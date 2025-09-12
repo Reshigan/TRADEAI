@@ -93,31 +93,31 @@ cp production/.env.backend.production backend/.env
 # Generate secure passwords and secrets
 echo -e "${YELLOW}🔐 Generating secure credentials...${NC}"
 
-# Generate random passwords
-DB_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
-JWT_SECRET=$(openssl rand -base64 64 | tr -d "=+/" | cut -c1-64)
-REDIS_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
-ENCRYPTION_KEY=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32)
+# Generate random passwords (using only alphanumeric characters to avoid sed issues)
+DB_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/\n" | tr -cd '[:alnum:]' | cut -c1-25)
+JWT_SECRET=$(openssl rand -base64 64 | tr -d "=+/\n" | tr -cd '[:alnum:]' | cut -c1-64)
+REDIS_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/\n" | tr -cd '[:alnum:]' | cut -c1-25)
+ENCRYPTION_KEY=$(openssl rand -base64 32 | tr -d "=+/\n" | tr -cd '[:alnum:]' | cut -c1-32)
 
-# Update environment files with generated passwords
-sed -i "s/your_secure_db_password_here/$DB_PASSWORD/g" .env
-sed -i "s/your_jwt_secret_key_here/$JWT_SECRET/g" .env
-sed -i "s/your_redis_password_here/$REDIS_PASSWORD/g" .env
-sed -i "s/your_encryption_key_here/$ENCRYPTION_KEY/g" .env
+# Update environment files with generated passwords using | as delimiter
+sed -i "s|your_secure_db_password_here|$DB_PASSWORD|g" .env
+sed -i "s|your_jwt_secret_key_here|$JWT_SECRET|g" .env
+sed -i "s|your_redis_password_here|$REDIS_PASSWORD|g" .env
+sed -i "s|your_encryption_key_here|$ENCRYPTION_KEY|g" .env
 
-sed -i "s/your_secure_db_password_here/$DB_PASSWORD/g" backend/.env
-sed -i "s/your_jwt_secret_key_here/$JWT_SECRET/g" backend/.env
-sed -i "s/your_redis_password_here/$REDIS_PASSWORD/g" backend/.env
-sed -i "s/your_encryption_key_here/$ENCRYPTION_KEY/g" backend/.env
+sed -i "s|your_secure_db_password_here|$DB_PASSWORD|g" backend/.env
+sed -i "s|your_jwt_secret_key_here|$JWT_SECRET|g" backend/.env
+sed -i "s|your_redis_password_here|$REDIS_PASSWORD|g" backend/.env
+sed -i "s|your_encryption_key_here|$ENCRYPTION_KEY|g" backend/.env
 
 # Get server IP for configuration
 SERVER_IP=$(curl -s ifconfig.me || curl -s ipinfo.io/ip || echo "localhost")
 echo -e "${BLUE}🌐 Detected server IP: $SERVER_IP${NC}"
 
 # Update environment files with server IP
-sed -i "s/your_server_ip_here/$SERVER_IP/g" .env
-sed -i "s/your_server_ip_here/$SERVER_IP/g" frontend/.env
-sed -i "s/your_server_ip_here/$SERVER_IP/g" backend/.env
+sed -i "s|your_server_ip_here|$SERVER_IP|g" .env
+sed -i "s|your_server_ip_here|$SERVER_IP|g" frontend/.env
+sed -i "s|your_server_ip_here|$SERVER_IP|g" backend/.env
 
 # Create data directories
 echo -e "${BLUE}📁 Creating data directories...${NC}"
