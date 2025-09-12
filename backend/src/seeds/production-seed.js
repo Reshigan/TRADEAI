@@ -300,7 +300,7 @@ const seedProductionData = async () => {
     // 5. Create Campaigns for GONXT
     console.log('Creating campaigns for GONXT...');
     const gonxtCampaigns = [];
-    const campaignTypes = ['promotional', 'seasonal', 'product_launch', 'brand_awareness', 'loyalty'];
+    const campaignTypes = ['brand_awareness', 'product_launch', 'seasonal', 'clearance', 'loyalty'];
     
     for (let i = 0; i < 15; i++) {
       const startDate = new Date(2023, i % 12, 1);
