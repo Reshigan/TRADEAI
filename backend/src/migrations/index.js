@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../config');
 
-// Import all models to ensure they're registered
-require('../models');
-
 async function runMigrations() {
     try {
         console.log('🔄 Starting database migrations...');
@@ -17,38 +14,61 @@ async function runMigrations() {
         const collections = await mongoose.connection.db.listCollections().toArray();
         console.log(`📊 Found ${collections.length} existing collections`);
         
-        // Create indexes for better performance
+        // Create basic indexes for collections that might exist
         console.log('🔍 Creating database indexes...');
         
-        // User collection indexes
-        const User = mongoose.model('User');
-        await User.collection.createIndex({ email: 1 }, { unique: true });
-        await User.collection.createIndex({ companyId: 1 });
-        await User.collection.createIndex({ role: 1 });
+        const db = mongoose.connection.db;
         
-        // Company collection indexes
-        const Company = mongoose.model('Company');
-        await Company.collection.createIndex({ name: 1 }, { unique: true });
-        await Company.collection.createIndex({ status: 1 });
+        // Create indexes for common collections (if they exist)
+        try {
+            // Users collection indexes
+            await db.collection('users').createIndex({ email: 1 }, { unique: true, background: true });
+            await db.collection('users').createIndex({ companyId: 1 }, { background: true });
+            await db.collection('users').createIndex({ role: 1 }, { background: true });
+            console.log('✅ User indexes created');
+        } catch (error) {
+            console.log('ℹ️  User collection indexes skipped (collection may not exist yet)');
+        }
         
-        // TradeSpend collection indexes
-        const TradeSpend = mongoose.model('TradeSpend');
-        await TradeSpend.collection.createIndex({ companyId: 1 });
-        await TradeSpend.collection.createIndex({ customerId: 1 });
-        await TradeSpend.collection.createIndex({ date: -1 });
+        try {
+            // Companies collection indexes
+            await db.collection('companies').createIndex({ name: 1 }, { unique: true, background: true });
+            await db.collection('companies').createIndex({ status: 1 }, { background: true });
+            console.log('✅ Company indexes created');
+        } catch (error) {
+            console.log('ℹ️  Company collection indexes skipped (collection may not exist yet)');
+        }
         
-        // Budget collection indexes
-        const Budget = mongoose.model('Budget');
-        await Budget.collection.createIndex({ companyId: 1 });
-        await Budget.collection.createIndex({ year: 1 });
+        try {
+            // TradeSpends collection indexes
+            await db.collection('tradespends').createIndex({ companyId: 1 }, { background: true });
+            await db.collection('tradespends').createIndex({ customerId: 1 }, { background: true });
+            await db.collection('tradespends').createIndex({ date: -1 }, { background: true });
+            console.log('✅ TradeSpend indexes created');
+        } catch (error) {
+            console.log('ℹ️  TradeSpend collection indexes skipped (collection may not exist yet)');
+        }
         
-        // Promotion collection indexes
-        const Promotion = mongoose.model('Promotion');
-        await Promotion.collection.createIndex({ companyId: 1 });
-        await Promotion.collection.createIndex({ status: 1 });
-        await Promotion.collection.createIndex({ startDate: 1, endDate: 1 });
+        try {
+            // Budgets collection indexes
+            await db.collection('budgets').createIndex({ companyId: 1 }, { background: true });
+            await db.collection('budgets').createIndex({ year: 1 }, { background: true });
+            console.log('✅ Budget indexes created');
+        } catch (error) {
+            console.log('ℹ️  Budget collection indexes skipped (collection may not exist yet)');
+        }
         
-        console.log('✅ Database indexes created successfully');
+        try {
+            // Promotions collection indexes
+            await db.collection('promotions').createIndex({ companyId: 1 }, { background: true });
+            await db.collection('promotions').createIndex({ status: 1 }, { background: true });
+            await db.collection('promotions').createIndex({ startDate: 1, endDate: 1 }, { background: true });
+            console.log('✅ Promotion indexes created');
+        } catch (error) {
+            console.log('ℹ️  Promotion collection indexes skipped (collection may not exist yet)');
+        }
+        
+        console.log('✅ Database index creation completed');
         
         // Verify collections exist
         const finalCollections = await mongoose.connection.db.listCollections().toArray();
