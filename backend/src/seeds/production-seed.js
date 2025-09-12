@@ -260,6 +260,7 @@ const seedProductionData = async () => {
         const product = new Product({
           name: productName,
           sku: `${category.prefix}_${String(i + 1).padStart(4, '0')}`,
+          barcode: `${generateRandomValue(100000000000, 999999999999)}`,
           sapMaterialId: `SAP_MAT_${category.prefix}_${String(i + 1).padStart(4, '0')}`,
           company: gonxtCompany._id,
           category: category.name,
