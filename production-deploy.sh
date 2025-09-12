@@ -63,20 +63,31 @@ else
     echo -e "${GREEN}✅ Git is already installed${NC}"
 fi
 
-# Create deployment directory
-DEPLOY_DIR="/opt/tradeai"
-echo -e "${BLUE}📁 Creating deployment directory: $DEPLOY_DIR${NC}"
-mkdir -p $DEPLOY_DIR
-cd $DEPLOY_DIR
+# Use current directory for deployment
+DEPLOY_DIR=$(pwd)
+echo -e "${BLUE}📁 Using current directory for deployment: $DEPLOY_DIR${NC}"
 
-# Clone or update repository
+# Check if we're in a TRADEAI repository
 if [ -d ".git" ]; then
-    echo -e "${BLUE}🔄 Updating existing repository...${NC}"
-    git fetch origin
-    git reset --hard origin/main
+    # Check if it's the TRADEAI repository
+    REPO_URL=$(git remote get-url origin 2>/dev/null || echo "")
+    if [[ "$REPO_URL" == *"TRADEAI"* ]]; then
+        echo -e "${BLUE}🔄 Updating existing TRADEAI repository...${NC}"
+        git fetch origin
+        git reset --hard origin/main
+    else
+        echo -e "${RED}❌ Current directory contains a different git repository${NC}"
+        echo -e "${YELLOW}Please navigate to your TRADEAI repository directory or clone it first:${NC}"
+        echo -e "${BLUE}git clone https://github.com/Reshigan/TRADEAI.git${NC}"
+        echo -e "${BLUE}cd TRADEAI${NC}"
+        exit 1
+    fi
 else
-    echo -e "${BLUE}📥 Cloning TRADEAI repository...${NC}"
-    git clone https://github.com/Reshigan/TRADEAI.git .
+    echo -e "${RED}❌ Current directory is not a git repository${NC}"
+    echo -e "${YELLOW}Please clone the TRADEAI repository first:${NC}"
+    echo -e "${BLUE}git clone https://github.com/Reshigan/TRADEAI.git${NC}"
+    echo -e "${BLUE}cd TRADEAI${NC}"
+    exit 1
 fi
 
 # Make scripts executable
@@ -121,11 +132,14 @@ sed -i "s|your_server_ip_here|$SERVER_IP|g" backend/.env
 
 # Create data directories
 echo -e "${BLUE}📁 Creating data directories...${NC}"
-mkdir -p data/postgres
+mkdir -p data/mongodb
 mkdir -p data/redis
 mkdir -p data/uploads
 mkdir -p data/backups
 mkdir -p logs
+mkdir -p backups/mongodb
+mkdir -p backups/redis
+mkdir -p backups/backend
 
 # Set proper permissions
 chown -R 1000:1000 data/

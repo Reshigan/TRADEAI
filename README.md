@@ -239,13 +239,19 @@ The system supports both **Development Mode** (with mock data) and **Production 
 
 ## 🚀 Production Deployment
 
-For production deployment with full features including advanced analytics, use the AWS production configuration:
+### Quick Start
 
-```bash
-# Deploy to production
-chmod +x deploy-aws-production.sh
-./deploy-aws-production.sh
-```
+1. **Clone Repository**:
+   ```bash
+   git clone https://github.com/Reshigan/TRADEAI.git
+   cd TRADEAI
+   ```
+
+2. **Deploy to Production**:
+   ```bash
+   chmod +x production-deploy.sh
+   sudo ./production-deploy.sh
+   ```
 
 ### Production Features
 - **Multi-tenant architecture** with complete company data isolation

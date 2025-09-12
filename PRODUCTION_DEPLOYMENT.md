@@ -8,14 +8,7 @@
 - Internet connection
 - Domain name (optional, for SSL)
 
-### One-Command Deployment
-
-```bash
-# Download and run the deployment script
-curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/production-deploy.sh -o deploy.sh && chmod +x deploy.sh && sudo ./deploy.sh
-```
-
-### Manual Deployment Steps
+### Deployment Steps
 
 1. **Clone Repository**:
    ```bash
@@ -28,6 +21,21 @@ curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/production-de
    chmod +x production-deploy.sh
    sudo ./production-deploy.sh
    ```
+
+### Alternative: Download and Deploy
+
+```bash
+# Download deployment script and run in current directory
+curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/production-deploy.sh -o production-deploy.sh
+chmod +x production-deploy.sh
+
+# Clone repository first
+git clone https://github.com/Reshigan/TRADEAI.git
+cd TRADEAI
+
+# Run deployment
+sudo ./production-deploy.sh
+```
 
 ## 📊 What Gets Deployed
 
@@ -62,34 +70,36 @@ The platform comes with **GONXT** company and 8 role-based test accounts:
 
 ## 🛠️ Management Commands
 
+**Note**: Run these commands from your TRADEAI repository directory.
+
 ### View Logs
 ```bash
-cd /opt/tradeai
+# From your TRADEAI directory
 docker-compose -f docker-compose.production.yml logs -f
 ```
 
 ### Restart Services
 ```bash
-cd /opt/tradeai
+# From your TRADEAI directory
 docker-compose -f docker-compose.production.yml restart
 ```
 
 ### Stop Services
 ```bash
-cd /opt/tradeai
+# From your TRADEAI directory
 docker-compose -f docker-compose.production.yml down
 ```
 
 ### Update Platform
 ```bash
-cd /opt/tradeai
+# From your TRADEAI directory
 git pull
 docker-compose -f docker-compose.production.yml up -d --build
 ```
 
 ### Backup Data
 ```bash
-cd /opt/tradeai
+# From your TRADEAI directory
 ./production/backup.sh
 ```
 
@@ -199,17 +209,19 @@ df -h
 ## 📁 Directory Structure
 
 ```
-/opt/tradeai/
+TRADEAI/                # Your repository directory
 ├── production/          # Production configurations
-├── data/               # Persistent data
-│   ├── postgres/       # Database files
+├── data/               # Persistent data (created during deployment)
+│   ├── mongodb/        # Database files
 │   ├── redis/          # Cache files
 │   ├── uploads/        # User uploads
 │   └── backups/        # Backup files
-├── logs/               # Application logs
+├── logs/               # Application logs (created during deployment)
 ├── frontend/           # React application
 ├── backend/            # Node.js API
-└── deployment-info.txt # Deployment credentials
+├── ai-services/        # AI/ML services
+├── monitoring/         # System monitoring
+└── deployment-info.txt # Deployment credentials (created during deployment)
 ```
 
 ## 🎯 Next Steps
