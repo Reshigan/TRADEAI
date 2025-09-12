@@ -11,7 +11,7 @@ const AIChat = require('../models/AIChat');
 const PromotionAnalysis = require('../models/PromotionAnalysis');
 const MarketingBudgetAllocation = require('../models/MarketingBudgetAllocation');
 const CombinationAnalysis = require('../models/CombinationAnalysis');
-const connectDB = require('../config/database');
+const { connectDB } = require('../config/database');
 
 // Helper function to generate random values
 const generateRandomValue = (min, max, decimals = 0) => {
