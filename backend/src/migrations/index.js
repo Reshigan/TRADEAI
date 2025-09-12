@@ -9,10 +9,7 @@ async function runMigrations() {
         console.log('🔄 Starting database migrations...');
         
         // Connect to MongoDB
-        await mongoose.connect(config.database.mongodb.uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect(config.mongodb.uri, config.mongodb.options);
         
         console.log('✅ Connected to MongoDB');
         
