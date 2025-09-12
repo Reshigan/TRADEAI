@@ -259,11 +259,12 @@ const seedProductionData = async () => {
       if (!existingProduct) {
         const product = new Product({
           name: productName,
+          sku: `${category.prefix}_${String(i + 1).padStart(4, '0')}`,
           sapMaterialId: `SAP_MAT_${category.prefix}_${String(i + 1).padStart(4, '0')}`,
           company: gonxtCompany._id,
           category: category.name,
           brand: `Brand ${String.fromCharCode(65 + (i % 5))}`,
-          productType: ['finished_good', 'raw_material', 'packaging'][i % 3],
+          productType: ['own_brand', 'distributed', 'private_label', 'consignment'][i % 4],
           description: `High-quality ${category.name.toLowerCase()} product designed for premium market segment`,
           specifications: {
             weight: generateRandomValue(100, 2000, 1),
