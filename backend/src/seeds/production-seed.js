@@ -123,16 +123,22 @@ const seedProductionData = async () => {
     if (!gonxtAdmin) {
       const hashedPassword = await bcrypt.hash('GonxtAdmin2024!', 12);
       gonxtAdmin = new User({
+        employeeId: 'GONXT001',
         firstName: 'GONXT',
         lastName: 'Administrator',
         email: 'admin@gonxt.tech',
         password: hashedPassword,
         role: 'admin',
+        department: 'admin',
         company: gonxtCompany._id,
         isActive: true,
-        permissions: ['all'],
+        permissions: [
+          { module: 'users', actions: ['create', 'read', 'update', 'delete'] },
+          { module: 'companies', actions: ['create', 'read', 'update', 'delete'] },
+          { module: 'analytics', actions: ['read'] },
+          { module: 'reports', actions: ['create', 'read', 'update', 'delete'] }
+        ],
         profile: {
-          department: 'IT',
           position: 'System Administrator',
           phone: '+61-2-9876-5432',
           timezone: 'Australia/Sydney'
@@ -149,16 +155,21 @@ const seedProductionData = async () => {
     if (!testAdmin) {
       const hashedPassword = await bcrypt.hash('TestAdmin2024!', 12);
       testAdmin = new User({
+        employeeId: 'TEST001',
         firstName: 'Test',
         lastName: 'Administrator',
         email: 'admin@test.demo',
         password: hashedPassword,
         role: 'admin',
+        department: 'admin',
         company: testCompany._id,
         isActive: true,
-        permissions: ['analytics', 'reporting', 'users'],
+        permissions: [
+          { module: 'analytics', actions: ['read'] },
+          { module: 'reports', actions: ['create', 'read', 'update', 'delete'] },
+          { module: 'users', actions: ['create', 'read', 'update', 'delete'] }
+        ],
         profile: {
-          department: 'Management',
           position: 'Administrator',
           phone: '+61-3-1234-5678',
           timezone: 'Australia/Sydney'
