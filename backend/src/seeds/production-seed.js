@@ -334,7 +334,7 @@ const seedProductionData = async () => {
             conversions: generateRandomValue(500, 5000),
             roi: generateRandomValue(150, 300, 1)
           },
-          status: i < 10 ? 'completed' : i < 13 ? 'active' : 'planned',
+          status: i < 10 ? 'completed' : i < 13 ? 'active' : 'planning',
           createdBy: gonxtAdmin._id
         });
         await campaign.save();
