@@ -126,13 +126,12 @@ services:
         REACT_APP_MONITORING_URL: ${REACT_APP_MONITORING_URL}
     env_file:
       - .env.production
-    environment:
-      NODE_ENV: production
     container_name: trade-ai-frontend-prod
     restart: always
     ports:
       - "127.0.0.1:3001:80"  # Bind to localhost only, nginx will proxy
     environment:
+      NODE_ENV: production
       REACT_APP_API_URL: ${REACT_APP_API_URL}
       REACT_APP_SOCKET_URL: ${REACT_APP_SOCKET_URL}
       REACT_APP_AI_API_URL: ${REACT_APP_AI_API_URL}
