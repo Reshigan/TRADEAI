@@ -198,11 +198,12 @@ const seedProductionData = async () => {
       if (!existingCustomer) {
         const customer = new Customer({
           name: customerNames[i],
+          code: customerNames[i].toUpperCase().replace(/\s+/g, '_').substring(0, 10),
           sapCustomerId: `SAP_CUST_${String(i + 1).padStart(6, '0')}`,
           company: gonxtCompany._id,
-          customerType: i < 5 ? 'key_account' : 'standard',
-          channel: i < 3 ? 'retail' : i < 7 ? 'wholesale' : 'online',
-          tier: i < 2 ? 'tier_1' : i < 5 ? 'tier_2' : 'tier_3',
+          customerType: i < 5 ? 'chain' : 'retailer',
+          channel: i < 3 ? 'modern_trade' : i < 7 ? 'traditional_trade' : 'ecommerce',
+          tier: i < 2 ? 'platinum' : i < 5 ? 'gold' : 'silver',
           contactInfo: {
             email: `contact@${customerNames[i].toLowerCase().replace(/\s+/g, '')}.com.au`,
             phone: `+61-${generateRandomValue(2, 8)}-${generateRandomValue(1000, 9999)}-${generateRandomValue(1000, 9999)}`,
