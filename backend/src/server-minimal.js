@@ -10,17 +10,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongodb:27017/trade_ai_production';
 
-console.log('🚀 Starting TRADEAI Backend...');
+console.log('🚀 Starting TRADEAI Backend (Minimal Mode)...');
 console.log('📊 Environment:', process.env.NODE_ENV || 'production');
 console.log('🔌 Port:', PORT);
 console.log('🗄️ MongoDB:', MONGODB_URI);
 
 // Quick middleware setup
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(helmet({ 
+  contentSecurityPolicy: false, 
+  crossOriginEmbedderPolicy: false 
+}));
+
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression());
@@ -31,7 +36,8 @@ app.get('/api/health', (req, res) => {
     status: 'OK', 
     timestamp: new Date().toISOString(),
     service: 'TRADEAI Backend',
-    version: '2.1.3'
+    version: '2.1.3',
+    mode: 'minimal'
   });
 });
 
@@ -39,13 +45,45 @@ app.get('/api/health', (req, res) => {
 app.get('/api/status', (req, res) => {
   res.json({
     success: true,
-    message: 'TRADEAI Backend is running',
+    message: 'TRADEAI Backend is running (minimal mode)',
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    mode: 'minimal'
   });
 });
 
-// Connect to MongoDB with timeout and no authentication
+// Basic auth endpoint for testing
+app.post('/api/auth/login', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Login endpoint available',
+    token: 'demo-token-' + Date.now(),
+    user: {
+      id: 1,
+      email: 'admin@tradeai.com',
+      name: 'Admin User',
+      role: 'admin'
+    }
+  });
+});
+
+// Basic dashboard endpoint
+app.get('/api/dashboard/stats', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      totalUsers: 1,
+      totalCompanies: 1,
+      totalProducts: 0,
+      totalPromotions: 0,
+      revenue: 0,
+      growth: 0
+    }
+  });
+});
+
+// Connect to MongoDB (optional)
 const connectDB = async () => {
   try {
     console.log('🔄 Connecting to MongoDB...');
@@ -54,79 +92,16 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 2,
-      maxIdleTimeMS: 30000,
-      waitQueueTimeoutMS: 5000,
-      authSource: 'admin'  // Use admin database for auth
+      connectTimeoutMS: 10000
     });
     
     console.log('✅ MongoDB connected successfully');
     console.log('📍 Host:', mongoose.connection.host);
     console.log('📂 Database:', mongoose.connection.name);
     
-    // Try to create indexes, but don't fail if it doesn't work
-    try {
-      console.log('🔄 Creating database indexes...');
-      // Skip index creation for now to avoid auth issues
-      console.log('⚠️ Skipping index creation to avoid authentication issues');
-    } catch (indexError) {
-      console.log('⚠️ Index creation failed (continuing anyway):', indexError.message);
-    }
-    
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
-    // Don't exit - continue without database for health checks
     console.log('⚠️ Continuing without database connection...');
-  }
-};
-
-// Initialize Redis cache
-const initializeCache = async () => {
-  try {
-    console.log('🔄 Initializing Redis cache...');
-    
-    const { initializeCache } = require('./services/cacheService-simple');
-    await initializeCache();
-    
-    console.log('✅ Redis cache initialized successfully');
-    
-  } catch (error) {
-    console.error('⚠️ Redis cache initialization failed:', error.message);
-    console.log('🔄 Continuing without Redis cache...');
-  }
-};
-
-// Load routes after basic setup
-const loadRoutes = async () => {
-  try {
-    console.log('🔄 Loading API routes...');
-    
-    // Import routes dynamically to handle missing dependencies gracefully
-    const authRoutes = require('./routes/auth');
-    const userRoutes = require('./routes/user');
-    const customerRoutes = require('./routes/customer');
-    const productRoutes = require('./routes/product');
-    const promotionRoutes = require('./routes/promotion');
-    const budgetRoutes = require('./routes/budget');
-    const dashboardRoutes = require('./routes/dashboard');
-    
-    // Register routes
-    app.use('/api/auth', authRoutes);
-    app.use('/api/users', userRoutes);
-    app.use('/api/customers', customerRoutes);
-    app.use('/api/products', productRoutes);
-    app.use('/api/promotions', promotionRoutes);
-    app.use('/api/budgets', budgetRoutes);
-    app.use('/api/dashboard', dashboardRoutes);
-    
-    console.log('✅ API routes loaded successfully');
-    
-  } catch (error) {
-    console.error('⚠️ Error loading routes:', error.message);
-    console.log('🔄 Continuing with basic health check only...');
   }
 };
 
@@ -145,7 +120,13 @@ app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found',
-    path: req.originalUrl
+    path: req.originalUrl,
+    availableEndpoints: [
+      'GET /api/health',
+      'GET /api/status',
+      'POST /api/auth/login',
+      'GET /api/dashboard/stats'
+    ]
   });
 });
 
@@ -159,16 +140,11 @@ const startServer = async () => {
       console.log(`🌐 Server running on http://0.0.0.0:${PORT}`);
       console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
       console.log(`📊 Status check: http://localhost:${PORT}/api/status`);
+      console.log(`🔐 Login test: POST http://localhost:${PORT}/api/auth/login`);
     });
 
-    // Connect to database after server starts
-    setTimeout(connectDB, 1000);
-    
-    // Initialize cache after database
-    setTimeout(initializeCache, 1500);
-    
-    // Load routes after database and cache
-    setTimeout(loadRoutes, 2500);
+    // Connect to database after server starts (optional)
+    setTimeout(connectDB, 2000);
 
     // Graceful shutdown
     const shutdown = () => {

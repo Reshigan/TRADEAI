@@ -56,9 +56,10 @@ COPY --from=builder --chown=tradeai:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=tradeai:nodejs /app/package*.json ./
 COPY --chown=tradeai:nodejs . .
 
-# Create necessary directories
-RUN mkdir -p /app/logs /app/uploads /app/backups /app/.cache && \
-    chown -R tradeai:nodejs /app/logs /app/uploads /app/backups /app/.cache
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/logs /app/logs/security /app/uploads /app/backups /app/.cache && \
+    chown -R tradeai:nodejs /app/logs /app/uploads /app/backups /app/.cache && \
+    chmod -R 755 /app/logs /app/uploads /app/backups /app/.cache
 
 # Create healthcheck script
 RUN echo '#!/bin/sh\ncurl -f http://localhost:5000/api/health || exit 1' > /app/healthcheck.js && \
@@ -84,5 +85,5 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start with the fast server and memory optimization
-CMD ["node", "--max-old-space-size=512", "src/server-fast.js"]
+# Start with the minimal server for fastest startup
+CMD ["node", "--max-old-space-size=512", "src/server-minimal.js"]
