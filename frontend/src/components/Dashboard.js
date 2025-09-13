@@ -191,7 +191,7 @@ const Dashboard = ({ user }) => {
       </Snackbar>
       
       <Typography variant="h4" gutterBottom>
-        Welcome back, {user?.name.split(' ')[0] || 'User'}
+        Welcome back, {user?.name?.split(' ')[0] || 'User'}
       </Typography>
       <Typography variant="subtitle1" color="text.secondary" gutterBottom>
         Here's what's happening with your trade spend activities today.

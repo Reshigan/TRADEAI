@@ -1,503 +1,458 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  TextField,
-  Typography,
+import { 
+  Container, 
+  Paper, 
+  TextField, 
+  Button, 
+  Typography, 
+  Box, 
   Alert,
   InputAdornment,
   IconButton,
-  Paper,
-  Grid,
-  Divider,
-  Link
+  Divider
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
-import { authService } from '../services/api';
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    
+    // Simple validation
+    if (!credentials.email || !credentials.password) {
+      setError('Please fill in all fields');
+      return;
+    }
 
-    try {
-      const response = await authService.login({ email, password });
-      
-      if (response.success) {
-        // Store user data
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
-        // Call onLogin callback
-        if (onLogin) {
-          onLogin(response.data.user);
-        }
-      } else {
-        setError(response.message || 'Login failed');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError(error.response?.data?.message || 'Invalid credentials. Try admin@tradeai.com / password123');
-    } finally {
-      setLoading(false);
+    // Mock authentication - replace with actual API call
+    if (credentials.email === 'admin@tradeai.com' && credentials.password === 'password123') {
+      onLogin({ email: credentials.email, role: 'admin' });
+    } else if (credentials.email === 'manager@tradeai.com' && credentials.password === 'password123') {
+      onLogin({ email: credentials.email, role: 'manager' });
+    } else if (credentials.email === 'kam@tradeai.com' && credentials.password === 'password123') {
+      onLogin({ email: credentials.email, role: 'kam' });
+    } else {
+      setError('Invalid credentials. Try admin@tradeai.com / password123');
     }
   };
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
+  const handleChange = (e) => {
+    setCredentials({
+      ...credentials,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
-    <Container 
-      component="main" 
-      maxWidth="lg" 
-      sx={{ 
-        height: '100vh', 
-        display: 'flex', 
-        alignItems: 'center',
-        background: 'var(--bg-primary)',
-        position: 'relative'
-      }}
-    >
-      {/* Animated background elements */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '10%',
-          right: '10%',
-          width: '200px',
-          height: '200px',
-          background: 'radial-gradient(circle, rgba(0,255,255,0.1) 0%, transparent 70%)',
-          borderRadius: '50%',
-          animation: 'pulse 4s ease-in-out infinite'
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '20%',
-          left: '5%',
-          width: '150px',
-          height: '150px',
-          background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)',
-          borderRadius: '50%',
-          animation: 'pulse 6s ease-in-out infinite reverse'
-        }}
-      />
-      
-      <Grid container spacing={4} sx={{ height: '80vh', zIndex: 1 }}>
-        <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
-            <img 
-              src="/images/modern-edgy-logo.svg" 
-              alt="Trade AI Logo" 
-              style={{ 
-                height: 80, 
-                marginBottom: 24,
-                filter: 'drop-shadow(0 0 10px rgba(0,255,255,0.3))'
-              }} 
-            />
+    <div style={{ 
+      minHeight: '100vh',
+      background: 'var(--bg-primary)',
+      display: 'flex',
+      alignItems: 'center',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Premium animated background elements */}
+      <div style={{
+        position: 'absolute',
+        top: '15%',
+        right: '15%',
+        width: '400px',
+        height: '400px',
+        background: 'radial-gradient(circle, rgba(30, 64, 175, 0.08) 0%, transparent 70%)',
+        borderRadius: '50%',
+        animation: 'premiumFloat 8s ease-in-out infinite'
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '15%',
+        left: '15%',
+        width: '300px',
+        height: '300px',
+        background: 'radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 70%)',
+        borderRadius: '50%',
+        animation: 'premiumFloat 10s ease-in-out infinite reverse'
+      }} />
+
+      <Container maxWidth="lg">
+        <Box display="flex" alignItems="center" minHeight="100vh">
+          {/* Left side - Branding */}
+          <Box flex={1} pr={4} className="slide-in">
+            <Box display="flex" alignItems="center" mb={3}>
+              <img 
+                src="/images/corporate-logo.svg" 
+                alt="Trade AI Logo"
+                style={{ height: '60px', marginRight: '1rem' }}
+              />
+            </Box>
+            
             <Typography 
-              variant="h3" 
-              component="h1" 
-              gutterBottom
-              className="glitch-text"
-              data-text="TRADE AI"
-              sx={{
-                background: 'linear-gradient(45deg, #ffffff, #00ffff, #8b5cf6)',
+              variant="h2" 
+              className="premium-heading"
+              sx={{ 
+                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                fontWeight: 700,
+                mb: 2,
+                background: 'var(--gradient-primary)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                fontWeight: 900,
-                letterSpacing: '2px',
-                textAlign: 'center'
+                backgroundClip: 'text',
+                letterSpacing: '-0.02em'
               }}
             >
               TRADE AI
             </Typography>
+            
             <Typography 
-              variant="h6" 
+              variant="h4" 
               sx={{ 
-                color: 'var(--text-secondary)', 
-                textAlign: 'center',
-                fontWeight: 300,
-                letterSpacing: '1px',
-                textTransform: 'uppercase'
+                color: 'var(--text-secondary)',
+                fontWeight: 600,
+                mb: 3,
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                letterSpacing: '-0.01em'
               }}
             >
-              Next-Generation Trade Intelligence
+              NEXT-GENERATION TRADE INTELLIGENCE
             </Typography>
+            
             <Typography 
               variant="body1" 
               sx={{ 
-                color: 'var(--text-muted)', 
-                textAlign: 'center',
-                mt: 2,
-                maxWidth: '400px'
+                color: 'var(--text-muted)',
+                fontSize: '1.1rem',
+                mb: 4,
+                lineHeight: 1.6
               }}
             >
               AI-Powered FMCG Trade Spend Management Platform
             </Typography>
           </Box>
-          
-          <Card 
-            className="modern-card"
-            sx={{
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border-primary)',
-              borderRadius: '16px',
-              backdropFilter: 'blur(10px)',
-              boxShadow: 'var(--shadow-card)',
-              '&:hover': {
-                boxShadow: 'var(--shadow-elevated)',
-                transform: 'translateY(-2px)'
-              }
-            }}
-          >
-            <CardContent sx={{ p: 4 }}>
+
+          {/* Right side - Login Form */}
+          <Box flex={1} className="fade-in">
+            <Paper 
+              elevation={0}
+              className="glass-card"
+              sx={{ 
+                maxWidth: 420,
+                mx: 'auto',
+                background: 'var(--bg-glass)',
+                backdropFilter: 'var(--glass-backdrop)',
+                WebkitBackdropFilter: 'var(--glass-backdrop)',
+                border: 'var(--glass-border)',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-glass)'
+              }}
+            >
               <Typography 
                 variant="h5" 
-                component="h2" 
                 align="center" 
-                gutterBottom
-                sx={{
+                sx={{ 
+                  mb: 3,
                   color: 'var(--text-primary)',
                   fontWeight: 600,
-                  mb: 3
+                  fontSize: '1.5rem'
                 }}
               >
                 Access Your Dashboard
               </Typography>
-              
+
               {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
+                <Alert 
+                  severity="error" 
+                  className="premium-alert error"
+                  sx={{ 
+                    mb: 2,
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    color: '#dc2626',
+                    border: 'none',
+                    borderLeft: '4px solid #dc2626',
+                    borderRadius: '12px',
+                    '& .MuiAlert-icon': {
+                      color: '#dc2626'
+                    }
+                  }}
+                >
                   {error}
                 </Alert>
               )}
-              
-              <Box component="form" onSubmit={handleSubmit} noValidate>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      background: 'var(--bg-tertiary)',
-                      color: 'var(--text-primary)',
-                      '& fieldset': {
-                        borderColor: 'var(--border-primary)',
+
+              <form onSubmit={handleSubmit}>
+                <Box className="form-group">
+                  <Typography className="form-label">Email Address</Typography>
+                  <TextField
+                    fullWidth
+                    name="email"
+                    type="email"
+                    value={credentials.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your email address"
+                    className="premium-input"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Email sx={{ color: 'var(--primary-blue-light)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: 'var(--bg-tertiary)',
+                        border: '2px solid rgba(30, 64, 175, 0.1)',
+                        borderRadius: '12px',
+                        color: 'var(--text-primary)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          borderColor: 'var(--primary-blue-light)',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: 'var(--primary-blue-light)',
+                          boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                        },
+                        '& fieldset': {
+                          border: 'none',
+                        },
                       },
-                      '&:hover fieldset': {
-                        borderColor: 'var(--neon-cyan)',
+                      '& .MuiInputBase-input': {
+                        padding: '14px 18px',
+                        fontSize: '1rem',
+                        fontWeight: 400,
                       },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'var(--neon-cyan)',
-                        boxShadow: '0 0 10px rgba(0, 255, 255, 0.3)',
+                      '& .MuiInputBase-input::placeholder': {
+                        color: 'var(--text-light)',
+                        opacity: 1,
                       },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'var(--text-secondary)',
-                      '&.Mui-focused': {
-                        color: 'var(--neon-cyan)',
+                    }}
+                  />
+                </Box>
+
+                <Box className="form-group">
+                  <Typography className="form-label">Password</Typography>
+                  <TextField
+                    fullWidth
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={credentials.password}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter your password"
+                    className="premium-input"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock sx={{ color: 'var(--primary-blue-light)' }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            sx={{ color: 'var(--text-muted)' }}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: 'var(--bg-tertiary)',
+                        border: '2px solid rgba(30, 64, 175, 0.1)',
+                        borderRadius: '12px',
+                        color: 'var(--text-primary)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          borderColor: 'var(--primary-blue-light)',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: 'var(--primary-blue-light)',
+                          boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                        },
+                        '& fieldset': {
+                          border: 'none',
+                        },
                       },
-                    },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Email sx={{ color: 'var(--text-secondary)' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      background: 'var(--bg-tertiary)',
-                      color: 'var(--text-primary)',
-                      '& fieldset': {
-                        borderColor: 'var(--border-primary)',
+                      '& .MuiInputBase-input': {
+                        padding: '14px 18px',
+                        fontSize: '1rem',
+                        fontWeight: 400,
                       },
-                      '&:hover fieldset': {
-                        borderColor: 'var(--neon-cyan)',
+                      '& .MuiInputBase-input::placeholder': {
+                        color: 'var(--text-light)',
+                        opacity: 1,
                       },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'var(--neon-cyan)',
-                        boxShadow: '0 0 10px rgba(0, 255, 255, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'var(--text-secondary)',
-                      '&.Mui-focused': {
-                        color: 'var(--neon-cyan)',
-                      },
-                    },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Lock sx={{ color: 'var(--text-secondary)' }} />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                          sx={{ color: 'var(--text-secondary)' }}
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                    }}
+                  />
+                </Box>
+
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  disabled={loading}
-                  className="neon-button primary"
-                  sx={{ 
-                    mt: 3, 
-                    mb: 2, 
-                    py: 1.5,
-                    background: 'transparent',
-                    border: '2px solid var(--neon-purple)',
-                    color: 'var(--neon-purple)',
+                  className="premium-button"
+                  sx={{
+                    py: 1.75,
+                    fontSize: '1rem',
                     fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
+                    letterSpacing: '0.025em',
+                    background: 'var(--gradient-primary)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: 'white',
+                    textTransform: 'none',
+                    boxShadow: 'var(--shadow-subtle)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                      background: 'rgba(139, 92, 246, 0.1)',
-                      boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)',
-                      textShadow: '0 0 10px var(--neon-purple)',
+                      background: 'var(--gradient-primary)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: 'var(--shadow-premium)',
                     },
-                    '&:disabled': {
-                      opacity: 0.6,
-                      border: '2px solid var(--border-primary)',
-                      color: 'var(--text-muted)',
-                    }
                   }}
                 >
-                  {loading ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <div className="loading-spinner" style={{ width: 20, height: 20 }} />
-                      ACCESSING...
-                    </Box>
-                  ) : (
-                    'ACCESS PLATFORM'
-                  )}
+                  ACCESS PLATFORM
                 </Button>
-              </Box>
-              
-              <Divider sx={{ my: 3, borderColor: 'var(--border-primary)' }}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'var(--text-secondary)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    fontSize: '0.75rem'
-                  }}
-                >
-                  Demo Access
+              </form>
+
+              <Divider sx={{ my: 3, borderColor: 'rgba(30, 64, 175, 0.1)' }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-muted)', px: 2, fontSize: '0.85rem', fontWeight: 500 }}>
+                  DEMO ACCESS
                 </Typography>
               </Divider>
-              
-              <Box 
-                sx={{ 
-                  mt: 2,
-                  p: 2,
-                  background: 'var(--bg-tertiary)',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-primary)'
-                }}
-              >
-                <Typography variant="body2" gutterBottom sx={{ color: 'var(--text-secondary)', mb: 1 }}>
-                  <span style={{ color: 'var(--neon-cyan)', fontWeight: 600 }}>ADMIN:</span> admin@tradeai.com / password123
+
+              <Box sx={{ textAlign: 'center', fontSize: '0.85rem' }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-muted)', mb: 1 }}>
+                  <strong style={{ color: 'var(--primary-blue)' }}>ADMIN:</strong> admin@tradeai.com / password123
                 </Typography>
-                <Typography variant="body2" gutterBottom sx={{ color: 'var(--text-secondary)', mb: 1 }}>
-                  <span style={{ color: 'var(--neon-purple)', fontWeight: 600 }}>MANAGER:</span> manager@tradeai.com / password123
+                <Typography variant="body2" sx={{ color: 'var(--text-muted)', mb: 1 }}>
+                  <strong style={{ color: 'var(--accent-gold)' }}>MANAGER:</strong> manager@tradeai.com / password123
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
-                  <span style={{ color: 'var(--neon-green)', fontWeight: 600 }}>KAM:</span> kam@tradeai.com / password123
+                <Typography variant="body2" sx={{ color: 'var(--text-muted)' }}>
+                  <strong style={{ color: 'var(--primary-blue-light)' }}>KAM:</strong> kam@tradeai.com / password123
                 </Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'flex' } }}>
-          <Paper 
-            elevation={0} 
-            className="modern-card"
+            </Paper>
+          </Box>
+        </Box>
+
+        {/* Right side content */}
+        <Box 
+          flex={1} 
+          pl={4} 
+          className="fade-in"
+          sx={{ display: { xs: 'none', lg: 'block' } }}
+        >
+          <Typography 
+            variant="h3" 
             sx={{ 
-              p: 4, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              justifyContent: 'center',
-              background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))',
               color: 'var(--text-primary)',
-              height: '100%',
-              borderRadius: '16px',
-              border: '1px solid var(--border-primary)',
-              position: 'relative',
-              overflow: 'hidden'
+              fontWeight: 700,
+              mb: 3,
+              background: 'var(--gradient-primary)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              letterSpacing: '-0.02em'
             }}
           >
-            {/* Decorative elements */}
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '-50px',
-                right: '-50px',
-                width: '200px',
-                height: '200px',
-                background: 'radial-gradient(circle, rgba(0,255,255,0.05) 0%, transparent 70%)',
-                borderRadius: '50%',
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: '-30px',
-                left: '-30px',
-                width: '150px',
-                height: '150px',
-                background: 'radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 70%)',
-                borderRadius: '50%',
-              }}
-            />
-            
+            Welcome to the Future
+          </Typography>
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              color: 'var(--text-secondary)',
+              fontSize: '1.1rem',
+              mb: 4,
+              lineHeight: 1.6
+            }}
+          >
+            Next-generation FMCG trade intelligence platform powered by advanced AI algorithms and real-time analytics.
+          </Typography>
+
+          <Box>
             <Typography 
-              variant="h3" 
-              gutterBottom
-              sx={{
-                background: 'linear-gradient(45deg, #ffffff, #00ffff)',
+              variant="h5" 
+              className="accent-heading"
+              sx={{ 
+                background: 'var(--gradient-accent)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                fontWeight: 800,
-                letterSpacing: '1px',
-                mb: 3
+                backgroundClip: 'text',
+                fontWeight: 600,
+                mb: 2
               }}
             >
-              Welcome to the Future
-            </Typography>
-            <Typography 
-              variant="h6" 
-              paragraph
-              sx={{ 
-                color: 'var(--text-secondary)',
-                fontWeight: 300,
-                lineHeight: 1.6,
-                mb: 4
-              }}
-            >
-              Next-generation FMCG trade intelligence platform powered by advanced AI algorithms and real-time analytics.
+              Advanced Capabilities
             </Typography>
             
-            <Box sx={{ my: 4, zIndex: 1 }}>
-              <Typography 
-                variant="h5" 
-                gutterBottom
-                sx={{
-                  color: 'var(--neon-cyan)',
-                  fontWeight: 600,
-                  mb: 3,
-                  textShadow: '0 0 10px rgba(0,255,255,0.3)'
-                }}
-              >
-                Advanced Capabilities
-              </Typography>
-              <Box component="ul" sx={{ listStyle: 'none', p: 0 }}>
-                {[
-                  'AI-Powered Predictive Analytics',
-                  'Intelligent Budget Optimization',
-                  'Real-time Trade Spend Monitoring',
-                  'Advanced ROI Forecasting',
-                  'Dynamic Performance Dashboards',
-                  'Seamless Enterprise Integration'
-                ].map((feature, index) => (
-                  <Box 
-                    component="li" 
-                    key={index}
-                    sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      mb: 2,
-                      color: 'var(--text-secondary)'
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: '6px',
-                        height: '6px',
-                        background: `linear-gradient(45deg, var(--neon-cyan), var(--neon-purple))`,
-                        borderRadius: '50%',
-                        mr: 2,
-                        boxShadow: '0 0 10px rgba(0,255,255,0.5)'
-                      }}
-                    />
-                    {feature}
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            
-            <Box sx={{ mt: 'auto', zIndex: 1 }}>
-              <Typography 
-                variant="body2"
-                sx={{ 
-                  color: 'var(--text-muted)',
-                  textAlign: 'center'
-                }}
-              >
-                Need assistance? <Link 
-                  href="#" 
+            <Box component="ul" sx={{ pl: 0, listStyle: 'none' }}>
+              {[
+                'AI-Powered Predictive Analytics',
+                'Intelligent Budget Optimization', 
+                'Real-time Trade Spend Monitoring',
+                'Advanced ROI Forecasting',
+                'Dynamic Performance Dashboards',
+                'Seamless Enterprise Integration'
+              ].map((feature, index) => (
+                <Box 
+                  component="li" 
+                  key={index}
                   sx={{ 
-                    color: 'var(--neon-cyan)',
-                    textDecoration: 'none',
-                    '&:hover': {
-                      textShadow: '0 0 5px var(--neon-cyan)'
-                    }
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 1.5,
+                    color: 'var(--text-secondary)',
+                    fontSize: '1rem'
                   }}
                 >
-                  Contact Support
-                </Link>
-              </Typography>
+                  <Box 
+                    sx={{ 
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      background: 'var(--gradient-accent)',
+                      mr: 2,
+                      boxShadow: '0 0 8px rgba(212, 175, 55, 0.3)'
+                    }} 
+                  />
+                  {feature}
+                </Box>
+              ))}
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+          </Box>
+
+          <Box mt={4}>
+            <Typography 
+              variant="body2" 
+              sx={{ color: 'var(--text-muted)' }}
+            >
+              Need assistance?{' '}
+              <a 
+                href="#" 
+                style={{ 
+                  color: 'var(--primary-blue-light)',
+                  textDecoration: 'none',
+                  fontWeight: 500
+                }}
+              >
+                Contact Support
+              </a>
+            </Typography>
+          </Box>
+        </Box>
+      </Container>
+    </div>
   );
 };
 
