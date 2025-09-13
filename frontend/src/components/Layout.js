@@ -42,7 +42,6 @@ import {
 } from '@mui/icons-material';
 
 import { AIAssistant, Walkthrough } from './common';
-import logo from '../assets/new_logo.svg';
 
 const drawerWidth = 240;
 
@@ -122,9 +121,20 @@ const Layout = ({ children, user, onLogout }) => {
     <div>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src={logo} alt="Trade AI Logo" style={{ width: 40, marginRight: 8 }} />
-          <Typography variant="h6" noWrap component="div">
-            Trade AI
+          <img src="/images/modern-edgy-logo.svg" alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
+          <Typography 
+            variant="h6" 
+            noWrap 
+            component="div"
+            sx={{ 
+              background: 'linear-gradient(45deg, #00ffff, #8b5cf6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 800,
+              letterSpacing: '1px'
+            }}
+          >
+            TRADE AI
           </Typography>
         </Box>
         {isMobile && (
