@@ -199,10 +199,15 @@ seed_database() {
     print_header "Seeding Database"
     
     print_status "Running database seeding..."
-    if docker exec tradeai_backend_live npm run seed:production; then
+    if docker exec tradeai_backend_live npm run seed:clean; then
         print_success "Database seeded successfully"
     else
-        print_warning "Database seeding failed, but continuing..."
+        print_warning "Database seeding failed, trying alternative method..."
+        if docker exec tradeai_backend_live npm run seed:production; then
+            print_success "Database seeded with alternative method"
+        else
+            print_warning "Database seeding failed, but continuing..."
+        fi
     fi
 }
 

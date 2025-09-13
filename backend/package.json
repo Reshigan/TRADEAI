@@ -12,6 +12,7 @@
     "seed:simple": "node src/seeds/simple-seed.js",
     "seed:minimal": "node src/seeds/minimal-seed.js",
     "seed:production": "node src/seeds/production-seed.js",
+    "seed:clean": "node src/seeds/clean-production-seed.js",
     "check-db": "node src/scripts/check-db.js",
     "migrate": "node src/migrations/index.js",
     "lint": "eslint src/",
