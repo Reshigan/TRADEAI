@@ -1,11 +1,11 @@
-# TRADEAI - Trade AI Platform
+# 🚀 TRADEAI v2.1.3 - Premium Corporate FMCG Trading Platform
 
-> **Complete Production-Ready Trade Marketing Budget Management Platform**
+> **World-class enterprise trading analytics with premium glass morphism UI**
 
 <div align="center">
   <img src="frontend/public/images/modern-logo-new.svg" alt="TRADEAI Logo" width="200"/>
   
-  **Enterprise-grade Trade Marketing Management with AI-Powered Analytics**
+  **🏢 Perfect for P&G, Unilever, Nestlé, Coca-Cola, PepsiCo**
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -13,8 +13,26 @@
   [![MongoDB](https://img.shields.io/badge/MongoDB-7.0+-green.svg)](https://www.mongodb.com/)
   [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
   [![Production](https://img.shields.io/badge/Production-Ready-brightgreen.svg)]()
-  [![Version](https://img.shields.io/badge/version-v2.0.0-blue.svg)]()
+  [![Version](https://img.shields.io/badge/version-v2.1.3-blue.svg)]()
+  [![Premium UI](https://img.shields.io/badge/Premium-Corporate%20UI-gold.svg)]()
 </div>
+
+## 🎯 **One-Command Installation**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/install-tradeai.sh -o install-tradeai.sh
+chmod +x install-tradeai.sh
+./install-tradeai.sh
+```
+
+## 🌟 **Premium Corporate Features**
+
+- **🎨 Glass Morphism UI**: Sophisticated frosted glass effects with corporate aesthetics
+- **🏢 Enterprise Design**: Deep blue (#1e40af) and gold (#d4af37) color scheme  
+- **🔐 Enterprise Security**: JWT auth, rate limiting, audit logging
+- **🏭 Multi-tenant**: Complete company isolation and data segregation
+- **📊 Executive Dashboards**: C-suite ready analytics and reporting
+- **🐳 Docker Deployment**: Complete containerized production solution
 
 ## 🌟 Overview
 
