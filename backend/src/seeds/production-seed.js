@@ -38,8 +38,9 @@ const seedProductionData = async () => {
     if (!gonxtCompany) {
       gonxtCompany = new Company({
         name: 'GONXT',
+        code: 'GONXT',
         domain: 'gonxt.tech',
-        industry: 'Technology',
+        industry: 'fmcg',
         country: 'Australia',
         timezone: 'Australia/Sydney',
         currency: 'AUD',
@@ -79,8 +80,9 @@ const seedProductionData = async () => {
     if (!testCompany) {
       testCompany = new Company({
         name: 'Test Company',
+        code: 'TESTCO',
         domain: 'test.demo',
-        industry: 'Retail',
+        industry: 'retail',
         country: 'Australia',
         timezone: 'Australia/Sydney',
         currency: 'AUD',
