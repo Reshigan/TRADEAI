@@ -1,25 +1,28 @@
 {
   "short_name": "Trade AI",
-  "name": "Trade AI Platform",
+  "name": "Trade AI Platform | Modern Trade Intelligence",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "images/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "images/modern-favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "images/modern-edgy-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#2563eb",
-  "background_color": "#ffffff"
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "description": "Next-generation FMCG Trade Spend Management with AI-Powered Analytics. Modern, intelligent, and powerful.",
+  "categories": ["business", "productivity", "finance"]
 }

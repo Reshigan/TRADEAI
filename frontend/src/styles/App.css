@@ -1,3 +1,5 @@
+/* Modern Edgy App Styles */
+
 /* Global styles */
 * {
   box-sizing: border-box;
@@ -5,52 +7,224 @@
   padding: 0;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f9fafb;
+/* Modern Card Styles */
+.modern-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.modern-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+  border-color: var(--border-accent);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
+.modern-card:hover::before {
+  opacity: 1;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+/* Neon Button Styles */
+.neon-button {
+  background: transparent;
+  border: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Animation for page transitions */
+.neon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.neon-button:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.neon-button:hover::before {
+  left: 100%;
+}
+
+.neon-button.primary {
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+}
+
+.neon-button.primary:hover {
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  text-shadow: 0 0 10px var(--neon-purple);
+}
+
+.neon-button.danger {
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+}
+
+.neon-button.danger:hover {
+  background: rgba(255, 0, 128, 0.1);
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+  text-shadow: 0 0 10px var(--neon-pink);
+}
+
+/* Glitch Text Effect */
+.glitch-text {
+  position: relative;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  animation: glitch-1 0.5s infinite;
+  color: var(--neon-cyan);
+  z-index: -1;
+}
+
+.glitch-text::after {
+  animation: glitch-2 0.5s infinite;
+  color: var(--neon-pink);
+  z-index: -2;
+}
+
+@keyframes glitch-1 {
+  0%, 14%, 15%, 49%, 50%, 99%, 100% {
+    transform: translate(0);
+  }
+  15%, 49% {
+    transform: translate(-2px, -1px);
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 20%, 21%, 62%, 63%, 99%, 100% {
+    transform: translate(0);
+  }
+  21%, 62% {
+    transform: translate(2px, 1px);
+  }
+}
+
+/* Neon Input Styles */
+.neon-input {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.neon-input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  background: var(--bg-card);
+}
+
+.neon-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Loading Animation */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-primary);
+  border-top: 3px solid var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Pulse Animation */
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0);
+  }
+}
+
+/* Page transitions */
 .fade-enter {
   opacity: 0;
+  transform: translateY(20px);
 }
 
 .fade-enter-active {
   opacity: 1;
-  transition: opacity 300ms;
+  transform: translateY(0);
+  transition: all 300ms ease-out;
 }
 
 .fade-exit {
   opacity: 1;
+  transform: translateY(0);
 }
 
 .fade-exit-active {
   opacity: 0;
-  transition: opacity 300ms;
+  transform: translateY(-20px);
+  transition: all 300ms ease-in;
 }
 
-/* Custom utility classes */
+/* Utility classes */
 .text-truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -61,10 +235,49 @@ body {
   cursor: pointer;
 }
 
+.text-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.border-glow {
+  box-shadow: 0 0 10px var(--border-glow);
+}
+
+/* Status indicators */
+.status-online {
+  color: var(--success);
+  text-shadow: 0 0 5px var(--success);
+}
+
+.status-warning {
+  color: var(--warning);
+  text-shadow: 0 0 5px var(--warning);
+}
+
+.status-error {
+  color: var(--error);
+  text-shadow: 0 0 5px var(--error);
+}
+
+.status-info {
+  color: var(--info);
+  text-shadow: 0 0 5px var(--info);
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .hide-on-mobile {
     display: none !important;
+  }
+  
+  .modern-card {
+    border-radius: 8px;
+    margin: 8px;
+  }
+  
+  .neon-button {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 
@@ -78,4 +291,37 @@ body {
   .hide-on-desktop {
     display: none !important;
   }
+}
+
+/* Dark theme overrides for Material-UI */
+.MuiPaper-root {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.MuiAppBar-root {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary)) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+.MuiDrawer-paper {
+  background-color: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-primary) !important;
+}
+
+.MuiListItemButton-root:hover {
+  background-color: rgba(0, 255, 255, 0.1) !important;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root {
+  background-color: var(--bg-tertiary);
+}
+
+.MuiTextField-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--neon-cyan) !important;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--neon-cyan) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
