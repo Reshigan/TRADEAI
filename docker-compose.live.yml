@@ -10,12 +10,29 @@ services:
       MONGO_INITDB_DATABASE: trade_ai_production
     volumes:
       - mongodb_data:/data/db
-      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     ports:
       - "27017:27017"
     networks:
       - tradeai_network
-    command: mongod --bind_ip_all --auth
+    command: mongod --bind_ip_all
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: tradeai_redis_live
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - tradeai_network
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
     logging:
       driver: "json-file"
       options:
@@ -32,21 +49,25 @@ services:
     environment:
       - NODE_ENV=production
       - MONGODB_URI=mongodb://mongodb:27017/trade_ai_production
+      - REDIS_URL=redis://redis:6379
       - PORT=5000
       - JWT_SECRET=${JWT_SECRET:-tradeai-jwt-secret-2024-production-key-very-long-and-secure}
       - SESSION_SECRET=${SESSION_SECRET:-tradeai-session-secret-2024-production-key-very-long-and-secure}
       - CORS_ORIGIN=http://localhost:3000,http://127.0.0.1:3000
       - API_RATE_LIMIT=1000
       - LOG_LEVEL=info
+      - DISABLE_REDIS=false
+      - DISABLE_SECURITY_LOGS=true
     ports:
       - "5000:5000"
     depends_on:
       - mongodb
+      - redis
     networks:
       - tradeai_network
     volumes:
-      - ./backend/uploads:/app/uploads
-      - ./backend/logs:/app/logs
+      - backend_uploads:/app/uploads
+      - backend_logs:/app/logs
     logging:
       driver: "json-file"
       options:
@@ -100,6 +121,12 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_uploads:
+    driver: local
+  backend_logs:
     driver: local
 
 networks:
