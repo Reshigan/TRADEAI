@@ -17,11 +17,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Configure npm for faster installs
+# Configure npm for faster installs (remove invalid network-timeout option)
 RUN npm config set fetch-retry-mintimeout 10000 && \
     npm config set fetch-retry-maxtimeout 60000 && \
     npm config set fetch-retries 3 && \
-    npm config set network-timeout 120000 && \
     npm config set audit false && \
     npm config set fund false
 
