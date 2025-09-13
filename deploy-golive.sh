@@ -347,18 +347,47 @@ wait_for_services() {
         sleep 5
     done
     
-    # Wait for Backend API
+    # Wait for Backend API with better diagnostics
     print_status "Waiting for Backend API to be ready..."
-    for i in {1..40}; do
+    for i in {1..60}; do
         if curl -f -s http://localhost:5000/api/health >/dev/null 2>&1; then
             print_success "Backend API is ready"
             break
         fi
-        if [ $i -eq 40 ]; then
-            print_error "Backend API failed to start within 200 seconds"
-            print_status "Checking backend logs..."
-            docker logs --tail 20 tradeai_backend_live
-            return 1
+        
+        # Show progress every 10 attempts
+        if [ $((i % 10)) -eq 0 ]; then
+            print_status "Still waiting for backend... (attempt $i/60)"
+            print_status "Checking backend container status..."
+            docker ps --filter "name=tradeai_backend_live" --format "{{.Status}}"
+        fi
+        
+        if [ $i -eq 60 ]; then
+            print_error "Backend API failed to start within 300 seconds"
+            print_status "Running backend diagnostics..."
+            
+            # Show container status
+            docker ps --filter "name=tradeai_backend_live"
+            
+            # Show recent logs
+            print_status "Recent backend logs:"
+            docker logs --tail 30 tradeai_backend_live
+            
+            # Try to restart backend once
+            print_status "Attempting to restart backend..."
+            docker-compose -f "$COMPOSE_FILE" restart backend
+            
+            # Wait a bit more after restart
+            print_status "Waiting 30 more seconds after restart..."
+            sleep 30
+            
+            if curl -f -s http://localhost:5000/api/health >/dev/null 2>&1; then
+                print_success "Backend API is ready after restart"
+                break
+            else
+                print_error "Backend API still not responding after restart"
+                return 1
+            fi
         fi
         sleep 5
     done
