@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# 🔧 TRADEAI v2.1.0 - Fix Build Files
-# This script uploads the correct production build files to your server
+# 🔧 TRADEAI v2.1.4 - Fix Build Files
+# This script downloads the correct production build files to your server
 
 set -e
 
@@ -13,12 +13,12 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
-echo -e "${PURPLE}🔧 TRADEAI v2.1.0 - Fix Build Files${NC}"
+echo -e "${PURPLE}🔧 TRADEAI v2.1.4 - Fix Build Files${NC}"
 echo -e "${PURPLE}===================================${NC}"
 
 # Configuration
 DOMAIN="tradeai.gonxt.tech"
-INSTALL_DIR="/var/www/tradeai-v2.1.0"
+INSTALL_DIR="/var/www/tradeai-v2.1.4"
 CURRENT_APP_DIR="/var/www/tradeai"
 
 # Function to log steps
@@ -50,8 +50,8 @@ log_success "Running as root user"
 log_step "Downloading production build files from GitHub..."
 
 cd /tmp
-wget -O main.b75d57d7.js "https://raw.githubusercontent.com/Reshigan/TRADEAI/main/frontend/build/static/js/main.b75d57d7.js"
-wget -O main.0c7b41d8.css "https://raw.githubusercontent.com/Reshigan/TRADEAI/main/frontend/build/static/css/main.0c7b41d8.css"
+wget -O main.b75d57d7.js "https://github.com/Reshigan/TRADEAI/raw/main/frontend/build/static/js/main.b75d57d7.js"
+wget -O main.0c7b41d8.css "https://github.com/Reshigan/TRADEAI/raw/main/frontend/build/static/css/main.0c7b41d8.css"
 
 if [ -f "main.b75d57d7.js" ] && [ -f "main.0c7b41d8.css" ]; then
     log_success "Production build files downloaded successfully"
@@ -100,7 +100,7 @@ cat > "$INSTALL_DIR/frontend/build/index.html" << 'EOF'
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="TRADEAI - Advanced Trading Platform v2.1.0" />
+    <meta name="description" content="TRADEAI - Advanced Trading Platform v2.1.4" />
     <title>TRADEAI - Trading Platform</title>
     <link href="/static/css/main.0c7b41d8.css" rel="stylesheet">
 </head>
@@ -219,6 +219,5 @@ echo -e "   2. Check SSL certificate (should be green lock)"
 echo -e "   3. Test login functionality"
 echo -e "   4. Verify API integration (no mock data)"
 echo ""
-echo -e "${GREEN}✅ TRADEAI v2.1.0 build files are now correct!${NC}"
+echo -e "${GREEN}✅ TRADEAI v2.1.4 build files are now correct!${NC}"
 echo -e "${PURPLE}🚀 Your production build is ready!${NC}"
-EOF
