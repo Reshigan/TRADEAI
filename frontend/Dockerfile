@@ -41,10 +41,11 @@ ARG CACHEBUST=1
 # Install react-scripts globally to avoid version conflicts
 RUN npm install -g react-scripts@5.0.1
 
-# Build the application using our custom build script
-RUN CI=false GENERATE_SOURCEMAP=false npm --legacy-peer-deps run build
-
-# The build.js script handles fallback creation if needed
+# Build the application with fallback mechanism
+RUN CI=false GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" \
+    npm run build:react || \
+    (echo "React build failed, using fallback build script..." && \
+     node build.js)
 
 # Production stage
 FROM nginx:alpine
