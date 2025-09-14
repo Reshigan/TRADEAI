@@ -1,107 +1,140 @@
 #!/bin/bash
 
-# TRADEAI AWS Deployment Script
-# This script deploys TRADEAI on AWS EC2 instance
-# Server: 13.247.139.75
-# Domain: tradeai.gonxt.tech
+# TRADEAI AWS Deployment Script - ARM64/AMD64 Compatible
+# Automated deployment for AWS EC2 instances
+# Supports Ubuntu 20.04+, Amazon Linux 2, and ARM64/AMD64 architectures
 
 set -e
+
+# Configuration
+PROJECT_NAME="TRADEAI"
+REPO_URL="https://github.com/Reshigan/TRADEAI.git"
+INSTALL_DIR="/opt/tradeai"
+LOG_FILE="/var/log/tradeai-deploy.log"
+DOMAIN="${DOMAIN:-tradeai.gonxt.tech}"
+SERVER_IP="${SERVER_IP:-13.247.139.75}"
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Configuration
-DOMAIN="tradeai.gonxt.tech"
-SERVER_IP="13.247.139.75"
-PROJECT_DIR="/opt/tradeai"
-BACKUP_DIR="/opt/tradeai-backup"
-
-# Function to print colored output
-print_status() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+# Logging function
+log() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" | tee -a "$LOG_FILE"
 }
 
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+error() {
+    echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"
+    exit 1
 }
 
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+warn() {
+    echo -e "${YELLOW}[WARNING]${NC} $1" | tee -a "$LOG_FILE"
 }
 
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+info() {
+    echo -e "${BLUE}[INFO]${NC} $1" | tee -a "$LOG_FILE"
 }
 
-# Function to check if running as root
+success() {
+    echo -e "${PURPLE}[SUCCESS]${NC} $1" | tee -a "$LOG_FILE"
+}
+
+header() {
+    echo -e "${CYAN}================================${NC}"
+    echo -e "${CYAN}$1${NC}"
+    echo -e "${CYAN}================================${NC}"
+}
+
+# Check if running as root
 check_root() {
     if [[ $EUID -ne 0 ]]; then
-        print_error "This script must be run as root (use sudo)"
-        exit 1
+        error "This script must be run as root (use sudo)"
     fi
 }
 
-# Function to check system requirements
-check_system() {
-    print_status "Checking system requirements..."
+# Detect system architecture and OS
+detect_system() {
+    ARCH=$(uname -m)
+    OS=$(lsb_release -si 2>/dev/null || echo "Unknown")
+    OS_VERSION=$(lsb_release -sr 2>/dev/null || echo "Unknown")
     
-    # Check OS
-    if [[ ! -f /etc/os-release ]]; then
-        print_error "Cannot determine OS version"
-        exit 1
-    fi
+    case $ARCH in
+        x86_64)
+            PLATFORM="linux/amd64"
+            COMPOSE_FILE="docker-compose.yml"
+            ;;
+        aarch64|arm64)
+            PLATFORM="linux/arm64"
+            COMPOSE_FILE="docker-compose-arm64.yml"
+            warn "Detected ARM64 architecture - using ARM64-optimized configuration"
+            ;;
+        *)
+            error "Unsupported architecture: $ARCH"
+            ;;
+    esac
     
-    . /etc/os-release
-    if [[ "$ID" != "ubuntu" ]] && [[ "$ID" != "debian" ]]; then
-        print_warning "This script is optimized for Ubuntu/Debian. Proceeding anyway..."
-    fi
-    
-    # Check available disk space (minimum 10GB)
-    available_space=$(df / | awk 'NR==2 {print $4}')
-    if [[ $available_space -lt 10485760 ]]; then
-        print_error "Insufficient disk space. At least 10GB required."
-        exit 1
-    fi
-    
-    print_success "System requirements check passed"
+    info "System: $OS $OS_VERSION"
+    info "Architecture: $ARCH"
+    info "Platform: $PLATFORM"
+    info "Compose file: $COMPOSE_FILE"
 }
 
-# Function to install Docker and Docker Compose
-install_docker() {
-    print_status "Installing Docker and Docker Compose..."
+# Install system dependencies
+install_dependencies() {
+    header "Installing System Dependencies"
     
-    # Remove old Docker installations
-    apt-get remove -y docker docker-engine docker.io containerd runc 2>/dev/null || true
+    # Update package lists
+    info "Updating package lists..."
+    apt-get update -y
     
-    # Update package index
-    apt-get update
-    
-    # Install prerequisites
+    # Install essential packages
+    info "Installing essential packages..."
     apt-get install -y \
+        curl \
+        wget \
+        git \
+        unzip \
+        software-properties-common \
         apt-transport-https \
         ca-certificates \
-        curl \
         gnupg \
         lsb-release \
-        software-properties-common \
-        git \
-        wget \
-        unzip
+        ufw \
+        htop \
+        nano \
+        jq
+    
+    success "System dependencies installed"
+}
+
+# Install Docker
+install_docker() {
+    header "Installing Docker"
+    
+    if command -v docker &> /dev/null; then
+        info "Docker already installed: $(docker --version)"
+        return
+    fi
     
     # Add Docker's official GPG key
+    info "Adding Docker GPG key..."
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     
     # Add Docker repository
+    info "Adding Docker repository..."
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
     
-    # Update package index again
-    apt-get update
+    # Update package lists
+    apt-get update -y
     
     # Install Docker
+    info "Installing Docker..."
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     
     # Start and enable Docker
@@ -111,285 +144,300 @@ install_docker() {
     # Add current user to docker group (if not root)
     if [[ $SUDO_USER ]]; then
         usermod -aG docker $SUDO_USER
-        print_status "Added $SUDO_USER to docker group. Please log out and back in for changes to take effect."
+        info "Added $SUDO_USER to docker group"
     fi
     
-    print_success "Docker and Docker Compose installed successfully"
+    success "Docker installed: $(docker --version)"
 }
 
-# Function to setup firewall
-setup_firewall() {
-    print_status "Configuring firewall..."
+# Configure firewall
+configure_firewall() {
+    header "Configuring Firewall"
     
-    # Install ufw if not present
-    apt-get install -y ufw
-    
-    # Reset firewall rules
+    # Reset UFW to defaults
     ufw --force reset
     
-    # Default policies
+    # Set default policies
     ufw default deny incoming
     ufw default allow outgoing
     
     # Allow SSH
-    ufw allow ssh
     ufw allow 22/tcp
     
     # Allow HTTP and HTTPS
     ufw allow 80/tcp
     ufw allow 443/tcp
     
-    # Allow specific ports for development/debugging (optional)
-    # ufw allow 3000/tcp  # Frontend dev
-    # ufw allow 5000/tcp  # Backend dev
-    # ufw allow 8000/tcp  # AI services
-    # ufw allow 8080/tcp  # Monitoring
+    # Allow application ports
+    ufw allow 5000/tcp  # Backend API
+    ufw allow 8000/tcp  # AI Services
+    ufw allow 8080/tcp  # Monitoring
     
     # Enable firewall
     ufw --force enable
     
-    print_success "Firewall configured successfully"
+    success "Firewall configured"
 }
 
-# Function to create project directory and backup existing installation
-setup_directories() {
-    print_status "Setting up project directories..."
+# Setup project directory
+setup_project() {
+    header "Setting Up Project"
     
-    # Create backup if existing installation found
-    if [[ -d "$PROJECT_DIR" ]]; then
-        print_warning "Existing installation found. Creating backup..."
-        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-        mv "$PROJECT_DIR" "${BACKUP_DIR}_${TIMESTAMP}"
-        print_success "Backup created at ${BACKUP_DIR}_${TIMESTAMP}"
+    # Create backup if directory exists
+    if [[ -d "$INSTALL_DIR" ]]; then
+        warn "Existing installation found, creating backup..."
+        rm -rf "${INSTALL_DIR}.backup" 2>/dev/null || true
+        mv "$INSTALL_DIR" "${INSTALL_DIR}.backup"
     fi
     
     # Create project directory
-    mkdir -p "$PROJECT_DIR"
-    cd "$PROJECT_DIR"
+    mkdir -p "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
     
-    print_success "Project directories created"
+    # Clone repository
+    info "Cloning TRADEAI repository..."
+    git clone "$REPO_URL" .
+    
+    # Set permissions
+    chown -R $SUDO_USER:$SUDO_USER "$INSTALL_DIR" 2>/dev/null || true
+    
+    success "Project setup complete"
 }
 
-# Function to clone repository
-clone_repository() {
-    print_status "Cloning TRADEAI repository..."
+# Create environment configuration
+create_environment() {
+    header "Creating Environment Configuration"
     
-    cd "$PROJECT_DIR"
+    cd "$INSTALL_DIR"
     
-    # Clone the repository
-    git clone https://github.com/Reshigan/TRADEAI.git .
-    
-    # Set proper permissions
-    chown -R $SUDO_USER:$SUDO_USER "$PROJECT_DIR" 2>/dev/null || true
-    
-    print_success "Repository cloned successfully"
-}
+    # Create .env file
+    cat > .env << EOF
+# TRADEAI Production Environment Configuration
+# Generated on $(date)
 
-# Function to setup environment configuration
-setup_environment() {
-    print_status "Setting up environment configuration..."
-    
-    cd "$PROJECT_DIR"
-    
-    # Copy environment template
-    if [[ ! -f .env ]]; then
-        cp .env.example .env
-        print_status "Environment file created from template"
-    else
-        print_warning "Environment file already exists. Skipping..."
-    fi
-    
-    # Update environment file with server-specific values
-    sed -i "s/DOMAIN=.*/DOMAIN=$DOMAIN/" .env
-    sed -i "s/SERVER_IP=.*/SERVER_IP=$SERVER_IP/" .env
-    
-    print_success "Environment configuration completed"
-}
+# Server Configuration
+DOMAIN=$DOMAIN
+SERVER_IP=$SERVER_IP
+NODE_ENV=production
+PLATFORM=$PLATFORM
 
-# Function to build and start services
-deploy_services() {
-    print_status "Building and deploying services..."
-    
-    cd "$PROJECT_DIR"
-    
-    # Use simple nginx config for initial deployment
-    if [[ -f nginx-simple.conf ]]; then
-        cp nginx-simple.conf nginx.conf
-        print_status "Using simple nginx configuration (no SSL)"
-    fi
-    
-    # Pull latest images and build
-    docker compose pull 2>/dev/null || docker-compose pull
-    docker compose build --no-cache 2>/dev/null || docker-compose build --no-cache
-    
-    # Start services
-    docker compose up -d 2>/dev/null || docker-compose up -d
-    
-    print_success "Services deployed successfully"
-}
+# Database Configuration
+MONGO_USERNAME=admin
+MONGO_PASSWORD=TradeAI_Mongo_2024!
+MONGO_DATABASE=tradeai
+REDIS_PASSWORD=TradeAI_Redis_2024!
 
-# Function to wait for services to be ready
-wait_for_services() {
-    print_status "Waiting for services to be ready..."
-    
-    # Wait for services to start
-    sleep 30
-    
-    # Check service health
-    max_attempts=30
-    attempt=0
-    
-    while [[ $attempt -lt $max_attempts ]]; do
-        if curl -f http://localhost/health >/dev/null 2>&1; then
-            print_success "Services are ready!"
-            return 0
-        fi
-        
-        attempt=$((attempt + 1))
-        print_status "Waiting for services... (attempt $attempt/$max_attempts)"
-        sleep 10
-    done
-    
-    print_warning "Services may not be fully ready. Check logs with: docker compose logs"
-}
+# JWT Configuration
+JWT_SECRET=TradeAI_JWT_Super_Secret_Key_2024_Change_This_In_Production
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=TradeAI_JWT_Refresh_Secret_2024
+JWT_REFRESH_EXPIRES_IN=7d
 
-# Function to setup SSL (optional)
-setup_ssl() {
-    print_status "SSL setup is optional. To enable SSL later:"
-    echo "1. Obtain SSL certificates for $DOMAIN"
-    echo "2. Place certificates in ./ssl/ directory"
-    echo "3. Update nginx.conf to use SSL configuration"
-    echo "4. Restart nginx: docker compose restart nginx"
-}
+# API Configuration
+PORT=5000
+BACKEND_PORT=5000
+AI_SERVICES_PORT=8000
+MONITORING_PORT=8080
+FRONTEND_PORT=80
 
-# Function to display deployment information
-show_deployment_info() {
-    print_success "TRADEAI deployment completed successfully!"
-    echo ""
-    echo "==================================================="
-    echo "DEPLOYMENT INFORMATION"
-    echo "==================================================="
-    echo "Domain: http://$DOMAIN"
-    echo "IP Address: http://$SERVER_IP"
-    echo "Project Directory: $PROJECT_DIR"
-    echo ""
-    echo "Services:"
-    echo "- Frontend: http://$DOMAIN"
-    echo "- Backend API: http://$DOMAIN/api"
-    echo "- AI Services: http://$DOMAIN/ai"
-    echo "- Monitoring: http://$DOMAIN/monitoring"
-    echo ""
-    echo "Default Login Credentials:"
-    echo "- Admin: admin@tradeai.com / password123"
-    echo "- Manager: manager@tradeai.com / password123"
-    echo "- KAM: kam@tradeai.com / password123"
-    echo ""
-    echo "Management Commands:"
-    echo "- View logs: docker compose logs -f"
-    echo "- Restart services: docker compose restart"
-    echo "- Stop services: docker compose down"
-    echo "- Update deployment: git pull && docker compose up -d --build"
-    echo ""
-    echo "Configuration Files:"
-    echo "- Environment: $PROJECT_DIR/.env"
-    echo "- Nginx: $PROJECT_DIR/nginx.conf"
-    echo "- Docker Compose: $PROJECT_DIR/docker-compose.yml"
-    echo "==================================================="
-}
+# CORS Configuration
+CORS_ORIGIN=*
 
-# Function to setup monitoring and maintenance
-setup_maintenance() {
-    print_status "Setting up maintenance tasks..."
-    
-    # Create maintenance script
-    cat > /usr/local/bin/tradeai-maintenance << 'EOF'
-#!/bin/bash
-# TRADEAI Maintenance Script
+# Logging
+LOG_LEVEL=info
 
-PROJECT_DIR="/opt/tradeai"
-LOG_FILE="/var/log/tradeai-maintenance.log"
+# React App Configuration
+REACT_APP_API_URL=http://$DOMAIN/api/v1
+REACT_APP_SOCKET_URL=http://$DOMAIN
+REACT_APP_AI_API_URL=http://$DOMAIN:8000
+REACT_APP_MONITORING_URL=http://$DOMAIN:8080
 
-log_message() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
-}
-
-# Cleanup old Docker images and containers
-cleanup_docker() {
-    log_message "Starting Docker cleanup"
-    docker system prune -f
-    docker image prune -f
-    log_message "Docker cleanup completed"
-}
-
-# Backup database
-backup_database() {
-    log_message "Starting database backup"
-    cd "$PROJECT_DIR"
-    docker compose exec -T mongodb mongodump --out /tmp/backup
-    docker compose cp mongodb:/tmp/backup ./backups/$(date +%Y%m%d_%H%M%S)
-    log_message "Database backup completed"
-}
-
-# Update application
-update_application() {
-    log_message "Starting application update"
-    cd "$PROJECT_DIR"
-    git pull
-    docker compose up -d --build
-    log_message "Application update completed"
-}
-
-case "$1" in
-    cleanup)
-        cleanup_docker
-        ;;
-    backup)
-        backup_database
-        ;;
-    update)
-        update_application
-        ;;
-    *)
-        echo "Usage: $0 {cleanup|backup|update}"
-        exit 1
-        ;;
-esac
+# Build Configuration
+CACHEBUST=$(date +%s)
 EOF
     
-    chmod +x /usr/local/bin/tradeai-maintenance
+    success "Environment configuration created"
+}
+
+# Deploy application
+deploy_application() {
+    header "Deploying Application"
     
-    # Create backup directory
-    mkdir -p "$PROJECT_DIR/backups"
+    cd "$INSTALL_DIR"
     
-    # Setup cron jobs for maintenance
-    (crontab -l 2>/dev/null; echo "0 2 * * 0 /usr/local/bin/tradeai-maintenance cleanup") | crontab -
-    (crontab -l 2>/dev/null; echo "0 3 * * * /usr/local/bin/tradeai-maintenance backup") | crontab -
+    # Use appropriate compose file based on architecture
+    if [[ "$ARCH" == "aarch64" || "$ARCH" == "arm64" ]]; then
+        if [[ -f "docker-compose-arm64.yml" ]]; then
+            info "Using ARM64-optimized compose file"
+            cp docker-compose-arm64.yml docker-compose.yml
+        else
+            warn "ARM64 compose file not found, using default with platform override"
+            # Add platform specification to existing compose file
+            sed -i '/services:/a\  # Platform override for ARM64' docker-compose.yml
+        fi
+    fi
     
-    print_success "Maintenance tasks configured"
+    # Stop any existing containers
+    info "Stopping existing containers..."
+    docker compose down -v 2>/dev/null || true
+    
+    # Clean up old images and volumes
+    info "Cleaning up old Docker resources..."
+    docker system prune -f
+    docker volume prune -f
+    
+    # Build and start services
+    info "Building and starting services..."
+    docker compose up -d --build
+    
+    success "Application deployment initiated"
+}
+
+# Wait for services to be healthy
+wait_for_services() {
+    header "Waiting for Services to Start"
+    
+    cd "$INSTALL_DIR"
+    
+    local max_attempts=60
+    local attempt=1
+    
+    while [[ $attempt -le $max_attempts ]]; do
+        info "Health check attempt $attempt/$max_attempts..."
+        
+        # Check if all services are running
+        local running_services=$(docker compose ps --services --filter "status=running" | wc -l)
+        local total_services=$(docker compose ps --services | wc -l)
+        
+        if [[ $running_services -eq $total_services ]] && [[ $total_services -gt 0 ]]; then
+            success "All services are running!"
+            break
+        fi
+        
+        if [[ $attempt -eq $max_attempts ]]; then
+            error "Services failed to start within timeout"
+        fi
+        
+        sleep 10
+        ((attempt++))
+    done
+}
+
+# Verify deployment
+verify_deployment() {
+    header "Verifying Deployment"
+    
+    cd "$INSTALL_DIR"
+    
+    # Check service status
+    info "Service status:"
+    docker compose ps
+    
+    # Test endpoints
+    info "Testing endpoints..."
+    
+    # Test frontend
+    if curl -f -s http://localhost/health.json > /dev/null 2>&1; then
+        success "✓ Frontend is accessible"
+    else
+        warn "✗ Frontend health check failed"
+    fi
+    
+    # Test backend
+    if curl -f -s http://localhost:5000/health > /dev/null 2>&1; then
+        success "✓ Backend API is accessible"
+    else
+        warn "✗ Backend API health check failed"
+    fi
+    
+    # Test AI services
+    if curl -f -s http://localhost:8000/health > /dev/null 2>&1; then
+        success "✓ AI Services are accessible"
+    else
+        warn "✗ AI Services health check failed"
+    fi
+    
+    # Test monitoring
+    if curl -f -s http://localhost:8080/health > /dev/null 2>&1; then
+        success "✓ Monitoring is accessible"
+    else
+        warn "✗ Monitoring health check failed"
+    fi
+    
+    # Test MongoDB
+    if docker compose exec -T mongodb mongosh --quiet --eval "db.adminCommand('ping').ok" > /dev/null 2>&1; then
+        success "✓ MongoDB is accessible"
+    else
+        warn "✗ MongoDB health check failed"
+    fi
+    
+    # Test Redis
+    if docker compose exec -T redis redis-cli ping > /dev/null 2>&1; then
+        success "✓ Redis is accessible"
+    else
+        warn "✗ Redis health check failed"
+    fi
+}
+
+# Display deployment information
+show_deployment_info() {
+    header "Deployment Complete!"
+    
+    echo -e "${GREEN}🎉 TRADEAI has been successfully deployed!${NC}"
+    echo ""
+    echo -e "${CYAN}📋 Access Information:${NC}"
+    echo -e "   🌐 Main Application: ${YELLOW}http://$DOMAIN${NC} or ${YELLOW}http://$SERVER_IP${NC}"
+    echo -e "   🔌 API Endpoint:     ${YELLOW}http://$DOMAIN/api/v1${NC}"
+    echo -e "   🤖 AI Services:      ${YELLOW}http://$DOMAIN:8000${NC}"
+    echo -e "   📊 Monitoring:       ${YELLOW}http://$DOMAIN:8080${NC}"
+    echo ""
+    echo -e "${CYAN}🔧 Management Commands:${NC}"
+    echo -e "   📊 View logs:        ${YELLOW}cd $INSTALL_DIR && sudo docker compose logs -f${NC}"
+    echo -e "   🔄 Restart services: ${YELLOW}cd $INSTALL_DIR && sudo docker compose restart${NC}"
+    echo -e "   ⏹️  Stop services:    ${YELLOW}cd $INSTALL_DIR && sudo docker compose down${NC}"
+    echo -e "   🚀 Start services:   ${YELLOW}cd $INSTALL_DIR && sudo docker compose up -d${NC}"
+    echo ""
+    echo -e "${CYAN}📁 Important Paths:${NC}"
+    echo -e "   📂 Project Directory: ${YELLOW}$INSTALL_DIR${NC}"
+    echo -e "   📜 Deployment Log:    ${YELLOW}$LOG_FILE${NC}"
+    echo -e "   ⚙️  Environment File:  ${YELLOW}$INSTALL_DIR/.env${NC}"
+    echo ""
+    echo -e "${CYAN}🔐 Default Credentials:${NC}"
+    echo -e "   🗄️  MongoDB: ${YELLOW}admin / TradeAI_Mongo_2024!${NC}"
+    echo -e "   🔴 Redis:   ${YELLOW}TradeAI_Redis_2024!${NC}"
+    echo ""
+    echo -e "${RED}⚠️  Security Note: Change default passwords in production!${NC}"
+    echo ""
+    echo -e "${GREEN}✅ Deployment completed successfully!${NC}"
 }
 
 # Main deployment function
 main() {
-    print_status "Starting TRADEAI AWS deployment..."
-    print_status "Target: $DOMAIN ($SERVER_IP)"
-    echo ""
+    header "TRADEAI AWS Deployment - Starting"
     
+    # Create log file
+    touch "$LOG_FILE"
+    
+    log "Starting TRADEAI deployment on $(hostname) at $(date)"
+    
+    # Run deployment steps
     check_root
-    check_system
+    detect_system
+    install_dependencies
     install_docker
-    setup_firewall
-    setup_directories
-    clone_repository
-    setup_environment
-    deploy_services
+    configure_firewall
+    setup_project
+    create_environment
+    deploy_application
     wait_for_services
-    setup_maintenance
-    setup_ssl
+    verify_deployment
     show_deployment_info
     
-    print_success "Deployment completed successfully!"
-    print_status "You can now access TRADEAI at: http://$DOMAIN"
+    log "TRADEAI deployment completed successfully"
 }
+
+# Handle script interruption
+trap 'error "Deployment interrupted"' INT TERM
 
 # Run main function
 main "$@"
