@@ -1,4 +1,0 @@
-This file verifies that Docker is building from the correct branch.
-Branch: docker-deployment-diplomat-sa
-Date: 2025-01-05
-Changes: Removed style jsx from ActivityGrid.tsx

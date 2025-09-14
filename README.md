@@ -17,13 +17,20 @@
   [![Premium UI](https://img.shields.io/badge/Premium-Corporate%20UI-gold.svg)]()
 </div>
 
-## 🎯 **One-Command Installation**
+## 🎯 **One-Command AWS Deployment**
+
+Deploy to your AWS server (13.247.139.75 / tradeai.gonxt.tech) with a single command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/install-tradeai.sh -o install-tradeai.sh
-chmod +x install-tradeai.sh
-./install-tradeai.sh
+# On your AWS server (as root/sudo)
+curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/deploy-aws.sh -o deploy-aws.sh
+chmod +x deploy-aws.sh
+sudo ./deploy-aws.sh
 ```
+
+**That's it!** Your TRADEAI platform will be available at:
+- **http://tradeai.gonxt.tech** (main application)
+- **http://13.247.139.75** (direct IP access)
 
 ## 🌟 **Premium Corporate Features**
 
