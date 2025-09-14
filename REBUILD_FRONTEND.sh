@@ -94,11 +94,14 @@ echo "🔄 Setting proper permissions..."
 chown -R www-data:www-data "$WEB_DIR"
 chmod -R 755 "$WEB_DIR"
 
-# Create nginx configuration if it doesn't exist
+# Create nginx configuration (force recreate to fix any issues)
 NGINX_CONFIG="/etc/nginx/sites-available/tradeai"
-if [ ! -f "$NGINX_CONFIG" ]; then
-    echo "🔄 Creating nginx configuration..."
-    cat > "$NGINX_CONFIG" << 'EOF'
+echo "🔄 Creating fresh nginx configuration..."
+# Remove any existing problematic configurations
+rm -f /etc/nginx/sites-enabled/tradeai
+rm -f /etc/nginx/sites-available/tradeai
+
+cat > "$NGINX_CONFIG" << 'EOF'
 server {
     listen 80;
     server_name tradeai.gonxt.tech;
@@ -148,9 +151,12 @@ server {
 }
 EOF
 
-    # Enable the site
-    ln -sf "$NGINX_CONFIG" /etc/nginx/sites-enabled/
-fi
+# Enable the site
+ln -sf "$NGINX_CONFIG" /etc/nginx/sites-enabled/
+
+# Clean up any temporary nginx files
+rm -f /etc/nginx/sites-enabled/default
+rm -f /etc/nginx/sites-available/default
 
 # Test nginx configuration
 echo "🔄 Testing nginx configuration..."
