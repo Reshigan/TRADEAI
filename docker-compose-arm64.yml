@@ -53,7 +53,7 @@ services:
     restart: unless-stopped
     platform: linux/arm64
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 5000
@@ -90,15 +90,21 @@ services:
       platforms:
         - linux/arm64
       args:
-        REACT_APP_API_URL: http://${DOMAIN:-tradeai.gonxt.tech}/api/v1
-        REACT_APP_SOCKET_URL: http://${DOMAIN:-tradeai.gonxt.tech}
-        REACT_APP_AI_API_URL: http://${DOMAIN:-tradeai.gonxt.tech}:8000
-        REACT_APP_MONITORING_URL: http://${DOMAIN:-tradeai.gonxt.tech}:8080
+        CACHEBUST: ${CACHEBUST:-1}
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-/api}
+        REACT_APP_SOCKET_URL: ${REACT_APP_SOCKET_URL:-}
+        REACT_APP_AI_API_URL: ${REACT_APP_AI_API_URL:-/ai}
+        REACT_APP_MONITORING_URL: ${REACT_APP_MONITORING_URL:-/monitoring}
     container_name: trade-ai-frontend
     restart: unless-stopped
     platform: linux/arm64
     ports:
-      - "80:80"
+      - "3000:80"
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-/api}
+      REACT_APP_SOCKET_URL: ${REACT_APP_SOCKET_URL:-}
+      REACT_APP_AI_API_URL: ${REACT_APP_AI_API_URL:-/ai}
+      REACT_APP_MONITORING_URL: ${REACT_APP_MONITORING_URL:-/monitoring}
     depends_on:
       - backend
     networks:
@@ -120,7 +126,7 @@ services:
     restart: unless-stopped
     platform: linux/arm64
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       PORT: 8000
       HOST: 0.0.0.0
@@ -157,7 +163,7 @@ services:
     restart: unless-stopped
     platform: linux/arm64
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       PORT: 8080
       HOST: 0.0.0.0
@@ -185,6 +191,32 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # Nginx (Production reverse proxy) - ARM64 Compatible
+  nginx:
+    image: nginx:alpine
+    container_name: trade-ai-nginx
+    restart: unless-stopped
+    platform: linux/arm64
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      - frontend
+      - backend
+      - ai-services
+      - monitoring
+    networks:
+      - trade-ai-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health || exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mongodb_data:
