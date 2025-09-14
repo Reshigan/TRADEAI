@@ -106,4 +106,4 @@ tmp/
 !test_data/*.json
 !requirements.txt
 !package.json
-!yarn.lock
+!yarn.lockbackend/dump.rdb
