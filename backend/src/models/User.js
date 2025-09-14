@@ -4,13 +4,15 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
   // Company Association - CRITICAL for multi-tenant isolation
-  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-  // company: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Company',
-  //   required: true,
-  //   index: true
-  // },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company',
+    required: function() {
+      // Super admin doesn't need company association
+      return this.role !== 'super_admin';
+    },
+    index: true
+  },
   employeeId: {
     type: String,
     required: true,
@@ -40,8 +42,9 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'board', 'director', 'manager', 'kam', 'sales_rep', 'sales_admin', 'analyst'],
-    required: true
+    enum: ['super_admin', 'admin', 'manager', 'kam', 'analyst', 'user'],
+    required: true,
+    default: 'user'
   },
   department: {
     type: String,
@@ -96,9 +99,9 @@ const userSchema = new mongoose.Schema({
   twoFactorSecret: String,
   preferences: {
     language: { type: String, default: 'en' },
-    timezone: { type: String, default: 'UTC' },
-    currency: { type: String, default: 'USD' },
-    dateFormat: { type: String, default: 'MM/DD/YYYY' },
+    timezone: { type: String, default: 'Africa/Johannesburg' },
+    currency: { type: String, default: 'ZAR' },
+    dateFormat: { type: String, default: 'DD/MM/YYYY' },
     notifications: {
       email: { type: Boolean, default: true },
       inApp: { type: Boolean, default: true },
@@ -118,12 +121,11 @@ const userSchema = new mongoose.Schema({
 });
 
 // Indexes - Company-specific indexes for multi-tenant isolation
-// TEMPORARILY COMMENTED OUT FOR DEBUGGING
-// userSchema.index({ company: 1, email: 1 }, { unique: true });
-// userSchema.index({ company: 1, employeeId: 1 }, { unique: true });
-// userSchema.index({ company: 1, role: 1 });
-// userSchema.index({ company: 1, department: 1 });
-// userSchema.index({ company: 1, isActive: 1 });
+userSchema.index({ companyId: 1, email: 1 }, { unique: true, sparse: true });
+userSchema.index({ companyId: 1, employeeId: 1 }, { unique: true, sparse: true });
+userSchema.index({ companyId: 1, role: 1 });
+userSchema.index({ companyId: 1, department: 1 });
+userSchema.index({ companyId: 1, isActive: 1 });
 userSchema.index({ email: 1 });
 userSchema.index({ employeeId: 1 });
 userSchema.index({ role: 1 });
@@ -169,7 +171,7 @@ userSchema.methods.generateAuthToken = function() {
       email: this.email, 
       role: this.role,
       department: this.department,
-      // companyId: this.company  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
+      companyId: this.companyId
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRE || '7d' }
@@ -178,8 +180,8 @@ userSchema.methods.generateAuthToken = function() {
 };
 
 userSchema.methods.hasPermission = function(module, action) {
-  // Admin has all permissions
-  if (this.role === 'admin') return true;
+  // Super admin and admin have all permissions
+  if (this.role === 'super_admin' || this.role === 'admin') return true;
   
   // Check specific permissions
   const permission = this.permissions.find(p => p.module === module);
@@ -188,7 +190,7 @@ userSchema.methods.hasPermission = function(module, action) {
 
 userSchema.methods.canApprove = function(type, amount) {
   const limit = this.approvalLimits[type] || 0;
-  return limit >= amount || this.role === 'admin' || this.role === 'board';
+  return limit >= amount || this.role === 'super_admin' || this.role === 'admin';
 };
 
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {

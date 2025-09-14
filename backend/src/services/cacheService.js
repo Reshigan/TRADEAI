@@ -33,20 +33,35 @@ class CacheService {
         }
       });
       
-      // Promisify Redis methods
-      this.getAsync = promisify(this.client.get).bind(this.client);
-      this.setAsync = promisify(this.client.set).bind(this.client);
-      this.delAsync = promisify(this.client.del).bind(this.client);
-      this.existsAsync = promisify(this.client.exists).bind(this.client);
-      this.keysAsync = promisify(this.client.keys).bind(this.client);
-      this.ttlAsync = promisify(this.client.ttl).bind(this.client);
-      this.mgetAsync = promisify(this.client.mget).bind(this.client);
-      this.msetAsync = promisify(this.client.mset).bind(this.client);
-      this.hgetAsync = promisify(this.client.hget).bind(this.client);
-      this.hsetAsync = promisify(this.client.hset).bind(this.client);
-      this.hgetallAsync = promisify(this.client.hgetall).bind(this.client);
-      this.incrAsync = promisify(this.client.incr).bind(this.client);
-      this.expireAsync = promisify(this.client.expire).bind(this.client);
+      // Wait for client to be ready before promisifying methods
+      await new Promise((resolve, reject) => {
+        this.client.on('ready', () => {
+          try {
+            // Promisify Redis methods
+            this.getAsync = promisify(this.client.get).bind(this.client);
+            this.setAsync = promisify(this.client.set).bind(this.client);
+            this.delAsync = promisify(this.client.del).bind(this.client);
+            this.existsAsync = promisify(this.client.exists).bind(this.client);
+            this.keysAsync = promisify(this.client.keys).bind(this.client);
+            this.ttlAsync = promisify(this.client.ttl).bind(this.client);
+            this.mgetAsync = promisify(this.client.mget).bind(this.client);
+            this.msetAsync = promisify(this.client.mset).bind(this.client);
+            this.hgetAsync = promisify(this.client.hget).bind(this.client);
+            this.hsetAsync = promisify(this.client.hset).bind(this.client);
+            this.hgetallAsync = promisify(this.client.hgetall).bind(this.client);
+            this.incrAsync = promisify(this.client.incr).bind(this.client);
+            this.expireAsync = promisify(this.client.expire).bind(this.client);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        });
+        
+        this.client.on('error', reject);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => reject(new Error('Redis connection timeout')), 10000);
+      });
       
       // Event handlers
       this.client.on('connect', () => {

@@ -31,17 +31,17 @@ const companySchema = new mongoose.Schema({
   country: {
     type: String,
     required: true,
-    default: 'AU'
+    default: 'ZA'
   },
   currency: {
     type: String,
     required: true,
-    default: 'AUD'
+    default: 'ZAR'
   },
   timezone: {
     type: String,
     required: true,
-    default: 'Australia/Sydney'
+    default: 'Africa/Johannesburg'
   },
   
   // Contact Information

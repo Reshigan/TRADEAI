@@ -83,6 +83,7 @@ const mockTradeSpends = [
 
 // Currency display mapping
 const currencyDisplay = {
+  'ZAR': 'R (ZAR)',
   'USD': '$ (USD)',
   'EUR': '€ (EUR)',
   'GBP': '£ (GBP)',
@@ -97,6 +98,7 @@ const currencyDisplay = {
 
 // Currency symbols
 const currencySymbols = {
+  'ZAR': 'R',
   'USD': '$',
   'EUR': '€',
   'GBP': '£',

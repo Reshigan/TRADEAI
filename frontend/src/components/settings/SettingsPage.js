@@ -40,7 +40,7 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
-  Integration as IntegrationIcon
+  Extension as IntegrationIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
