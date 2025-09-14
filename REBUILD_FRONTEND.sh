@@ -101,7 +101,13 @@ echo "🔄 Creating fresh nginx configuration..."
 rm -f /etc/nginx/sites-enabled/tradeai
 rm -f /etc/nginx/sites-available/tradeai
 
-cat > "$NGINX_CONFIG" << 'EOF'
+# Check if SSL certificates exist
+SSL_CERT_PATH="/etc/letsencrypt/live/tradeai.gonxt.tech/fullchain.pem"
+SSL_KEY_PATH="/etc/letsencrypt/live/tradeai.gonxt.tech/privkey.pem"
+
+if [[ -f "$SSL_CERT_PATH" && -f "$SSL_KEY_PATH" ]]; then
+    echo "🔒 SSL certificates found - creating HTTPS configuration..."
+    cat > "$NGINX_CONFIG" << 'EOF'
 server {
     listen 80;
     server_name tradeai.gonxt.tech;
@@ -150,6 +156,54 @@ server {
     }
 }
 EOF
+else
+    echo "⚠️  SSL certificates not found - creating HTTP-only configuration..."
+    echo "   Run 'sudo certbot --nginx -d tradeai.gonxt.tech' after this script to enable HTTPS"
+    cat > "$NGINX_CONFIG" << 'EOF'
+server {
+    listen 80;
+    server_name tradeai.gonxt.tech;
+
+    root /var/www/tradeai;
+    index index.html;
+
+    # Security headers (HTTP version)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+
+    # Handle React Router
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API proxy
+    location /api/ {
+        proxy_pass http://localhost:5000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Static files caching
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Let's Encrypt challenge location
+    location /.well-known/acme-challenge/ {
+        root /var/www/tradeai;
+    }
+}
+EOF
+fi
 
 # Enable the site
 ln -sf "$NGINX_CONFIG" /etc/nginx/sites-enabled/
@@ -253,11 +307,19 @@ echo "   • Nginx configuration and restart"
 echo "   • Backend setup and PM2 process management"
 echo ""
 echo "🌐 Your website should now be available at:"
-echo "   https://tradeai.gonxt.tech"
+if [[ -f "$SSL_CERT_PATH" && -f "$SSL_KEY_PATH" ]]; then
+    echo "   https://tradeai.gonxt.tech (HTTPS enabled)"
+else
+    echo "   http://tradeai.gonxt.tech (HTTP only - SSL setup needed)"
+fi
 echo ""
 echo "🔍 To verify everything is working:"
 echo "   • Visit the website in your browser"
-echo "   • Check for SSL certificate (green lock)"
+if [[ -f "$SSL_CERT_PATH" && -f "$SSL_KEY_PATH" ]]; then
+    echo "   • Check for SSL certificate (green lock)"
+else
+    echo "   • Set up SSL certificate (see instructions below)"
+fi
 echo "   • Test login functionality"
 echo "   • Verify API responses"
 echo ""
@@ -270,3 +332,27 @@ echo "   • Check nginx logs: sudo tail -f /var/log/nginx/error.log"
 echo "   • Check PM2 logs: pm2 logs tradeai-backend"
 echo "   • Restart services: sudo systemctl restart nginx && pm2 restart tradeai-backend"
 echo ""
+
+# Add SSL setup instructions if certificates don't exist
+if [[ ! -f "$SSL_CERT_PATH" || ! -f "$SSL_KEY_PATH" ]]; then
+    echo "🔒 SSL CERTIFICATE SETUP REQUIRED:"
+    echo ""
+    echo "Your site is currently running on HTTP only. To enable HTTPS:"
+    echo ""
+    echo "1. Install Certbot (if not already installed):"
+    echo "   sudo apt update"
+    echo "   sudo apt install certbot python3-certbot-nginx -y"
+    echo ""
+    echo "2. Generate SSL certificate:"
+    echo "   sudo certbot --nginx -d tradeai.gonxt.tech"
+    echo ""
+    echo "3. Verify auto-renewal:"
+    echo "   sudo certbot renew --dry-run"
+    echo ""
+    echo "4. After SSL setup, run this script again to enable HTTPS redirect:"
+    echo "   sudo ./REBUILD_FRONTEND.sh"
+    echo ""
+    echo "⚠️  Make sure your domain tradeai.gonxt.tech points to this server's IP address"
+    echo "   before running certbot, or the certificate generation will fail."
+    echo ""
+fi
