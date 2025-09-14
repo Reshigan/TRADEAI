@@ -32,6 +32,24 @@ sudo ./deploy-aws.sh
 - **http://tradeai.gonxt.tech** (main application)
 - **http://13.247.139.75** (direct IP access)
 
+### 🧪 Test Your Deployment
+
+After deployment, run the comprehensive test suite:
+
+```bash
+# Clone repository and run tests
+git clone https://github.com/Reshigan/TRADEAI.git
+cd TRADEAI
+./test-deployment.sh
+```
+
+**Test Accounts Available:**
+- **Admin**: admin@testcompany.demo / admin123
+- **Manager**: manager@testcompany.demo / manager123  
+- **KAM**: kam@testcompany.demo / kam123
+- **Sales**: sales@testcompany.demo / sales123
+- **Analyst**: analyst@testcompany.demo / analyst123
+
 ## 🌟 **Premium Corporate Features**
 
 - **🎨 Glass Morphism UI**: Sophisticated frosted glass effects with corporate aesthetics
