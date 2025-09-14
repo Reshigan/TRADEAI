@@ -85,13 +85,47 @@ const initializeJobs = async () => {
       }
     );
     
-    // Process jobs
-    queues.sapSync.process(sapSyncJob.process);
-    queues.reportGeneration.process(reportGenerationJob.process);
-    queues.budgetAlert.process(budgetAlertJob.process);
-    queues.dataCleanup.process(dataCleanupJob.process);
-    queues.mlTraining.process(mlTrainingJob.process);
-    queues.anomalyDetection.process(anomalyDetectionJob.process);
+    // Process jobs with error handling
+    try {
+      if (sapSyncJob && sapSyncJob.process) {
+        queues.sapSync.process(sapSyncJob.process);
+      } else {
+        logger.warn('sapSyncJob.process is not available');
+      }
+      
+      if (reportGenerationJob && reportGenerationJob.process) {
+        queues.reportGeneration.process(reportGenerationJob.process);
+      } else {
+        logger.warn('reportGenerationJob.process is not available');
+      }
+      
+      if (budgetAlertJob && budgetAlertJob.process) {
+        queues.budgetAlert.process(budgetAlertJob.process);
+      } else {
+        logger.warn('budgetAlertJob.process is not available');
+      }
+      
+      if (dataCleanupJob && dataCleanupJob.process) {
+        queues.dataCleanup.process(dataCleanupJob.process);
+      } else {
+        logger.warn('dataCleanupJob.process is not available');
+      }
+      
+      if (mlTrainingJob && mlTrainingJob.process) {
+        queues.mlTraining.process(mlTrainingJob.process);
+      } else {
+        logger.warn('mlTrainingJob.process is not available');
+      }
+      
+      if (anomalyDetectionJob && anomalyDetectionJob.process) {
+        queues.anomalyDetection.process(anomalyDetectionJob.process);
+      } else {
+        logger.warn('anomalyDetectionJob.process is not available');
+      }
+    } catch (error) {
+      logger.error('Error setting up job processors:', error);
+      throw error;
+    }
     
     // Event handlers
     Object.entries(queues).forEach(([name, queue]) => {

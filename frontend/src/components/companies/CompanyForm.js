@@ -44,6 +44,7 @@ const mockCompany = {
 
 // Available currencies
 const currencies = [
+  { code: 'ZAR', name: 'South African Rand', symbol: 'R' },
   { code: 'USD', name: 'US Dollar', symbol: '$' },
   { code: 'EUR', name: 'Euro', symbol: '€' },
   { code: 'GBP', name: 'British Pound', symbol: '£' },
@@ -101,7 +102,7 @@ const CompanyForm = () => {
     phone: '',
     website: '',
     status: 'active',
-    currency: 'USD',
+    currency: 'ZAR',
     taxId: '',
     notes: ''
   });

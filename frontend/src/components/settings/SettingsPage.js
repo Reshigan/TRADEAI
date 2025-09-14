@@ -40,7 +40,7 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
-  Integration as IntegrationIcon
+  Extension as IntegrationIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
@@ -76,9 +76,9 @@ const SettingsPage = () => {
   const [displaySettings, setDisplaySettings] = useState({
     theme: 'light',
     language: 'en',
-    timezone: 'America/New_York',
-    dateFormat: 'MM/DD/YYYY',
-    currencyFormat: 'USD',
+    timezone: 'Africa/Johannesburg',
+    dateFormat: 'DD/MM/YYYY',
+    currencyFormat: 'ZAR',
     compactNumbers: true
   });
   const [apiKeys, setApiKeys] = useState([
@@ -915,6 +915,7 @@ const SettingsPage = () => {
                           onChange={handleDisplaySettingChange}
                           label="Timezone"
                         >
+                          <MenuItem value="Africa/Johannesburg">South Africa (SAST)</MenuItem>
                           <MenuItem value="America/New_York">Eastern Time (ET)</MenuItem>
                           <MenuItem value="America/Chicago">Central Time (CT)</MenuItem>
                           <MenuItem value="America/Denver">Mountain Time (MT)</MenuItem>
@@ -963,6 +964,7 @@ const SettingsPage = () => {
                               onChange={handleDisplaySettingChange}
                               label="Currency Format"
                             >
+                              <MenuItem value="ZAR">ZAR (R)</MenuItem>
                               <MenuItem value="USD">USD ($)</MenuItem>
                               <MenuItem value="EUR">EUR (€)</MenuItem>
                               <MenuItem value="GBP">GBP (£)</MenuItem>

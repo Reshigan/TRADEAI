@@ -22,6 +22,8 @@ require('./models');
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const companyRoutes = require('./routes/companyRoutes');
+const tradingTermsRoutes = require('./routes/tradingTermsRoutes');
 const customerRoutes = require('./routes/customer');
 const productRoutes = require('./routes/product');
 const vendorRoutes = require('./routes/vendor');
@@ -124,6 +126,8 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
+app.use('/api/companies', authenticateToken, companyRoutes);
+app.use('/api/trading-terms', authenticateToken, tradingTermsRoutes);
 app.use('/api/customers', authenticateToken, customerRoutes);
 app.use('/api/products', authenticateToken, productRoutes);
 app.use('/api/vendors', authenticateToken, vendorRoutes);

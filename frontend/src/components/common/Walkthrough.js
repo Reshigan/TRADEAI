@@ -71,6 +71,10 @@ const Walkthrough = ({ open, onClose, feature, showTips = true }) => {
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
+      className="walkthrough-dialog"
+      BackdropProps={{
+        className: 'walkthrough-overlay'
+      }}
       PaperProps={{
         sx: {
           borderRadius: 2,

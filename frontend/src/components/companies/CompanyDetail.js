@@ -50,39 +50,11 @@ import {
 
 import { PageHeader } from '../common';
 
-// Mock data for development
-const mockCompany = {
-  id: '3',
-  name: 'Tech Innovations Inc',
-  industry: 'Technology',
-  region: 'North America',
-  address: '123 Tech Blvd, San Francisco, CA 94105',
-  phone: '+1 (555) 123-4567',
-  website: 'https://techinnovations.example.com',
-  status: 'active',
-  currency: 'USD',
-  taxId: 'US-987654321',
-  notes: 'Leading technology company specializing in AI solutions.',
-  createdAt: '2025-03-10T14:45:00Z',
-  updatedAt: '2025-08-15T09:30:00Z'
-};
-
-// Mock budgets
-const mockBudgets = [
-  { id: '1', name: 'Q1 Marketing Budget', amount: 250000, used: 180000, remaining: 70000, status: 'active' },
-  { id: '2', name: 'Q2 Marketing Budget', amount: 300000, used: 120000, remaining: 180000, status: 'active' },
-  { id: '3', name: 'Annual Trade Show Budget', amount: 150000, used: 75000, remaining: 75000, status: 'active' }
-];
-
-// Mock trade spends
-const mockTradeSpends = [
-  { id: '1', name: 'Summer Promotion', amount: 50000, startDate: '2025-06-01', endDate: '2025-08-31', status: 'active' },
-  { id: '2', name: 'Holiday Campaign', amount: 75000, startDate: '2025-11-01', endDate: '2025-12-31', status: 'pending' },
-  { id: '3', name: 'Product Launch', amount: 100000, startDate: '2025-09-15', endDate: '2025-10-15', status: 'active' }
-];
+// Using real API calls with seeded data
 
 // Currency display mapping
 const currencyDisplay = {
+  'ZAR': 'R (ZAR)',
   'USD': '$ (USD)',
   'EUR': '€ (EUR)',
   'GBP': '£ (GBP)',
@@ -97,6 +69,7 @@ const currencyDisplay = {
 
 // Currency symbols
 const currencySymbols = {
+  'ZAR': 'R',
   'USD': '$',
   'EUR': '€',
   'GBP': '£',
@@ -114,6 +87,8 @@ const CompanyDetail = () => {
   const navigate = useNavigate();
   
   const [company, setCompany] = useState(null);
+  const [budgets, setBudgets] = useState([]);
+  const [tradeSpends, setTradeSpends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tabValue, setTabValue] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -125,11 +100,50 @@ const CompanyDetail = () => {
   
   // Load company data
   useEffect(() => {
-    // In a real app, we would fetch data from the API
-    // For now, we'll use mock data
-    setLoading(true);
-    
+    fetchCompanyData();
   }, [id]);
+
+  const fetchCompanyData = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
+      // Fetch company details
+      const companyResponse = await fetch(`/api/companies/${id}`, { headers });
+      if (companyResponse.ok) {
+        const companyData = await companyResponse.json();
+        setCompany(companyData);
+      }
+
+      // Fetch budgets for this company
+      const budgetsResponse = await fetch(`/api/budgets?companyId=${id}`, { headers });
+      if (budgetsResponse.ok) {
+        const budgetsData = await budgetsResponse.json();
+        setBudgets(budgetsData);
+      }
+
+      // Fetch trade spends for this company
+      const tradeSpendsResponse = await fetch(`/api/trade-spends?companyId=${id}`, { headers });
+      if (tradeSpendsResponse.ok) {
+        const tradeSpendsData = await tradeSpendsResponse.json();
+        setTradeSpends(tradeSpendsData);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching company data:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to load company data',
+        severity: 'error'
+      });
+      setLoading(false);
+    }
+  };
   
   // Handle tab change
   const handleTabChange = (event, newValue) => {
@@ -437,14 +451,14 @@ const CompanyDetail = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {mockBudgets.length === 0 ? (
+                        {budgets.length === 0 ? (
                           <TableRow>
                             <TableCell colSpan={6} align="center">
                               No budgets found for this company.
                             </TableCell>
                           </TableRow>
                         ) : (
-                          mockBudgets.map((budget) => (
+                          budgets.map((budget) => (
                             <TableRow key={budget.id} hover>
                               <TableCell>
                                 <Link to={`/budgets/${budget.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -520,14 +534,14 @@ const CompanyDetail = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {mockTradeSpends.length === 0 ? (
+                        {tradeSpends.length === 0 ? (
                           <TableRow>
                             <TableCell colSpan={6} align="center">
                               No trade spends found for this company.
                             </TableCell>
                           </TableRow>
                         ) : (
-                          mockTradeSpends.map((tradeSpend) => (
+                          tradeSpends.map((tradeSpend) => (
                             <TableRow key={tradeSpend.id} hover>
                               <TableCell>
                                 <Link to={`/trade-spends/${tradeSpend.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>

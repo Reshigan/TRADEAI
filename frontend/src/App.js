@@ -17,6 +17,7 @@ import { SettingsPage } from './components/settings';
 import { UserList, UserDetail, UserForm } from './components/users';
 import { ReportList, ReportBuilder } from './components/reports';
 import { CompanyList, CompanyDetail, CompanyForm } from './components/companies';
+import { TradingTermsList, TradingTermDetail, TradingTermForm } from './components/tradingTerms';
 import ActivityGrid from './components/activityGrid';
 
 function App() {
@@ -341,6 +342,54 @@ function App() {
               <Navigate to="/" replace />
             )
           }
+        />
+        <Route 
+          path="/trading-terms" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradingTermsList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trading-terms/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradingTermDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trading-terms/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradingTermForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trading-terms/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradingTermForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
