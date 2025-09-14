@@ -231,10 +231,11 @@ if [ -d "$REPO_DIR/backend" ]; then
     # Copy backend files
     cp -r "$REPO_DIR/backend"/* "$BACKEND_DIR/"
     
-    # Install Python dependencies if requirements.txt exists
-    if [ -f "$BACKEND_DIR/requirements.txt" ]; then
-        echo "🔄 Installing Python dependencies..."
-        pip3 install -r "$BACKEND_DIR/requirements.txt" || true
+    # Install Node.js dependencies
+    if [ -f "$BACKEND_DIR/package.json" ]; then
+        echo "🔄 Installing Node.js dependencies..."
+        cd "$BACKEND_DIR"
+        npm install --production || true
     fi
     
     # Install PM2 if not present
@@ -246,7 +247,7 @@ if [ -d "$REPO_DIR/backend" ]; then
     # Start backend with PM2
     cd "$BACKEND_DIR"
     pm2 delete tradeai-backend || true
-    pm2 start app.py --name tradeai-backend --interpreter python3
+    pm2 start src/server.js --name tradeai-backend
     pm2 save
     pm2 startup
 fi
