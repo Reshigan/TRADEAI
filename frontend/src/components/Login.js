@@ -21,7 +21,7 @@ const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
@@ -31,15 +31,31 @@ const Login = ({ onLogin }) => {
       return;
     }
 
-    // Mock authentication - replace with actual API call
-    if (credentials.email === 'admin@tradeai.com' && credentials.password === 'password123') {
-      onLogin({ email: credentials.email, role: 'admin' });
-    } else if (credentials.email === 'manager@tradeai.com' && credentials.password === 'password123') {
-      onLogin({ email: credentials.email, role: 'manager' });
-    } else if (credentials.email === 'kam@tradeai.com' && credentials.password === 'password123') {
-      onLogin({ email: credentials.email, role: 'kam' });
-    } else {
-      setError('Invalid credentials. Try admin@tradeai.com / password123');
+    try {
+      // Production authentication with seeded users
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: credentials.email,
+          password: credentials.password
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        onLogin(data.user);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Invalid credentials. Use seeded user accounts.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Login failed. Please try again.');
     }
   };
 

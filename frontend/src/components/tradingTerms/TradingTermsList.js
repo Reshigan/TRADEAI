@@ -28,52 +28,39 @@ import {
 
 import { PageHeader } from '../common';
 
-// Mock data for development
-const mockTradingTerms = [
-  {
-    id: '1',
-    title: 'Standard Payment Terms',
-    description: 'Net 30 payment terms for standard customers',
-    type: 'payment',
-    status: 'active',
-    approvalStatus: 'approved',
-    createdAt: '2025-01-15T10:30:00Z',
-    updatedAt: '2025-01-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    title: 'Volume Discount Terms',
-    description: '5% discount for orders over $10,000',
-    type: 'discount',
-    status: 'active',
-    approvalStatus: 'pending',
-    createdAt: '2025-01-10T14:20:00Z',
-    updatedAt: '2025-01-12T09:15:00Z'
-  },
-  {
-    id: '3',
-    title: 'Return Policy',
-    description: '30-day return policy for all products',
-    type: 'return',
-    status: 'inactive',
-    approvalStatus: 'approved',
-    createdAt: '2025-01-05T16:45:00Z',
-    updatedAt: '2025-01-08T11:30:00Z'
-  }
-];
-
 const TradingTermsList = () => {
   const navigate = useNavigate();
   const [tradingTerms, setTradingTerms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setTradingTerms(mockTradingTerms);
-      setLoading(false);
-    }, 1000);
+    fetchTradingTerms();
   }, []);
+
+  const fetchTradingTerms = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/trading-terms', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTradingTerms(data);
+      } else {
+        setError('Failed to fetch trading terms');
+      }
+    } catch (error) {
+      console.error('Error fetching trading terms:', error);
+      setError('Failed to load trading terms');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -145,7 +132,13 @@ const TradingTermsList = () => {
       />
 
       <Paper sx={{ mt: 3 }}>
-        {tradingTerms.length === 0 ? (
+        {error ? (
+          <Box p={4} textAlign="center">
+            <Alert severity="error">
+              {error}
+            </Alert>
+          </Box>
+        ) : tradingTerms.length === 0 && !loading ? (
           <Box p={4} textAlign="center">
             <Alert severity="info">
               No trading terms found. Click "Add Trading Term" to create your first trading term.

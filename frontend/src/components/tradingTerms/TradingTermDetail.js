@@ -21,37 +21,40 @@ import {
 
 import { PageHeader } from '../common';
 
-// Mock data for development
-const mockTradingTerm = {
-  id: '1',
-  title: 'Standard Payment Terms',
-  description: 'Net 30 payment terms for standard customers',
-  type: 'payment',
-  status: 'active',
-  approvalStatus: 'approved',
-  content: 'Payment is due within 30 days of invoice date. Late payments may incur a 1.5% monthly service charge.',
-  effectiveDate: '2025-01-01T00:00:00Z',
-  expiryDate: '2025-12-31T23:59:59Z',
-  createdAt: '2025-01-15T10:30:00Z',
-  updatedAt: '2025-01-15T10:30:00Z',
-  createdBy: 'John Doe',
-  approvedBy: 'Jane Smith',
-  approvedAt: '2025-01-15T11:00:00Z'
-};
-
 const TradingTermDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tradingTerm, setTradingTerm] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setTradingTerm(mockTradingTerm);
-      setLoading(false);
-    }, 1000);
+    fetchTradingTerm();
   }, [id]);
+
+  const fetchTradingTerm = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/trading-terms/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTradingTerm(data);
+      } else {
+        setError('Failed to fetch trading term details');
+      }
+    } catch (error) {
+      console.error('Error fetching trading term:', error);
+      setError('Failed to load trading term details');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {

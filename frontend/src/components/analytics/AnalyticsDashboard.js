@@ -41,46 +41,16 @@ import ProductPerformanceChart from './charts/ProductPerformanceChart';
 import TradeSpendTrendsChart from './charts/TradeSpendTrendsChart';
 import AIPredictionsChart from './charts/AIPredictionsChart';
 
-// No more mock data - using real API calls
-
-const mockProducts = [
-  { id: '1', name: 'Rooibos Tea' },
-  { id: '2', name: 'Biltong' },
-  { id: '3', name: 'Amarula Cream Liqueur' },
-  { id: '4', name: 'Mrs. Ball\'s Chutney' },
-  { id: '5', name: 'Ouma Rusks' },
-  { id: '6', name: 'Boerewors' },
-  { id: '7', name: 'Cape Malay Curry Powder' },
-  { id: '8', name: 'Malva Pudding Mix' }
-];
-
-const mockCustomers = [
-  { id: '1', name: 'Pick n Pay' },
-  { id: '2', name: 'Shoprite' },
-  { id: '3', name: 'Woolworths' },
-  { id: '4', name: 'Spar' },
-  { id: '5', name: 'Checkers' },
-  { id: '6', name: 'Food Lover\'s Market' },
-  { id: '7', name: 'OK Foods' },
-  { id: '8', name: 'Makro' }
-];
-
-const mockCategories = [
-  'Beverages',
-  'Snacks',
-  'Alcoholic Beverages',
-  'Condiments',
-  'Breakfast',
-  'Meat',
-  'Spices',
-  'Desserts'
-];
+// Using real API calls with seeded data
 
 const AnalyticsDashboard = () => {
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [analyticsData, setAnalyticsData] = useState({});
+  const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({
     dateRange: {
       startDate: new Date(new Date().getFullYear(), 0, 1), // Jan 1 of current year
@@ -96,7 +66,42 @@ const AnalyticsDashboard = () => {
   // Fetch data on component mount
   useEffect(() => {
     fetchData();
+    fetchReferenceData();
   }, []);
+
+  // Fetch reference data for filters
+  const fetchReferenceData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
+      // Fetch products
+      const productsResponse = await fetch('/api/products', { headers });
+      if (productsResponse.ok) {
+        const productsData = await productsResponse.json();
+        setProducts(productsData);
+      }
+
+      // Fetch customers
+      const customersResponse = await fetch('/api/customers', { headers });
+      if (customersResponse.ok) {
+        const customersData = await customersResponse.json();
+        setCustomers(customersData);
+      }
+
+      // Fetch categories (from products)
+      const categoriesResponse = await fetch('/api/products/categories', { headers });
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        setCategories(categoriesData);
+      }
+    } catch (error) {
+      console.error('Error fetching reference data:', error);
+    }
+  };
 
   // Fetch data based on filters
   const fetchData = async () => {
@@ -265,7 +270,7 @@ const AnalyticsDashboard = () => {
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => {
-                          const customer = mockCustomers.find(c => c.id === value);
+                          const customer = customers.find(c => c._id === value);
                           return (
                             <Chip key={value} label={customer ? customer.name : value} size="small" />
                           );
@@ -273,9 +278,9 @@ const AnalyticsDashboard = () => {
                       </Box>
                     )}
                   >
-                    {mockCustomers.map((customer) => (
-                      <MenuItem key={customer.id} value={customer.id}>
-                        <Checkbox checked={filters.customers.indexOf(customer.id) > -1} />
+                    {customers.map((customer) => (
+                      <MenuItem key={customer._id} value={customer._id}>
+                        <Checkbox checked={filters.customers.indexOf(customer._id) > -1} />
                         <ListItemText primary={customer.name} />
                       </MenuItem>
                     ))}
@@ -299,7 +304,7 @@ const AnalyticsDashboard = () => {
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => {
-                          const product = mockProducts.find(p => p.id === value);
+                          const product = products.find(p => p._id === value);
                           return (
                             <Chip key={value} label={product ? product.name : value} size="small" />
                           );
@@ -307,9 +312,9 @@ const AnalyticsDashboard = () => {
                       </Box>
                     )}
                   >
-                    {mockProducts.map((product) => (
-                      <MenuItem key={product.id} value={product.id}>
-                        <Checkbox checked={filters.products.indexOf(product.id) > -1} />
+                    {products.map((product) => (
+                      <MenuItem key={product._id} value={product._id}>
+                        <Checkbox checked={filters.products.indexOf(product._id) > -1} />
                         <ListItemText primary={product.name} />
                       </MenuItem>
                     ))}
@@ -338,7 +343,7 @@ const AnalyticsDashboard = () => {
                       </Box>
                     )}
                   >
-                    {mockCategories.map((category) => (
+                    {categories.map((category) => (
                       <MenuItem key={category} value={category}>
                         <Checkbox checked={filters.categories.indexOf(category) > -1} />
                         <ListItemText primary={category} />
