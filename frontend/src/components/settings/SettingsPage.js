@@ -39,7 +39,8 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  Integration as IntegrationIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
@@ -84,6 +85,31 @@ const SettingsPage = () => {
     { id: '1', name: 'Web App', key: 'sk_test_123456789abcdef', created: '2025-01-15', lastUsed: '2025-09-01' },
     { id: '2', name: 'Mobile App', key: 'sk_test_abcdef123456789', created: '2025-03-20', lastUsed: '2025-08-25' }
   ]);
+  const [integrationSettings, setIntegrationSettings] = useState({
+    sap: {
+      enabled: false,
+      server: '',
+      client: '',
+      username: '',
+      systemNumber: '',
+      testConnection: false
+    },
+    sso: {
+      enabled: false,
+      provider: 'azure',
+      clientId: '',
+      tenantId: '',
+      redirectUri: '',
+      testConnection: false
+    },
+    erp: {
+      enabled: false,
+      type: 'sap',
+      endpoint: '',
+      apiKey: '',
+      syncFrequency: 'daily'
+    }
+  });
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -260,6 +286,70 @@ const SettingsPage = () => {
     });
   };
 
+  // Handle integration settings change
+  const handleIntegrationChange = (section, field, value) => {
+    setIntegrationSettings(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: value
+      }
+    }));
+  };
+
+  // Test SAP connection
+  const handleTestSapConnection = () => {
+    setIntegrationSettings(prev => ({
+      ...prev,
+      sap: { ...prev.sap, testConnection: true }
+    }));
+    
+    // Simulate connection test
+    setTimeout(() => {
+      setIntegrationSettings(prev => ({
+        ...prev,
+        sap: { ...prev.sap, testConnection: false }
+      }));
+      
+      setSnackbar({
+        open: true,
+        message: 'SAP connection test successful',
+        severity: 'success'
+      });
+    }, 2000);
+  };
+
+  // Test SSO connection
+  const handleTestSsoConnection = () => {
+    setIntegrationSettings(prev => ({
+      ...prev,
+      sso: { ...prev.sso, testConnection: true }
+    }));
+    
+    // Simulate connection test
+    setTimeout(() => {
+      setIntegrationSettings(prev => ({
+        ...prev,
+        sso: { ...prev.sso, testConnection: false }
+      }));
+      
+      setSnackbar({
+        open: true,
+        message: 'SSO connection test successful',
+        severity: 'success'
+      });
+    }, 2000);
+  };
+
+  // Save integration settings
+  const handleSaveIntegrations = () => {
+    setSnackbar({
+      open: true,
+      message: 'Integration settings saved successfully',
+      severity: 'success'
+    });
+  };
+
   // Close snackbar
   const handleCloseSnackbar = () => {
     setSnackbar((prevSnackbar) => ({
@@ -288,6 +378,7 @@ const SettingsPage = () => {
           <Tab icon={<SecurityIcon />} label="Security" />
           <Tab icon={<NotificationsIcon />} label="Notifications" />
           <Tab icon={<PaletteIcon />} label="Display" />
+          <Tab icon={<IntegrationIcon />} label="Integrations" />
           <Tab icon={<LanguageIcon />} label="API" />
         </Tabs>
         
@@ -900,6 +991,248 @@ const SettingsPage = () => {
           )}
           
           {tabValue === 4 && (
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Integration Settings
+              </Typography>
+              <Divider sx={{ mb: 3 }} />
+              
+              {/* SAP Integration */}
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                      SAP Integration
+                    </Typography>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={integrationSettings.sap.enabled}
+                          onChange={(e) => handleIntegrationChange('sap', 'enabled', e.target.checked)}
+                        />
+                      }
+                      label="Enable SAP Integration"
+                    />
+                  </Box>
+                  
+                  {integrationSettings.sap.enabled && (
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="SAP Server"
+                          value={integrationSettings.sap.server}
+                          onChange={(e) => handleIntegrationChange('sap', 'server', e.target.value)}
+                          placeholder="sap.company.com"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Client"
+                          value={integrationSettings.sap.client}
+                          onChange={(e) => handleIntegrationChange('sap', 'client', e.target.value)}
+                          placeholder="100"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Username"
+                          value={integrationSettings.sap.username}
+                          onChange={(e) => handleIntegrationChange('sap', 'username', e.target.value)}
+                          placeholder="SAP_USER"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="System Number"
+                          value={integrationSettings.sap.systemNumber}
+                          onChange={(e) => handleIntegrationChange('sap', 'systemNumber', e.target.value)}
+                          placeholder="00"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Button
+                          variant="outlined"
+                          onClick={handleTestSapConnection}
+                          disabled={integrationSettings.sap.testConnection}
+                          sx={{ mr: 2 }}
+                        >
+                          {integrationSettings.sap.testConnection ? 'Testing...' : 'Test Connection'}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* SSO Integration */}
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                      Single Sign-On (SSO)
+                    </Typography>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={integrationSettings.sso.enabled}
+                          onChange={(e) => handleIntegrationChange('sso', 'enabled', e.target.checked)}
+                        />
+                      }
+                      label="Enable SSO"
+                    />
+                  </Box>
+                  
+                  {integrationSettings.sso.enabled && (
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <InputLabel>SSO Provider</InputLabel>
+                          <Select
+                            value={integrationSettings.sso.provider}
+                            onChange={(e) => handleIntegrationChange('sso', 'provider', e.target.value)}
+                            label="SSO Provider"
+                          >
+                            <MenuItem value="azure">Azure AD</MenuItem>
+                            <MenuItem value="okta">Okta</MenuItem>
+                            <MenuItem value="google">Google Workspace</MenuItem>
+                            <MenuItem value="saml">Generic SAML</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Client ID"
+                          value={integrationSettings.sso.clientId}
+                          onChange={(e) => handleIntegrationChange('sso', 'clientId', e.target.value)}
+                          placeholder="12345678-1234-1234-1234-123456789012"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Tenant ID"
+                          value={integrationSettings.sso.tenantId}
+                          onChange={(e) => handleIntegrationChange('sso', 'tenantId', e.target.value)}
+                          placeholder="87654321-4321-4321-4321-210987654321"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="Redirect URI"
+                          value={integrationSettings.sso.redirectUri}
+                          onChange={(e) => handleIntegrationChange('sso', 'redirectUri', e.target.value)}
+                          placeholder="https://tradeai.gonxt.tech/auth/callback"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Button
+                          variant="outlined"
+                          onClick={handleTestSsoConnection}
+                          disabled={integrationSettings.sso.testConnection}
+                          sx={{ mr: 2 }}
+                        >
+                          {integrationSettings.sso.testConnection ? 'Testing...' : 'Test SSO Configuration'}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* ERP Integration */}
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                      ERP Integration
+                    </Typography>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={integrationSettings.erp.enabled}
+                          onChange={(e) => handleIntegrationChange('erp', 'enabled', e.target.checked)}
+                        />
+                      }
+                      label="Enable ERP Integration"
+                    />
+                  </Box>
+                  
+                  {integrationSettings.erp.enabled && (
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <InputLabel>ERP Type</InputLabel>
+                          <Select
+                            value={integrationSettings.erp.type}
+                            onChange={(e) => handleIntegrationChange('erp', 'type', e.target.value)}
+                            label="ERP Type"
+                          >
+                            <MenuItem value="sap">SAP</MenuItem>
+                            <MenuItem value="oracle">Oracle ERP</MenuItem>
+                            <MenuItem value="dynamics">Microsoft Dynamics</MenuItem>
+                            <MenuItem value="netsuite">NetSuite</MenuItem>
+                            <MenuItem value="custom">Custom API</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="API Endpoint"
+                          value={integrationSettings.erp.endpoint}
+                          onChange={(e) => handleIntegrationChange('erp', 'endpoint', e.target.value)}
+                          placeholder="https://api.erp.company.com/v1"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          fullWidth
+                          label="API Key"
+                          type="password"
+                          value={integrationSettings.erp.apiKey}
+                          onChange={(e) => handleIntegrationChange('erp', 'apiKey', e.target.value)}
+                          placeholder="Enter API key"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                          <InputLabel>Sync Frequency</InputLabel>
+                          <Select
+                            value={integrationSettings.erp.syncFrequency}
+                            onChange={(e) => handleIntegrationChange('erp', 'syncFrequency', e.target.value)}
+                            label="Sync Frequency"
+                          >
+                            <MenuItem value="realtime">Real-time</MenuItem>
+                            <MenuItem value="hourly">Hourly</MenuItem>
+                            <MenuItem value="daily">Daily</MenuItem>
+                            <MenuItem value="weekly">Weekly</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                <Button
+                  variant="contained"
+                  startIcon={<SaveIcon />}
+                  onClick={handleSaveIntegrations}
+                >
+                  Save Integration Settings
+                </Button>
+              </Box>
+            </Box>
+          )}
+
+          {tabValue === 5 && (
             <Box>
               <Typography variant="h6" gutterBottom>
                 API Settings

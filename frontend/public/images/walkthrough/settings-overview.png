@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#f8fafc"/>
+  <text x="200" y="25" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="16" font-weight="bold">System Settings</text>
+  
+  <!-- Settings tabs -->
+  <rect x="20" y="40" width="60" height="30" fill="#3b82f6" rx="4"/>
+  <text x="50" y="58" text-anchor="middle" fill="white" font-family="Arial" font-size="10">Profile</text>
+  
+  <rect x="90" y="40" width="60" height="30" fill="#e5e7eb" rx="4"/>
+  <text x="120" y="58" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="10">Security</text>
+  
+  <rect x="160" y="40" width="80" height="30" fill="#e5e7eb" rx="4"/>
+  <text x="200" y="58" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="10">Notifications</text>
+  
+  <rect x="250" y="40" width="60" height="30" fill="#e5e7eb" rx="4"/>
+  <text x="280" y="58" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="10">Display</text>
+  
+  <rect x="320" y="40" width="60" height="30" fill="#e5e7eb" rx="4"/>
+  <text x="350" y="58" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="10">API</text>
+  
+  <!-- Profile form -->
+  <rect x="20" y="80" width="360" height="150" fill="#ffffff" rx="8" stroke="#e5e7eb"/>
+  
+  <text x="30" y="105" fill="#374151" font-family="Arial" font-size="12" font-weight="bold">Profile Information</text>
+  
+  <text x="30" y="125" fill="#6b7280" font-family="Arial" font-size="10">Name</text>
+  <rect x="30" y="130" width="150" height="20" fill="#f9fafb" rx="4" stroke="#d1d5db"/>
+  <text x="35" y="143" fill="#374151" font-family="Arial" font-size="10">Admin User</text>
+  
+  <text x="200" y="125" fill="#6b7280" font-family="Arial" font-size="10">Email</text>
+  <rect x="200" y="130" width="150" height="20" fill="#f9fafb" rx="4" stroke="#d1d5db"/>
+  <text x="205" y="143" fill="#374151" font-family="Arial" font-size="10">admin@testcompany.demo</text>
+  
+  <text x="30" y="165" fill="#6b7280" font-family="Arial" font-size="10">Role</text>
+  <rect x="30" y="170" width="150" height="20" fill="#f9fafb" rx="4" stroke="#d1d5db"/>
+  <text x="35" y="183" fill="#374151" font-family="Arial" font-size="10">Administrator</text>
+  
+  <text x="200" y="165" fill="#6b7280" font-family="Arial" font-size="10">Department</text>
+  <rect x="200" y="170" width="150" height="20" fill="#f9fafb" rx="4" stroke="#d1d5db"/>
+  <text x="205" y="183" fill="#374151" font-family="Arial" font-size="10">IT</text>
+  
+  <rect x="300" y="200" width="60" height="25" fill="#3b82f6" rx="4"/>
+  <text x="330" y="215" text-anchor="middle" fill="white" font-family="Arial" font-size="10">Save</text>
+</svg>

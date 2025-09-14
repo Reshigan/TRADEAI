@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#f8fafc"/>
+  <text x="200" y="25" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="16" font-weight="bold">Quick Actions</text>
+  
+  <!-- Action buttons -->
+  <rect x="50" y="50" width="120" height="80" fill="#3b82f6" rx="8"/>
+  <text x="110" y="80" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Create</text>
+  <text x="110" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Promotion</text>
+  <text x="110" y="115" text-anchor="middle" fill="#bfdbfe" font-family="Arial" font-size="10">Set up new trade promotion</text>
+  
+  <rect x="230" y="50" width="120" height="80" fill="#10b981" rx="8"/>
+  <text x="290" y="80" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Add</text>
+  <text x="290" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Budget</text>
+  <text x="290" y="115" text-anchor="middle" fill="#bbf7d0" font-family="Arial" font-size="10">Create budget allocation</text>
+  
+  <rect x="50" y="150" width="120" height="80" fill="#f59e0b" rx="8"/>
+  <text x="110" y="180" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Generate</text>
+  <text x="110" y="195" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Report</text>
+  <text x="110" y="215" text-anchor="middle" fill="#fde68a" font-family="Arial" font-size="10">Create performance report</text>
+  
+  <rect x="230" y="150" width="120" height="80" fill="#8b5cf6" rx="8"/>
+  <text x="290" y="180" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">AI</text>
+  <text x="290" y="195" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">Insights</text>
+  <text x="290" y="215" text-anchor="middle" fill="#ddd6fe" font-family="Arial" font-size="10">Get AI recommendations</text>
+</svg>

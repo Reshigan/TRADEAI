@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#f8fafc"/>
+  <text x="200" y="30" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="18" font-weight="bold">Performance Metrics</text>
+  
+  <!-- Large KPI Cards -->
+  <rect x="20" y="50" width="170" height="80" fill="#ffffff" rx="8" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="105" y="75" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="14">Total Trade Spend</text>
+  <text x="105" y="100" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="24" font-weight="bold">$2,456,789</text>
+  <text x="105" y="115" text-anchor="middle" fill="#10b981" font-family="Arial" font-size="12">↑ 12.5% vs last month</text>
+  
+  <rect x="210" y="50" width="170" height="80" fill="#ffffff" rx="8" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="295" y="75" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="14">Active Promotions</text>
+  <text x="295" y="100" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="24" font-weight="bold">24</text>
+  <text x="295" y="115" text-anchor="middle" fill="#3b82f6" font-family="Arial" font-size="12">6 ending this week</text>
+  
+  <rect x="20" y="150" width="170" height="80" fill="#ffffff" rx="8" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="105" y="175" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="14">Average ROI</text>
+  <text x="105" y="200" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="24" font-weight="bold">3.2x</text>
+  <text x="105" y="215" text-anchor="middle" fill="#10b981" font-family="Arial" font-size="12">Above target (2.8x)</text>
+  
+  <rect x="210" y="150" width="170" height="80" fill="#ffffff" rx="8" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="295" y="175" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="14">Budget Utilization</text>
+  <text x="295" y="200" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="24" font-weight="bold">68%</text>
+  <rect x="230" y="210" width="130" height="8" fill="#e5e7eb" rx="4"/>
+  <rect x="230" y="210" width="88" height="8" fill="#3b82f6" rx="4"/>
+</svg>

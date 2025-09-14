@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#f8fafc"/>
+  <text x="200" y="25" text-anchor="middle" fill="#1f2937" font-family="Arial" font-size="16" font-weight="bold">Recent Activity Feed</text>
+  
+  <rect x="20" y="40" width="360" height="180" fill="#ffffff" rx="8" stroke="#e5e7eb"/>
+  
+  <!-- Activity items -->
+  <circle cx="40" cy="70" r="6" fill="#10b981"/>
+  <text x="55" y="75" fill="#374151" font-family="Arial" font-size="12">New promotion "Summer Sale" created</text>
+  <text x="55" y="88" fill="#6b7280" font-family="Arial" font-size="10">2 hours ago</text>
+  
+  <circle cx="40" cy="110" r="6" fill="#3b82f6"/>
+  <text x="55" y="115" fill="#374151" font-family="Arial" font-size="12">Budget updated for Q4 2024</text>
+  <text x="55" y="128" fill="#6b7280" font-family="Arial" font-size="10">4 hours ago</text>
+  
+  <circle cx="40" cy="150" r="6" fill="#f59e0b"/>
+  <text x="55" y="155" fill="#374151" font-family="Arial" font-size="12">Trade spend approved: $15,000</text>
+  <text x="55" y="168" fill="#6b7280" font-family="Arial" font-size="10">1 day ago</text>
+  
+  <circle cx="40" cy="190" r="6" fill="#e11d48"/>
+  <text x="55" y="195" fill="#374151" font-family="Arial" font-size="12">Promotion "Back to School" ended</text>
+  <text x="55" y="208" fill="#6b7280" font-family="Arial" font-size="10">2 days ago</text>
+</svg>
