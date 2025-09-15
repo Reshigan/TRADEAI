@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 🚀 TRADEAI Production Deployment Script - CORRECTED VERSION
+# 🚀 TRADEAI Production Deployment for tradeai.gonxt.tech
 # Fixes the npm install issue by properly handling backend/frontend structure
 # Domain: tradeai.gonxt.tech
 # Author: OpenHands AI Assistant
-# Version: CORRECTED-1.0
+# Version: GONXT-1.0
 
 set -e
 
@@ -16,7 +16,7 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m'
 
-# Configuration
+# Configuration - TRADEAI.GONXT.TECH
 DOMAIN="tradeai.gonxt.tech"
 EMAIL="reshigan@gonxt.tech"
 APP_DIR="/var/www/tradeai"
@@ -48,6 +48,27 @@ info() {
 
 step() {
     echo -e "${PURPLE}[STEP] $1${NC}"
+}
+
+# Display domain configuration
+display_domain_info() {
+    echo -e "${PURPLE}================================${NC}"
+    echo -e "${PURPLE}🌐 TRADEAI DEPLOYMENT CONFIGURATION${NC}"
+    echo -e "${PURPLE}================================${NC}"
+    echo -e "${BLUE}Domain: ${YELLOW}$DOMAIN${NC}"
+    echo -e "${BLUE}Email: ${YELLOW}$EMAIL${NC}"
+    echo -e "${BLUE}App Directory: ${YELLOW}$APP_DIR${NC}"
+    echo -e "${BLUE}Backend Port: ${YELLOW}$BACKEND_PORT${NC}"
+    echo -e "${BLUE}Frontend Port: ${YELLOW}$FRONTEND_PORT${NC}"
+    echo -e "${PURPLE}================================${NC}"
+    echo ""
+    
+    read -p "⚠️  Make sure DNS for $DOMAIN points to this server. Continue? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        error "Deployment cancelled. Please configure DNS first."
+        exit 1
+    fi
 }
 
 # Check if running as root
@@ -172,7 +193,7 @@ setup_application() {
 
 # Install application dependencies - CORRECTED VERSION
 install_application_dependencies() {
-    step "Installing Application Dependencies"
+    step "Installing Application Dependencies (CORRECTED FOR BACKEND/FRONTEND STRUCTURE)"
     
     # Install backend dependencies
     log "Installing backend dependencies..."
@@ -299,12 +320,12 @@ EOF
     log "Frontend setup completed"
 }
 
-# Configure Nginx
+# Configure Nginx for tradeai.gonxt.tech
 configure_nginx() {
-    step "Configuring Nginx"
+    step "Configuring Nginx for $DOMAIN"
     
     # Create Nginx configuration
-    log "Creating Nginx configuration..."
+    log "Creating Nginx configuration for $DOMAIN..."
     cat > "$NGINX_CONFIG" << EOF
 server {
     listen 80;
@@ -318,7 +339,7 @@ server {
     listen 443 ssl http2;
     server_name $DOMAIN www.$DOMAIN;
     
-    # SSL Configuration
+    # SSL Configuration for $DOMAIN
     ssl_certificate $SSL_DIR/fullchain.pem;
     ssl_certificate_key $SSL_DIR/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -383,12 +404,12 @@ EOF
     # Test Nginx configuration
     nginx -t
     
-    log "Nginx configuration completed"
+    log "Nginx configuration completed for $DOMAIN"
 }
 
-# Setup SSL certificate
+# Setup SSL certificate for tradeai.gonxt.tech
 setup_ssl() {
-    step "Setting Up SSL Certificate"
+    step "Setting Up SSL Certificate for $DOMAIN"
     
     # Stop nginx temporarily
     systemctl stop nginx
@@ -404,7 +425,7 @@ setup_ssl() {
     log "Setting up SSL certificate auto-renewal..."
     (crontab -l 2>/dev/null; echo "0 12 * * * /usr/bin/certbot renew --quiet") | crontab -
     
-    log "SSL certificate setup completed"
+    log "SSL certificate setup completed for $DOMAIN"
 }
 
 # Start services
@@ -438,7 +459,7 @@ start_services() {
 
 # Verify deployment
 verify_deployment() {
-    step "Verifying Deployment"
+    step "Verifying Deployment for $DOMAIN"
     
     # Check services
     log "Checking service status..."
@@ -463,8 +484,9 @@ verify_deployment() {
 
 # Main deployment function
 main() {
-    log "🚀 Starting TRADEAI Production Deployment (CORRECTED VERSION)"
+    log "🚀 Starting TRADEAI Production Deployment for $DOMAIN"
     
+    display_domain_info
     check_root
     create_backup
     cleanup_system
@@ -472,7 +494,7 @@ main() {
     install_nodejs
     configure_firewall
     setup_application
-    install_application_dependencies  # This is now corrected to handle backend/frontend structure
+    install_application_dependencies  # This is corrected to handle backend/frontend structure
     setup_backend
     setup_frontend
     configure_nginx
@@ -480,12 +502,15 @@ main() {
     start_services
     verify_deployment
     
-    log "🎉 TRADEAI Production Deployment Completed Successfully!"
-    log "🌐 Your application should be available at: https://$DOMAIN"
-    log "📊 Backend API: https://$DOMAIN/api/"
-    log "🖥️  Frontend: https://$DOMAIN"
-    log "📝 Logs: pm2 logs"
-    log "🔧 Management: pm2 status, pm2 restart all, pm2 stop all"
+    echo -e "${GREEN}================================${NC}"
+    echo -e "${GREEN}🎉 TRADEAI DEPLOYMENT COMPLETED!${NC}"
+    echo -e "${GREEN}================================${NC}"
+    echo -e "${BLUE}🌐 Your application is available at: ${YELLOW}https://$DOMAIN${NC}"
+    echo -e "${BLUE}📊 Backend API: ${YELLOW}https://$DOMAIN/api/${NC}"
+    echo -e "${BLUE}🖥️  Frontend: ${YELLOW}https://$DOMAIN${NC}"
+    echo -e "${BLUE}📝 Logs: ${YELLOW}pm2 logs${NC}"
+    echo -e "${BLUE}🔧 Management: ${YELLOW}pm2 status, pm2 restart all, pm2 stop all${NC}"
+    echo -e "${GREEN}================================${NC}"
 }
 
 # Run main function

@@ -35,6 +35,12 @@ TRADEAI/
 └── (no root package.json)    ← This was missing and causing the error
 ```
 
+## Domain Configuration
+**Important:** The deployment is configured for domain: `tradeai.gonxt.tech`
+- SSL certificates will be issued for this domain
+- Nginx will be configured to serve this domain
+- Make sure your DNS is pointing to the correct server
+
 ## Solutions Provided
 
 ### 1. Quick Fix (Immediate Solution)
