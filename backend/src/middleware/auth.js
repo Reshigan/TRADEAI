@@ -63,9 +63,14 @@ const authenticateToken = async (req, res, next) => {
     
     // Get user from database
     const userId = decoded.userId || decoded._id; // Support both userId and _id for compatibility
+    console.log('Auth middleware - Looking for user with ID:', userId);
+    console.log('Auth middleware - Decoded token:', { userId: decoded.userId, _id: decoded._id });
+    
     const user = await User.findById(userId)
       .populate('companyId', 'name code currency')
       .select('-password -twoFactorSecret');
+    
+    console.log('Auth middleware - User found:', !!user);
     
     if (!user) {
       securityLogger.logAuth({ id: userId || 'unknown' }, 'access', false, {
