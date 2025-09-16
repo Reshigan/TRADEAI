@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Container, 
@@ -23,6 +23,12 @@ const Login = ({ onLogin }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+
+  // Debug: Log component mount
+  useEffect(() => {
+    console.log('Login component mounted');
+    console.log('React is working!');
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
