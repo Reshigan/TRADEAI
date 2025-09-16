@@ -45,9 +45,12 @@ const Login = ({ onLogin }) => {
       console.log('Login response received:', { success: !!data.token, user: data.user });
 
       if (data.token) {
+        console.log('Login successful, setting localStorage and calling onLogin...');
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('isAuthenticated', 'true');
+        console.log('About to call onLogin with user:', data.user);
         onLogin(data.user);
+        console.log('onLogin called successfully');
       } else {
         setError('Invalid credentials. Use seeded user accounts.');
       }

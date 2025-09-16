@@ -29,10 +29,12 @@ function App() {
   );
 
   const handleLogin = (userData) => {
+    console.log('handleLogin called with userData:', userData);
     setIsAuthenticated(true);
     setUser(userData);
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
+    console.log('handleLogin completed, isAuthenticated should now be true');
   };
 
   const handleLogout = () => {
