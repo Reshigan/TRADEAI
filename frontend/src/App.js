@@ -107,7 +107,7 @@ function App() {
             </div>
           } 
         />
-        <Route 
+        {/* <Route 
           path="/budgets/:id" 
           element={
             isAuthenticated ? (
@@ -118,7 +118,7 @@ function App() {
               <Navigate to="/" replace />
             )
           } 
-        />
+        /> */}
         <Route 
           path="/trade-spends" 
           element={
