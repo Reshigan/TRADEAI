@@ -28,6 +28,8 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     
+    // Add alert for debugging
+    alert('Form submitted! Email: ' + credentials.email);
     console.log('Login form submitted with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
     
     // Simple validation
