@@ -87,6 +87,12 @@ app.use(compression());
 // Logging
 app.use(morgan('combined', { stream: logger.stream }));
 
+// Debug: Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`[REQUEST DEBUG] ${req.method} ${req.url} - Headers:`, JSON.stringify(req.headers.authorization ? { authorization: req.headers.authorization } : {}));
+  next();
+});
+
 // Rate limiting
 const limiter = rateLimit(config.rateLimit);
 app.use('/api/', limiter);
