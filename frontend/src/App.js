@@ -102,9 +102,7 @@ function App() {
           path="/budgets" 
           element={
             isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TestMinimal />
-              </Layout>
+              <TestMinimal />
             ) : (
               <Navigate to="/" replace />
             )
