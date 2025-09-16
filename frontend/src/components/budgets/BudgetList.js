@@ -50,12 +50,17 @@ const BudgetList = () => {
     setError(null);
     
     try {
+      console.log('BudgetList: Fetching budgets...');
       const response = await budgetService.getAll();
-      setBudgets(response.data || response);
+      console.log('BudgetList: API response:', response);
+      
+      const budgetData = response.data || response || [];
+      console.log('BudgetList: Setting budgets:', budgetData);
+      setBudgets(budgetData);
       setLoading(false);
     } catch (error) {
-      console.error("Error:", error);
-      setError(error.message || "An error occurred");
+      console.error("BudgetList: Error fetching budgets:", error);
+      setError(error.message || "Failed to load budgets. Please try again.");
       setLoading(false);
     }
   };
@@ -106,68 +111,103 @@ const BudgetList = () => {
     }
   };
 
-  // Apply filters to budgets
+  // Apply filters to budgets with safe property access
   const filteredBudgets = budgets.filter((budget) => {
-    // Apply year filter
-    if (filters.year && budget.year.toString() !== filters.year) {
+    try {
+      // Apply year filter
+      if (filters.year && budget?.year?.toString() !== filters.year) {
+        return false;
+      }
+      
+      // Apply status filter
+      if (filters.status && budget?.status !== filters.status) {
+        return false;
+      }
+      
+      // Apply search filter
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        return (
+          (budget?.customer?.name || '').toLowerCase().includes(searchTerm) ||
+          (budget?.year?.toString() || '').includes(searchTerm) ||
+          (budget?.status || '').toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Error filtering budget:', err, budget);
       return false;
     }
-    
-    // Apply status filter
-    if (filters.status && budget.status !== filters.status) {
-      return false;
-    }
-    
-    // Apply search filter
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      return (
-        budget.customer.name.toLowerCase().includes(searchTerm) ||
-        budget.year.toString().includes(searchTerm) ||
-        budget.status.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    return true;
   });
 
-  // Table columns
+  // Table columns with safe formatting
   const columns = [
     { id: 'year', label: 'Year' },
     { 
       id: 'customer', 
       label: 'Customer',
-      format: (customer) => customer.name
+      format: (customer) => customer?.name || 'N/A'
     },
     { 
       id: 'total_amount', 
       label: 'Total Amount',
       numeric: true,
-      format: (value) => `$${value.toLocaleString()}`
+      format: (value) => value ? `$${value.toLocaleString()}` : '$0'
     },
     { 
       id: 'allocated_amount', 
       label: 'Allocated',
       numeric: true,
-      format: (value) => `$${value.toLocaleString()}`
+      format: (value) => value ? `$${value.toLocaleString()}` : '$0'
     },
     { 
       id: 'remaining_amount', 
       label: 'Remaining',
       numeric: true,
-      format: (value) => `$${value.toLocaleString()}`
+      format: (value) => value ? `$${value.toLocaleString()}` : '$0'
     },
     { 
       id: 'status', 
       label: 'Status',
-      format: (value) => <StatusChip status={value} />
+      format: (value) => <StatusChip status={value || 'unknown'} />
     },
     { 
       id: 'updated_at', 
       label: 'Last Updated',
-      format: (date) => new Date(date).toLocaleDateString()
+      format: (date) => {
+        try {
+          return date ? new Date(date).toLocaleDateString() : 'N/A';
+        } catch (err) {
+          return 'Invalid Date';
+        }
+      }
     }
   ];
+
+  // Add error boundary fallback
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <PageHeader
+          title="Budgets"
+          subtitle="Manage your trade spend budgets"
+        />
+        <Alert severity="error" sx={{ mt: 2 }}>
+          <strong>Error loading budgets:</strong> {error}
+          <br />
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={fetchBudgets}
+            sx={{ mt: 1 }}
+          >
+            Retry
+          </Button>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box>

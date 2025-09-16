@@ -103,12 +103,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <div style={{ padding: '20px' }}>
-                  <h1>Budget Management</h1>
-                  <p>This is the budgets page - working!</p>
-                  <p>User: {user?.name || 'Unknown'}</p>
-                  <p>Authentication: {isAuthenticated ? 'Authenticated' : 'Not authenticated'}</p>
-                </div>
+                <BudgetList />
               </Layout>
             ) : (
               <Navigate to="/" replace />

@@ -51,12 +51,17 @@ const CustomerList = () => {
     setError(null);
     
     try {
+      console.log('CustomerList: Fetching customers...');
       const response = await customerService.getAll();
-      setCustomers(response.data || response);
+      console.log('CustomerList: API response:', response);
+      
+      const customerData = response.data || response || [];
+      console.log('CustomerList: Setting customers:', customerData);
+      setCustomers(customerData);
       setLoading(false);
     } catch (error) {
-      console.error("Error:", error);
-      setError(error.message || "An error occurred");
+      console.error("CustomerList: Error fetching customers:", error);
+      setError(error.message || "Failed to load customers. Please try again.");
       setLoading(false);
     }
   };
@@ -107,32 +112,37 @@ const CustomerList = () => {
     }
   };
 
-  // Apply filters to customers
+  // Apply filters to customers with safe property access
   const filteredCustomers = customers.filter((customer) => {
-    // Apply type filter
-    if (filters.type && customer.type !== filters.type) {
+    try {
+      // Apply type filter
+      if (filters.type && customer?.type !== filters.type) {
+        return false;
+      }
+      
+      // Apply status filter
+      if (filters.status && customer?.status !== filters.status) {
+        return false;
+      }
+      
+      // Apply search filter
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        return (
+          (customer?.name || '').toLowerCase().includes(searchTerm) ||
+          (customer?.code || '').toLowerCase().includes(searchTerm) ||
+          (customer?.contact?.name || '').toLowerCase().includes(searchTerm) ||
+          (customer?.contact?.email || '').toLowerCase().includes(searchTerm) ||
+          (customer?.address?.city || '').toLowerCase().includes(searchTerm) ||
+          (customer?.address?.state || '').toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Error filtering customer:', err, customer);
       return false;
     }
-    
-    // Apply status filter
-    if (filters.status && customer.status !== filters.status) {
-      return false;
-    }
-    
-    // Apply search filter
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      return (
-        customer.name.toLowerCase().includes(searchTerm) ||
-        customer.code.toLowerCase().includes(searchTerm) ||
-        customer.contact.name.toLowerCase().includes(searchTerm) ||
-        customer.contact.email.toLowerCase().includes(searchTerm) ||
-        customer.address.city.toLowerCase().includes(searchTerm) ||
-        customer.address.state.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    return true;
   });
 
   // Get customer initials for avatar
@@ -163,7 +173,7 @@ const CustomerList = () => {
     return colors[index];
   };
 
-  // Table columns
+  // Table columns with safe formatting
   const columns = [
     { 
       id: 'name', 
@@ -172,20 +182,20 @@ const CustomerList = () => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar 
             sx={{ 
-              bgcolor: getAvatarColor(value),
+              bgcolor: getAvatarColor(value || 'Unknown'),
               width: 32,
               height: 32,
               mr: 1
             }}
           >
-            {getCustomerInitials(value)}
+            {getCustomerInitials(value || 'Unknown')}
           </Avatar>
           <Box>
             <Typography variant="body2" fontWeight="medium">
-              {value}
+              {value || 'Unknown Customer'}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {row.code}
+              {row?.code || 'N/A'}
             </Typography>
           </Box>
         </Box>
@@ -194,7 +204,7 @@ const CustomerList = () => {
     { 
       id: 'type', 
       label: 'Type',
-      format: (value) => value.charAt(0).toUpperCase() + value.slice(1)
+      format: (value) => value ? value.charAt(0).toUpperCase() + value.slice(1) : 'N/A'
     },
     { 
       id: 'contact', 
@@ -202,10 +212,10 @@ const CustomerList = () => {
       format: (contact) => (
         <Box>
           <Typography variant="body2">
-            {contact.name}
+            {contact?.name || 'N/A'}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {contact.email}
+            {contact?.email || 'N/A'}
           </Typography>
         </Box>
       )
@@ -213,14 +223,38 @@ const CustomerList = () => {
     { 
       id: 'address', 
       label: 'Location',
-      format: (address) => `${address.city}, ${address.state}`
+      format: (address) => address ? `${address.city || 'N/A'}, ${address.state || 'N/A'}` : 'N/A'
     },
     { 
       id: 'status', 
       label: 'Status',
-      format: (value) => <StatusChip status={value} />
+      format: (value) => <StatusChip status={value || 'unknown'} />
     }
   ];
+
+  // Add error boundary fallback
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <PageHeader
+          title="Customers"
+          subtitle="Manage your customer accounts"
+        />
+        <Alert severity="error" sx={{ mt: 2 }}>
+          <strong>Error loading customers:</strong> {error}
+          <br />
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={fetchCustomers}
+            sx={{ mt: 1 }}
+          >
+            Retry
+          </Button>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box>
