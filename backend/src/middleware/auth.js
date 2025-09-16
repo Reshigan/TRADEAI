@@ -71,6 +71,15 @@ const authenticateToken = async (req, res, next) => {
       .select('-password -twoFactorSecret');
     
     console.log('Auth middleware - User found:', !!user);
+    if (user) {
+      console.log('User details:', JSON.stringify({
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        assignedCustomers: user.assignedCustomers
+      }));
+    }
     
     if (!user) {
       securityLogger.logAuth({ id: userId || 'unknown' }, 'access', false, {
