@@ -419,7 +419,7 @@ function App() {
             )
           } 
         />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<div style={{padding: '20px', backgroundColor: 'green', color: 'white'}}>CATCH ALL ROUTE</div>} />
       </Routes>
     </Router>
   );
