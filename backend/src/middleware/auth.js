@@ -47,7 +47,7 @@ const authenticateToken = async (req, res, next) => {
     // Check if token is in blacklist
     const isBlacklisted = await isTokenBlacklisted(token);
     if (isBlacklisted) {
-      securityLogger.logAuth({ id: decoded._id || 'unknown' }, 'access', false, {
+      securityLogger.logAuth({ id: decoded.userId || decoded._id || 'unknown' }, 'access', false, {
         ip: req.ip,
         userAgent: req.headers['user-agent'],
         path: req.originalUrl,
@@ -62,12 +62,13 @@ const authenticateToken = async (req, res, next) => {
     }
     
     // Get user from database
-    const user = await User.findById(decoded._id)
+    const userId = decoded.userId || decoded._id; // Support both userId and _id for compatibility
+    const user = await User.findById(userId)
       .populate('companyId', 'name code currency')
       .select('-password -twoFactorSecret');
     
     if (!user) {
-      securityLogger.logAuth({ id: decoded._id || 'unknown' }, 'access', false, {
+      securityLogger.logAuth({ id: userId || 'unknown' }, 'access', false, {
         ip: req.ip,
         userAgent: req.headers['user-agent'],
         path: req.originalUrl,

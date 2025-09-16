@@ -67,9 +67,13 @@ const Login = ({ onLogin }) => {
         console.log('About to call onLogin with user:', data.user);
         onLogin(data.user);
         console.log('onLogin called successfully, now navigating to dashboard...');
-        // Force navigation to dashboard
-        navigate('/dashboard', { replace: true });
-        console.log('Navigation to dashboard initiated');
+        
+        // Add a small delay to ensure localStorage is properly set
+        setTimeout(() => {
+          console.log('Delayed navigation to dashboard...');
+          navigate('/dashboard', { replace: true });
+          console.log('Navigation to dashboard initiated');
+        }, 100);
       } else {
         setError('Invalid credentials. Use seeded user accounts.');
       }
