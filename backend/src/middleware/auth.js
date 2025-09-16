@@ -14,14 +14,14 @@ const securityLogger = new SecurityAuditLogger({
 // Authenticate JWT token
 const authenticateToken = async (req, res, next) => {
   try {
-    console.log('=== AUTH MIDDLEWARE CALLED ===');
-    console.log('Path:', req.originalUrl);
-    console.log('Method:', req.method);
+    logger.info('=== AUTH MIDDLEWARE CALLED ===');
+    logger.info('Path: ' + req.originalUrl);
+    logger.info('Method: ' + req.method);
     
     // Get token from authorization header or cookies
     let token;
     const authHeader = req.headers.authorization;
-    console.log('Auth header present:', !!authHeader);
+    logger.info('Auth header present: ' + !!authHeader);
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1];
