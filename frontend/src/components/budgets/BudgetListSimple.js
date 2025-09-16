@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
-// Test importing the common components one by one
-import { PageHeader, DataTable } from '../common';
+// TEMPORARILY REMOVE ALL COMMON IMPORTS TO TEST
+// import { PageHeader, DataTable } from '../common';
 // TEMPORARILY REMOVE budgetService import to test
 // import { budgetService } from '../../services/api';
 
@@ -68,36 +68,36 @@ const BudgetListSimple = () => {
   
   return (
     <Box sx={{ p: 3 }}>
-      <PageHeader 
-        title="Marketing Budget"
-        subtitle="Manage your trade spend budgets"
-        action={
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => console.log('Add budget clicked')}
-          >
-            Add Budget
-          </Button>
-        }
-      />
+      <Typography variant="h4" gutterBottom>
+        Budget Management (Simple Test)
+      </Typography>
       
-      <Paper sx={{ p: 2, mt: 2 }}>
-        <Typography variant="body1" gutterBottom>
-          Testing API call and DataTable component:
+      <Typography variant="body1" gutterBottom>
+        Testing without PageHeader and DataTable components
+      </Typography>
+      
+      {error && (
+        <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+          Error: {error}
         </Typography>
-        {error && (
-          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
-            API Error: {error} (showing fallback data)
+      )}
+      
+      {loading ? (
+        <Typography>Loading...</Typography>
+      ) : (
+        <Paper sx={{ p: 2, mt: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Budgets ({budgets.length})
           </Typography>
-        )}
-        <DataTable
-          columns={columns}
-          data={budgets}
-          title="Budgets from API"
-          loading={loading}
-        />
-      </Paper>
+          {budgets.map(budget => (
+            <Box key={budget.id} sx={{ mb: 1, p: 1, border: '1px solid #ccc' }}>
+              <Typography variant="body1">{budget.name}</Typography>
+              <Typography variant="body2">Amount: ${budget.amount.toLocaleString()}</Typography>
+              <Typography variant="body2">Status: {budget.status}</Typography>
+            </Box>
+          ))}
+        </Paper>
+      )}
     </Box>
   );
 };
