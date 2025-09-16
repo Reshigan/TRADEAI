@@ -46,6 +46,7 @@ const Login = ({ onLogin }) => {
 
       if (data.token) {
         localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('isAuthenticated', 'true');
         onLogin(data.user);
       } else {
         setError('Invalid credentials. Use seeded user accounts.');
