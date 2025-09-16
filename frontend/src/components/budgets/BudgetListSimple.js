@@ -15,27 +15,57 @@ const BudgetListSimple = () => {
   
   useEffect(() => {
     const fetchBudgets = async () => {
+      console.log('Starting fetchBudgets...');
+      
       try {
-        console.log('Fetching budgets...');
+        console.log('Setting loading to true...');
         setLoading(true);
+        
+        console.log('About to call budgetService.getAll()...');
         const response = await budgetService.getAll();
-        console.log('Budgets response:', response);
-        setBudgets(response.data || []);
+        console.log('budgetService.getAll() completed. Response:', response);
+        
+        // budgetService.getAll() already returns response.data, so we don't need .data again
+        const budgetsData = Array.isArray(response) ? response : (response.data || response.budgets || []);
+        console.log('Processed budgets data:', budgetsData);
+        
+        console.log('Setting budgets state...');
+        setBudgets(budgetsData);
         setError(null);
+        console.log('Successfully set budgets state');
+        
       } catch (err) {
-        console.error('Error fetching budgets:', err);
-        setError(err.message);
+        console.error('Error in fetchBudgets:', err);
+        console.error('Error details:', {
+          message: err.message,
+          stack: err.stack,
+          response: err.response
+        });
+        
+        setError(err.message || 'Failed to fetch budgets');
+        
         // Fallback to test data
+        console.log('Setting fallback data...');
         setBudgets([
-          { id: 1, name: 'Test Budget 1', amount: 10000, status: 'active' },
-          { id: 2, name: 'Test Budget 2', amount: 15000, status: 'pending' }
+          { id: 1, name: 'Test Budget 1 (Fallback)', amount: 10000, status: 'active' },
+          { id: 2, name: 'Test Budget 2 (Fallback)', amount: 15000, status: 'pending' }
         ]);
+        
       } finally {
+        console.log('Setting loading to false...');
         setLoading(false);
+        console.log('fetchBudgets completed');
       }
     };
     
-    fetchBudgets();
+    // Wrap the entire effect in try-catch
+    try {
+      fetchBudgets();
+    } catch (err) {
+      console.error('Error in useEffect:', err);
+      setError('Critical error in component initialization');
+      setLoading(false);
+    }
   }, []);
   
   const columns = [
