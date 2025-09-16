@@ -99,11 +99,12 @@ function App() {
           } 
         />
         <Route 
-          path="/test-budgets" 
+          path="/budgets" 
           element={
-            <div style={{ padding: '20px', backgroundColor: 'red', color: 'white', fontSize: '24px' }}>
-              <h1>DIRECT ROUTE TEST</h1>
-              <p>This should always show regardless of authentication</p>
+            <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', fontSize: '24px' }}>
+              <h1>BUDGETS ROUTE WORKING!</h1>
+              <p>Cache busted - this should show now</p>
+              <p>Timestamp: {new Date().toISOString()}</p>
             </div>
           } 
         />
