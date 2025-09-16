@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Container, 
   Paper, 
@@ -15,6 +16,7 @@ import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { authService } from '../services/api';
 
 const Login = ({ onLogin }) => {
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
@@ -50,7 +52,10 @@ const Login = ({ onLogin }) => {
         localStorage.setItem('isAuthenticated', 'true');
         console.log('About to call onLogin with user:', data.user);
         onLogin(data.user);
-        console.log('onLogin called successfully');
+        console.log('onLogin called successfully, now navigating to dashboard...');
+        // Force navigation to dashboard
+        navigate('/dashboard', { replace: true });
+        console.log('Navigation to dashboard initiated');
       } else {
         setError('Invalid credentials. Use seeded user accounts.');
       }
