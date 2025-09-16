@@ -1,8 +1,4 @@
-// TEMPORARILY COMMENTED OUT FOR DEBUGGING
-// const Company = require('../models/Company'); // Explicitly load Company model first
-// const User = require('../models/User');
-// const User = require('../models/UserMinimal'); // TEMPORARY MINIMAL USER MODEL FOR DEBUGGING
-const TestUser = require('../models/TestUser'); // COMPLETELY NEW TEST MODEL
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const config = require('../config');
@@ -138,24 +134,49 @@ exports.quickLogin = asyncHandler(async (req, res, next) => {
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'Please provide email and password'
+    });
+  }
+  
   try {
-    // Find user by email
-    const user = await TestUser.findOne({ email: email });
+    logger.info(`Login attempt for email: ${email}`);
     
-    if (!user) {
+    // Find user by email and include password field
+    const user = await User.findOne({ email: email.toLowerCase() });
+    
+    logger.info(`User found: ${user ? 'Yes' : 'No'}`);
+    if (user) {
+      logger.info(`User active: ${user.isActive}`);
+      logger.info(`User has password: ${user.password ? 'Yes' : 'No'}`);
+    }
+    
+    if (!user || !user.isActive) {
+      logger.warn(`Authentication failed for ${email}: User not found or inactive`);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
     
-    // For now, simple password comparison (in production, use bcrypt)
-    if (user.password !== password) {
+    // Check password using bcrypt
+    logger.info('Checking password...');
+    const isPasswordCorrect = await user.comparePassword(password);
+    logger.info(`Password correct: ${isPasswordCorrect}`);
+    
+    if (!isPasswordCorrect) {
+      logger.warn(`Authentication failed for ${email}: Invalid password`);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
+    
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save({ validateBeforeSave: false });
     
     // Generate JWT token
     const token = jwt.sign(
@@ -168,19 +189,29 @@ exports.login = asyncHandler(async (req, res, next) => {
       { expiresIn: config.jwt.expiresIn }
     );
     
+    // Cache user data if cache service is available
+    try {
+      if (cacheService && cacheService.cacheUser) {
+        await cacheService.cacheUser(user._id.toString(), user);
+      }
+    } catch (cacheError) {
+      logger.warn('Failed to cache user data:', cacheError);
+    }
+    
+    // Log successful login
+    logger.info(`User logged in: ${user.email} (${user.role})`);
+    
     // Return success with token
     return res.json({
       success: true,
       message: 'Login successful',
-      data: {
-        user: {
-          id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role
-        },
-        token: token
+      token: token,
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
       }
     });
     

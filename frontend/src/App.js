@@ -202,12 +202,12 @@ function App() {
         <Route 
           path="/settings" 
           element={
-            isAuthenticated ? (
+            isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
               <Layout user={user} onLogout={handleLogout}>
                 <SettingsPage />
               </Layout>
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
             )
           } 
         />
@@ -286,48 +286,48 @@ function App() {
         <Route 
           path="/companies" 
           element={
-            isAuthenticated ? (
+            isAuthenticated && user?.role === 'super_admin' ? (
               <Layout user={user} onLogout={handleLogout}>
                 <CompanyList />
               </Layout>
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
             )
           } 
         />
         <Route 
           path="/companies/:id" 
           element={
-            isAuthenticated ? (
+            isAuthenticated && user?.role === 'super_admin' ? (
               <Layout user={user} onLogout={handleLogout}>
                 <CompanyDetail />
               </Layout>
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
             )
           } 
         />
         <Route 
           path="/companies/:id/edit" 
           element={
-            isAuthenticated ? (
+            isAuthenticated && user?.role === 'super_admin' ? (
               <Layout user={user} onLogout={handleLogout}>
                 <CompanyForm />
               </Layout>
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
             )
           } 
         />
         <Route 
           path="/companies/new" 
           element={
-            isAuthenticated ? (
+            isAuthenticated && user?.role === 'super_admin' ? (
               <Layout user={user} onLogout={handleLogout}>
                 <CompanyForm />
               </Layout>
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
             )
           } 
         />
