@@ -34,8 +34,6 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     
-    // Add alert for debugging
-    alert('Form submitted! Email: ' + credentials.email);
     console.log('Login form submitted with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
     
     // Simple validation
@@ -59,23 +57,14 @@ const Login = ({ onLogin }) => {
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('isAuthenticated', 'true');
         
-        // Debug: Check what's actually stored in localStorage
-        console.log('Token stored:', localStorage.getItem('authToken'));
-        console.log('isAuthenticated stored:', localStorage.getItem('isAuthenticated'));
-        console.log('User stored:', localStorage.getItem('user'));
-        
         console.log('About to call onLogin with user:', data.user);
         onLogin(data.user);
         console.log('onLogin called successfully, now navigating to dashboard...');
         
-        // Add a small delay to ensure localStorage is properly set
-        setTimeout(() => {
-          console.log('Delayed navigation to dashboard...');
-          navigate('/dashboard', { replace: true });
-          console.log('Navigation to dashboard initiated');
-        }, 100);
+        // Navigate to dashboard
+        navigate('/dashboard', { replace: true });
       } else {
-        setError('Invalid credentials. Use seeded user accounts.');
+        setError('Invalid credentials. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -382,7 +371,7 @@ const Login = ({ onLogin }) => {
 
               <Box sx={{ textAlign: 'center', fontSize: '0.85rem' }}>
                 <Typography variant="body2" sx={{ color: 'var(--text-muted)', mb: 1 }}>
-                  <strong style={{ color: 'var(--primary-blue)' }}>ADMIN:</strong> admin@tradeai.com / password123
+                  <strong style={{ color: 'var(--primary-blue)' }}>ADMIN:</strong> admin@tradeai.com / admin123
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'var(--text-muted)', mb: 1 }}>
                   <strong style={{ color: 'var(--accent-gold)' }}>MANAGER:</strong> manager@tradeai.com / password123
