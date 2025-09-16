@@ -49,7 +49,7 @@ cd TRADEAI
 ```
 
 **Test Accounts Available:**
-- **Admin**: admin@testcompany.demo / admin123
+- **Admin**: admin@tradeai.com / admin123
 - **Manager**: manager@testcompany.demo / manager123  
 - **KAM**: kam@testcompany.demo / kam123
 - **Sales**: sales@testcompany.demo / sales123
@@ -270,7 +270,7 @@ The system includes demo users for testing:
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@tradeai.com | password123 |
+| Admin | admin@tradeai.com | admin123 |
 | Manager | manager@tradeai.com | password123 |
 | KAM | kam@tradeai.com | password123 |
 
