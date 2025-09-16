@@ -12,6 +12,7 @@ import {
   Divider
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
+import { authService } from '../services/api';
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
@@ -32,30 +33,25 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      // Production authentication with seeded users
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: credentials.email,
-          password: credentials.password
-        }),
+      // Use authService for consistent API handling
+      const data = await authService.login({
+        email: credentials.email,
+        password: credentials.password
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
+      if (data.token) {
         localStorage.setItem('user', JSON.stringify(data.user));
         onLogin(data.user);
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Invalid credentials. Use seeded user accounts.');
+        setError('Invalid credentials. Use seeded user accounts.');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Login failed. Please try again.');
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
     }
   };
 
