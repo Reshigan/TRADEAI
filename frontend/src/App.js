@@ -99,7 +99,7 @@ function App() {
           } 
         />
         <Route 
-          path="/budgets" 
+          path="/test-budgets" 
           element={
             <div style={{ padding: '20px', backgroundColor: 'red', color: 'white', fontSize: '24px' }}>
               <h1>DIRECT ROUTE TEST</h1>
