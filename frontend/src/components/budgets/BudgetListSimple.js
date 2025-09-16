@@ -21,35 +21,26 @@ const BudgetListSimple = () => {
         console.log('Setting loading to true...');
         setLoading(true);
         
-        console.log('About to call budgetService.getAll()...');
-        const response = await budgetService.getAll();
-        console.log('budgetService.getAll() completed. Response:', response);
+        // TEMPORARILY DISABLE API CALL TO TEST
+        console.log('SKIPPING API CALL - Testing without budgetService.getAll()');
         
-        // budgetService.getAll() already returns response.data, so we don't need .data again
-        const budgetsData = Array.isArray(response) ? response : (response.data || response.budgets || []);
-        console.log('Processed budgets data:', budgetsData);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        console.log('Setting budgets state...');
-        setBudgets(budgetsData);
+        // Set test data directly
+        const testData = [
+          { id: 1, name: 'Test Budget 1 (No API)', amount: 10000, status: 'active' },
+          { id: 2, name: 'Test Budget 2 (No API)', amount: 15000, status: 'pending' }
+        ];
+        
+        console.log('Setting test budgets data...');
+        setBudgets(testData);
         setError(null);
         console.log('Successfully set budgets state');
         
       } catch (err) {
         console.error('Error in fetchBudgets:', err);
-        console.error('Error details:', {
-          message: err.message,
-          stack: err.stack,
-          response: err.response
-        });
-        
         setError(err.message || 'Failed to fetch budgets');
-        
-        // Fallback to test data
-        console.log('Setting fallback data...');
-        setBudgets([
-          { id: 1, name: 'Test Budget 1 (Fallback)', amount: 10000, status: 'active' },
-          { id: 2, name: 'Test Budget 2 (Fallback)', amount: 15000, status: 'pending' }
-        ]);
         
       } finally {
         console.log('Setting loading to false...');
