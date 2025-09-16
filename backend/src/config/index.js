@@ -189,7 +189,8 @@ module.exports = {
   jobs: {
     redis: {
       host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379
+      port: process.env.REDIS_PORT || 6379,
+      password: process.env.REDIS_PASSWORD
     },
     defaultJobOptions: {
       removeOnComplete: true,

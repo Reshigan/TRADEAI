@@ -11,60 +11,29 @@ class CacheService {
   
   async initialize() {
     try {
+      // Redis v4 client configuration
       this.client = redis.createClient({
-        host: config.redis.host,
-        port: config.redis.port,
+        socket: {
+          host: config.redis.host,
+          port: config.redis.port,
+          reconnectStrategy: (retries) => {
+            if (retries > 10) {
+              logger.error('Redis max retry attempts reached');
+              return false;
+            }
+            return Math.min(retries * 100, 3000);
+          }
+        },
         password: config.redis.password,
-        db: config.redis.db,
-        retry_strategy: (options) => {
-          if (options.error && options.error.code === 'ECONNREFUSED') {
-            logger.error('Redis connection refused');
-            return new Error('The server refused the connection');
-          }
-          if (options.total_retry_time > 1000 * 60 * 60) {
-            logger.error('Redis retry time exhausted');
-            return new Error('Retry time exhausted');
-          }
-          if (options.attempt > 10) {
-            logger.error('Redis max retry attempts reached');
-            return undefined;
-          }
-          return Math.min(options.attempt * 100, 3000);
-        }
-      });
-      
-      // Wait for client to be ready before promisifying methods
-      await new Promise((resolve, reject) => {
-        this.client.on('ready', () => {
-          try {
-            // Promisify Redis methods
-            this.getAsync = promisify(this.client.get).bind(this.client);
-            this.setAsync = promisify(this.client.set).bind(this.client);
-            this.delAsync = promisify(this.client.del).bind(this.client);
-            this.existsAsync = promisify(this.client.exists).bind(this.client);
-            this.keysAsync = promisify(this.client.keys).bind(this.client);
-            this.ttlAsync = promisify(this.client.ttl).bind(this.client);
-            this.mgetAsync = promisify(this.client.mget).bind(this.client);
-            this.msetAsync = promisify(this.client.mset).bind(this.client);
-            this.hgetAsync = promisify(this.client.hget).bind(this.client);
-            this.hsetAsync = promisify(this.client.hset).bind(this.client);
-            this.hgetallAsync = promisify(this.client.hgetall).bind(this.client);
-            this.incrAsync = promisify(this.client.incr).bind(this.client);
-            this.expireAsync = promisify(this.client.expire).bind(this.client);
-            resolve();
-          } catch (error) {
-            reject(error);
-          }
-        });
-        
-        this.client.on('error', reject);
-        
-        // Timeout after 10 seconds
-        setTimeout(() => reject(new Error('Redis connection timeout')), 10000);
+        database: config.redis.db || 0
       });
       
       // Event handlers
       this.client.on('connect', () => {
+        logger.info('Redis connecting...');
+      });
+      
+      this.client.on('ready', () => {
         this.isConnected = true;
         logger.info('Redis connected successfully');
       });
@@ -78,6 +47,9 @@ class CacheService {
         this.isConnected = false;
         logger.info('Redis connection closed');
       });
+      
+      // Connect to Redis
+      await this.client.connect();
       
     } catch (error) {
       logger.error('Failed to initialize Redis:', error);
@@ -96,7 +68,7 @@ class CacheService {
     if (!this.isConnected) return null;
     
     try {
-      const data = await this.getAsync(key);
+      const data = await this.client.get(key);
       return data ? JSON.parse(data) : null;
     } catch (error) {
       logger.error('Cache get error:', error);
@@ -112,7 +84,7 @@ class CacheService {
       const serialized = JSON.stringify(value);
       const expiry = ttl || config.redis.ttl.default;
       
-      await this.setAsync(key, serialized, 'EX', expiry);
+      await this.client.setEx(key, expiry, serialized);
       return true;
     } catch (error) {
       logger.error('Cache set error:', error);
@@ -125,7 +97,7 @@ class CacheService {
     if (!this.isConnected) return false;
     
     try {
-      await this.delAsync(key);
+      await this.client.del(key);
       return true;
     } catch (error) {
       logger.error('Cache delete error:', error);
@@ -138,9 +110,9 @@ class CacheService {
     if (!this.isConnected) return false;
     
     try {
-      const keys = await this.keysAsync(pattern);
+      const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
-        await this.delAsync(...keys);
+        await this.client.del(keys);
       }
       return true;
     } catch (error) {
@@ -154,7 +126,7 @@ class CacheService {
     if (!this.isConnected) return false;
     
     try {
-      const exists = await this.existsAsync(key);
+      const exists = await this.client.exists(key);
       return exists === 1;
     } catch (error) {
       logger.error('Cache exists error:', error);
@@ -167,7 +139,7 @@ class CacheService {
     if (!this.isConnected) return -1;
     
     try {
-      return await this.ttlAsync(key);
+      return await this.client.ttl(key);
     } catch (error) {
       logger.error('Cache TTL error:', error);
       return -1;
