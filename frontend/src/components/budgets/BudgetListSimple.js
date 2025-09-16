@@ -4,15 +4,39 @@ import { Add as AddIcon } from '@mui/icons-material';
 
 // Test importing the common components one by one
 import { PageHeader, DataTable } from '../common';
+import { budgetService } from '../../services/api';
 
 const BudgetListSimple = () => {
   console.log('BudgetListSimple component rendering...');
   
-  const [budgets, setBudgets] = useState([
-    { id: 1, name: 'Test Budget 1', amount: 10000, status: 'active' },
-    { id: 2, name: 'Test Budget 2', amount: 15000, status: 'pending' }
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [budgets, setBudgets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    const fetchBudgets = async () => {
+      try {
+        console.log('Fetching budgets...');
+        setLoading(true);
+        const response = await budgetService.getAll();
+        console.log('Budgets response:', response);
+        setBudgets(response.data || []);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching budgets:', err);
+        setError(err.message);
+        // Fallback to test data
+        setBudgets([
+          { id: 1, name: 'Test Budget 1', amount: 10000, status: 'active' },
+          { id: 2, name: 'Test Budget 2', amount: 15000, status: 'pending' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchBudgets();
+  }, []);
   
   const columns = [
     { id: 'name', label: 'Budget Name' },
@@ -38,12 +62,17 @@ const BudgetListSimple = () => {
       
       <Paper sx={{ p: 2, mt: 2 }}>
         <Typography variant="body1" gutterBottom>
-          Testing DataTable component:
+          Testing API call and DataTable component:
         </Typography>
+        {error && (
+          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+            API Error: {error} (showing fallback data)
+          </Typography>
+        )}
         <DataTable
           columns={columns}
           data={budgets}
-          title="Test Budgets"
+          title="Budgets from API"
           loading={loading}
         />
       </Paper>
