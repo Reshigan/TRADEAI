@@ -42,7 +42,8 @@ import {
   Assignment as TradingTermsIcon
 } from '@mui/icons-material';
 
-import { AIAssistant, Walkthrough } from './common';
+// TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
+// import { AIAssistant, Walkthrough } from './common';
 
 const drawerWidth = 240;
 
@@ -357,16 +358,15 @@ const Layout = ({ children, user, onLogout }) => {
         {children}
       </Box>
       
-      {/* AI Assistant */}
-      <AIAssistant context={walkthroughFeature || location.pathname.split('/')[1] || 'dashboard'} />
+      {/* TEMPORARILY DISABLE AI ASSISTANT AND WALKTHROUGH */}
+      {/* <AIAssistant context={walkthroughFeature || location.pathname.split('/')[1] || 'dashboard'} /> */}
       
-      {/* Walkthrough */}
-      <Walkthrough 
+      {/* <Walkthrough 
         open={walkthroughOpen} 
         onClose={() => setWalkthroughOpen(false)} 
         feature={walkthroughFeature}
         showTips={true}
-      />
+      /> */}
     </Box>
   );
 };
