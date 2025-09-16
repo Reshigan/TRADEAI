@@ -78,7 +78,64 @@ fi
 
 # Install psutil for Python
 print_status "Installing Python dependencies..."
-pip3 install psutil
+# Handle externally managed Python environments (Ubuntu 24.04+)
+if pip3 install psutil 2>/dev/null; then
+    print_status "Python packages installed via pip"
+elif apt-get install -y python3-psutil 2>/dev/null; then
+    print_status "Python packages installed via apt"
+elif pip3 install --break-system-packages psutil 2>/dev/null; then
+    print_warning "Python packages installed with --break-system-packages flag"
+else
+    print_warning "Could not install psutil. System info API may have limited functionality"
+    # Create a fallback version that doesn't require psutil
+    cat > /tmp/psutil_fallback.py << 'EOFFALLBACK'
+# Fallback psutil-like functionality
+import os
+import subprocess
+
+class VirtualMemory:
+    def __init__(self):
+        try:
+            with open('/proc/meminfo', 'r') as f:
+                meminfo = f.read()
+            total = int([line for line in meminfo.split('\n') if 'MemTotal' in line][0].split()[1]) * 1024
+            available = int([line for line in meminfo.split('\n') if 'MemAvailable' in line][0].split()[1]) * 1024
+            self.total = total
+            self.percent = ((total - available) / total) * 100
+        except:
+            self.total = 0
+            self.percent = 0
+
+class DiskUsage:
+    def __init__(self, path):
+        try:
+            stat = os.statvfs(path)
+            self.total = stat.f_frsize * stat.f_blocks
+            self.used = stat.f_frsize * (stat.f_blocks - stat.f_available)
+        except:
+            self.total = 0
+            self.used = 0
+
+def cpu_percent(interval=1):
+    try:
+        with open('/proc/loadavg', 'r') as f:
+            load = float(f.read().split()[0])
+        return min(load * 25, 100)  # Rough approximation
+    except:
+        return 0
+
+def virtual_memory():
+    return VirtualMemory()
+
+def disk_usage(path):
+    return DiskUsage(path)
+EOFFALLBACK
+    
+    # Install the fallback
+    cp /tmp/psutil_fallback.py /usr/local/lib/python3.*/dist-packages/psutil.py 2>/dev/null || \
+    cp /tmp/psutil_fallback.py /usr/lib/python3/dist-packages/psutil.py 2>/dev/null || \
+    print_warning "Could not install psutil fallback"
+fi
 
 # Install ttyd (web terminal)
 if ! command -v ttyd &> /dev/null; then
@@ -169,10 +226,18 @@ cat > $WEB_DIR/system-info.py << 'EOF'
 import json
 import subprocess
 import socket
-import psutil
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
+import os
+
+# Try to import psutil, use fallback if not available
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+    print("psutil not available, using fallback methods")
 
 class SystemInfoHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -211,25 +276,84 @@ class SystemInfoHandler(BaseHTTPRequestHandler):
                 public_ip = "Unable to detect"
             
             # Get system stats
-            cpu_percent = psutil.cpu_percent(interval=1)
-            memory = psutil.virtual_memory()
-            disk = psutil.disk_usage('/')
-            
-            return {
-                "timestamp": datetime.now().isoformat(),
-                "hostname": hostname,
-                "local_ip": local_ip,
-                "public_ip": public_ip,
-                "system": {
+            if PSUTIL_AVAILABLE:
+                cpu_percent = psutil.cpu_percent(interval=1)
+                memory = psutil.virtual_memory()
+                disk = psutil.disk_usage('/')
+                
+                system_info = {
                     "cpu_percent": cpu_percent,
                     "memory_percent": memory.percent,
                     "memory_total_gb": round(memory.total / (1024**3), 2),
                     "disk_percent": round((disk.used / disk.total) * 100, 2),
                     "disk_total_gb": round(disk.total / (1024**3), 2)
                 }
+            else:
+                # Fallback methods without psutil
+                system_info = self.get_system_info_fallback()
+            
+            return {
+                "timestamp": datetime.now().isoformat(),
+                "hostname": hostname,
+                "local_ip": local_ip,
+                "public_ip": public_ip,
+                "system": system_info,
+                "psutil_available": PSUTIL_AVAILABLE
             }
         except Exception as e:
             return {"error": str(e)}
+    
+    def get_system_info_fallback(self):
+        """Fallback system info without psutil"""
+        try:
+            # CPU info from /proc/loadavg
+            try:
+                with open('/proc/loadavg', 'r') as f:
+                    load = float(f.read().split()[0])
+                cpu_percent = min(load * 25, 100)  # Rough approximation
+            except:
+                cpu_percent = 0
+            
+            # Memory info from /proc/meminfo
+            try:
+                with open('/proc/meminfo', 'r') as f:
+                    meminfo = f.read()
+                total_kb = int([line for line in meminfo.split('\n') if 'MemTotal' in line][0].split()[1])
+                available_kb = int([line for line in meminfo.split('\n') if 'MemAvailable' in line][0].split()[1])
+                total_bytes = total_kb * 1024
+                memory_percent = ((total_kb - available_kb) / total_kb) * 100
+                memory_total_gb = round(total_bytes / (1024**3), 2)
+            except:
+                memory_percent = 0
+                memory_total_gb = 0
+            
+            # Disk info from statvfs
+            try:
+                stat = os.statvfs('/')
+                total = stat.f_frsize * stat.f_blocks
+                used = stat.f_frsize * (stat.f_blocks - stat.f_available)
+                disk_percent = round((used / total) * 100, 2)
+                disk_total_gb = round(total / (1024**3), 2)
+            except:
+                disk_percent = 0
+                disk_total_gb = 0
+            
+            return {
+                "cpu_percent": cpu_percent,
+                "memory_percent": round(memory_percent, 2),
+                "memory_total_gb": memory_total_gb,
+                "disk_percent": disk_percent,
+                "disk_total_gb": disk_total_gb
+            }
+        except Exception as e:
+            return {
+                "cpu_percent": 0,
+                "memory_percent": 0,
+                "memory_total_gb": 0,
+                "disk_percent": 0,
+                "disk_total_gb": 0,
+                "fallback_error": str(e)
+            }
     
     def get_service_status(self):
         services = {}
