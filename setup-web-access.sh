@@ -33,14 +33,92 @@ print_header "1. Installing Dependencies"
 # Update system
 apt-get update -y
 
-# Install required packages
-apt-get install -y curl wget git nodejs npm python3 python3-pip
+# Install basic packages first
+apt-get install -y curl wget git python3 python3-pip
+
+# Handle nodejs/npm conflict
+print_status "Resolving nodejs/npm dependencies..."
+if dpkg -l | grep -q nodejs; then
+    print_warning "Existing nodejs installation detected. Checking for conflicts..."
+    
+    # Try to install npm, if it fails due to conflicts, fix it
+    if ! apt-get install -y npm 2>/dev/null; then
+        print_warning "npm installation failed due to conflicts. Fixing..."
+        
+        # Remove conflicting packages
+        apt-get remove --purge nodejs npm -y 2>/dev/null || true
+        apt-get autoremove -y
+        
+        # Install Node.js using NodeSource repository
+        print_status "Installing Node.js from NodeSource repository..."
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+        apt-get install -y nodejs
+    fi
+else
+    # Fresh installation
+    print_status "Installing nodejs and npm..."
+    apt-get install -y nodejs npm || {
+        print_warning "Standard installation failed. Using NodeSource repository..."
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+        apt-get install -y nodejs
+    }
+fi
+
+# Verify Node.js installation
+if command -v node &> /dev/null; then
+    print_status "Node.js installed: $(node --version)"
+    if command -v npm &> /dev/null; then
+        print_status "npm installed: $(npm --version)"
+    else
+        print_warning "npm not available, but Node.js is working"
+    fi
+else
+    print_warning "Node.js installation may have issues, but continuing..."
+fi
+
+# Install psutil for Python
+print_status "Installing Python dependencies..."
+pip3 install psutil
 
 # Install ttyd (web terminal)
 if ! command -v ttyd &> /dev/null; then
     print_status "Installing ttyd (web terminal)..."
-    wget -O /usr/local/bin/ttyd https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64
-    chmod +x /usr/local/bin/ttyd
+    
+    # Try different architectures
+    ARCH=$(uname -m)
+    case $ARCH in
+        x86_64)
+            TTYD_URL="https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64"
+            ;;
+        aarch64|arm64)
+            TTYD_URL="https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.aarch64"
+            ;;
+        armv7l)
+            TTYD_URL="https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.armhf"
+            ;;
+        *)
+            print_warning "Unsupported architecture: $ARCH. Trying x86_64 binary..."
+            TTYD_URL="https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.x86_64"
+            ;;
+    esac
+    
+    if wget -O /usr/local/bin/ttyd "$TTYD_URL"; then
+        chmod +x /usr/local/bin/ttyd
+        print_status "ttyd installed successfully"
+    else
+        print_error "Failed to download ttyd. Trying alternative installation..."
+        
+        # Alternative: compile from source or use package manager
+        if command -v snap &> /dev/null; then
+            print_status "Trying snap installation..."
+            snap install ttyd --classic || print_warning "Snap installation failed"
+        elif apt-cache search ttyd | grep -q ttyd; then
+            print_status "Trying apt installation..."
+            apt-get install -y ttyd || print_warning "Apt installation failed"
+        else
+            print_error "Could not install ttyd. Web terminal may not work."
+        fi
+    fi
 fi
 
 print_header "2. Creating Web Access User"
@@ -461,27 +539,63 @@ WantedBy=multi-user.target
 EOF
 
 # Enable and start services
+print_status "Setting up systemd services..."
 systemctl daemon-reload
-systemctl enable tradeai-web-terminal.service
-systemctl enable tradeai-system-info.service
-systemctl enable tradeai-dashboard.service
 
-systemctl start tradeai-web-terminal.service
-systemctl start tradeai-system-info.service
-systemctl start tradeai-dashboard.service
+print_status "Enabling services..."
+systemctl enable tradeai-web-terminal.service || print_warning "Failed to enable web terminal service"
+systemctl enable tradeai-system-info.service || print_warning "Failed to enable system info service"
+
+print_status "Starting services..."
+systemctl start tradeai-web-terminal.service || print_warning "Failed to start web terminal service"
+systemctl start tradeai-system-info.service || print_warning "Failed to start system info service"
+
+# Wait a moment for services to start
+sleep 3
+
+# Check service status
+print_status "Checking service status..."
+if systemctl is-active --quiet tradeai-web-terminal.service; then
+    print_status "✅ Web Terminal service is running"
+else
+    print_warning "❌ Web Terminal service failed to start"
+    systemctl status tradeai-web-terminal.service --no-pager -l || true
+fi
+
+if systemctl is-active --quiet tradeai-system-info.service; then
+    print_status "✅ System Info API service is running"
+else
+    print_warning "❌ System Info API service failed to start"
+    systemctl status tradeai-system-info.service --no-pager -l || true
+fi
 
 print_header "7. Configuring Firewall"
 
 # Open required ports
+print_status "Configuring firewall rules..."
 if command -v ufw &> /dev/null; then
-    ufw allow 8889  # Dashboard
-    ufw allow 8888  # System Info API
-    ufw allow 9999  # Web Terminal
+    print_status "Using UFW firewall..."
+    ufw --force enable 2>/dev/null || true
+    ufw allow 8888/tcp comment "TRADEAI System Info API" || print_warning "Failed to add UFW rule for port 8888"
+    ufw allow 9999/tcp comment "TRADEAI Web Terminal" || print_warning "Failed to add UFW rule for port 9999"
+    ufw status numbered 2>/dev/null || true
 elif command -v firewall-cmd &> /dev/null; then
-    firewall-cmd --permanent --add-port=8889/tcp
-    firewall-cmd --permanent --add-port=8888/tcp
-    firewall-cmd --permanent --add-port=9999/tcp
-    firewall-cmd --reload
+    print_status "Using firewalld..."
+    firewall-cmd --permanent --add-port=8888/tcp || print_warning "Failed to add firewalld rule for port 8888"
+    firewall-cmd --permanent --add-port=9999/tcp || print_warning "Failed to add firewalld rule for port 9999"
+    firewall-cmd --reload || print_warning "Failed to reload firewalld"
+elif command -v iptables &> /dev/null; then
+    print_status "Using iptables..."
+    iptables -A INPUT -p tcp --dport 8888 -j ACCEPT 2>/dev/null || print_warning "Failed to add iptables rule for port 8888"
+    iptables -A INPUT -p tcp --dport 9999 -j ACCEPT 2>/dev/null || print_warning "Failed to add iptables rule for port 9999"
+    # Try to save iptables rules
+    if command -v iptables-save &> /dev/null; then
+        mkdir -p /etc/iptables 2>/dev/null || true
+        iptables-save > /etc/iptables/rules.v4 2>/dev/null || print_warning "Could not save iptables rules"
+    fi
+else
+    print_warning "No firewall detected. Please ensure ports 8888 and 9999 are open manually"
+    print_warning "You may need to configure your cloud provider's security groups"
 fi
 
 print_header "8. Setting up Auto-cleanup"
@@ -513,15 +627,34 @@ cat > /etc/cron.d/tradeai-web-cleanup << EOF
 0 */24 * * * root /usr/local/bin/cleanup-tradeai-web.sh
 EOF
 
-print_header "9. Final Setup"
+print_header "9. Final Setup and Testing"
 
 # Get system information
 HOSTNAME=$(hostname)
 PUBLIC_IP=$(curl -s ifconfig.me || curl -s ipinfo.io/ip || echo "Unable to detect")
 
-# Update dashboard with credentials
-sed -i "s/Loading.../tradeai_web/g" $WEB_DIR/dashboard.html
-sed -i "s/Loading.../$WEB_PASSWORD/g" $WEB_DIR/dashboard.html
+# Test connectivity
+print_status "Testing service connectivity..."
+TERMINAL_STATUS="❌ Not accessible"
+API_STATUS="❌ Not accessible"
+
+# Test web terminal port
+if timeout 5 bash -c "</dev/tcp/localhost/9999" 2>/dev/null; then
+    TERMINAL_STATUS="✅ Accessible"
+else
+    print_warning "Web terminal port 9999 is not accessible"
+fi
+
+# Test system info API port
+if timeout 5 bash -c "</dev/tcp/localhost/8888" 2>/dev/null; then
+    API_STATUS="✅ Accessible"
+else
+    print_warning "System info API port 8888 is not accessible"
+fi
+
+print_status "Service connectivity test results:"
+print_status "  Web Terminal (9999): $TERMINAL_STATUS"
+print_status "  System API (8888): $API_STATUS"
 
 # Create connection info file
 cat > /tmp/tradeai_web_access.txt << EOF
@@ -530,7 +663,6 @@ TRADEAI Web Access Information
 
 Server: $HOSTNAME ($PUBLIC_IP)
 
-Web Dashboard: http://$PUBLIC_IP:8889/dashboard.html
 Web Terminal: http://$PUBLIC_IP:9999
 System API: http://$PUBLIC_IP:8888
 
@@ -538,15 +670,20 @@ Web Terminal Credentials:
 Username: $WEB_USER
 Password: $WEB_PASSWORD
 
-Services:
-- Dashboard: Port 8889
-- Terminal: Port 9999  
-- System API: Port 8888
+Service Status:
+- Web Terminal (9999): $TERMINAL_STATUS
+- System API (8888): $API_STATUS
 
 Auto-cleanup: 24 hours
 Manual cleanup: sudo /usr/local/bin/cleanup-tradeai-web.sh
 
 Generated: $(date)
+
+Troubleshooting:
+- If services are not accessible, check firewall settings
+- For cloud servers, ensure security groups allow ports 8888 and 9999
+- Check service logs: journalctl -u tradeai-web-terminal.service -f
+- Check service logs: journalctl -u tradeai-system-info.service -f
 EOF
 
 echo ""
