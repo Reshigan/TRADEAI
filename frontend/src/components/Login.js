@@ -58,6 +58,12 @@ const Login = ({ onLogin }) => {
         console.log('Login successful, setting localStorage and calling onLogin...');
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('isAuthenticated', 'true');
+        
+        // Debug: Check what's actually stored in localStorage
+        console.log('Token stored:', localStorage.getItem('authToken'));
+        console.log('isAuthenticated stored:', localStorage.getItem('isAuthenticated'));
+        console.log('User stored:', localStorage.getItem('user'));
+        
         console.log('About to call onLogin with user:', data.user);
         onLogin(data.user);
         console.log('onLogin called successfully, now navigating to dashboard...');
