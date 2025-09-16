@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import NotFound from './components/NotFound';
 import { BudgetList, BudgetDetail } from './components/budgets';
 import BudgetListSimple from './components/budgets/BudgetListSimple';
+import TestMinimal from './components/budgets/TestMinimal';
 import { TradeSpendList, TradeSpendDetail } from './components/tradeSpends';
 import { PromotionList, PromotionDetail } from './components/promotions';
 import { CustomerList, CustomerDetail } from './components/customers';
@@ -102,7 +103,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <BudgetListSimple />
+                <TestMinimal />
               </Layout>
             ) : (
               <Navigate to="/" replace />
