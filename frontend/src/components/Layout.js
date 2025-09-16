@@ -38,26 +38,40 @@ import {
   ChevronLeft,
   Business as BusinessIcon,
   Description as ReportIcon,
-  CalendarMonth as ActivityGridIcon
+  CalendarMonth as ActivityGridIcon,
+  Assignment as TradingTermsIcon
 } from '@mui/icons-material';
 
 import { AIAssistant, Walkthrough } from './common';
 
 const drawerWidth = 240;
 
-const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Budgets', icon: <BudgetIcon />, path: '/budgets' },
-  { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
-  { text: 'Promotions', icon: <PromotionIcon />, path: '/promotions' },
-  { text: 'Activity Grid', icon: <ActivityGridIcon />, path: '/activity-grid' },
-  { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
-  { text: 'Products', icon: <ProductIcon />, path: '/products' },
-  { text: 'Companies', icon: <BusinessIcon />, path: '/companies' },
-  { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-  { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-];
+const getMenuItems = (user) => {
+  const baseItems = [
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Marketing Budget', icon: <BudgetIcon />, path: '/budgets' },
+    { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+    { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
+    { text: 'Promotions', icon: <PromotionIcon />, path: '/promotions' },
+    { text: 'Activity Grid', icon: <ActivityGridIcon />, path: '/activity-grid' },
+    { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
+    { text: 'Products', icon: <ProductIcon />, path: '/products' },
+    { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
+    { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+  ];
+
+  // Add Companies menu item only for super admin
+  if (user?.role === 'super_admin') {
+    baseItems.splice(-2, 0, { text: 'Companies', icon: <BusinessIcon />, path: '/companies' });
+  }
+
+  // Add Settings - accessible by admin and super_admin
+  if (user?.role === 'admin' || user?.role === 'super_admin') {
+    baseItems.push({ text: 'Settings', icon: <SettingsIcon />, path: '/settings' });
+  }
+
+  return baseItems;
+};
 
 const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -69,6 +83,7 @@ const Layout = ({ children, user, onLogout }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const menuItems = getMenuItems(user);
   
   // Check if walkthrough should be shown based on current path
   useEffect(() => {
@@ -121,7 +136,7 @@ const Layout = ({ children, user, onLogout }) => {
     <div>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/images/corporate-logo.svg" alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
+          <img src="/images/modern-logo-bold-new.svg" alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
           <Typography 
             variant="h6" 
             noWrap 

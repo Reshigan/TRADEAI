@@ -79,21 +79,16 @@ const createIndexes = async () => {
     logger.info('Creating database indexes...');
     
     // Import all models to ensure indexes are created
-    // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-    // require('../models/Company');
-    // require('../models/User');
-    require('../models/TestUser');
-    // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-    // require('../models/Customer');
-    // require('../models/Product');
-    // require('../models/Vendor');
-    // require('../models/Budget');
-    // require('../models/Promotion');
-    // require('../models/Campaign');
-    // require('../models/TradeSpend');
-    // require('../models/ActivityGrid');
-    // require('../models/SalesHistory');
-    // require('../models/MasterData');
+    require('../models/Company');
+    require('../models/User');
+    require('../models/Customer');
+    require('../models/Product');
+    require('../models/Budget');
+    require('../models/Promotion');
+    require('../models/TradeSpend');
+    require('../models/TradingTerm');
+    require('../models/ActivityGrid');
+    require('../models/Report');
     
     await mongoose.connection.syncIndexes();
     logger.info('Database indexes created successfully');
