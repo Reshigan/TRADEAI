@@ -101,14 +101,16 @@ function App() {
         <Route 
           path="/budgets" 
           element={
-            <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', fontSize: '24px' }}>
-              <h1>BUDGETS ROUTE WORKING!</h1>
-              <p>Cache busted - this should show now</p>
-              <p>Timestamp: {new Date().toISOString()}</p>
-            </div>
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
           } 
         />
-        {/* <Route 
+        <Route 
           path="/budgets/:id" 
           element={
             isAuthenticated ? (
@@ -119,7 +121,7 @@ function App() {
               <Navigate to="/" replace />
             )
           } 
-        /> */}
+        />
         <Route 
           path="/trade-spends" 
           element={
@@ -420,7 +422,7 @@ function App() {
             )
           } 
         />
-        <Route path="*" element={<div style={{padding: '20px', backgroundColor: 'green', color: 'white'}}>CATCH ALL ROUTE</div>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
