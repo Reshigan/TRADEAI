@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/App.css';
 
@@ -28,13 +28,40 @@ function App() {
     JSON.parse(localStorage.getItem('user')) || null
   );
 
+  // Effect to check for authentication changes
+  useEffect(() => {
+    const checkAuth = () => {
+      const authStatus = localStorage.getItem('isAuthenticated') === 'true';
+      const userData = JSON.parse(localStorage.getItem('user')) || null;
+      console.log('App.js useEffect - checking auth:', { authStatus, userData });
+      setIsAuthenticated(authStatus);
+      setUser(userData);
+    };
+
+    // Check on mount
+    checkAuth();
+
+    // Listen for storage changes (in case of multiple tabs)
+    window.addEventListener('storage', checkAuth);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
+  }, []);
+
   const handleLogin = (userData) => {
     console.log('handleLogin called with userData:', userData);
-    setIsAuthenticated(true);
-    setUser(userData);
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
+    setIsAuthenticated(true);
+    setUser(userData);
     console.log('handleLogin completed, isAuthenticated should now be true');
+    // Force a re-render by updating state after a brief delay
+    setTimeout(() => {
+      setIsAuthenticated(true);
+      setUser(userData);
+      console.log('handleLogin - forced state update completed');
+    }, 100);
   };
 
   const handleLogout = () => {
