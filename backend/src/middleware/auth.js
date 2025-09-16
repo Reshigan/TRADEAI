@@ -13,6 +13,7 @@ const securityLogger = new SecurityAuditLogger({
 
 // Authenticate JWT token
 const authenticateToken = async (req, res, next) => {
+  console.log('MIDDLEWARE ENTRY POINT');
   try {
     logger.info('=== AUTH MIDDLEWARE CALLED ===');
     logger.info('Path: ' + req.originalUrl);
@@ -165,6 +166,7 @@ const authenticateToken = async (req, res, next) => {
     req.token = token;
     next();
   } catch (error) {
+    console.log('MIDDLEWARE ERROR:', error.message);
     // Handle specific JWT errors
     if (error.name === 'JsonWebTokenError') {
       securityLogger.logAuth({ id: 'unknown' }, 'access', false, {
