@@ -52,8 +52,11 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 5000
-      MONGODB_URI: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-TradeAI_Mongo_2024!}@mongodb:27017/${MONGO_DATABASE:-tradeai}?authSource=admin
-      REDIS_URL: redis://:${REDIS_PASSWORD:-TradeAI_Redis_2024!}@redis:6379
+      MONGODB_URI: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-TradeAI_Mongo_2024!}@trade-ai-mongodb:27017/${MONGO_DATABASE:-tradeai}?authSource=admin
+      REDIS_URL: redis://:${REDIS_PASSWORD:-TradeAI_Redis_2024!}@trade-ai-redis:6379
+      REDIS_HOST: trade-ai-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-TradeAI_Redis_2024!}
       JWT_SECRET: ${JWT_SECRET:-TradeAI_JWT_Super_Secret_Key_2024_Change_This_In_Production}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-TradeAI_JWT_Refresh_Secret_2024}
@@ -125,7 +128,7 @@ services:
       - MODEL_DIR=/app/models
       - DATA_DIR=/app/data
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-TradeAI_Mongo_2024!}@mongodb:27017/${MONGO_DATABASE:-tradeai}?authSource=admin
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-TradeAI_Mongo_2024!}@trade-ai-mongodb:27017/${MONGO_DATABASE:-tradeai}?authSource=admin
     volumes:
       - ./ai-services:/app
       - ai_services_models:/app/models
