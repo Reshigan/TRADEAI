@@ -19,14 +19,19 @@
 
 ## 🎯 **One-Command AWS Deployment**
 
-Deploy to your AWS server (13.247.139.75 / tradeai.gonxt.tech) with a single command:
+Deploy to your AWS server (13.247.139.75 / tradeai.gonxt.tech) with SSH access:
 
 ```bash
-# On your AWS server (as root/sudo)
+# SSH to production server using included PEM key
+ssh -i TPMServer.pem ubuntu@13.247.139.75
+
+# Deploy with single command
 curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/deploy-aws.sh -o deploy-aws.sh
 chmod +x deploy-aws.sh
 sudo ./deploy-aws.sh
 ```
+
+**🔐 SSH Access**: TPMServer.pem key included in repository for production access
 
 **That's it!** Your TRADEAI platform will be available at:
 - **http://tradeai.gonxt.tech** (main application)
