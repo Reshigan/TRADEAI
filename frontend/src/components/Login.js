@@ -334,6 +334,7 @@ const Login = ({ onLogin }) => {
                   fullWidth
                   variant="contained"
                   className="premium-button"
+                  onClick={handleSubmit}
                   sx={{
                     py: 1.75,
                     fontSize: '1rem',
