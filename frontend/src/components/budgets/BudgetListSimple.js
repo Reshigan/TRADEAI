@@ -4,7 +4,8 @@ import { Add as AddIcon } from '@mui/icons-material';
 
 // Test importing the common components one by one
 import { PageHeader, DataTable } from '../common';
-import { budgetService } from '../../services/api';
+// TEMPORARILY REMOVE budgetService import to test
+// import { budgetService } from '../../services/api';
 
 const BudgetListSimple = () => {
   console.log('BudgetListSimple component rendering...');
