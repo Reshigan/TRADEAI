@@ -18,7 +18,7 @@ import {
   FilterList as FilterListIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
 import { budgetService } from '../../services/api';
@@ -165,7 +165,7 @@ const BudgetList = () => {
     { 
       id: 'updated_at', 
       label: 'Last Updated',
-      format: (date) => format(new Date(date), 'MMM d, yyyy')
+      format: (date) => new Date(date).toLocaleDateString()
     }
   ];
 
