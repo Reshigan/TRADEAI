@@ -101,11 +101,12 @@ function App() {
         <Route 
           path="/budgets" 
           element={
-            isAuthenticated ? (
-              <TestMinimal />
-            ) : (
-              <Navigate to="/" replace />
-            )
+            <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white' }}>
+              <h1>ROUTE DEBUG</h1>
+              <p>isAuthenticated: {isAuthenticated ? 'TRUE' : 'FALSE'}</p>
+              <p>user: {user ? JSON.stringify(user) : 'NULL'}</p>
+              {isAuthenticated ? <TestMinimal /> : <Navigate to="/" replace />}
+            </div>
           } 
         />
         <Route 
