@@ -39,12 +39,26 @@ api.interceptors.response.use(
 export const authService = {
   login: async (credentials) => {
     try {
+      console.log('authService.login called with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
+      console.log('API base URL:', api.defaults.baseURL);
+      console.log('Making POST request to /auth/login...');
+      
       const response = await api.post('/auth/login', credentials);
+      
+      console.log('Login API response:', { 
+        status: response.status, 
+        data: response.data,
+        headers: response.headers 
+      });
+      
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
       return response.data;
     } catch (error) {
+      console.error('authService.login error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
       throw error;
     }
   },

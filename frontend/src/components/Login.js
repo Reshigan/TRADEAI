@@ -26,6 +26,8 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     
+    console.log('Login form submitted with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
+    
     // Simple validation
     if (!credentials.email || !credentials.password) {
       setError('Please fill in all fields');
@@ -33,11 +35,14 @@ const Login = ({ onLogin }) => {
     }
 
     try {
+      console.log('Attempting login with authService...');
       // Use authService for consistent API handling
       const data = await authService.login({
         email: credentials.email,
         password: credentials.password
       });
+
+      console.log('Login response received:', { success: !!data.token, user: data.user });
 
       if (data.token) {
         localStorage.setItem('user', JSON.stringify(data.user));
@@ -47,6 +52,11 @@ const Login = ({ onLogin }) => {
       }
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       if (error.response && error.response.data && error.response.data.message) {
         setError(error.response.data.message);
       } else {
