@@ -4,7 +4,8 @@
 # Creates a secure web terminal for remote assistance
 # Easiest option - no SSH configuration needed
 
-set -e
+# Don't exit on errors - we handle them gracefully
+set +e
 
 echo "🌐 TRADEAI Web Access Setup"
 echo "=========================="
@@ -79,14 +80,26 @@ fi
 # Install psutil for Python
 print_status "Installing Python dependencies..."
 # Handle externally managed Python environments (Ubuntu 24.04+)
-if pip3 install psutil 2>/dev/null; then
-    print_status "Python packages installed via pip"
-elif apt-get install -y python3-psutil 2>/dev/null; then
-    print_status "Python packages installed via apt"
-elif pip3 install --break-system-packages psutil 2>/dev/null; then
-    print_warning "Python packages installed with --break-system-packages flag"
+
+# Try pip first (quietly)
+if pip3 install psutil >/dev/null 2>&1; then
+    print_status "✅ Python packages installed via pip"
+    PSUTIL_INSTALLED=true
+# Try apt package manager
+elif apt-get install -y python3-psutil >/dev/null 2>&1; then
+    print_status "✅ Python packages installed via apt (python3-psutil)"
+    PSUTIL_INSTALLED=true
+# Try pip with --break-system-packages flag
+elif pip3 install --break-system-packages psutil >/dev/null 2>&1; then
+    print_warning "⚠️  Python packages installed with --break-system-packages flag"
+    PSUTIL_INSTALLED=true
 else
-    print_warning "Could not install psutil. System info API may have limited functionality"
+    print_warning "❌ Could not install psutil via any method"
+    print_status "📦 Creating fallback system monitoring (no external dependencies)"
+    PSUTIL_INSTALLED=false
+fi
+
+if [ "$PSUTIL_INSTALLED" = "false" ]; then
     # Create a fallback version that doesn't require psutil
     cat > /tmp/psutil_fallback.py << 'EOFFALLBACK'
 # Fallback psutil-like functionality
@@ -132,10 +145,16 @@ def disk_usage(path):
 EOFFALLBACK
     
     # Install the fallback
-    cp /tmp/psutil_fallback.py /usr/local/lib/python3.*/dist-packages/psutil.py 2>/dev/null || \
-    cp /tmp/psutil_fallback.py /usr/lib/python3/dist-packages/psutil.py 2>/dev/null || \
-    print_warning "Could not install psutil fallback"
+    if cp /tmp/psutil_fallback.py /usr/local/lib/python3.*/dist-packages/psutil.py 2>/dev/null; then
+        print_status "✅ Installed psutil fallback to /usr/local/lib/"
+    elif cp /tmp/psutil_fallback.py /usr/lib/python3/dist-packages/psutil.py 2>/dev/null; then
+        print_status "✅ Installed psutil fallback to /usr/lib/"
+    else
+        print_warning "⚠️  Could not install psutil fallback, using built-in fallback in API"
+    fi
 fi
+
+print_status "🐍 Python dependency setup completed"
 
 # Install ttyd (web terminal)
 if ! command -v ttyd &> /dev/null; then
