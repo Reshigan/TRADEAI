@@ -110,7 +110,7 @@ const ProductList = () => {
   // Apply filters to products
   const filteredProducts = products.filter((product) => {
     // Apply category filter
-    if (filters.category && product.category !== filters.category) {
+    if (filters.category && product.category?.primary !== filters.category) {
       return false;
     }
     
@@ -126,7 +126,7 @@ const ProductList = () => {
         product.name.toLowerCase().includes(searchTerm) ||
         product.sku.toLowerCase().includes(searchTerm) ||
         product.description.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm)
+        (product.category?.primary || '').toLowerCase().includes(searchTerm)
       );
     }
     
@@ -134,7 +134,7 @@ const ProductList = () => {
   });
 
   // Get unique categories for filter
-  const categories = [...new Set(products.map(product => product.category))];
+  const categories = [...new Set(products.map(product => product.category?.primary).filter(Boolean))];
 
   // Table columns
   const columns = [
@@ -154,19 +154,23 @@ const ProductList = () => {
     },
     { 
       id: 'category', 
-      label: 'Category'
+      label: 'Category',
+      format: (value, row) => row.category?.primary || 'N/A'
     },
     { 
-      id: 'price', 
+      id: 'pricing', 
       label: 'Price',
       numeric: true,
-      format: (value) => `$${value.toFixed(2)}`
+      format: (value, row) => `R${row.pricing?.listPrice?.toFixed(2) || '0.00'}`
     },
     { 
-      id: 'inventory', 
-      label: 'Inventory',
-      numeric: true,
-      format: (value) => value.toLocaleString()
+      id: 'barcode', 
+      label: 'Barcode',
+      format: (value, row) => (
+        <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+          {row.barcode}
+        </Typography>
+      )
     },
     { 
       id: 'status', 
