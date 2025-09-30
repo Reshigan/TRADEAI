@@ -39,6 +39,7 @@ const reportRoutes = require('./routes/report');
 const analyticsRoutes = require('./routes/analytics');
 const integrationRoutes = require('./routes/integration');
 const mlRoutes = require('./routes/ml');
+const salesRoutes = require('./routes/sales');
 
 // Create Express app
 const app = express();
@@ -149,6 +150,7 @@ app.use('/api/reports', authenticateToken, reportRoutes);
 app.use('/api/analytics', authenticateToken, analyticsRoutes);
 app.use('/api/integration', authenticateToken, integrationRoutes);
 app.use('/api/ml', authenticateToken, mlRoutes);
+app.use('/api/sales', authenticateToken, salesRoutes);
 
 // Socket.IO middleware
 io.use(async (socket, next) => {

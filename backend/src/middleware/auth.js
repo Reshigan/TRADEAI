@@ -73,8 +73,7 @@ const authenticateToken = async (req, res, next) => {
     console.log('Auth middleware - Decoded token:', { userId: decoded.userId, _id: decoded._id });
     
     const user = await User.findById(userId)
-      .populate('companyId', 'name code currency')
-      .select('-password -twoFactorSecret');
+      .populate('companyId', 'name code currency');
     
     console.log('Auth middleware - User found:', !!user);
     if (user) {
@@ -83,6 +82,7 @@ const authenticateToken = async (req, res, next) => {
         email: user.email,
         role: user.role,
         isActive: user.isActive,
+        companyId: user.companyId,
         assignedCustomers: user.assignedCustomers
       }));
     }

@@ -109,9 +109,9 @@ const DataTable = ({
   );
 
   // Format cell value based on column definition
-  const formatCellValue = (column, value) => {
+  const formatCellValue = (column, value, row) => {
     if (column.format) {
-      return column.format(value);
+      return column.format(value, row);
     }
     
     if (value === null || value === undefined) {
@@ -211,7 +211,7 @@ const DataTable = ({
                   >
                     {columns.map((column) => (
                       <TableCell key={column.id} align={column.numeric ? 'right' : 'left'}>
-                        {formatCellValue(column, row[column.id])}
+                        {formatCellValue(column, row[column.id], row)}
                       </TableCell>
                     ))}
                   </TableRow>
