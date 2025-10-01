@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const promotionSchema = new mongoose.Schema({
-  // Promotion Identification
-
-  // Company Association - CRITICAL for multi-tenant isolation
+  // Tenant Association - CRITICAL for multi-tenant isolation
+  // Note: tenantId will be added by addTenantSupport()
+  
+  // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: true,
     index: true
   },
   promotionId: {
@@ -464,6 +465,9 @@ promotionSchema.statics.findOverlapping = function(customerId, productId, startD
     status: { $in: ['approved', 'active'] }
   });
 };
+
+// Add tenant support to the schema
+addTenantSupport(promotionSchema);
 
 const Promotion = mongoose.model('Promotion', promotionSchema);
 

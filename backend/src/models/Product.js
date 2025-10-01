@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 const mongooseAggregatePaginate = require('mongoose-aggregate-paginate-v2');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const productSchema = new mongoose.Schema({
-  // Company Association - CRITICAL for multi-tenant isolation
+  // Tenant Association - CRITICAL for multi-tenant isolation
+  // Note: tenantId will be added by addTenantSupport()
+  
+  // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: true,
     index: true
   },
   
@@ -376,6 +379,9 @@ productSchema.statics.findByHierarchy = function(level, value) {
 
 // Plugins
 productSchema.plugin(mongooseAggregatePaginate);
+
+// Add tenant support to the schema
+addTenantSupport(productSchema);
 
 const Product = mongoose.model('Product', productSchema);
 

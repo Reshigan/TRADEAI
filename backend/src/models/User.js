@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const userSchema = new mongoose.Schema({
-  // Company Association - CRITICAL for multi-tenant isolation
+  // Tenant Association - CRITICAL for multi-tenant isolation
+  // Note: tenantId will be added by addTenantSupport()
+  
+  // Legacy company support (will be migrated to tenant)
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: function() {
-      // Super admin doesn't need company association
-      return this.role !== 'super_admin';
-    },
     index: true
   },
   employeeId: {
@@ -171,7 +171,8 @@ userSchema.methods.generateAuthToken = function() {
       email: this.email, 
       role: this.role,
       department: this.department,
-      companyId: this.companyId
+      tenantId: this.tenantId,
+      companyId: this.companyId // Legacy support
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRE || '7d' }
@@ -224,6 +225,9 @@ userSchema.statics.findByCredentials = async function(email, password, companyId
   
   return user;
 };
+
+// Add tenant support to the schema
+addTenantSupport(userSchema);
 
 const User = mongoose.model('User', userSchema);
 

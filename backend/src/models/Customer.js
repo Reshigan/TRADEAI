@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 const mongooseAggregatePaginate = require('mongoose-aggregate-paginate-v2');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const customerSchema = new mongoose.Schema({
-  // Company Association - CRITICAL for multi-tenant isolation
+  // Tenant Association - CRITICAL for multi-tenant isolation
+  // Note: tenantId will be added by addTenantSupport()
+  
+  // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: true,
     index: true
   },
   
@@ -345,6 +348,9 @@ customerSchema.methods.calculateTradingTermsValue = function(salesAmount, termTy
 
 // Plugins
 customerSchema.plugin(mongooseAggregatePaginate);
+
+// Add tenant support to the schema
+addTenantSupport(customerSchema);
 
 const Customer = mongoose.model('Customer', customerSchema);
 
