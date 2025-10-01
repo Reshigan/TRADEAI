@@ -1,0 +1,345 @@
+openapi: 3.0.3
+info:
+  title: Trade AI Platform API
+  description: |
+    Comprehensive API for the Trade AI Platform - a multi-tenant FMCG trade promotion management system.
+    
+    ## Features
+    - Multi-tenant architecture with company isolation
+    - Advanced AI-powered analytics and predictions
+    - Real-time monitoring and alerting
+    - Comprehensive reporting with multiple export formats
+    - Budget and promotion management
+    - SAP integration capabilities
+    
+    ## Authentication
+    All API endpoints require JWT authentication unless otherwise specified.
+    Include the JWT token in the Authorization header: `Bearer <token>`
+    
+    ## Rate Limiting
+    API requests are rate-limited to 1000 requests per hour per user.
+    
+    ## Pagination
+    List endpoints support pagination with `page` and `limit` query parameters.
+    Default page size is 20, maximum is 100.
+    
+  version: 2.0.0
+  contact:
+    name: Trade AI Support
+    email: support@tradeai.com
+    url: https://tradeai.com/support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.tradeai.com/v2
+    description: Production server
+  - url: https://staging-api.tradeai.com/v2
+    description: Staging server
+  - url: http://localhost:3000/api
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@company.com
+                password:
+                  type: string
+                  format: password
+                  example: securePassword123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+                  expiresIn:
+                    type: string
+                    example: 24h
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Dashboard Endpoints
+  /dashboard:
+    get:
+      tags:
+        - Dashboard
+      summary: Get dashboard data
+      description: Retrieve comprehensive dashboard metrics and KPIs
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [7days, 30days, 90days, 1year]
+            default: 30days
+          description: Time period for metrics
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Analytics Endpoints
+  /analytics/predictions:
+    post:
+      tags:
+        - Analytics
+      summary: Generate AI predictions
+      description: Generate AI-powered predictions using advanced ML models
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - targetId
+                - horizon
+              properties:
+                type:
+                  type: string
+                  enum: [sales, budget, promotion_performance]
+                targetId:
+                  type: string
+                horizon:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                features:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Predictions generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResult'
+
+  # Reporting Endpoints
+  /reports/excel:
+    post:
+      tags:
+        - Reports
+      summary: Generate Excel report
+      description: Generate comprehensive Excel report with multiple sheets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequest'
+      responses:
+        '200':
+          description: Excel report generated successfully
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+
+  # Monitoring Endpoints
+  /monitoring/dashboard:
+    get:
+      tags:
+        - Monitoring
+      summary: Get real-time monitoring dashboard
+      description: Retrieve real-time metrics and system health
+      responses:
+        '200':
+          description: Monitoring dashboard retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDashboard'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        email:
+          type: string
+          format: email
+          example: user@company.com
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        role:
+          type: string
+          enum: [admin, manager, user]
+          example: manager
+        companyId:
+          type: string
+          example: 507f1f77bcf86cd799439012
+
+    DashboardData:
+      type: object
+      properties:
+        metrics:
+          type: object
+          properties:
+            totalPromotions:
+              type: integer
+            activePromotions:
+              type: integer
+            totalBudget:
+              type: number
+              format: float
+            totalSpend:
+              type: number
+              format: float
+
+    PredictionResult:
+      type: object
+      properties:
+        type:
+          type: string
+        targetId:
+          type: string
+        horizon:
+          type: integer
+        predictions:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              value:
+                type: number
+              confidence:
+                type: number
+
+    ReportRequest:
+      type: object
+      required:
+        - reportType
+        - dateRange
+      properties:
+        reportType:
+          type: string
+          enum: [comprehensive, promotion, budget, sales]
+        dateRange:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+            endDate:
+              type: string
+              format: date
+
+    MonitoringDashboard:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        metrics:
+          type: object
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        priority:
+          type: string
+          enum: [critical, warning, info]
+        message:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid request parameters
+        code:
+          type: string
+          example: VALIDATION_ERROR
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Dashboard
+    description: Dashboard metrics and KPIs
+  - name: Analytics
+    description: Advanced analytics and AI predictions
+  - name: Reports
+    description: Report generation and templates
+  - name: Monitoring
+    description: Real-time monitoring and alerts
