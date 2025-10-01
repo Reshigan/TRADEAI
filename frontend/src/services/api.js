@@ -362,7 +362,7 @@ export const analyticsService = {
 export const currencyService = {
   getAll: async () => {
     try {
-      const response = await api.get('/currencies');
+      const response = await api.get('/analytics/currencies');
       return response.data;
     } catch (error) {
       throw error;

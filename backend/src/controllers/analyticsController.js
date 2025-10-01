@@ -101,6 +101,130 @@ class AnalyticsController {
   });
 
   /**
+   * Get dashboard analytics data
+   * Used by frontend Dashboard component
+   */
+  getDashboardAnalytics = async (options = {}) => {
+    const { userId, period = '30days', currency = 'USD' } = options;
+    
+    try {
+      // Get currency info
+      const currencySymbols = {
+        'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥', 'CAD': 'C$', 'AUD': 'A$'
+      };
+      const currencySymbol = currencySymbols[currency] || '$';
+      
+      // Generate realistic demo data based on currency
+      const exchangeRates = {
+        'USD': 1, 'EUR': 0.85, 'GBP': 0.73, 'JPY': 110, 'CAD': 1.25, 'AUD': 1.35
+      };
+      const rate = exchangeRates[currency] || 1;
+      
+      // Base amounts in USD, converted to selected currency
+      const totalBudget = Math.round(5000000 * rate);
+      const totalUsed = Math.round(2150000 * rate);
+      const budgetUtilization = (totalUsed / totalBudget) * 100;
+      
+      const dashboardData = {
+        summary: {
+          totalBudget,
+          totalUsed,
+          budgetUtilization,
+          activePromotions: 12,
+          totalCustomers: 847,
+          currencySymbol,
+          currency
+        },
+        monthlySpend: [
+          { month: 'Jan', amount: Math.round(180000 * rate), target: Math.round(200000 * rate) },
+          { month: 'Feb', amount: Math.round(220000 * rate), target: Math.round(200000 * rate) },
+          { month: 'Mar', amount: Math.round(195000 * rate), target: Math.round(200000 * rate) },
+          { month: 'Apr', amount: Math.round(240000 * rate), target: Math.round(200000 * rate) },
+          { month: 'May', amount: Math.round(210000 * rate), target: Math.round(200000 * rate) },
+          { month: 'Jun', amount: Math.round(185000 * rate), target: Math.round(200000 * rate) }
+        ],
+        topCustomers: [
+          { 
+            id: 1, 
+            name: 'Walmart Inc.', 
+            totalSpend: Math.round(450000 * rate), 
+            growth: 12.5,
+            category: 'Retail Chain'
+          },
+          { 
+            id: 2, 
+            name: 'Target Corporation', 
+            totalSpend: Math.round(380000 * rate), 
+            growth: 8.3,
+            category: 'Retail Chain'
+          },
+          { 
+            id: 3, 
+            name: 'Kroger Co.', 
+            totalSpend: Math.round(320000 * rate), 
+            growth: 15.7,
+            category: 'Grocery Chain'
+          },
+          { 
+            id: 4, 
+            name: 'Costco Wholesale', 
+            totalSpend: Math.round(290000 * rate), 
+            growth: 6.9,
+            category: 'Warehouse Club'
+          }
+        ],
+        categoryPerformance: [
+          { category: 'In-Store Displays', spend: Math.round(680000 * rate), roi: 3.2 },
+          { category: 'Digital Advertising', spend: Math.round(520000 * rate), roi: 4.1 },
+          { category: 'Price Promotions', spend: Math.round(450000 * rate), roi: 2.8 },
+          { category: 'Trade Shows', spend: Math.round(380000 * rate), roi: 2.1 },
+          { category: 'Co-op Advertising', spend: Math.round(320000 * rate), roi: 3.5 }
+        ],
+        pendingApprovals: [
+          {
+            id: 1,
+            type: 'Trade Promotion',
+            customer: 'Walmart Inc.',
+            amount: Math.round(75000 * rate),
+            requestedBy: 'Sarah Johnson',
+            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            status: 'pending'
+          },
+          {
+            id: 2,
+            type: 'Display Allowance',
+            customer: 'Target Corporation',
+            amount: Math.round(45000 * rate),
+            requestedBy: 'Mike Chen',
+            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            status: 'pending'
+          },
+          {
+            id: 3,
+            type: 'Volume Rebate',
+            customer: 'Kroger Co.',
+            amount: Math.round(32000 * rate),
+            requestedBy: 'Lisa Rodriguez',
+            date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            status: 'pending'
+          }
+        ],
+        forecast: {
+          recommendation: `Based on current spending patterns in ${currency}, you are projected to be within budget by year end with ${currencySymbol}${Math.round((totalBudget - totalUsed) / 1000000 * 10) / 10}M remaining.`,
+          confidence: 87,
+          projectedTotal: Math.round(totalBudget * 0.92 * rate),
+          riskFactors: ['Seasonal demand increase', 'New product launches']
+        }
+      };
+      
+      return dashboardData;
+    } catch (error) {
+      console.error('Error generating dashboard analytics:', error);
+      throw error;
+    }
+  };
+
+  /**
    * Generate performance dashboard
    * GET /api/analytics/dashboard
    */

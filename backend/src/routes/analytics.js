@@ -6,16 +6,34 @@ const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
 // Get dashboard analytics
 router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
-  const { period = '30days' } = req.query;
+  const { period = '30days', currency = 'USD' } = req.query;
   
   const analytics = await analyticsController.getDashboardAnalytics({
     userId: req.user._id,
-    period
+    period,
+    currency
   });
   
   res.json({
     success: true,
     data: analytics
+  });
+}));
+
+// Get available currencies
+router.get('/currencies', asyncHandler(async (req, res) => {
+  const currencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
+    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' }
+  ];
+  
+  res.json({
+    success: true,
+    data: currencies
   });
 }));
 
