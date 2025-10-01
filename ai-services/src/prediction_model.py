@@ -3,13 +3,26 @@ import json
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.linear_model import ElasticNet
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.ensemble import (
+    RandomForestRegressor, GradientBoostingRegressor, ExtraTreesRegressor, 
+    VotingRegressor, StackingRegressor
+)
+from sklearn.linear_model import ElasticNet, Ridge, Lasso
+from sklearn.svm import SVR
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, RobustScaler
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import (
+    train_test_split, GridSearchCV, TimeSeriesSplit, cross_val_score
+)
+from sklearn.metrics import (
+    mean_absolute_error, mean_squared_error, r2_score, 
+    mean_absolute_percentage_error
+)
+from sklearn.feature_selection import SelectKBest, f_regression, RFE
+import warnings
+warnings.filterwarnings('ignore')
 
 class TradeAIPredictionModel:
     """
@@ -17,152 +30,325 @@ class TradeAIPredictionModel:
     to forecast sales and promotional effectiveness.
     """
     
-    def __init__(self, model_type="ensemble"):
+    def __init__(self, model_type="advanced_ensemble"):
         """
-        Initialize the prediction model.
+        Initialize the prediction model with enhanced ML capabilities.
         
         Args:
-            model_type (str): Type of model to use. Options: "ensemble", "random_forest", 
-                             "gradient_boosting", "elastic_net"
+            model_type (str): Type of model to use. Options: 
+                             "advanced_ensemble", "stacking_ensemble", "voting_ensemble",
+                             "random_forest", "gradient_boosting", "neural_network", "svm"
         """
         self.model_type = model_type
         self.model = None
         self.feature_importance = {}
         self.metrics = {}
         self.preprocessor = None
+        self.feature_selector = None
         self.categorical_features = ['product_category', 'promo_type', 'region', 'channel']
         self.numerical_features = ['base_price', 'discount_percentage', 'avg_monthly_sales', 
-                                  'sales_volatility', 'seasonality_index', 'competitor_intensity']
+                                  'sales_volatility', 'seasonality_index', 'competitor_intensity',
+                                  'margin_percentage', 'promo_cost']
+        self.model_performance = {}
+        self.cross_validation_scores = {}
         
-    def _create_preprocessor(self):
-        """Create a preprocessor for the data"""
+    def _create_preprocessor(self, use_robust_scaler=True):
+        """Create an enhanced preprocessor for the data"""
+        # Use RobustScaler for better handling of outliers
+        scaler = RobustScaler() if use_robust_scaler else StandardScaler()
+        
         numerical_transformer = Pipeline(steps=[
-            ('scaler', StandardScaler())
+            ('scaler', scaler)
         ])
         
         categorical_transformer = Pipeline(steps=[
-            ('onehot', OneHotEncoder(handle_unknown='ignore'))
+            ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
         ])
         
         return ColumnTransformer(
             transformers=[
                 ('num', numerical_transformer, self.numerical_features),
                 ('cat', categorical_transformer, self.categorical_features)
-            ])
+            ],
+            remainder='passthrough'
+        )
+    
+    def _create_feature_selector(self, n_features=20):
+        """Create feature selector for dimensionality reduction"""
+        return SelectKBest(score_func=f_regression, k=min(n_features, len(self.numerical_features) + 10))
     
     def _create_model(self):
-        """Create the prediction model based on model_type"""
+        """Create advanced prediction models with ensemble techniques"""
         if self.model_type == "random_forest":
             return RandomForestRegressor(
-                n_estimators=100, 
+                n_estimators=200, 
                 max_depth=15,
                 min_samples_split=5,
                 min_samples_leaf=2,
-                random_state=42
+                random_state=42,
+                n_jobs=-1
             )
         elif self.model_type == "gradient_boosting":
             return GradientBoostingRegressor(
-                n_estimators=100,
+                n_estimators=150,
                 learning_rate=0.1,
-                max_depth=5,
+                max_depth=6,
+                subsample=0.8,
                 random_state=42
             )
-        elif self.model_type == "elastic_net":
-            return ElasticNet(
-                alpha=0.5,
-                l1_ratio=0.5,
+        elif self.model_type == "neural_network":
+            return MLPRegressor(
+                hidden_layer_sizes=(100, 50, 25),
+                activation='relu',
+                solver='adam',
+                alpha=0.001,
+                learning_rate='adaptive',
+                max_iter=500,
                 random_state=42
             )
-        else:  # ensemble
-            return RandomForestRegressor(
+        elif self.model_type == "svm":
+            return SVR(
+                kernel='rbf',
+                C=100,
+                gamma='scale',
+                epsilon=0.1
+            )
+        elif self.model_type == "voting_ensemble":
+            # Voting ensemble with multiple algorithms
+            rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
+            gb = GradientBoostingRegressor(n_estimators=100, random_state=42)
+            et = ExtraTreesRegressor(n_estimators=100, random_state=42, n_jobs=-1)
+            
+            return VotingRegressor([
+                ('rf', rf),
+                ('gb', gb),
+                ('et', et)
+            ])
+        elif self.model_type == "stacking_ensemble":
+            # Stacking ensemble with meta-learner
+            base_models = [
+                ('rf', RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)),
+                ('gb', GradientBoostingRegressor(n_estimators=100, random_state=42)),
+                ('et', ExtraTreesRegressor(n_estimators=100, random_state=42, n_jobs=-1)),
+                ('ridge', Ridge(alpha=1.0))
+            ]
+            
+            return StackingRegressor(
+                estimators=base_models,
+                final_estimator=ElasticNet(alpha=0.1, l1_ratio=0.5),
+                cv=5
+            )
+        else:  # advanced_ensemble (default)
+            # Advanced ensemble with optimized parameters
+            rf = RandomForestRegressor(
                 n_estimators=200, 
                 max_depth=20,
                 min_samples_split=5,
                 min_samples_leaf=2,
+                random_state=42,
+                n_jobs=-1
+            )
+            gb = GradientBoostingRegressor(
+                n_estimators=150,
+                learning_rate=0.1,
+                max_depth=6,
+                subsample=0.8,
                 random_state=42
             )
+            et = ExtraTreesRegressor(
+                n_estimators=150,
+                max_depth=20,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                random_state=42,
+                n_jobs=-1
+            )
+            
+            return VotingRegressor([
+                ('rf', rf),
+                ('gb', gb),
+                ('et', et)
+            ], weights=[0.4, 0.35, 0.25])
     
-    def train(self, X, y, optimize=False):
+    def train(self, X, y, optimize=False, use_time_series_cv=False):
         """
-        Train the prediction model.
+        Train the prediction model with enhanced evaluation.
         
         Args:
             X (pd.DataFrame): Features dataframe
             y (pd.Series): Target variable
             optimize (bool): Whether to perform hyperparameter optimization
+            use_time_series_cv (bool): Use time series cross-validation
             
         Returns:
-            dict: Training metrics
+            dict: Comprehensive training metrics
         """
-        # Create preprocessor and model
+        # Create preprocessor and feature selector
         self.preprocessor = self._create_preprocessor()
+        self.feature_selector = self._create_feature_selector()
         base_model = self._create_model()
         
-        # Create full pipeline
+        # Create full pipeline with feature selection
         self.model = Pipeline(steps=[
             ('preprocessor', self.preprocessor),
+            ('feature_selector', self.feature_selector),
             ('model', base_model)
         ])
         
         # Split data for training and validation
-        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+        if use_time_series_cv:
+            # Use time series split for temporal data
+            tscv = TimeSeriesSplit(n_splits=5)
+            cv_strategy = tscv
+        else:
+            cv_strategy = 5
+            
+        X_train, X_val, y_train, y_val = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=None
+        )
         
         # Hyperparameter optimization if requested
-        if optimize and self.model_type != "elastic_net":
-            param_grid = {
-                'model__n_estimators': [50, 100, 200],
-                'model__max_depth': [5, 10, 15, 20],
-                'model__min_samples_split': [2, 5, 10],
-                'model__min_samples_leaf': [1, 2, 4]
-            }
+        if optimize:
+            param_grid = self._get_param_grid()
             
             grid_search = GridSearchCV(
                 self.model,
                 param_grid,
-                cv=5,
-                scoring='neg_mean_squared_error',
-                n_jobs=-1
+                cv=cv_strategy,
+                scoring=['neg_mean_squared_error', 'neg_mean_absolute_error', 'r2'],
+                refit='neg_mean_squared_error',
+                n_jobs=-1,
+                verbose=1
             )
             
             grid_search.fit(X_train, y_train)
             self.model = grid_search.best_estimator_
             print(f"Best parameters: {grid_search.best_params_}")
+            print(f"Best CV score: {grid_search.best_score_:.4f}")
         else:
             # Train the model
             self.model.fit(X_train, y_train)
         
+        # Perform cross-validation for robust evaluation
+        cv_scores = cross_val_score(
+            self.model, X_train, y_train, 
+            cv=cv_strategy, 
+            scoring='neg_mean_squared_error',
+            n_jobs=-1
+        )
+        self.cross_validation_scores = {
+            'mse_scores': -cv_scores,
+            'mean_mse': -cv_scores.mean(),
+            'std_mse': cv_scores.std()
+        }
+        
         # Evaluate on validation set
         y_pred = self.model.predict(X_val)
         
-        # Calculate metrics
+        # Calculate comprehensive metrics
         self.metrics = {
-            'mae': mean_absolute_error(y_val, y_pred),
+            'mse': mean_squared_error(y_val, y_pred),
             'rmse': np.sqrt(mean_squared_error(y_val, y_pred)),
-            'r2': r2_score(y_val, y_pred)
+            'mae': mean_absolute_error(y_val, y_pred),
+            'r2': r2_score(y_val, y_pred),
+            'mape': mean_absolute_percentage_error(y_val, y_pred) * 100,
+            'cv_mean_mse': self.cross_validation_scores['mean_mse'],
+            'cv_std_mse': self.cross_validation_scores['std_mse']
         }
         
         # Extract feature importance if available
-        if hasattr(self.model.named_steps['model'], 'feature_importances_'):
-            # Get feature names from preprocessor
-            feature_names = (
-                self.numerical_features +
-                self.preprocessor.named_transformers_['cat'].named_steps['onehot'].get_feature_names_out(
-                    self.categorical_features
-                ).tolist()
-            )
-            
-            # Map importances to feature names
-            importances = self.model.named_steps['model'].feature_importances_
-            self.feature_importance = dict(zip(feature_names, importances))
-            
-            # Sort by importance
-            self.feature_importance = {k: v for k, v in sorted(
-                self.feature_importance.items(), 
-                key=lambda item: item[1], 
-                reverse=True
-            )}
+        self._extract_feature_importance()
+        
+        print(f"Model Training Complete:")
+        print(f"  R² Score: {self.metrics['r2']:.4f}")
+        print(f"  RMSE: {self.metrics['rmse']:.4f}")
+        print(f"  MAE: {self.metrics['mae']:.4f}")
+        print(f"  MAPE: {self.metrics['mape']:.2f}%")
+        print(f"  CV Mean MSE: {self.metrics['cv_mean_mse']:.4f} ± {self.metrics['cv_std_mse']:.4f}")
         
         return self.metrics
+    
+    def _get_param_grid(self):
+        """Get parameter grid for hyperparameter optimization"""
+        if self.model_type in ["random_forest", "advanced_ensemble"]:
+            return {
+                'model__n_estimators': [100, 150, 200],
+                'model__max_depth': [10, 15, 20, None],
+                'model__min_samples_split': [2, 5, 10],
+                'model__min_samples_leaf': [1, 2, 4]
+            }
+        elif self.model_type == "gradient_boosting":
+            return {
+                'model__n_estimators': [100, 150, 200],
+                'model__learning_rate': [0.05, 0.1, 0.15],
+                'model__max_depth': [3, 5, 7],
+                'model__subsample': [0.8, 0.9, 1.0]
+            }
+        elif self.model_type == "neural_network":
+            return {
+                'model__hidden_layer_sizes': [(50,), (100,), (100, 50), (100, 50, 25)],
+                'model__alpha': [0.0001, 0.001, 0.01],
+                'model__learning_rate_init': [0.001, 0.01, 0.1]
+            }
+        else:
+            return {}
+    
+    def _extract_feature_importance(self):
+        """Extract feature importance from the trained model"""
+        try:
+            # Get the final model from the pipeline
+            final_model = self.model.named_steps['model']
+            
+            # Get feature names after preprocessing
+            feature_names = self._get_feature_names()
+            
+            if hasattr(final_model, 'feature_importances_'):
+                # For tree-based models
+                importances = final_model.feature_importances_
+            elif hasattr(final_model, 'coef_'):
+                # For linear models
+                importances = np.abs(final_model.coef_)
+            elif hasattr(final_model, 'estimators_'):
+                # For ensemble models
+                if hasattr(final_model.estimators_[0], 'feature_importances_'):
+                    importances = np.mean([est.feature_importances_ for est in final_model.estimators_], axis=0)
+                else:
+                    importances = None
+            else:
+                importances = None
+            
+            if importances is not None and len(feature_names) == len(importances):
+                self.feature_importance = dict(zip(feature_names, importances))
+                # Sort by importance
+                self.feature_importance = dict(sorted(
+                    self.feature_importance.items(), 
+                    key=lambda x: x[1], 
+                    reverse=True
+                ))
+        except Exception as e:
+            print(f"Could not extract feature importance: {e}")
+            self.feature_importance = {}
+    
+    def _get_feature_names(self):
+        """Get feature names after preprocessing"""
+        try:
+            # Get feature names from preprocessor
+            preprocessor = self.model.named_steps['preprocessor']
+            
+            # Numerical features
+            num_features = self.numerical_features
+            
+            # Categorical features (after one-hot encoding)
+            cat_features = []
+            if hasattr(preprocessor.named_transformers_['cat'], 'named_steps'):
+                onehot = preprocessor.named_transformers_['cat'].named_steps['onehot']
+                if hasattr(onehot, 'get_feature_names_out'):
+                    cat_features = onehot.get_feature_names_out(self.categorical_features).tolist()
+            
+            return num_features + cat_features
+        except Exception as e:
+            print(f"Could not get feature names: {e}")
+            return [f"feature_{i}" for i in range(len(self.numerical_features) + 10)]
     
     def predict(self, X):
         """
@@ -178,6 +364,58 @@ class TradeAIPredictionModel:
             raise ValueError("Model has not been trained yet. Call train() first.")
         
         return self.model.predict(X)
+    
+    def predict_with_confidence(self, X, confidence_level=0.95):
+        """
+        Make predictions with confidence intervals (for ensemble models).
+        
+        Args:
+            X (pd.DataFrame): Features dataframe
+            confidence_level (float): Confidence level for intervals
+            
+        Returns:
+            dict: Predictions with confidence intervals
+        """
+        if self.model is None:
+            raise ValueError("Model has not been trained yet. Call train() first.")
+        
+        predictions = self.model.predict(X)
+        
+        # For ensemble models, calculate prediction intervals
+        if hasattr(self.model.named_steps['model'], 'estimators_'):
+            # Get predictions from all estimators
+            estimator_predictions = []
+            for estimator in self.model.named_steps['model'].estimators_:
+                # Transform data through preprocessing pipeline
+                X_transformed = self.model.named_steps['preprocessor'].transform(X)
+                X_selected = self.model.named_steps['feature_selector'].transform(X_transformed)
+                pred = estimator.predict(X_selected)
+                estimator_predictions.append(pred)
+            
+            estimator_predictions = np.array(estimator_predictions)
+            
+            # Calculate confidence intervals
+            alpha = 1 - confidence_level
+            lower_percentile = (alpha / 2) * 100
+            upper_percentile = (1 - alpha / 2) * 100
+            
+            lower_bound = np.percentile(estimator_predictions, lower_percentile, axis=0)
+            upper_bound = np.percentile(estimator_predictions, upper_percentile, axis=0)
+            
+            return {
+                'predictions': predictions,
+                'lower_bound': lower_bound,
+                'upper_bound': upper_bound,
+                'confidence_level': confidence_level
+            }
+        else:
+            # For non-ensemble models, return predictions without intervals
+            return {
+                'predictions': predictions,
+                'lower_bound': predictions,
+                'upper_bound': predictions,
+                'confidence_level': confidence_level
+            }
     
     def predict_promotion_impact(self, product_data, promotion_details):
         """
@@ -256,6 +494,88 @@ class TradeAIPredictionModel:
             base_confidence = 0.7 + (r2_factor * 0.3)
         
         return base_confidence
+    
+    def evaluate_model(self, X_test, y_test):
+        """
+        Evaluate model performance on test data.
+        
+        Args:
+            X_test (pd.DataFrame): Test features
+            y_test (pd.Series): Test targets
+            
+        Returns:
+            dict: Comprehensive evaluation metrics
+        """
+        if self.model is None:
+            raise ValueError("Model has not been trained yet. Call train() first.")
+        
+        # Make predictions
+        y_pred = self.model.predict(X_test)
+        
+        # Calculate metrics
+        evaluation_metrics = {
+            'test_mse': mean_squared_error(y_test, y_pred),
+            'test_rmse': np.sqrt(mean_squared_error(y_test, y_pred)),
+            'test_mae': mean_absolute_error(y_test, y_pred),
+            'test_r2': r2_score(y_test, y_pred),
+            'test_mape': mean_absolute_percentage_error(y_test, y_pred) * 100
+        }
+        
+        # Add residual analysis
+        residuals = y_test - y_pred
+        evaluation_metrics.update({
+            'residual_mean': np.mean(residuals),
+            'residual_std': np.std(residuals),
+            'residual_skewness': self._calculate_skewness(residuals),
+            'residual_kurtosis': self._calculate_kurtosis(residuals)
+        })
+        
+        return evaluation_metrics
+    
+    def _calculate_skewness(self, data):
+        """Calculate skewness of data"""
+        mean = np.mean(data)
+        std = np.std(data)
+        if std == 0:
+            return 0
+        return np.mean(((data - mean) / std) ** 3)
+    
+    def _calculate_kurtosis(self, data):
+        """Calculate kurtosis of data"""
+        mean = np.mean(data)
+        std = np.std(data)
+        if std == 0:
+            return 0
+        return np.mean(((data - mean) / std) ** 4) - 3
+    
+    def get_model_summary(self):
+        """
+        Get comprehensive model summary.
+        
+        Returns:
+            dict: Model summary with metrics and feature importance
+        """
+        summary = {
+            'model_type': self.model_type,
+            'training_metrics': self.metrics,
+            'cross_validation_scores': self.cross_validation_scores,
+            'feature_importance': self.feature_importance,
+            'model_parameters': self._get_model_parameters()
+        }
+        
+        return summary
+    
+    def _get_model_parameters(self):
+        """Get model parameters"""
+        if self.model is None:
+            return {}
+        
+        try:
+            final_model = self.model.named_steps['model']
+            return final_model.get_params()
+        except Exception as e:
+            print(f"Could not get model parameters: {e}")
+            return {}
     
     def save_model(self, filepath):
         """
