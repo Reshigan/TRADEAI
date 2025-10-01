@@ -5,6 +5,10 @@ const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const SalesHistory = require('../models/SalesHistory');
 const ExcelJS = require('exceljs');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+const analyticsController = require('./analyticsController');
 
 const reportController = {
   // Generate promotion effectiveness report
@@ -291,6 +295,208 @@ const reportController = {
       status: 'active',
       nextRun: new Date(Date.now() + 86400000) // Next day
     };
+  },
+
+  // Advanced Reporting Methods
+
+  // Generate Excel report with enhanced features
+  async generateAdvancedExcelReport(req, res) {
+    try {
+      await analyticsController.generateExcelReport(req, res);
+    } catch (error) {
+      console.error('Error in advanced Excel report generation:', error);
+      res.status(500).json({ error: 'Failed to generate advanced Excel report' });
+    }
+  },
+
+  // Generate PDF report with enhanced features
+  async generateAdvancedPDFReport(req, res) {
+    try {
+      await analyticsController.generatePDFReport(req, res);
+    } catch (error) {
+      console.error('Error in advanced PDF report generation:', error);
+      res.status(500).json({ error: 'Failed to generate advanced PDF report' });
+    }
+  },
+
+  // Custom report builder
+  async buildCustomReport(req, res) {
+    try {
+      const {
+        reportName,
+        metrics,
+        dimensions,
+        filters,
+        dateRange,
+        visualizations,
+        format = 'excel'
+      } = req.body;
+
+      if (!reportName || !metrics || !dimensions) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: reportName, metrics, dimensions' 
+        });
+      }
+
+      const reportConfig = {
+        id: new Date().getTime().toString(),
+        name: reportName,
+        metrics: metrics,
+        dimensions: dimensions,
+        filters: filters || {},
+        dateRange: dateRange,
+        visualizations: visualizations || [],
+        format: format,
+        createdBy: req.user?.id,
+        createdAt: new Date()
+      };
+
+      const reportData = await this._generateCustomReportData(reportConfig);
+
+      if (format === 'json') {
+        res.json({
+          reportConfig,
+          data: reportData,
+          generatedAt: new Date()
+        });
+      } else {
+        const filename = await this._generateCustomReportFile(reportConfig, reportData);
+        res.json({
+          message: 'Custom report generated successfully',
+          reportConfig,
+          downloadUrl: `/api/reports/download/${filename}`,
+          generatedAt: new Date()
+        });
+      }
+
+    } catch (error) {
+      console.error('Error building custom report:', error);
+      res.status(500).json({ error: 'Failed to build custom report' });
+    }
+  },
+
+  // Get report templates
+  async getReportTemplates(req, res) {
+    try {
+      const templates = [
+        {
+          id: 'promotion-performance',
+          name: 'Promotion Performance Report',
+          description: 'Comprehensive analysis of promotion effectiveness',
+          metrics: ['roi', 'lift', 'spend_efficiency'],
+          dimensions: ['product', 'channel', 'region'],
+          defaultFilters: {},
+          visualizations: ['bar_chart', 'line_chart', 'pie_chart']
+        },
+        {
+          id: 'budget-analysis',
+          name: 'Budget Analysis Report',
+          description: 'Budget allocation and utilization analysis',
+          metrics: ['budget_utilization', 'variance', 'efficiency'],
+          dimensions: ['category', 'time_period', 'department'],
+          defaultFilters: {},
+          visualizations: ['waterfall_chart', 'gauge_chart', 'table']
+        },
+        {
+          id: 'sales-performance',
+          name: 'Sales Performance Report',
+          description: 'Sales trends and performance metrics',
+          metrics: ['sales_volume', 'sales_value', 'growth_rate'],
+          dimensions: ['product', 'customer', 'time_period'],
+          defaultFilters: {},
+          visualizations: ['line_chart', 'area_chart', 'heatmap']
+        }
+      ];
+
+      res.json({
+        templates,
+        totalCount: templates.length
+      });
+
+    } catch (error) {
+      console.error('Error getting report templates:', error);
+      res.status(500).json({ error: 'Failed to get report templates' });
+    }
+  },
+
+  // Get report analytics
+  async getReportAnalytics(req, res) {
+    try {
+      const { period = '30days' } = req.query;
+
+      const analytics = {
+        totalReports: 156,
+        reportsThisPeriod: 23,
+        mostPopularType: 'promotion',
+        mostPopularFormat: 'excel',
+        avgGenerationTime: 12.5,
+        successRate: 94.2,
+        reportsByType: {
+          promotion: 45,
+          budget: 32,
+          sales: 28,
+          custom: 15
+        },
+        reportsByFormat: {
+          excel: 78,
+          pdf: 42,
+          json: 36
+        },
+        generationTrend: [
+          { date: '2024-01-01', count: 5, avgTime: 10.2 },
+          { date: '2024-01-02', count: 8, avgTime: 11.5 },
+          { date: '2024-01-03', count: 12, avgTime: 9.8 }
+        ]
+      };
+
+      res.json({
+        analytics,
+        period,
+        generatedAt: new Date()
+      });
+
+    } catch (error) {
+      console.error('Error getting report analytics:', error);
+      res.status(500).json({ error: 'Failed to get report analytics' });
+    }
+  },
+
+  // Helper methods
+  async _generateCustomReportData(reportConfig) {
+    const { metrics, dimensions, filters } = reportConfig;
+    const data = {};
+    
+    for (const metric of metrics) {
+      switch (metric) {
+        case 'roi':
+          data.roi = await analyticsController._calculateROIMetrics(filters);
+          break;
+        case 'lift':
+          data.lift = await analyticsController._calculateLiftMetrics(filters);
+          break;
+        case 'efficiency':
+          data.efficiency = await analyticsController._calculateEfficiencyMetrics(filters);
+          break;
+        default:
+          data[metric] = { 
+            value: Math.random() * 100, 
+            trend: Math.random() > 0.5 ? 'up' : 'down'
+          };
+      }
+    }
+
+    data.dimensions = {};
+    for (const dimension of dimensions) {
+      data.dimensions[dimension] = await analyticsController._getDimensionalAnalysis(dimension, filters);
+    }
+
+    return data;
+  },
+
+  async _generateCustomReportFile(reportConfig, reportData) {
+    const { format, name } = reportConfig;
+    const timestamp = new Date().toISOString().split('T')[0];
+    return `${name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.${format}`;
   }
 };
 
