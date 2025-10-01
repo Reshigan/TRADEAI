@@ -38,7 +38,8 @@ const productSchema = new mongoose.Schema({
   },
   description: String,
   
-  // 5-Level Product Hierarchy
+  // Enhanced Hierarchical Structure with Materialized Path
+  // Traditional 5-Level Product Hierarchy (legacy support)
   hierarchy: {
     level1: {
       id: String,
@@ -70,6 +71,41 @@ const productSchema = new mongoose.Schema({
       code: String,
       description: String
     }
+  },
+  
+  // Modern Tree Structure with Materialized Path
+  parentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    default: null,
+    index: true
+  },
+  level: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 10, // Reasonable depth limit
+    index: true
+  },
+  path: {
+    type: String,
+    default: '',
+    index: true
+  },
+  hasChildren: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  
+  // Tree metadata
+  childrenCount: {
+    type: Number,
+    default: 0
+  },
+  descendantsCount: {
+    type: Number,
+    default: 0
   },
   
   // Product Classification
@@ -375,6 +411,80 @@ productSchema.statics.findByHierarchy = function(level, value) {
   const query = {};
   query[`hierarchy.${level}.id`] = value;
   return this.find(query);
+};
+
+// Hierarchical Methods
+productSchema.methods.getAncestors = async function() {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getAncestors(this.tenantId, this._id);
+};
+
+productSchema.methods.getDescendants = async function(maxDepth = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
+};
+
+productSchema.methods.getChildren = async function() {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getDirectChildren(this.tenantId, this._id);
+};
+
+productSchema.methods.getSiblings = async function(includeSelf = false) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
+};
+
+productSchema.methods.getPathToRoot = async function() {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getPathToRoot(this.tenantId, this._id);
+};
+
+productSchema.methods.moveTo = async function(newParentId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
+};
+
+// Static Methods for Hierarchy Management
+productSchema.statics.createHierarchyNode = async function(tenantId, productData, parentId = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.createNode(tenantId, productData, parentId);
+};
+
+productSchema.statics.getTree = async function(tenantId, rootId = null, maxDepth = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.getTree(tenantId, rootId, maxDepth);
+};
+
+productSchema.statics.searchInHierarchy = async function(tenantId, searchTerm, rootId = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
+};
+
+productSchema.statics.validateHierarchy = async function(tenantId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.validateHierarchy(tenantId);
+};
+
+productSchema.statics.repairHierarchy = async function(tenantId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.repairHierarchy(tenantId);
+};
+
+productSchema.statics.getHierarchyStats = async function(tenantId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.getHierarchyStats(tenantId);
 };
 
 // Plugins

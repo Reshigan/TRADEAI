@@ -32,7 +32,8 @@ const customerSchema = new mongoose.Schema({
     uppercase: true
   },
   
-  // 5-Level Hierarchy
+  // Enhanced Hierarchical Structure with Materialized Path
+  // Traditional 5-Level Hierarchy (legacy support)
   hierarchy: {
     level1: {
       id: String,
@@ -59,6 +60,41 @@ const customerSchema = new mongoose.Schema({
       name: String,
       code: String
     }
+  },
+  
+  // Modern Tree Structure with Materialized Path
+  parentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    default: null,
+    index: true
+  },
+  level: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 10, // Reasonable depth limit
+    index: true
+  },
+  path: {
+    type: String,
+    default: '',
+    index: true
+  },
+  hasChildren: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  
+  // Tree metadata
+  childrenCount: {
+    type: Number,
+    default: 0
+  },
+  descendantsCount: {
+    type: Number,
+    default: 0
   },
   
   // Customer Groups (5 groups)
@@ -282,6 +318,15 @@ customerSchema.index({ company: 1, status: 1 });
 customerSchema.index({ company: 1, accountManager: 1 });
 customerSchema.index({ sapCustomerId: 1 });
 customerSchema.index({ code: 1 });
+
+// Hierarchical indexes for tree operations
+customerSchema.index({ tenantId: 1, parentId: 1 });
+customerSchema.index({ tenantId: 1, path: 1 });
+customerSchema.index({ tenantId: 1, level: 1 });
+customerSchema.index({ tenantId: 1, hasChildren: 1 });
+
+// Geographic index for location-based queries
+customerSchema.index({ 'address.location': '2dsphere' });
 customerSchema.index({ 'hierarchy.level1.id': 1 });
 customerSchema.index({ 'hierarchy.level2.id': 1 });
 customerSchema.index({ 'hierarchy.level3.id': 1 });
@@ -344,6 +389,113 @@ customerSchema.methods.calculateTradingTermsValue = function(salesAmount, termTy
   }
   
   return value;
+};
+
+// Hierarchical Methods
+customerSchema.methods.getAncestors = async function() {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getAncestors(this.tenantId, this._id);
+};
+
+customerSchema.methods.getDescendants = async function(maxDepth = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
+};
+
+customerSchema.methods.getChildren = async function() {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getDirectChildren(this.tenantId, this._id);
+};
+
+customerSchema.methods.getSiblings = async function(includeSelf = false) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
+};
+
+customerSchema.methods.getPathToRoot = async function() {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.getPathToRoot(this.tenantId, this._id);
+};
+
+customerSchema.methods.moveTo = async function(newParentId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this.constructor);
+  return await hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
+};
+
+// Static Methods for Hierarchy Management
+customerSchema.statics.createHierarchyNode = async function(tenantId, customerData, parentId = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.createNode(tenantId, customerData, parentId);
+};
+
+customerSchema.statics.getTree = async function(tenantId, rootId = null, maxDepth = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.getTree(tenantId, rootId, maxDepth);
+};
+
+customerSchema.statics.searchInHierarchy = async function(tenantId, searchTerm, rootId = null) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
+};
+
+customerSchema.statics.validateHierarchy = async function(tenantId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.validateHierarchy(tenantId);
+};
+
+customerSchema.statics.repairHierarchy = async function(tenantId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.repairHierarchy(tenantId);
+};
+
+customerSchema.statics.getHierarchyStats = async function(tenantId) {
+  const HierarchyManager = require('../utils/hierarchyManager');
+  const hierarchyManager = new HierarchyManager(this);
+  return await hierarchyManager.getHierarchyStats(tenantId);
+};
+
+// Geographic Methods
+customerSchema.methods.findNearby = async function(maxDistance = 10000) {
+  if (!this.address || !this.address.location || !this.address.location.coordinates) {
+    return [];
+  }
+  
+  return await this.constructor.find({
+    tenantId: this.tenantId,
+    _id: { $ne: this._id },
+    'address.location': {
+      $near: {
+        $geometry: this.address.location,
+        $maxDistance: maxDistance
+      }
+    }
+  });
+};
+
+customerSchema.statics.findByLocation = async function(tenantId, longitude, latitude, maxDistance = 10000) {
+  return await this.find({
+    tenantId,
+    'address.location': {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: [longitude, latitude]
+        },
+        $maxDistance: maxDistance
+      }
+    }
+  });
 };
 
 // Plugins
