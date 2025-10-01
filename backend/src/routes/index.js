@@ -13,6 +13,7 @@ const activityGridRoutes = require('./activityGrid');
 const aiChatbotRoutes = require('./aiChatbot');
 const customerRoutes = require('./customer');
 const productRoutes = require('./product');
+const analyticsRoutes = require('./analytics');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -27,6 +28,7 @@ router.use('/activity-grid', authenticateToken, activityGridRoutes);
 router.use('/ai/chatbot', authenticateToken, aiChatbotRoutes);
 router.use('/customers', authenticateToken, customerRoutes);
 router.use('/products', authenticateToken, productRoutes);
+router.use('/analytics', authenticateToken, analyticsRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
@@ -48,7 +50,12 @@ router.get('/docs', (req, res) => {
       promotions: '/api/promotions',
       tradeSpends: '/api/trade-spends',
       dashboards: '/api/dashboards',
-      sap: '/api/sap'
+      sap: '/api/sap',
+      customers: '/api/customers',
+      products: '/api/products',
+      analytics: '/api/analytics',
+      activityGrid: '/api/activity-grid',
+      aiChatbot: '/api/ai/chatbot'
     }
   });
 });
