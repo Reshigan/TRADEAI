@@ -9,6 +9,7 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 const analyticsController = require('./analyticsController');
+const mongoose = require('mongoose');
 
 const reportController = {
   // Generate promotion effectiveness report
@@ -97,11 +98,16 @@ const reportController = {
   
   // Generate customer performance report
   async generateCustomerPerformanceReport({ customerId, startDate, endDate, tenantId }) {
+    console.log('=== Customer Performance Report Started ===');
+    console.log('Parameters:', { customerId, startDate, endDate, tenantId });
+    
     const query = {};
     if (customerId) query._id = customerId;
-    if (tenantId) query.company = tenantId;
+    if (tenantId) query.company = new mongoose.Types.ObjectId(tenantId);
     
+    console.log('Customer query:', JSON.stringify(query, null, 2));
     const customers = await Customer.find(query);
+    console.log('Found customers:', customers.length);
     
     const reports = await Promise.all(customers.map(async (customer) => {
       const matchQuery = {
@@ -110,7 +116,7 @@ const reportController = {
       
       // Add tenant filtering
       if (tenantId) {
-        matchQuery.company = tenantId;
+        matchQuery.company = new mongoose.Types.ObjectId(tenantId);
       }
       
       // Add date filtering if provided
@@ -121,6 +127,8 @@ const reportController = {
         };
       }
 
+      console.log('Customer Performance Report - Match Query:', JSON.stringify(matchQuery, null, 2));
+      
       const salesData = await SalesHistory.aggregate([
         {
           $match: matchQuery
@@ -134,6 +142,8 @@ const reportController = {
           }
         }
       ]);
+      
+      console.log('Customer Performance Report - Sales Data Result:', JSON.stringify(salesData, null, 2));
       
       return {
         customer: {
