@@ -36,8 +36,8 @@ const reportController = {
       {
         $group: {
           _id: null,
-          totalUnits: { $sum: '$units' },
-          totalValue: { $sum: '$value' }
+          totalUnits: { $sum: '$quantity' },
+          totalValue: { $sum: '$revenue.net' }
         }
       }
     ]);
@@ -96,28 +96,40 @@ const reportController = {
   },
   
   // Generate customer performance report
-  async generateCustomerPerformanceReport({ customerId, startDate, endDate }) {
+  async generateCustomerPerformanceReport({ customerId, startDate, endDate, tenantId }) {
     const query = {};
     if (customerId) query._id = customerId;
+    if (tenantId) query.company = tenantId;
     
     const customers = await Customer.find(query);
     
     const reports = await Promise.all(customers.map(async (customer) => {
+      const matchQuery = {
+        customer: customer._id
+      };
+      
+      // Add tenant filtering
+      if (tenantId) {
+        matchQuery.company = tenantId;
+      }
+      
+      // Add date filtering if provided
+      if (startDate && endDate) {
+        matchQuery.date = {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        };
+      }
+
       const salesData = await SalesHistory.aggregate([
         {
-          $match: {
-            customer: customer._id,
-            date: {
-              $gte: new Date(startDate),
-              $lte: new Date(endDate)
-            }
-          }
+          $match: matchQuery
         },
         {
           $group: {
             _id: null,
-            totalUnits: { $sum: '$units' },
-            totalValue: { $sum: '$value' },
+            totalUnits: { $sum: '$quantity' },
+            totalValue: { $sum: '$revenue.net' },
             transactionCount: { $sum: 1 }
           }
         }
@@ -163,8 +175,8 @@ const reportController = {
         {
           $group: {
             _id: null,
-            totalUnits: { $sum: '$units' },
-            totalValue: { $sum: '$value' }
+            totalUnits: { $sum: '$quantity' },
+            totalValue: { $sum: '$revenue.net' }
           }
         }
       ]);
@@ -212,7 +224,7 @@ const reportController = {
         {
           $group: {
             _id: null,
-            totalValue: { $sum: '$value' }
+            totalValue: { $sum: '$revenue.net' }
           }
         }
       ]);

@@ -47,7 +47,8 @@ router.get('/customer-performance', authenticateToken, asyncHandler(async (req, 
   const report = await reportController.generateCustomerPerformanceReport({
     customerId,
     startDate,
-    endDate
+    endDate,
+    tenantId: req.tenant?.id
   });
   
   res.json({
