@@ -1,5 +1,5 @@
 const AnalyticsEngine = require('../services/analyticsEngine');
-const { asyncHandler } = require('../middleware/asyncHandler');
+const asyncHandler = require('../middleware/asyncHandler');
 const { validateTenant } = require('../middleware/tenantValidation');
 
 /**
