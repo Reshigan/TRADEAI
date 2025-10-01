@@ -1,23 +1,95 @@
-# TRADEAI Production Deployment Guide
+# TRADEAI Platform - Go-Live Deployment Guide
 
-Complete guide for deploying TRADEAI with SSL, database seeding, and comprehensive monitoring.
+## 🚀 Pre-Deployment Testing & Validation
 
-## 📋 Server Information
+### Prerequisites
+- Node.js 18+ installed
+- Docker and Docker Compose installed
+- PostgreSQL 15+ available
+- Redis 7+ available
+- SSL certificates configured
+- Domain names configured
 
-- **Server IP**: 13.247.139.75
-- **Domain**: tradeai.gonxt.tech
-- **OS**: Ubuntu/Debian (recommended)
-- **Minimum Requirements**: 4GB RAM, 20GB Storage, 2 vCPUs
+### 1. Environment Setup
 
-## 🎯 Quick Deployment (Recommended)
-
-### One-Command Installation
-
+#### Development Environment
 ```bash
-# SSH into your AWS server
-ssh ubuntu@13.247.139.75
+# Clone repository
+git clone https://github.com/Reshigan/TRADEAI.git
+cd TRADEAI
 
-# Run the automated deployment script
+# Install dependencies
+npm run setup
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+#### Required Environment Variables
+```bash
+# Application
+NODE_ENV=production
+PORT=3000
+FRONTEND_PORT=3001
+
+# Database
+DATABASE_URL=postgresql://username:password@host:5432/tradeai
+POSTGRES_PASSWORD=your_secure_password
+
+# Cache
+REDIS_URL=redis://:password@host:6379
+REDIS_PASSWORD=your_redis_password
+
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+JWT_EXPIRES_IN=1h
+JWT_REFRESH_SECRET=your_refresh_secret
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Security
+CORS_ORIGIN=https://yourdomain.com
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX=100
+
+# External Services
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_user
+SMTP_PASS=your_smtp_password
+
+# Monitoring
+GRAFANA_USER=admin
+GRAFANA_PASSWORD=your_grafana_password
+PROMETHEUS_RETENTION=15d
+
+# Message Queue
+RABBITMQ_USER=tradeai
+RABBITMQ_PASSWORD=your_rabbitmq_password
+
+# File Storage
+UPLOAD_MAX_SIZE=10485760
+ALLOWED_FILE_TYPES=jpg,jpeg,png,pdf,csv,xlsx
+
+# API Keys
+OPENAI_API_KEY=your_openai_api_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+```
+
+### 2. Pre-Deployment Testing
+
+#### Run Comprehensive Test Suite
+```bash
+# Run all go-live tests
+npm run test:go-live
+
+# Run individual test suites
+npm run test:unit          # Unit tests
+npm run test:integration   # Integration tests
+npm run test:e2e          # End-to-end tests
+npm run test:performance  # Performance tests
+npm run test:security     # Security tests
+npm run test:pwa          # PWA functionality tests
 curl -fsSL https://raw.githubusercontent.com/Reshigan/TRADEAI/main/deploy-aws.sh -o deploy-aws.sh
 chmod +x deploy-aws.sh
 sudo ./deploy-aws.sh

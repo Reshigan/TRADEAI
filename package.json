@@ -1,0 +1,103 @@
+{
+  "name": "tradeai-platform",
+  "version": "1.0.0",
+  "description": "Multi-tenant trading platform with AI-powered analytics",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "build": "docker-compose build",
+    "dev": "docker-compose -f docker-compose.dev.yml up",
+    "test": "npm run test:all",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "npm run test:unit:backend && npm run test:unit:frontend",
+    "test:unit:backend": "cd backend && npm test",
+    "test:unit:frontend": "cd frontend && npm test",
+    "test:integration": "cd backend && npm run test:integration",
+    "test:e2e": "npx playwright test tests/e2e/",
+    "test:api": "cd backend && npm run test:api",
+    "test:performance": "k6 run tests/performance/load-test.js",
+    "test:security": "npm audit && npm run test:security:backend && npm run test:security:frontend",
+    "test:security:backend": "cd backend && npm audit && snyk test",
+    "test:security:frontend": "cd frontend && npm audit && snyk test",
+    "test:migrations": "cd backend && npm run test:migrations",
+    "test:pwa": "cd frontend && npm run test:pwa",
+    "test:go-live": "node scripts/runGoLiveTests.js",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "format": "npm run format:backend && npm run format:frontend",
+    "format:backend": "cd backend && npm run format",
+    "format:frontend": "cd frontend && npm run format",
+    "deploy:staging": "npm run test:go-live && docker-compose -f docker-compose.staging.yml up -d",
+    "deploy:production": "npm run test:go-live && ./scripts/deploy-production.sh",
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js",
+    "migrate": "cd backend && npm run migrate",
+    "seed": "cd backend && npm run seed",
+    "logs": "docker-compose logs -f",
+    "logs:backend": "docker-compose logs -f backend",
+    "logs:frontend": "docker-compose logs -f frontend",
+    "health": "curl -f http://localhost:3000/health && curl -f http://localhost:3001/health.json",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && npm install",
+    "setup:frontend": "cd frontend && npm install",
+    "clean": "docker-compose down -v && docker system prune -f",
+    "docs": "npm run docs:backend && npm run docs:frontend",
+    "docs:backend": "cd backend && npm run docs",
+    "docs:frontend": "cd frontend && npm run docs"
+  },
+  "keywords": [
+    "trading",
+    "multi-tenant",
+    "analytics",
+    "ai",
+    "react",
+    "nodejs",
+    "postgresql",
+    "redis",
+    "docker"
+  ],
+  "author": "TRADEAI Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "k6": "^0.47.0",
+    "snyk": "^1.1200.0",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.0",
+    "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Reshigan/TRADEAI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Reshigan/TRADEAI/issues"
+  },
+  "homepage": "https://github.com/Reshigan/TRADEAI#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run test:unit"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
