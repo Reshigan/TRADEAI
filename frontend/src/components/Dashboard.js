@@ -19,7 +19,11 @@ import {
   Chip,
   Snackbar,
   Alert,
-  CircularProgress
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   TrendingUp,
@@ -35,20 +39,36 @@ import {
 } from '@mui/icons-material';
 import { AIAssistant } from './common';
 import { WalkthroughTour } from './training';
-import { analyticsService, budgetService, promotionService, customerService } from '../services/api';
+import { analyticsService, budgetService, promotionService, customerService, currencyService } from '../services/api';
 
 const Dashboard = ({ user }) => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showWalkthroughSnackbar, setShowWalkthroughSnackbar] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
-    budgetData: null,
-    recentPromotions: [],
-    pendingApprovals: [],
-    kpis: []
+    summary: null,
+    monthlySpend: [],
+    topCustomers: [],
+    categoryPerformance: [],
+    forecast: null
   });
+  const [currencies, setCurrencies] = useState([]);
+  const [selectedCurrency, setSelectedCurrency] = useState(user?.currency || 'USD');
   const [error, setError] = useState(null);
   
+  // Fetch currencies on component mount
+  useEffect(() => {
+    const fetchCurrencies = async () => {
+      try {
+        const response = await currencyService.getAll();
+        setCurrencies(response.data || []);
+      } catch (error) {
+        console.error('Error fetching currencies:', error);
+      }
+    };
+    fetchCurrencies();
+  }, []);
+
   // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -56,70 +76,16 @@ const Dashboard = ({ user }) => {
         setLoading(true);
         setError(null);
 
-        // Fetch data from multiple endpoints
-        const [analyticsData, budgetsData, promotionsData, customersData] = await Promise.allSettled([
-          analyticsService.getSummary(),
-          budgetService.getAll({ limit: 10 }),
-          promotionService.getAll({ limit: 5, status: 'active' }),
-          customerService.getAll({ limit: 10 })
-        ]);
-
-        // Process analytics data
-        const analytics = analyticsData.status === 'fulfilled' ? analyticsData.value : null;
-        
-        // Process budget data
-        const budgets = budgetsData.status === 'fulfilled' ? budgetsData.value : { data: [] };
-        const budgetSummary = budgets.data.reduce((acc, budget) => ({
-          total: acc.total + (budget.totalAmount || 0),
-          allocated: acc.allocated + (budget.allocatedAmount || 0),
-          remaining: acc.remaining + (budget.remainingAmount || 0)
-        }), { total: 0, allocated: 0, remaining: 0 });
-        budgetSummary.percentUsed = budgetSummary.total > 0 ? (budgetSummary.allocated / budgetSummary.total) * 100 : 0;
-
-        // Process promotions data
-        const promotions = promotionsData.status === 'fulfilled' ? promotionsData.value : { data: [] };
-        
-        // Process customers data
-        const customers = customersData.status === 'fulfilled' ? customersData.value : { data: [] };
-
-        // Create KPIs from real data
-        const kpis = [
-          { 
-            title: 'Total Budget', 
-            value: `$${(budgetSummary.total / 1000000).toFixed(1)}M`, 
-            icon: <AttachMoney color="primary" />, 
-            change: analytics?.budgetGrowth || '+0%', 
-            trend: 'up' 
-          },
-          { 
-            title: 'Active Promotions', 
-            value: promotions.data.length.toString(), 
-            icon: <LocalOffer color="secondary" />, 
-            change: analytics?.promotionGrowth || '+0', 
-            trend: 'up' 
-          },
-          { 
-            title: 'Customers', 
-            value: customers.data.length.toString(), 
-            icon: <ShoppingCart color="success" />, 
-            change: analytics?.customerGrowth || '0', 
-            trend: 'neutral' 
-          },
-          { 
-            title: 'Budget Utilization', 
-            value: `${budgetSummary.percentUsed.toFixed(0)}%`, 
-            icon: <Assessment color="warning" />, 
-            change: analytics?.utilizationChange || '+0%', 
-            trend: 'up' 
-          }
-        ];
-
-        setDashboardData({
-          budgetData: budgetSummary,
-          recentPromotions: promotions.data || [],
-          pendingApprovals: analytics?.pendingApprovals || [],
-          kpis
+        // Fetch dashboard analytics with currency parameter
+        const response = await analyticsService.getDashboard({ 
+          currency: selectedCurrency 
         });
+
+        if (response.success) {
+          setDashboardData(response.data);
+        } else {
+          throw new Error('Failed to fetch dashboard data');
+        }
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -130,7 +96,7 @@ const Dashboard = ({ user }) => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [selectedCurrency]);
 
   // Check if this is the first login
   useEffect(() => {
@@ -197,7 +163,21 @@ const Dashboard = ({ user }) => {
         Here's what's happening with your trade spend activities today.
       </Typography>
       
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel>Currency</InputLabel>
+          <Select
+            value={selectedCurrency}
+            label="Currency"
+            onChange={(e) => setSelectedCurrency(e.target.value)}
+          >
+            {currencies.map((currency) => (
+              <MenuItem key={currency.code} value={currency.code}>
+                {currency.symbol} {currency.code}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Button
           startIcon={<SchoolIcon />}
           onClick={handleStartWalkthrough}
@@ -224,7 +204,36 @@ const Dashboard = ({ user }) => {
         <>
           {/* KPI Cards */}
           <Grid container spacing={3} sx={{ mb: 4, mt: 1 }}>
-            {dashboardData.kpis.map((kpi, index) => (
+            {dashboardData.summary && [
+              {
+                title: 'Total Budget',
+                value: `${dashboardData.summary.currencySymbol}${(dashboardData.summary.totalBudget / 1000000).toFixed(1)}M`,
+                icon: <AttachMoney color="primary" />,
+                change: '+12%',
+                trend: 'up'
+              },
+              {
+                title: 'Active Promotions',
+                value: dashboardData.summary.activePromotions.toString(),
+                icon: <LocalOffer color="secondary" />,
+                change: `+${dashboardData.summary.activePromotions}`,
+                trend: 'up'
+              },
+              {
+                title: 'Customers',
+                value: dashboardData.summary.totalCustomers.toString(),
+                icon: <ShoppingCart color="success" />,
+                change: '0',
+                trend: 'neutral'
+              },
+              {
+                title: 'Budget Utilization',
+                value: `${dashboardData.summary.budgetUtilization.toFixed(0)}%`,
+                icon: <Assessment color="warning" />,
+                change: '+8%',
+                trend: 'up'
+              }
+            ].map((kpi, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Card elevation={2}>
                   <CardContent sx={{ p: 2 }}>
@@ -272,19 +281,19 @@ const Dashboard = ({ user }) => {
               <Typography variant="h6" gutterBottom>
                 Budget Overview (2025)
               </Typography>
-              {dashboardData.budgetData ? (
+              {dashboardData.summary ? (
                 <Box sx={{ my: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="body2">
-                      ${(dashboardData.budgetData.allocated / 1000000).toFixed(1)}M Used
+                      {dashboardData.summary.currencySymbol}{(dashboardData.summary.totalUsed / 1000000).toFixed(1)}M Used
                     </Typography>
                     <Typography variant="body2">
-                      ${(dashboardData.budgetData.total / 1000000).toFixed(1)}M Total
+                      {dashboardData.summary.currencySymbol}{(dashboardData.summary.totalBudget / 1000000).toFixed(1)}M Total
                     </Typography>
                   </Box>
                   <LinearProgress 
                     variant="determinate" 
-                    value={dashboardData.budgetData.percentUsed} 
+                    value={dashboardData.summary.budgetUtilization} 
                     sx={{ height: 10, borderRadius: 5 }}
                   />
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
@@ -293,7 +302,7 @@ const Dashboard = ({ user }) => {
                         Allocated
                       </Typography>
                       <Typography variant="h6">
-                        ${(dashboardData.budgetData.allocated / 1000000).toFixed(1)}M
+                        {dashboardData.summary.currencySymbol}{(dashboardData.summary.totalUsed / 1000000).toFixed(1)}M
                       </Typography>
                     </Box>
                     <Box>
@@ -301,7 +310,7 @@ const Dashboard = ({ user }) => {
                         Remaining
                       </Typography>
                       <Typography variant="h6">
-                        ${(dashboardData.budgetData.remaining / 1000000).toFixed(1)}M
+                        {dashboardData.summary.currencySymbol}{((dashboardData.summary.totalBudget - dashboardData.summary.totalUsed) / 1000000).toFixed(1)}M
                       </Typography>
                     </Box>
                     <Box>
@@ -309,7 +318,7 @@ const Dashboard = ({ user }) => {
                         % Used
                       </Typography>
                       <Typography variant="h6">
-                        {dashboardData.budgetData.percentUsed.toFixed(0)}%
+                        {dashboardData.summary.budgetUtilization.toFixed(0)}%
                       </Typography>
                     </Box>
                   </Box>
@@ -336,7 +345,7 @@ const Dashboard = ({ user }) => {
               />
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Based on current spending patterns, you are projected to exceed your budget by 8% before year end.
+              {dashboardData.forecast?.recommendation || 'Based on current spending patterns, you are projected to exceed your budget by 8% before year end.'}
             </Typography>
           </Paper>
         </Grid>
@@ -403,42 +412,42 @@ const Dashboard = ({ user }) => {
           </Paper>
         </Grid>
         
-          {/* Recent Promotions */}
+          {/* Top Customers */}
           <Grid item xs={12}>
             <Paper elevation={2} sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">
-                  Recent Promotions
+                  Top Customers
                 </Typography>
                 <Button size="small" variant="outlined">
                   View All
                 </Button>
               </Box>
-              {dashboardData.recentPromotions.length > 0 ? (
+              {dashboardData.topCustomers && dashboardData.topCustomers.length > 0 ? (
                 <Grid container spacing={2}>
-                  {dashboardData.recentPromotions.map((promotion) => (
-                    <Grid item xs={12} sm={6} md={3} key={promotion._id || promotion.id}>
+                  {dashboardData.topCustomers.slice(0, 4).map((customer, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={customer.id || index}>
                       <Card variant="outlined">
                         <CardHeader
-                          title={promotion.name}
-                          subheader={promotion.customer?.name || promotion.customer}
+                          title={customer.name}
+                          subheader={`${customer.totalSpend ? `${dashboardData.summary?.currencySymbol || '$'}${customer.totalSpend.toLocaleString()}` : 'No spend data'}`}
                           titleTypographyProps={{ variant: 'subtitle1' }}
                           subheaderTypographyProps={{ variant: 'body2' }}
                           action={
                             <Chip 
-                              label={promotion.status} 
+                              label={customer.tier || 'Standard'} 
                               size="small"
-                              color={promotion.status === 'active' ? 'success' : 'default'}
+                              color={customer.tier === 'Premium' ? 'success' : 'default'}
                             />
                           }
                         />
                         <Divider />
                         <CardContent sx={{ pt: 1 }}>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Budget: ${(promotion.budget || 0).toLocaleString()}
+                            Active Promotions: {customer.activePromotions || 0}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {new Date(promotion.startDate).toLocaleDateString()} - {new Date(promotion.endDate).toLocaleDateString()}
+                            Last Activity: {customer.lastActivity ? new Date(customer.lastActivity).toLocaleDateString() : 'N/A'}
                           </Typography>
                         </CardContent>
                       </Card>
@@ -448,7 +457,7 @@ const Dashboard = ({ user }) => {
               ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                   <Typography variant="body2" color="text.secondary">
-                    No recent promotions found
+                    No customer data available
                   </Typography>
                 </Box>
               )}

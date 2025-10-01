@@ -300,9 +300,25 @@ export const productService = {
 
 // Analytics services
 export const analyticsService = {
-  getSummary: async () => {
+  getSummary: async (params) => {
     try {
-      const response = await api.get('/analytics/summary');
+      const response = await api.get('/analytics/dashboard', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getDashboard: async (params) => {
+    try {
+      const response = await api.get('/analytics/dashboard', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getReports: async (params) => {
+    try {
+      const response = await api.get('/analytics/reports', { params });
       return response.data;
     } catch (error) {
       throw error;
@@ -335,6 +351,48 @@ export const analyticsService = {
   getProductAnalytics: async (params) => {
     try {
       const response = await api.get('/analytics/products', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+// Currency services
+export const currencyService = {
+  getAll: async () => {
+    try {
+      const response = await api.get('/currencies');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  convert: async (amount, from, to) => {
+    try {
+      const response = await api.get('/currencies/convert', {
+        params: { amount, from, to }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+// Settings services
+export const settingsService = {
+  get: async () => {
+    try {
+      const response = await api.get('/settings');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  update: async (settings) => {
+    try {
+      const response = await api.put('/settings', settings);
       return response.data;
     } catch (error) {
       throw error;
