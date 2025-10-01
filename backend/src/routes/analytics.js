@@ -150,4 +150,37 @@ router.get('/predictions', authenticateToken, asyncHandler(async (req, res) => {
   });
 }));
 
+// ROI calculation routes
+router.get('/roi/:promotionId', authenticateToken, analyticsController.calculateROI);
+router.post('/bulk-roi', authenticateToken, analyticsController.bulkCalculateROI);
+
+// Lift calculation routes
+router.get('/lift/:promotionId', authenticateToken, analyticsController.calculateLift);
+router.post('/bulk-lift', authenticateToken, analyticsController.bulkCalculateLift);
+
+// Performance prediction
+router.post('/predict', authenticateToken, analyticsController.predictPerformance);
+
+// Spend optimization
+router.post('/optimize-spend', authenticateToken, analyticsController.optimizeSpend);
+
+// Insights and recommendations
+router.get('/insights', authenticateToken, analyticsController.getInsights);
+
+// Export functionality
+router.get('/export', authenticateToken, analyticsController.exportAnalytics);
+
+// Performance metrics
+router.get('/performance', authenticateToken, analyticsController.getPerformanceMetrics);
+
+// Cache management
+router.delete('/cache', authenticateToken, analyticsController.clearCache);
+
+// Advanced Analytics Routes
+router.get('/advanced/performance', authenticateToken, analyticsController.getAdvancedPerformanceMetrics);
+router.post('/advanced/predict', authenticateToken, analyticsController.getPredictiveAnalytics);
+router.get('/advanced/recommendations', authenticateToken, analyticsController.getOptimizationRecommendations);
+router.post('/advanced/bulk-roi', authenticateToken, analyticsController.bulkCalculateROI);
+router.post('/advanced/bulk-lift', authenticateToken, analyticsController.bulkCalculateLift);
+
 module.exports = router;

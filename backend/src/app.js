@@ -15,6 +15,7 @@ const config = require('./config');
 const logger = require('./utils/logger');
 const { errorHandler } = require('./middleware/errorHandler');
 const { authenticateToken } = require('./middleware/auth');
+const { tenantIsolation, tenantCleanup } = require('./middleware/tenantIsolation');
 
 // Load all models to ensure they are registered with Mongoose
 require('./models');
@@ -40,6 +41,7 @@ const analyticsRoutes = require('./routes/analytics');
 const integrationRoutes = require('./routes/integration');
 const mlRoutes = require('./routes/ml');
 const salesRoutes = require('./routes/sales');
+const tenantRoutes = require('./routes/tenantRoutes');
 
 // Create Express app
 const app = express();
@@ -98,6 +100,10 @@ app.use((req, res, next) => {
 const limiter = rateLimit(config.rateLimit);
 app.use('/api/', limiter);
 
+// Tenant isolation middleware (before authentication)
+app.use(tenantCleanup);
+app.use('/api/', tenantIsolation);
+
 // API Documentation
 const swaggerOptions = {
   definition: config.swagger.definition,
@@ -132,6 +138,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/tenants', tenantRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/companies', authenticateToken, companyRoutes);
 app.use('/api/trading-terms', authenticateToken, tradingTermsRoutes);

@@ -1,4 +1,5 @@
 const AnalyticsEngine = require('../services/analyticsEngine');
+const AdvancedAnalyticsEngine = require('../services/advancedAnalyticsEngine');
 const asyncHandler = require('../middleware/asyncHandler');
 const { validateTenant } = require('../middleware/tenantValidation');
 
@@ -10,6 +11,7 @@ const { validateTenant } = require('../middleware/tenantValidation');
 class AnalyticsController {
   constructor() {
     this.analyticsEngine = new AnalyticsEngine();
+    this.advancedAnalyticsEngine = AdvancedAnalyticsEngine;
   }
 
   /**
@@ -21,7 +23,7 @@ class AnalyticsController {
     const { forceRefresh } = req.query;
     const tenantId = req.tenant.id;
 
-    const roi = await this.analyticsEngine.calculateROI(
+    const roi = await this.advancedAnalyticsEngine.calculateROI(
       tenantId, 
       promotionId, 
       { forceRefresh: forceRefresh === 'true' }
@@ -42,7 +44,7 @@ class AnalyticsController {
     const { forceRefresh } = req.query;
     const tenantId = req.tenant.id;
 
-    const lift = await this.analyticsEngine.calculateLift(
+    const lift = await this.advancedAnalyticsEngine.calculateLift(
       tenantId, 
       promotionId, 
       { forceRefresh: forceRefresh === 'true' }
@@ -421,10 +423,206 @@ class AnalyticsController {
 
     // Clear specific cache or all caches
     this.analyticsEngine.cache.clear();
+    this.advancedAnalyticsEngine.clearCache();
 
     res.json({
       success: true,
       message: `Cache cleared successfully${type ? ` for ${type}` : ''}`
+    });
+  });
+
+  /**
+   * Get comprehensive performance metrics
+   * GET /api/analytics/advanced/performance
+   */
+  getAdvancedPerformanceMetrics = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const {
+      startDate,
+      endDate,
+      customerIds,
+      productIds,
+      promotionIds,
+      forceRefresh
+    } = req.query;
+
+    const options = {
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      customerIds: customerIds ? customerIds.split(',') : [],
+      productIds: productIds ? productIds.split(',') : [],
+      promotionIds: promotionIds ? promotionIds.split(',') : [],
+      forceRefresh: forceRefresh === 'true'
+    };
+
+    const metrics = await this.advancedAnalyticsEngine.calculatePerformanceMetrics(
+      tenantId,
+      options
+    );
+
+    res.json({
+      success: true,
+      data: metrics
+    });
+  });
+
+  /**
+   * Get predictive sales analytics
+   * POST /api/analytics/advanced/predict
+   */
+  getPredictiveAnalytics = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const {
+      productIds = [],
+      customerIds = [],
+      forecastDays = 30,
+      confidenceLevel = 0.95
+    } = req.body;
+
+    const prediction = await this.advancedAnalyticsEngine.predictSalesPerformance(
+      tenantId,
+      {
+        productIds,
+        customerIds,
+        forecastDays,
+        confidenceLevel
+      }
+    );
+
+    res.json({
+      success: true,
+      data: prediction
+    });
+  });
+
+  /**
+   * Get optimization recommendations
+   * GET /api/analytics/advanced/recommendations
+   */
+  getOptimizationRecommendations = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const {
+      startDate,
+      endDate,
+      category,
+      priority
+    } = req.query;
+
+    const options = {
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      category,
+      priority
+    };
+
+    const recommendations = await this.advancedAnalyticsEngine.generateOptimizationRecommendations(
+      tenantId,
+      options
+    );
+
+    res.json({
+      success: true,
+      data: recommendations
+    });
+  });
+
+  /**
+   * Bulk calculate ROI for multiple promotions
+   * POST /api/analytics/advanced/bulk-roi
+   */
+  bulkCalculateROI = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { promotionIds, forceRefresh } = req.body;
+
+    if (!Array.isArray(promotionIds) || promotionIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'promotionIds array is required'
+      });
+    }
+
+    const results = await Promise.allSettled(
+      promotionIds.map(promotionId =>
+        this.advancedAnalyticsEngine.calculateROI(
+          tenantId,
+          promotionId,
+          { forceRefresh: forceRefresh === true }
+        )
+      )
+    );
+
+    const successful = results
+      .filter(result => result.status === 'fulfilled')
+      .map(result => result.value);
+
+    const failed = results
+      .filter(result => result.status === 'rejected')
+      .map((result, index) => ({
+        promotionId: promotionIds[index],
+        error: result.reason.message
+      }));
+
+    res.json({
+      success: true,
+      data: {
+        successful,
+        failed,
+        summary: {
+          total: promotionIds.length,
+          successful: successful.length,
+          failed: failed.length
+        }
+      }
+    });
+  });
+
+  /**
+   * Bulk calculate lift for multiple promotions
+   * POST /api/analytics/advanced/bulk-lift
+   */
+  bulkCalculateLift = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { promotionIds, forceRefresh } = req.body;
+
+    if (!Array.isArray(promotionIds) || promotionIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'promotionIds array is required'
+      });
+    }
+
+    const results = await Promise.allSettled(
+      promotionIds.map(promotionId =>
+        this.advancedAnalyticsEngine.calculateLift(
+          tenantId,
+          promotionId,
+          { forceRefresh: forceRefresh === true }
+        )
+      )
+    );
+
+    const successful = results
+      .filter(result => result.status === 'fulfilled')
+      .map(result => result.value);
+
+    const failed = results
+      .filter(result => result.status === 'rejected')
+      .map((result, index) => ({
+        promotionId: promotionIds[index],
+        error: result.reason.message
+      }));
+
+    res.json({
+      success: true,
+      data: {
+        successful,
+        failed,
+        summary: {
+          total: promotionIds.length,
+          successful: successful.length,
+          failed: failed.length
+        }
+      }
     });
   });
 }
