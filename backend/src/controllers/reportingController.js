@@ -1,7 +1,10 @@
 const ReportingEngine = require('../services/reportingEngine');
+const AdvancedReportingEngine = require('../services/advancedReportingEngine');
+const Report = require('../models/Report');
 const { asyncHandler } = require('../middleware/asyncHandler');
 const { validateTenant } = require('../middleware/tenantValidation');
 const fs = require('fs');
+const path = require('path');
 
 /**
  * Reporting Controller
@@ -11,6 +14,7 @@ const fs = require('fs');
 class ReportingController {
   constructor() {
     this.reportingEngine = new ReportingEngine();
+    this.advancedReportingEngine = AdvancedReportingEngine;
   }
 
   /**
@@ -487,6 +491,508 @@ class ReportingController {
         totalRecords: Object.values(reportData)
           .filter(Array.isArray)
           .reduce((sum, arr) => sum + arr.length, 0)
+      }
+    });
+  });
+
+  // Advanced Reporting Methods
+
+  /**
+   * Generate advanced Excel report with custom configuration
+   * POST /api/reports/advanced/excel
+   */
+  generateAdvancedExcelReport = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const userId = req.user._id;
+    const {
+      reportType,
+      title,
+      dataSource,
+      columns,
+      filters = {},
+      charts = [],
+      formatting = {},
+      fileName,
+      includeSummary = true
+    } = req.body;
+
+    // Validate required fields
+    if (!reportType || !dataSource || !columns) {
+      return res.status(400).json({
+        success: false,
+        error: 'reportType, dataSource, and columns are required'
+      });
+    }
+
+    // Get data for the report
+    const data = await this.advancedReportingEngine.getReportData(tenantId, {
+      dataSource,
+      filters,
+      dateRange: filters.dateRange
+    });
+
+    // Generate Excel report
+    const result = await this.advancedReportingEngine.generateExcelReport(tenantId, {
+      reportType,
+      title: title || `${reportType} Report`,
+      data,
+      columns,
+      charts,
+      formatting,
+      fileName: fileName || `${reportType}_${Date.now()}.xlsx`
+    }, { includeSummary });
+
+    // Save report record
+    const reportRecord = await Report.create({
+      company: tenantId,
+      name: title || `${reportType} Report`,
+      reportType,
+      configuration: {
+        dataSources: [dataSource],
+        filters,
+        columns: columns.map(col => ({
+          field: col.key,
+          label: col.header,
+          type: col.type || 'text'
+        }))
+      },
+      exportSettings: {
+        formats: [{ type: 'excel', enabled: true }],
+        includeCharts: charts.length > 0
+      },
+      reportData: {
+        data: data.slice(0, 100), // Store sample for preview
+        summary: {
+          totalRecords: data.length,
+          generatedAt: new Date()
+        },
+        generatedAt: new Date()
+      },
+      createdBy: userId,
+      status: 'active'
+    });
+
+    res.json({
+      success: true,
+      data: {
+        reportId: reportRecord._id,
+        fileName: result.fileName,
+        filePath: result.filePath,
+        size: result.size,
+        downloadUrl: `/api/reports/download-advanced/${reportRecord._id}`,
+        generatedAt: result.generatedAt
+      }
+    });
+  });
+
+  /**
+   * Generate advanced PDF report
+   * POST /api/reports/advanced/pdf
+   */
+  generateAdvancedPDFReport = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const userId = req.user._id;
+    const {
+      reportType,
+      title,
+      dataSource,
+      columns,
+      filters = {},
+      sections = [],
+      charts = [],
+      formatting = {},
+      fileName,
+      includeExecutiveSummary = true
+    } = req.body;
+
+    // Validate required fields
+    if (!reportType || !dataSource || !columns) {
+      return res.status(400).json({
+        success: false,
+        error: 'reportType, dataSource, and columns are required'
+      });
+    }
+
+    // Get data for the report
+    const data = await this.advancedReportingEngine.getReportData(tenantId, {
+      dataSource,
+      filters,
+      dateRange: filters.dateRange
+    });
+
+    // Generate PDF report
+    const result = await this.advancedReportingEngine.generatePDFReport(tenantId, {
+      reportType,
+      title: title || `${reportType} Report`,
+      data,
+      columns,
+      sections,
+      charts,
+      formatting,
+      fileName: fileName || `${reportType}_${Date.now()}.pdf`
+    }, { includeExecutiveSummary });
+
+    // Save report record
+    const reportRecord = await Report.create({
+      company: tenantId,
+      name: title || `${reportType} Report`,
+      reportType,
+      configuration: {
+        dataSources: [dataSource],
+        filters,
+        columns: columns.map(col => ({
+          field: col.key,
+          label: col.header,
+          type: col.type || 'text'
+        }))
+      },
+      exportSettings: {
+        formats: [{ type: 'pdf', enabled: true }],
+        includeCharts: charts.length > 0
+      },
+      reportData: {
+        data: data.slice(0, 100), // Store sample for preview
+        summary: {
+          totalRecords: data.length,
+          generatedAt: new Date()
+        },
+        generatedAt: new Date()
+      },
+      createdBy: userId,
+      status: 'active'
+    });
+
+    res.json({
+      success: true,
+      data: {
+        reportId: reportRecord._id,
+        fileName: result.fileName,
+        filePath: result.filePath,
+        size: result.size,
+        downloadUrl: `/api/reports/download-advanced/${reportRecord._id}`,
+        generatedAt: result.generatedAt
+      }
+    });
+  });
+
+  /**
+   * Generate multi-sheet Excel report
+   * POST /api/reports/advanced/multi-sheet
+   */
+  generateMultiSheetReport = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const userId = req.user._id;
+    const {
+      title,
+      sheets,
+      fileName
+    } = req.body;
+
+    if (!sheets || !Array.isArray(sheets) || sheets.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'sheets array is required'
+      });
+    }
+
+    // Validate each sheet configuration
+    for (const sheet of sheets) {
+      if (!sheet.name || !sheet.dataSource || !sheet.columns) {
+        return res.status(400).json({
+          success: false,
+          error: 'Each sheet must have name, dataSource, and columns'
+        });
+      }
+    }
+
+    // Generate multi-sheet Excel report
+    const result = await this.advancedReportingEngine.generateMultiSheetExcel(tenantId, {
+      title: title || 'Multi-Sheet Report',
+      sheets,
+      fileName: fileName || `multi_sheet_report_${Date.now()}.xlsx`
+    });
+
+    // Save report record
+    const reportRecord = await Report.create({
+      company: tenantId,
+      name: title || 'Multi-Sheet Report',
+      reportType: 'custom',
+      configuration: {
+        dataSources: sheets.map(sheet => sheet.dataSource),
+        filters: {},
+        multiSheet: true,
+        sheets: sheets.map(sheet => ({
+          name: sheet.name,
+          dataSource: sheet.dataSource,
+          columns: sheet.columns.map(col => ({
+            field: col.key,
+            label: col.header,
+            type: col.type || 'text'
+          }))
+        }))
+      },
+      exportSettings: {
+        formats: [{ type: 'excel', enabled: true }],
+        includeCharts: false
+      },
+      reportData: {
+        summary: {
+          totalSheets: sheets.length,
+          generatedAt: new Date()
+        },
+        generatedAt: new Date()
+      },
+      createdBy: userId,
+      status: 'active'
+    });
+
+    res.json({
+      success: true,
+      data: {
+        reportId: reportRecord._id,
+        fileName: result.fileName,
+        filePath: result.filePath,
+        size: result.size,
+        sheets: result.sheets,
+        downloadUrl: `/api/reports/download-advanced/${reportRecord._id}`,
+        generatedAt: result.generatedAt
+      }
+    });
+  });
+
+  /**
+   * Create advanced report template
+   * POST /api/reports/advanced/templates
+   */
+  createAdvancedTemplate = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const userId = req.user._id;
+    const templateConfig = req.body;
+
+    const result = await this.advancedReportingEngine.createReportTemplate(tenantId, {
+      ...templateConfig,
+      createdBy: userId
+    });
+
+    res.json({
+      success: true,
+      data: result
+    });
+  });
+
+  /**
+   * Generate report from advanced template
+   * POST /api/reports/advanced/templates/:templateId/generate
+   */
+  generateFromAdvancedTemplate = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { templateId } = req.params;
+    const parameters = req.body;
+
+    const result = await this.advancedReportingEngine.generateFromTemplate(
+      tenantId,
+      templateId,
+      parameters
+    );
+
+    res.json({
+      success: true,
+      data: {
+        ...result,
+        downloadUrl: `/api/reports/download-file?path=${encodeURIComponent(result.filePath)}`
+      }
+    });
+  });
+
+  /**
+   * Schedule advanced report
+   * POST /api/reports/advanced/schedule
+   */
+  scheduleAdvancedReport = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const userId = req.user._id;
+    const scheduleConfig = req.body;
+
+    const result = await this.advancedReportingEngine.scheduleReport(tenantId, {
+      ...scheduleConfig,
+      createdBy: userId
+    });
+
+    res.json({
+      success: true,
+      data: result
+    });
+  });
+
+  /**
+   * Download advanced report file
+   * GET /api/reports/download-advanced/:id
+   */
+  downloadAdvancedReport = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { id } = req.params;
+
+    const report = await Report.findOne({
+      _id: id,
+      company: tenantId,
+      isActive: true
+    });
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        error: 'Report not found'
+      });
+    }
+
+    // For this demo, we'll look for the file in the temp directory
+    const fileName = `${report.reportType}_${report._id}.xlsx`;
+    const filePath = path.join(process.cwd(), 'temp', fileName);
+
+    try {
+      await fs.promises.access(filePath);
+      
+      // Update download count
+      await report.updatePerformance('export');
+
+      res.download(filePath, fileName);
+    } catch (error) {
+      res.status(404).json({
+        success: false,
+        error: 'Report file not found'
+      });
+    }
+  });
+
+  /**
+   * Download file by path (for template-generated reports)
+   * GET /api/reports/download-file
+   */
+  downloadFileByPath = asyncHandler(async (req, res) => {
+    const { path: filePath } = req.query;
+
+    if (!filePath) {
+      return res.status(400).json({
+        success: false,
+        error: 'File path is required'
+      });
+    }
+
+    try {
+      await fs.promises.access(filePath);
+      const fileName = path.basename(filePath);
+      res.download(filePath, fileName);
+    } catch (error) {
+      res.status(404).json({
+        success: false,
+        error: 'File not found'
+      });
+    }
+  });
+
+  /**
+   * Get advanced report templates
+   * GET /api/reports/advanced/templates
+   */
+  getAdvancedTemplates = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const {
+      page = 1,
+      limit = 20,
+      category,
+      search
+    } = req.query;
+
+    const query = {
+      company: tenantId,
+      isTemplate: true,
+      isActive: true
+    };
+
+    if (category) query.templateCategory = category;
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { templateTags: { $in: [new RegExp(search, 'i')] } }
+      ];
+    }
+
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      sort: { 'performance.popularityScore': -1, createdAt: -1 },
+      populate: [
+        { path: 'createdBy', select: 'firstName lastName email' }
+      ]
+    };
+
+    const templates = await Report.paginate(query, options);
+
+    res.json({
+      success: true,
+      data: templates
+    });
+  });
+
+  /**
+   * Get advanced report statistics
+   * GET /api/reports/advanced/stats
+   */
+  getAdvancedReportStats = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+
+    const stats = await Report.aggregate([
+      { $match: { company: tenantId, isActive: true } },
+      {
+        $group: {
+          _id: null,
+          totalReports: { $sum: 1 },
+          totalViews: { $sum: '$performance.viewCount' },
+          totalExports: { $sum: '$performance.exportCount' },
+          activeScheduled: {
+            $sum: {
+              $cond: [
+                { $and: ['$schedule.isScheduled', '$schedule.isActive'] },
+                1,
+                0
+              ]
+            }
+          },
+          templates: {
+            $sum: { $cond: ['$isTemplate', 1, 0] }
+          }
+        }
+      }
+    ]);
+
+    const reportsByType = await Report.aggregate([
+      { $match: { company: tenantId, isActive: true } },
+      {
+        $group: {
+          _id: '$reportType',
+          count: { $sum: 1 },
+          avgViews: { $avg: '$performance.viewCount' }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    const popularReports = await Report.getPopularReports(tenantId, 5);
+
+    res.json({
+      success: true,
+      data: {
+        overview: stats[0] || {
+          totalReports: 0,
+          totalViews: 0,
+          totalExports: 0,
+          activeScheduled: 0,
+          templates: 0
+        },
+        reportsByType,
+        popularReports
       }
     });
   });
