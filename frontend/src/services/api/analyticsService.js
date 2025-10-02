@@ -2,6 +2,21 @@ import apiClient from './apiClient';
 
 const analyticsService = {
   /**
+   * Get all analytics data (comprehensive dashboard data)
+   * @param {Object} params - Query parameters
+   * @returns {Promise} - Promise with comprehensive analytics data
+   */
+  getAll: async (params = {}) => {
+    try {
+      const response = await apiClient.get('/analytics/dashboard', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Get all analytics error:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get dashboard analytics
    * @param {Object} params - Query parameters
    * @returns {Promise} - Promise with dashboard analytics data

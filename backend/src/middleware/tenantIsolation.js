@@ -133,15 +133,31 @@ function extractTenantId(req) {
 function isPublicRoute(path) {
   const publicRoutes = [
     '/health',
+    '/api/health',
     '/api/v1/health',
-    '/api/v1/auth/login',
-    '/api/v1/auth/register',
-    '/api/v1/auth/forgot-password',
-    '/api/v1/auth/reset-password',
-    '/api/v1/tenants/signup',
-    '/api/v1/tenants/verify',
+    '/auth/login',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/auth/quick-login',
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password',
+    '/api/auth/quick-login',
+    '/v1/auth/login',
+    '/v1/auth/register',
+    '/v1/auth/forgot-password',
+    '/v1/auth/reset-password',
+    '/tenants/signup',
+    '/tenants/verify',
+    '/api/tenants/signup',
+    '/api/tenants/verify',
+    '/v1/tenants/signup',
+    '/v1/tenants/verify',
     '/docs',
     '/api-docs',
+    '/api/docs',
     '/swagger',
     '/openapi.json'
   ];
@@ -171,8 +187,12 @@ const tenantIsolation = async (req, res, next) => {
     req.requestId = req.headers['x-request-id'] || 
                    `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
+    // Debug logging
+    console.log(`[TENANT DEBUG] Path: ${req.path}, isPublic: ${isPublicRoute(req.path)}`);
+    
     // Skip tenant check for public routes
     if (isPublicRoute(req.path)) {
+      console.log(`[TENANT DEBUG] Skipping tenant check for public route: ${req.path}`);
       return next();
     }
     

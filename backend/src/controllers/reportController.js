@@ -9,6 +9,7 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 const analyticsController = require('./analyticsController');
+const mongoose = require('mongoose');
 
 const reportController = {
   // Generate promotion effectiveness report
@@ -36,8 +37,8 @@ const reportController = {
       {
         $group: {
           _id: null,
-          totalUnits: { $sum: '$units' },
-          totalValue: { $sum: '$value' }
+          totalUnits: { $sum: '$quantity' },
+          totalValue: { $sum: '$revenue.net' }
         }
       }
     ]);
@@ -96,32 +97,53 @@ const reportController = {
   },
   
   // Generate customer performance report
-  async generateCustomerPerformanceReport({ customerId, startDate, endDate }) {
+  async generateCustomerPerformanceReport({ customerId, startDate, endDate, tenantId }) {
+    console.log('=== Customer Performance Report Started ===');
+    console.log('Parameters:', { customerId, startDate, endDate, tenantId });
+    
     const query = {};
     if (customerId) query._id = customerId;
+    if (tenantId) query.company = new mongoose.Types.ObjectId(tenantId);
     
+    console.log('Customer query:', JSON.stringify(query, null, 2));
     const customers = await Customer.find(query);
+    console.log('Found customers:', customers.length);
     
     const reports = await Promise.all(customers.map(async (customer) => {
+      const matchQuery = {
+        customer: customer._id
+      };
+      
+      // Add tenant filtering
+      if (tenantId) {
+        matchQuery.company = new mongoose.Types.ObjectId(tenantId);
+      }
+      
+      // Add date filtering if provided
+      if (startDate && endDate) {
+        matchQuery.date = {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        };
+      }
+
+      console.log('Customer Performance Report - Match Query:', JSON.stringify(matchQuery, null, 2));
+      
       const salesData = await SalesHistory.aggregate([
         {
-          $match: {
-            customer: customer._id,
-            date: {
-              $gte: new Date(startDate),
-              $lte: new Date(endDate)
-            }
-          }
+          $match: matchQuery
         },
         {
           $group: {
             _id: null,
-            totalUnits: { $sum: '$units' },
-            totalValue: { $sum: '$value' },
+            totalUnits: { $sum: '$quantity' },
+            totalValue: { $sum: '$revenue.net' },
             transactionCount: { $sum: 1 }
           }
         }
       ]);
+      
+      console.log('Customer Performance Report - Sales Data Result:', JSON.stringify(salesData, null, 2));
       
       return {
         customer: {
@@ -163,8 +185,8 @@ const reportController = {
         {
           $group: {
             _id: null,
-            totalUnits: { $sum: '$units' },
-            totalValue: { $sum: '$value' }
+            totalUnits: { $sum: '$quantity' },
+            totalValue: { $sum: '$revenue.net' }
           }
         }
       ]);
@@ -212,7 +234,7 @@ const reportController = {
         {
           $group: {
             _id: null,
-            totalValue: { $sum: '$value' }
+            totalValue: { $sum: '$revenue.net' }
           }
         }
       ]);

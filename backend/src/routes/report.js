@@ -44,10 +44,17 @@ router.get('/budget-utilization', authenticateToken, asyncHandler(async (req, re
 router.get('/customer-performance', authenticateToken, asyncHandler(async (req, res) => {
   const { customerId, startDate, endDate } = req.query;
   
+  // Write to a file to ensure we can see the debug output
+  const fs = require('fs');
+  fs.appendFileSync('/home/ubuntu/debug.log', `=== Customer Performance Route ===\n`);
+  fs.appendFileSync('/home/ubuntu/debug.log', `req.tenant: ${JSON.stringify(req.tenant)}\n`);
+  fs.appendFileSync('/home/ubuntu/debug.log', `tenantId being passed: ${req.tenant?.id}\n`);
+  
   const report = await reportController.generateCustomerPerformanceReport({
     customerId,
     startDate,
-    endDate
+    endDate,
+    tenantId: req.tenant?.id
   });
   
   res.json({

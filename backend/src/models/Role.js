@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { BaseTenantModel } = require('./BaseTenantModel');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const roleSchema = new mongoose.Schema({
   // Role name (unique within tenant)
@@ -161,7 +161,7 @@ const roleSchema = new mongoose.Schema({
 });
 
 // Apply tenant isolation
-roleSchema.plugin(BaseTenantModel);
+addTenantSupport(roleSchema);
 
 // Indexes
 roleSchema.index({ tenantId: 1, name: 1 }, { unique: true });

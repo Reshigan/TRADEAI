@@ -7,6 +7,9 @@ import customerService from './customerService';
 import productService from './productService';
 import analyticsService from './analyticsService';
 import activityGridService from './activityGridService';
+import forecastingService from './forecastingService';
+import securityService from './securityService';
+import workflowService from './workflowService';
 
 export {
   apiClient,
@@ -17,5 +20,8 @@ export {
   customerService,
   productService,
   analyticsService,
-  activityGridService
+  activityGridService,
+  forecastingService,
+  securityService,
+  workflowService
 };

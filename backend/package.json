@@ -6,8 +6,12 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest --coverage",
-    "test:watch": "jest --watch",
+    "test": "jest --coverage --detectOpenHandles --forceExit",
+    "test:watch": "jest --watch --detectOpenHandles",
+    "test:integration": "jest --testPathPattern=integration --detectOpenHandles --forceExit",
+    "test:unit": "jest --testPathPattern=unit --detectOpenHandles --forceExit",
+    "test:services": "jest --testPathPattern=services --detectOpenHandles --forceExit",
+    "test:e2e": "jest --testPathPattern=e2e --detectOpenHandles --forceExit",
     "seed": "node src/seeds/index.js",
     "seed:simple": "node src/seeds/simple-seed.js",
     "seed:minimal": "node src/seeds/minimal-seed.js",
@@ -16,9 +20,13 @@
     "check-db": "node src/scripts/check-db.js",
     "migrate": "node src/migrations/index.js",
     "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"src/**/*.js\"",
     "ml:train": "node src/ml/train.js",
-    "ml:evaluate": "node src/ml/evaluate.js"
+    "ml:evaluate": "node src/ml/evaluate.js",
+    "build": "npm run lint && npm run test",
+    "docker:build": "docker build -t tradeai-backend .",
+    "docker:run": "docker run -p 3000:3000 tradeai-backend"
   },
   "keywords": [
     "fmcg",
@@ -96,10 +104,10 @@
     "@faker-js/faker": "^8.4.1",
     "eslint": "^8.48.0",
     "jest": "^29.6.4",
-    "mongodb-memory-server": "^8.15.1",
+    "mongodb-memory-server": "^8.16.1",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.4"
   },
   "engines": {
     "node": ">=16.0.0",
@@ -107,5 +115,28 @@
   },
   "directories": {
     "test": "test"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js",
+      "!src/config/**",
+      "!src/scripts/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testTimeout": 30000,
+    "maxWorkers": 1
   }
 }
