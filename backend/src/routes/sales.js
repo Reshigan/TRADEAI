@@ -383,6 +383,94 @@ router.get('/trends', auth, async (req, res) => {
   }
 });
 
+// Create a new sales transaction
+router.post('/', auth, async (req, res) => {
+  try {
+    const {
+      customerId,
+      productId,
+      quantity,
+      unitPrice,
+      totalAmount,
+      saleDate,
+      status = 'completed',
+      channel = 'Direct',
+      region = 'Unknown'
+    } = req.body;
+
+    // Extract company ID from user context
+    let companyId;
+    if (req.user.companyId && req.user.companyId._id) {
+      companyId = req.user.companyId._id;
+    } else {
+      companyId = req.user.companyId;
+    }
+    
+    // If no company ID, try using tenantId (for multi-tenant setups)
+    if (!companyId) {
+      companyId = req.tenantId || req.user.tenantId;
+    }
+
+    // Validate company context exists
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Company/tenant context not found. User must be associated with a company.'
+      });
+    }
+
+    // Validate required fields
+    if (!customerId || !productId || !quantity || !unitPrice) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: customerId, productId, quantity, unitPrice'
+      });
+    }
+
+    // Generate unique transaction ID
+    const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Calculate amounts
+    const calculatedTotal = totalAmount || (quantity * unitPrice);
+    const netAmount = calculatedTotal; // Assuming no discount for now
+
+    const salesTransaction = new SalesTransaction({
+      company: companyId,
+      transactionId,
+      customer: customerId,
+      product: productId,
+      date: saleDate ? new Date(saleDate) : new Date(),
+      quantity,
+      unitPrice,
+      totalAmount: calculatedTotal,
+      discountAmount: 0,
+      netAmount,
+      currency: 'ZAR',
+      salesRep: req.user.username || req.user.email || 'System',
+      channel,
+      region,
+      status
+    });
+
+    await salesTransaction.save();
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: salesTransaction._id,
+        transactionId: salesTransaction.transactionId,
+        totalAmount: salesTransaction.totalAmount
+      }
+    });
+  } catch (error) {
+    logger.error('Create sales transaction error', { error: error.message, stack: error.stack });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create sales transaction'
+    });
+  }
+});
+
 // Get sales transactions with pagination
 router.get('/transactions', auth, async (req, res) => {
   try {

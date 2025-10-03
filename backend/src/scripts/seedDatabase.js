@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Budget = require('../models/Budget');
 const Customer = require('../models/Customer');
+const Tenant = require('../models/Tenant');
 const logger = require('../utils/logger');
 
 // Connect to MongoDB
@@ -39,7 +40,25 @@ const clearData = async () => {
 // Seed users
 const seedUsers = async () => {
   try {
-    const tenantId = new mongoose.Types.ObjectId();
+    // Get existing tenant or create a new one
+    let tenant = await Tenant.findOne({});
+    if (!tenant) {
+      logger.info('No tenant found, creating default tenant...');
+      tenant = await Tenant.create({
+        name: 'TradeAI Demo Company',
+        slug: 'tradeai-demo',
+        isActive: true,
+        subscription: {
+          plan: 'enterprise',
+          status: 'active'
+        }
+      });
+      logger.info(`Created tenant with ID: ${tenant._id}`);
+    } else {
+      logger.info(`Using existing tenant: ${tenant._id}`);
+    }
+    
+    const tenantId = tenant._id;
     const users = [
       {
         email: 'admin@tradeai.com',

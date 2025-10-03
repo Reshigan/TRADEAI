@@ -54,6 +54,7 @@ router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
 router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(async (req, res) => {
   const product = await Product.create({
     ...req.body,
+    tenantId: req.tenant?.id,
     createdBy: req.user._id
   });
   

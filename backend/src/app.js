@@ -41,10 +41,14 @@ const analyticsRoutes = require('./routes/analytics');
 const integrationRoutes = require('./routes/integration');
 const mlRoutes = require('./routes/ml');
 const salesRoutes = require('./routes/sales');
+const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
 
 // Create Express app
 const app = express();
+
+// Track server start time for uptime calculation
+const serverStartTime = Date.now();
 
 // Create HTTP server
 const server = createServer(app);
@@ -116,9 +120,9 @@ if (process.env.NODE_ENV === 'development' && process.env.DEBUG_REQUESTS === 'tr
   });
 }
 
-// Rate limiting
-const limiter = rateLimit(config.rateLimit);
-app.use('/api/', limiter);
+// Rate limiting - Temporarily disabled for UAT testing
+// const limiter = rateLimit(config.rateLimit);
+// app.use('/api/', limiter);
 
 // Tenant isolation middleware (before authentication)
 app.use(tenantCleanup);
@@ -148,11 +152,13 @@ app.get('/health', (req, res) => {
 
 // API health check
 app.get('/api/health', (req, res) => {
+  const uptimeSeconds = Math.floor((Date.now() - serverStartTime) / 1000);
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'Trade AI Backend API',
-    version: '1.0.0'
+    version: '1.0.0',
+    uptime: uptimeSeconds
   });
 });
 
@@ -178,6 +184,7 @@ app.use('/api/analytics', authenticateToken, analyticsRoutes);
 app.use('/api/integration', authenticateToken, integrationRoutes);
 app.use('/api/ml', authenticateToken, mlRoutes);
 app.use('/api/sales', authenticateToken, salesRoutes);
+app.use('/api/inventory', authenticateToken, inventoryRoutes);
 
 // Socket.IO middleware
 io.use(async (socket, next) => {

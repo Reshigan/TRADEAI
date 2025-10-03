@@ -104,7 +104,7 @@ const reportController = {
     
     const query = {};
     if (customerId) query._id = customerId;
-    if (tenantId) query.company = new mongoose.Types.ObjectId(tenantId);
+    if (tenantId) query.tenantId = new mongoose.Types.ObjectId(tenantId);
     
     logger.debug('Customer query', { query });
     const customers = await Customer.find(query);
@@ -117,7 +117,7 @@ const reportController = {
       
       // Add tenant filtering
       if (tenantId) {
-        matchQuery.company = new mongoose.Types.ObjectId(tenantId);
+        matchQuery.tenantId = new mongoose.Types.ObjectId(tenantId);
       }
       
       // Add date filtering if provided
