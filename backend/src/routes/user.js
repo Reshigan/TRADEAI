@@ -3,6 +3,18 @@ const router = express.Router();
 const { authenticateToken, authorize } = require('../middleware/auth');
 const User = require('../models/User');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const { body, validationResult } = require('express-validator');
+
+// XSS sanitization helper
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
 
 // Get all users (admin only)
 router.get('/', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
@@ -14,6 +26,76 @@ router.get('/', authenticateToken, authorize('admin'), asyncHandler(async (req, 
     success: true,
     count: users.length,
     data: users
+  });
+}));
+
+// Create new user (admin only)
+router.post('/', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
+  let { employeeId, email, password, firstName, lastName, role, department } = req.body;
+  
+  // Sanitize string inputs to prevent XSS
+  employeeId = sanitizeInput(employeeId);
+  firstName = sanitizeInput(firstName);
+  lastName = sanitizeInput(lastName);
+  
+  // Validate required fields
+  if (!employeeId || !email || !password || !firstName || !lastName) {
+    throw new AppError('Missing required fields: employeeId, email, password, firstName, lastName', 400);
+  }
+  
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new AppError('Invalid email format', 400);
+  }
+  
+  // Validate password strength (min 8 chars, at least 1 uppercase, 1 lowercase, 1 number, 1 special char)
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    throw new AppError('Password must be at least 8 characters and contain uppercase, lowercase, number, and special character', 400);
+  }
+  
+  // Check if user already exists
+  const existingUser = await User.findOne({ email: email.toLowerCase() });
+  if (existingUser) {
+    throw new AppError('User with this email already exists', 409);
+  }
+  
+  // Check if employeeId already exists
+  const existingEmployee = await User.findOne({ employeeId });
+  if (existingEmployee) {
+    throw new AppError('User with this employee ID already exists', 409);
+  }
+  
+  // Set tenant from request context (added by tenantIsolation middleware)
+  const tenantId = req.tenantId || req.user.tenantId;
+  if (!tenantId) {
+    throw new AppError('Tenant context not found', 400);
+  }
+  
+  // Create new user
+  const user = new User({
+    employeeId,
+    email: email.toLowerCase(),
+    password, // Will be hashed by pre-save hook
+    firstName,
+    lastName,
+    role: role || 'user',
+    department,
+    tenantId,
+    isActive: true
+  });
+  
+  await user.save();
+  
+  // Remove password from response
+  const userObj = user.toObject();
+  delete userObj.password;
+  
+  res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    data: userObj
   });
 }));
 
