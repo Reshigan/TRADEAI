@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const SalesHistory = require('../models/SalesHistory');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const { bulkOperationsLimiter } = require('../middleware/security');
 
 // Get sales history with filters
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
@@ -115,24 +116,28 @@ router.get('/aggregate', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Import sales history (bulk upload)
-router.post('/import', authenticateToken, asyncHandler(async (req, res) => {
-  const { data } = req.body;
-  
-  if (!Array.isArray(data) || data.length === 0) {
-    throw new AppError('Invalid data format', 400);
-  }
-  
-  const salesHistory = await SalesHistory.insertMany(data, { 
-    ordered: false,
-    rawResult: true 
-  });
-  
-  res.status(201).json({
-    success: true,
-    message: `Successfully imported ${salesHistory.insertedCount} records`,
-    failed: data.length - salesHistory.insertedCount
-  });
-}));
+router.post('/import', 
+  bulkOperationsLimiter,
+  authenticateToken, 
+  asyncHandler(async (req, res) => {
+    const { data } = req.body;
+    
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new AppError('Invalid data format', 400);
+    }
+    
+    const salesHistory = await SalesHistory.insertMany(data, { 
+      ordered: false,
+      rawResult: true 
+    });
+    
+    res.status(201).json({
+      success: true,
+      message: `Successfully imported ${salesHistory.insertedCount} records`,
+      failed: data.length - salesHistory.insertedCount
+    });
+  })
+);
 
 // Get sales trends
 router.get('/trends', authenticateToken, asyncHandler(async (req, res) => {

@@ -393,4 +393,10 @@ budgetSchema.statics.findLatestApproved = function(year, scope) {
 
 const Budget = mongoose.model('Budget', budgetSchema);
 
-module.exports = Budget;
+// Use mock in development mode if USE_MOCK_DB is enabled
+if (process.env.USE_MOCK_DB === 'true') {
+  const { MockBudget } = require('../services/mockDatabase');
+  module.exports = MockBudget;
+} else {
+  module.exports = Budget;
+}

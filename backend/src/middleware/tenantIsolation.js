@@ -216,18 +216,55 @@ const tenantIsolation = async (req, res, next) => {
     
     // Find tenant in database
     let tenant;
-    if (tenantInfo.type === 'id') {
-      tenant = await Tenant.findById(tenantInfo.value);
-    } else if (tenantInfo.type === 'slug') {
-      tenant = await Tenant.findBySlug(tenantInfo.value);
-    }
     
-    if (!tenant) {
-      return res.status(404).json({
-        error: 'Tenant not found',
-        message: 'The specified tenant does not exist',
-        code: 'TENANT_NOT_FOUND'
-      });
+    // In mock mode, create a mock tenant to avoid database queries
+    if (process.env.USE_MOCK_DB === 'true') {
+      tenant = {
+        _id: '507f1f77bcf86cd799439012',
+        slug: 'demo-tenant',
+        name: 'Demo Tenant',
+        isActive: true,
+        isSuspended: false,
+        features: {
+          promotionManagement: true,
+          budgetManagement: true,
+          aiPredictions: true,
+          multiCurrency: true,
+          customReports: true
+        },
+        limits: {
+          maxUsers: 100,
+          maxPromotions: 1000,
+          maxStorageGB: 10
+        },
+        usage: {
+          userCount: 5,
+          promotionCount: 50,
+          storageUsedGB: 2
+        },
+        settings: {
+          timezone: 'UTC',
+          currency: 'USD',
+          dateFormat: 'YYYY-MM-DD'
+        },
+        subscription: {
+          plan: 'enterprise'
+        }
+      };
+    } else {
+      if (tenantInfo.type === 'id') {
+        tenant = await Tenant.findById(tenantInfo.value);
+      } else if (tenantInfo.type === 'slug') {
+        tenant = await Tenant.findBySlug(tenantInfo.value);
+      }
+      
+      if (!tenant) {
+        return res.status(404).json({
+          error: 'Tenant not found',
+          message: 'The specified tenant does not exist',
+          code: 'TENANT_NOT_FOUND'
+        });
+      }
     }
     
     // Check tenant status
@@ -277,13 +314,15 @@ const tenantIsolation = async (req, res, next) => {
     req.canPerformAction = (action, currentUsage) => 
       tenantContext.canPerformAction(req.requestId, action, currentUsage);
     
-    // Update last activity
-    tenant.lastActivityAt = new Date();
-    await tenant.save();
-    
-    // Increment API call usage
-    if (req.method !== 'GET' || req.path.includes('/api/')) {
-      await tenant.updateUsage('apiCallsThisMonth', 1);
+    // Update last activity (skip in mock mode)
+    if (process.env.USE_MOCK_DB !== 'true') {
+      tenant.lastActivityAt = new Date();
+      await tenant.save();
+      
+      // Increment API call usage
+      if (req.method !== 'GET' || req.path.includes('/api/')) {
+        await tenant.updateUsage('apiCallsThisMonth', 1);
+      }
     }
     
     next();

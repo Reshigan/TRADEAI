@@ -495,4 +495,10 @@ addTenantSupport(productSchema);
 
 const Product = mongoose.model('Product', productSchema);
 
-module.exports = Product;
+// Use mock in development mode if USE_MOCK_DB is enabled
+if (process.env.USE_MOCK_DB === 'true') {
+  const { MockProduct } = require('../services/mockDatabase');
+  module.exports = MockProduct;
+} else {
+  module.exports = Product;
+}

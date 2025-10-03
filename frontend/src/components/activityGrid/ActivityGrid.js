@@ -42,6 +42,10 @@ import ActivityForm from './ActivityForm';
 import { useSnackbar } from 'notistack';
 
 const ActivityGrid = () => {
+  console.log('[ActivityGrid] Component mounted');
+  console.log('[ActivityGrid] Token in localStorage:', localStorage.getItem('token') ? 'EXISTS' : 'MISSING');
+  console.log('[ActivityGrid] isAuthenticated:', localStorage.getItem('isAuthenticated'));
+  
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState([]);
   const [viewType, setViewType] = useState('month');

@@ -6,13 +6,12 @@
 
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
-const csrf = require('csurf');
 const validator = require('validator');
 const crypto = require('crypto');
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, matchedData } = require('express-validator');
+const mongoSanitize = require('express-mongo-sanitize');
 
 /**
  * Configure security middleware for Express app
@@ -50,25 +49,20 @@ const configureSecurityMiddleware = (app, config = {}) => {
     ]
   }));
   
-  // Data sanitization against XSS
-  app.use(xss());
+  // Data sanitization against NoSQL injection
+  app.use(mongoSanitize({
+    replaceWith: '_',
+    onSanitize: ({ req, key }) => {
+      console.warn(`Sanitized request data at key: ${key}`);
+    }
+  }));
   
-  // CSRF protection for non-API routes
-  if (config.enableCsrf !== false) {
-    const csrfProtection = csrf({ cookie: true });
-    app.use((req, res, next) => {
-      // Skip CSRF for API routes and non-mutation methods
-      if (req.path.startsWith('/api/') || ['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-        return next();
-      }
-      csrfProtection(req, res, next);
-    });
-    
-    // Provide CSRF token
-    app.get('/csrf-token', csrfProtection, (req, res) => {
-      res.json({ csrfToken: req.csrfToken() });
-    });
-  }
+  // XSS protection is handled by express-validator sanitizers in route handlers
+  // CSRF protection note: For API-first applications with JWT auth, CSRF is mitigated by:
+  // 1. Not using cookies for auth tokens
+  // 2. Using custom headers (Authorization) which can't be set by attackers
+  // 3. SameSite cookie attributes when cookies are used
+  // If CSRF tokens are needed, implement per-route with a modern alternative like csrf-csrf
   
   // Content Security Policy
   if (config.enableCsp !== false) {
@@ -357,6 +351,49 @@ const detectAttackPatterns = (req, res, next) => {
   next();
 };
 
+/**
+ * Strict rate limiter for file upload endpoints
+ * Prevents abuse of resource-intensive file operations
+ */
+const fileUploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 file uploads per 15 minutes
+  message: {
+    status: 'error',
+    message: 'Too many file uploads from this IP. Please try again later.',
+    retryAfter: 15 * 60 // seconds
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false, // Count all requests
+  skipFailedRequests: false,
+  // Custom key generator to track by IP and user
+  keyGenerator: (req) => {
+    return req.ip + (req.user?.id ? `-${req.user.id}` : '');
+  }
+});
+
+/**
+ * Stricter rate limiter for bulk operations
+ * Even more restrictive for bulk data operations
+ */
+const bulkOperationsLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit to 10 bulk operations per hour
+  message: {
+    status: 'error',
+    message: 'Too many bulk operations. Please try again in an hour.',
+    retryAfter: 60 * 60 // seconds
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  skipFailedRequests: false,
+  keyGenerator: (req) => {
+    return req.ip + (req.user?.id ? `-${req.user.id}` : '');
+  }
+});
+
 module.exports = {
   configureSecurityMiddleware,
   validateRequest,
@@ -365,5 +402,7 @@ module.exports = {
   generateSecureToken,
   hashPassword,
   verifyPassword,
-  detectAttackPatterns
+  detectAttackPatterns,
+  fileUploadLimiter,
+  bulkOperationsLimiter
 };

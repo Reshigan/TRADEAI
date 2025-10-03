@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { BaseTenantModel } = require('./BaseTenantModel');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const permissionSchema = new mongoose.Schema({
   // Permission identifier (e.g., "users:create", "reports:read")
@@ -233,7 +233,7 @@ const permissionSchema = new mongoose.Schema({
 });
 
 // Apply tenant isolation
-permissionSchema.plugin(BaseTenantModel);
+addTenantSupport(permissionSchema);
 
 // Indexes
 permissionSchema.index({ tenantId: 1, name: 1 }, { unique: true });

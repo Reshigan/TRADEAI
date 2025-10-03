@@ -137,12 +137,12 @@ const TradeSpendList = () => {
   // Apply filters to trade spends
   const filteredTradeSpends = tradeSpends.filter((tradeSpend) => {
     // Apply customer filter
-    if (filters.customer && tradeSpend.budget.customer.id !== filters.customer) {
+    if (filters.customer && tradeSpend.customer?._id !== filters.customer) {
       return false;
     }
     
     // Apply type filter
-    if (filters.type && tradeSpend.type !== filters.type) {
+    if (filters.type && tradeSpend.spendType !== filters.type) {
       return false;
     }
     
@@ -152,7 +152,7 @@ const TradeSpendList = () => {
     }
     
     // Apply budget filter
-    if (selectedBudgetId && tradeSpend.budget.id !== selectedBudgetId) {
+    if (selectedBudgetId && tradeSpend.budget?._id !== selectedBudgetId) {
       return false;
     }
     
@@ -160,47 +160,50 @@ const TradeSpendList = () => {
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       return (
-        tradeSpend.description.toLowerCase().includes(searchTerm) ||
-        tradeSpend.budget.customer.name.toLowerCase().includes(searchTerm) ||
-        tradeSpend.type.toLowerCase().includes(searchTerm) ||
-        tradeSpend.status.toLowerCase().includes(searchTerm)
+        tradeSpend.description?.toLowerCase().includes(searchTerm) ||
+        tradeSpend.customer?.name?.toLowerCase().includes(searchTerm) ||
+        tradeSpend.spendType?.toLowerCase().includes(searchTerm) ||
+        tradeSpend.status?.toLowerCase().includes(searchTerm) ||
+        tradeSpend.category?.toLowerCase().includes(searchTerm)
       );
     }
     
     return true;
   });
 
-  // Table columns
+  // Table columns - adapted for backend structure
   const columns = [
     { 
-      id: 'budget', 
+      id: 'customer', 
       label: 'Customer',
-      format: (budget) => `${budget.customer.name} (${budget.year})`
+      format: (customer) => customer?.name || 'N/A'
     },
     { 
       id: 'description', 
       label: 'Description'
     },
     { 
-      id: 'type', 
+      id: 'spendType', 
       label: 'Type',
-      format: (value) => value.charAt(0).toUpperCase() + value.slice(1)
+      format: (value) => value ? value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'N/A'
+    },
+    { 
+      id: 'category', 
+      label: 'Category'
     },
     { 
       id: 'amount', 
-      label: 'Amount',
+      label: 'Requested',
       numeric: true,
-      format: (value) => `$${value.toLocaleString()}`
+      format: (value) => value?.requested ? `$${value.requested.toLocaleString()}` : '$0'
     },
     { 
-      id: 'start_date', 
-      label: 'Start Date',
-      format: (date) => format(new Date(date), 'MMM d, yyyy')
-    },
-    { 
-      id: 'end_date', 
-      label: 'End Date',
-      format: (date) => format(new Date(date), 'MMM d, yyyy')
+      id: 'period', 
+      label: 'Period',
+      format: (period) => {
+        if (!period?.startDate) return 'N/A';
+        return `${format(new Date(period.startDate), 'MMM d')} - ${format(new Date(period.endDate), 'MMM d, yyyy')}`;
+      }
     },
     { 
       id: 'status', 
@@ -241,13 +244,13 @@ const TradeSpendList = () => {
                 size="small"
               >
                 <MenuItem value="">All Customers</MenuItem>
-                {Array.from(new Set(tradeSpends.map(ts => ts.budget.customer.id))).map(customerId => {
-                  const customer = tradeSpends.find(ts => ts.budget.customer.id === customerId)?.budget.customer;
-                  return (
+                {Array.from(new Set(tradeSpends.filter(ts => ts.customer?._id).map(ts => ts.customer._id))).map(customerId => {
+                  const customer = tradeSpends.find(ts => ts.customer?._id === customerId)?.customer;
+                  return customer ? (
                     <MenuItem key={customerId} value={customerId}>
                       {customer.name}
                     </MenuItem>
-                  );
+                  ) : null;
                 })}
               </TextField>
             </Grid>

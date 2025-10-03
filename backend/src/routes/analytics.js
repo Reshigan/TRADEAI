@@ -3,6 +3,23 @@ const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const analyticsController = require('../controllers/analyticsController');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const { bulkOperationsLimiter } = require('../middleware/security');
+
+// Get all analytics overview
+router.get('/', authenticateToken, asyncHandler(async (req, res) => {
+  const { period = '30days', currency = 'USD' } = req.query;
+  
+  const analytics = await analyticsController.getDashboardAnalytics({
+    userId: req.user._id,
+    period,
+    currency
+  });
+  
+  res.json({
+    success: true,
+    data: analytics
+  });
+}));
 
 // Get dashboard analytics
 router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
@@ -152,11 +169,11 @@ router.get('/predictions', authenticateToken, asyncHandler(async (req, res) => {
 
 // ROI calculation routes
 router.get('/roi/:promotionId', authenticateToken, analyticsController.calculateROI);
-router.post('/bulk-roi', authenticateToken, analyticsController.bulkCalculateROI);
+router.post('/bulk-roi', bulkOperationsLimiter, authenticateToken, analyticsController.bulkCalculateROI);
 
 // Lift calculation routes
 router.get('/lift/:promotionId', authenticateToken, analyticsController.calculateLift);
-router.post('/bulk-lift', authenticateToken, analyticsController.bulkCalculateLift);
+router.post('/bulk-lift', bulkOperationsLimiter, authenticateToken, analyticsController.bulkCalculateLift);
 
 // Performance prediction
 router.post('/predict', authenticateToken, analyticsController.predictPerformance);
@@ -180,7 +197,7 @@ router.delete('/cache', authenticateToken, analyticsController.clearCache);
 router.get('/advanced/performance', authenticateToken, analyticsController.getAdvancedPerformanceMetrics);
 router.post('/advanced/predict', authenticateToken, analyticsController.getPredictiveAnalytics);
 router.get('/advanced/recommendations', authenticateToken, analyticsController.getOptimizationRecommendations);
-router.post('/advanced/bulk-roi', authenticateToken, analyticsController.bulkCalculateROI);
-router.post('/advanced/bulk-lift', authenticateToken, analyticsController.bulkCalculateLift);
+router.post('/advanced/bulk-roi', bulkOperationsLimiter, authenticateToken, analyticsController.bulkCalculateROI);
+router.post('/advanced/bulk-lift', bulkOperationsLimiter, authenticateToken, analyticsController.bulkCalculateLift);
 
 module.exports = router;

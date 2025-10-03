@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { BaseTenantModel } = require('./BaseTenantModel');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const securityEventSchema = new mongoose.Schema({
   // Event type
@@ -242,7 +242,7 @@ const securityEventSchema = new mongoose.Schema({
 });
 
 // Apply tenant isolation
-securityEventSchema.plugin(BaseTenantModel);
+addTenantSupport(securityEventSchema);
 
 // Indexes for performance
 securityEventSchema.index({ tenantId: 1, createdAt: -1 });

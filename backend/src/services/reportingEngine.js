@@ -1,4 +1,4 @@
-const XLSX = require('xlsx');
+const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -27,19 +27,30 @@ class ReportingEngine {
   async generateExcelReport(tenantId, reportType, parameters = {}) {
     try {
       const reportData = await this.getReportData(tenantId, reportType, parameters);
-      const workbook = XLSX.utils.book_new();
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'TRADEAI';
+      workbook.created = new Date();
 
       // Add multiple sheets based on report type
       const sheets = await this.createExcelSheets(reportData, reportType, parameters);
       
-      sheets.forEach(sheet => {
-        const worksheet = XLSX.utils.json_to_sheet(sheet.data);
+      for (const sheet of sheets) {
+        const worksheet = workbook.addWorksheet(sheet.name);
         
-        // Apply formatting
-        this.applyExcelFormatting(worksheet, sheet.formatting);
-        
-        XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
-      });
+        // Add data - convert to rows format
+        if (sheet.data && sheet.data.length > 0) {
+          const headers = Object.keys(sheet.data[0]);
+          worksheet.addRow(headers);
+          
+          sheet.data.forEach(row => {
+            const values = headers.map(header => row[header]);
+            worksheet.addRow(values);
+          });
+          
+          // Apply formatting
+          this.applyExcelFormattingExcelJS(worksheet, sheet.formatting, headers);
+        }
+      }
 
       // Generate file
       const fileName = this.generateFileName(reportType, 'xlsx');
@@ -51,7 +62,7 @@ class ReportingEngine {
         fs.mkdirSync(dir, { recursive: true });
       }
 
-      XLSX.writeFile(workbook, filePath);
+      await workbook.xlsx.writeFile(filePath);
 
       return {
         success: true,
@@ -503,6 +514,45 @@ class ReportingEngine {
     if (formatting.columnWidths) {
       worksheet['!cols'] = formatting.columnWidths;
     }
+  }
+
+  applyExcelFormattingExcelJS(worksheet, formatting, headers) {
+    if (!formatting) return;
+
+    // Header row formatting
+    if (worksheet.rowCount > 0) {
+      const headerRow = worksheet.getRow(1);
+      headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+      headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF366092' }
+      };
+      headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+      headerRow.height = 20;
+      headerRow.commit();
+    }
+
+    // Column widths
+    if (headers) {
+      headers.forEach((header, index) => {
+        const column = worksheet.getColumn(index + 1);
+        column.width = formatting?.columnWidths?.[index]?.wch || 15;
+      });
+    }
+
+    // Auto-filter for header row
+    if (worksheet.rowCount > 1) {
+      worksheet.autoFilter = {
+        from: { row: 1, column: 1 },
+        to: { row: 1, column: headers?.length || 1 }
+      };
+    }
+
+    // Freeze header row
+    worksheet.views = [
+      { state: 'frozen', xSplit: 0, ySplit: 1 }
+    ];
   }
 
   getSheetFormatting(sheetName, reportType) {

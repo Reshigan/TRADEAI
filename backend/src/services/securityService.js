@@ -236,6 +236,14 @@ class SecurityService {
       // Aggregate all permissions from roles and direct permissions
       const allPermissions = this.aggregatePermissions(user.roles, user.permissions);
 
+      // DEBUG: Log permission check
+      console.log('DEBUG checkPermission:', {
+        userId,
+        requiredPermission: `${resource}:${action}`,
+        userRoles: user.roles,
+        allPermissions
+      });
+
       // Check for specific permission
       const requiredPermission = `${resource}:${action}`;
       const hasPermission = allPermissions.some(permission => {

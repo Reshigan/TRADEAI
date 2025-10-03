@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { BaseTenantModel } = require('./BaseTenantModel');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const auditLogSchema = new mongoose.Schema({
   // User who performed the action
@@ -164,7 +164,7 @@ const auditLogSchema = new mongoose.Schema({
 });
 
 // Apply tenant isolation
-auditLogSchema.plugin(BaseTenantModel);
+addTenantSupport(auditLogSchema);
 
 // Indexes for performance and querying
 auditLogSchema.index({ tenantId: 1, createdAt: -1 });

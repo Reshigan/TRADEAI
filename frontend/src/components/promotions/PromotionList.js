@@ -156,23 +156,41 @@ const PromotionList = () => {
     { 
       id: 'customer', 
       label: 'Customer',
-      format: (customer) => customer.name
+      format: (customerId) => {
+        // Find customer by ID
+        const customer = customers.find(c => c._id === customerId);
+        return customer ? customer.name : customerId;
+      }
     },
     { 
       id: 'budget', 
       label: 'Budget',
       numeric: true,
-      format: (value) => `$${value.toLocaleString()}`
+      format: (value) => value ? `$${value.toLocaleString()}` : '-'
     },
     { 
-      id: 'start_date', 
+      id: 'startDate', 
       label: 'Start Date',
-      format: (date) => format(new Date(date), 'MMM d, yyyy')
+      format: (date) => {
+        if (!date) return '-';
+        try {
+          return format(new Date(date), 'MMM d, yyyy');
+        } catch (error) {
+          return '-';
+        }
+      }
     },
     { 
-      id: 'end_date', 
+      id: 'endDate', 
       label: 'End Date',
-      format: (date) => format(new Date(date), 'MMM d, yyyy')
+      format: (date) => {
+        if (!date) return '-';
+        try {
+          return format(new Date(date), 'MMM d, yyyy');
+        } catch (error) {
+          return '-';
+        }
+      }
     },
     { 
       id: 'status', 

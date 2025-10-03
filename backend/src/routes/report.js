@@ -4,6 +4,21 @@ const { authenticateToken } = require('../middleware/auth');
 const reportController = require('../controllers/reportController');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
+// Get all available reports
+router.get('/', authenticateToken, asyncHandler(async (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      availableReports: [
+        { id: 'promotion-effectiveness', name: 'Promotion Effectiveness Report', endpoint: '/api/reports/promotion-effectiveness' },
+        { id: 'budget-utilization', name: 'Budget Utilization Report', endpoint: '/api/reports/budget-utilization' },
+        { id: 'customer-performance', name: 'Customer Performance Report', endpoint: '/api/reports/customer-performance' },
+        { id: 'trade-spend-analysis', name: 'Trade Spend Analysis Report', endpoint: '/api/reports/trade-spend-analysis' }
+      ]
+    }
+  });
+}));
+
 // Generate promotion effectiveness report
 router.get('/promotion-effectiveness', authenticateToken, asyncHandler(async (req, res) => {
   const { promotionId, startDate, endDate } = req.query;
