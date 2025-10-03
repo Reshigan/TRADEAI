@@ -108,11 +108,13 @@ app.use(compression());
 // Logging
 app.use(morgan('combined', { stream: logger.stream }));
 
-// Debug: Log all incoming requests
-app.use((req, res, next) => {
-  console.log(`[REQUEST DEBUG] ${req.method} ${req.url} - Headers:`, JSON.stringify(req.headers.authorization ? { authorization: req.headers.authorization } : {}));
-  next();
-});
+// Request logging (only in development)
+if (process.env.NODE_ENV === 'development' && process.env.DEBUG_REQUESTS === 'true') {
+  app.use((req, res, next) => {
+    console.log(`[REQUEST] ${req.method} ${req.url}`);
+    next();
+  });
+}
 
 // Rate limiting
 const limiter = rateLimit(config.rateLimit);
@@ -233,11 +235,16 @@ io.on('connection', (socket) => {
 // Make io accessible to routes
 app.set('io', io);
 
-// 404 handler
+// 404 handler - Must be defined after all routes
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Resource not found'
+    message: 'Resource not found',
+    error: {
+      code: 'RESOURCE_NOT_FOUND',
+      path: req.originalUrl,
+      method: req.method
+    }
   });
 });
 

@@ -12,8 +12,12 @@ const validate = (req, res, next) => {
       value: error.value
     }));
     
+    // Log validation errors for debugging
+    console.error('Validation Errors:', JSON.stringify(errorMessages, null, 2));
+    console.error('Request Body:', JSON.stringify(req.body, null, 2));
+    
     throw new AppError(
-      'Validation failed',
+      `Validation failed: ${errorMessages.map(e => `${e.field}: ${e.message}`).join(', ')}`,
       400,
       'VALIDATION_ERROR',
       errorMessages

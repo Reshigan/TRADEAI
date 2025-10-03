@@ -31,6 +31,7 @@ const mockRoles = [
 const mockUsers = [
   {
     _id: '507f1f77bcf86cd799439011',
+    username: 'admin',
     email: 'admin@tradeai.com',
     password: '$2a$10$xayyn2PQxec836W85yTmGumh2I5s9VBKk97einayKUHGPMzVsikVm', // password: admin123
     firstName: 'Admin',
@@ -42,11 +43,13 @@ const mockUsers = [
     department: 'IT',
     isActive: true,
     twoFactorEnabled: false,
+    tenantId: 'mondelez',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
   },
   {
     _id: '507f1f77bcf86cd799439012',
+    username: 'manager',
     email: 'manager@tradeai.com',
     password: '$2a$10$6sTGUBPSSz/Wh079m/u.WuHq/0kLe1OXLxWuxWdmp9hI80RANh1Ge', // password: password123
     firstName: 'Manager',
@@ -58,11 +61,13 @@ const mockUsers = [
     department: 'Sales',
     isActive: true,
     twoFactorEnabled: false,
+    tenantId: 'mondelez',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
   },
   {
     _id: '507f1f77bcf86cd799439013',
+    username: 'kam',
     email: 'kam@tradeai.com',
     password: '$2a$10$6sTGUBPSSz/Wh079m/u.WuHq/0kLe1OXLxWuxWdmp9hI80RANh1Ge', // password: password123
     firstName: 'KAM',
@@ -74,6 +79,7 @@ const mockUsers = [
     department: 'Sales',
     isActive: true,
     twoFactorEnabled: false,
+    tenantId: 'mondelez',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
   }
@@ -99,10 +105,15 @@ class MockDatabase {
     return this.users.find(user => user.employeeId === employeeId);
   }
 
+  async findUserByUsername(username) {
+    return this.users.find(user => user.username === username);
+  }
+
   async findUser(query) {
     if (query._id) return this.findUserById(query._id);
     if (query.email) return this.findUserByEmail(query.email);
     if (query.employeeId) return this.findUserByEmployeeId(query.employeeId);
+    if (query.username) return this.findUserByUsername(query.username);
     
     // Handle $or queries
     if (query.$or) {

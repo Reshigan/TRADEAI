@@ -50,12 +50,8 @@ const BudgetList = () => {
     setError(null);
     
     try {
-      console.log('BudgetList: Fetching budgets...');
       const response = await budgetService.getAll();
-      console.log('BudgetList: API response:', response);
-      
       const budgetData = response.data || response || [];
-      console.log('BudgetList: Setting budgets:', budgetData);
       setBudgets(budgetData);
       setLoading(false);
     } catch (error) {

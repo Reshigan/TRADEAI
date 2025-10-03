@@ -51,12 +51,8 @@ const CustomerList = () => {
     setError(null);
     
     try {
-      console.log('CustomerList: Fetching customers...');
       const response = await customerService.getAll();
-      console.log('CustomerList: API response:', response);
-      
       const customerData = response.data || response || [];
-      console.log('CustomerList: Setting customers:', customerData);
       setCustomers(customerData);
       setLoading(false);
     } catch (error) {

@@ -187,12 +187,8 @@ const tenantIsolation = async (req, res, next) => {
     req.requestId = req.headers['x-request-id'] || 
                    `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // Debug logging
-    console.log(`[TENANT DEBUG] Path: ${req.path}, isPublic: ${isPublicRoute(req.path)}`);
-    
     // Skip tenant check for public routes
     if (isPublicRoute(req.path)) {
-      console.log(`[TENANT DEBUG] Skipping tenant check for public route: ${req.path}`);
       return next();
     }
     
