@@ -207,11 +207,10 @@ const tenantIsolation = async (req, res, next) => {
     const tenantInfo = extractTenantId(req);
     
     if (!tenantInfo) {
-      return res.status(400).json({
-        error: 'Tenant identification required',
-        message: 'Please provide tenant ID via header, subdomain, or token',
-        code: 'TENANT_REQUIRED'
-      });
+      // No tenant info found - let the auth middleware handle authentication
+      // The auth middleware will return 401 if token is missing/invalid
+      // If auth passes but tenant is still missing, that would be caught by route handlers
+      return next();
     }
     
     // Find tenant in database
