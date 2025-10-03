@@ -35,9 +35,18 @@ const startServer = async () => {
       logger.info('Initializing cache...');
       await initializeCache();
       
-      // Initialize background jobs
+      // Initialize background jobs (requires Redis)
       logger.info('Initializing background jobs...');
-      await initializeJobs();
+      try {
+        // Add a timeout to prevent indefinite hanging
+        const timeout = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Jobs initialization timeout')), 10000)
+        );
+        await Promise.race([initializeJobs(), timeout]);
+      } catch (error) {
+        logger.warn('Failed to initialize background jobs (Redis required):', error.message);
+        logger.info('Server will continue without background jobs');
+      }
     } else {
       logger.info('Skipping cache and background jobs in mock mode');
     }

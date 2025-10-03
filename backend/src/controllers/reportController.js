@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const analyticsController = require('./analyticsController');
 const mongoose = require('mongoose');
+const logger = require('../utils/logger');
 
 const reportController = {
   // Generate promotion effectiveness report
@@ -98,16 +99,16 @@ const reportController = {
   
   // Generate customer performance report
   async generateCustomerPerformanceReport({ customerId, startDate, endDate, tenantId }) {
-    console.log('=== Customer Performance Report Started ===');
-    console.log('Parameters:', { customerId, startDate, endDate, tenantId });
+    logger.debug('Customer Performance Report Started');
+    logger.debug('Report parameters', { customerId, startDate, endDate, tenantId });
     
     const query = {};
     if (customerId) query._id = customerId;
     if (tenantId) query.company = new mongoose.Types.ObjectId(tenantId);
     
-    console.log('Customer query:', JSON.stringify(query, null, 2));
+    logger.debug('Customer query', { query });
     const customers = await Customer.find(query);
-    console.log('Found customers:', customers.length);
+    logger.debug('Found customers', { count: customers.length });
     
     const reports = await Promise.all(customers.map(async (customer) => {
       const matchQuery = {
@@ -127,7 +128,7 @@ const reportController = {
         };
       }
 
-      console.log('Customer Performance Report - Match Query:', JSON.stringify(matchQuery, null, 2));
+      logger.debug('Match query', { matchQuery });
       
       const salesData = await SalesHistory.aggregate([
         {
@@ -143,7 +144,7 @@ const reportController = {
         }
       ]);
       
-      console.log('Customer Performance Report - Sales Data Result:', JSON.stringify(salesData, null, 2));
+      logger.debug('Sales data result', { salesData });
       
       return {
         customer: {
@@ -326,7 +327,7 @@ const reportController = {
     try {
       await analyticsController.generateExcelReport(req, res);
     } catch (error) {
-      console.error('Error in advanced Excel report generation:', error);
+      logger.error('Error in advanced Excel report generation', { error: error.message, stack: error.stack });
       res.status(500).json({ error: 'Failed to generate advanced Excel report' });
     }
   },
@@ -336,7 +337,7 @@ const reportController = {
     try {
       await analyticsController.generatePDFReport(req, res);
     } catch (error) {
-      console.error('Error in advanced PDF report generation:', error);
+      logger.error('Error in advanced PDF report generation', { error: error.message, stack: error.stack });
       res.status(500).json({ error: 'Failed to generate advanced PDF report' });
     }
   },
@@ -392,7 +393,7 @@ const reportController = {
       }
 
     } catch (error) {
-      console.error('Error building custom report:', error);
+      logger.error('Error building custom report', { error: error.message, stack: error.stack });
       res.status(500).json({ error: 'Failed to build custom report' });
     }
   },
@@ -436,7 +437,7 @@ const reportController = {
       });
 
     } catch (error) {
-      console.error('Error getting report templates:', error);
+      logger.error('Error getting report templates', { error: error.message, stack: error.stack });
       res.status(500).json({ error: 'Failed to get report templates' });
     }
   },
@@ -478,7 +479,7 @@ const reportController = {
       });
 
     } catch (error) {
-      console.error('Error getting report analytics:', error);
+      logger.error('Error getting report analytics', { error: error.message, stack: error.stack });
       res.status(500).json({ error: 'Failed to get report analytics' });
     }
   },

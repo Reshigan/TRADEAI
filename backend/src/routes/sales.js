@@ -5,6 +5,7 @@ const SalesTransaction = require('../../models/SalesTransaction');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const { authenticateToken: auth } = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 // Get sales overview/summary
 router.get('/overview', auth, async (req, res) => {
@@ -18,10 +19,11 @@ router.get('/overview', auth, async (req, res) => {
       companyId = req.user.companyId;
     }
     
-    console.log('Sales overview - User:', req.user._id);
-    console.log('Sales overview - CompanyId:', companyId);
-    console.log('Sales overview - CompanyId type:', typeof companyId);
-    console.log('Sales overview - Full user companyId:', req.user.companyId);
+    logger.debug('Sales overview request', { 
+      userId: req.user._id, 
+      companyId, 
+      companyIdType: typeof companyId 
+    });
     
     const matchQuery = { company: companyId, status: 'completed' };
     if (startDate && endDate) {
@@ -58,7 +60,7 @@ router.get('/overview', auth, async (req, res) => {
       data: result
     });
   } catch (error) {
-    console.error('Sales overview error:', error);
+    logger.error('Sales overview error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales overview'
@@ -124,7 +126,7 @@ router.get('/by-period', auth, async (req, res) => {
       data: salesByPeriod
     });
   } catch (error) {
-    console.error('Sales by period error:', error);
+    logger.error('Sales by period error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales by period'
@@ -191,7 +193,7 @@ router.get('/top-customers', auth, async (req, res) => {
       data: topCustomers
     });
   } catch (error) {
-    console.error('Top customers error:', error);
+    logger.error('Top customers error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch top customers'
@@ -259,7 +261,7 @@ router.get('/top-products', auth, async (req, res) => {
       data: topProducts
     });
   } catch (error) {
-    console.error('Top products error:', error);
+    logger.error('Top products error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch top products'
@@ -305,7 +307,7 @@ router.get('/by-channel', auth, async (req, res) => {
       data: salesByChannel
     });
   } catch (error) {
-    console.error('Sales by channel error:', error);
+    logger.error('Sales by channel error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales by channel'
@@ -373,7 +375,7 @@ router.get('/trends', auth, async (req, res) => {
       data: trends
     });
   } catch (error) {
-    console.error('Sales trends error:', error);
+    logger.error('Sales trends error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales trends'
@@ -443,7 +445,7 @@ router.get('/transactions', auth, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Sales transactions error:', error);
+    logger.error('Sales transactions error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales transactions'

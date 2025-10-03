@@ -4,6 +4,7 @@ const tenantController = require('../controllers/tenantController');
 const { authenticate } = require('../middleware/auth');
 const { tenantIsolation } = require('../middleware/tenantIsolation');
 const { applyTenantQueryFilter, validateTenantConsistency } = require('../middleware/tenantQueryFilter');
+const logger = require('../utils/logger');
 
 /**
  * Tenant Management Routes
@@ -133,7 +134,7 @@ router.get('/:id/features', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get tenant features error:', error);
+    logger.error('Get tenant features error', { error: error.message, stack: error.stack });
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to retrieve tenant features'
@@ -184,7 +185,7 @@ router.put('/:id/features', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Update tenant features error:', error);
+    logger.error('Update tenant features error', { error: error.message, stack: error.stack });
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to update tenant features'
@@ -243,7 +244,7 @@ router.get('/:id/usage', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get tenant usage error:', error);
+    logger.error('Get tenant usage error', { error: error.message, stack: error.stack });
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to retrieve tenant usage'
@@ -297,7 +298,7 @@ router.put('/:id/limits', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Update tenant limits error:', error);
+    logger.error('Update tenant limits error', { error: error.message, stack: error.stack });
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to update tenant limits'

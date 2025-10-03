@@ -187,16 +187,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     user.lastLogin = new Date();
     await user.save({ validateBeforeSave: false });
     
-    // Generate JWT token
-    const token = jwt.sign(
-      { 
-        userId: user._id,
-        email: user.email,
-        role: user.role
-      },
-      config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
-    );
+    // Generate tokens using the proper helper function
+    const { accessToken, refreshToken } = generateTokens(user);
     
     // Cache user data if cache service is available
     try {
@@ -214,13 +206,21 @@ exports.login = asyncHandler(async (req, res, next) => {
     return res.json({
       success: true,
       message: 'Login successful',
-      token: token,
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role
+      token: accessToken,
+      data: {
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          department: user.department,
+          tenantId: user.tenantId
+        },
+        tokens: {
+          accessToken,
+          refreshToken
+        }
       }
     });
     

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken, authorize } = require('../middleware/auth');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const logger = require('../utils/logger');
 
 // Get integration status
 router.get('/status', authenticateToken, asyncHandler(async (req, res) => {
@@ -44,7 +45,7 @@ router.post('/webhooks/:service', asyncHandler(async (req, res) => {
   const { service } = req.params;
   
   // Log webhook data
-  console.log(`Webhook received from ${service}:`, req.body);
+  logger.info('Webhook received', { service, body: req.body });
   
   res.json({
     success: true,

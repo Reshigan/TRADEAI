@@ -87,12 +87,16 @@ function extractTenantId(req) {
     return { type: 'id', value: tenantId };
   }
   
-  // 2. Check subdomain
+  // 2. Check subdomain (skip in development/localhost)
   const host = req.headers.host;
   if (host) {
-    const subdomain = host.split('.')[0];
-    if (subdomain && subdomain !== 'www' && subdomain !== 'api') {
-      return { type: 'slug', value: subdomain };
+    // Skip subdomain extraction for localhost and IP addresses
+    const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1') || host.startsWith('0.0.0.0');
+    if (!isLocalhost) {
+      const subdomain = host.split('.')[0];
+      if (subdomain && subdomain !== 'www' && subdomain !== 'api') {
+        return { type: 'slug', value: subdomain };
+      }
     }
   }
   
@@ -101,7 +105,7 @@ function extractTenantId(req) {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     try {
       const token = authHeader.substring(7);
-      const decoded = jwt.verify(token, config.JWT_SECRET);
+      const decoded = jwt.verify(token, config.jwt.secret);
       if (decoded.tenantId) {
         return { type: 'id', value: decoded.tenantId };
       }
