@@ -34,12 +34,26 @@ ENV/
 # Docker
 .dockerignore
 
-# Environment variables
+# Environment variables - NEVER commit these!
 .env
 .env.local
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
+.env.staging
+
+# SSH Keys and Certificates - CRITICAL SECURITY
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+id_rsa*
+*.pub
+ssl/privkey.pem
+ssl/fullchain.pem
 
 # Logs
 logs

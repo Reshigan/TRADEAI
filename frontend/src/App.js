@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './styles/App.css';
 
 // Import components
+import ErrorBoundary from './components/common/ErrorBoundary';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
@@ -74,8 +75,9 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
+    <ErrorBoundary>
+      <Router>
+        <Routes>
         <Route 
           path="/" 
           element={
@@ -425,6 +427,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+    </ErrorBoundary>
   );
 }
 

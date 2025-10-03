@@ -4,6 +4,11 @@ const { initializeDatabase } = require('./config/database');
 const { server } = require('./app');
 const { initializeJobs } = require('./jobs');
 const { initializeCache } = require('./services/cacheService');
+const { validateOrExit } = require('./utils/validateEnv');
+
+// Validate environment variables before starting
+console.log('🔍 Validating environment configuration...\n');
+validateOrExit();
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {

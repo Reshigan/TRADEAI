@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { authService } from '../services/api';
+import { validateEmail, validatePassword, validateForm } from '../utils/validation';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Login = ({ onLogin }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Debug: Log component mount
   useEffect(() => {
@@ -33,12 +35,23 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setValidationErrors({});
     
     console.log('Login form submitted with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
     
-    // Simple validation
-    if (!credentials.email || !credentials.password) {
-      setError('Please fill in all fields');
+    // Comprehensive validation
+    const { isValid, errors } = validateForm(credentials, {
+      email: [validateEmail],
+      password: [(value) => {
+        if (!value) return 'Password is required';
+        if (value.length < 6) return 'Password must be at least 6 characters';
+        return null;
+      }]
+    });
+
+    if (!isValid) {
+      setValidationErrors(errors);
+      setError('Please fix the validation errors');
       return;
     }
 
@@ -236,6 +249,8 @@ const Login = ({ onLogin }) => {
                     required
                     placeholder="Enter your email address"
                     className="premium-input"
+                    error={!!validationErrors.email}
+                    helperText={validationErrors.email}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -285,6 +300,8 @@ const Login = ({ onLogin }) => {
                     required
                     placeholder="Enter your password"
                     className="premium-input"
+                    error={!!validationErrors.password}
+                    helperText={validationErrors.password}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

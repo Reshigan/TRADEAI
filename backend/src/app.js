@@ -62,7 +62,7 @@ const io = new Server(server, {
 // Trust proxy
 app.set('trust proxy', 1);
 
-// Security middleware
+// Security middleware - Enhanced with comprehensive security headers
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -70,8 +70,26 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
     },
   },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  frameguard: {
+    action: 'deny'
+  },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: {
+    policy: 'strict-origin-when-cross-origin'
+  }
 }));
 
 // CORS
