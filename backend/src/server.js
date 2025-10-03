@@ -5,6 +5,7 @@ const { server } = require('./app');
 const { initializeJobs } = require('./jobs');
 const { initializeCache } = require('./services/cacheService');
 const { validateOrExit } = require('./utils/validateEnv');
+const { initRedis, closeRedis } = require('./config/redis');
 
 // Validate environment variables before starting
 console.log('🔍 Validating environment configuration...\n');
@@ -28,6 +29,10 @@ const startServer = async () => {
     // Initialize database
     logger.info('Initializing database...');
     await initializeDatabase();
+    
+    // Initialize Redis
+    logger.info('Initializing Redis...');
+    initRedis();
     
     // Initialize cache
     const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true';

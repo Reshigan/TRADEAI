@@ -4,6 +4,17 @@ const { authenticateToken, authorize } = require('../middleware/auth');
 const Product = require('../models/Product');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
+// XSS sanitization helper
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
+
 // Get all products
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, category, brand, status } = req.query;
@@ -52,9 +63,22 @@ router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
 
 // Create new product
 router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(async (req, res) => {
+  // Get tenant from request context
+  const tenantId = req.tenantId || req.user.tenantId;
+  if (!tenantId) {
+    throw new AppError('Tenant context not found', 400);
+  }
+  
+  // Sanitize string fields to prevent XSS
+  const sanitizedData = { ...req.body };
+  if (sanitizedData.name) sanitizedData.name = sanitizeInput(sanitizedData.name);
+  if (sanitizedData.sku) sanitizedData.sku = sanitizeInput(sanitizedData.sku);
+  if (sanitizedData.sapMaterialId) sanitizedData.sapMaterialId = sanitizeInput(sanitizedData.sapMaterialId);
+  if (sanitizedData.description) sanitizedData.description = sanitizeInput(sanitizedData.description);
+  
   const product = await Product.create({
-    ...req.body,
-    tenantId: req.tenant?.id,
+    ...sanitizedData,
+    tenantId,
     createdBy: req.user._id
   });
   

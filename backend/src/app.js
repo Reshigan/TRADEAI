@@ -16,6 +16,7 @@ const logger = require('./utils/logger');
 const { errorHandler } = require('./middleware/errorHandler');
 const { authenticateToken } = require('./middleware/auth');
 const { tenantIsolation, tenantCleanup } = require('./middleware/tenantIsolation');
+const { initSentry, getHandlers } = require('./config/sentry');
 
 // Load all models to ensure they are registered with Mongoose
 require('./models');
@@ -43,9 +44,14 @@ const mlRoutes = require('./routes/ml');
 const salesRoutes = require('./routes/sales');
 const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
+const healthRoutes = require('./routes/health');
 
 // Create Express app
 const app = express();
+
+// Initialize Sentry BEFORE all other middleware
+initSentry(app);
+const sentryHandlers = getHandlers();
 
 // Track server start time for uptime calculation
 const serverStartTime = Date.now();
@@ -65,6 +71,12 @@ const io = new Server(server, {
 
 // Trust proxy
 app.set('trust proxy', 1);
+
+// Sentry request handler MUST be first middleware
+app.use(sentryHandlers.requestHandler);
+
+// Sentry tracing handler
+app.use(sentryHandlers.tracingHandler);
 
 // Security middleware - Enhanced with comprehensive security headers
 app.use(helmet({
@@ -96,8 +108,38 @@ app.use(helmet({
   }
 }));
 
-// CORS
-app.use(cors(config.cors));
+// CORS - Production-ready configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Get allowed origins from environment variable
+    const allowedOrigins = process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
+      : ['http://localhost:3000', 'http://localhost:3001'];
+    
+    // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // In development, allow all origins
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    // In production, check against whitelist
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      logger.warn(`❌ CORS blocked request from origin: ${origin}`);
+      callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Tenant-ID'],
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count', 'X-RateLimit-Limit', 'X-RateLimit-Remaining'],
+  maxAge: 86400 // 24 hours
+};
+
+app.use(cors(corsOptions));
 
 // Body parsing with reduced payload limits for security
 app.use(express.json({ limit: '1mb' }));
@@ -120,9 +162,27 @@ if (process.env.NODE_ENV === 'development' && process.env.DEBUG_REQUESTS === 'tr
   });
 }
 
-// Rate limiting - Temporarily disabled for UAT testing
-// const limiter = rateLimit(config.rateLimit);
-// app.use('/api/', limiter);
+// Rate limiting - Production security
+const { 
+  apiLimiter, 
+  authLimiter, 
+  speedLimiter, 
+  exportLimiter,
+  passwordResetLimiter,
+  requestLogger
+} = require('./middleware/rateLimiter');
+
+// Apply request logger for security monitoring
+app.use(requestLogger);
+
+// Apply general rate limiting to all API routes
+if (process.env.NODE_ENV === 'production' || process.env.ENABLE_RATE_LIMITING === 'true') {
+  app.use('/api/', apiLimiter);
+  app.use('/api/', speedLimiter);
+  logger.info('✅ Rate limiting enabled');
+} else {
+  logger.warn('⚠️  Rate limiting disabled (development mode)');
+}
 
 // Tenant isolation middleware (before authentication)
 app.use(tenantCleanup);
@@ -139,18 +199,11 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: config.env,
-    version: process.env.npm_package_version || '1.0.0'
-  });
-});
+// Health check routes
+app.use('/', healthRoutes);
+app.use('/api', healthRoutes);
 
-// API health check
+// Legacy health check support
 app.get('/api/health', (req, res) => {
   const uptimeSeconds = Math.floor((Date.now() - serverStartTime) / 1000);
   res.json({
@@ -163,8 +216,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/auth', authRoutes);
+// Auth routes with strict rate limiting (protect against brute force)
+app.use('/api/auth', authLimiter, authRoutes);
+
+// Tenant routes
 app.use('/api/tenants', tenantRoutes);
+
+// Protected routes with authentication
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/companies', authenticateToken, companyRoutes);
 app.use('/api/trading-terms', authenticateToken, tradingTermsRoutes);
@@ -179,10 +237,16 @@ app.use('/api/activity-grid', authenticateToken, activityGridRoutes);
 app.use('/api/sales-history', authenticateToken, salesHistoryRoutes);
 app.use('/api/master-data', authenticateToken, masterDataRoutes);
 app.use('/api/dashboards', authenticateToken, dashboardRoutes);
-app.use('/api/reports', authenticateToken, reportRoutes);
+
+// Reports with export rate limiting (prevent data scraping)
+app.use('/api/reports', authenticateToken, exportLimiter, reportRoutes);
+
+// Analytics and ML routes
 app.use('/api/analytics', authenticateToken, analyticsRoutes);
 app.use('/api/integration', authenticateToken, integrationRoutes);
 app.use('/api/ml', authenticateToken, mlRoutes);
+
+// Sales and inventory
 app.use('/api/sales', authenticateToken, salesRoutes);
 app.use('/api/inventory', authenticateToken, inventoryRoutes);
 
@@ -255,14 +319,38 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware (must be last)
+// Sentry error handler MUST be before custom error handler
+app.use(sentryHandlers.errorHandler);
+
+// Custom error handling middleware (must be last)
 app.use(errorHandler);
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+const { closeRedis } = require('./config/redis');
+
+process.on('SIGTERM', async () => {
   logger.info('SIGTERM signal received: closing HTTP server');
+  
+  // Close Redis connection
+  await closeRedis();
+  
+  // Close HTTP server
   server.close(() => {
     logger.info('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', async () => {
+  logger.info('SIGINT signal received: closing HTTP server');
+  
+  // Close Redis connection
+  await closeRedis();
+  
+  // Close HTTP server
+  server.close(() => {
+    logger.info('HTTP server closed');
+    process.exit(0);
   });
 });
 

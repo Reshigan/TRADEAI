@@ -429,3 +429,23 @@ exports.lockBudget = asyncHandler(async (req, res, next) => {
     data: budget
   });
 });
+
+exports.deleteBudget = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    return next(new AppError('Budget not found', 404));
+  }
+  
+  // Only allow deletion of draft budgets
+  if (budget.status !== 'draft') {
+    return next(new AppError('Only draft budgets can be deleted', 400));
+  }
+  
+  await budget.deleteOne();
+  
+  res.json({
+    success: true,
+    message: 'Budget deleted successfully'
+  });
+});

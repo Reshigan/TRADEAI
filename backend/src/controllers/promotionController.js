@@ -485,3 +485,29 @@ exports.clonePromotion = asyncHandler(async (req, res, next) => {
     data: clonedPromotion
   });
 });
+
+// Delete promotion
+exports.deletePromotion = asyncHandler(async (req, res, next) => {
+  const tenantId = req.tenantId || req.user.tenantId;
+  
+  const promotion = await Promotion.findOne({ 
+    _id: req.params.id,
+    tenantId
+  });
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  // Only allow deletion of draft promotions
+  if (promotion.status !== 'draft') {
+    throw new AppError('Only draft promotions can be deleted', 400);
+  }
+  
+  await promotion.deleteOne();
+  
+  res.json({
+    success: true,
+    message: 'Promotion deleted successfully'
+  });
+});

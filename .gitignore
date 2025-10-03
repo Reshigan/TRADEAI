@@ -90,6 +90,9 @@ coverage/
 .coverage
 htmlcov/
 .pytest_cache/
+uat-*.txt
+test-results-*.txt
+*-results.txt
 
 # Build files
 /build/
