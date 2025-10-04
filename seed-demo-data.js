@@ -189,13 +189,11 @@ async function seedDatabase() {
       password: hashedPassword,
       firstName: 'System',
       lastName: 'Administrator',
-      role: 'superadmin',
-      status: 'active',
-      profile: {
-        phone: '+27 11 123 4567',
-        department: 'IT',
-        jobTitle: 'System Administrator'
-      }
+      role: 'super_admin',
+      department: 'admin',
+      employeeId: 'SA-001',
+      tenantId: tenant._id,
+      isActive: true
     });
     console.log(`   ✓ Created Super Admin: ${superAdmin.email}`);
 
@@ -206,13 +204,10 @@ async function seedDatabase() {
       firstName: 'John',
       lastName: 'Mbeki',
       role: 'admin',
-      tenant: tenant._id,
-      status: 'active',
-      profile: {
-        phone: '+27 11 456 7890',
-        department: 'Trade Marketing',
-        jobTitle: 'Trade Marketing Director'
-      }
+      department: 'admin',
+      employeeId: 'MDLZ-001',
+      tenantId: tenant._id,
+      isActive: true
     });
     console.log(`   ✓ Created Tenant Admin: ${tenantAdmin.email}`);
 
@@ -223,13 +218,10 @@ async function seedDatabase() {
       firstName: 'Sarah',
       lastName: 'Botha',
       role: 'manager',
-      tenant: tenant._id,
-      status: 'active',
-      profile: {
-        phone: '+27 11 234 5678',
-        department: 'Trade Marketing',
-        jobTitle: 'Trade Marketing Manager'
-      }
+      department: 'marketing',
+      employeeId: 'MDLZ-002',
+      tenantId: tenant._id,
+      isActive: true
     });
     console.log(`   ✓ Created Manager: ${tmManager.email}`);
 
@@ -243,20 +235,18 @@ async function seedDatabase() {
       { firstName: 'David', lastName: 'Smith' }
     ];
 
+    let empId = 3;
     for (const rep of salesRepNames) {
       const user = await User.create({
-        email: `${rep.firstName.toLowerCase()}.${rep.lastName.toLowerCase()}@mondelez.co.za`,
+        email: `${rep.firstName.toLowerCase()}.${rep.lastName.toLowerCase().replace(/\s+/g, '')}@mondelez.co.za`,
         password: hashedPassword,
         firstName: rep.firstName,
         lastName: rep.lastName,
-        role: 'user',
-        tenant: tenant._id,
-        status: 'active',
-        profile: {
-          phone: `+27 ${getRandomNumber(10, 89)} ${getRandomNumber(100, 999)} ${getRandomNumber(1000, 9999)}`,
-          department: 'Sales',
-          jobTitle: 'Sales Representative'
-        }
+        role: 'kam',
+        department: 'sales',
+        employeeId: `MDLZ-${String(empId++).padStart(3, '0')}`,
+        tenantId: tenant._id,
+        isActive: true
       });
       salesReps.push(user);
       console.log(`   ✓ Created Sales Rep: ${user.email}`);
