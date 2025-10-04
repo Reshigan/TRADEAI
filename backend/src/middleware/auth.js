@@ -232,12 +232,15 @@ const authorize = (...roles) => {
       });
     }
     
-    if (!roles.includes(req.user.role)) {
+    // Flatten roles array if it's nested (e.g., [['admin', 'user']] -> ['admin', 'user'])
+    const allowedRoles = roles.flat();
+    
+    if (!allowedRoles.includes(req.user.role)) {
       // Log unauthorized access attempt
       logger.warn('Unauthorized access attempt', {
         userId: req.user._id,
         userRole: req.user.role,
-        requiredRoles: roles,
+        requiredRoles: allowedRoles,
         path: req.path
       });
       
@@ -245,7 +248,7 @@ const authorize = (...roles) => {
       securityLogger.logAccess(req.user, req.originalUrl, req.method, false, {
         ip: req.ip,
         userAgent: req.headers['user-agent'],
-        requiredRoles: roles,
+        requiredRoles: allowedRoles,
         userRole: req.user.role
       });
       
