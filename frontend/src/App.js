@@ -21,6 +21,8 @@ import { CompanyList, CompanyDetail, CompanyForm } from './components/companies'
 import { TradingTermsList, TradingTermDetail, TradingTermForm } from './components/tradingTerms';
 import ActivityGrid from './components/activityGrid';
 import SimulationStudio from './components/enterprise/simulations/SimulationStudio';
+import ExecutiveDashboardEnhanced from './components/enterprise/dashboards/ExecutiveDashboardEnhanced';
+import TransactionManagement from './components/enterprise/transactions/TransactionManagement';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -429,6 +431,30 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <SimulationStudio />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/transactions" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TransactionManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/executive-dashboard" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ExecutiveDashboardEnhanced />
               </Layout>
             ) : (
               <Navigate to="/" replace />
