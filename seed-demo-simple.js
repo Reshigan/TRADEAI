@@ -263,12 +263,15 @@ async function seedDatabase() {
             currency: 'ZAR'
           },
           payment: {
-            dueDate: new Date(txDate.getTime() + (30 * 24 * 60 * 60 * 1000)),
             method: 'wire_transfer',
-            status: isOld ? 'paid' : 'pending'
+            terms: 'net_30',
+            dueDate: new Date(txDate.getTime() + (30 * 24 * 60 * 60 * 1000)),
+            paidDate: isOld ? new Date(txDate.getTime() + (25 * 24 * 60 * 60 * 1000)) : null
           },
-          status: isOld ? 'delivered' : 'processing',
-          approvalStatus: 'approved',
+          fulfillment: {
+            status: isOld ? 'delivered' : 'processing'
+          },
+          status: isOld ? 'completed' : 'processing',
           tenantId: tenant._id,
           createdBy: getRandomElement(salesReps)._id,
           createdAt: txDate,
