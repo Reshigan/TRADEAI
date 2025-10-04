@@ -262,32 +262,24 @@ async function seedDatabase() {
     const company = await Company.create({
       name: 'Mondelez South Africa (Pty) Ltd',
       code: 'MDLZ-SA',
-      type: 'manufacturer',
-      industry: 'Food & Beverage',
-      taxNumber: 'ZA9876543210',
-      registrationNumber: '1998/012345/07',
+      domain: 'mondelez.co.za',
+      industry: 'fmcg',
+      country: 'ZA',
+      currency: 'ZAR',
+      timezone: 'Africa/Johannesburg',
       address: {
         street: '1 Woodmead Drive',
         city: 'Sandton',
         state: 'Gauteng',
-        postalCode: '2196',
-        country: 'South Africa'
+        country: 'South Africa',
+        postalCode: '2196'
       },
-      contact: {
+      contactInfo: {
         phone: '+27 11 517 8000',
         email: 'info@mondelez.co.za',
         website: 'https://www.mondelezinternational.com/africa'
       },
-      banking: {
-        accountName: 'Mondelez South Africa (Pty) Ltd',
-        accountNumber: '1234567890',
-        bankName: 'Standard Bank',
-        branchCode: '051001',
-        swiftCode: 'SBZAZAJJ'
-      },
-      tenant: tenant._id,
-      createdBy: tenantAdmin._id,
-      status: 'active'
+      tenant: tenant._id
     });
     
     console.log(`   ✓ Created company: ${company.name}`);
