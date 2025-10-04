@@ -136,27 +136,28 @@ exports.getRealTimeKPIs = asyncHandler(async (req, res, next) => {
     ? ['revenue', 'margin', 'volume', 'roi', 'promotions', 'customers']
     : metrics.split(',');
 
+  const tenantId = req.tenant._id;
   const kpiData = {};
 
   const promises = requestedMetrics.map(async (metric) => {
     switch(metric) {
       case 'revenue':
-        kpiData.revenue = await getRevenueKPI(dateRange);
+        kpiData.revenue = await getRevenueKPI(tenantId, dateRange);
         break;
       case 'margin':
-        kpiData.margin = await getMarginKPI(dateRange);
+        kpiData.margin = await getMarginKPI(tenantId, dateRange);
         break;
       case 'volume':
-        kpiData.volume = await getVolumeKPI(dateRange);
+        kpiData.volume = await getVolumeKPI(tenantId, dateRange);
         break;
       case 'roi':
-        kpiData.roi = await getROIKPI(dateRange);
+        kpiData.roi = await getROIKPI(tenantId, dateRange);
         break;
       case 'promotions':
-        kpiData.promotions = await getPromotionKPI(dateRange);
+        kpiData.promotions = await getPromotionKPI(tenantId, dateRange);
         break;
       case 'customers':
-        kpiData.customers = await getCustomerKPI(dateRange);
+        kpiData.customers = await getCustomerKPI(tenantId, dateRange);
         break;
     }
   });
@@ -982,6 +983,168 @@ async function generateInsights(data) {
       action: 'Increase investment in top-performing products'
     }
   ];
+}
+
+/**
+ * KPI Helper Functions
+ */
+
+async function getRevenueKPI(tenantId, dateRange) {
+  const aggregate = await SalesHistory.aggregate([
+    {
+      $match: {
+        tenantId,
+        date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        current: { $sum: '$revenue.net' },
+        gross: { $sum: '$revenue.gross' },
+        count: { $sum: 1 }
+      }
+    }
+  ]);
+
+  const result = aggregate[0] || { current: 0, gross: 0, count: 0 };
+
+  return {
+    value: result.current,
+    change: 0, // TODO: Calculate vs previous period
+    trend: 'stable',
+    unit: 'USD'
+  };
+}
+
+async function getMarginKPI(tenantId, dateRange) {
+  const aggregate = await SalesHistory.aggregate([
+    {
+      $match: {
+        tenantId,
+        date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        margin: { $sum: '$margins.grossMargin' },
+        revenue: { $sum: '$revenue.net' }
+      }
+    }
+  ]);
+
+  const result = aggregate[0] || { margin: 0, revenue: 1 };
+  const marginPercent = result.revenue > 0 ? (result.margin / result.revenue) * 100 : 0;
+
+  return {
+    value: result.margin,
+    percent: marginPercent,
+    change: 0,
+    trend: 'stable',
+    unit: 'USD'
+  };
+}
+
+async function getVolumeKPI(tenantId, dateRange) {
+  const aggregate = await SalesHistory.aggregate([
+    {
+      $match: {
+        tenantId,
+        date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        volume: { $sum: '$quantity' }
+      }
+    }
+  ]);
+
+  const result = aggregate[0] || { volume: 0 };
+
+  return {
+    value: result.volume,
+    change: 0,
+    trend: 'stable',
+    unit: 'units'
+  };
+}
+
+async function getROIKPI(tenantId, dateRange) {
+  // Calculate ROI from promotions or trade spend
+  const aggregate = await SalesHistory.aggregate([
+    {
+      $match: {
+        tenantId,
+        date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        revenue: { $sum: '$revenue.net' },
+        spend: { $sum: { $ifNull: ['$tradeSpend', 0] } }
+      }
+    }
+  ]);
+
+  const result = aggregate[0] || { revenue: 0, spend: 1 };
+  const roi = result.spend > 0 ? ((result.revenue - result.spend) / result.spend) * 100 : 0;
+
+  return {
+    value: roi,
+    change: 0,
+    trend: roi > 0 ? 'up' : 'down',
+    unit: '%'
+  };
+}
+
+async function getPromotionKPI(tenantId, dateRange) {
+  const Promotion = mongoose.model('Promotion');
+  
+  const count = await Promotion.countDocuments({
+    tenantId,
+    startDate: { $lte: new Date(dateRange.end) },
+    endDate: { $gte: new Date(dateRange.start) },
+    status: 'active'
+  });
+
+  return {
+    value: count,
+    change: 0,
+    trend: 'stable',
+    unit: 'count'
+  };
+}
+
+async function getCustomerKPI(tenantId, dateRange) {
+  const aggregate = await SalesHistory.aggregate([
+    {
+      $match: {
+        tenantId,
+        date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+      }
+    },
+    {
+      $group: {
+        _id: '$customerId'
+      }
+    },
+    {
+      $count: 'total'
+    }
+  ]);
+
+  const result = aggregate[0] || { total: 0 };
+
+  return {
+    value: result.total,
+    change: 0,
+    trend: 'stable',
+    unit: 'count'
+  };
 }
 
 // Export additional helper functions for use in other controllers
