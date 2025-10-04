@@ -11,7 +11,7 @@ exports.simulatePromotionImpact = asyncHandler(async (req, res, next) => {
   const scenario = {
     type: 'promotion_impact',
     ...req.body,
-    tenantId: req.user.tenantId,
+    tenantId: req.tenant._id,
     userId: req.user._id
   };
 
@@ -28,7 +28,7 @@ exports.simulateBudgetAllocation = asyncHandler(async (req, res, next) => {
   const scenario = {
     type: 'budget_allocation',
     ...req.body,
-    tenantId: req.user.tenantId,
+    tenantId: req.tenant._id,
     userId: req.user._id
   };
 
@@ -45,7 +45,7 @@ exports.simulatePricingStrategy = asyncHandler(async (req, res, next) => {
   const scenario = {
     type: 'pricing_strategy',
     ...req.body,
-    tenantId: req.user.tenantId,
+    tenantId: req.tenant._id,
     userId: req.user._id
   };
 
@@ -62,7 +62,7 @@ exports.simulateVolumeProjection = asyncHandler(async (req, res, next) => {
   const scenario = {
     type: 'volume_projection',
     ...req.body,
-    tenantId: req.user.tenantId,
+    tenantId: req.tenant._id,
     userId: req.user._id
   };
 
@@ -79,7 +79,7 @@ exports.simulateMarketShare = asyncHandler(async (req, res, next) => {
   const scenario = {
     type: 'market_share',
     ...req.body,
-    tenantId: req.user.tenantId,
+    tenantId: req.tenant._id,
     userId: req.user._id
   };
 
@@ -96,7 +96,7 @@ exports.simulateROIOptimization = asyncHandler(async (req, res, next) => {
   const scenario = {
     type: 'roi_optimization',
     ...req.body,
-    tenantId: req.user.tenantId,
+    tenantId: req.tenant._id,
     userId: req.user._id
   };
 
@@ -112,7 +112,7 @@ exports.simulateROIOptimization = asyncHandler(async (req, res, next) => {
 exports.whatIfAnalysis = asyncHandler(async (req, res, next) => {
   const { baseScenario, variations } = req.body;
 
-  baseScenario.tenantId = req.user.tenantId;
+  baseScenario.tenantId = req.tenant._id;
   baseScenario.userId = req.user._id;
 
   const result = await simulationEngine.whatIfAnalysis(baseScenario, variations);
@@ -129,7 +129,7 @@ exports.compareScenarios = asyncHandler(async (req, res, next) => {
 
   // Add tenant and user info to all scenarios
   scenarios.forEach(scenario => {
-    scenario.tenantId = req.user.tenantId;
+    scenario.tenantId = req.tenant._id;
     scenario.userId = req.user._id;
   });
 

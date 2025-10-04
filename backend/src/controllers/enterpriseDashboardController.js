@@ -1272,6 +1272,50 @@ async function generateProductInsights(performance, profitability) {
   ];
 }
 
+/**
+ * Budget Dashboard Helper Functions
+ */
+
+async function getBudgetOverview(criteria) {
+  return {
+    allocated: 0,
+    spent: 0,
+    remaining: 0,
+    utilization: 0
+  };
+}
+
+async function getBudgetUtilizationByCategory(criteria) {
+  return [];
+}
+
+async function getMonthlyBudgetUtilization(year) {
+  return [];
+}
+
+async function getTopBudgetSpenders(criteria, limit) {
+  return [];
+}
+
+async function getBudgetAlerts(criteria) {
+  return [];
+}
+
+async function getBudgetForecast(year) {
+  return { forecast: [], confidence: 0.75 };
+}
+
+function generateBudgetRecommendations(overview, utilization) {
+  return [
+    {
+      type: 'info',
+      title: 'Budget Analysis',
+      description: 'Budget recommendations in progress',
+      confidence: 0.8
+    }
+  ];
+}
+
 // Export additional helper functions for use in other controllers
 module.exports.calculateDateRange = calculateDateRange;
 module.exports.calculateGrowth = calculateGrowth;
