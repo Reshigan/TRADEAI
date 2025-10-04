@@ -996,6 +996,46 @@ class ReportingController {
       }
     });
   });
+
+  /**
+   * Export data in various formats
+   * POST /api/enterprise/reports/export
+   */
+  exportData = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { format, dataType, parameters } = req.body;
+
+    if (!format || !dataType) {
+      return res.status(400).json({
+        success: false,
+        error: 'Format and data type are required'
+      });
+    }
+
+    const result = await this.reportingEngine.generateExcelReport(
+      tenantId,
+      dataType,
+      { ...parameters, format }
+    );
+
+    if (result.success) {
+      res.download(result.filePath, result.fileName, (err) => {
+        if (err) {
+          console.error('Export download error:', err);
+        }
+        setTimeout(() => {
+          if (fs.existsSync(result.filePath)) {
+            fs.unlinkSync(result.filePath);
+          }
+        }, 5000);
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to export data'
+      });
+    }
+  });
 }
 
 module.exports = new ReportingController();
