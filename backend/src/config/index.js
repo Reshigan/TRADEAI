@@ -1,8 +1,11 @@
 const path = require('path');
 const dotenv = require('dotenv');
-// Load .env from backend/ and also try project root (two levels up)
+// Load .env from backend/ (default cwd), also try backend/.env and project root .env
 dotenv.config();
+// Try backend/.env explicitly
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// Try project root .env (three levels up from src/config)
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 module.exports = {
   // Environment
