@@ -27,9 +27,12 @@ class SimulationEngine {
    * Simulate the impact of promotional activities
    */
   async simulatePromotionImpact(scenario) {
+    console.log('[SimulationEngine] simulatePromotionImpact called', { scenario });
+    
     const {
       promotionType,
       discount,
+      discountPercent,
       duration,
       products,
       targetCustomers,
@@ -37,9 +40,14 @@ class SimulationEngine {
       historicalData = true,
       tenantId
     } = scenario;
+    
+    // Handle both discount and discountPercent parameters
+    const discountValue = discount || discountPercent || 0;
+    console.log('[SimulationEngine] Using discountValue:', discountValue);
 
     // Get historical promotion data
     let historicalPromotions = [];
+    console.log('[SimulationEngine] About to query promotions');
     if (historicalData && tenantId) {
       historicalPromotions = await Promotion.find({
         tenant: tenantId,
@@ -47,26 +55,29 @@ class SimulationEngine {
         status: 'completed'
       }).limit(100);
     }
+    console.log('[SimulationEngine] Promotions queried:', historicalPromotions.length);
 
     // Calculate baseline metrics
+    console.log('[SimulationEngine] Calculating baseline');
     const baseline = await this.calculateBaselineMetrics(products, duration);
+    console.log('[SimulationEngine] Baseline calculated:', baseline);
 
     // Apply ML model for prediction
     const mlPrediction = await mlService.predictPromotionPerformance({
       promotionType,
-      discount,
+      discountPercent: discountValue,
       duration,
       historicalData: historicalPromotions
     });
 
     // Calculate expected uplift
-    const uplift = this.calculateUplift(discount, promotionType, mlPrediction);
+    const uplift = this.calculateUplift(discountValue, promotionType, mlPrediction);
 
     // Calculate financial impact
     const financialImpact = this.calculateFinancialImpact({
       baseline,
       uplift,
-      discount,
+      discount: discountValue,
       budget
     });
 
