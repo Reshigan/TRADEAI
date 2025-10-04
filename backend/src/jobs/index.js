@@ -10,30 +10,29 @@ const dataCleanupJob = require('./dataCleanup');
 const mlTrainingJob = require('./mlTraining');
 const anomalyDetectionJob = require('./anomalyDetection');
 
-// Create queues
-const queues = {
-  sapSync: new Queue('sap-sync', {
-    redis: config.jobs.redis
-  }),
-  reportGeneration: new Queue('report-generation', {
-    redis: config.jobs.redis
-  }),
-  budgetAlert: new Queue('budget-alert', {
-    redis: config.jobs.redis
-  }),
-  dataCleanup: new Queue('data-cleanup', {
-    redis: config.jobs.redis
-  }),
-  mlTraining: new Queue('ml-training', {
-    redis: config.jobs.redis
-  }),
-  anomalyDetection: new Queue('anomaly-detection', {
-    redis: config.jobs.redis
-  })
+const isRedisConfigured = () => {
+  const { host, password } = config.jobs.redis || {};
+  if (process.env.REDIS_ENABLED === 'false') return false;
+  if (process.env.NODE_ENV === 'production') return Boolean(host && password);
+  return Boolean(host);
 };
+
+// Create queues (only if Redis is configured)
+const queues = isRedisConfigured() ? {
+  sapSync: new Queue('sap-sync', { redis: config.jobs.redis }),
+  reportGeneration: new Queue('report-generation', { redis: config.jobs.redis }),
+  budgetAlert: new Queue('budget-alert', { redis: config.jobs.redis }),
+  dataCleanup: new Queue('data-cleanup', { redis: config.jobs.redis }),
+  mlTraining: new Queue('ml-training', { redis: config.jobs.redis }),
+  anomalyDetection: new Queue('anomaly-detection', { redis: config.jobs.redis })
+} : {};
 
 // Initialize jobs
 const initializeJobs = async () => {
+  if (!isRedisConfigured()) {
+    logger.warn('Background jobs disabled: Redis not configured');
+    return;
+  }
   try {
     // SAP Sync - Daily at 2 AM
     await queues.sapSync.add(
