@@ -327,7 +327,8 @@ const tenantIsolation = async (req, res, next) => {
     
     // Add tenant information to request
     req.tenant = {
-      id: tenant._id.toString(),
+      _id: tenant._id,  // Keep ObjectId for controller compatibility
+      id: tenant._id.toString(),  // String version for convenience
       slug: tenant.slug,
       name: tenant.name,
       plan: tenant.subscription.plan,
@@ -336,6 +337,8 @@ const tenantIsolation = async (req, res, next) => {
       usage: tenant.usage,
       settings: tenant.settings
     };
+    
+    console.log('[TenantIsolation] req.tenant set with _id:', req.tenant._id);
     
     // Add helper methods to request
     req.hasFeature = (featureName) => tenantContext.hasFeature(req.requestId, featureName);
