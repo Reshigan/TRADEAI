@@ -1,7 +1,6 @@
 // Load all models to ensure they are registered with Mongoose
-// TEMPORARILY LOADING ONLY MINIMAL USER MODEL FOR DEBUGGING
-// const Company = require('./Company');
-// const User = require('./User');
+// Note: Using minimal User model for mock database mode
+// For production with real database, uncomment the full models
 const User = require('./UserMinimal');
 // const Customer = require('./Customer');
 // const Product = require('./Product');

@@ -515,3 +515,22 @@ exports.processWalletDeduction = async (tradeSpend) => {
   
   await tradeSpend.save();
 };
+exports.deleteTradeSpend = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id);
+  
+  if (!tradeSpend) {
+    return next(new AppError('Trade spend not found', 404));
+  }
+  
+  // Only allow deletion of draft or rejected items
+  if (!['draft', 'rejected'].includes(tradeSpend.status)) {
+    return next(new AppError('Only draft or rejected trade spends can be deleted', 400));
+  }
+  
+  await tradeSpend.deleteOne();
+  
+  res.json({
+    success: true,
+    message: 'Trade spend deleted successfully'
+  });
+});

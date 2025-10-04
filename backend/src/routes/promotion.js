@@ -96,4 +96,11 @@ router.post('/:id/clone',
   promotionController.clonePromotion
 );
 
+router.delete('/:id',
+  checkPermission('promotion', 'delete'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.deletePromotion
+);
+
 module.exports = router;

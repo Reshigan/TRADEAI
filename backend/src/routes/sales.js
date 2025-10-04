@@ -5,6 +5,7 @@ const SalesTransaction = require('../../models/SalesTransaction');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const { authenticateToken: auth } = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 // Get sales overview/summary
 router.get('/overview', auth, async (req, res) => {
@@ -18,10 +19,11 @@ router.get('/overview', auth, async (req, res) => {
       companyId = req.user.companyId;
     }
     
-    console.log('Sales overview - User:', req.user._id);
-    console.log('Sales overview - CompanyId:', companyId);
-    console.log('Sales overview - CompanyId type:', typeof companyId);
-    console.log('Sales overview - Full user companyId:', req.user.companyId);
+    logger.debug('Sales overview request', { 
+      userId: req.user._id, 
+      companyId, 
+      companyIdType: typeof companyId 
+    });
     
     const matchQuery = { company: companyId, status: 'completed' };
     if (startDate && endDate) {
@@ -58,7 +60,7 @@ router.get('/overview', auth, async (req, res) => {
       data: result
     });
   } catch (error) {
-    console.error('Sales overview error:', error);
+    logger.error('Sales overview error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales overview'
@@ -124,7 +126,7 @@ router.get('/by-period', auth, async (req, res) => {
       data: salesByPeriod
     });
   } catch (error) {
-    console.error('Sales by period error:', error);
+    logger.error('Sales by period error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales by period'
@@ -191,7 +193,7 @@ router.get('/top-customers', auth, async (req, res) => {
       data: topCustomers
     });
   } catch (error) {
-    console.error('Top customers error:', error);
+    logger.error('Top customers error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch top customers'
@@ -259,7 +261,7 @@ router.get('/top-products', auth, async (req, res) => {
       data: topProducts
     });
   } catch (error) {
-    console.error('Top products error:', error);
+    logger.error('Top products error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch top products'
@@ -305,7 +307,7 @@ router.get('/by-channel', auth, async (req, res) => {
       data: salesByChannel
     });
   } catch (error) {
-    console.error('Sales by channel error:', error);
+    logger.error('Sales by channel error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales by channel'
@@ -373,10 +375,98 @@ router.get('/trends', auth, async (req, res) => {
       data: trends
     });
   } catch (error) {
-    console.error('Sales trends error:', error);
+    logger.error('Sales trends error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales trends'
+    });
+  }
+});
+
+// Create a new sales transaction
+router.post('/', auth, async (req, res) => {
+  try {
+    const {
+      customerId,
+      productId,
+      quantity,
+      unitPrice,
+      totalAmount,
+      saleDate,
+      status = 'completed',
+      channel = 'Direct',
+      region = 'Unknown'
+    } = req.body;
+
+    // Extract company ID from user context
+    let companyId;
+    if (req.user.companyId && req.user.companyId._id) {
+      companyId = req.user.companyId._id;
+    } else {
+      companyId = req.user.companyId;
+    }
+    
+    // If no company ID, try using tenantId (for multi-tenant setups)
+    if (!companyId) {
+      companyId = req.tenantId || req.user.tenantId;
+    }
+
+    // Validate company context exists
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Company/tenant context not found. User must be associated with a company.'
+      });
+    }
+
+    // Validate required fields
+    if (!customerId || !productId || !quantity || !unitPrice) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: customerId, productId, quantity, unitPrice'
+      });
+    }
+
+    // Generate unique transaction ID
+    const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Calculate amounts
+    const calculatedTotal = totalAmount || (quantity * unitPrice);
+    const netAmount = calculatedTotal; // Assuming no discount for now
+
+    const salesTransaction = new SalesTransaction({
+      company: companyId,
+      transactionId,
+      customer: customerId,
+      product: productId,
+      date: saleDate ? new Date(saleDate) : new Date(),
+      quantity,
+      unitPrice,
+      totalAmount: calculatedTotal,
+      discountAmount: 0,
+      netAmount,
+      currency: 'ZAR',
+      salesRep: req.user.username || req.user.email || 'System',
+      channel,
+      region,
+      status
+    });
+
+    await salesTransaction.save();
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: salesTransaction._id,
+        transactionId: salesTransaction.transactionId,
+        totalAmount: salesTransaction.totalAmount
+      }
+    });
+  } catch (error) {
+    logger.error('Create sales transaction error', { error: error.message, stack: error.stack });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create sales transaction'
     });
   }
 });
@@ -443,7 +533,7 @@ router.get('/transactions', auth, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Sales transactions error:', error);
+    logger.error('Sales transactions error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       error: 'Failed to fetch sales transactions'

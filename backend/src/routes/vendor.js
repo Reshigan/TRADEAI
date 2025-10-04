@@ -4,6 +4,17 @@ const { authenticateToken, authorize } = require('../middleware/auth');
 const Vendor = require('../models/Vendor');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
+// XSS sanitization helper
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
+
 // Get all vendors
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, status, type } = req.query;
@@ -52,8 +63,23 @@ router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
 
 // Create new vendor
 router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(async (req, res) => {
+  // Get tenant from request context
+  const tenantId = req.tenantId || req.user.tenantId;
+  if (!tenantId) {
+    throw new AppError('Tenant context not found', 400);
+  }
+  
+  // Sanitize string fields to prevent XSS
+  const sanitizedData = { ...req.body };
+  if (sanitizedData.name) sanitizedData.name = sanitizeInput(sanitizedData.name);
+  if (sanitizedData.code) sanitizedData.code = sanitizeInput(sanitizedData.code);
+  if (sanitizedData.sapVendorId) sanitizedData.sapVendorId = sanitizeInput(sanitizedData.sapVendorId);
+  if (sanitizedData.legalName) sanitizedData.legalName = sanitizeInput(sanitizedData.legalName);
+  if (sanitizedData.taxId) sanitizedData.taxId = sanitizeInput(sanitizedData.taxId);
+  
   const vendor = await Vendor.create({
-    ...req.body,
+    ...sanitizedData,
+    tenantId,
     createdBy: req.user._id
   });
   

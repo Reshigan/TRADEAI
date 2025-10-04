@@ -55,19 +55,19 @@ const userSchema = new mongoose.Schema({
     module: String,
     actions: [String]
   }],
-  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-  // assignedCustomers: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Customer'
-  // }],
-  // assignedProducts: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Product'
-  // }],
-  // assignedVendors: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Vendor'
-  // }],
+  // Note: Customer and Product references for user assignments
+  assignedCustomers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer'
+  }],
+  assignedProducts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product'
+  }],
+  assignedVendors: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vendor'
+  }],
   cashCoopWallet: {
     allocated: { type: Number, default: 0 },
     spent: { type: Number, default: 0 },
@@ -79,11 +79,10 @@ const userSchema = new mongoose.Schema({
     tradingTerms: { type: Number, default: 0 },
     promotions: { type: Number, default: 0 }
   },
-  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-  // manager: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User'
-  // },
+  manager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   isActive: {
     type: Boolean,
     default: true
@@ -208,10 +207,10 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 // Static methods
 userSchema.statics.findByCredentials = async function(email, password, companyId = null) {
   const query = { email, isActive: true };
-  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
-  // if (companyId) {
-  //   query.company = companyId;
-  // }
+  // Add company filter for multi-tenant support
+  if (companyId) {
+    query.company = companyId;
+  }
   
   const user = await this.findOne(query);
   if (!user) {

@@ -164,6 +164,7 @@ const authenticateToken = async (req, res, next) => {
     // Add user and token to request
     req.user = user;
     req.token = token;
+    req.tenantId = user.tenantId; // Add tenantId for easy access
     next();
   } catch (error) {
     console.log('MIDDLEWARE ERROR:', error.message);

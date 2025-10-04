@@ -104,4 +104,11 @@ router.post('/:id/lock',
   budgetController.lockBudget
 );
 
+router.delete('/:id',
+  checkPermission('budget', 'delete'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.deleteBudget
+);
+
 module.exports = router;

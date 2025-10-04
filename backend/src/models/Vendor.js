@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
+const { addTenantSupport } = require('./BaseTenantModel');
 
 const vendorSchema = new mongoose.Schema({
-  // SAP Integration
-
-  // Company Association - CRITICAL for multi-tenant isolation
+  // Tenant Association - CRITICAL for multi-tenant isolation
+  // Note: tenantId will be added by addTenantSupport()
+  
+  // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: true,
     index: true
   },
   sapVendorId: {
@@ -303,6 +304,9 @@ vendorSchema.methods.calculateRebate = function(purchaseAmount) {
   
   return 0;
 };
+
+// Add tenant support for multi-tenant isolation
+addTenantSupport(vendorSchema);
 
 const Vendor = mongoose.model('Vendor', vendorSchema);
 

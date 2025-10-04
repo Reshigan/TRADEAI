@@ -1,0 +1,181 @@
+{
+  "timestamp": "2025-10-03T12:59:55.691Z",
+  "summary": {
+    "total": 22,
+    "passed": 19,
+    "failed": 0,
+    "warnings": 3,
+    "passRate": "86.4%"
+  },
+  "tests": [
+    {
+      "name": "System Health Check",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.223Z"
+    },
+    {
+      "name": "Database Connection",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.226Z"
+    },
+    {
+      "name": "User Login",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.319Z"
+    },
+    {
+      "name": "Token Validation",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.329Z"
+    },
+    {
+      "name": "Customer List",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.363Z"
+    },
+    {
+      "name": "Customer Creation",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.390Z"
+    },
+    {
+      "name": "Customer Retrieval",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.409Z"
+    },
+    {
+      "name": "Product List",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.441Z"
+    },
+    {
+      "name": "Product Creation",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.464Z"
+    },
+    {
+      "name": "Product Retrieval",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.481Z"
+    },
+    {
+      "name": "Sales Overview",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.498Z"
+    },
+    {
+      "name": "Sales Creation",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.517Z"
+    },
+    {
+      "name": "Sales Transactions List",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.535Z"
+    },
+    {
+      "name": "Promotions List",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.557Z"
+    },
+    {
+      "name": "Promotion Creation",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.581Z"
+    },
+    {
+      "name": "Inventory List",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.596Z"
+    },
+    {
+      "name": "Low Stock Check",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.609Z"
+    },
+    {
+      "name": "Sales Prediction",
+      "passed": true,
+      "warning": true,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.620Z"
+    },
+    {
+      "name": "Churn Prediction",
+      "passed": true,
+      "warning": true,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.628Z"
+    },
+    {
+      "name": "Dashboard Analytics",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.640Z"
+    },
+    {
+      "name": "Report Generation",
+      "passed": true,
+      "warning": true,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.651Z"
+    },
+    {
+      "name": "Data Export",
+      "passed": true,
+      "warning": false,
+      "error": null,
+      "timestamp": "2025-10-03T12:59:55.689Z"
+    }
+  ],
+  "createdData": {
+    "customers": [
+      "68dfc8cb1af7983ce107d5cc"
+    ],
+    "products": [
+      "68dfc8cb1af7983ce107d5e2"
+    ],
+    "sales": [
+      "68dfc8cb1af7983ce107d5f3"
+    ],
+    "promotions": [
+      "68dfc8cb1af7983ce107d60c"
+    ],
+    "reports": []
+  }
+}

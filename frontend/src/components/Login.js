@@ -26,18 +26,15 @@ const Login = ({ onLogin }) => {
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState({});
 
-  // Debug: Log component mount
+  // Component mount - initialization complete
   useEffect(() => {
-    console.log('Login component mounted');
-    console.log('React is working!');
+    // Component ready
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setValidationErrors({});
-    
-    console.log('Login form submitted with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
     
     // Comprehensive validation
     const { isValid, errors } = validateForm(credentials, {
@@ -56,23 +53,17 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      console.log('Attempting login with authService...');
       // Use authService for consistent API handling
       const data = await authService.login({
         email: credentials.email,
         password: credentials.password
       });
 
-      console.log('Login response received:', { success: !!data.token, user: data.user });
-
       if (data.token) {
-        console.log('Login successful, setting localStorage and calling onLogin...');
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('isAuthenticated', 'true');
         
-        console.log('About to call onLogin with user:', data.user);
         onLogin(data.user);
-        console.log('onLogin called successfully, now navigating to dashboard...');
         
         // Navigate to dashboard
         navigate('/dashboard', { replace: true });

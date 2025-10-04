@@ -32,7 +32,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-import { analyticsService } from '../../services/api';
+import { analyticsService, productService, customerService } from '../../services/api';
 import SalesPerformanceChart from './charts/SalesPerformanceChart';
 import BudgetUtilizationChart from './charts/BudgetUtilizationChart';
 import ROIAnalysisChart from './charts/ROIAnalysisChart';
@@ -72,31 +72,20 @@ const AnalyticsDashboard = () => {
   // Fetch reference data for filters
   const fetchReferenceData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-
-      // Fetch products
-      const productsResponse = await fetch('/api/products', { headers });
-      if (productsResponse.ok) {
-        const productsData = await productsResponse.json();
-        setProducts(productsData);
+      // Fetch products using productService
+      const productsResponse = await productService.getAll();
+      if (productsResponse && productsResponse.data) {
+        setProducts(productsResponse.data);
+        
+        // Extract unique categories from products
+        const uniqueCategories = [...new Set(productsResponse.data.map(p => p.category).filter(Boolean))];
+        setCategories(uniqueCategories);
       }
 
-      // Fetch customers
-      const customersResponse = await fetch('/api/customers', { headers });
-      if (customersResponse.ok) {
-        const customersData = await customersResponse.json();
-        setCustomers(customersData);
-      }
-
-      // Fetch categories (from products)
-      const categoriesResponse = await fetch('/api/products/categories', { headers });
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json();
-        setCategories(categoriesData);
+      // Fetch customers using customerService
+      const customersResponse = await customerService.getAll();
+      if (customersResponse && customersResponse.data) {
+        setCustomers(customersResponse.data);
       }
     } catch (error) {
       console.error('Error fetching reference data:', error);

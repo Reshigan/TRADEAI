@@ -4,6 +4,17 @@ const { authenticateToken, authorize } = require('../middleware/auth');
 const Customer = require('../models/Customer');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
+// XSS sanitization helper
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
+
 // Get all customers
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, status, channel } = req.query;
@@ -51,13 +62,31 @@ router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
 
 // Create new customer
 router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(async (req, res) => {
+  // Get tenant from request context
+  const tenantId = req.tenantId || req.user.tenantId;
+  if (!tenantId) {
+    throw new AppError('Tenant context not found', 400);
+  }
+  
+  // Sanitize string fields to prevent XSS
+  const sanitizedData = { ...req.body };
+  if (sanitizedData.name) sanitizedData.name = sanitizeInput(sanitizedData.name);
+  if (sanitizedData.code) sanitizedData.code = sanitizeInput(sanitizedData.code);
+  if (sanitizedData.sapCustomerId) sanitizedData.sapCustomerId = sanitizeInput(sanitizedData.sapCustomerId);
+  if (sanitizedData.address) sanitizedData.address = sanitizeInput(sanitizedData.address);
+  if (sanitizedData.city) sanitizedData.city = sanitizeInput(sanitizedData.city);
+  if (sanitizedData.state) sanitizedData.state = sanitizeInput(sanitizedData.state);
+  if (sanitizedData.contactPerson) sanitizedData.contactPerson = sanitizeInput(sanitizedData.contactPerson);
+  
   const customer = await Customer.create({
-    ...req.body,
+    ...sanitizedData,
+    tenantId,
     createdBy: req.user._id
   });
   
   res.status(201).json({
     success: true,
+    message: 'Customer created successfully',
     data: customer
   });
 }));

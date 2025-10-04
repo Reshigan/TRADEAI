@@ -132,20 +132,29 @@ exports.quickLogin = asyncHandler(async (req, res, next) => {
 
 // Login
 exports.login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, username, password, tenantId } = req.body;
   
-  if (!email || !password) {
+  if ((!email && !username) || !password) {
     return res.status(400).json({
       success: false,
-      message: 'Please provide email and password'
+      message: 'Please provide email/username and password'
     });
   }
   
   try {
-    logger.info(`Login attempt for email: ${email}`);
+    const loginIdentifier = email || username;
+    logger.info(`Login attempt for: ${loginIdentifier}${tenantId ? ` (tenant: ${tenantId})` : ''}`);
     
-    // Find user by email and include password field
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Find user by email or username
+    const searchQuery = email 
+      ? { email: email.toLowerCase() }
+      : { $or: [
+          { email: username.toLowerCase() },
+          { employeeId: username },
+          { username: username }
+        ]};
+    
+    const user = await User.findOne(searchQuery);
     
     logger.info(`User found: ${user ? 'Yes' : 'No'}`);
     if (user) {
@@ -154,7 +163,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     }
     
     if (!user || !user.isActive) {
-      logger.warn(`Authentication failed for ${email}: User not found or inactive`);
+      logger.warn(`Authentication failed for ${loginIdentifier}: User not found or inactive`);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -178,16 +187,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     user.lastLogin = new Date();
     await user.save({ validateBeforeSave: false });
     
-    // Generate JWT token
-    const token = jwt.sign(
-      { 
-        userId: user._id,
-        email: user.email,
-        role: user.role
-      },
-      config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
-    );
+    // Generate tokens using the proper helper function
+    const { accessToken, refreshToken } = generateTokens(user);
     
     // Cache user data if cache service is available
     try {
@@ -205,13 +206,21 @@ exports.login = asyncHandler(async (req, res, next) => {
     return res.json({
       success: true,
       message: 'Login successful',
-      token: token,
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role
+      token: accessToken,
+      data: {
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          department: user.department,
+          tenantId: user.tenantId
+        },
+        tokens: {
+          accessToken,
+          refreshToken
+        }
       }
     });
     

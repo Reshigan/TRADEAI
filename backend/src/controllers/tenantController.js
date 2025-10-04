@@ -2,6 +2,7 @@ const Tenant = require('../models/Tenant');
 const User = require('../models/User');
 const { withoutTenantFilter, withTenantContext } = require('../middleware/tenantQueryFilter');
 const mongoose = require('mongoose');
+const logger = require('../utils/logger');
 
 /**
  * Tenant Management Controller
@@ -80,7 +81,7 @@ class TenantController {
       });
 
     } catch (error) {
-      console.error('Get all tenants error:', error);
+      logger.error('Get all tenants error', { error: error.message, stack: error.stack });
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to retrieve tenants'
@@ -119,7 +120,7 @@ class TenantController {
       });
 
     } catch (error) {
-      console.error('Get current tenant error:', error);
+      logger.error('Get current tenant error', { error: error.message, stack: error.stack });
       res.status(500).json({
         error: 'Internal server error',
         message: 'Failed to retrieve tenant information'
@@ -161,7 +162,7 @@ class TenantController {
       });
 
     } catch (error) {
-      console.error('Create tenant error:', error);
+      logger.error('Create tenant error', { error: error.message, stack: error.stack });
       
       if (error.code === 11000) {
         const field = Object.keys(error.keyPattern)[0];

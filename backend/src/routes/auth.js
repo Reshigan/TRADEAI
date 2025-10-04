@@ -6,37 +6,70 @@ const { validate } = require('../middleware/validation');
 const { authenticateToken } = require('../middleware/auth');
 const { rateLimitByRole } = require('../middleware/auth');
 
-// Simplified validation rules for login (remove normalizeEmail temporarily)
+// Simplified validation rules for login - support both email and username
 const loginValidation = [
   body('email')
+    .optional()
     .isEmail()
-    .withMessage('Please provide a valid email'),
+    .withMessage('Please provide a valid email')
+    .isLength({ max: 255 })
+    .withMessage('Email must be less than 255 characters'),
+  body('username')
+    .optional()
+    .notEmpty()
+    .withMessage('Username is required when not using email')
+    .isLength({ max: 100 })
+    .withMessage('Username must be less than 100 characters'),
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-];
+    .isLength({ max: 200 })
+    .withMessage('Password must be less than 200 characters'),
+  body('tenantId')
+    .optional()
+    .notEmpty()
+    .withMessage('Tenant ID must not be empty if provided')
+    .isLength({ max: 100 })
+    .withMessage('Tenant ID must be less than 100 characters')
+].concat([
+  // At least one of email or username must be provided
+  body().custom((value, { req }) => {
+    if (!req.body.email && !req.body.username) {
+      throw new Error('Either email or username is required');
+    }
+    return true;
+  })
+]);
 
 const registerValidation = [
   body('email')
     .isEmail()
     .normalizeEmail()
-    .withMessage('Please provide a valid email'),
+    .withMessage('Please provide a valid email')
+    .isLength({ max: 255 })
+    .withMessage('Email must be less than 255 characters'),
   body('password')
-    .isLength({ min: 8 })
+    .isLength({ min: 8, max: 128 })
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-    .withMessage('Password must contain at least 8 characters, including uppercase, lowercase, number and special character'),
+    .withMessage('Password must be 8-128 characters with uppercase, lowercase, number and special character'),
   body('firstName')
     .trim()
     .notEmpty()
-    .withMessage('First name is required'),
+    .withMessage('First name is required')
+    .isLength({ max: 100 })
+    .withMessage('First name must be less than 100 characters'),
   body('lastName')
     .trim()
     .notEmpty()
-    .withMessage('Last name is required'),
+    .withMessage('Last name is required')
+    .isLength({ max: 100 })
+    .withMessage('Last name must be less than 100 characters'),
   body('employeeId')
     .trim()
     .notEmpty()
-    .withMessage('Employee ID is required'),
+    .withMessage('Employee ID is required')
+    .isLength({ max: 50 })
+    .withMessage('Employee ID must be less than 50 characters'),
   body('role')
     .isIn(['admin', 'board', 'director', 'manager', 'kam', 'sales_rep', 'sales_admin', 'analyst'])
     .withMessage('Invalid role'),

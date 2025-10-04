@@ -99,4 +99,11 @@ router.post('/:id/record-spend',
   tradeSpendController.recordSpend
 );
 
+router.delete('/:id',
+  checkPermission('trade_spend', 'delete'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.deleteTradeSpend
+);
+
 module.exports = router;

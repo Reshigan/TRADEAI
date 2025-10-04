@@ -11,8 +11,7 @@ const requiredEnvVars = [
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
   'REDIS_HOST',
-  'REDIS_PORT',
-  'REDIS_PASSWORD'
+  'REDIS_PORT'
 ];
 
 const optionalEnvVars = {
@@ -20,7 +19,8 @@ const optionalEnvVars = {
   'RATE_LIMIT_WINDOW_MS': '900000',
   'RATE_LIMIT_MAX': '100',
   'SESSION_SECRET': 'change-this-secret',
-  'CORS_ORIGIN': '*'
+  'CORS_ORIGIN': '*',
+  'REDIS_PASSWORD': '' // Optional - leave empty for no auth
 };
 
 /**

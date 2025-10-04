@@ -8,6 +8,12 @@ const logger = require('../utils/logger');
 
 // Create new promotion
 exports.createPromotion = asyncHandler(async (req, res, next) => {
+  // Get tenant from request context
+  const tenantId = req.tenantId || req.user.tenantId;
+  if (!tenantId) {
+    throw new AppError('Tenant context not found', 400);
+  }
+  
   // Generate promotion ID
   const promotionCount = await Promotion.countDocuments();
   const promotionId = `PROMO-${new Date().getFullYear()}-${String(promotionCount + 1).padStart(5, '0')}`;
@@ -15,6 +21,7 @@ exports.createPromotion = asyncHandler(async (req, res, next) => {
   const promotionData = {
     ...req.body,
     promotionId,
+    tenantId,
     createdBy: req.user._id,
     status: 'draft'
   };
@@ -476,5 +483,31 @@ exports.clonePromotion = asyncHandler(async (req, res, next) => {
     success: true,
     message: 'Promotion cloned successfully',
     data: clonedPromotion
+  });
+});
+
+// Delete promotion
+exports.deletePromotion = asyncHandler(async (req, res, next) => {
+  const tenantId = req.tenantId || req.user.tenantId;
+  
+  const promotion = await Promotion.findOne({ 
+    _id: req.params.id,
+    tenantId
+  });
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  // Only allow deletion of draft promotions
+  if (promotion.status !== 'draft') {
+    throw new AppError('Only draft promotions can be deleted', 400);
+  }
+  
+  await promotion.deleteOne();
+  
+  res.json({
+    success: true,
+    message: 'Promotion deleted successfully'
   });
 });

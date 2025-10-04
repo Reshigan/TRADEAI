@@ -1,4 +1,4 @@
-const XLSX = require('xlsx');
+const ExcelJS = require('exceljs');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
@@ -317,11 +317,34 @@ class BulkOperationsService {
   }
 
   async parseExcel(filePath) {
-    const workbook = XLSX.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
     
-    return XLSX.utils.sheet_to_json(worksheet);
+    const worksheet = workbook.worksheets[0];
+    if (!worksheet) {
+      throw new Error('No worksheet found in Excel file');
+    }
+    
+    const data = [];
+    const headers = [];
+    
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) {
+        // First row is headers
+        row.eachCell((cell) => {
+          headers.push(cell.value);
+        });
+      } else {
+        // Data rows
+        const rowData = {};
+        row.eachCell((cell, colNumber) => {
+          rowData[headers[colNumber - 1]] = cell.value;
+        });
+        data.push(rowData);
+      }
+    });
+    
+    return data;
   }
 
   async validateData(data, modelType, tenantId) {
@@ -443,10 +466,53 @@ class BulkOperationsService {
   }
 
   async generateExcel(data, filePath) {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-    XLSX.writeFile(workbook, filePath);
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'TRADEAI';
+    workbook.created = new Date();
+    
+    const worksheet = workbook.addWorksheet('Data');
+    
+    if (data && data.length > 0) {
+      // Add headers
+      const headers = Object.keys(data[0]);
+      worksheet.addRow(headers);
+      
+      // Style header row
+      const headerRow = worksheet.getRow(1);
+      headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+      headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF366092' }
+      };
+      headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+      headerRow.height = 20;
+      
+      // Add data rows
+      data.forEach(row => {
+        const values = headers.map(header => row[header]);
+        worksheet.addRow(values);
+      });
+      
+      // Auto-size columns
+      headers.forEach((header, index) => {
+        const column = worksheet.getColumn(index + 1);
+        column.width = Math.max(15, header.length + 5);
+      });
+      
+      // Add auto-filter
+      worksheet.autoFilter = {
+        from: { row: 1, column: 1 },
+        to: { row: 1, column: headers.length }
+      };
+      
+      // Freeze header row
+      worksheet.views = [
+        { state: 'frozen', xSplit: 0, ySplit: 1 }
+      ];
+    }
+    
+    await workbook.xlsx.writeFile(filePath);
   }
 
   getModel(modelType) {
