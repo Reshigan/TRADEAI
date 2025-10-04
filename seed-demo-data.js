@@ -18,13 +18,14 @@
 
 const path = require('path');
 
-// Load environment from backend directory
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-
 // Use backend's node_modules
+const dotenv = require(path.join(__dirname, 'backend', 'node_modules', 'dotenv'));
 const mongoose = require(path.join(__dirname, 'backend', 'node_modules', 'mongoose'));
 const bcrypt = require(path.join(__dirname, 'backend', 'node_modules', 'bcryptjs'));
 const { faker } = require(path.join(__dirname, 'backend', 'node_modules', '@faker-js', 'faker'));
+
+// Load environment from backend directory
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Import models
 const User = require('./backend/src/models/User');
