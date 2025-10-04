@@ -6,5 +6,7 @@ const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-module.exports = { asyncHandler };
+// Export as default (for: require('...'))
+module.exports = asyncHandler;
+// Also export as named export (for: const { asyncHandler } = require('...'))
 module.exports.asyncHandler = asyncHandler;
