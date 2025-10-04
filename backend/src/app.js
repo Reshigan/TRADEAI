@@ -188,6 +188,12 @@ if (process.env.NODE_ENV === 'production' || process.env.ENABLE_RATE_LIMITING ==
   logger.warn('⚠️  Rate limiting disabled (development mode)');
 }
 
+// Test middleware to verify middleware execution
+app.use('/api', (req, res, next) => {
+  console.log('[TEST MIDDLEWARE] Request received:', req.method, req.originalUrl);
+  next();
+});
+
 // Tenant isolation middleware (before authentication)
 console.log('[App.js] About to apply tenantCleanup middleware');
 app.use(tenantCleanup);
