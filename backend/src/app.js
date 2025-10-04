@@ -187,7 +187,7 @@ if (process.env.NODE_ENV === 'production' || process.env.ENABLE_RATE_LIMITING ==
 
 // Tenant isolation middleware (before authentication)
 app.use(tenantCleanup);
-app.use('/api/', tenantIsolation);
+app.use('/api', tenantIsolation);
 
 // API Documentation
 const swaggerOptions = {
