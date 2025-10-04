@@ -20,7 +20,7 @@ const ProtectedRoute = ({
   showError = false 
 }) => {
   // Check if user is authenticated
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   if (!token) {
     return <Navigate to="/" replace />;
   }
@@ -86,7 +86,7 @@ export const ConditionalRender = ({
   fallback = null 
 }) => {
   // Check if user is authenticated
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   if (!token) {
     return fallback;
   }
@@ -144,7 +144,7 @@ export const RoleBasedButton = ({
  * Hook for role-based access control
  */
 export const useRoleAccess = () => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
   
   if (token && !roleService.getCurrentUser()) {
     roleService.initializeFromToken(token);
