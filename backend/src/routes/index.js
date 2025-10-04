@@ -20,6 +20,7 @@ const reportRoutes = require('./report');
 // Enterprise feature routes
 const enterpriseBudgetRoutes = require('./enterpriseBudget');
 const superAdminRoutes = require('./superAdmin');
+const enterpriseRoutes = require('./enterprise');
 
 // Mount routes
 router.use('/auth', authRoutes);
@@ -43,6 +44,7 @@ router.use('/reports', reportRoutes);
 
 // Enterprise feature routes
 router.use('/enterprise/budget', authenticateToken, enterpriseBudgetRoutes);
+router.use('/enterprise', authenticateToken, enterpriseRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
