@@ -73,11 +73,11 @@ async function seedDatabase() {
 
     // Create Users
     console.log('👥 Creating users...');
-    const hashedPassword = await bcrypt.hash('Admin@123456', 10);
+    // Note: Don't hash password here - User model pre-save hook will handle it
     
     const superAdmin = await User.create({
       email: 'admin@tradeai.gonxt.tech',
-      password: hashedPassword,
+      password: 'Admin@123456',
       firstName: 'System',
       lastName: 'Administrator',
       role: 'super_admin',
@@ -89,7 +89,7 @@ async function seedDatabase() {
     
     const tenantAdmin = await User.create({
       email: 'admin@mondelez.co.za',
-      password: hashedPassword,
+      password: 'Admin@123456',
       firstName: 'John',
       lastName: 'Mbeki',
       role: 'admin',
@@ -101,7 +101,7 @@ async function seedDatabase() {
     
     const manager = await User.create({
       email: 'sarah.botha@mondelez.co.za',
-      password: hashedPassword,
+      password: 'Admin@123456',
       firstName: 'Sarah',
       lastName: 'Botha',
       role: 'manager',
@@ -117,7 +117,7 @@ async function seedDatabase() {
       const [firstName, lastName] = repNames[i].split(' ');
       const rep = await User.create({
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase().replace(/\s+/g, '')}@mondelez.co.za`,
-        password: hashedPassword,
+        password: 'Admin@123456',
         firstName,
         lastName,
         role: 'kam',
