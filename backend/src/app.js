@@ -18,6 +18,9 @@ const { authenticateToken } = require('./middleware/auth');
 const { tenantIsolation, tenantCleanup } = require('./middleware/tenantIsolation');
 const { initSentry, getHandlers } = require('./config/sentry');
 
+console.log('[App.js] tenantIsolation type:', typeof tenantIsolation);
+console.log('[App.js] tenantCleanup type:', typeof tenantCleanup);
+
 // Load all models to ensure they are registered with Mongoose
 require('./models');
 
@@ -186,8 +189,11 @@ if (process.env.NODE_ENV === 'production' || process.env.ENABLE_RATE_LIMITING ==
 }
 
 // Tenant isolation middleware (before authentication)
+console.log('[App.js] About to apply tenantCleanup middleware');
 app.use(tenantCleanup);
+console.log('[App.js] About to apply tenantIsolation to /api');
 app.use('/api', tenantIsolation);
+console.log('[App.js] Tenant middlewares applied');
 
 // API Documentation
 const swaggerOptions = {
