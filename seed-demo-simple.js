@@ -153,8 +153,11 @@ async function seedDatabase() {
       const customer = await Customer.create({
         name: retailerNames[i],
         code: `RTL-${String(i + 1).padStart(4, '0')}`,
-        type: 'customer',
-        tenant: tenant._id,
+        sapCustomerId: `SAP-${String(i + 1).padStart(6, '0')}`,
+        customerType: 'chain',
+        channel: 'modern_trade',
+        tenantId: tenant._id,
+        company: company._id,
         status: 'active'
       });
       customers.push(customer);
@@ -182,10 +185,16 @@ async function seedDatabase() {
       const product = await Product.create({
         name: prod.name,
         sku: `SKU-${String(i + 1).padStart(4, '0')}`,
+        sapMaterialId: `MAT-${String(i + 1).padStart(8, '0')}`,
         description: prod.name,
-        price: prod.price,
-        cost: prod.cost,
-        tenant: tenant._id,
+        productType: 'own_brand',
+        pricing: {
+          listPrice: prod.price,
+          cost: prod.cost,
+          currency: 'ZAR'
+        },
+        tenantId: tenant._id,
+        company: company._id,
         status: 'active'
       });
       products.push(product);
@@ -233,7 +242,7 @@ async function seedDatabase() {
         for (let j = 0; j < numItems; j++) {
           const product = getRandomElement(products);
           const quantity = getRandomNumber(10, 500);
-          const unitPrice = product.price;
+          const unitPrice = product.pricing.listPrice;
           const total = quantity * unitPrice;
           
           items.push({
