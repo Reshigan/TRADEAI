@@ -507,7 +507,7 @@ exports.getCustomerAnalyticsDashboard = asyncHandler(async (req, res, next) => {
     data: {
       metrics: customerMetrics,
       segments: segmentAnalysis,
-      lifetime Value: customerLifetimeValue,
+      lifetimeValue: customerLifetimeValue,
       churn: churnAnalysis,
       topCustomers,
       growth: customerGrowth,
