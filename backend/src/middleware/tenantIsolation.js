@@ -256,20 +256,30 @@ const tenantIsolation = async (req, res, next) => {
       };
     } else {
       console.log('[TenantIsolation] Looking up tenant:', tenantInfo);
+      console.log('[TenantIsolation] TenantInfo type:', tenantInfo.type, 'value:', tenantInfo.value);
+      
       if (tenantInfo.type === 'id') {
+        console.log('[TenantIsolation] Using Tenant.findById with value:', tenantInfo.value);
         tenant = await Tenant.findById(tenantInfo.value);
+        console.log('[TenantIsolation] Result from findById:', tenant ? {id: tenant._id, name: tenant.name} : 'NULL');
       } else if (tenantInfo.type === 'slug') {
+        console.log('[TenantIsolation] Using Tenant.findBySlug with value:', tenantInfo.value);
         tenant = await Tenant.findBySlug(tenantInfo.value);
+        console.log('[TenantIsolation] Result from findBySlug:', tenant ? {id: tenant._id, name: tenant.name} : 'NULL');
       }
       
       console.log('[TenantIsolation] Tenant found:', tenant ? tenant.name : 'NO');
       
       if (!tenant) {
-        console.log('[TenantIsolation] Tenant not found in DB');
+        console.log('[TenantIsolation] Tenant not found in DB - tenantInfo was:', JSON.stringify(tenantInfo));
         return res.status(404).json({
           error: 'Tenant not found',
           message: 'The specified tenant does not exist',
-          code: 'TENANT_NOT_FOUND'
+          code: 'TENANT_NOT_FOUND',
+          debug: {
+            tenantInfo: tenantInfo,
+            path: req.path
+          }
         });
       }
     }
