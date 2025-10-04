@@ -188,8 +188,12 @@ function isAdminRoute(path) {
  * Main tenant isolation middleware
  */
 const tenantIsolation = async (req, res, next) => {
+  console.log('[TenantIsolation] ========== MIDDLEWARE INVOKED ==========');
+  console.log('[TenantIsolation] path:', req.path);
+  console.log('[TenantIsolation] url:', req.url);
+  console.log('[TenantIsolation] originalUrl:', req.originalUrl);
+  console.log('[TenantIsolation] method:', req.method);
   try {
-    console.log('[TenantIsolation] INVOKED - path:', req.path, 'url:', req.url, 'originalUrl:', req.originalUrl);
     
     // Generate unique request ID for context tracking
     req.requestId = req.headers['x-request-id'] || 
