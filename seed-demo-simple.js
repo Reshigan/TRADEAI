@@ -202,25 +202,8 @@ async function seedDatabase() {
     }
     console.log(`✅ Created ${products.length} products\n`);
 
-    // Create Budgets
-    console.log('💰 Creating budgets...');
-    const budgetCategories = ['Trade Marketing', 'Promotions', 'Listing Fees', 'Rebates'];
-    const budgets = [];
-    
-    for (const category of budgetCategories) {
-      const budget = await Budget.create({
-        name: `${category} 2024`,
-        code: `BDG-2024-${category.substring(0, 3).toUpperCase()}`,
-        fiscalYear: 2024,
-        totalAmount: getRandomNumber(5000000, 15000000),
-        allocatedAmount: 0,
-        spentAmount: 0,
-        tenant: tenant._id,
-        status: 'active'
-      });
-      budgets.push(budget);
-    }
-    console.log(`✅ Created ${budgets.length} budgets\n`);
+    // Skip budgets, promotions, trade spends for now - focus on transactions
+    console.log('💰 Skipping budgets, promotions, trade spends (can be added later)\n');
 
     // Generate Transactions
     console.log('💳 Generating 50,000 transactions...');
@@ -297,53 +280,12 @@ async function seedDatabase() {
     
     console.log('✅ All transactions created\n');
 
-    // Create Promotions
-    console.log('🎯 Creating promotions...');
-    for (let i = 0; i < 100; i++) {
-      const promoStart = getRandomDate(startDate, new Date('2024-11-01'));
-      const promoEnd = new Date(promoStart.getTime() + (getRandomNumber(7, 30) * 24 * 60 * 60 * 1000));
-      
-      await Promotion.create({
-        name: `Promotion ${i + 1} - ${getRandomElement(retailerNames)}`,
-        code: `PROMO-${String(i + 1).padStart(4, '0')}`,
-        startDate: promoStart,
-        endDate: promoEnd,
-        promotionType: getRandomElement(['temporary_price_reduction', 'multi_buy', 'bundle']),
-        discountType: 'percentage',
-        discountValue: getRandomFloat(10, 30),
-        budget: getRandomNumber(50000, 500000),
-        tenant: tenant._id,
-        status: promoEnd < new Date() ? 'completed' : (promoStart < new Date() ? 'active' : 'planned')
-      });
-    }
-    console.log('✅ Created 100 promotions\n');
-
-    // Create Trade Spends
-    console.log('💸 Creating trade spends...');
-    for (let i = 0; i < 500; i++) {
-      const spendDate = getRandomDate(startDate, endDate);
-      await TradeSpend.create({
-        name: `Trade Spend ${i + 1}`,
-        code: `TS-${String(i + 1).padStart(4, '0')}`,
-        customerId: getRandomElement(customers)._id,
-        date: spendDate,
-        amount: getRandomNumber(5000, 100000),
-        category: getRandomElement(['promotional_support', 'listing_fee', 'rebate', 'marketing_contribution']),
-        tenant: tenant._id,
-        status: 'approved'
-      });
-    }
-    console.log('✅ Created 500 trade spends\n');
-
     // Final Summary
     const stats = {
       users: await User.countDocuments(),
       customers: await Customer.countDocuments(),
       products: await Product.countDocuments(),
-      transactions: await Transaction.countDocuments(),
-      promotions: await Promotion.countDocuments(),
-      tradeSpends: await TradeSpend.countDocuments(),
-      budgets: await Budget.countDocuments()
+      transactions: await Transaction.countDocuments()
     };
 
     console.log('\n═══════════════════════════════════════════════════════════');
@@ -353,9 +295,6 @@ async function seedDatabase() {
     console.log(`   • Users: ${stats.users}`);
     console.log(`   • Customers: ${stats.customers} (SA Retailers)`);
     console.log(`   • Products: ${stats.products} (Mondelez)`);
-    console.log(`   • Budgets: ${stats.budgets}`);
-    console.log(`   • Promotions: ${stats.promotions}`);
-    console.log(`   • Trade Spends: ${stats.tradeSpends}`);
     console.log(`   • Transactions: ${stats.transactions.toLocaleString()}`);
     console.log('\n👤 Login Credentials:');
     console.log('   ┌─────────────────────────────────────────────────────┐');
