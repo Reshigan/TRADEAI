@@ -94,7 +94,9 @@ function extractTenantId(req) {
     const isLocalhost = host.startsWith('localhost') || host.startsWith('127.0.0.1') || host.startsWith('0.0.0.0');
     if (!isLocalhost) {
       const subdomain = host.split('.')[0];
-      if (subdomain && subdomain !== 'www' && subdomain !== 'api') {
+      // Skip common non-tenant subdomains (www, api, app, tradeai)
+      const skipSubdomains = ['www', 'api', 'app', 'tradeai'];
+      if (subdomain && !skipSubdomains.includes(subdomain)) {
         return { type: 'slug', value: subdomain };
       }
     }
