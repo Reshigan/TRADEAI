@@ -374,7 +374,7 @@ router.post(
 router.get(
   '/reports/custom',
   auth,
-  reportingController.generateCustomReport
+  reportingController.createCustomReport
 );
 
 /**
