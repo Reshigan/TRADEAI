@@ -34,13 +34,15 @@ class SimulationEngine {
       products,
       targetCustomers,
       budget,
-      historicalData = true
+      historicalData = true,
+      tenantId
     } = scenario;
 
     // Get historical promotion data
     let historicalPromotions = [];
-    if (historicalData) {
+    if (historicalData && tenantId) {
       historicalPromotions = await Promotion.find({
+        tenant: tenantId,
         type: promotionType,
         status: 'completed'
       }).limit(100);
