@@ -1,4 +1,11 @@
-const tf = require('@tensorflow/tfjs-node');
+let tf;
+try {
+  tf = require('@tensorflow/tfjs-node');
+  console.log('[MLPredictionService] Using @tensorflow/tfjs-node backend');
+} catch (err) {
+  console.warn('[MLPredictionService] Failed to load @tensorflow/tfjs-node, falling back to @tensorflow/tfjs (CPU). Error:', err.message);
+  tf = require('@tensorflow/tfjs');
+}
 const { SimpleLinearRegression, PolynomialRegression } = require('ml-regression');
 const ss = require('simple-statistics');
 const math = require('mathjs');
