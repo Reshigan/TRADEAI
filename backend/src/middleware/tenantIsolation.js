@@ -206,10 +206,14 @@ const tenantIsolation = async (req, res, next) => {
     // Extract tenant information
     const tenantInfo = extractTenantId(req);
     
+    console.log('[TenantIsolation] Path:', req.path);
+    console.log('[TenantIsolation] TenantInfo:', tenantInfo);
+    
     if (!tenantInfo) {
       // No tenant info found - let the auth middleware handle authentication
       // The auth middleware will return 401 if token is missing/invalid
       // If auth passes but tenant is still missing, that would be caught by route handlers
+      console.log('[TenantIsolation] No tenant info found, continuing');
       return next();
     }
     
@@ -251,13 +255,17 @@ const tenantIsolation = async (req, res, next) => {
         }
       };
     } else {
+      console.log('[TenantIsolation] Looking up tenant:', tenantInfo);
       if (tenantInfo.type === 'id') {
         tenant = await Tenant.findById(tenantInfo.value);
       } else if (tenantInfo.type === 'slug') {
         tenant = await Tenant.findBySlug(tenantInfo.value);
       }
       
+      console.log('[TenantIsolation] Tenant found:', tenant ? tenant.name : 'NO');
+      
       if (!tenant) {
+        console.log('[TenantIsolation] Tenant not found in DB');
         return res.status(404).json({
           error: 'Tenant not found',
           message: 'The specified tenant does not exist',
