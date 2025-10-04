@@ -17,8 +17,15 @@ const analyticsRoutes = require('./analytics');
 const tradingTermsRoutes = require('./tradingTermsRoutes');
 const reportRoutes = require('./report');
 
+// Enterprise feature routes
+const enterpriseBudgetRoutes = require('./enterpriseBudget');
+const superAdminRoutes = require('./superAdmin');
+
 // Mount routes
 router.use('/auth', authRoutes);
+
+// Super Admin routes (must be before other protected routes)
+router.use('/super-admin', superAdminRoutes);
 
 // Protected routes
 router.use('/budgets', authenticateToken, budgetRoutes);
@@ -33,6 +40,9 @@ router.use('/products', authenticateToken, productRoutes);
 router.use('/analytics', authenticateToken, analyticsRoutes);
 router.use('/trading-terms', tradingTermsRoutes);
 router.use('/reports', reportRoutes);
+
+// Enterprise feature routes
+router.use('/enterprise/budget', authenticateToken, enterpriseBudgetRoutes);
 
 // Health check
 router.get('/health', (req, res) => {
