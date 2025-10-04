@@ -1,4 +1,8 @@
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+// Load .env from backend/ and also try project root (two levels up)
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 module.exports = {
   // Environment
