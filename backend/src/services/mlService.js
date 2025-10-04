@@ -453,6 +453,47 @@ class MLService {
     
     return risks;
   }
+
+  /**
+   * Predict promotion performance using ML models
+   */
+  async predictPromotionPerformance(params) {
+    // Placeholder implementation - returns basic prediction
+    const { discountPercent = 0, duration = 0 } = params;
+    
+    // Simple heuristic for now
+    const baselineLift = discountPercent * 2; // 10% discount = 20% lift
+    const durationFactor = Math.min(duration / 30, 1); // Normalize duration
+    
+    return {
+      expectedLift: baselineLift * durationFactor,
+      confidence: 0.75,
+      volumeIncrease: baselineLift * 0.8,
+      revenueImpact: baselineLift * 0.6 // After discount
+    };
+  }
+
+  /**
+   * Forecast volume using time series models
+   */
+  async forecastVolume(params) {
+    // Placeholder implementation - returns basic forecast
+    const { historicalVolume = 1000, periods = 12 } = params;
+    
+    const forecast = [];
+    for (let i = 1; i <= periods; i++) {
+      // Simple trend with random variation
+      const trend = historicalVolume * (1 + 0.05 * i); // 5% growth per period
+      const noise = (Math.random() - 0.5) * historicalVolume * 0.1; // ±10% noise
+      forecast.push({
+        period: i,
+        value: Math.max(0, trend + noise),
+        confidence: 0.8 - (i * 0.02) // Confidence decreases over time
+      });
+    }
+    
+    return forecast;
+  }
 }
 
 module.exports = new MLService();
