@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Budget = require('../models/Budget');
 const Promotion = require('../models/Promotion');
 const TradeSpend = require('../models/TradeSpend');
@@ -435,7 +436,7 @@ exports.getSalesPerformanceDashboard = asyncHandler(async (req, res, next) => {
   } = req.query;
 
   const dateRange = calculateDateRange({ period });
-  const filters = {};
+  const filters = { tenantId: req.tenant._id };
   if (product) filters.productId = product;
   if (customer) filters.customerId = customer;
   if (region) filters.region = region;
@@ -1143,6 +1144,132 @@ async function getCustomerKPI(tenantId, dateRange) {
     trend: 'stable',
     unit: 'count'
   };
+}
+
+/**
+ * Sales Dashboard Helper Functions
+ */
+
+async function getSalesMetrics(dateRange, filters = {}) {
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  if (filters.customerId) match.customerId = filters.customerId;
+  if (filters.region) match.region = filters.region;
+  
+  const aggregate = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: '$revenue.net' },
+        totalUnits: { $sum: '$quantity' },
+        avgOrderValue: { $avg: '$revenue.net' },
+        orderCount: { $sum: 1 }
+      }
+    }
+  ]);
+  
+  const result = aggregate[0] || { totalRevenue: 0, totalUnits: 0, avgOrderValue: 0, orderCount: 0 };
+  
+  return {
+    revenue: result.totalRevenue,
+    units: result.totalUnits,
+    avgOrderValue: result.avgOrderValue,
+    orders: result.orderCount
+  };
+}
+
+async function getSalesTrend(dateRange, groupBy = 'week', filters = {}) {
+  // Simplified implementation - group by month
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  const aggregate = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$date" } },
+        revenue: { $sum: '$revenue.net' },
+        units: { $sum: '$quantity' }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ]);
+  
+  return aggregate.map(item => ({
+    period: item._id,
+    revenue: item.revenue,
+    units: item.units
+  }));
+}
+
+async function getTopProducts(dateRange, filters = {}, limit = 10) {
+  return { products: [] }; // Placeholder
+}
+
+async function getTopCustomers(dateRange, filters = {}, limit = 10) {
+  return { customers: [] }; // Placeholder
+}
+
+async function getRegionPerformance(dateRange, filters = {}) {
+  return { regions: [] }; // Placeholder
+}
+
+async function getSalesForecast(dateRange, filters = {}) {
+  return { forecast: [], confidence: 0.8 }; // Placeholder
+}
+
+async function getCohortAnalysis(dateRange, filters = {}) {
+  return { cohorts: [] }; // Placeholder
+}
+
+async function generateSalesInsights(metrics, trend) {
+  return [
+    {
+      type: 'info',
+      title: 'Sales Performance',
+      description: `Total revenue: $${metrics.revenue.toFixed(2)}`,
+      confidence: 0.9
+    }
+  ];
+}
+
+async function generatePromotionInsights(metrics) {
+  return [
+    {
+      type: 'info',
+      title: 'Promotion Performance',
+      description: 'Promotion analysis in progress',
+      confidence: 0.8
+    }
+  ];
+}
+
+async function generateCustomerInsights(metrics, churnAnalysis) {
+  return [
+    {
+      type: 'info',
+      title: 'Customer Insights',
+      description: 'Customer analysis in progress',
+      confidence: 0.8
+    }
+  ];
+}
+
+async function generateProductInsights(performance, profitability) {
+  return [
+    {
+      type: 'info',
+      title: 'Product Insights',
+      description: 'Product analysis in progress',
+      confidence: 0.8
+    }
+  ];
 }
 
 // Export additional helper functions for use in other controllers
