@@ -189,12 +189,15 @@ function isAdminRoute(path) {
  */
 const tenantIsolation = async (req, res, next) => {
   try {
+    console.log('[TenantIsolation] INVOKED - path:', req.path, 'url:', req.url, 'originalUrl:', req.originalUrl);
+    
     // Generate unique request ID for context tracking
     req.requestId = req.headers['x-request-id'] || 
                    `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Skip tenant check for public routes
     if (isPublicRoute(req.path)) {
+      console.log('[TenantIsolation] Public route, skipping');
       return next();
     }
     
@@ -202,6 +205,7 @@ const tenantIsolation = async (req, res, next) => {
     if (isAdminRoute(req.path)) {
       // Admin routes require system admin privileges
       // This will be handled by admin authentication middleware
+      console.log('[TenantIsolation] Admin route, skipping');
       return next();
     }
     
@@ -210,12 +214,13 @@ const tenantIsolation = async (req, res, next) => {
     
     console.log('[TenantIsolation] Path:', req.path);
     console.log('[TenantIsolation] TenantInfo:', tenantInfo);
+    console.log('[TenantIsolation] Auth header:', req.headers.authorization ? 'Present' : 'Missing');
     
     if (!tenantInfo) {
       // No tenant info found - let the auth middleware handle authentication
       // The auth middleware will return 401 if token is missing/invalid
       // If auth passes but tenant is still missing, that would be caught by route handlers
-      console.log('[TenantIsolation] No tenant info found, continuing');
+      console.log('[TenantIsolation] No tenant info found, continuing without tenant');
       return next();
     }
     
