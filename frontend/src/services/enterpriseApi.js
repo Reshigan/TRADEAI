@@ -298,10 +298,82 @@ export const superAdminApi = {
   }
 };
 
+/**
+ * Enterprise Simulations API
+ */
+export const simulationsApi = {
+  // Promotion Impact
+  promotionImpact: (data) => {
+    return apiClient.post('/enterprise/simulations/promotion-impact', data);
+  },
+
+  // Budget Allocation
+  budgetAllocation: (data) => {
+    return apiClient.post('/enterprise/simulations/budget-allocation', data);
+  },
+
+  // Pricing Strategy
+  pricingStrategy: (data) => {
+    return apiClient.post('/enterprise/simulations/pricing-strategy', data);
+  },
+
+  // Volume Projection
+  volumeProjection: (data) => {
+    return apiClient.post('/enterprise/simulations/volume-projection', data);
+  },
+
+  // Market Share
+  marketShare: (data) => {
+    return apiClient.post('/enterprise/simulations/market-share', data);
+  },
+
+  // ROI Optimization
+  roiOptimization: (data) => {
+    return apiClient.post('/enterprise/simulations/roi-optimization', data);
+  },
+
+  // What-If Analysis
+  whatIfAnalysis: (data) => {
+    return apiClient.post('/enterprise/simulations/what-if', data);
+  }
+};
+
+/**
+ * Enterprise Dashboards API
+ */
+export const dashboardsApi = {
+  // Executive Dashboard
+  executive: (filters) => {
+    return apiClient.get('/enterprise/dashboards/executive', { params: filters });
+  },
+
+  // Real-time KPIs
+  realtimeKPIs: () => {
+    return apiClient.get('/enterprise/dashboards/kpis/realtime');
+  },
+
+  // Sales Performance
+  salesPerformance: (filters) => {
+    return apiClient.get('/enterprise/dashboards/sales-performance', { params: filters });
+  },
+
+  // Budget Dashboard
+  budget: (filters) => {
+    return apiClient.get('/enterprise/dashboards/budget', { params: filters });
+  },
+
+  // Trade Spend Dashboard
+  tradeSpend: (filters) => {
+    return apiClient.get('/enterprise/dashboards/trade-spend', { params: filters });
+  }
+};
+
 export default {
   enterpriseBudget: enterpriseBudgetApi,
   tradeSpend: tradeSpendApi,
   promotionSimulation: promotionSimulationApi,
   masterData: masterDataApi,
-  superAdmin: superAdminApi
+  superAdmin: superAdminApi,
+  simulations: simulationsApi,
+  dashboards: dashboardsApi
 };
