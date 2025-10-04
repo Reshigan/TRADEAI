@@ -246,6 +246,8 @@ async function seedDatabase() {
         const discountAmount = grossAmount * getRandomFloat(0, 0.1, 4);
         const netAmount = grossAmount - discountAmount + taxAmount;
         
+        const isOld = txDate < new Date(Date.now() - (60 * 24 * 60 * 60 * 1000));
+        
         batchTransactions.push({
           transactionNumber: `TXN-2024-${String((batch * batchSize) + i + 1).padStart(6, '0')}`,
           transactionType: 'order',
@@ -261,14 +263,13 @@ async function seedDatabase() {
             currency: 'ZAR'
           },
           payment: {
-            terms: 'Net 30',
             dueDate: new Date(txDate.getTime() + (30 * 24 * 60 * 60 * 1000)),
-            method: 'eft',
-            status: txDate < new Date(Date.now() - (60 * 24 * 60 * 60 * 1000)) ? 'paid' : 'pending'
+            method: 'wire_transfer',
+            status: isOld ? 'paid' : 'pending'
           },
-          status: 'settled',
+          status: isOld ? 'delivered' : 'processing',
           approvalStatus: 'approved',
-          tenant: tenant._id,
+          tenantId: tenant._id,
           createdBy: getRandomElement(salesReps)._id,
           createdAt: txDate,
           updatedAt: txDate
