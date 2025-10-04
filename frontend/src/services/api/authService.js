@@ -13,7 +13,7 @@ const authService = {
       const response = await apiClient.post('/auth/login', credentials);
       
       // Store token and user data in local storage
-      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('token', response.data.token);
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
@@ -33,7 +33,7 @@ const authService = {
       await apiClient.post('/auth/logout');
       
       // Clear local storage
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
       
@@ -42,7 +42,7 @@ const authService = {
       console.error('Logout error:', error);
       
       // Clear local storage even if API call fails
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
       
