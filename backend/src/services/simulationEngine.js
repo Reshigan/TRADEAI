@@ -63,33 +63,43 @@ class SimulationEngine {
     console.log('[SimulationEngine] Baseline calculated:', baseline);
 
     // Apply ML model for prediction
+    console.log('[SimulationEngine] Calling ML service');
     const mlPrediction = await mlService.predictPromotionPerformance({
       promotionType,
       discountPercent: discountValue,
       duration,
       historicalData: historicalPromotions
     });
+    console.log('[SimulationEngine] ML prediction received:', mlPrediction);
 
     // Calculate expected uplift
+    console.log('[SimulationEngine] Calculating uplift');
     const uplift = this.calculateUplift(discountValue, promotionType, mlPrediction);
+    console.log('[SimulationEngine] Uplift calculated:', uplift);
 
     // Calculate financial impact
+    console.log('[SimulationEngine] Calculating financial impact');
     const financialImpact = this.calculateFinancialImpact({
       baseline,
       uplift,
       discount: discountValue,
       budget
     });
+    console.log('[SimulationEngine] Financial impact calculated:', financialImpact);
 
     // Calculate ROI
+    console.log('[SimulationEngine] Calculating ROI');
     const roi = this.calculateROI(financialImpact, budget);
+    console.log('[SimulationEngine] ROI calculated:', roi);
 
     // Generate recommendations
+    console.log('[SimulationEngine] Generating recommendations');
     const recommendations = this.generateRecommendations({
       roi,
       financialImpact,
       scenario
     });
+    console.log('[SimulationEngine] Recommendations generated:', recommendations);
 
     return {
       scenario: {
