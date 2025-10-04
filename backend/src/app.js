@@ -45,6 +45,7 @@ const salesRoutes = require('./routes/sales');
 const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
 const healthRoutes = require('./routes/health');
+const enterpriseRoutes = require('./routes/enterprise');
 
 // Create Express app
 const app = express();
@@ -249,6 +250,9 @@ app.use('/api/ml', authenticateToken, mlRoutes);
 // Sales and inventory
 app.use('/api/sales', authenticateToken, salesRoutes);
 app.use('/api/inventory', authenticateToken, inventoryRoutes);
+
+// Enterprise routes (advanced dashboards, CRUD, simulations, transactions)
+app.use('/api/enterprise', authenticateToken, enterpriseRoutes);
 
 // Socket.IO middleware
 io.use(async (socket, next) => {
