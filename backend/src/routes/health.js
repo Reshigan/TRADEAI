@@ -223,4 +223,39 @@ router.get('/health/startup', async (req, res) => {
   }
 });
 
+// Debug route for tenant lookup testing
+router.get('/health/test-tenant/:tenantId', async (req, res) => {
+  try {
+    const Tenant = require('../models/Tenant');
+    const tenantId = req.params.tenantId;
+    
+    console.log('Looking up tenant with ID:', tenantId);
+    const tenant = await Tenant.findById(tenantId);
+    
+    if (tenant) {
+      res.json({
+        success: true,
+        tenant: {
+          _id: tenant._id,
+          name: tenant.name,
+          slug: tenant.slug,
+          isActive: tenant.isActive
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Tenant not found',
+        tenantId
+      });
+    }
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 module.exports = router;
