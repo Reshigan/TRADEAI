@@ -186,6 +186,7 @@ async function seedDatabase() {
         name: prod.name,
         code: `PROD-${String(i + 1).padStart(4, '0')}`,
         sku: `SKU-${String(i + 1).padStart(4, '0')}`,
+        barcode: `600${String(i + 1).padStart(10, '0')}`,
         sapMaterialId: `MAT-${String(i + 1).padStart(8, '0')}`,
         description: prod.name,
         productType: 'own_brand',
