@@ -11,12 +11,20 @@
  * - Seeds South African retailers and products
  * - Generates 50,000+ transactions
  * - Fills all tables with realistic 1-year historical data
+ * 
+ * Usage: Run from project root
+ *   node seed-demo-data.js
  */
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const { faker } = require('@faker-js/faker');
+const path = require('path');
+
+// Load environment from backend directory
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+// Use backend's node_modules
+const mongoose = require(path.join(__dirname, 'backend', 'node_modules', 'mongoose'));
+const bcrypt = require(path.join(__dirname, 'backend', 'node_modules', 'bcryptjs'));
+const { faker } = require(path.join(__dirname, 'backend', 'node_modules', '@faker-js', 'faker'));
 
 // Import models
 const User = require('./backend/src/models/User');
