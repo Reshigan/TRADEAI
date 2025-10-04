@@ -1102,8 +1102,6 @@ async function getROIKPI(tenantId, dateRange) {
 }
 
 async function getPromotionKPI(tenantId, dateRange) {
-  const Promotion = mongoose.model('Promotion');
-  
   const count = await Promotion.countDocuments({
     tenantId,
     startDate: { $lte: new Date(dateRange.end) },
