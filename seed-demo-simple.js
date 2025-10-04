@@ -46,19 +46,19 @@ async function seedDatabase() {
 
     // Clear data
     console.log('🗑️  Clearing existing data...');
-    await Promise.all([
-      User.deleteMany({}),
-      Tenant.deleteMany({}),
-      Company.deleteMany({}),
-      Customer.deleteMany({}),
-      Product.deleteMany({}),
-      Promotion.deleteMany({}),
-      Budget.deleteMany({}),
-      TradeSpend.deleteMany({}),
-      TradingTerm.deleteMany({}),
-      Transaction.deleteMany({})
-    ]);
-    console.log('✅ Cleared\n');
+    
+    // Drop all collections to avoid index issues
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    for (const collection of collections) {
+      try {
+        await mongoose.connection.db.dropCollection(collection.name);
+        console.log(`   ✓ Dropped ${collection.name}`);
+      } catch (error) {
+        // Ignore errors for system collections
+      }
+    }
+    
+    console.log('✅ All data cleared\n');
 
     // Create Tenant
     console.log('🏢 Creating tenant...');
