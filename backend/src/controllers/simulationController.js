@@ -8,6 +8,7 @@ const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
 // Simulate promotion impact
 exports.simulatePromotionImpact = asyncHandler(async (req, res, next) => {
+  console.log('[SimulationController] simulatePromotionImpact called');
   const scenario = {
     type: 'promotion_impact',
     ...req.body,
@@ -15,12 +16,16 @@ exports.simulatePromotionImpact = asyncHandler(async (req, res, next) => {
     userId: req.user._id
   };
 
+  console.log('[SimulationController] Calling simulationEngine');
   const result = await simulationEngine.simulatePromotionImpact(scenario);
+  console.log('[SimulationController] SimulationEngine returned, result length:', JSON.stringify(result).length);
 
+  console.log('[SimulationController] Sending response');
   res.json({
     success: true,
     data: result
   });
+  console.log('[SimulationController] Response sent');
 });
 
 // Simulate budget allocation
