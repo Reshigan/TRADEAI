@@ -101,6 +101,17 @@ class SimulationEngine {
     });
     console.log('[SimulationEngine] Recommendations generated:', recommendations);
 
+    // Perform sensitivity analysis only if not skipped (to avoid infinite loop)
+    let sensitivityAnalysis = null;
+    if (!scenario.skipSensitivity) {
+      console.log('[SimulationEngine] Performing sensitivity analysis');
+      sensitivityAnalysis = await this.performSensitivityAnalysis(scenario, ['discount', 'duration']);
+      console.log('[SimulationEngine] Sensitivity analysis complete');
+    } else {
+      console.log('[SimulationEngine] Skipping sensitivity analysis');
+    }
+
+    console.log('[SimulationEngine] Returning results');
     return {
       scenario: {
         type: 'promotion_impact',
@@ -118,7 +129,7 @@ class SimulationEngine {
       roi,
       recommendations,
       confidence: mlPrediction.confidence || 0.75,
-      sensitivityAnalysis: await this.performSensitivityAnalysis(scenario, ['discount', 'duration'])
+      sensitivityAnalysis
     };
   }
 
@@ -410,7 +421,10 @@ class SimulationEngine {
       const paramResults = [];
 
       for (const variation of variations) {
-        const variedScenario = { ...scenario };
+        const variedScenario = { 
+          ...scenario,
+          skipSensitivity: true  // Prevent infinite loop
+        };
         variedScenario[param] = scenario[param] * (1 + variation / 100);
         
         const result = await this.runScenario(variedScenario);
