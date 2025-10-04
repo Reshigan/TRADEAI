@@ -21,6 +21,14 @@ function initRedis() {
     return null;
   }
 
+  // Require password for production Redis to avoid NOAUTH reconnect storms
+  if (!process.env.REDIS_PASSWORD) {
+    logger.warn('⚠️  Redis password not provided. Disabling Redis (no cache).');
+    logger.info('💡 To enable Redis: Set REDIS_PASSWORD in your environment');
+    return null;
+  }
+
+
   try {
     const config = {
       host: host,
