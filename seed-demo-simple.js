@@ -184,6 +184,7 @@ async function seedDatabase() {
       const prod = productData[i];
       const product = await Product.create({
         name: prod.name,
+        code: `PROD-${String(i + 1).padStart(4, '0')}`,
         sku: `SKU-${String(i + 1).padStart(4, '0')}`,
         sapMaterialId: `MAT-${String(i + 1).padStart(8, '0')}`,
         description: prod.name,
