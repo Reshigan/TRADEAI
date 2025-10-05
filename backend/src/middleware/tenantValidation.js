@@ -1,36 +1,36 @@
-/**
- * Tenant validation middleware
- * Validates tenant context for multi-tenant operations
- */
+const Tenant = require('../models/Tenant');
 
-const validateTenant = (req, res, next) => {
-  // Extract tenant from request (could be from headers, params, or user context)
-  const tenantId = req.headers['x-tenant-id'] || req.params.tenantId || req.user?.tenantId;
-  
+const validateTenant = async (req, res, next) => {
+  const tenantId = req.headers['x-tenant-id'] || req.params.tenantId;
+
   if (!tenantId) {
-    return res.status(400).json({
-      error: 'Tenant ID is required',
-      message: 'Please provide a valid tenant identifier'
-    });
+    return res.status(400).json({ message: 'Tenant ID is required' });
   }
-  
-  // Add tenant to request context
-  req.tenantId = tenantId;
-  next();
+
+  try {
+    const tenant = await Tenant.findById(tenantId);
+
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    if (!tenant.isActive) {
+      return res.status(403).json({ message: 'Tenant is inactive' });
+    }
+
+    if (tenant.isSuspended) {
+      return res.status(403).json({ message: 'Tenant is suspended' });
+    }
+
+    if (tenant.subscription.plan === 'trial' && tenant.isTrialExpired) {
+      return res.status(403).json({ message: 'Trial has expired' });
+    }
+
+    req.tenant = tenant;
+    next();
+  } catch (error) {
+    res.status(500).json({ message: 'Error validating tenant', error: error.message });
+  }
 };
 
-const optionalTenant = (req, res, next) => {
-  // Extract tenant from request but don't require it
-  const tenantId = req.headers['x-tenant-id'] || req.params.tenantId || req.user?.tenantId;
-  
-  if (tenantId) {
-    req.tenantId = tenantId;
-  }
-  
-  next();
-};
-
-module.exports = {
-  validateTenant,
-  optionalTenant
-};
+module.exports = { validateTenant };

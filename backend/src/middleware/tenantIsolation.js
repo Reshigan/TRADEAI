@@ -73,21 +73,14 @@ const tenantContext = new TenantContext();
  */
 function extractTenantId(req) {
   // Priority order:
-  // 1. X-Tenant-ID header
   // 2. Subdomain
-  // 3. JWT token
-  // 4. Query parameter
+  // 3. X-Tenant-ID header
+  // 4. JWT token
   
   let tenantId = null;
   let tenantSlug = null;
   
-  // 1. Check X-Tenant-ID header
-  tenantId = req.headers['x-tenant-id'];
-  if (tenantId) {
-    return { type: 'id', value: tenantId };
-  }
-  
-  // 2. Check subdomain (skip in development/localhost)
+  // 1. Check subdomain (skip in development/localhost)
   const host = req.headers.host;
   if (host) {
     // Skip subdomain extraction for localhost and IP addresses
@@ -101,7 +94,13 @@ function extractTenantId(req) {
       }
     }
   }
-  
+
+  // 2. Check X-Tenant-ID header
+  tenantId = req.headers['x-tenant-id'];
+  if (tenantId) {
+    return { type: 'id', value: tenantId };
+  }
+
   // 3. Check JWT token
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
