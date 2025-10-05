@@ -50,7 +50,7 @@ RUN mkdir -p uploads logs && \
 USER nodejs
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5002
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \

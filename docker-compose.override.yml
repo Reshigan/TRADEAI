@@ -1,8 +1,5 @@
 # TRADEAI Docker Compose Override for Development
 # This file is used for development overrides
-# Production deployment script will create the main docker-compose.yml
-
-version: '3.8'
 
 services:
   # Development overrides for backend
@@ -23,14 +20,10 @@ services:
       - NODE_ENV=development
     command: npm start
 
-  # Development database with exposed port
-  postgres:
+  # Development MongoDB with exposed port
+  mongodb:
     ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=tradeai_dev
-      - POSTGRES_USER=tradeai_dev
-      - POSTGRES_PASSWORD=dev_password
+      - "27017:27017"
 
   # Development Redis with exposed port
   redis:
