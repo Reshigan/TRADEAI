@@ -50,6 +50,7 @@ const Dashboard = ({ user }) => {
     monthlySpend: [],
     topCustomers: [],
     categoryPerformance: [],
+    pendingApprovals: [],
     forecast: null
   });
   const [currencies, setCurrencies] = useState([]);
