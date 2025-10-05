@@ -110,7 +110,7 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SimpleTest />
+      <App />
     </ThemeProvider>
   </React.StrictMode>
 );
