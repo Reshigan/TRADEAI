@@ -1,10 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import './index.css';
 import './styles/App.css';
 import App from './App';
+import TestApp from './TestApp';
+import SimpleTest from './SimpleTest';
 
 // Create a custom theme
 const theme = createTheme({
@@ -101,12 +103,14 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <SimpleTest />
     </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

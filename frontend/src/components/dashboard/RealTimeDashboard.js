@@ -104,7 +104,7 @@ const RealTimeDashboard = () => {
 
   // Initialize socket connection
   useEffect(() => {
-    const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5002', {
+    const newSocket = io(process.env.REACT_APP_WEBSOCKET_URL || 'wss://tradeai.gonxt.tech', {
       auth: {
         token: localStorage.getItem('token')
       }

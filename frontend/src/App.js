@@ -28,15 +28,17 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
   );
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem('user')) || null
-  );
+  const [user, setUser] = useState(() => {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  });
 
   // Effect to check for authentication changes
   useEffect(() => {
     const checkAuth = () => {
       const authStatus = localStorage.getItem('isAuthenticated') === 'true';
-      const userData = JSON.parse(localStorage.getItem('user')) || null;
+      const userDataString = localStorage.getItem('user');
+      const userData = userDataString ? JSON.parse(userDataString) : null;
       console.log('App.js useEffect - checking auth:', { authStatus, userData });
       setIsAuthenticated(authStatus);
       setUser(userData);

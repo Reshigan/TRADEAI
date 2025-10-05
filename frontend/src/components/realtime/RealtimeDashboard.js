@@ -80,7 +80,7 @@ const RealtimeDashboard = () => {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const newSocket = io('ws://localhost:3000', {
+    const newSocket = io(process.env.REACT_APP_WEBSOCKET_URL || 'wss://tradeai.gonxt.tech', {
       transports: ['websocket'],
       upgrade: false
     });
