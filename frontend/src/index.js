@@ -5,8 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import './index.css';
 import './styles/App.css';
 import App from './App';
-import TestMinimal from './TestMinimal';
-import SimpleApp from './SimpleApp';
 
 // Create a custom theme
 const theme = createTheme({
