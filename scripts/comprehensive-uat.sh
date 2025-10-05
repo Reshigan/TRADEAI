@@ -101,6 +101,21 @@ make_request() {
     eval "$curl_cmd"
 }
 
+# Test 0: Local AI/ML Validation
+test_local_ai_validation() {
+    test_start "Local AI/ML Validation"
+    
+    if [ -f "$PROJECT_ROOT/scripts/validate-local-ai.js" ]; then
+        if cd "$PROJECT_ROOT" && node scripts/validate-local-ai.js > /dev/null 2>&1; then
+            test_pass "Local AI/ML Validation"
+        else
+            test_fail "Local AI/ML Validation" "AI/ML validation script failed"
+        fi
+    else
+        test_skip "Local AI/ML Validation" "Validation script not found"
+    fi
+}
+
 # Test 1: Backend Health Check
 test_backend_health() {
     test_start "Backend Health Check"
@@ -524,6 +539,7 @@ main() {
     echo "" > "$RESULTS_FILE"
     
     # Run all tests
+    test_local_ai_validation
     test_backend_health
     test_api_health
     test_database_connectivity

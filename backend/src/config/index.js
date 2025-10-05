@@ -5,6 +5,9 @@ const dotenv = require('dotenv');
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
+// Import AI configuration
+const { aiConfig, validateLocalOnlyConfig } = require('./ai.config');
+
 module.exports = {
   // Environment
   env: process.env.NODE_ENV || 'development',
@@ -132,7 +135,7 @@ module.exports = {
     retryDelay: 5000
   },
   
-  // ML/AI Configuration
+  // ML/AI Configuration - LOCAL ONLY
   ml: {
     tensorflow: {
       modelPath: './models/tensorflow',
@@ -145,15 +148,10 @@ module.exports = {
       confidenceInterval: 0.95,
       seasonalityPeriods: [7, 30, 365] // Weekly, monthly, yearly
     },
-    anomalyDetection: {
-      threshold: 2.5, // Standard deviations
-      minDataPoints: 30
-    },
-    optimization: {
-      maxIterations: 1000,
-      convergenceThreshold: 0.0001
-    }
   },
+  
+  // AI Configuration - LOCAL PROCESSING ONLY
+  ai: aiConfig,
   
   // Business Rules
   businessRules: {
