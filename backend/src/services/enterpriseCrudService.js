@@ -1,5 +1,4 @@
 const { AppError } = require('../middleware/errorHandler');
-const xlsx = require('xlsx');
 const csvParser = require('csv-parser');
 const fs = require('fs');
 const { pipeline } = require('stream/promises');
@@ -458,7 +457,16 @@ class EnterpriseCrudService {
       const row = {};
       selectedFields.forEach(field => {
         row[field] = this.getNestedValue(record, field);
-      });
+      
+    // Lazy-load xlsx to avoid startup dependency
+    let xlsx;
+    try {
+      xlsx = require('xlsx');
+    } catch (e) {
+      throw new AppError('Excel export unavailable: xlsx module not installed', 500);
+    }
+
+});
       return row;
     });
 
@@ -510,10 +518,15 @@ class EnterpriseCrudService {
 
   // Import from Excel
   async importFromExcel(filePath, options = {}) {
+    let xlsx;
+    try {
+      xlsx = require('xlsx');
+    } catch (e) {
+      throw new AppError('Excel import unavailable: xlsx module not installed', 500);
+    }
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const records = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
     return this.bulkCreate(records, options);
   }
 

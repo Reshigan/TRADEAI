@@ -11,17 +11,28 @@ class CacheService {
   
   async initialize() {
     try {
+      const enabled = process.env.REDIS_ENABLED !== 'false';
+      if (!enabled) {
+        logger.info('⚠️  Redis caching disabled (REDIS_ENABLED=false)');
+        return;
+      }
+
+      if (!config.redis.password) {
+        logger.warn('⚠️  Redis password not provided. Skipping Redis cache initialization.');
+        return;
+      }
+
       // Redis v4 client configuration
       this.client = redis.createClient({
         socket: {
           host: config.redis.host,
           port: config.redis.port,
           reconnectStrategy: (retries) => {
-            if (retries > 10) {
+            if (retries > 5) {
               logger.error('Redis max retry attempts reached');
               return false;
             }
-            return Math.min(retries * 100, 3000);
+            return Math.min(retries * 100, 2000);
           }
         },
         password: config.redis.password,
@@ -48,8 +59,14 @@ class CacheService {
         logger.info('Redis connection closed');
       });
       
-      // Connect to Redis
-      await this.client.connect();
+      // Connect to Redis with timeout to avoid blocking server startup
+      await Promise.race([
+        this.client.connect(),
+        new Promise((resolve) => setTimeout(() => {
+          logger.warn('⚠️  Redis connect timeout. Continuing without cache.');
+          resolve();
+        }, 3000))
+      ]);
       
     } catch (error) {
       logger.error('Failed to initialize Redis:', error);

@@ -230,7 +230,7 @@ class RoleService {
 const roleService = new RoleService();
 
 // Initialize from stored token on app start
-const token = localStorage.getItem('authToken');
+const token = localStorage.getItem('token');
 if (token) {
   roleService.initializeFromToken(token);
 }

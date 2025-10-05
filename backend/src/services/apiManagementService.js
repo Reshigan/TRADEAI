@@ -1,6 +1,7 @@
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
 const Redis = require('ioredis');
+const config = require('../config');
 
 class APIManagementService {
   constructor() {
@@ -18,7 +19,7 @@ class APIManagementService {
     
     console.log('Initializing API Management Service...');
     
-    // Initialize Redis connection
+    // Initialize Redis connection (guarded by env)
     await this.initializeRedis();
     
     // Initialize default rate limiters
@@ -36,27 +37,28 @@ class APIManagementService {
 
   async initializeRedis() {
     try {
-      this.redis = new Redis({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: process.env.REDIS_PORT || 6379,
-        password: process.env.REDIS_PASSWORD,
-        db: process.env.REDIS_DB || 0,
-        retryDelayOnFailover: 100,
-        maxRetriesPerRequest: 3
-      });
+      const redisEnabled = process.env.REDIS_ENABLED !== 'false';
+      const host = process.env.REDIS_HOST || (config.jobs && config.jobs.redis && config.jobs.redis.host) || 'localhost';
+      const port = Number(process.env.REDIS_PORT || (config.jobs && config.jobs.redis && config.jobs.redis.port) || 6379);
+      const password = process.env.REDIS_PASSWORD || (config.jobs && config.jobs.redis && config.jobs.redis.password);
+      const db = Number(process.env.REDIS_DB || (config.jobs && config.jobs.redis && config.jobs.redis.db) || 0);
 
-      this.redis.on('connect', () => {
-        console.log('Connected to Redis for API Management');
-      });
+      if (!redisEnabled || (process.env.NODE_ENV === 'production' && !password)) {
+        console.warn('API Management: Redis disabled or not configured; using in-memory stores');
+        this.redis = null;
+        return;
+      }
 
-      this.redis.on('error', (error) => {
-        console.error('Redis connection error:', error);
-      });
+      this.redis = new Redis({ host, port, password, db, retryDelayOnFailover: 100, maxRetriesPerRequest: 3 });
+      this.redis.on('connect', () => console.log('Connected to Redis for API Management'));
+      this.redis.on('error', (error) => console.error('Redis connection error:', error));
     } catch (error) {
       console.warn('Redis not available, using in-memory storage for API management');
       this.redis = null;
     }
   }
+
+
 
   initializeRateLimiters() {
     // Global rate limiter

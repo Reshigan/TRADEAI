@@ -1,4 +1,9 @@
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+// Load project root .env first (so production overrides dev), then backend/.env for missing keys
+// Note: dotenv does not override existing keys by default.
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 module.exports = {
   // Environment

@@ -116,25 +116,24 @@ const EnhancedSecurityDashboard = () => {
       setError(null);
 
       const [
-        overviewRes,
+        dashboardRes,
         eventsRes,
         auditRes,
-        sessionsRes,
         rolesRes,
         permissionsRes
       ] = await Promise.all([
-        securityService.getSecurityOverview(),
+        securityService.getSecurityDashboard({ days: 30 }),
         securityService.getSecurityEvents({ limit: 50 }),
         securityService.getAuditLogs({ limit: 100 }),
-        securityService.getActiveSessions(),
         securityService.getRoles(),
         securityService.getPermissions()
       ]);
 
-      setSecurityOverview(overviewRes.data);
+      setSecurityOverview(dashboardRes.data);
       setSecurityEvents(eventsRes.data || []);
       setAuditLogs(auditRes.data || []);
-      setUserSessions(sessionsRes.data || []);
+      // Sessions not supported by backend currently
+      setUserSessions([]);
       setRoles(rolesRes.data || []);
       setPermissions(permissionsRes.data || []);
 
@@ -736,7 +735,8 @@ const EnhancedSecurityDashboard = () => {
         <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="Overview" icon={<Timeline />} />
           <Tab label="Security Events" icon={<Warning />} />
-          <Tab label="User Sessions" icon={<Person />} />
+          {/* User Sessions tab temporarily disabled until backend support exists */}
+          {/* <Tab label="User Sessions" icon={<Person />} /> */}
           <Tab label="Role Management" icon={<AdminPanelSettings />} />
         </Tabs>
       </Box>
@@ -751,8 +751,7 @@ const EnhancedSecurityDashboard = () => {
         <>
           {activeTab === 0 && renderSecurityOverview()}
           {activeTab === 1 && renderSecurityEvents()}
-          {activeTab === 2 && renderUserSessions()}
-          {activeTab === 3 && renderRoleManagement()}
+          {activeTab === 2 && renderRoleManagement()}
         </>
       )}
 

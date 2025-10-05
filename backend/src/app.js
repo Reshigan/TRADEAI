@@ -26,6 +26,7 @@ require('./models');
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const securityRoutes = require('./routes/security');
 const userRoutes = require('./routes/user');
 const companyRoutes = require('./routes/companyRoutes');
 const tradingTermsRoutes = require('./routes/tradingTermsRoutes');
@@ -234,6 +235,9 @@ app.use('/api/auth', authLimiter, authRoutes);
 
 // Tenant routes
 app.use('/api/tenants', tenantRoutes);
+
+// Security routes (router handles its own auth for specific endpoints)
+app.use('/api/security', securityRoutes);
 
 // Protected routes with authentication
 app.use('/api/users', authenticateToken, userRoutes);
