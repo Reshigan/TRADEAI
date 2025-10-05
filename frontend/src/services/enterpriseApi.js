@@ -11,12 +11,16 @@ const apiClient = axios.create({
   }
 });
 
-// Add auth token to requests
+// Add auth token and tenant ID to requests
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+    const tenantId = localStorage.getItem('tenantId');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (tenantId) {
+      config.headers['X-Tenant-ID'] = tenantId;
     }
     return config;
   },
