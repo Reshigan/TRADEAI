@@ -50,6 +50,7 @@ const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
 const healthRoutes = require('./routes/health');
 const enterpriseRoutes = require('./routes/enterprise');
+const missingRoutesFixRoutes = require('./routes/missing-routes-fix');
 
 // Create Express app
 const app = express();
@@ -269,6 +270,9 @@ app.use('/api/inventory', authenticateToken, inventoryRoutes);
 
 // Enterprise routes (advanced dashboards, CRUD, simulations, transactions)
 app.use('/api/enterprise', authenticateToken, enterpriseRoutes);
+
+// Missing routes fix - Add aliases and additional endpoints
+app.use('/api', authenticateToken, missingRoutesFixRoutes);
 
 // Socket.IO middleware
 io.use(async (socket, next) => {
