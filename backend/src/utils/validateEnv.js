@@ -99,6 +99,11 @@ function validateMongoURI(uri) {
  * Validate Redis configuration
  */
 function validateRedis(host, port, password) {
+  // Skip validation if Redis is disabled
+  if (process.env.REDIS_ENABLED === 'false') {
+    return { valid: true };
+  }
+  
   if (!host || !isValidValue(host)) {
     return {
       valid: false,
