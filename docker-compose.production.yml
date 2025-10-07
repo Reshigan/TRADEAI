@@ -1,4 +1,4 @@
-version: '3.8'
+# Docker Compose configuration for TRADEAI Production
 
 services:
   # MongoDB Database
@@ -12,9 +12,7 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     volumes:
       - mongodb_data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    ports:
-      - "27017:27017"
+      - ./docker/mongo-init-production.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - tradeai-network
     command: mongod --auth --bind_ip_all
@@ -46,32 +44,36 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.production
+      dockerfile: Dockerfile
     container_name: tradeai-backend
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: 3000
-      MONGODB_URI: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      PORT: 5002
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-      EMAIL_SERVICE: ${EMAIL_SERVICE}
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      CLIENT_URL: ${CLIENT_URL}
+      EMAIL_FROM: ${EMAIL_FROM}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       SENTRY_DSN: ${SENTRY_DSN}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      ENABLE_RATE_LIMITING: ${ENABLE_RATE_LIMITING}
+      REDIS_ENABLED: ${REDIS_ENABLED}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      REDIS_KEY_PREFIX: ${REDIS_KEY_PREFIX}
     volumes:
       - ./backend/uploads:/app/uploads
       - ./backend/logs:/app/logs
       - ./backend/temp:/app/temp
-    ports:
-      - "3000:3000"
     networks:
       - tradeai-network
     depends_on:
@@ -80,7 +82,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "node", "healthcheck.js"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -90,27 +92,44 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.production
+      dockerfile: Dockerfile
       args:
         REACT_APP_API_URL: ${REACT_APP_API_URL}
-        REACT_APP_ENVIRONMENT: production
-        REACT_APP_SENTRY_DSN: ${REACT_APP_SENTRY_DSN}
-        REACT_APP_GOOGLE_ANALYTICS_ID: ${REACT_APP_GOOGLE_ANALYTICS_ID}
+        REACT_APP_SOCKET_URL: ${REACT_APP_SOCKET_URL}
+        REACT_APP_AI_API_URL: ${REACT_APP_AI_API_URL}
+        REACT_APP_MONITORING_URL: ${REACT_APP_MONITORING_URL}
+        CACHEBUST: ${CACHEBUST}
     container_name: tradeai-frontend
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./nginx/logs:/var/log/nginx
     networks:
       - tradeai-network
     depends_on:
       - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy with SSL
+  nginx:
+    image: nginx:alpine
+    container_name: tradeai-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx-aws-production.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - tradeai-network
+    depends_on:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
       interval: 30s
       timeout: 10s
       retries: 3

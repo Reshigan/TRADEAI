@@ -77,7 +77,7 @@ class ErrorBoundary extends Component {
               We're sorry for the inconvenience. An unexpected error has occurred.
             </Typography>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {this.state.error && (
               <Box
                 sx={{
                   mt: 3,
@@ -91,7 +91,7 @@ class ErrorBoundary extends Component {
                 }}
               >
                 <Typography variant="subtitle2" color="error" gutterBottom>
-                  Error Details (Development Mode):
+                  Error Details:
                 </Typography>
                 <Typography variant="body2" component="pre" sx={{ fontSize: '0.75rem' }}>
                   {this.state.error.toString()}

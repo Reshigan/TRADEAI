@@ -8,7 +8,7 @@ set -e
 # Configuration
 DOMAIN="tradeai.gonxt.tech"
 EMAIL="admin@gonxt.tech"
-SSL_DIR="/workspace/project/trade-ai-platform-v2/ssl"
+SSL_DIR="/etc/nginx/ssl"
 WEBROOT_PATH="/var/www/certbot"
 
 # Colors for output

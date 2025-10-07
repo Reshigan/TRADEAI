@@ -137,3 +137,8 @@ tmp/
 # Redis dump files
 backend/dump.rdb
 dump.rdb
+
+# Test files (temporary)
+backend/test-backend.js
+frontend/test-frontend.html
+/tmp/trade-ai-uat-*

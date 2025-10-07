@@ -43,7 +43,7 @@ RUN npm install -g react-scripts@5.0.1
 
 # Build the application with fallback mechanism
 RUN CI=false GENERATE_SOURCEMAP=false NODE_OPTIONS="--max-old-space-size=4096" \
-    npm run build:react || \
+    npm run build || \
     (echo "React build failed, using fallback build script..." && \
      node build.js)
 
