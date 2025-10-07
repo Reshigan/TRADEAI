@@ -14,9 +14,13 @@
     "test:unit:backend": "cd backend && npm test",
     "test:unit:frontend": "cd frontend && npm test",
     "test:integration": "cd backend && npm run test:integration",
-    "test:e2e": "npx playwright test tests/e2e/",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:e2e:headed": "npx playwright test --headed",
+    "test:e2e:debug": "npx playwright test --debug",
+    "test:e2e:report": "npx playwright show-report",
+    "test:e2e:full": "./run-e2e-tests.sh",
     "test:api": "cd backend && npm run test:api",
-    "test:performance": "k6 run tests/performance/load-test.js",
     "test:security": "npm audit && npm run test:security:backend && npm run test:security:frontend",
     "test:security:backend": "cd backend && npm audit && snyk test",
     "test:security:frontend": "cd frontend && npm audit && snyk test",
@@ -62,16 +66,13 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.40.0",
-    "k6": "^0.47.0",
-    "snyk": "^1.1200.0",
+    "concurrently": "^8.2.0",
+    "dotenv": "^17.2.3",
     "eslint": "^8.50.0",
-    "prettier": "^3.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.0",
-    "concurrently": "^8.2.0"
-  },
-  "dependencies": {
-    "dotenv": "^16.3.1"
+    "prettier": "^3.0.0",
+    "snyk": "^1.1200.0"
   },
   "engines": {
     "node": ">=18.0.0",

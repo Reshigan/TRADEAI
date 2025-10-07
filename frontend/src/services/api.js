@@ -45,16 +45,32 @@ export const authService = {
       
       const response = await api.post('/auth/login', credentials);
       
-      console.log('Login API response:', { 
-        status: response.status, 
-        data: response.data,
-        headers: response.headers 
-      });
+      console.log('✅ Login API response received');
+      console.log('Response status:', response.status);
+      console.log('Response data:', response.data);
+      console.log('Response data structure:', JSON.stringify(response.data, null, 2));
       
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
+      // Backend response structure: { success: true, token: "...", data: { user: {...}, tokens: {...} } }
+      const { token, data } = response.data;
+      const user = data?.user;
+      
+      console.log('Extracted token:', token ? 'YES' : 'NO');
+      console.log('Extracted data:', data);
+      console.log('Extracted user:', user);
+      
+      if (!token || !user) {
+        console.error('❌ Invalid response structure:', response.data);
+        throw new Error('Invalid login response structure');
       }
-      return response.data;
+      
+      // Store token and user data
+      localStorage.setItem('token', token);
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      console.log('✅ Login successful, stored token and user data');
+      
+      return { token, user, tokens: data.tokens };
     } catch (error) {
       console.error('authService.login error:', error);
       console.error('Error response:', error.response?.data);

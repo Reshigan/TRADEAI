@@ -43,6 +43,9 @@ ENV/
 .env.production.local
 .env.staging
 
+# Exception: .env.test is the template for E2E tests and should be committed
+!.env.test
+
 # SSH Keys and Certificates - CRITICAL SECURITY
 *.pem
 *.key
@@ -93,6 +96,12 @@ htmlcov/
 uat-*.txt
 test-results-*.txt
 *-results.txt
+
+# Playwright
+playwright-report/
+test-results/
+playwright/.cache/
+.playwright/
 
 # Build files
 /build/
