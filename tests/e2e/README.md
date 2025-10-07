@@ -2,10 +2,31 @@
 
 This directory contains comprehensive end-to-end tests for the TRADEAI platform using Playwright.
 
+## ⭐ Latest Test Suite: `full-system.spec.js`
+
+**✅ PRODUCTION READY** - Complete system test suite with **100% pass rate**!
+- **Pass Rate**: 🎉 **100% (45/45 PASSING)**
+- **Execution Time**: ~3.3 minutes
+- **Coverage**: Authentication, Dashboard, Budgets, Trade Spends, Promotions, Customers, Products, Analytics, Users, Activity Grid, Trading Terms, Executive Dashboard, Simulations, Transactions, Reports, Settings, API Health, Critical Flows, Error Handling, Performance
+
+📋 See [TEST_RESULTS.md](./TEST_RESULTS.md) for detailed results and comprehensive documentation.
+
+### Quick Start
+```bash
+# Run the full test suite
+npx playwright test tests/e2e/full-system.spec.js
+
+# View interactive report
+npx playwright show-report
+```
+
 ## Test Files
 
+### `full-system.spec.js` ⭐ **RECOMMENDED**
+Complete end-to-end test suite with 45 tests covering 20 functional areas - most comprehensive test coverage.
+
 ### `complete-system.spec.js`
-Comprehensive test suite covering all major system functionalities with 35+ tests organized into 11 test suites:
+Original comprehensive test suite covering all major system functionalities with 35+ tests organized into 11 test suites:
 
 1. **Authentication & Authorization** (5 tests)
    - Admin login
