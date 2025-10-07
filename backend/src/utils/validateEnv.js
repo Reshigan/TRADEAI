@@ -175,14 +175,16 @@ function validateEnvironment() {
     }
   }
   
-  // Validate Redis
-  const redisValidation = validateRedis(
-    process.env.REDIS_HOST,
-    process.env.REDIS_PORT,
-    process.env.REDIS_PASSWORD
-  );
-  if (!redisValidation.valid) {
-    errors.push(`Redis: ${redisValidation.message}`);
+  // Validate Redis (only if enabled)
+  if (process.env.REDIS_ENABLED !== 'false') {
+    const redisValidation = validateRedis(
+      process.env.REDIS_HOST,
+      process.env.REDIS_PORT,
+      process.env.REDIS_PASSWORD
+    );
+    if (!redisValidation.valid) {
+      errors.push(`Redis: ${redisValidation.message}`);
+    }
   }
   
   // Validate NODE_ENV
