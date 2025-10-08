@@ -61,59 +61,77 @@ class SecurityService {
         throw new Error('Account temporarily locked due to failed login attempts');
       }
 
-      // Find user with tenant context
-      const user = await User.findOne({ 
+      // Find user with tenant context (or without if tenantId is null in single-tenant mode)
+      const userQuery = { 
         email: email.toLowerCase(),
-        tenantId,
         isActive: true,
         isDeleted: false
-      }).populate('roles permissions');
+      };
+      
+      // Only add tenantId filter if provided (for multi-tenant scenarios)
+      if (tenantId) {
+        userQuery.tenantId = tenantId;
+      }
+      
+      const user = await User.findOne(userQuery).populate('roles permissions');
 
       if (!user) {
-        await this.recordFailedAttempt(lockoutKey, ipAddress, userAgent, tenantId);
-        await this.logSecurityEvent({
-          type: 'AUTHENTICATION_FAILED',
-          severity: 'MEDIUM',
-          tenantId,
-          email,
-          ipAddress,
-          userAgent,
-          details: { reason: 'User not found' }
-        });
+        // For logging, use provided tenantId or 'unknown'
+        const logTenantId = tenantId || 'unknown';
+        await this.recordFailedAttempt(lockoutKey, ipAddress, userAgent, logTenantId);
+        // Skip security event logging if tenantId is not available (prevents validation errors)
+        if (tenantId) {
+          await this.logSecurityEvent({
+            type: 'AUTHENTICATION_FAILED',
+            severity: 'MEDIUM',
+            tenantId,
+            email,
+            ipAddress,
+            userAgent,
+            details: { reason: 'User not found' }
+          });
+        }
         throw new Error('Invalid credentials');
       }
+
+      // Use the user's tenantId if not provided in request (for single-tenant scenarios)
+      const effectiveTenantId = tenantId || user.tenantId;
 
       // Verify password
       const isValidPassword = await bcrypt.compare(password, user.password);
       
       if (!isValidPassword) {
-        await this.recordFailedAttempt(lockoutKey, ipAddress, userAgent, tenantId);
-        await this.logSecurityEvent({
-          type: 'AUTHENTICATION_FAILED',
-          severity: 'MEDIUM',
-          tenantId,
-          userId: user._id,
-          email,
-          ipAddress,
-          userAgent,
-          details: { reason: 'Invalid password' }
-        });
+        await this.recordFailedAttempt(lockoutKey, ipAddress, userAgent, effectiveTenantId);
+        if (effectiveTenantId) {
+          await this.logSecurityEvent({
+            type: 'AUTHENTICATION_FAILED',
+            severity: 'MEDIUM',
+            tenantId: effectiveTenantId,
+            userId: user._id,
+            email,
+            ipAddress,
+            userAgent,
+            details: { reason: 'Invalid password' }
+          });
+        }
         throw new Error('Invalid credentials');
       }
 
       // Check IP restrictions
       if (this.securityPolicies.allowedIpRanges.length > 0) {
         if (!this.isIpAllowed(ipAddress)) {
-          await this.logSecurityEvent({
-            type: 'AUTHENTICATION_BLOCKED',
-            severity: 'HIGH',
-            tenantId,
-            userId: user._id,
-            email,
-            ipAddress,
-            userAgent,
-            details: { reason: 'IP address not in allowed ranges' }
-          });
+          if (effectiveTenantId) {
+            await this.logSecurityEvent({
+              type: 'AUTHENTICATION_BLOCKED',
+              severity: 'HIGH',
+              tenantId: effectiveTenantId,
+              userId: user._id,
+              email,
+              ipAddress,
+              userAgent,
+              details: { reason: 'IP address not in allowed ranges' }
+            });
+          }
           throw new Error('Access denied from this IP address');
         }
       }
@@ -160,35 +178,37 @@ class SecurityService {
         }
       );
 
-      // Log successful authentication
-      await this.logSecurityEvent({
-        type: 'AUTHENTICATION_SUCCESS',
-        severity: 'LOW',
-        tenantId,
-        userId: user._id,
-        email,
-        ipAddress,
-        userAgent,
-        details: {
-          sessionId: sessionToken,
-          authenticationTime: Date.now() - startTime
-        }
-      });
+      // Log successful authentication (only if tenantId is available)
+      if (effectiveTenantId) {
+        await this.logSecurityEvent({
+          type: 'AUTHENTICATION_SUCCESS',
+          severity: 'LOW',
+          tenantId: effectiveTenantId,
+          userId: user._id,
+          email,
+          ipAddress,
+          userAgent,
+          details: {
+            sessionId: sessionToken,
+            authenticationTime: Date.now() - startTime
+          }
+        });
 
-      // Log audit event
-      await this.logAuditEvent({
-        tenantId,
-        userId: user._id,
-        action: 'USER_LOGIN',
-        resource: 'authentication',
-        resourceId: user._id,
-        ipAddress,
-        userAgent,
-        details: {
-          loginMethod: 'password',
-          sessionId: sessionToken
-        }
-      });
+        // Log audit event
+        await this.logAuditEvent({
+          tenantId: effectiveTenantId,
+          userId: user._id,
+          action: 'USER_LOGIN',
+          resource: 'authentication',
+          resourceId: user._id,
+          ipAddress,
+          userAgent,
+          details: {
+            loginMethod: 'password',
+            sessionId: sessionToken
+          }
+        });
+      }
 
       return {
         success: true,
