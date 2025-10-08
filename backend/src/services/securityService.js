@@ -73,7 +73,7 @@ class SecurityService {
         userQuery.tenantId = tenantId;
       }
       
-      const user = await User.findOne(userQuery).populate('roles permissions');
+      const user = await User.findOne(userQuery);
 
       if (!user) {
         // For logging, use provided tenantId or 'unknown'
@@ -145,8 +145,8 @@ class SecurityService {
         userId: user._id,
         tenantId: user.tenantId,
         email: user.email,
-        roles: user.roles.map(role => role.name),
-        permissions: this.aggregatePermissions(user.roles, user.permissions),
+        role: user.role, // Single role, not array
+        permissions: user.permissions || [], // Use direct permissions if available
         sessionId: sessionToken
       };
 
@@ -217,11 +217,11 @@ class SecurityService {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          roles: user.roles.map(role => role.name),
+          role: user.role, // Single role
           permissions: tokenPayload.permissions,
           tenantId: user.tenantId
         },
-        accessToken,
+        token: accessToken, // Changed from accessToken to token for consistency
         sessionToken,
         expiresIn: '24h'
       };
