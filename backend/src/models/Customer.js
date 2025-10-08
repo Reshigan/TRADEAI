@@ -16,8 +16,9 @@ const customerSchema = new mongoose.Schema({
   // SAP Integration
   sapCustomerId: {
     type: String,
-    required: true,
-    index: true
+    required: false,
+    index: true,
+    sparse: true
   },
   
   // Basic Information
@@ -111,12 +112,14 @@ const customerSchema = new mongoose.Schema({
   customerType: {
     type: String,
     enum: ['retailer', 'wholesaler', 'distributor', 'chain', 'independent', 'online'],
-    required: true
+    required: false,
+    default: 'retailer'
   },
   channel: {
     type: String,
     enum: ['modern_trade', 'traditional_trade', 'horeca', 'ecommerce', 'b2b', 'export'],
-    required: true
+    required: false,
+    default: 'modern_trade'
   },
   tier: {
     type: String,

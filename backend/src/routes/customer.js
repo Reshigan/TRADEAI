@@ -61,7 +61,7 @@ router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Create new customer
-router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(async (req, res) => {
+router.post('/', authenticateToken, authorize('super_admin', 'admin', 'manager'), asyncHandler(async (req, res) => {
   // Get tenant from request context
   const tenantId = req.tenantId || req.user.tenantId;
   if (!tenantId) {
@@ -92,7 +92,7 @@ router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(
 }));
 
 // Update customer
-router.put('/:id', authenticateToken, authorize('admin', 'manager'), asyncHandler(async (req, res) => {
+router.put('/:id', authenticateToken, authorize('super_admin', 'admin', 'manager'), asyncHandler(async (req, res) => {
   const customer = await Customer.findByIdAndUpdate(
     req.params.id,
     req.body,
@@ -110,7 +110,7 @@ router.put('/:id', authenticateToken, authorize('admin', 'manager'), asyncHandle
 }));
 
 // Delete customer
-router.delete('/:id', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
+router.delete('/:id', authenticateToken, authorize('super_admin', 'admin'), asyncHandler(async (req, res) => {
   const customer = await Customer.findByIdAndDelete(req.params.id);
   
   if (!customer) {
