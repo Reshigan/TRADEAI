@@ -3,6 +3,11 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
+// Metrics collection for Prometheus
+let requestCount = 0;
+let requestDuration = [];
+let lastRequestTime = Date.now();
+
 let redis = null;
 
 // Initialize Redis if available
@@ -256,6 +261,107 @@ router.get('/health/test-tenant/:tenantId', async (req, res) => {
       stack: error.stack
     });
   }
+});
+
+// Prometheus metrics endpoint
+router.get('/metrics', async (req, res) => {
+  try {
+    const memUsage = process.memoryUsage();
+    const cpuUsage = process.cpuUsage();
+    const uptime = process.uptime();
+    
+    // MongoDB connection status
+    const mongoConnected = mongoose.connection.readyState === 1 ? 1 : 0;
+    
+    // Redis connection status
+    let redisConnected = 0;
+    if (redis) {
+      try {
+        await redis.ping();
+        redisConnected = 1;
+      } catch (error) {
+        redisConnected = 0;
+      }
+    }
+    
+    // Basic metrics in Prometheus format
+    const metrics = `
+# HELP nodejs_heap_size_used_bytes Process heap space used in bytes
+# TYPE nodejs_heap_size_used_bytes gauge
+nodejs_heap_size_used_bytes ${memUsage.heapUsed}
+
+# HELP nodejs_heap_size_total_bytes Process heap space total in bytes
+# TYPE nodejs_heap_size_total_bytes gauge
+nodejs_heap_size_total_bytes ${memUsage.heapTotal}
+
+# HELP nodejs_external_memory_bytes Nodejs external memory size in bytes
+# TYPE nodejs_external_memory_bytes gauge
+nodejs_external_memory_bytes ${memUsage.external}
+
+# HELP process_resident_memory_bytes Resident memory size in bytes
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes ${memUsage.rss}
+
+# HELP process_cpu_user_seconds_total Total user CPU time spent in seconds
+# TYPE process_cpu_user_seconds_total counter
+process_cpu_user_seconds_total ${cpuUsage.user / 1000000}
+
+# HELP process_cpu_system_seconds_total Total system CPU time spent in seconds
+# TYPE process_cpu_system_seconds_total counter
+process_cpu_system_seconds_total ${cpuUsage.system / 1000000}
+
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds ${Math.floor((Date.now() - uptime * 1000) / 1000)}
+
+# HELP nodejs_version_info Node.js version info
+# TYPE nodejs_version_info gauge
+nodejs_version_info{version="${process.version}",major="${process.version.split('.')[0].substring(1)}",minor="${process.version.split('.')[1]}",patch="${process.version.split('.')[2]}"} 1
+
+# HELP tradeai_mongodb_connected MongoDB connection status
+# TYPE tradeai_mongodb_connected gauge
+tradeai_mongodb_connected ${mongoConnected}
+
+# HELP tradeai_redis_connected Redis connection status
+# TYPE tradeai_redis_connected gauge
+tradeai_redis_connected ${redisConnected}
+
+# HELP tradeai_uptime_seconds Application uptime in seconds
+# TYPE tradeai_uptime_seconds gauge
+tradeai_uptime_seconds ${uptime}
+
+# HELP tradeai_http_requests_total Total number of HTTP requests
+# TYPE tradeai_http_requests_total counter
+tradeai_http_requests_total ${requestCount}
+`.trim();
+
+    res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
+    res.send(metrics);
+    
+  } catch (error) {
+    logger.error('Error generating metrics:', error);
+    res.status(500).send('# Error generating metrics\n');
+  }
+});
+
+// Middleware to track requests for metrics
+router.use((req, res, next) => {
+  requestCount++;
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    requestDuration.push(duration);
+    
+    // Keep only last 100 request durations
+    if (requestDuration.length > 100) {
+      requestDuration = requestDuration.slice(-100);
+    }
+    
+    lastRequestTime = Date.now();
+  });
+  
+  next();
 });
 
 module.exports = router;
