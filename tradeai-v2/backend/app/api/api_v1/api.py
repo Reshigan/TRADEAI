@@ -12,6 +12,8 @@ from app.api.api_v1.endpoints import (
     products,
     budgets,
     trade_spend,
+    trading_terms,
+    activity_grids,
     promotions,
     analytics,
     reports,
@@ -29,6 +31,8 @@ api_router.include_router(customers.router, prefix="/customers", tags=["customer
 api_router.include_router(products.router, prefix="/products", tags=["products"])
 api_router.include_router(budgets.router, prefix="/budgets", tags=["budgets"])
 api_router.include_router(trade_spend.router, prefix="/trade-spend", tags=["trade-spend"])
+api_router.include_router(trading_terms.router, prefix="/trading-terms", tags=["trading-terms"])
+api_router.include_router(activity_grids.router, prefix="/activity-grids", tags=["activity-grids"])
 api_router.include_router(promotions.router, prefix="/promotions", tags=["promotions"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
