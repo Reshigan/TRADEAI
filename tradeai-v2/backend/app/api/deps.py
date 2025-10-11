@@ -30,7 +30,7 @@ async def get_current_tenant(
             detail="Tenant slug header (X-Tenant-Slug) is required"
         )
     
-    tenant = await crud_tenant.tenant.get_by_slug(db=db, slug=x_tenant_slug)
+    tenant = await crud_tenant.get_by_slug(db=db, slug=x_tenant_slug)
     if not tenant:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
