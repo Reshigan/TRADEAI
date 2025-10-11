@@ -142,3 +142,10 @@ dump.rdb
 backend/test-backend.js
 frontend/test-frontend.html
 /tmp/trade-ai-uat-*
+
+# Temporary documentation files
+*_GUIDE.md
+*_REPORT.md
+*_CREDENTIALS.md
+fix_*.sh
+*.html
