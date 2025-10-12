@@ -1,0 +1,84 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "successRate": 100,
+    "totalTime": 107,
+    "timestamp": "2025-10-12T15:03:07.878Z"
+  },
+  "tests": [
+    {
+      "name": "SSL Certificate & HTTPS",
+      "status": "PASS",
+      "details": "HTTPS working, Status: 200",
+      "responseTime": 55,
+      "timestamp": "2025-10-12T15:03:07.831Z"
+    },
+    {
+      "name": "HTTP to HTTPS Redirect",
+      "status": "PASS",
+      "details": "Redirect to: https://tradeai.gonxt.tech/",
+      "responseTime": 3,
+      "timestamp": "2025-10-12T15:03:07.835Z"
+    },
+    {
+      "name": "Security Headers",
+      "status": "PASS",
+      "details": "All required security headers present",
+      "responseTime": 1,
+      "timestamp": "2025-10-12T15:03:07.837Z"
+    },
+    {
+      "name": "Gzip Compression",
+      "status": "PASS",
+      "details": "Gzip compression enabled",
+      "responseTime": 1,
+      "timestamp": "2025-10-12T15:03:07.838Z"
+    },
+    {
+      "name": "React Application Loading",
+      "status": "PASS",
+      "details": "React application loaded successfully",
+      "responseTime": 1,
+      "timestamp": "2025-10-12T15:03:07.840Z"
+    },
+    {
+      "name": "Static Asset Loading",
+      "status": "PASS",
+      "details": "JavaScript bundle loaded successfully",
+      "responseTime": 15,
+      "timestamp": "2025-10-12T15:03:07.856Z"
+    },
+    {
+      "name": "Performance Test",
+      "status": "PASS",
+      "details": "Average response time: 1ms",
+      "responseTime": 1.3333333333333333,
+      "timestamp": "2025-10-12T15:03:07.861Z"
+    },
+    {
+      "name": "Load Handling Test",
+      "status": "PASS",
+      "details": "5/5 requests successful (100.0%)",
+      "responseTime": 0,
+      "timestamp": "2025-10-12T15:03:07.877Z"
+    }
+  ],
+  "categories": {
+    "Infrastructure": [
+      "SSL Certificate & HTTPS",
+      "HTTP to HTTPS Redirect",
+      "Security Headers",
+      "Gzip Compression"
+    ],
+    "Frontend": [
+      "React Application Loading",
+      "Static Asset Loading"
+    ],
+    "Performance": [
+      "Performance Test",
+      "Load Handling Test"
+    ]
+  }
+}

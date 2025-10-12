@@ -1,81 +1,122 @@
+/**
+ * Main Routes Index
+ * Centralized route management for TRADEAI API
+ */
+
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
 
-// Import route modules
+// Import all route modules
 const authRoutes = require('./auth');
-const budgetRoutes = require('./budget');
-const promotionRoutes = require('./promotion');
-const tradeSpendRoutes = require('./tradeSpend');
+const userRoutes = require('./user');
 const dashboardRoutes = require('./dashboard');
-const sapRoutes = require('./sap');
-const activityGridRoutes = require('./activityGrid');
-const aiChatbotRoutes = require('./aiChatbot');
-const customerRoutes = require('./customer');
-const productRoutes = require('./product');
 const analyticsRoutes = require('./analytics');
+const budgetRoutes = require('./budget');
+const tradeSpendRoutes = require('./tradeSpend');
+const promotionRoutes = require('./promotion');
+const activityGridRoutes = require('./activityGrid');
 const tradingTermsRoutes = require('./tradingTermsRoutes');
-const reportRoutes = require('./report');
-
-// Enterprise feature routes
-const enterpriseBudgetRoutes = require('./enterpriseBudget');
-const superAdminRoutes = require('./superAdmin');
 const enterpriseRoutes = require('./enterprise');
+const superAdminRoutes = require('./superAdmin');
+const reportRoutes = require('./report');
+const mlRoutes = require('./ml');
+const healthRoutes = require('./health');
+const integrationRoutes = require('./integration');
+const sapRoutes = require('./sap');
+const securityRoutes = require('./security');
 
-// Mount routes
+// NEW: AI Promotion Routes
+const aiPromotionRoutes = require('./aiPromotion');
+
+// Health check (no auth required)
+router.use('/health', healthRoutes);
+
+// Authentication routes (no auth required for login/register)
 router.use('/auth', authRoutes);
 
-// Super Admin routes (must be before other protected routes)
-router.use('/super-admin', superAdminRoutes);
-
-// Protected routes
-router.use('/budgets', authenticateToken, budgetRoutes);
-router.use('/promotions', authenticateToken, promotionRoutes);
-router.use('/trade-spends', authenticateToken, tradeSpendRoutes);
-router.use('/dashboards', authenticateToken, dashboardRoutes);
-router.use('/sap', authenticateToken, sapRoutes);
-router.use('/activity-grid', authenticateToken, activityGridRoutes);
-router.use('/ai/chatbot', authenticateToken, aiChatbotRoutes);
-router.use('/customers', authenticateToken, customerRoutes);
-router.use('/products', authenticateToken, productRoutes);
-router.use('/analytics', authenticateToken, analyticsRoutes);
+// Protected routes (require authentication)
+router.use('/users', userRoutes);
+router.use('/dashboard', dashboardRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/budgets', budgetRoutes);
+router.use('/trade-spend', tradeSpendRoutes);
+router.use('/promotions', promotionRoutes);
+router.use('/activity-grid', activityGridRoutes);
 router.use('/trading-terms', tradingTermsRoutes);
+router.use('/enterprise', enterpriseRoutes);
+router.use('/super-admin', superAdminRoutes);
 router.use('/reports', reportRoutes);
+router.use('/ml', mlRoutes);
+router.use('/integrations', integrationRoutes);
+router.use('/sap', sapRoutes);
+router.use('/security', securityRoutes);
 
-// Enterprise feature routes
-router.use('/enterprise/budget', authenticateToken, enterpriseBudgetRoutes);
-router.use('/enterprise', authenticateToken, enterpriseRoutes);
+// NEW: AI-Powered Promotion Routes
+router.use('/ai-promotion', aiPromotionRoutes);
 
-// Health check
-router.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+// API documentation endpoint
+router.get('/', (req, res) => {
+    res.json({
+        message: 'TRADEAI API v2.1.3',
+        status: 'operational',
+        features: {
+            core: [
+                'authentication',
+                'dashboard',
+                'analytics',
+                'budgets',
+                'trade-spend',
+                'promotions',
+                'activity-grid',
+                'trading-terms'
+            ],
+            advanced: [
+                'ai-promotion-validation',
+                'ai-suggestion-generation',
+                'ml-predictions',
+                'real-time-analytics'
+            ],
+            enterprise: [
+                'multi-tenant',
+                'super-admin',
+                'advanced-security',
+                'enterprise-reporting'
+            ]
+        },
+        endpoints: {
+            health: '/api/health',
+            auth: '/api/auth',
+            dashboard: '/api/dashboard',
+            analytics: '/api/analytics',
+            aiPromotion: '/api/ai-promotion',
+            ml: '/api/ml',
+            enterprise: '/api/enterprise'
+        },
+        aiCapabilities: {
+            promotionValidation: '/api/ai-promotion/validate-uplift',
+            aiSuggestions: '/api/ai-promotion/generate-suggestions',
+            fullSimulation: '/api/ai-promotion/run-simulation',
+            modelStatus: '/api/ai-promotion/model-status'
+        },
+        timestamp: new Date().toISOString()
+    });
 });
 
-// API documentation
-router.get('/docs', (req, res) => {
-  res.json({
-    message: 'API Documentation',
-    version: '1.0.0',
-    endpoints: {
-      auth: '/api/auth',
-      budgets: '/api/budgets',
-      promotions: '/api/promotions',
-      tradeSpends: '/api/trade-spends',
-      dashboards: '/api/dashboards',
-      sap: '/api/sap',
-      customers: '/api/customers',
-      products: '/api/products',
-      analytics: '/api/analytics',
-      activityGrid: '/api/activity-grid',
-      aiChatbot: '/api/ai/chatbot',
-      tradingTerms: '/api/trading-terms',
-      reports: '/api/reports'
-    }
-  });
+// 404 handler for undefined routes
+router.use('*', (req, res) => {
+    res.status(404).json({
+        success: false,
+        error: 'API endpoint not found',
+        availableEndpoints: [
+            '/api/health',
+            '/api/auth',
+            '/api/dashboard',
+            '/api/analytics',
+            '/api/ai-promotion',
+            '/api/ml',
+            '/api/enterprise'
+        ]
+    });
 });
 
 module.exports = router;

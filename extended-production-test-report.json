@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1,
+    "successRate": 90,
+    "totalTime": 237,
+    "timestamp": "2025-10-12T15:14:15.362Z"
+  },
+  "tests": [
+    {
+      "name": "SSL Certificate & HTTPS",
+      "status": "PASS",
+      "details": "HTTPS working, Status: 200",
+      "responseTime": 92,
+      "timestamp": "2025-10-12T15:14:15.221Z"
+    },
+    {
+      "name": "Security Headers",
+      "status": "PASS",
+      "details": "3/3 security headers present",
+      "responseTime": 2,
+      "timestamp": "2025-10-12T15:14:15.223Z"
+    },
+    {
+      "name": "React Application Loading",
+      "status": "PASS",
+      "details": "React application loaded successfully",
+      "responseTime": 1,
+      "timestamp": "2025-10-12T15:14:15.225Z"
+    },
+    {
+      "name": "Static Asset Loading",
+      "status": "PASS",
+      "details": "JavaScript bundle loaded successfully",
+      "responseTime": 16,
+      "timestamp": "2025-10-12T15:14:15.241Z"
+    },
+    {
+      "name": "Backend API Health",
+      "status": "PASS",
+      "details": "API healthy, version: 2.1.3",
+      "responseTime": 3,
+      "timestamp": "2025-10-12T15:14:15.245Z"
+    },
+    {
+      "name": "Backend API Root",
+      "status": "FAIL",
+      "details": "HTTP 301",
+      "responseTime": 1,
+      "timestamp": "2025-10-12T15:14:15.247Z"
+    },
+    {
+      "name": "AI Model Status",
+      "status": "PASS",
+      "details": "AI Service: online, LLM: online",
+      "responseTime": 92,
+      "timestamp": "2025-10-12T15:14:15.339Z"
+    },
+    {
+      "name": "AI Promotion Simulation",
+      "status": "PASS",
+      "details": "Validation: false, Suggestions: 3",
+      "responseTime": 4,
+      "timestamp": "2025-10-12T15:14:15.343Z"
+    },
+    {
+      "name": "Performance Test",
+      "status": "PASS",
+      "details": "Average response time: 1ms",
+      "responseTime": 1,
+      "timestamp": "2025-10-12T15:14:15.347Z"
+    },
+    {
+      "name": "Load Handling Test",
+      "status": "PASS",
+      "details": "5/5 requests successful (100.0%)",
+      "responseTime": 0,
+      "timestamp": "2025-10-12T15:14:15.361Z"
+    }
+  ],
+  "categories": {
+    "Infrastructure": [
+      "SSL Certificate & HTTPS",
+      "Security Headers"
+    ],
+    "Frontend": [
+      "React Application Loading",
+      "Static Asset Loading"
+    ],
+    "Backend API": [
+      "Backend API Health",
+      "Backend API Root"
+    ],
+    "AI Features": [
+      "AI Model Status",
+      "AI Promotion Simulation"
+    ],
+    "Performance": [
+      "Performance Test",
+      "Load Handling Test"
+    ]
+  },
+  "featureAssessment": {
+    "infrastructure": "2/2",
+    "frontend": "2/2",
+    "backend": "1/2",
+    "ai": "2/2",
+    "performance": "2/2"
+  }
+}
