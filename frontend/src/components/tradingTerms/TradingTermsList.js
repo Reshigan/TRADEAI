@@ -50,7 +50,7 @@ const TradingTermsList = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setTradingTerms(data);
+        setTradingTerms(data.data?.tradingTerms || []);
       } else {
         setError('Failed to fetch trading terms');
       }
@@ -164,7 +164,7 @@ const TradingTermsList = () => {
                     <TableCell>
                       <Box>
                         <Typography variant="subtitle2" fontWeight="medium">
-                          {term.title}
+                          {term.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" noWrap>
                           {term.description}
@@ -173,24 +173,24 @@ const TradingTermsList = () => {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={term.type}
+                        label={term.termType}
                         size="small"
                         variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={term.status}
+                        label={term.isActive ? 'active' : 'inactive'}
                         size="small"
-                        color={getStatusColor(term.status)}
+                        color={getStatusColor(term.isActive ? 'active' : 'inactive')}
                       />
                     </TableCell>
                     <TableCell>
                       <Chip
-                        icon={getApprovalStatusIcon(term.approvalStatus)}
-                        label={term.approvalStatus}
+                        icon={getApprovalStatusIcon(term.approvalWorkflow?.status)}
+                        label={term.approvalWorkflow?.status || 'draft'}
                         size="small"
-                        color={getApprovalStatusColor(term.approvalStatus)}
+                        color={getApprovalStatusColor(term.approvalWorkflow?.status)}
                       />
                     </TableCell>
                     <TableCell>{formatDate(term.createdAt)}</TableCell>
