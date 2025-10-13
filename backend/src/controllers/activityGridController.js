@@ -89,7 +89,89 @@ const mockActivities = [
   }
 ];
 
-// Get activity grid
+// Get all activity grids (list view)
+exports.getActivityGrids = asyncHandler(async (req, res, next) => {
+  const {
+    page = 1,
+    limit = 10,
+    sort = '-createdAt',
+    search,
+    status,
+    activityType,
+    customer,
+    product,
+    vendor,
+    startDate,
+    endDate,
+    ...filters
+  } = req.query;
+
+  // Build query with tenant isolation
+  const query = { 
+    tenantId: req.user.tenantId,
+    company: req.user.company 
+  };
+  
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+      { activityType: { $regex: search, $options: 'i' } }
+    ];
+  }
+  
+  if (status) {
+    query.status = status;
+  }
+  
+  if (activityType) {
+    query.activityType = activityType;
+  }
+  
+  if (customer) {
+    query.customer = customer;
+  }
+  
+  if (product) {
+    query.product = product;
+  }
+  
+  if (vendor) {
+    query.vendor = vendor;
+  }
+  
+  if (startDate || endDate) {
+    query.date = {};
+    if (startDate) query.date.$gte = new Date(startDate);
+    if (endDate) query.date.$lte = new Date(endDate);
+  }
+  
+  // Apply additional filters
+  Object.assign(query, filters);
+
+  const activities = await ActivityGrid.find(query)
+    .populate('customer', 'name sapCustomerId')
+    .populate('product', 'name sku')
+    .populate('vendor', 'name')
+    .populate('createdBy', 'firstName lastName')
+    .sort(sort)
+    .limit(limit * 1)
+    .skip((page - 1) * limit);
+
+  const total = await ActivityGrid.countDocuments(query);
+
+  res.json({
+    success: true,
+    data: activities,
+    pagination: {
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit)
+    }
+  });
+});
+
+// Get activity grid (calendar/heatmap view)
 exports.getActivityGrid = asyncHandler(async (req, res, next) => {
   const {
     startDate,

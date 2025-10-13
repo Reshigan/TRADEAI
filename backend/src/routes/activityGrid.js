@@ -5,7 +5,21 @@ const { authorize, checkPermission } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
 const { validate, commonValidations } = require('../middleware/validation');
 
-// Get activity grid
+// Get activity grids list
+router.get('/list',
+  checkPermission('activity_grid', 'read'),
+  query('page').optional().isInt({ min: 1 }),
+  query('limit').optional().isInt({ min: 1, max: 100 }),
+  query('search').optional().isString(),
+  query('status').optional().isString(),
+  query('activityType').optional().isString(),
+  query('startDate').optional().isISO8601(),
+  query('endDate').optional().isISO8601(),
+  validate,
+  activityGridController.getActivityGrids
+);
+
+// Get activity grid (calendar/heatmap view)
 router.get('/',
   checkPermission('activity_grid', 'read'),
   query('view').optional().isIn(['month', 'week', 'day', 'list']),

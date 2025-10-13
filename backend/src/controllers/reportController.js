@@ -4,6 +4,7 @@ const TradeSpend = require('../models/TradeSpend');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const SalesHistory = require('../models/SalesHistory');
+const Report = require('../models/Report');
 const ExcelJS = require('exceljs');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -13,6 +14,216 @@ const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
 const reportController = {
+  // CRUD Operations for Report entities
+  
+  // Create report
+  async createReport(req, res) {
+    try {
+      const reportData = {
+        ...req.body,
+        company: req.user.company,
+        createdBy: req.user._id
+      };
+
+      const report = await Report.create(reportData);
+
+      logger.logAudit('report_created', req.user._id, {
+        reportId: report._id,
+        reportName: report.name,
+        reportType: report.reportType
+      });
+
+      res.status(201).json({
+        success: true,
+        data: report
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Get all reports
+  async getReports(req, res) {
+    try {
+      const {
+        page = 1,
+        limit = 10,
+        sort = '-createdAt',
+        search,
+        reportType,
+        status,
+        ...filters
+      } = req.query;
+
+      // Build query
+      const query = { company: req.user.company };
+      
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } }
+        ];
+      }
+      
+      if (reportType) {
+        query.reportType = reportType;
+      }
+      
+      if (status) {
+        query.status = status;
+      }
+      
+      // Apply additional filters
+      Object.assign(query, filters);
+
+      const reports = await Report.find(query)
+        .populate('company', 'name')
+        .populate('createdBy', 'firstName lastName')
+        .sort(sort)
+        .limit(limit * 1)
+        .skip((page - 1) * limit);
+
+      const total = await Report.countDocuments(query);
+
+      res.json({
+        success: true,
+        data: reports,
+        pagination: {
+          total,
+          page: parseInt(page),
+          pages: Math.ceil(total / limit)
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Get single report
+  async getReport(req, res) {
+    try {
+      const report = await Report.findById(req.params.id)
+        .populate('company', 'name')
+        .populate('createdBy', 'firstName lastName');
+
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: 'Report not found'
+        });
+      }
+
+      // Check if user has access to this report
+      if (report.company.toString() !== req.user.company.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied'
+        });
+      }
+
+      res.json({
+        success: true,
+        data: report
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Update report
+  async updateReport(req, res) {
+    try {
+      const report = await Report.findById(req.params.id);
+
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: 'Report not found'
+        });
+      }
+
+      // Check if user has access to this report
+      if (report.company.toString() !== req.user.company.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied'
+        });
+      }
+
+      Object.assign(report, req.body);
+      report.lastModifiedBy = req.user._id;
+      
+      await report.save();
+
+      logger.logAudit('report_updated', req.user._id, {
+        reportId: report._id,
+        reportName: report.name,
+        reportType: report.reportType
+      });
+
+      res.json({
+        success: true,
+        data: report
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Delete report
+  async deleteReport(req, res) {
+    try {
+      const report = await Report.findById(req.params.id);
+
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: 'Report not found'
+        });
+      }
+
+      // Check if user has access to this report
+      if (report.company.toString() !== req.user.company.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied'
+        });
+      }
+
+      await report.deleteOne();
+
+      logger.logAudit('report_deleted', req.user._id, {
+        reportId: report._id,
+        reportName: report.name,
+        reportType: report.reportType
+      });
+
+      res.json({
+        success: true,
+        message: 'Report deleted successfully'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  // Analytics and Generation Functions
+  
   // Generate promotion effectiveness report
   async generatePromotionEffectivenessReport({ promotionId, startDate, endDate }) {
     const promotion = await Promotion.findById(promotionId)

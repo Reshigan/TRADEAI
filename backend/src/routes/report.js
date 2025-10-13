@@ -4,7 +4,14 @@ const { authenticateToken } = require('../middleware/auth');
 const reportController = require('../controllers/reportController');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
-// Get all available reports
+// CRUD Routes for Report entities
+router.post('/reports', authenticateToken, reportController.createReport);
+router.get('/reports', authenticateToken, reportController.getReports);
+router.get('/reports/:id', authenticateToken, reportController.getReport);
+router.put('/reports/:id', authenticateToken, reportController.updateReport);
+router.delete('/reports/:id', authenticateToken, reportController.deleteReport);
+
+// Get all available report types
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   res.json({
     success: true,

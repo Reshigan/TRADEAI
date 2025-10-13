@@ -34,6 +34,9 @@ const TradingTermsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  console.log('TradingTermsList render - tradingTerms:', tradingTerms, 'type:', typeof tradingTerms, 'isArray:', Array.isArray(tradingTerms));
+  // Debug: Force rebuild with different hash v2
+
   useEffect(() => {
     fetchTradingTerms();
   }, []);
@@ -50,7 +53,15 @@ const TradingTermsList = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setTradingTerms(data.data?.tradingTerms || []);
+        console.log('Trading terms API response:', data);
+        const tradingTermsArray = data.data?.tradingTerms || data.data || [];
+        console.log('Trading terms array:', tradingTermsArray, 'isArray:', Array.isArray(tradingTermsArray));
+        if (Array.isArray(tradingTermsArray)) {
+          setTradingTerms(tradingTermsArray);
+        } else {
+          console.error('Trading terms is not an array:', tradingTermsArray);
+          setTradingTerms([]);
+        }
       } else {
         setError('Failed to fetch trading terms');
       }
@@ -159,7 +170,7 @@ const TradingTermsList = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tradingTerms.map((term) => (
+                {Array.isArray(tradingTerms) ? tradingTerms.map((term) => (
                   <TableRow key={term.id} hover>
                     <TableCell>
                       <Box>
@@ -214,7 +225,15 @@ const TradingTermsList = () => {
                       </Tooltip>
                     </TableCell>
                   </TableRow>
-                ))}
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      <Typography variant="body2" color="text.secondary">
+                        No trading terms available
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>

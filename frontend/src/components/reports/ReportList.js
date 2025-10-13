@@ -27,7 +27,9 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Tooltip
+  Tooltip,
+  Fab,
+  TablePagination
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -41,12 +43,16 @@ import {
   Share as ShareIcon,
   Delete as DeleteIcon,
   Schedule as ScheduleIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  Edit as EditIcon,
+  Visibility as ViewIcon,
+  PlayArrow as RunIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-
-// No more mock data - using real API calls
+import { reportService } from '../../services/api/reportService';
+import ReportForm from './ReportForm';
+import ReportDetail from './ReportDetail';
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
@@ -55,31 +61,63 @@ const ReportList = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
-  const [exportDialogOpen, setExportDialogOpen] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [editingReport, setEditingReport] = useState(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
   });
   
+  // Pagination
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalReports, setTotalReports] = useState(0);
+  
   // Filter states
   const [typeFilter, setTypeFilter] = useState('all');
-  const [formatFilter, setFormatFilter] = useState('all');
-  const [scheduleFilter, setScheduleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   
   // Load reports data
   useEffect(() => {
-    // In a real app, we would fetch data from the API
-    // For now, we'll use mock data
-    setLoading(true);
-    
-  }, []);
+    fetchReports();
+  }, [page, rowsPerPage, searchTerm, typeFilter, statusFilter]);
+
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        page: page + 1,
+        limit: rowsPerPage,
+        search: searchTerm || undefined,
+        reportType: typeFilter !== 'all' ? typeFilter : undefined,
+        status: statusFilter !== 'all' ? statusFilter : undefined
+      };
+
+      const response = await reportService.getReports(params);
+      setReports(response.data.data || []);
+      setTotalReports(response.data.pagination?.total || 0);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      showSnackbar('Error loading reports', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
   
+  const showSnackbar = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
   // Handle search
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setPage(0); // Reset to first page when searching
   };
   
   // Handle filter menu open
@@ -95,19 +133,67 @@ const ReportList = () => {
   // Handle type filter change
   const handleTypeFilterChange = (type) => {
     setTypeFilter(type);
+    setPage(0);
     handleFilterMenuClose();
   };
   
-  // Handle format filter change
-  const handleFormatFilterChange = (format) => {
-    setFormatFilter(format);
+  // Handle status filter change
+  const handleStatusFilterChange = (status) => {
+    setStatusFilter(status);
+    setPage(0);
     handleFilterMenuClose();
   };
-  
-  // Handle schedule filter change
-  const handleScheduleFilterChange = (schedule) => {
-    setScheduleFilter(schedule);
-    handleFilterMenuClose();
+
+  // CRUD Handlers
+  const handleCreateReport = () => {
+    setEditingReport(null);
+    setFormOpen(true);
+  };
+
+  const handleEditReport = (report) => {
+    setEditingReport(report);
+    setFormOpen(true);
+  };
+
+  const handleViewReport = (report) => {
+    setSelectedReport(report);
+    setDetailOpen(true);
+  };
+
+  const handleFormClose = () => {
+    setFormOpen(false);
+    setEditingReport(null);
+  };
+
+  const handleFormSave = (savedReport) => {
+    if (editingReport) {
+      // Update existing report
+      setReports(prev => prev.map(r => r._id === savedReport._id ? savedReport : r));
+      showSnackbar('Report updated successfully');
+    } else {
+      // Add new report
+      setReports(prev => [savedReport, ...prev]);
+      showSnackbar('Report created successfully');
+    }
+    setFormOpen(false);
+    setEditingReport(null);
+  };
+
+  const handleDetailClose = () => {
+    setDetailOpen(false);
+    setSelectedReport(null);
+  };
+
+  const handleDetailUpdate = (updatedReport) => {
+    setReports(prev => prev.map(r => r._id === updatedReport._id ? updatedReport : r));
+    showSnackbar('Report updated successfully');
+  };
+
+  const handleDetailDelete = (reportId) => {
+    setReports(prev => prev.filter(r => r._id !== reportId));
+    showSnackbar('Report deleted successfully');
+    setDetailOpen(false);
+    setSelectedReport(null);
   };
   
   // Handle delete dialog open
@@ -119,53 +205,31 @@ const ReportList = () => {
   // Handle delete dialog close
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
-  };
-  
-  // Handle schedule dialog open
-  const handleScheduleDialogOpen = (report) => {
-    setSelectedReport(report);
-    setScheduleDialogOpen(true);
-  };
-  
-  // Handle schedule dialog close
-  const handleScheduleDialogClose = () => {
-    setScheduleDialogOpen(false);
-  };
-  
-  // Handle export dialog open
-  const handleExportDialogOpen = (report) => {
-    setSelectedReport(report);
-    setExportDialogOpen(true);
-  };
-  
-  // Handle export dialog close
-  const handleExportDialogClose = () => {
-    setExportDialogOpen(false);
-  };
-  
-  // Handle share dialog open
-  const handleShareDialogOpen = (report) => {
-    setSelectedReport(report);
-    setShareDialogOpen(true);
-  };
-  
-  // Handle share dialog close
-  const handleShareDialogClose = () => {
-    setShareDialogOpen(false);
+    setSelectedReport(null);
   };
   
   // Handle delete report
-  const handleDeleteReport = () => {
-    // In a real app, we would call the API to delete the report
-    setReports((prevReports) => prevReports.filter(report => report.id !== selectedReport.id));
-    
-    setSnackbar({
-      open: true,
-      message: `Report "${selectedReport.name}" has been deleted`,
-      severity: 'success'
-    });
-    
-    handleDeleteDialogClose();
+  const handleDeleteReport = async () => {
+    try {
+      await reportService.deleteReport(selectedReport._id);
+      setReports(prev => prev.filter(r => r._id !== selectedReport._id));
+      showSnackbar('Report deleted successfully');
+    } catch (error) {
+      console.error('Error deleting report:', error);
+      showSnackbar('Error deleting report', 'error');
+    } finally {
+      handleDeleteDialogClose();
+    }
+  };
+
+  // Handle pagination
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
   
   // Handle schedule report
