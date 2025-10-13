@@ -371,23 +371,7 @@ const Login = ({ onLogin }) => {
                 </Button>
               </form>
 
-              <Divider sx={{ my: 3, borderColor: 'rgba(30, 64, 175, 0.1)' }}>
-                <Typography variant="body2" sx={{ color: 'var(--text-muted)', px: 2, fontSize: '0.85rem', fontWeight: 500 }}>
-                  DEMO ACCESS
-                </Typography>
-              </Divider>
-
-              <Box sx={{ textAlign: 'center', fontSize: '0.85rem' }}>
-                <Typography variant="body2" sx={{ color: 'var(--text-muted)', mb: 1 }}>
-                  <strong style={{ color: 'var(--primary-blue)' }}>ADMIN:</strong> admin@tradeai.com / admin123
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-muted)', mb: 1 }}>
-                  <strong style={{ color: 'var(--accent-gold)' }}>MANAGER:</strong> manager@tradeai.com / password123
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--text-muted)' }}>
-                  <strong style={{ color: 'var(--primary-blue-light)' }}>KAM:</strong> kam@tradeai.com / password123
-                </Typography>
-              </Box>
+              {/* Demo credentials removed for production security */}
             </Paper>
           </Box>
         </Box>
