@@ -33,6 +33,7 @@ import { format } from 'date-fns';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { tradeSpendService, budgetService } from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
 
 // Mock data for development
@@ -164,9 +165,7 @@ const TradeSpendDetail = () => {
   };
 
   // Format currency
-  const formatCurrency = (amount) => {
-    return `$${amount.toLocaleString()}`;
-  };
+  // Remove local formatCurrency function - using imported one
 
   // Format date
   const formatDate = (date) => {

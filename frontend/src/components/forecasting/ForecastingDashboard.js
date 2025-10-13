@@ -53,6 +53,7 @@ import {
   ComposedChart
 } from 'recharts';
 import { forecastingService } from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 const ForecastingDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -456,7 +457,7 @@ const ForecastingDashboard = () => {
             {budgetForecast ? (
               <>
                 <Typography variant="h4" color="warning.main" gutterBottom>
-                  ${budgetForecast.finalForecast?.reduce((sum, f) => sum + f.value, 0).toLocaleString() || '0'}
+                  {formatCurrency(budgetForecast.finalForecast?.reduce((sum, f) => sum + f.value, 0) || 0)}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   Total Budget

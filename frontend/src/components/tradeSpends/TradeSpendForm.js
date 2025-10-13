@@ -220,7 +220,7 @@ const TradeSpendForm = ({
                 helperText={errors.amount}
                 required
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: <InputAdornment position="start">R</InputAdornment>,
                 }}
               />
             </Grid>

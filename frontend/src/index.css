@@ -15,6 +15,7 @@
   --bg-primary: #fafbfc;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #ffffff;
+  --bg-card: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.85);
   --bg-glass-dark: rgba(248, 250, 252, 0.95);
   
@@ -35,6 +36,17 @@
   --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.15);
   --shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Borders */
+  --border-primary: #e2e8f0;
+  --border-accent: #cbd5e1;
+  
+  /* Neon Colors for Accents */
+  --neon-cyan: #00ffff;
+  --neon-purple: #8b5cf6;
+  --neon-pink: #ec4899;
   
   /* Glass Morphism */
   --glass-border: 1px solid rgba(255, 255, 255, 0.2);

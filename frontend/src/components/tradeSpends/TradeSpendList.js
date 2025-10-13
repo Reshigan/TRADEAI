@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
 import { tradeSpendService, budgetService } from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
 
 // No more mock data - using real API calls
@@ -195,7 +196,7 @@ const TradeSpendList = () => {
       id: 'amount', 
       label: 'Requested',
       numeric: true,
-      format: (value) => value?.requested ? `$${value.requested.toLocaleString()}` : '$0'
+      format: (value) => value?.requested ? formatCurrency(value.requested) : formatCurrency(0)
     },
     { 
       id: 'period', 
