@@ -28,7 +28,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useAuth } from '../../contexts/AuthContext';
-import { reportService } from '../../services/reportService';
+import { reportService } from '../../services/api/reportService';
 
 const REPORT_TYPES = [
   { value: 'promotion_effectiveness', label: 'Promotion Effectiveness' },

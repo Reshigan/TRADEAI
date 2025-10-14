@@ -180,18 +180,26 @@ const BudgetDetail = () => {
 
   // Calculate budget utilization percentage
   const calculateUtilization = () => {
-    if (!budget) return 0;
-    return Math.round((budget.allocated_amount / budget.total_amount) * 100);
+    if (!budget || !budget.allocated || !budget.remaining) return 0;
+    const total = budget.allocated + budget.remaining;
+    if (total === 0) return 0;
+    return Math.round((budget.allocated / total) * 100);
   };
 
   // Format currency
   const formatCurrency = (amount) => {
-    return `$${amount.toLocaleString()}`;
+    if (amount === null || amount === undefined || isNaN(amount)) {
+      return '$0';
+    }
+    return `$${Number(amount).toLocaleString()}`;
   };
 
   // Format date
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    if (!date) return 'N/A';
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return 'Invalid Date';
+    return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -315,7 +323,7 @@ const BudgetDetail = () => {
                     Last Updated
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    {formatDate(budget.updated_at)}
+                    {formatDate(budget.updatedAt)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -326,7 +334,7 @@ const BudgetDetail = () => {
                     Total Budget
                   </Typography>
                   <Typography variant="h5" color="primary" gutterBottom>
-                    {formatCurrency(budget.total_amount)}
+                    {formatCurrency(budget.allocated + budget.remaining)}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -334,7 +342,7 @@ const BudgetDetail = () => {
                     Allocated
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    {formatCurrency(budget.allocated_amount)}
+                    {formatCurrency(budget.allocated)}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -342,7 +350,7 @@ const BudgetDetail = () => {
                     Remaining
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    {formatCurrency(budget.remaining_amount)}
+                    {formatCurrency(budget.remaining)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>

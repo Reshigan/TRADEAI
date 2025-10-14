@@ -35,7 +35,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
-import { reportService } from '../../services/reportService';
+import { reportService } from '../../services/api/reportService';
 import ReportForm from './ReportForm';
 
 const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
