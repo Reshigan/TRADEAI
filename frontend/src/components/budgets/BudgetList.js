@@ -124,7 +124,7 @@ const BudgetList = () => {
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase();
         return (
-          (budget?.customer?.name || '').toLowerCase().includes(searchTerm) ||
+          (budget?.scope?.customers?.[0]?.name || '').toLowerCase().includes(searchTerm) ||
           (budget?.year?.toString() || '').includes(searchTerm) ||
           (budget?.status || '').toLowerCase().includes(searchTerm)
         );
@@ -143,22 +143,25 @@ const BudgetList = () => {
     { 
       id: 'customer', 
       label: 'Customer',
-      format: (customer) => customer?.name || 'N/A'
+      format: (value, row) => row?.scope?.customers?.[0]?.name || 'N/A'
     },
     { 
       id: 'total_amount', 
       label: 'Total Amount',
       numeric: true,
-      format: (value) => value ? `$${value.toLocaleString()}` : '$0'
+      format: (value, row) => {
+        const total = (row?.allocated || 0) + (row?.remaining || 0);
+        return total ? `$${total.toLocaleString()}` : '$0';
+      }
     },
     { 
-      id: 'allocated_amount', 
+      id: 'allocated', 
       label: 'Allocated',
       numeric: true,
       format: (value) => value ? `$${value.toLocaleString()}` : '$0'
     },
     { 
-      id: 'remaining_amount', 
+      id: 'remaining', 
       label: 'Remaining',
       numeric: true,
       format: (value) => value ? `$${value.toLocaleString()}` : '$0'
@@ -169,7 +172,7 @@ const BudgetList = () => {
       format: (value) => <StatusChip status={value || 'unknown'} />
     },
     { 
-      id: 'updated_at', 
+      id: 'updatedAt', 
       label: 'Last Updated',
       format: (date) => {
         try {
