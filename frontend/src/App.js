@@ -16,7 +16,7 @@ import { ProductList, ProductDetail } from './components/products';
 import { AnalyticsDashboard } from './components/analytics';
 import { SettingsPage } from './components/settings';
 import { UserList, UserDetail, UserForm } from './components/users';
-import { ReportList, ReportBuilder } from './components/reports';
+import { ReportList, ReportBuilder, BudgetReports, TradingTermsReports, CustomerReports } from './components/reports';
 import { CompanyList, CompanyDetail, CompanyForm } from './components/companies';
 import { TradingTermsList, TradingTermDetail, TradingTermForm } from './components/tradingTerms';
 import ActivityGrid from './components/activityGrid';
@@ -313,6 +313,42 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <ReportBuilder />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/budget" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetReports />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/tradingterms" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradingTermsReports />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/customers" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CustomerReports />
               </Layout>
             ) : (
               <Navigate to="/" replace />

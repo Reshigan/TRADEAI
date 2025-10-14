@@ -452,4 +452,48 @@ export const userService = {
   },
 };
 
+// Trading Terms services
+export const tradingTermsService = {
+  getAll: async (params) => {
+    try {
+      const response = await api.get('/trading-terms', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/trading-terms/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  create: async (tradingTerm) => {
+    try {
+      const response = await api.post('/trading-terms', tradingTerm);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  update: async (id, tradingTerm) => {
+    try {
+      const response = await api.put(`/trading-terms/${id}`, tradingTerm);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`/trading-terms/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export default api;
