@@ -158,6 +158,98 @@ router.get('/forecasting/by-channel', (req, res) => {
   });
 });
 
+// Demand forecast endpoint
+router.post('/forecasting/demand', async (req, res) => {
+  try {
+    // Mock demand forecast for now
+    const { productIds = [], customerIds = [], horizon = 12 } = req.body;
+    
+    const mockDemandForecast = {
+      productIds,
+      customerIds,
+      horizon,
+      scenarios: {
+        optimistic: { demand: 1200, confidence: 0.8 },
+        realistic: { demand: 1000, confidence: 0.9 },
+        pessimistic: { demand: 800, confidence: 0.7 }
+      },
+      riskAnalysis: {
+        riskLevel: 'medium',
+        factors: ['seasonality', 'market_trends']
+      },
+      generatedAt: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      message: 'Demand forecast generated successfully',
+      data: mockDemandForecast
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate demand forecast',
+      error: error.message
+    });
+  }
+});
+
+// Budget forecast endpoint
+router.post('/forecasting/budget', async (req, res) => {
+  try {
+    // Mock budget forecast for now
+    const { horizon = 12, includeInflation = true } = req.body;
+    
+    const mockBudgetForecast = {
+      horizon,
+      includeInflation,
+      finalForecast: Array.from({ length: horizon }, (_, i) => ({
+        period: i + 1,
+        value: 50000 + (i * 2000) + (Math.random() * 5000)
+      })),
+      budgetRisk: {
+        level: 'low',
+        factors: ['inflation', 'market_volatility']
+      },
+      generatedAt: new Date().toISOString()
+    };
+    
+    res.json({
+      success: true,
+      message: 'Budget forecast generated successfully',
+      data: mockBudgetForecast
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate budget forecast',
+      error: error.message
+    });
+  }
+});
+
+// Export forecast endpoint
+router.post('/forecasting/export/:type', async (req, res) => {
+  try {
+    const { type } = req.params;
+    
+    // Mock Excel export - in reality this would generate an actual Excel file
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=${type}_forecast_${new Date().toISOString().split('T')[0]}.xlsx`);
+    
+    // Send mock Excel data
+    const mockExcelData = Buffer.from('Mock Excel Data for ' + type + ' forecast');
+    res.send(mockExcelData);
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to export forecast',
+      error: error.message
+    });
+  }
+});
+
 // ============================================================================
 // INTEGRATIONS ENDPOINT (alias)
 // ============================================================================

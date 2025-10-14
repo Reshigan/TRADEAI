@@ -115,7 +115,7 @@ const ForecastingDashboard = () => {
       const promises = [];
 
       // Sales Forecast
-      if (activeTab === 0 || activeTab === 3) {
+      if (activeTab === 0 || activeTab === 1) {
         promises.push(
           forecastingService.generateSalesForecast(filters)
             .then(res => setSalesForecast(res.data))
@@ -124,7 +124,7 @@ const ForecastingDashboard = () => {
       }
 
       // Demand Forecast
-      if (activeTab === 1 || activeTab === 3) {
+      if (activeTab === 1) {
         promises.push(
           forecastingService.generateDemandForecast({
             productIds: filters.productId ? [filters.productId] : [],
@@ -137,7 +137,7 @@ const ForecastingDashboard = () => {
       }
 
       // Budget Forecast
-      if (activeTab === 2 || activeTab === 3) {
+      if (activeTab === 1) {
         promises.push(
           forecastingService.generateBudgetForecast({
             horizon: filters.horizon,
@@ -167,6 +167,8 @@ const ForecastingDashboard = () => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+    // Load forecasts for the new tab
+    setTimeout(() => loadForecasts(), 100);
   };
 
   const exportForecast = async (type) => {

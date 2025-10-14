@@ -516,7 +516,7 @@ export const forecastingService = {
   },
   generateSalesForecast: async (filters) => {
     try {
-      const response = await api.post('/forecasting/sales', filters);
+      const response = await api.post('/forecasting/generate', filters);
       return response.data;
     } catch (error) {
       throw error;
