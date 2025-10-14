@@ -238,14 +238,16 @@ const BudgetDetail = () => {
     );
   }
 
+  const customerName = budget.scope?.customers?.[0]?.name || 'N/A';
+  
   return (
     <Box>
       <PageHeader
-        title={`Budget: ${budget.customer.name} (${budget.year})`}
+        title={`Budget: ${customerName} (${budget.year})`}
         subtitle={`Budget ID: ${budget.id}`}
         breadcrumbs={[
           { text: 'Budgets', link: '/budgets' },
-          { text: `${budget.customer.name} (${budget.year})` }
+          { text: `${customerName} (${budget.year})` }
         ]}
         action={
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -291,7 +293,7 @@ const BudgetDetail = () => {
                     Customer
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    {budget.customer.name}
+                    {customerName}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
