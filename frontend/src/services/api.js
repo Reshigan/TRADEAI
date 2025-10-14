@@ -372,6 +372,14 @@ export const analyticsService = {
       throw error;
     }
   },
+  getAll: async (params) => {
+    try {
+      const response = await api.get('/analytics/dashboard', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 // Currency services

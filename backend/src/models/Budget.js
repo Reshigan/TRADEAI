@@ -227,6 +227,20 @@ const budgetSchema = new mongoose.Schema({
   }],
   
   // Created/Modified By
+  // Simple Budget Tracking (for frontend compatibility)
+  allocated: {
+    type: Number,
+    default: 0
+  },
+  remaining: {
+    type: Number,
+    default: 0
+  },
+  spent: {
+    type: Number,
+    default: 0
+  },
+  
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

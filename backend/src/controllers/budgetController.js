@@ -13,6 +13,14 @@ exports.createBudget = asyncHandler(async (req, res, next) => {
     status: 'draft'
   };
   
+  // Handle total_amount from frontend form
+  if (req.body.total_amount) {
+    budgetData.allocated = 0; // Start with 0 allocated
+    budgetData.remaining = req.body.total_amount; // All amount is remaining initially
+    budgetData.spent = 0; // No spending yet
+    delete budgetData.total_amount; // Remove the frontend field
+  }
+  
   // Generate ML forecast if requested
   if (req.body.generateForecast) {
     const forecast = await mlService.generateBudgetForecast({
