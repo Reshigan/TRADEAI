@@ -496,4 +496,58 @@ export const tradingTermsService = {
   },
 };
 
+// Forecasting services
+export const forecastingService = {
+  getProducts: async () => {
+    try {
+      const response = await api.get('/products');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getCustomers: async () => {
+    try {
+      const response = await api.get('/customers');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  generateSalesForecast: async (filters) => {
+    try {
+      const response = await api.post('/forecasting/sales', filters);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  generateDemandForecast: async (params) => {
+    try {
+      const response = await api.post('/forecasting/demand', params);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  generateBudgetForecast: async (params) => {
+    try {
+      const response = await api.post('/forecasting/budget', params);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  exportForecast: async (type, filters) => {
+    try {
+      const response = await api.post(`/forecasting/export/${type}`, filters, {
+        responseType: 'blob'
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export default api;

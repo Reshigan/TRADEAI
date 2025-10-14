@@ -39,7 +39,9 @@ import {
   Business as BusinessIcon,
   Description as ReportIcon,
   CalendarMonth as ActivityGridIcon,
-  Assignment as TradingTermsIcon
+  Assignment as TradingTermsIcon,
+  Psychology as SimulationIcon,
+  Timeline as ForecastingIcon
 } from '@mui/icons-material';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
@@ -57,6 +59,8 @@ const getMenuItems = (user) => {
     { text: 'Activity Grid', icon: <ActivityGridIcon />, path: '/activity-grid' },
     { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
     { text: 'Products', icon: <ProductIcon />, path: '/products' },
+    { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulations' },
+    { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
     { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
     { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
   ];
@@ -98,6 +102,8 @@ const Layout = ({ children, user, onLogout }) => {
     else if (path.includes('/activity-grid')) feature = 'activity-grid';
     else if (path.includes('/customers')) feature = 'customers';
     else if (path.includes('/products')) feature = 'products';
+    else if (path.includes('/simulations')) feature = 'simulations';
+    else if (path.includes('/forecasting')) feature = 'forecasting';
     else if (path.includes('/analytics')) feature = 'analytics';
     else if (path.includes('/settings')) feature = 'settings';
     

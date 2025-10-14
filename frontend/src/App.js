@@ -23,6 +23,7 @@ import ActivityGrid from './components/activityGrid';
 import SimulationStudio from './components/enterprise/simulations/SimulationStudio';
 import ExecutiveDashboardEnhanced from './components/enterprise/dashboards/ExecutiveDashboardEnhanced';
 import TransactionManagement from './components/enterprise/transactions/TransactionManagement';
+import ForecastingDashboard from './components/forecasting/ForecastingDashboard';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -469,6 +470,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <SimulationStudio />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/forecasting" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ForecastingDashboard />
               </Layout>
             ) : (
               <Navigate to="/" replace />

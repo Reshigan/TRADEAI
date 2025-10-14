@@ -29,7 +29,7 @@ import {
 import {
   TrendingUp,
   Analytics,
-  PredictiveAnalytics,
+  Psychology as PredictiveAnalytics,
   Timeline,
   Assessment,
   Download,

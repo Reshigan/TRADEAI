@@ -78,7 +78,9 @@ const TradingTermsReports = () => {
     try {
       setLoading(true);
       const response = await tradingTermsService.getAll();
-      setTradingTerms(response.data || []);
+      // Ensure we always have an array
+      const data = response?.data || response || [];
+      setTradingTerms(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching trading terms data:', error);
       setTradingTerms([]);
@@ -99,54 +101,55 @@ const TradingTermsReports = () => {
     setAnchorEl(null);
   };
 
-  // Calculate trading terms metrics
-  const totalEstimatedValue = tradingTerms.reduce((sum, term) => sum + (term.financialImpact?.estimatedAnnualValue || 0), 0);
-  const totalCost = tradingTerms.reduce((sum, term) => sum + (term.financialImpact?.costToCompany || 0), 0);
-  const avgROI = tradingTerms.length > 0 ? tradingTerms.reduce((sum, term) => sum + (term.performance?.actualROI || 0), 0) / tradingTerms.length : 0;
-  const avgUtilization = tradingTerms.length > 0 ? tradingTerms.reduce((sum, term) => sum + (term.performance?.utilizationRate || 0), 0) / tradingTerms.length : 0;
+  // Calculate trading terms metrics with safety checks
+  const safeTerms = Array.isArray(tradingTerms) ? tradingTerms : [];
+  const totalEstimatedValue = safeTerms.reduce((sum, term) => sum + (term?.financialImpact?.estimatedAnnualValue || 0), 0);
+  const totalCost = safeTerms.reduce((sum, term) => sum + (term?.financialImpact?.costToCompany || 0), 0);
+  const avgROI = safeTerms.length > 0 ? safeTerms.reduce((sum, term) => sum + (term?.performance?.actualROI || 0), 0) / safeTerms.length : 0;
+  const avgUtilization = safeTerms.length > 0 ? safeTerms.reduce((sum, term) => sum + (term?.performance?.utilizationRate || 0), 0) / safeTerms.length : 0;
 
   // Status distribution
-  const statusCounts = tradingTerms.reduce((acc, term) => {
-    const status = term.approvalWorkflow?.status || 'draft';
+  const statusCounts = safeTerms.reduce((acc, term) => {
+    const status = term?.approvalWorkflow?.status || 'draft';
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {});
 
   // Term type distribution
-  const termTypeCounts = tradingTerms.reduce((acc, term) => {
-    const type = term.termType || 'unknown';
+  const termTypeCounts = safeTerms.reduce((acc, term) => {
+    const type = term?.termType || 'unknown';
     acc[type] = (acc[type] || 0) + 1;
     return acc;
   }, {});
 
   // Prepare chart data
-  const performanceData = tradingTerms.map((term, index) => ({
-    name: term.name?.substring(0, 20) + '...' || `Term ${index + 1}`,
-    estimatedValue: term.financialImpact?.estimatedAnnualValue || 0,
-    actualRevenue: term.performance?.actualRevenue || 0,
-    cost: term.financialImpact?.costToCompany || 0,
-    roi: term.performance?.actualROI || 0,
-    utilization: term.performance?.utilizationRate || 0,
-    volume: term.performance?.actualVolume || 0
+  const performanceData = safeTerms.map((term, index) => ({
+    name: term?.name?.substring(0, 20) + '...' || `Term ${index + 1}`,
+    estimatedValue: term?.financialImpact?.estimatedAnnualValue || 0,
+    actualRevenue: term?.performance?.actualRevenue || 0,
+    cost: term?.financialImpact?.costToCompany || 0,
+    roi: term?.performance?.actualROI || 0,
+    utilization: term?.performance?.utilizationRate || 0,
+    volume: term?.performance?.actualVolume || 0
   }));
 
   const statusData = Object.entries(statusCounts).map(([status, count]) => ({
     name: status.replace('_', ' ').toUpperCase(),
     value: count,
-    percentage: ((count / tradingTerms.length) * 100).toFixed(1)
+    percentage: ((count / safeTerms.length) * 100).toFixed(1)
   }));
 
   const termTypeData = Object.entries(termTypeCounts).map(([type, count]) => ({
     name: type.replace('_', ' ').toUpperCase(),
     value: count,
-    percentage: ((count / tradingTerms.length) * 100).toFixed(1)
+    percentage: ((count / safeTerms.length) * 100).toFixed(1)
   }));
 
-  const roiVsUtilizationData = tradingTerms.map((term, index) => ({
-    name: term.name?.substring(0, 15) + '...' || `Term ${index + 1}`,
-    roi: term.performance?.actualROI || 0,
-    utilization: term.performance?.utilizationRate || 0,
-    value: term.financialImpact?.estimatedAnnualValue || 0
+  const roiVsUtilizationData = safeTerms.map((term, index) => ({
+    name: term?.name?.substring(0, 15) + '...' || `Term ${index + 1}`,
+    roi: term?.performance?.actualROI || 0,
+    utilization: term?.performance?.utilizationRate || 0,
+    value: term?.financialImpact?.estimatedAnnualValue || 0
   }));
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#8DD1E1'];
@@ -511,7 +514,7 @@ const TradingTermsReports = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {tradingTerms.map((term, index) => (
+                    {safeTerms.map((term, index) => (
                       <TableRow key={term._id || index}>
                         <TableCell>{term.name}</TableCell>
                         <TableCell>
@@ -570,11 +573,11 @@ const TradingTermsReports = () => {
               </Typography>
               <Box sx={{ mb: 2 }}>
                 <Typography variant="body2" color="text.secondary">
-                  Approved Terms: {statusCounts.approved || 0} / {tradingTerms.length}
+                  Approved Terms: {statusCounts.approved || 0} / {safeTerms.length}
                 </Typography>
                 <LinearProgress
                   variant="determinate"
-                  value={((statusCounts.approved || 0) / tradingTerms.length) * 100}
+                  value={((statusCounts.approved || 0) / safeTerms.length) * 100}
                   sx={{ mt: 1, height: 8, borderRadius: 4 }}
                 />
               </Box>
@@ -587,7 +590,7 @@ const TradingTermsReports = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary={status.replace('_', ' ').toUpperCase()}
-                      secondary={`${count} terms (${((count / tradingTerms.length) * 100).toFixed(1)}%)`}
+                      secondary={`${count} terms (${((count / safeTerms.length) * 100).toFixed(1)}%)`}
                     />
                   </ListItem>
                 ))}
@@ -601,9 +604,9 @@ const TradingTermsReports = () => {
                 Expiring Terms Alert
               </Typography>
               <List>
-                {tradingTerms
+                {safeTerms
                   .filter(term => {
-                    const daysUntilExpiry = term.daysUntilExpiry || 0;
+                    const daysUntilExpiry = term?.daysUntilExpiry || 0;
                     return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
                   })
                   .map((term, index) => (
@@ -622,8 +625,8 @@ const TradingTermsReports = () => {
                       />
                     </ListItem>
                   ))}
-                {tradingTerms.filter(term => {
-                  const daysUntilExpiry = term.daysUntilExpiry || 0;
+                {safeTerms.filter(term => {
+                  const daysUntilExpiry = term?.daysUntilExpiry || 0;
                   return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
                 }).length === 0 && (
                   <ListItem>
