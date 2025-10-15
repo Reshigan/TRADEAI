@@ -1,9 +1,0 @@
-"""
-Reporting endpoints
-"""
-
-from fastapi import APIRouter
-
-router = APIRouter()
-
-# TODO: Implement reporting endpoints
