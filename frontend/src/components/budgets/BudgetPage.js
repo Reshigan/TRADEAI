@@ -41,7 +41,6 @@ function a11yProps(index) {
 }
 
 const BudgetPage = () => {
-  console.log('BudgetPage component loaded - v2.0');
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {

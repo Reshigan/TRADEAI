@@ -16,7 +16,7 @@ import { ProductList, ProductDetail } from './components/products';
 import { AnalyticsDashboard } from './components/analytics';
 import { SettingsPage } from './components/settings';
 import { UserList, UserDetail, UserForm } from './components/users';
-import { ReportList, ReportBuilder, BudgetReports, TradingTermsReports, CustomerReports } from './components/reports';
+import { ReportList, ReportBuilder, BudgetReports, TradingTermsReports, CustomerReports, ProductReports, PromotionReports, TradeSpendReports } from './components/reports';
 import { CompanyList, CompanyDetail, CompanyForm } from './components/companies';
 import { TradingTermsList, TradingTermDetail, TradingTermForm } from './components/tradingTerms';
 import ActivityGrid from './components/activityGrid';
@@ -350,6 +350,42 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <CustomerReports />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/products" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ProductReports />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/promotions" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionReports />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/tradespend" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeSpendReports />
               </Layout>
             ) : (
               <Navigate to="/" replace />
