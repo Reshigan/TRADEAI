@@ -32,7 +32,9 @@ const AIPredictionsChart = ({ data = [], height = 400 }) => {
   };
 
   // Find the index where predictions start
-  const predictionStartIndex = data.findIndex(item => item.isPrediction);
+  const predictionStartIndex = data.findIndex(item => item && item.isPrediction);
+  const hasPredictions = predictionStartIndex > 0 && predictionStartIndex < data.length;
+  const hasValidData = data && data.length > 0;
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
@@ -51,12 +53,12 @@ const AIPredictionsChart = ({ data = [], height = 400 }) => {
           }}
         >
           <p style={{ margin: 0, fontWeight: 'bold' }}>{label}</p>
-          {data.actual !== null && (
+          {data.actual !== null && data.actual !== undefined && (
             <p style={{ margin: '5px 0', color: theme.palette.primary.main }}>
               Actual: {formatCurrency(data.actual)}
             </p>
           )}
-          {data.predicted !== null && (
+          {data.predicted !== null && data.predicted !== undefined && (
             <p style={{ margin: '5px 0', color: theme.palette.secondary.main }}>
               Predicted: {formatCurrency(data.predicted)}
             </p>
@@ -93,26 +95,30 @@ const AIPredictionsChart = ({ data = [], height = 400 }) => {
           <Tooltip content={<CustomTooltip />} />
           <Legend />
           
-          {/* Prediction area */}
-          <ReferenceArea 
-            x1={data[predictionStartIndex - 1].month} 
-            x2={data[data.length - 1].month} 
-            fill={theme.palette.grey[100]} 
-            fillOpacity={0.5} 
-          />
+          {/* Prediction area - only render if we have valid predictions */}
+          {hasPredictions && hasValidData && data[predictionStartIndex - 1] && data[data.length - 1] && (
+            <ReferenceArea 
+              x1={data[predictionStartIndex - 1].month} 
+              x2={data[data.length - 1].month} 
+              fill={theme.palette.grey[100]} 
+              fillOpacity={0.5} 
+            />
+          )}
           
-          {/* Reference line for current month */}
-          <ReferenceLine 
-            x={data[predictionStartIndex - 1].month} 
-            stroke={theme.palette.grey[500]} 
-            strokeDasharray="3 3" 
-            label={{ 
-              value: 'Current', 
-              position: 'insideTopRight',
-              fill: theme.palette.grey[700],
-              fontSize: 12
-            }} 
-          />
+          {/* Reference line for current month - only render if we have valid predictions */}
+          {hasPredictions && hasValidData && data[predictionStartIndex - 1] && (
+            <ReferenceLine 
+              x={data[predictionStartIndex - 1].month} 
+              stroke={theme.palette.grey[500]} 
+              strokeDasharray="3 3" 
+              label={{ 
+                value: 'Current', 
+                position: 'insideTopRight',
+                fill: theme.palette.grey[700],
+                fontSize: 12
+              }} 
+            />
+          )}
           
           {/* Actual sales line */}
           <Line 
