@@ -19,15 +19,7 @@ import { formatCurrency } from '../../../utils/formatters';
 const SalesPerformanceChart = ({ data = [], height = 400 }) => {
   const theme = useTheme();
 
-  // Format currency for tooltip - South African Rand
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
-  };
+
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {

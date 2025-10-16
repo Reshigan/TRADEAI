@@ -1,9 +1,39 @@
 // Centralized formatting utilities
 
-// Get user's currency preference from settings or default to USD
+// Get tenant's currency settings from user context
 const getCurrencySettings = () => {
-  // In a real app, this would come from user settings/context
-  // For now, default to USD for consistency across the platform
+  try {
+    // Get user data from localStorage (set during login)
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        // Map currency to locale and symbol
+        const currencyMap = {
+          'USD': { locale: 'en-US', symbol: '$' },
+          'EUR': { locale: 'en-EU', symbol: '€' },
+          'GBP': { locale: 'en-GB', symbol: '£' },
+          'ZAR': { locale: 'en-ZA', symbol: 'R' },
+          'AUD': { locale: 'en-AU', symbol: 'A$' },
+          'CAD': { locale: 'en-CA', symbol: 'C$' },
+          'JPY': { locale: 'ja-JP', symbol: '¥' },
+          'CNY': { locale: 'zh-CN', symbol: '¥' },
+          'INR': { locale: 'en-IN', symbol: '₹' }
+        };
+        
+        const currencyInfo = currencyMap[user.company.currency] || currencyMap['USD'];
+        return {
+          currency: user.company.currency,
+          symbol: currencyInfo.symbol,
+          locale: currencyInfo.locale
+        };
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency settings from user context:', error);
+  }
+  
+  // Fallback to USD if no company currency is available
   return {
     currency: 'USD',
     symbol: '$',
@@ -118,14 +148,17 @@ export const formatDate = (date, format = 'medium') => {
  */
 export const formatCurrencyCompact = (amount) => {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return '$0';
+    const settings = getCurrencySettings();
+    return `${settings.symbol}0`;
   }
 
+  const settings = getCurrencySettings();
+  
   if (Math.abs(amount) >= 1000000) {
-    return `$${(amount / 1000000).toFixed(1)}M`;
+    return `${settings.symbol}${(amount / 1000000).toFixed(1)}M`;
   } else if (Math.abs(amount) >= 1000) {
-    return `$${(amount / 1000).toFixed(1)}K`;
+    return `${settings.symbol}${(amount / 1000).toFixed(1)}K`;
   }
   
-  return `$${Number(amount).toLocaleString('en-US')}`;
+  return `${settings.symbol}${Number(amount).toLocaleString(settings.locale)}`;
 };

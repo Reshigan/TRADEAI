@@ -145,7 +145,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     const loginIdentifier = email || username;
     logger.info(`Login attempt for: ${loginIdentifier}${tenantId ? ` (tenant: ${tenantId})` : ''}`);
     
-    // Find user by email or username
+    // Find user by email or username and populate company data
     const searchQuery = email 
       ? { email: email.toLowerCase() }
       : { $or: [
@@ -154,7 +154,7 @@ exports.login = asyncHandler(async (req, res, next) => {
           { username: username }
         ]};
     
-    const user = await User.findOne(searchQuery);
+    const user = await User.findOne(searchQuery).populate('companyId', 'name currency country timezone settings');
     
     logger.info(`User found: ${user ? 'Yes' : 'No'}`);
     if (user) {
@@ -202,7 +202,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     // Log successful login
     logger.info(`User logged in: ${user.email} (${user.role})`);
     
-    // Return success with token
+    // Return success with token and company information
     return res.json({
       success: true,
       message: 'Login successful',
@@ -215,7 +215,15 @@ exports.login = asyncHandler(async (req, res, next) => {
           lastName: user.lastName,
           role: user.role,
           department: user.department,
-          tenantId: user.tenantId
+          tenantId: user.tenantId,
+          company: user.companyId ? {
+            id: user.companyId._id,
+            name: user.companyId.name,
+            currency: user.companyId.currency,
+            country: user.companyId.country,
+            timezone: user.companyId.timezone,
+            settings: user.companyId.settings
+          } : null
         },
         tokens: {
           accessToken,
