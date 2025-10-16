@@ -38,115 +38,7 @@ import { format } from 'date-fns';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { customerService, budgetService, promotionService, tradeSpendService } from '../../services/api';
 import CustomerForm from './CustomerForm';
-
-// Mock data for development - South African customer
-const mockCustomer = {
-  id: '7',
-  name: 'Diplomat South Africa',
-  code: 'DSA',
-  type: 'distributor',
-  status: 'active',
-  contact: {
-    name: 'Sarah Nkosi',
-    email: 's.nkosi@diplomat.co.za',
-    phone: '+27-11-234-5678'
-  },
-  address: {
-    street: '45 Commerce Crescent',
-    city: 'Johannesburg',
-    state: 'Gauteng',
-    zip: '2157',
-    country: 'South Africa'
-  },
-  notes: 'Diplomat South Africa is a key distributor for our products across the South African market. They have strong relationships with major retailers and excellent logistics capabilities.',
-  created_at: new Date('2024-01-01'),
-  updated_at: new Date('2025-08-15')
-};
-
-const mockBudgets = [
-  {
-    id: '1',
-    year: 2025,
-    total_amount: 15000000,
-    allocated_amount: 11250000,
-    remaining_amount: 3750000,
-    status: 'approved'
-  },
-  {
-    id: '2',
-    year: 2024,
-    total_amount: 12000000,
-    allocated_amount: 12000000,
-    remaining_amount: 0,
-    status: 'completed'
-  }
-];
-
-const mockPromotions = [
-  {
-    id: '1',
-    name: 'Winter Promotion',
-    budget: 750000,
-    status: 'active',
-    start_date: new Date('2025-06-01'),
-    end_date: new Date('2025-07-31')
-  },
-  {
-    id: '2',
-    name: 'Heritage Day Special',
-    budget: 600000,
-    status: 'planned',
-    start_date: new Date('2025-09-01'),
-    end_date: new Date('2025-09-30')
-  },
-  {
-    id: '3',
-    name: 'Summer Launch',
-    budget: 900000,
-    status: 'planned',
-    start_date: new Date('2025-11-01'),
-    end_date: new Date('2025-12-31')
-  },
-  {
-    id: '4',
-    name: 'Easter Campaign',
-    budget: 500000,
-    status: 'completed',
-    start_date: new Date('2025-03-15'),
-    end_date: new Date('2025-04-15')
-  }
-];
-
-const mockTradeSpends = [
-  {
-    id: '1',
-    description: 'Shoprite End Cap Display',
-    type: 'display',
-    amount: 225000,
-    status: 'approved'
-  },
-  {
-    id: '2',
-    description: 'Pick n Pay Featured Product Listing',
-    type: 'listing',
-    amount: 300000,
-    status: 'approved'
-  },
-  {
-    id: '3',
-    description: 'Woolworths Premium Placement',
-    type: 'placement',
-    amount: 450000,
-    status: 'pending'
-  },
-  {
-    id: '4',
-    description: 'SPAR Group Promotional Bundle',
-    type: 'bundle',
-    amount: 375000,
-    status: 'approved'
-  }
-];
+import { formatCurrency } from '../../utils/formatters';
 
 const CustomerDetail = () => {
   const { id } = useParams();
@@ -189,44 +81,33 @@ const CustomerDetail = () => {
   // Fetch budgets from API
   const fetchBudgets = async () => {
     try {
-      // In a real app, we would call the API
       const response = await budgetService.getAll({ customer_id: id });
-      setBudgets(response.data);
-      
-      // Using mock data for development
-      setBudgets(mockBudgets);
+      setBudgets(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch budgets:', err);
+      setBudgets([]);
     }
   };
 
   // Fetch promotions from API
   const fetchPromotions = async () => {
     try {
-      // In a real app, we would call the API
       const response = await promotionService.getAll({ customer_id: id });
-      setPromotions(response.data);
-      
-      // Using mock data for development
-      setPromotions(mockPromotions);
+      setPromotions(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch promotions:', err);
+      setPromotions([]);
     }
   };
 
   // Fetch trade spends from API
   const fetchTradeSpends = async () => {
     try {
-      // In a real app, we would call the API
       const response = await tradeSpendService.getAll({ customer_id: id });
-      setTradeSpends(response.data);
-      
-      // Using mock data for development
-      setTradeSpends(mockTradeSpends);
+      setTradeSpends(response.data || response || []);
     } catch (error) {
       console.error('Failed to fetch trade spends:', error);
-      setError(error.message || "An error occurred");
-      setLoading(false);
+      setTradeSpends([]);
     }
   };
 
@@ -281,15 +162,7 @@ const CustomerDetail = () => {
     }
   };
 
-  // Format currency - South African Rand
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
+
 
   // Format date
   const formatDate = (date) => {

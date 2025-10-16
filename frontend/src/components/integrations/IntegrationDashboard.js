@@ -112,67 +112,7 @@ const IntegrationDashboard = () => {
       setError(null);
 
       // Mock data for demonstration
-      const mockDashboardData = {
-        integrations: {
-          total: 6,
-          active: 4,
-          error: 1,
-          list: [
-            {
-              id: 'erp',
-              name: 'Enterprise Resource Planning',
-              type: 'erp',
-              status: 'active',
-              lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-              syncCount: 45,
-              errorCount: 0
-            },
-            {
-              id: 'crm',
-              name: 'Customer Relationship Management',
-              type: 'crm',
-              status: 'active',
-              lastSync: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-              syncCount: 32,
-              errorCount: 1
-            },
-            {
-              id: 'pos',
-              name: 'Point of Sale System',
-              type: 'pos',
-              status: 'active',
-              lastSync: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-              syncCount: 128,
-              errorCount: 0
-            },
-            {
-              id: 'email',
-              name: 'Email Marketing Platform',
-              type: 'email',
-              status: 'active',
-              lastSync: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-              syncCount: 67,
-              errorCount: 2
-            },
-            {
-              id: 'social',
-              name: 'Social Media Advertising',
-              type: 'social',
-              status: 'error',
-              lastSync: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-              syncCount: 12,
-              errorCount: 5
-            },
-            {
-              id: 'analytics',
-              name: 'Web Analytics Platform',
-              type: 'analytics',
-              status: 'inactive',
-              lastSync: null,
-              syncCount: 0,
-              errorCount: 0
-            }
-          ]
+                ]
         },
         webhooks: {
           total: 3,

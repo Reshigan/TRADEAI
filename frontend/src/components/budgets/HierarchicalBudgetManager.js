@@ -37,6 +37,7 @@ import {
   AttachMoney as MoneyIcon,
   Assessment as AssessmentIcon
 } from '@mui/icons-material';
+import { formatCurrency } from '../../utils/formatters';
 // Removed TreeView import due to compatibility issues
 import { budgetService } from '../../services/api';
 
@@ -55,7 +56,7 @@ const HierarchicalBudgetManager = () => {
     timeframe: 'annual',
     startDate: '',
     endDate: '',
-    currency: 'ZAR',
+    currency: 'USD',
     description: '',
     allocationType: 'percentage',
     children: []
@@ -92,127 +93,11 @@ const HierarchicalBudgetManager = () => {
   const fetchBudgetHierarchy = async () => {
     setLoading(true);
     try {
-      // Mock hierarchical budget data for now
-      const mockHierarchy = [
-        {
-          id: 'root',
-          name: 'Total Marketing Budget 2025',
-          type: 'company',
-          totalBudget: 5000000,
-          allocated: 4200000,
-          spent: 2100000,
-          remaining: 2100000,
-          timeframe: 'annual',
-          currency: 'ZAR',
-          children: [
-            {
-              id: 'dept-1',
-              name: 'Brand Marketing',
-              type: 'department',
-              totalBudget: 2000000,
-              allocated: 1800000,
-              spent: 900000,
-              remaining: 900000,
-              parentId: 'root',
-              children: [
-                {
-                  id: 'brand-1',
-                  name: 'Premium Brand A',
-                  type: 'brand',
-                  totalBudget: 1200000,
-                  allocated: 1100000,
-                  spent: 550000,
-                  remaining: 550000,
-                  parentId: 'dept-1',
-                  children: []
-                },
-                {
-                  id: 'brand-2',
-                  name: 'Value Brand B',
-                  type: 'brand',
-                  totalBudget: 800000,
-                  allocated: 700000,
-                  spent: 350000,
-                  remaining: 350000,
-                  parentId: 'dept-1',
-                  children: []
-                }
-              ]
-            },
-            {
-              id: 'dept-2',
-              name: 'Trade Marketing',
-              type: 'department',
-              totalBudget: 1500000,
-              allocated: 1300000,
-              spent: 650000,
-              remaining: 650000,
-              parentId: 'root',
-              children: [
-                {
-                  id: 'channel-1',
-                  name: 'Modern Trade',
-                  type: 'channel',
-                  totalBudget: 900000,
-                  allocated: 800000,
-                  spent: 400000,
-                  remaining: 400000,
-                  parentId: 'dept-2',
-                  children: []
-                },
-                {
-                  id: 'channel-2',
-                  name: 'Traditional Trade',
-                  type: 'channel',
-                  totalBudget: 600000,
-                  allocated: 500000,
-                  spent: 250000,
-                  remaining: 250000,
-                  parentId: 'dept-2',
-                  children: []
-                }
-              ]
-            },
-            {
-              id: 'dept-3',
-              name: 'Digital Marketing',
-              type: 'department',
-              totalBudget: 1000000,
-              allocated: 800000,
-              spent: 400000,
-              remaining: 400000,
-              parentId: 'root',
-              children: [
-                {
-                  id: 'campaign-1',
-                  name: 'Q1 Launch Campaign',
-                  type: 'campaign',
-                  totalBudget: 400000,
-                  allocated: 350000,
-                  spent: 175000,
-                  remaining: 175000,
-                  parentId: 'dept-3',
-                  children: []
-                },
-                {
-                  id: 'campaign-2',
-                  name: 'Social Media Campaigns',
-                  type: 'campaign',
-                  totalBudget: 600000,
-                  allocated: 450000,
-                  spent: 225000,
-                  remaining: 225000,
-                  parentId: 'dept-3',
-                  children: []
-                }
-              ]
-            }
-          ]
-        }
-      ];
-      setBudgetHierarchy(mockHierarchy);
+      const response = await budgetService.getHierarchy();
+      setBudgetHierarchy(response.data || response || []);
     } catch (error) {
       console.error('Error fetching budget hierarchy:', error);
+      setBudgetHierarchy([]);
     } finally {
       setLoading(false);
     }
@@ -245,7 +130,7 @@ const HierarchicalBudgetManager = () => {
       timeframe: 'annual',
       startDate: '',
       endDate: '',
-      currency: 'ZAR',
+      currency: 'USD',
       description: '',
       allocationType: 'percentage',
       children: []
@@ -293,7 +178,7 @@ const HierarchicalBudgetManager = () => {
   };
 
   const formatCurrency = (amount, currency = 'ZAR') => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
       minimumFractionDigits: 0,

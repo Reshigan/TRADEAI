@@ -63,6 +63,7 @@ import {
   Scatter
 } from 'recharts';
 import { tradingTermsService } from '../../../services/api';
+import { formatCurrency } from '../../../utils/formatters';
 
 const TradingTermsReports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -161,9 +162,9 @@ const TradingTermsReports = () => {
   );
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount || 0);

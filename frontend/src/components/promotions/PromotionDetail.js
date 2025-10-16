@@ -34,42 +34,12 @@ import {
   ShoppingCart as ShoppingCartIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { promotionService, customerService } from '../../services/api';
+import { formatCurrency, formatDate } from '../../utils/formatters';
 import PromotionForm from './PromotionForm';
 
-// Mock data for development
-const mockPromotion = {
-  id: '1',
-  name: 'Summer Sale',
-  customer: { id: '1', name: 'Walmart' },
-  budget: 50000,
-  status: 'active',
-  start_date: new Date('2025-06-01'),
-  end_date: new Date('2025-06-30'),
-  description: 'Summer promotion featuring seasonal products with special pricing.',
-  objectives: 'Increase sales of seasonal products by 20%. Introduce new product line to customers.',
-  kpis: 'Sales volume, Market share, Customer acquisition',
-  created_at: new Date('2025-05-15'),
-  updated_at: new Date('2025-05-15'),
-  products: [
-    { id: '1', name: 'Product A', sku: 'SKU-001' },
-    { id: '2', name: 'Product B', sku: 'SKU-002' },
-    { id: '3', name: 'Product C', sku: 'SKU-003' }
-  ],
-  trade_spends: [
-    { id: '1', type: 'display', amount: 15000, description: 'End Cap Display' },
-    { id: '2', type: 'listing', amount: 20000, description: 'Featured Product Listing' },
-    { id: '3', type: 'rebate', amount: 15000, description: 'Customer Rebate Program' }
-  ],
-  performance: {
-    budget_used: 35000,
-    sales_lift: 15,
-    roi: 2.4,
-    target_achieved: 75
-  }
-};
+// Production component - no mock data
 
 const PromotionDetail = () => {
   const { id } = useParams();
@@ -108,20 +78,11 @@ const PromotionDetail = () => {
   // Fetch customers from API
   const fetchCustomers = async () => {
     try {
-      // In a real app, we would call the API
       const response = await customerService.getAll();
-      setCustomers(response.data);
-      
-      // Using mock data for development
-      const mockCustomers = [
-        { id: '1', name: 'Walmart' },
-        { id: '2', name: 'Target' },
-        { id: '3', name: 'Costco' },
-        { id: '4', name: 'Test Company' }
-      ];
-      setCustomers(mockCustomers);
+      setCustomers(response.data || response);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
+      setCustomers([]);
     }
   };
 
@@ -175,15 +136,7 @@ const PromotionDetail = () => {
     }
   };
 
-  // Format currency
-  const formatCurrency = (amount) => {
-    return `$${amount.toLocaleString()}`;
-  };
-
-  // Format date
-  const formatDate = (date) => {
-    return format(new Date(date), 'MMM d, yyyy');
-  };
+  // Using centralized formatters from utils
 
   // Calculate days remaining
   const calculateDaysRemaining = () => {
@@ -315,7 +268,7 @@ const PromotionDetail = () => {
                     </Typography>
                   </Box>
                   <Typography variant="body1" gutterBottom>
-                    {promotion.customer.name}
+                    {promotion.customer && promotion.customer.name ? promotion.customer.name : 'No customer assigned'}
                   </Typography>
                 </Grid>
                 

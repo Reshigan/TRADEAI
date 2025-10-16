@@ -47,6 +47,7 @@ import {
   AreaChart
 } from 'recharts';
 import enterpriseApi from '../../../services/enterpriseApi';
+import { formatCurrency } from '../../../utils/formatters';
 
 const promotionTypes = [
   { value: 'discount', label: 'Discount Promotion' },
@@ -112,9 +113,9 @@ export default function PromotionSimulator({ onSaveScenario }) {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);

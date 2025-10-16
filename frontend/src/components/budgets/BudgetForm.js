@@ -14,14 +14,7 @@ import {
 } from '@mui/material';
 import { FormDialog } from '../common';
 import { customerService } from '../../services/api';
-
-// Mock customers data for development
-const mockCustomers = [
-  { id: '1', name: 'Walmart' },
-  { id: '2', name: 'Target' },
-  { id: '3', name: 'Costco' },
-  { id: '4', name: 'Test Company' }
-];
+import { formatCurrency } from '../../utils/formatters';
 
 const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
   const [formData, setFormData] = useState({
@@ -200,12 +193,12 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
-                  Allocated: ${budget.allocated_amount.toLocaleString()}
+                  Allocated: {formatCurrency(budget.allocated_amount)}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
-                  Remaining: ${budget.remaining_amount.toLocaleString()}
+                  Remaining: {formatCurrency(budget.remaining_amount)}
                 </Typography>
               </Grid>
             </Grid>

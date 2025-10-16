@@ -74,17 +74,7 @@ const TradeSpendList = () => {
     try {
       // In a real app, we would call the API
       const response = await budgetService.getAll();
-      setBudgets(response.data);
-      
-      // Using mock data for development
-      const mockBudgets = [
-        { id: '1', year: 2025, customer: { id: '1', name: 'Walmart' } },
-        { id: '2', year: 2025, customer: { id: '2', name: 'Target' } },
-        { id: '3', year: 2025, customer: { id: '3', name: 'Costco' } },
-        { id: '4', year: 2025, customer: { id: '4', name: 'Test Company' } }
-      ];
-      setBudgets(mockBudgets);
-    } catch (err) {
+      setBudgets(response.data);    } catch (err) {
       console.error('Failed to fetch budgets:', err);
     }
   };

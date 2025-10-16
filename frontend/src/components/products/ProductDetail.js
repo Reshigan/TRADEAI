@@ -37,89 +37,16 @@ import {
   LocalOffer as TagIcon,
   Timeline as TimelineIcon
 } from '@mui/icons-material';
+import { formatCurrency } from '../../utils/formatters';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { productService, promotionService, tradeSpendService } from '../../services/api';
 import ProductForm from './ProductForm';
 
 // Mock data for development - South African product
-const mockProduct = {
-  id: '2',
-  name: 'Biltong',
-  sku: 'BLT-002',
-  category: 'Snacks',
-  status: 'active',
-  price: 89.99,
-  cost: 45.50,
-  inventory: 850,
-  description: 'Traditional South African dried, cured meat with signature spices.',
-  specifications: 'Ingredients: Beef, vinegar, salt, coriander, black pepper, brown sugar, paprika. Packaged in 250g resealable bags.',
-  is_taxable: true,
-  created_at: new Date('2024-02-20'),
-  updated_at: new Date('2025-04-15')
-};
 
-const mockPromotions = [
-  {
-    id: '1',
-    name: 'Winter Promotion',
-    customer: { id: '1', name: 'Shoprite Holdings' },
-    start_date: new Date('2025-06-01'),
-    end_date: new Date('2025-07-31'),
-    status: 'active'
-  },
-  {
-    id: '2',
-    name: 'Heritage Day Special',
-    customer: { id: '3', name: 'SPAR Group' },
-    start_date: new Date('2025-09-01'),
-    end_date: new Date('2025-09-30'),
-    status: 'planned'
-  },
-  {
-    id: '3',
-    name: 'Summer Launch',
-    customer: { id: '4', name: 'Woolworths Holdings' },
-    start_date: new Date('2025-11-01'),
-    end_date: new Date('2025-12-31'),
-    status: 'planned'
-  }
-];
 
-const mockTradeSpends = [
-  {
-    id: '1',
-    description: 'Shoprite End Cap Display',
-    type: 'display',
-    amount: 225000,
-    status: 'approved'
-  },
-  {
-    id: '2',
-    description: 'Pick n Pay Featured Product Listing',
-    type: 'listing',
-    amount: 300000,
-    status: 'approved'
-  },
-  {
-    id: '3',
-    description: 'Woolworths Premium Placement',
-    type: 'placement',
-    amount: 450000,
-    status: 'pending'
-  }
-];
 
-const mockSalesData = [
-  { month: 'Jan', sales: 5250, revenue: 472447.50 },
-  { month: 'Feb', sales: 5620, revenue: 505738.80 },
-  { month: 'Mar', sales: 5980, revenue: 538142.20 },
-  { month: 'Apr', sales: 6210, revenue: 558839.90 },
-  { month: 'May', sales: 6650, revenue: 598433.50 },
-  { month: 'Jun', sales: 7120, revenue: 640728.80 },
-  { month: 'Jul', sales: 7580, revenue: 682042.20 },
-  { month: 'Aug', sales: 8930, revenue: 803607.70 }
-];
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -164,11 +91,7 @@ const ProductDetail = () => {
     try {
       // In a real app, we would call the API
       const response = await promotionService.getAll({ product_id: id });
-      setPromotions(response.data);
-      
-      // Using mock data for development
-      setPromotions(mockPromotions);
-    } catch (err) {
+      setPromotions(response.data);    } catch (err) {
       console.error('Failed to fetch promotions:', err);
     }
   };
@@ -178,11 +101,7 @@ const ProductDetail = () => {
     try {
       // In a real app, we would call the API
       const response = await tradeSpendService.getAll({ product_id: id });
-      setTradeSpends(response.data);
-      
-      // Using mock data for development
-      setTradeSpends(mockTradeSpends);
-    } catch (err) {
+      setTradeSpends(response.data);    } catch (err) {
       console.error('Failed to fetch trade spends:', err);
     }
   };
@@ -192,11 +111,7 @@ const ProductDetail = () => {
     try {
       // In a real app, we would call the API
       const response = await productService.getSalesData(id);
-      setSalesData(response.data);
-      
-      // Using mock data for development
-      setSalesData(mockSalesData);
-    } catch (error) {
+      setSalesData(response.data);    } catch (error) {
       console.error('Failed to fetch sales data:', error);
     }
   };
@@ -250,16 +165,7 @@ const ProductDetail = () => {
     }
   };
 
-  // Format currency - South African Rand
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount);
-  };
-
+  
   // Format date
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString();

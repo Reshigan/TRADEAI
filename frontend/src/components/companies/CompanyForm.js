@@ -27,20 +27,6 @@ import {
 import { PageHeader } from '../common';
 
 // Mock data for development
-const mockCompany = {
-  id: '3',
-  name: 'Tech Innovations Inc',
-  industry: 'Technology',
-  region: 'North America',
-  address: '123 Tech Blvd, San Francisco, CA 94105',
-  phone: '+1 (555) 123-4567',
-  website: 'https://techinnovations.example.com',
-  status: 'active',
-  currency: 'USD',
-  taxId: 'US-987654321',
-  notes: 'Leading technology company specializing in AI solutions.',
-  createdAt: '2025-03-10T14:45:00Z'
-};
 
 // Available currencies
 const currencies = [
@@ -102,7 +88,7 @@ const CompanyForm = () => {
     phone: '',
     website: '',
     status: 'active',
-    currency: 'ZAR',
+    currency: 'USD',
     taxId: '',
     notes: ''
   });

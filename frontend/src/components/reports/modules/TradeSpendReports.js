@@ -57,6 +57,7 @@ import {
   ComposedChart
 } from 'recharts';
 import { tradeSpendService } from '../../../services/api';
+import { formatCurrency } from '../../../utils/formatters';
 
 const TradeSpendReports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -230,16 +231,16 @@ const TradeSpendReports = () => {
   );
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount || 0);
   };
 
   const formatNumber = (number) => {
-    return new Intl.NumberFormat('en-ZA').format(number || 0);
+    return new Intl.NumberFormat('en-US').format(number || 0);
   };
 
   const formatPercentage = (value) => {

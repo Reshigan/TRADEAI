@@ -12,6 +12,7 @@ import {
   ZAxis,
   Label
 } from 'recharts';
+import { formatCurrency } from '../../../utils/formatters';
 
 // No more mock data - using real API calls
 

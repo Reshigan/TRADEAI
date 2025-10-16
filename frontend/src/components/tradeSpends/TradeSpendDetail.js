@@ -36,29 +36,7 @@ import { tradeSpendService, budgetService } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
 
-// Mock data for development
-const mockTradeSpend = {
-  id: '1',
-  budget: {
-    id: '1',
-    year: 2025,
-    customer: { id: '1', name: 'Walmart' }
-  },
-  amount: 50000,
-  type: 'promotion',
-  description: 'Summer Promotion',
-  status: 'approved',
-  start_date: new Date('2025-06-01'),
-  end_date: new Date('2025-06-30'),
-  notes: 'This promotion will feature our new product line with special pricing and prominent display placement.',
-  created_at: new Date('2025-02-10'),
-  updated_at: new Date('2025-02-15'),
-  products: [
-    { id: '1', name: 'Product A', sku: 'SKU-001' },
-    { id: '2', name: 'Product B', sku: 'SKU-002' },
-    { id: '3', name: 'Product C', sku: 'SKU-003' }
-  ]
-};
+
 
 const TradeSpendDetail = () => {
   const { id } = useParams();
@@ -99,17 +77,7 @@ const TradeSpendDetail = () => {
     try {
       // In a real app, we would call the API
       const response = await budgetService.getAll();
-      setBudgets(response.data);
-      
-      // Using mock data for development
-      const mockBudgets = [
-        { id: '1', year: 2025, customer: { id: '1', name: 'Walmart' } },
-        { id: '2', year: 2025, customer: { id: '2', name: 'Target' } },
-        { id: '3', year: 2025, customer: { id: '3', name: 'Costco' } },
-        { id: '4', year: 2025, customer: { id: '4', name: 'Test Company' } }
-      ];
-      setBudgets(mockBudgets);
-    } catch (err) {
+      setBudgets(response.data);    } catch (err) {
       console.error('Failed to fetch budgets:', err);
     }
   };

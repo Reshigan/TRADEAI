@@ -64,6 +64,7 @@ import {
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { format } from 'date-fns';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -149,18 +150,7 @@ const AIRecommendations = () => {
       setLoading(true);
       setError(null);
 
-      // Mock data for demonstration
-      const mockRecommendations = [
-        {
-          id: 'PROD001',
-          name: 'Wireless Headphones',
-          category: 'Electronics',
-          price: 299.99,
-          rating: 4.5,
-          reviews: 127,
-          score: 0.89,
-          reasons: ['Based on your music preferences', 'Popular in your age group', 'High rating']
-        },
+              },
         {
           id: 'PROD002',
           name: 'Smart Watch',
@@ -198,30 +188,7 @@ const AIRecommendations = () => {
       setLoading(true);
       setError(null);
 
-      // Mock data for demonstration
-      const mockPromotions = [
-        {
-          title: 'Electronics Flash Sale',
-          description: '25% off on all electronics - Limited time offer!',
-          discount: 25,
-          value: 75,
-          score: 0.91,
-          personalization: {
-            reason: 'Based on your recent electronics purchases'
-          }
-        },
-        {
-          title: 'Free Shipping Weekend',
-          description: 'Free shipping on orders over R500',
-          discount: 0,
-          value: 50,
-          score: 0.78,
-          personalization: {
-            reason: 'You frequently shop on weekends'
-          }
-        }
-      ];
-
+      
       setPersonalizedPromotions(mockPromotions);
     } catch (error) {
       setError('Failed to get personalized promotions');
@@ -238,15 +205,7 @@ const AIRecommendations = () => {
       setError(null);
 
       // Mock segmentation data
-      const mockSegmentation = {
-        primarySegment: 'Loyal Customers',
-        confidence: 0.87,
-        allSegments: [
-          { segment: 'Loyal Customers', probability: 0.87 },
-          { segment: 'Champions', probability: 0.65 },
-          { segment: 'Potential Loyalists', probability: 0.43 },
-          { segment: 'New Customers', probability: 0.21 }
-        ],
+              ],
         recommendations: [
           'Offer premium products',
           'Provide exclusive deals',
@@ -270,9 +229,9 @@ const AIRecommendations = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR'
+      currency: 'USD'
     }).format(value);
   };
 

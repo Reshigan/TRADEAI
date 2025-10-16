@@ -63,6 +63,7 @@ import {
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { format, subDays } from 'date-fns';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -122,31 +123,7 @@ const AIInsights = () => {
         params.append('priority', insightFilters.priority);
       }
 
-      // Mock insights data for demonstration
-      const mockInsights = [
-        {
-          id: 'insight_1',
-          type: 'revenue_trend',
-          title: 'Revenue Trend Analysis',
-          summary: 'Revenue has increased by 15.3% over the last 30 days, showing strong upward momentum with seasonal factors contributing positively.',
-          priority: 'high',
-          confidence: 0.89,
-          impact: 'high',
-          urgency: 'medium',
-          generatedAt: new Date().toISOString(),
-          data: {
-            trend: {
-              direction: 'increasing',
-              rate: 15.3,
-              significance: 'high'
-            },
-            forecast: {
-              nextWeek: [
-                { date: '2024-01-22', value: 125000, confidence: 0.85 },
-                { date: '2024-01-23', value: 128000, confidence: 0.82 },
-                { date: '2024-01-24', value: 132000, confidence: 0.79 }
-              ]
-            }
+                  }
           },
           recommendations: [
             'Increase inventory for high-performing products',
@@ -264,14 +241,7 @@ const AIInsights = () => {
 
     try {
       // Mock alert data
-      const mockAlertData = {
-        revenueChange: (Math.random() - 0.5) * 20,
-        conversionRateChange: (Math.random() - 0.5) * 10,
-        highRiskCustomers: Math.floor(Math.random() * 100),
-        promotionROI: 50 + Math.random() * 100,
-        anomalyScore: Math.random()
-      };
-
+      
       const response = await api.post('/api/ml/alerts/check', { data: mockAlertData });
       
       if (response.data.data.alerts.length > 0) {
@@ -315,9 +285,9 @@ const AIInsights = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR'
+      currency: 'USD'
     }).format(value);
   };
 

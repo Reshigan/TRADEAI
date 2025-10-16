@@ -27,57 +27,14 @@ import {
   Add as AddIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
+import { formatCurrency } from '../../utils/formatters';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { budgetService, tradeSpendService } from '../../services/api';
 import BudgetForm from './BudgetForm';
 
 // Mock data for development
-const mockBudget = {
-  id: '1',
-  year: 2025,
-  customer: { id: '1', name: 'Walmart' },
-  total_amount: 1000000,
-  allocated_amount: 750000,
-  remaining_amount: 250000,
-  status: 'approved',
-  notes: 'Annual budget for Walmart promotions and trade activities.',
-  created_at: new Date('2025-01-15'),
-  updated_at: new Date('2025-01-20')
-};
 
-const mockTradeSpends = [
-  {
-    id: '1',
-    budget_id: '1',
-    amount: 50000,
-    type: 'promotion',
-    description: 'Summer Promotion',
-    status: 'approved',
-    created_at: new Date('2025-02-10'),
-    updated_at: new Date('2025-02-15')
-  },
-  {
-    id: '2',
-    budget_id: '1',
-    amount: 75000,
-    type: 'listing',
-    description: 'New Product Listing',
-    status: 'approved',
-    created_at: new Date('2025-03-05'),
-    updated_at: new Date('2025-03-10')
-  },
-  {
-    id: '3',
-    budget_id: '1',
-    amount: 25000,
-    type: 'display',
-    description: 'End Cap Display',
-    status: 'pending',
-    created_at: new Date('2025-04-20'),
-    updated_at: new Date('2025-04-20')
-  }
-];
 
 const BudgetDetail = () => {
   const { id } = useParams();
@@ -116,16 +73,11 @@ const BudgetDetail = () => {
   // Fetch trade spends from API
   const fetchTradeSpends = async () => {
     try {
-      // In a real app, we would call the API
       const response = await tradeSpendService.getAll({ budget_id: id });
-      setTradeSpends(response.data);
-      
-      // Using mock data for development
-      setTimeout(() => {
-        setTradeSpends(mockTradeSpends);
-      }, 700);
+      setTradeSpends(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch trade spends:', err);
+      setTradeSpends([]);
     }
   };
 
@@ -184,14 +136,6 @@ const BudgetDetail = () => {
     const total = budget.allocated + budget.remaining;
     if (total === 0) return 0;
     return Math.round((budget.allocated / total) * 100);
-  };
-
-  // Format currency
-  const formatCurrency = (amount) => {
-    if (amount === null || amount === undefined || isNaN(amount)) {
-      return '$0';
-    }
-    return `$${Number(amount).toLocaleString()}`;
   };
 
   // Format date

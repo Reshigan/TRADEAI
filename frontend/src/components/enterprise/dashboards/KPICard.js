@@ -18,9 +18,9 @@ export default function KPICard({
     
     switch (format) {
       case 'currency':
-        return new Intl.NumberFormat('en-ZA', {
+        return new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'ZAR',
+          currency: 'USD',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0
         }).format(val);
@@ -29,7 +29,7 @@ export default function KPICard({
         return `${val.toFixed(2)}%`;
       
       case 'number':
-        return val.toLocaleString('en-ZA');
+        return val.toLocaleString('en-US');
       
       default:
         return val;

@@ -12,6 +12,7 @@ import {
   Line,
   ComposedChart
 } from 'recharts';
+import { formatCurrency } from '../../../utils/formatters';
 
 // No more mock data - using real API calls
 
@@ -20,9 +21,9 @@ const SalesPerformanceChart = ({ data = [], height = 400 }) => {
 
   // Format currency for tooltip - South African Rand
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);

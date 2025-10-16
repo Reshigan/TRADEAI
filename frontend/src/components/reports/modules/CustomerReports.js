@@ -61,6 +61,7 @@ import {
   Radar
 } from 'recharts';
 import { customerService } from '../../../services/api';
+import { formatCurrency } from '../../../utils/formatters';
 
 const CustomerReports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -185,9 +186,9 @@ const CustomerReports = () => {
   );
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount || 0);

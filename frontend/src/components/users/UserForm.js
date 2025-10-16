@@ -33,15 +33,6 @@ import {
 import { PageHeader } from '../common';
 
 // Mock data for development
-const mockUser = {
-  id: '3',
-  name: 'Jane Doe',
-  email: 'jane.doe@tradeai.com',
-  role: 'Analyst',
-  department: 'Marketing',
-  status: 'active',
-  lastLogin: '2025-09-03T09:45:00Z'
-};
 
 const UserForm = () => {
   const { id } = useParams();

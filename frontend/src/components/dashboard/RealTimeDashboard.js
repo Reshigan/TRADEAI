@@ -44,6 +44,7 @@ import {
 import { io } from 'socket.io-client';
 import { format, subHours, subDays } from 'date-fns';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 // Register Chart.js components
 ChartJS.register(
@@ -177,66 +178,7 @@ const RealTimeDashboard = () => {
         Math.floor(Math.random() * 50000) + 100000
       );
 
-      const mockData = {
-        kpis: {
-          totalRevenue: 2500000 + Math.floor(Math.random() * 100000),
-          totalProfit: 750000 + Math.floor(Math.random() * 50000),
-          activePromotions: 15 + Math.floor(Math.random() * 5),
-          customerCount: 1250 + Math.floor(Math.random() * 50),
-          revenueGrowth: (Math.random() - 0.5) * 20,
-          profitMargin: 25 + (Math.random() - 0.5) * 10,
-          promotionROI: 150 + Math.floor(Math.random() * 50),
-          customerRetention: 85 + Math.floor(Math.random() * 10)
-        },
-        revenueChart: {
-          labels,
-          datasets: [{
-            label: 'Revenue',
-            data: revenueData,
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
-        },
-        promotionPerformance: {
-          labels: ['Summer Sale', 'Back to School', 'Holiday Special', 'Flash Sale', 'Clearance'],
-          datasets: [{
-            label: 'ROI %',
-            data: [180, 145, 220, 165, 190],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.8)',
-              'rgba(54, 162, 235, 0.8)',
-              'rgba(255, 205, 86, 0.8)',
-              'rgba(75, 192, 192, 0.8)',
-              'rgba(153, 102, 255, 0.8)'
-            ]
-          }]
-        },
-        customerSegments: {
-          labels: ['Premium', 'Regular', 'New', 'Inactive'],
-          datasets: [{
-            data: [30, 45, 15, 10],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.8)',
-              'rgba(54, 162, 235, 0.8)',
-              'rgba(255, 205, 86, 0.8)',
-              'rgba(75, 192, 192, 0.8)'
-            ]
-          }]
-        },
-        alerts: [
-          {
-            severity: 'warning',
-            message: 'Promotion "Summer Sale" is underperforming by 15%',
-            timestamp: new Date()
-          },
-          {
-            severity: 'info',
-            message: 'New customer segment identified: Tech Enthusiasts',
-            timestamp: new Date(Date.now() - 300000)
-          }
-        ],
+              ],
         recentActivity: [
           {
             description: 'New promotion "Flash Sale" created',
@@ -280,9 +222,9 @@ const RealTimeDashboard = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR'
+      currency: 'USD'
     }).format(value);
   };
 

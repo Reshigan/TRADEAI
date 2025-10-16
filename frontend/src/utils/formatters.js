@@ -1,13 +1,13 @@
 // Centralized formatting utilities
 
-// Get user's currency preference from settings or default to ZAR
+// Get user's currency preference from settings or default to USD
 const getCurrencySettings = () => {
   // In a real app, this would come from user settings/context
-  // For now, default to ZAR as configured in Display Settings
+  // For now, default to USD for consistency across the platform
   return {
-    currency: 'ZAR',
-    symbol: 'R',
-    locale: 'en-ZA'
+    currency: 'USD',
+    symbol: '$',
+    locale: 'en-US'
   };
 };
 
@@ -19,7 +19,7 @@ const getCurrencySettings = () => {
  */
 export const formatCurrency = (amount, options = {}) => {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return 'R0';
+    return '$0';
   }
 
   const settings = getCurrencySettings();
@@ -43,7 +43,7 @@ export const formatCurrency = (amount, options = {}) => {
     return formatter.format(amount);
   } catch (error) {
     // Fallback to simple formatting if Intl fails
-    const formattedAmount = Number(amount).toLocaleString('en-ZA', {
+    const formattedAmount = Number(amount).toLocaleString('en-US', {
       minimumFractionDigits,
       maximumFractionDigits
     });
@@ -76,7 +76,7 @@ export const formatNumber = (value, useCompact = true) => {
   }
 
   if (!useCompact) {
-    return Number(value).toLocaleString('en-ZA');
+    return Number(value).toLocaleString('en-US');
   }
 
   // Compact notation
@@ -86,7 +86,7 @@ export const formatNumber = (value, useCompact = true) => {
     return (value / 1000).toFixed(1) + 'K';
   }
   
-  return Number(value).toLocaleString('en-ZA');
+  return Number(value).toLocaleString('en-US');
 };
 
 /**
@@ -108,7 +108,7 @@ export const formatDate = (date, format = 'medium') => {
     long: { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }
   };
 
-  return dateObj.toLocaleDateString('en-ZA', options[format] || options.medium);
+  return dateObj.toLocaleDateString('en-US', options[format] || options.medium);
 };
 
 /**
@@ -118,14 +118,14 @@ export const formatDate = (date, format = 'medium') => {
  */
 export const formatCurrencyCompact = (amount) => {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return 'R0';
+    return '$0';
   }
 
   if (Math.abs(amount) >= 1000000) {
-    return `R${(amount / 1000000).toFixed(1)}M`;
+    return `$${(amount / 1000000).toFixed(1)}M`;
   } else if (Math.abs(amount) >= 1000) {
-    return `R${(amount / 1000).toFixed(1)}K`;
+    return `$${(amount / 1000).toFixed(1)}K`;
   }
   
-  return `R${Number(amount).toLocaleString('en-ZA')}`;
+  return `$${Number(amount).toLocaleString('en-US')}`;
 };

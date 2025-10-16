@@ -61,6 +61,7 @@ import {
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { format, addDays } from 'date-fns';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 const MLPredictionDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -341,9 +342,9 @@ const MLPredictionDashboard = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR'
+      currency: 'USD'
     }).format(value);
   };
 

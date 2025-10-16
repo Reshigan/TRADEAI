@@ -71,6 +71,7 @@ import {
 } from 'recharts';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import api from '../../services/api';
+import { formatCurrency } from '../../utils/formatters';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -281,9 +282,9 @@ const AdvancedAnalytics = () => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR'
+      currency: 'USD'
     }).format(value);
   };
 

@@ -56,46 +56,8 @@ import {
 import { PageHeader } from '../common';
 
 // Mock data for development
-const mockUser = {
-  id: '3',
-  name: 'Jane Doe',
-  email: 'jane.doe@tradeai.com',
-  phone: '+1 (555) 987-6543',
-  role: 'Analyst',
-  department: 'Marketing',
-  status: 'active',
-  lastLogin: '2025-09-03T09:45:00Z',
-  createdAt: '2025-01-15T08:30:00Z',
-  updatedAt: '2025-08-20T14:20:00Z',
-  permissions: [
-    'view_budgets',
-    'view_trade_spends',
-    'view_promotions',
-    'view_customers',
-    'view_products',
-    'view_analytics',
-    'edit_budgets',
-    'edit_trade_spends'
-  ]
-};
 
-// Mock login history
-const mockLoginHistory = [
-  { id: '1', timestamp: '2025-09-03T09:45:00Z', ipAddress: '192.168.1.100', device: 'Chrome on Windows', status: 'success' },
-  { id: '2', timestamp: '2025-09-01T14:30:00Z', ipAddress: '192.168.1.100', device: 'Chrome on Windows', status: 'success' },
-  { id: '3', timestamp: '2025-08-28T10:15:00Z', ipAddress: '192.168.1.100', device: 'Chrome on Windows', status: 'success' },
-  { id: '4', timestamp: '2025-08-25T16:45:00Z', ipAddress: '192.168.1.100', device: 'Chrome on Windows', status: 'success' },
-  { id: '5', timestamp: '2025-08-22T08:30:00Z', ipAddress: '192.168.1.100', device: 'Chrome on Windows', status: 'success' }
-];
 
-// Mock activity history
-const mockActivityHistory = [
-  { id: '1', timestamp: '2025-09-03T10:15:00Z', action: 'Updated budget', details: 'Modified Q3 Marketing Budget', entity: 'Budget', entityId: '123' },
-  { id: '2', timestamp: '2025-09-02T15:30:00Z', action: 'Created trade spend', details: 'New trade spend for Walmart', entity: 'Trade Spend', entityId: '456' },
-  { id: '3', timestamp: '2025-09-01T11:45:00Z', action: 'Viewed analytics', details: 'Accessed ROI dashboard', entity: 'Analytics', entityId: null },
-  { id: '4', timestamp: '2025-08-31T14:20:00Z', action: 'Updated profile', details: 'Changed phone number', entity: 'User', entityId: '3' },
-  { id: '5', timestamp: '2025-08-30T09:10:00Z', action: 'Exported report', details: 'Downloaded Q2 performance report', entity: 'Report', entityId: '789' }
-];
 
 const UserDetail = () => {
   const { id } = useParams();
@@ -107,6 +69,8 @@ const UserDetail = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+  const [loginHistory, setLoginHistory] = useState([]);
+  const [activityHistory, setActivityHistory] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -491,7 +455,7 @@ const UserDetail = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {mockLoginHistory.map((login) => (
+                        {(loginHistory || []).map((login) => (
                           <TableRow key={login.id} hover>
                             <TableCell>{formatDate(login.timestamp)}</TableCell>
                             <TableCell>{login.ipAddress}</TableCell>
@@ -529,7 +493,7 @@ const UserDetail = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {mockActivityHistory.map((activity) => (
+                        {(activityHistory || []).map((activity) => (
                           <TableRow key={activity.id} hover>
                             <TableCell>{formatDate(activity.timestamp)}</TableCell>
                             <TableCell>{activity.action}</TableCell>

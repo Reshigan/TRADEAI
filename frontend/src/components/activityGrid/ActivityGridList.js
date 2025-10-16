@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
 import { enZA } from 'date-fns/locale';
+import { formatCurrency } from '../../utils/formatters';
 
 const ActivityGridList = ({ activities, onActivityClick }) => {
   const [order, setOrder] = useState('asc');
@@ -103,9 +104,9 @@ const ActivityGridList = ({ activities, onActivityClick }) => {
   
   // Format currency
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);

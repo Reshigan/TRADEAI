@@ -13,6 +13,7 @@ import {
   ReferenceArea,
   Area
 } from 'recharts';
+import { formatCurrency } from '../../../utils/formatters';
 
 // No more mock data - using real API calls
 

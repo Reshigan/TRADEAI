@@ -94,48 +94,7 @@ const APIManagementDashboard = () => {
       setError(null);
 
       // Mock data for demonstration
-      const mockData = {
-        apiKeys: [
-          {
-            id: 'key_1',
-            key: 'tradeai_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz567',
-            tier: 'enterprise',
-            name: 'Production API Key',
-            rateLimit: 2000,
-            dailyQuota: 100000,
-            quotaUsed: 45230,
-            active: true,
-            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-            lastUsed: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            usageCount: 1250000
-          },
-          {
-            id: 'key_2',
-            key: 'tradeai_def456ghi789jkl012mno345pqr678stu901vwx234yz567abc123',
-            tier: 'pro',
-            name: 'Development API Key',
-            rateLimit: 500,
-            dailyQuota: 10000,
-            quotaUsed: 3420,
-            active: true,
-            createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-            lastUsed: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-            usageCount: 85000
-          },
-          {
-            id: 'key_3',
-            key: 'tradeai_ghi789jkl012mno345pqr678stu901vwx234yz567abc123def456',
-            tier: 'free',
-            name: 'Testing API Key',
-            rateLimit: 100,
-            dailyQuota: 1000,
-            quotaUsed: 850,
-            active: false,
-            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            lastUsed: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-            usageCount: 12000
-          }
-        ],
+              ],
         analytics: {
           totalRequests: 1337000,
           totalErrors: 15420,

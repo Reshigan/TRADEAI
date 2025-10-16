@@ -50,6 +50,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { budgetService } from '../../../services/api';
+import { formatCurrency } from '../../../utils/formatters';
 
 const BudgetReports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -115,9 +116,9 @@ const BudgetReports = () => {
   );
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'ZAR',
+      currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount || 0);
