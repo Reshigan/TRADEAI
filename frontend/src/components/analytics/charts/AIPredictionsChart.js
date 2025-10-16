@@ -20,17 +20,7 @@ import { formatCurrency } from '../../../utils/formatters';
 const AIPredictionsChart = ({ data = [], height = 400 }) => {
   const theme = useTheme();
 
-  // Format currency for tooltip
-  const formatCurrency = (value) => {
-    if (!value && value !== 0) return 'N/A';
-    
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
-  };
+
 
   // Find the index where predictions start
   const predictionStartIndex = data.findIndex(item => item && item.isPrediction);

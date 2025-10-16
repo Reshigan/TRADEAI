@@ -53,22 +53,10 @@ const Dashboard = ({ user }) => {
     pendingApprovals: [],
     forecast: null
   });
-  const [currencies, setCurrencies] = useState([]);
-  const [selectedCurrency, setSelectedCurrency] = useState(user?.currency || 'USD');
+
   const [error, setError] = useState(null);
   
-  // Fetch currencies on component mount
-  useEffect(() => {
-    const fetchCurrencies = async () => {
-      try {
-        const response = await currencyService.getAll();
-        setCurrencies(response.data || []);
-      } catch (error) {
-        console.error('Error fetching currencies:', error);
-      }
-    };
-    fetchCurrencies();
-  }, []);
+
 
   // Fetch dashboard data
   useEffect(() => {
@@ -97,7 +85,7 @@ const Dashboard = ({ user }) => {
     };
 
     fetchDashboardData();
-  }, [selectedCurrency]);
+  }, []);
 
   // Check if this is the first login
   useEffect(() => {
@@ -164,21 +152,7 @@ const Dashboard = ({ user }) => {
         Here's what's happening with your trade spend activities today.
       </Typography>
       
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <FormControl size="small" sx={{ minWidth: 120 }}>
-          <InputLabel>Currency</InputLabel>
-          <Select
-            value={selectedCurrency}
-            label="Currency"
-            onChange={(e) => setSelectedCurrency(e.target.value)}
-          >
-            {currencies.map((currency) => (
-              <MenuItem key={currency.code} value={currency.code}>
-                {currency.symbol} {currency.code}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
         <Button
           startIcon={<SchoolIcon />}
           onClick={handleStartWalkthrough}

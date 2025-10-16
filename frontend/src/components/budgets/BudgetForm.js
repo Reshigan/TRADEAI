@@ -16,6 +16,26 @@ import { FormDialog } from '../common';
 import { customerService } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 
+// Get currency symbol from user's company settings
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        const currencyMap = {
+          'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+          'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
+        };
+        return currencyMap[user.company.currency] || '$';
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency symbol:', error);
+  }
+  return '$'; // Fallback
+};
+
 const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
   const [formData, setFormData] = useState({
     year: new Date().getFullYear() + 1,
@@ -138,7 +158,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
               helperText={errors.total_amount}
               required
               InputProps={{
-                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                startAdornment: <InputAdornment position="start">{getCurrencySymbol()}</InputAdornment>,
               }}
             />
           </Grid>

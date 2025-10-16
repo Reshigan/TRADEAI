@@ -16,6 +16,26 @@ import {
 } from '@mui/material';
 import { FormDialog } from '../common';
 
+// Get currency symbol from user's company settings
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        const currencyMap = {
+          'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+          'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
+        };
+        return currencyMap[user.company.currency] || '$';
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency symbol:', error);
+  }
+  return '$'; // Fallback
+};
+
 const ProductForm = ({ 
   open, 
   onClose, 
@@ -239,7 +259,7 @@ const ProductForm = ({
               helperText={errors.price}
               required
               InputProps={{
-                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                startAdornment: <InputAdornment position="start">{getCurrencySymbol()}</InputAdornment>,
               }}
             />
           </Grid>
@@ -256,7 +276,7 @@ const ProductForm = ({
               helperText={errors.cost}
               required
               InputProps={{
-                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                startAdornment: <InputAdornment position="start">{getCurrencySymbol()}</InputAdornment>,
               }}
             />
           </Grid>

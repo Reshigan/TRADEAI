@@ -341,12 +341,7 @@ const MLPredictionDashboard = () => {
     return 'success';
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(value);
-  };
+
 
   const TabPanel = ({ children, value, index }) => (
     <div hidden={value !== index}>

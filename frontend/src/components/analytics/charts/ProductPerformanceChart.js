@@ -39,15 +39,7 @@ const ProductPerformanceChart = ({ data = [], height = 400 }) => {
     '#ff7300'
   ];
 
-  // Format currency for tooltip
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
-  };
+
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload }) => {

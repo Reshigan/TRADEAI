@@ -228,12 +228,7 @@ const AIRecommendations = () => {
     return 'error';
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(value);
-  };
+
 
   const ProductCard = ({ product, showReasons = true }) => (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
