@@ -65,10 +65,8 @@ const Dashboard = ({ user }) => {
         setLoading(true);
         setError(null);
 
-        // Fetch dashboard analytics with currency parameter
-        const response = await analyticsService.getDashboard({ 
-          currency: selectedCurrency 
-        });
+        // Fetch dashboard analytics
+        const response = await analyticsService.getDashboard();
 
         if (response.success) {
           setDashboardData(response.data);
