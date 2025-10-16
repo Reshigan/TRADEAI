@@ -1,0 +1,24 @@
+{
+  "name": "tradeai-production-tests",
+  "version": "1.0.0",
+  "description": "Automated production testing suite for TRADEAI platform",
+  "main": "automated-test-suite.js",
+  "scripts": {
+    "test": "node automated-test-suite.js",
+    "test:health": "node health-monitor.js",
+    "test:continuous": "node continuous-monitor.js",
+    "install-deps": "npm install axios"
+  },
+  "dependencies": {
+    "axios": "^1.12.2"
+  },
+  "keywords": [
+    "tradeai",
+    "production",
+    "testing",
+    "monitoring",
+    "automation"
+  ],
+  "author": "TRADEAI Team",
+  "license": "MIT"
+}
