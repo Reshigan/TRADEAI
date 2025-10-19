@@ -28,6 +28,9 @@ const securityRoutes = require('./security');
 // NEW: AI Promotion Routes
 const aiPromotionRoutes = require('./aiPromotion');
 
+// AI Chatbot Routes
+const aiChatbotRoutes = require('./aiChatbot');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -53,6 +56,9 @@ router.use('/security', securityRoutes);
 
 // NEW: AI-Powered Promotion Routes
 router.use('/ai-promotion', aiPromotionRoutes);
+
+// AI Chatbot Routes
+router.use('/ai-chatbot', aiChatbotRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {
