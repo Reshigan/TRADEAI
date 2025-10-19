@@ -40,8 +40,6 @@ jobs:
         script: |
           cd /opt/tradeai-git/TRADEAI
           git pull origin main
-          cd backend
-          npm install --production
-          pm2 restart tradeai-backend-git
-          pm2 save
-          echo "Deployment completed successfully"
+          chmod +x scripts/production-deploy.sh
+          ./scripts/production-deploy.sh
+          echo "Production deployment completed successfully"

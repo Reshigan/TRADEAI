@@ -12,12 +12,12 @@ const path = require('path');
 // Load environment variables
 require('dotenv').config({ path: path.join(__dirname, '../backend/.env') });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/tradeai';
+const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL || 'mongodb://localhost:27017/tradeai';
 
 // Super Admin credentials
 const SUPER_ADMIN = {
-  email: process.env.SUPERADMIN_EMAIL || 'superadmin@tradeai.com',
-  password: process.env.SUPERADMIN_PASSWORD || 'SuperAdmin123!',
+  email: process.env.SUPERADMIN_EMAIL || 'admin@tradeai.com',
+  password: process.env.SUPERADMIN_PASSWORD || 'admin123',
   name: 'Super Administrator'
 };
 

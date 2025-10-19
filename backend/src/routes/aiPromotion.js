@@ -48,6 +48,7 @@ router.post('/batch-validate', async (req, res) => {
     try {
         const { promotions } = req.body;
         
+        if (!Array.isArray(promotions)) {
             return res.status(400).json({
                 success: false,
                 error: 'Promotions must be an array'

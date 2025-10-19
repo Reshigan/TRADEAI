@@ -283,6 +283,7 @@ class AIPromotionController {
     generateExecutiveRecommendations(validation, suggestions) {
         const recommendations = [];
 
+        if (validation.isUnrealistic) {
             recommendations.push({
                 priority: 'high',
                 category: 'validation',

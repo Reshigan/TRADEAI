@@ -227,7 +227,9 @@ const AIInsights = () => {
         }
       ];
 
-      setInsights(mockInsights);
+      // Call actual API for insights
+      const response = await api.get('/api/ai/insights');
+      setInsights(response.data.data || []);
     } catch (error) {
       setError('Failed to generate insights');
       console.error('Error generating insights:', error);
@@ -240,9 +242,8 @@ const AIInsights = () => {
     if (!alertsEnabled) return;
 
     try {
-      // Mock alert data
-      
-      const response = await api.post('/api/ml/alerts/check', { data: mockAlertData });
+      // Call actual API for alerts
+      const response = await api.get('/api/ai/alerts');
       
       if (response.data.data.alerts.length > 0) {
         setAlerts(prev => [...response.data.data.alerts, ...prev.slice(0, 9)]);
