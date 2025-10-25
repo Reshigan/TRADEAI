@@ -51,6 +51,10 @@ const tenantRoutes = require('./routes/tenantRoutes');
 const healthRoutes = require('./routes/health');
 const enterpriseRoutes = require('./routes/enterprise');
 const missingRoutesFixRoutes = require('./routes/missing-routes-fix');
+const transactionRoutes = require('./routes/transaction');
+const baselineRoutes = require('./routes/baseline');
+const cannibalizationRoutes = require('./routes/cannibalization');
+const forwardBuyRoutes = require('./routes/forwardBuy');
 
 // Create Express app
 const app = express();
@@ -270,6 +274,14 @@ app.use('/api/inventory', authenticateToken, inventoryRoutes);
 
 // Enterprise routes (advanced dashboards, CRUD, simulations, transactions)
 app.use('/api/enterprise', authenticateToken, enterpriseRoutes);
+
+// Transaction management
+app.use('/api/transactions', authenticateToken, transactionRoutes);
+
+// Analytics routes (baseline, cannibalization, forward buy)
+app.use('/api/baseline', authenticateToken, baselineRoutes);
+app.use('/api/cannibalization', authenticateToken, cannibalizationRoutes);
+app.use('/api/forward-buy', authenticateToken, forwardBuyRoutes);
 
 // Missing routes fix - Add aliases and additional endpoints
 app.use('/api', authenticateToken, missingRoutesFixRoutes);
