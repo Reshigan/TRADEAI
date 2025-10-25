@@ -20,7 +20,8 @@ import {
   Tooltip,
   Badge,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Collapse
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -41,8 +42,14 @@ import {
   CalendarMonth as ActivityGridIcon,
   Assignment as TradingTermsIcon,
   Psychology as SimulationIcon,
-  Timeline as ForecastingIcon
+  Timeline as ForecastingIcon,
+  ExpandLess,
+  ExpandMore,
+  AccountCircle as AccountCircleIcon
 } from '@mui/icons-material';
+import QuickActions from './common/QuickActions';
+import SearchBar from './common/SearchBar';
+import Breadcrumbs from './common/Breadcrumbs';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
 // import { AIAssistant, Walkthrough } from './common';
@@ -52,22 +59,40 @@ const drawerWidth = 240;
 const getMenuItems = (user) => {
   const baseItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Marketing Budget', icon: <BudgetIcon />, path: '/budgets' },
-    { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
-    { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-    { text: 'Promotions', icon: <PromotionIcon />, path: '/promotions' },
-    { text: 'Activity Grid', icon: <ActivityGridIcon />, path: '/activity-grid' },
-    { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
-    { text: 'Products', icon: <ProductIcon />, path: '/products' },
-    { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulations' },
-    { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
-    { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-    { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+    {
+      text: 'Trade Management',
+      icon: <TradeSpendIcon />,
+      subItems: [
+        { text: 'Marketing Budget', icon: <BudgetIcon />, path: '/budgets' },
+        { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
+        { text: 'Promotions', icon: <PromotionIcon />, path: '/promotions' },
+        { text: 'Activity Grid', icon: <ActivityGridIcon />, path: '/activity-grid' },
+      ]
+    },
+    {
+      text: 'Master Data',
+      icon: <CustomerIcon />,
+      subItems: [
+        { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
+        { text: 'Products', icon: <ProductIcon />, path: '/products' },
+      ]
+    },
+    {
+      text: 'Analytics & Insights',
+      icon: <AnalyticsIcon />,
+      subItems: [
+        { text: 'Analytics Dashboard', icon: <AnalyticsIcon />, path: '/analytics' },
+        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
+        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
+        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
   ];
 
   // Add Companies menu item only for super admin
   if (user?.role === 'super_admin') {
-    baseItems.splice(-2, 0, { text: 'Companies', icon: <BusinessIcon />, path: '/companies' });
+    baseItems.push({ text: 'Companies', icon: <BusinessIcon />, path: '/companies' });
   }
 
   // Add Settings - accessible by admin and super_admin
@@ -84,11 +109,23 @@ const Layout = ({ children, user, onLogout }) => {
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
   const [walkthroughOpen, setWalkthroughOpen] = useState(false);
   const [walkthroughFeature, setWalkthroughFeature] = useState('');
+  const [openSections, setOpenSections] = useState({
+    'Trade Management': true,
+    'Master Data': true,
+    'Analytics & Insights': true
+  });
   
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const menuItems = getMenuItems(user);
+
+  const toggleSection = (sectionName) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }));
+  };
   
   // Check if walkthrough should be shown based on current path
   useEffect(() => {
@@ -166,30 +203,116 @@ const Layout = ({ children, user, onLogout }) => {
         )}
       </Toolbar>
       <Divider />
-      <List>
+      <List sx={{ px: 1 }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              component={RouterLink}
-              to={item.path}
-              selected={location.pathname === item.path}
-              onClick={isMobile ? handleDrawerToggle : undefined}
-            >
-              <ListItemIcon
+          <React.Fragment key={item.text}>
+            {item.subItems ? (
+              // Collapsible Section
+              <>
+                <ListItemButton
+                  onClick={() => toggleSection(item.text)}
+                  sx={{
+                    borderRadius: 1,
+                    mb: 0.5,
+                    '&:hover': {
+                      bgcolor: 'action.hover'
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ color: '#00ffff', minWidth: 40 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: '0.875rem',
+                      fontWeight: 600
+                    }}
+                  />
+                  {openSections[item.text] ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={openSections[item.text]} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {item.subItems.map((subItem) => (
+                      <ListItemButton
+                        key={subItem.text}
+                        component={RouterLink}
+                        to={subItem.path}
+                        selected={location.pathname === subItem.path}
+                        onClick={isMobile ? handleDrawerToggle : undefined}
+                        sx={{
+                          pl: 4,
+                          py: 1,
+                          borderRadius: 1,
+                          mb: 0.5,
+                          '&.Mui-selected': {
+                            bgcolor: 'rgba(0, 255, 255, 0.08)',
+                            borderLeft: '3px solid',
+                            borderColor: '#00ffff',
+                            '&:hover': {
+                              bgcolor: 'rgba(0, 255, 255, 0.12)',
+                            }
+                          }
+                        }}
+                      >
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 36,
+                            color: location.pathname === subItem.path ? '#00ffff' : 'text.secondary',
+                          }}
+                        >
+                          {subItem.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={subItem.text}
+                          primaryTypographyProps={{
+                            fontSize: '0.875rem',
+                            fontWeight: location.pathname === subItem.path ? 600 : 'normal',
+                          }}
+                        />
+                      </ListItemButton>
+                    ))}
+                  </List>
+                </Collapse>
+              </>
+            ) : (
+              // Regular Menu Item
+              <ListItemButton
+                component={RouterLink}
+                to={item.path}
+                selected={location.pathname === item.path}
+                onClick={isMobile ? handleDrawerToggle : undefined}
                 sx={{
-                  color: location.pathname === item.path ? 'primary.main' : 'inherit',
+                  borderRadius: 1,
+                  mb: 0.5,
+                  '&.Mui-selected': {
+                    bgcolor: 'rgba(0, 255, 255, 0.08)',
+                    borderLeft: '3px solid',
+                    borderColor: '#00ffff',
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 255, 255, 0.12)',
+                    }
+                  }
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText 
-                primary={item.text} 
-                primaryTypographyProps={{
-                  fontWeight: location.pathname === item.path ? 'bold' : 'normal',
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
+                <ListItemIcon
+                  sx={{
+                    color: location.pathname === item.path ? '#00ffff' : 'inherit',
+                    minWidth: 40
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontSize: '0.875rem',
+                    fontWeight: location.pathname === item.path ? 600 : 'normal',
+                  }}
+                />
+              </ListItemButton>
+            )}
+          </React.Fragment>
         ))}
       </List>
       <Divider />
@@ -226,9 +349,15 @@ const Layout = ({ children, user, onLogout }) => {
             <MenuIcon />
           </IconButton>
           
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
+          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', md: 'block' }, mr: 3 }}>
+            {menuItems.find(item => item.path === location.pathname)?.text ||
+             menuItems.flatMap(m => m.subItems || []).find(s => s.path === location.pathname)?.text ||
+             'Dashboard'}
           </Typography>
+          
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' }, mr: 2 }}>
+            <SearchBar />
+          </Box>
           
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip title="Notifications">
@@ -361,7 +490,9 @@ const Layout = ({ children, user, onLogout }) => {
         }}
       >
         <Toolbar />
+        <Breadcrumbs />
         {children}
+        <QuickActions />
       </Box>
       
       {/* TEMPORARILY DISABLE AI ASSISTANT AND WALKTHROUGH */}
