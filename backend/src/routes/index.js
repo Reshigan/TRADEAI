@@ -31,6 +31,15 @@ const aiPromotionRoutes = require('./aiPromotion');
 // AI Chatbot Routes
 const aiChatbotRoutes = require('./aiChatbot');
 
+// Transaction Routes
+const transactionRoutes = require('./transaction');
+
+// POS Import Routes
+const posImportRoutes = require('./posImport');
+
+// Baseline Calculation Routes
+const baselineRoutes = require('./baseline');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -59,6 +68,15 @@ router.use('/ai-promotion', aiPromotionRoutes);
 
 // AI Chatbot Routes
 router.use('/ai-chatbot', aiChatbotRoutes);
+
+// Transaction Routes
+router.use('/transactions', transactionRoutes);
+
+// POS Import Routes
+router.use('/pos-import', posImportRoutes);
+
+// Baseline Calculation Routes
+router.use('/baseline', baselineRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {

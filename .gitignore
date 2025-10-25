@@ -218,23 +218,23 @@ frontend/test-frontend.html
 *_BUTTON*.md
 *_GREEN*.md
 
-# Script files (development artifacts)
-*.sh
-*.py
-*.js
-!package.json
-!init-mongo.js
-!ecosystem.config.js
-!jest.config.js
-!playwright.config.js
-!cypress.config.js
+# Script files (development artifacts - DISABLED FOR NOW)
+# *.sh
+# *.py
+# *.js
+# !package.json
+# !init-mongo.js
+# !ecosystem.config.js
+# !jest.config.js
+# !playwright.config.js
+# !cypress.config.js
 
-# Test output files
-*.json
-!package.json
-!package-lock.json
-!tsconfig.json
-!jsconfig.json
+# Test output files (DISABLED FOR NOW)
+# *.json
+# !package.json
+# !package-lock.json
+# !tsconfig.json
+# !jsconfig.json
 
 # Image files (unless in assets)
 *.png
