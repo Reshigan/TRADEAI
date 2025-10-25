@@ -40,6 +40,12 @@ const posImportRoutes = require('./posImport');
 // Baseline Calculation Routes
 const baselineRoutes = require('./baseline');
 
+// Cannibalization Analysis Routes
+const cannibalizationRoutes = require('./cannibalization');
+
+// Forward Buy Detection Routes
+const forwardBuyRoutes = require('./forwardBuy');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -77,6 +83,12 @@ router.use('/pos-import', posImportRoutes);
 
 // Baseline Calculation Routes
 router.use('/baseline', baselineRoutes);
+
+// Cannibalization Analysis Routes
+router.use('/cannibalization', cannibalizationRoutes);
+
+// Forward Buy Detection Routes
+router.use('/forward-buy', forwardBuyRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {
