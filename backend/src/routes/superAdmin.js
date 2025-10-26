@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const superAdminController = require('../controllers/superAdminController');
-const { protect, authorize } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 
 // Middleware to check super admin role
 const requireSuperAdmin = (req, res, next) => {
@@ -15,7 +15,7 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // All routes require authentication and super admin role
-router.use(protect);
+router.use(authenticateToken);
 router.use(requireSuperAdmin);
 
 /**

@@ -5,12 +5,12 @@
 const express = require('express');
 const router = express.Router();
 const baselineController = require('../controllers/baselineController');
-const { protect } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const { body } = require('express-validator');
 const { validate } = require('../middleware/validation');
 
 // Apply authentication
-router.use(protect);
+router.use(authenticateToken);
 
 // Validation
 const baselineValidation = [

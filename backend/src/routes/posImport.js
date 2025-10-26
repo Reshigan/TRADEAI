@@ -8,7 +8,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const posImportController = require('../controllers/posImportController');
-const { protect, authorize } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -41,7 +41,7 @@ const upload = multer({
 });
 
 // Apply authentication to all routes
-router.use(protect);
+router.use(authenticateToken);
 
 // Upload and preview file
 router.post('/upload',

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const enterpriseBudgetController = require('../controllers/enterpriseBudgetController');
-const { protect, authorize } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 const { validateRequest } = require('../middleware/validation');
 
 // All routes require authentication
-router.use(protect);
+router.use(authenticateToken);
 
 /**
  * @route   POST /api/enterprise-budget/scenarios

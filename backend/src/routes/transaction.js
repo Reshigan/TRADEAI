@@ -6,12 +6,12 @@
 const express = require('express');
 const router = express.Router();
 const transactionController = require('../controllers/transactionController');
-const { protect, authorize } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
 const { body, param, query } = require('express-validator');
 
 // Apply authentication to all transaction routes
-router.use(protect);
+router.use(authenticateToken);
 
 // Validation rules
 const createTransactionValidation = [
