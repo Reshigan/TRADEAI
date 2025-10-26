@@ -234,6 +234,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Public version endpoint (no authentication required)
+app.get('/api/version', (req, res) => {
+  res.json({
+    version: '2.1.3',
+    environment: process.env.NODE_ENV || 'development',
+    status: 'operational',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API Routes
 // Auth routes with strict rate limiting (protect against brute force)
 app.use('/api/auth', authLimiter, authRoutes);
