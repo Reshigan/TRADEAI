@@ -282,3 +282,6 @@ nginx-*.conf
 cleanup_repository.sh
 
 *.html
+
+# Generated secrets (never commit)
+.secrets/
