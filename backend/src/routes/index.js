@@ -31,6 +31,9 @@ const aiPromotionRoutes = require('./aiPromotion');
 // AI Chatbot Routes
 const aiChatbotRoutes = require('./aiChatbot');
 
+// NEW: Production ML AI Routes
+const aiRoutes = require('./ai');
+
 // Transaction Routes
 const transactionRoutes = require('./transaction');
 
@@ -74,6 +77,9 @@ router.use('/ai-promotion', aiPromotionRoutes);
 
 // AI Chatbot Routes
 router.use('/ai-chatbot', aiChatbotRoutes);
+
+// Production ML AI Routes (demand forecasting, price optimization, etc.)
+router.use('/ai', aiRoutes);
 
 // Transaction Routes
 router.use('/transactions', transactionRoutes);
