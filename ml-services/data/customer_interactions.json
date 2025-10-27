@@ -1,0 +1,342 @@
+[
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-001",
+    "product_name": "Cadbury Dairy Milk 150g",
+    "rating": 3.704051212258906,
+    "interactions": 9,
+    "last_purchase": "2025-06-03",
+    "affinity_score": 0.7989313726825866
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-002",
+    "product_name": "Oreo Original 154g",
+    "rating": 4.370511487052633,
+    "interactions": 13,
+    "last_purchase": "2025-09-24",
+    "affinity_score": 0.049162872062642915
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-003",
+    "product_name": "Cadbury Lunch Bar 48g",
+    "rating": 4.406631474732559,
+    "interactions": 40,
+    "last_purchase": "2025-10-03",
+    "affinity_score": 0.29793222916201056
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-004",
+    "product_name": "Halls Mentho-Lyptus",
+    "rating": 4.74959257326306,
+    "interactions": 44,
+    "last_purchase": "2025-07-27",
+    "affinity_score": 0.4026631392348332
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-005",
+    "product_name": "Cadbury PS Chocolate 80g",
+    "rating": 4.416227743855373,
+    "interactions": 26,
+    "last_purchase": "2025-08-29",
+    "affinity_score": 0.9992182052708867
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-007",
+    "product_name": "Maynards Wine Gums 125g",
+    "rating": 3.84263205393081,
+    "interactions": 43,
+    "last_purchase": "2025-10-10",
+    "affinity_score": 0.15812455465502806
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-008",
+    "product_name": "Stimorol Gum",
+    "rating": 3.494760437794119,
+    "interactions": 35,
+    "last_purchase": "2025-05-25",
+    "affinity_score": 0.708822938570131
+  },
+  {
+    "user_id": "cust-001",
+    "customer_name": "Shoprite Checkers",
+    "item_id": "prod-009",
+    "product_name": "Cadbury Top Deck 80g",
+    "rating": 3.8276329365634654,
+    "interactions": 42,
+    "last_purchase": "2025-05-05",
+    "affinity_score": 0.07474651699925738
+  },
+  {
+    "user_id": "cust-002",
+    "customer_name": "Pick n Pay",
+    "item_id": "prod-003",
+    "product_name": "Cadbury Lunch Bar 48g",
+    "rating": 3.5616006573154726,
+    "interactions": 15,
+    "last_purchase": "2025-06-11",
+    "affinity_score": 0.6790805246208984
+  },
+  {
+    "user_id": "cust-002",
+    "customer_name": "Pick n Pay",
+    "item_id": "prod-004",
+    "product_name": "Halls Mentho-Lyptus",
+    "rating": 3.1438078958406117,
+    "interactions": 15,
+    "last_purchase": "2025-05-10",
+    "affinity_score": 0.436298924467343
+  },
+  {
+    "user_id": "cust-002",
+    "customer_name": "Pick n Pay",
+    "item_id": "prod-005",
+    "product_name": "Cadbury PS Chocolate 80g",
+    "rating": 4.946628873199948,
+    "interactions": 9,
+    "last_purchase": "2025-09-26",
+    "affinity_score": 0.8107761132276707
+  },
+  {
+    "user_id": "cust-002",
+    "customer_name": "Pick n Pay",
+    "item_id": "prod-007",
+    "product_name": "Maynards Wine Gums 125g",
+    "rating": 3.016879302628833,
+    "interactions": 48,
+    "last_purchase": "2025-08-02",
+    "affinity_score": 0.626476069129468
+  },
+  {
+    "user_id": "cust-002",
+    "customer_name": "Pick n Pay",
+    "item_id": "prod-008",
+    "product_name": "Stimorol Gum",
+    "rating": 4.14305558003095,
+    "interactions": 45,
+    "last_purchase": "2025-06-07",
+    "affinity_score": 0.9200070800761673
+  },
+  {
+    "user_id": "cust-002",
+    "customer_name": "Pick n Pay",
+    "item_id": "prod-009",
+    "product_name": "Cadbury Top Deck 80g",
+    "rating": 4.062924391460803,
+    "interactions": 19,
+    "last_purchase": "2025-09-14",
+    "affinity_score": 0.7956128984163842
+  },
+  {
+    "user_id": "cust-003",
+    "customer_name": "Woolworths",
+    "item_id": "prod-002",
+    "product_name": "Oreo Original 154g",
+    "rating": 4.307986960630066,
+    "interactions": 14,
+    "last_purchase": "2025-07-27",
+    "affinity_score": 0.6752097732075468
+  },
+  {
+    "user_id": "cust-003",
+    "customer_name": "Woolworths",
+    "item_id": "prod-003",
+    "product_name": "Cadbury Lunch Bar 48g",
+    "rating": 4.301124089068016,
+    "interactions": 36,
+    "last_purchase": "2025-06-25",
+    "affinity_score": 0.058727392094025
+  },
+  {
+    "user_id": "cust-003",
+    "customer_name": "Woolworths",
+    "item_id": "prod-005",
+    "product_name": "Cadbury PS Chocolate 80g",
+    "rating": 4.793729328123335,
+    "interactions": 40,
+    "last_purchase": "2025-10-11",
+    "affinity_score": 0.45509644039524355
+  },
+  {
+    "user_id": "cust-003",
+    "customer_name": "Woolworths",
+    "item_id": "prod-008",
+    "product_name": "Stimorol Gum",
+    "rating": 4.822065240555117,
+    "interactions": 22,
+    "last_purchase": "2025-09-26",
+    "affinity_score": 0.9379255446626533
+  },
+  {
+    "user_id": "cust-003",
+    "customer_name": "Woolworths",
+    "item_id": "prod-009",
+    "product_name": "Cadbury Top Deck 80g",
+    "rating": 3.794617520387672,
+    "interactions": 26,
+    "last_purchase": "2025-05-04",
+    "affinity_score": 0.9631765438991144
+  },
+  {
+    "user_id": "cust-003",
+    "customer_name": "Woolworths",
+    "item_id": "prod-010",
+    "product_name": "Cadbury Whispers 135g",
+    "rating": 3.870241645139941,
+    "interactions": 23,
+    "last_purchase": "2025-09-04",
+    "affinity_score": 0.7308010574877633
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-001",
+    "product_name": "Cadbury Dairy Milk 150g",
+    "rating": 4.039285112271813,
+    "interactions": 20,
+    "last_purchase": "2025-07-11",
+    "affinity_score": 0.5198889096824513
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-002",
+    "product_name": "Oreo Original 154g",
+    "rating": 3.5147309679791157,
+    "interactions": 48,
+    "last_purchase": "2025-06-04",
+    "affinity_score": 0.601245480752886
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-003",
+    "product_name": "Cadbury Lunch Bar 48g",
+    "rating": 3.6862433199817795,
+    "interactions": 49,
+    "last_purchase": "2025-09-21",
+    "affinity_score": 0.37910111746691144
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-004",
+    "product_name": "Halls Mentho-Lyptus",
+    "rating": 4.211599599566174,
+    "interactions": 29,
+    "last_purchase": "2025-05-31",
+    "affinity_score": 0.7893428289982625
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-005",
+    "product_name": "Cadbury PS Chocolate 80g",
+    "rating": 4.662753060170454,
+    "interactions": 46,
+    "last_purchase": "2025-09-23",
+    "affinity_score": 0.13023065338181428
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-007",
+    "product_name": "Maynards Wine Gums 125g",
+    "rating": 3.5041000845951764,
+    "interactions": 49,
+    "last_purchase": "2025-07-23",
+    "affinity_score": 0.9944434767322368
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-008",
+    "product_name": "Stimorol Gum",
+    "rating": 3.292083651080486,
+    "interactions": 41,
+    "last_purchase": "2025-08-19",
+    "affinity_score": 0.5538650929300504
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-009",
+    "product_name": "Cadbury Top Deck 80g",
+    "rating": 4.5875484671044795,
+    "interactions": 15,
+    "last_purchase": "2025-08-08",
+    "affinity_score": 0.14275174450403494
+  },
+  {
+    "user_id": "cust-004",
+    "customer_name": "Spar",
+    "item_id": "prod-010",
+    "product_name": "Cadbury Whispers 135g",
+    "rating": 3.850561897025298,
+    "interactions": 44,
+    "last_purchase": "2025-09-02",
+    "affinity_score": 0.9578116390898859
+  },
+  {
+    "user_id": "cust-005",
+    "customer_name": "Boxer",
+    "item_id": "prod-002",
+    "product_name": "Oreo Original 154g",
+    "rating": 3.3512408142090195,
+    "interactions": 42,
+    "last_purchase": "2025-09-23",
+    "affinity_score": 0.9764312537652573
+  },
+  {
+    "user_id": "cust-005",
+    "customer_name": "Boxer",
+    "item_id": "prod-003",
+    "product_name": "Cadbury Lunch Bar 48g",
+    "rating": 3.622811860414354,
+    "interactions": 36,
+    "last_purchase": "2025-05-30",
+    "affinity_score": 0.7242433729537296
+  },
+  {
+    "user_id": "cust-005",
+    "customer_name": "Boxer",
+    "item_id": "prod-004",
+    "product_name": "Halls Mentho-Lyptus",
+    "rating": 4.601670634184544,
+    "interactions": 49,
+    "last_purchase": "2025-07-25",
+    "affinity_score": 0.49913120386951326
+  },
+  {
+    "user_id": "cust-005",
+    "customer_name": "Boxer",
+    "item_id": "prod-008",
+    "product_name": "Stimorol Gum",
+    "rating": 3.0378818034396935,
+    "interactions": 44,
+    "last_purchase": "2025-06-11",
+    "affinity_score": 0.0993608252982019
+  },
+  {
+    "user_id": "cust-005",
+    "customer_name": "Boxer",
+    "item_id": "prod-009",
+    "product_name": "Cadbury Top Deck 80g",
+    "rating": 3.690281523493697,
+    "interactions": 12,
+    "last_purchase": "2025-07-24",
+    "affinity_score": 0.40207740957256566
+  }
+]

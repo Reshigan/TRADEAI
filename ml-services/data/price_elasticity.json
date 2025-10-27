@@ -1,0 +1,882 @@
+[
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 12.79
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 12.79,
+    "avg_quantity": 1677,
+    "revenue": 21452.84,
+    "observations": 178
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 13.59
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 13.59,
+    "avg_quantity": 1531,
+    "revenue": 20812.31,
+    "observations": 105
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 14.39
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 14.39,
+    "avg_quantity": 1405,
+    "revenue": 20225.93,
+    "observations": 70
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 15.19
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 15.19,
+    "avg_quantity": 1296,
+    "revenue": 19686.47,
+    "observations": 165
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 15.99
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 15.99,
+    "avg_quantity": 1200,
+    "revenue": 19188,
+    "observations": 168
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 16.79
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 16.79,
+    "avg_quantity": 1115,
+    "revenue": 18725.57,
+    "observations": 136
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 17.59
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 17.59,
+    "avg_quantity": 1040,
+    "revenue": 18295.04,
+    "observations": 90
+  },
+  {
+    "_id": {
+      "product": "prod-001",
+      "price_point": 18.39
+    },
+    "product_name": "Cadbury Dairy Milk 150g",
+    "avg_price": 18.39,
+    "avg_quantity": 973,
+    "revenue": 17892.9,
+    "observations": 114
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 10.39
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 10.39,
+    "avg_quantity": 1398,
+    "revenue": 14523.26,
+    "observations": 200
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 11.04
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 11.04,
+    "avg_quantity": 1276,
+    "revenue": 14089.63,
+    "observations": 199
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 11.69
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 11.69,
+    "avg_quantity": 1171,
+    "revenue": 13692.66,
+    "observations": 101
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 12.34
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 12.34,
+    "avg_quantity": 1080,
+    "revenue": 13327.46,
+    "observations": 60
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 12.99
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 12.99,
+    "avg_quantity": 1000,
+    "revenue": 12990,
+    "observations": 173
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 13.64
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 13.64,
+    "avg_quantity": 929,
+    "revenue": 12676.94,
+    "observations": 64
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 14.29
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 14.29,
+    "avg_quantity": 867,
+    "revenue": 12385.48,
+    "observations": 99
+  },
+  {
+    "_id": {
+      "product": "prod-002",
+      "price_point": 14.94
+    },
+    "product_name": "Oreo Original 154g",
+    "avg_price": 14.94,
+    "avg_quantity": 811,
+    "revenue": 12113.24,
+    "observations": 120
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 7.99
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 7.99,
+    "avg_quantity": 1118,
+    "revenue": 8935.33,
+    "observations": 105
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 8.49
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 8.49,
+    "avg_quantity": 1021,
+    "revenue": 8668.54,
+    "observations": 98
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 8.99
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 8.99,
+    "avg_quantity": 937,
+    "revenue": 8424.31,
+    "observations": 75
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 9.49
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 9.49,
+    "avg_quantity": 864,
+    "revenue": 8199.62,
+    "observations": 61
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 9.99
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 9.99,
+    "avg_quantity": 800,
+    "revenue": 7992,
+    "observations": 184
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 10.49
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 10.49,
+    "avg_quantity": 744,
+    "revenue": 7799.39,
+    "observations": 112
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 10.99
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 10.99,
+    "avg_quantity": 693,
+    "revenue": 7620.07,
+    "observations": 146
+  },
+  {
+    "_id": {
+      "product": "prod-003",
+      "price_point": 11.49
+    },
+    "product_name": "Cadbury Lunch Bar 48g",
+    "avg_price": 11.49,
+    "avg_quantity": 649,
+    "revenue": 7452.58,
+    "observations": 159
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 7.19
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 7.19,
+    "avg_quantity": 839,
+    "revenue": 6030.68,
+    "observations": 60
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 7.64
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 7.64,
+    "avg_quantity": 766,
+    "revenue": 5850.61,
+    "observations": 172
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 8.09
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 8.09,
+    "avg_quantity": 703,
+    "revenue": 5685.78,
+    "observations": 50
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 8.54
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 8.54,
+    "avg_quantity": 648,
+    "revenue": 5534.13,
+    "observations": 150
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 8.99
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 8.99,
+    "avg_quantity": 600,
+    "revenue": 5394,
+    "observations": 191
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 9.44
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 9.44,
+    "avg_quantity": 558,
+    "revenue": 5264,
+    "observations": 114
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 9.89
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 9.89,
+    "avg_quantity": 520,
+    "revenue": 5142.98,
+    "observations": 143
+  },
+  {
+    "_id": {
+      "product": "prod-004",
+      "price_point": 10.34
+    },
+    "product_name": "Halls Mentho-Lyptus",
+    "avg_price": 10.34,
+    "avg_quantity": 487,
+    "revenue": 5029.93,
+    "observations": 120
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 9.59
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 9.59,
+    "avg_quantity": 1258,
+    "revenue": 12064.7,
+    "observations": 85
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 10.19
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 10.19,
+    "avg_quantity": 1148,
+    "revenue": 11704.48,
+    "observations": 139
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 10.79
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 10.79,
+    "avg_quantity": 1054,
+    "revenue": 11374.71,
+    "observations": 127
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 11.39
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 11.39,
+    "avg_quantity": 972,
+    "revenue": 11071.33,
+    "observations": 71
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 11.99
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 11.99,
+    "avg_quantity": 900,
+    "revenue": 10791,
+    "observations": 99
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 12.59
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 12.59,
+    "avg_quantity": 836,
+    "revenue": 10530.94,
+    "observations": 53
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 13.19
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 13.19,
+    "avg_quantity": 780,
+    "revenue": 10288.81,
+    "observations": 120
+  },
+  {
+    "_id": {
+      "product": "prod-005",
+      "price_point": 13.79
+    },
+    "product_name": "Cadbury PS Chocolate 80g",
+    "avg_price": 13.79,
+    "avg_quantity": 730,
+    "revenue": 10062.66,
+    "observations": 58
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 36.79
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 36.79,
+    "avg_quantity": 699,
+    "revenue": 25709.19,
+    "observations": 69
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 39.09
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 39.09,
+    "avg_quantity": 638,
+    "revenue": 24941.58,
+    "observations": 54
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 41.39
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 41.39,
+    "avg_quantity": 586,
+    "revenue": 24238.86,
+    "observations": 129
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 43.69
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 43.69,
+    "avg_quantity": 540,
+    "revenue": 23592.37,
+    "observations": 62
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 45.99
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 45.99,
+    "avg_quantity": 500,
+    "revenue": 22995,
+    "observations": 87
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 48.29
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 48.29,
+    "avg_quantity": 465,
+    "revenue": 22440.82,
+    "observations": 197
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 50.59
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 50.59,
+    "avg_quantity": 433,
+    "revenue": 21924.87,
+    "observations": 185
+  },
+  {
+    "_id": {
+      "product": "prod-006",
+      "price_point": 52.89
+    },
+    "product_name": "Bournvita 500g",
+    "avg_price": 52.89,
+    "avg_quantity": 405,
+    "revenue": 21442.95,
+    "observations": 88
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 11.19
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 11.19,
+    "avg_quantity": 978,
+    "revenue": 10948.91,
+    "observations": 196
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 11.89
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 11.89,
+    "avg_quantity": 893,
+    "revenue": 10622,
+    "observations": 158
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 12.59
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 12.59,
+    "avg_quantity": 820,
+    "revenue": 10322.73,
+    "observations": 130
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 13.29
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 13.29,
+    "avg_quantity": 756,
+    "revenue": 10047.41,
+    "observations": 101
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 13.99
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 13.99,
+    "avg_quantity": 700,
+    "revenue": 9793,
+    "observations": 193
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 14.69
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 14.69,
+    "avg_quantity": 651,
+    "revenue": 9556.99,
+    "observations": 178
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 15.39
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 15.39,
+    "avg_quantity": 607,
+    "revenue": 9337.26,
+    "observations": 72
+  },
+  {
+    "_id": {
+      "product": "prod-007",
+      "price_point": 16.09
+    },
+    "product_name": "Maynards Wine Gums 125g",
+    "avg_price": 16.09,
+    "avg_quantity": 568,
+    "revenue": 9132.02,
+    "observations": 59
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 6.39
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 6.39,
+    "avg_quantity": 769,
+    "revenue": 4913.2,
+    "observations": 143
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 6.79
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 6.79,
+    "avg_quantity": 702,
+    "revenue": 4766.5,
+    "observations": 157
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 7.19
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 7.19,
+    "avg_quantity": 644,
+    "revenue": 4632.21,
+    "observations": 198
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 7.59
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 7.59,
+    "avg_quantity": 594,
+    "revenue": 4508.66,
+    "observations": 137
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 7.99
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 7.99,
+    "avg_quantity": 550,
+    "revenue": 4394.5,
+    "observations": 160
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 8.39
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 8.39,
+    "avg_quantity": 511,
+    "revenue": 4288.59,
+    "observations": 63
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 8.79
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 8.79,
+    "avg_quantity": 477,
+    "revenue": 4189.99,
+    "observations": 80
+  },
+  {
+    "_id": {
+      "product": "prod-008",
+      "price_point": 9.19
+    },
+    "product_name": "Stimorol Gum",
+    "avg_price": 9.19,
+    "avg_quantity": 446,
+    "revenue": 4097.89,
+    "observations": 143
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 9.59
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 9.59,
+    "avg_quantity": 1188,
+    "revenue": 11394.44,
+    "observations": 195
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 10.19
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 10.19,
+    "avg_quantity": 1085,
+    "revenue": 11054.23,
+    "observations": 113
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 10.79
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 10.79,
+    "avg_quantity": 996,
+    "revenue": 10742.78,
+    "observations": 61
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 11.39
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 11.39,
+    "avg_quantity": 918,
+    "revenue": 10456.26,
+    "observations": 175
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 11.99
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 11.99,
+    "avg_quantity": 850,
+    "revenue": 10191.5,
+    "observations": 191
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 12.59
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 12.59,
+    "avg_quantity": 790,
+    "revenue": 9945.89,
+    "observations": 144
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 13.19
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 13.19,
+    "avg_quantity": 737,
+    "revenue": 9717.21,
+    "observations": 51
+  },
+  {
+    "_id": {
+      "product": "prod-009",
+      "price_point": 13.79
+    },
+    "product_name": "Cadbury Top Deck 80g",
+    "avg_price": 13.79,
+    "avg_quantity": 689,
+    "revenue": 9503.62,
+    "observations": 76
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 15.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 15.99,
+    "avg_quantity": 908,
+    "revenue": 14527.17,
+    "observations": 182
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 16.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 16.99,
+    "avg_quantity": 829,
+    "revenue": 14093.43,
+    "observations": 164
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 17.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 17.99,
+    "avg_quantity": 761,
+    "revenue": 13696.35,
+    "observations": 116
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 18.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 18.99,
+    "avg_quantity": 702,
+    "revenue": 13331.05,
+    "observations": 167
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 19.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 19.99,
+    "avg_quantity": 650,
+    "revenue": 12993.5,
+    "observations": 122
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 20.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 20.99,
+    "avg_quantity": 604,
+    "revenue": 12680.36,
+    "observations": 52
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 21.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 21.99,
+    "avg_quantity": 563,
+    "revenue": 12388.82,
+    "observations": 141
+  },
+  {
+    "_id": {
+      "product": "prod-010",
+      "price_point": 22.99
+    },
+    "product_name": "Cadbury Whispers 135g",
+    "avg_price": 22.99,
+    "avg_quantity": 527,
+    "revenue": 12116.5,
+    "observations": 86
+  }
+]

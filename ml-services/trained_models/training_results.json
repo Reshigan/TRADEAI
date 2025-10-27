@@ -1,0 +1,64 @@
+{
+  "training_timestamp": "2025-10-27T18:42:32.606370",
+  "status": "complete",
+  "models": {
+    "demand_forecasting": {
+      "mape": 0.10535106863631659,
+      "r2": 0.8864576365794827,
+      "n_features": 20,
+      "n_samples": 36550,
+      "model_type": "RandomForest",
+      "timestamp": "2025-10-27T18:42:32.595285"
+    },
+    "price_optimization": {
+      "products_analyzed": 10,
+      "average_elasticity": -1.498895411006982,
+      "elasticities": {
+        "prod-001": -1.4989870388095596,
+        "prod-002": -1.4989897026656733,
+        "prod-003": -1.4981219287554053,
+        "prod-004": -1.4982363918069679,
+        "prod-005": -1.4985912644640347,
+        "prod-006": -1.5028272762948116,
+        "prod-007": -1.4962476699843512,
+        "prod-008": -1.4984792763866401,
+        "prod-009": -1.4996905204694948,
+        "prod-010": -1.498783040432884
+      },
+      "timestamp": "2025-10-27T18:42:32.604965"
+    },
+    "promotion_lift": {
+      "promotions_count": 8,
+      "average_lift": 0.21625,
+      "average_roi": 3.73375,
+      "lifts": [
+        0.26,
+        0.26,
+        0.26,
+        0.16,
+        0.23,
+        0.19,
+        0.2,
+        0.17
+      ],
+      "rois": [
+        3.41,
+        4.72,
+        7.7,
+        1.1,
+        2.89,
+        3.19,
+        5.54,
+        1.32
+      ],
+      "timestamp": "2025-10-27T18:42:32.605221"
+    },
+    "recommendations": {
+      "interactions_count": 34,
+      "unique_customers": 5,
+      "unique_products": 9,
+      "sparsity": 0.24444444444444446,
+      "timestamp": "2025-10-27T18:42:32.606345"
+    }
+  }
+}
