@@ -41,6 +41,7 @@ import { formatCurrency } from '../../utils/formatters';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { productService, promotionService, tradeSpendService } from '../../services/api';
+import { RealTimePriceOptimizer } from '../contextual-ai';
 import ProductForm from './ProductForm';
 
 // Mock data for development - South African product
@@ -378,6 +379,7 @@ const ProductDetail = () => {
               variant="fullWidth"
             >
               <Tab label="Sales Data" />
+              <Tab label="🤖 AI Price Optimizer" />
               <Tab label="Promotions" />
               <Tab label="Trade Spends" />
             </Tabs>
@@ -438,8 +440,25 @@ const ProductDetail = () => {
                   )}
                 </Box>
               )}
-              
+
               {tabValue === 1 && (
+                <Box>
+                  <RealTimePriceOptimizer
+                    product={{
+                      id: product.id,
+                      name: product.name,
+                      currentPrice: product.price,
+                      cost: product.cost,
+                      sku: product.sku
+                    }}
+                    onPriceUpdate={(newPrice) => {
+                      setProduct(prev => ({ ...prev, price: newPrice }));
+                    }}
+                  />
+                </Box>
+              )}
+              
+              {tabValue === 2 && (
                 <Box>
                   <Typography variant="h6" gutterBottom>
                     Promotions
@@ -482,7 +501,7 @@ const ProductDetail = () => {
                 </Box>
               )}
               
-              {tabValue === 2 && (
+              {tabValue === 3 && (
                 <Box>
                   <Typography variant="h6" gutterBottom>
                     Trade Spends

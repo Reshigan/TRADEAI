@@ -39,6 +39,7 @@ import {
 } from '@mui/icons-material';
 import { AIAssistant } from './common';
 import { WalkthroughTour } from './training';
+import { AIInsightsFeed } from './contextual-ai';
 import { analyticsService, budgetService, promotionService, customerService, currencyService } from '../services/api';
 
 const Dashboard = ({ user }) => {
@@ -175,6 +176,11 @@ const Dashboard = ({ user }) => {
         </Box>
       ) : (
         <>
+          {/* AI Insights Feed */}
+          <Box sx={{ mb: 4 }}>
+            <AIInsightsFeed userId={user?.id} />
+          </Box>
+
           {/* KPI Cards */}
           <Grid container spacing={3} sx={{ mb: 4, mt: 1 }}>
             {dashboardData.summary && [

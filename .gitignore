@@ -285,3 +285,4 @@ cleanup_repository.sh
 
 # Generated secrets (never commit)
 .secrets/
+.env

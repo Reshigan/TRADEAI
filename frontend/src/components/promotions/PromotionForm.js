@@ -16,6 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { FormDialog } from '../common';
+import { SmartPromotionAssistant } from '../contextual-ai';
 
 // Get currency symbol from user's company settings
 const getCurrencySymbol = () => {
@@ -312,6 +313,27 @@ const PromotionForm = ({
                 placeholder="How will success be measured?"
               />
             </Grid>
+
+            {/* AI Assistant */}
+            {formData.budget && formData.budget > 0 && (
+              <Grid item xs={12}>
+                <Divider sx={{ mb: 2 }} />
+                <SmartPromotionAssistant
+                  formData={{
+                    ...formData,
+                    discount: 15 // Default discount if not in form
+                  }}
+                  onChange={setFormData}
+                  mode={promotion ? 'edit' : 'create'}
+                  onApplySuggestion={(suggestion) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      budget: suggestion.budget
+                    }));
+                  }}
+                />
+              </Grid>
+            )}
           </Grid>
           
           {promotion && (
