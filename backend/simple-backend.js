@@ -120,9 +120,66 @@ app.get('/api/health', (req, res) => {
         status: 'healthy',
         timestamp: new Date().toISOString(),
         version: '2.1.3',
-        features: ['ai-promotion', 'ml-validation', 'ollama-integration', 'authentication'],
+        features: ['ai-promotion', 'ml-validation', 'ollama-integration', 'authentication', 'dashboard-analytics'],
         uptime: process.uptime()
     });
+});
+
+// Dashboard Analytics endpoint
+app.get('/api/analytics/dashboard', (req, res) => {
+    try {
+        // Return mock dashboard data for demo purposes
+        res.json({
+            success: true,
+            data: {
+                summary: {
+                    totalRevenue: 2800000,
+                    totalSpend: 456000,
+                    activePromotions: 12,
+                    totalCustomers: 5,
+                    pendingApprovals: 3,
+                    budgetUtilization: 68.5,
+                    roi: 4.2
+                },
+                monthlySpend: [
+                    { month: 'Jan', spend: 38000, budget: 45000 },
+                    { month: 'Feb', spend: 42000, budget: 45000 },
+                    { month: 'Mar', spend: 39000, budget: 45000 },
+                    { month: 'Apr', spend: 41000, budget: 45000 },
+                    { month: 'May', spend: 43000, budget: 45000 },
+                    { month: 'Jun', spend: 45000, budget: 45000 }
+                ],
+                topCustomers: [
+                    { id: 1, name: 'Shoprite Checkers', revenue: 425000, growth: 12.5 },
+                    { id: 2, name: 'Pick n Pay', revenue: 380000, growth: 8.3 },
+                    { id: 3, name: 'Spar', revenue: 320000, growth: -2.1 },
+                    { id: 4, name: 'Woolworths', revenue: 285000, growth: 15.8 },
+                    { id: 5, name: 'Makro', revenue: 245000, growth: 5.2 }
+                ],
+                categoryPerformance: [
+                    { category: 'Chocolate', revenue: 850000, growth: 18.5, margin: 32.4 },
+                    { category: 'Confectionery', revenue: 620000, growth: 12.3, margin: 28.1 },
+                    { category: 'Biscuits', revenue: 580000, growth: 8.7, margin: 25.3 },
+                    { category: 'Beverages', revenue: 450000, growth: -3.2, margin: 22.8 },
+                    { category: 'Gum', revenue: 300000, growth: 5.4, margin: 35.2 }
+                ],
+                pendingApprovals: [],
+                forecast: {
+                    projectedRevenue: 3200000,
+                    projectedSpend: 495000,
+                    confidence: 87.5,
+                    trend: 'up'
+                }
+            },
+            message: 'Dashboard data retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Dashboard API error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to retrieve dashboard data'
+        });
+    }
 });
 
 // API root endpoint
