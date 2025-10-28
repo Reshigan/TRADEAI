@@ -33,11 +33,11 @@ const getCurrencySettings = () => {
     console.warn('Error getting currency settings from user context:', error);
   }
   
-  // Fallback to USD if no company currency is available
+  // Fallback to ZAR (South Africa) if no company currency is available
   return {
-    currency: 'USD',
-    symbol: '$',
-    locale: 'en-US'
+    currency: 'ZAR',
+    symbol: 'R',
+    locale: 'en-ZA'
   };
 };
 
@@ -49,7 +49,7 @@ const getCurrencySettings = () => {
  */
 export const formatCurrency = (amount, options = {}) => {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return '$0';
+    return 'R0';
   }
 
   const settings = getCurrencySettings();

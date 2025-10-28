@@ -18,6 +18,7 @@ import {
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { productService } from '../../services/api';
 import ProductForm from './ProductForm';
+import { formatCurrency } from '../../utils/formatters';
 
 const ProductListEnhanced = () => {
   const navigate = useNavigate();
@@ -202,7 +203,7 @@ const ProductListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600" color="primary">
-          ${(value || 0).toFixed(2)}
+          {formatCurrency(value || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </Typography>
       )
     },
@@ -212,7 +213,7 @@ const ProductListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Typography variant="body2">
-          ${(value || 0).toFixed(2)}
+          {formatCurrency(value || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </Typography>
       )
     },
