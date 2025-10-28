@@ -36,38 +36,48 @@ const Login = ({ onLogin }) => {
     setError('');
     setValidationErrors({});
     
-    // Comprehensive validation
-    const { isValid, errors } = validateForm(credentials, {
-      email: [validateEmail],
-      password: [(value) => {
-        if (!value) return 'Password is required';
-        if (value.length < 6) return 'Password must be at least 6 characters';
-        return null;
-      }]
-    });
+    // Simple validation - just check if fields are filled
+    const errors = {};
+    if (!credentials.email || !credentials.email.trim()) {
+      errors.email = 'Email is required';
+    }
+    if (!credentials.password || !credentials.password.trim()) {
+      errors.password = 'Password is required';
+    }
 
-    if (!isValid) {
+    if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
-      setError('Please fix the validation errors');
+      setError('Please fill in all fields');
       return;
     }
 
     try {
+      console.log('Attempting login with:', { email: credentials.email });
+      
       // Use authService for consistent API handling
       const data = await authService.login({
         email: credentials.email,
         password: credentials.password
       });
 
-      if (data.token) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+      console.log('Login response:', data);
+
+      if (data.token || data.data?.token) {
+        const userData = data.user || data.data?.user || data.data;
+        const token = data.token || data.data?.token;
+        
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('token', token);
         localStorage.setItem('isAuthenticated', 'true');
         
-        onLogin(data.user);
+        console.log('Login successful, calling onLogin with:', userData);
+        onLogin(userData);
         
         // Navigate to dashboard
+        console.log('Navigating to dashboard');
         navigate('/dashboard', { replace: true });
       } else {
+        console.error('No token in response:', data);
         setError('Invalid credentials. Please try again.');
       }
     } catch (error) {
@@ -79,8 +89,10 @@ const Login = ({ onLogin }) => {
       });
       if (error.response && error.response.data && error.response.data.message) {
         setError(error.response.data.message);
+      } else if (error.message) {
+        setError(error.message);
       } else {
-        setError('Login failed. Please try again.');
+        setError('Login failed. Please check your credentials and try again.');
       }
     }
   };
