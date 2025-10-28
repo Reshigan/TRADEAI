@@ -120,6 +120,31 @@ export const formatNumber = (value, useCompact = true) => {
 };
 
 /**
+ * Safely convert value to number, returning 0 if invalid
+ * @param {any} value - The value to convert
+ * @param {number} defaultValue - Default value if conversion fails
+ * @returns {number} Numeric value or default
+ */
+export const safeNumber = (value, defaultValue = 0) => {
+  if (value === null || value === undefined || value === '') {
+    return defaultValue;
+  }
+  const num = Number(value);
+  return isNaN(num) ? defaultValue : num;
+};
+
+/**
+ * Safely format number with decimal places
+ * @param {number} value - The value to format
+ * @param {number} decimals - Number of decimal places
+ * @returns {string} Formatted number string
+ */
+export const safeToFixed = (value, decimals = 2) => {
+  const num = safeNumber(value, 0);
+  return num.toFixed(decimals);
+};
+
+/**
  * Format date according to user settings
  * @param {Date|string} date - The date to format
  * @param {string} format - Format type ('short', 'medium', 'long')

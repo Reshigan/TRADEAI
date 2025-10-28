@@ -228,7 +228,8 @@ userSchema.statics.findByCredentials = async function(email, password, companyId
 // Add tenant support to the schema
 addTenantSupport(userSchema);
 
-const User = mongoose.model('User', userSchema);
+// Prevent model overwrite error in hot-reload scenarios
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 // Check if we should use mock database
 const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true' || process.env.NODE_ENV === 'mock';
