@@ -265,7 +265,11 @@ const CustomerDetailEnhanced = () => {
                         <Typography variant="subtitle2" color="textSecondary">Contact</Typography>
                         <Typography variant="body1">{customer.email || 'N/A'}</Typography>
                         <Typography variant="body1">{customer.phone || 'N/A'}</Typography>
-                        <Typography variant="body1" sx={{ mt: 1 }}>{customer.address || 'N/A'}</Typography>
+                        <Typography variant="body1" sx={{ mt: 1 }}>
+                          {customer.address && typeof customer.address === 'object' 
+                            ? `${customer.address.street || ''}, ${customer.address.city || ''}, ${customer.address.state || ''} ${customer.address.postalCode || ''}, ${customer.address.country || ''}`.replace(/,\s*,/g, ',').trim()
+                            : customer.address || 'N/A'}
+                        </Typography>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <Typography variant="subtitle2" color="textSecondary">Business Info</Typography>
