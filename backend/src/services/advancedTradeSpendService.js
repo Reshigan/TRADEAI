@@ -953,7 +953,7 @@ class AdvancedTradeSpendService {
   calculateImprovements(current, optimized, performance) {
     return {
       projectedROIIncrease: 18,
-      projectedRevenue Increase: 250000,
+      projectedRevenueIncrease: 250000,
       efficiencyGain: 15
     };
   }
