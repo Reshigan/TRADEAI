@@ -8,13 +8,70 @@ const api = axios.create({
   },
 });
 
-// Add request interceptor for authentication
+// Token refresh state
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+// Function to subscribe to token refresh
+const subscribeTokenRefresh = (callback) => {
+  refreshSubscribers.push(callback);
+};
+
+// Function to notify all subscribers when token is refreshed
+const onTokenRefreshed = (token) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+};
+
+// Check if token is about to expire (less than 5 minutes remaining)
+const isTokenExpiringSoon = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // Convert to milliseconds
+    const currentTime = Date.now();
+    const timeUntilExpiry = expirationTime - currentTime;
+    
+    // Return true if less than 5 minutes remaining
+    return timeUntilExpiry < 5 * 60 * 1000;
+  } catch (error) {
+    console.error('Error checking token expiration:', error);
+    return false;
+  }
+};
+
+// Add request interceptor for authentication and token refresh
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      
+      // Check if token is expiring soon and needs refresh
+      if (refreshToken && isTokenExpiringSoon(token) && !isRefreshing) {
+        isRefreshing = true;
+        
+        try {
+          const response = await axios.post(
+            `${api.defaults.baseURL}/auth/refresh`,
+            { refreshToken }
+          );
+          
+          const newToken = response.data.token || response.data.accessToken;
+          localStorage.setItem('token', newToken);
+          config.headers.Authorization = `Bearer ${newToken}`;
+          
+          isRefreshing = false;
+          onTokenRefreshed(newToken);
+        } catch (error) {
+          isRefreshing = false;
+          console.error('Token refresh failed:', error);
+          // Continue with old token
+        }
+      }
     }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -23,14 +80,64 @@ api.interceptors.request.use(
 // Add response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+    
     // Handle 401 Unauthorized errors
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('user');
-      window.location.href = '/';
+      // If token expired and we have refresh token, try to refresh
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      if (refreshToken && !originalRequest._retry) {
+        originalRequest._retry = true;
+        
+        if (isRefreshing) {
+          // If already refreshing, wait for it to complete
+          return new Promise((resolve) => {
+            subscribeTokenRefresh((token) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(axios(originalRequest));
+            });
+          });
+        }
+        
+        isRefreshing = true;
+        
+        try {
+          const response = await axios.post(
+            `${api.defaults.baseURL}/auth/refresh`,
+            { refreshToken }
+          );
+          
+          const newToken = response.data.token || response.data.accessToken;
+          localStorage.setItem('token', newToken);
+          
+          isRefreshing = false;
+          onTokenRefreshed(newToken);
+          
+          // Retry original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axios(originalRequest);
+        } catch (refreshError) {
+          isRefreshing = false;
+          // Refresh failed, log out user
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('isAuthenticated');
+          localStorage.removeItem('user');
+          window.location.href = '/';
+          return Promise.reject(refreshError);
+        }
+      } else {
+        // No refresh token or already tried refresh, log out
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+      }
     }
+    
     return Promise.reject(error);
   }
 );
@@ -53,8 +160,11 @@ export const authService = {
       // Backend response structure: { success: true, token: "...", data: { user: {...}, tokens: {...} } }
       const { token, data } = response.data;
       const user = data?.user;
+      const tokens = data?.tokens || {};
+      const refreshToken = tokens.refreshToken || data.refreshToken;
       
       console.log('Extracted token:', token ? 'YES' : 'NO');
+      console.log('Extracted refreshToken:', refreshToken ? 'YES' : 'NO');
       console.log('Extracted data:', data);
       console.log('Extracted user:', user);
       
@@ -63,14 +173,17 @@ export const authService = {
         throw new Error('Invalid login response structure');
       }
       
-      // Store token and user data
+      // Store token, refresh token, and user data
       localStorage.setItem('token', token);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(user));
       
       console.log('✅ Login successful, stored token and user data');
       
-      return { token, user, tokens: data.tokens };
+      return { token, refreshToken, user, tokens };
     } catch (error) {
       console.error('authService.login error:', error);
       console.error('Error response:', error.response?.data);
@@ -82,12 +195,14 @@ export const authService = {
     try {
       await api.post('/auth/logout');
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
     } catch (error) {
       console.error('Logout error:', error);
       // Still remove items even if API call fails
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
     }
