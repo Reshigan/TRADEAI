@@ -42,7 +42,7 @@ class AccrualManagementService {
       totalAccrual: accrualAmount,
       calculationMethod: tradeSpend.calculationMethod || 'percentage',
       calculationBasis: tradeSpend.calculationBasis || 'sales',
-      currency: tradeSpend.currency || 'USD',
+      currency: tradeSpend.currency || 'ZAR',
       createdBy: tradeSpend.createdBy
     });
 
@@ -81,7 +81,7 @@ class AccrualManagementService {
       totalAccrual: accrualAmount,
       calculationMethod: 'fixed_amount',
       calculationBasis: 'contract',
-      currency: promotion.currency || 'USD',
+      currency: promotion.currency || 'ZAR',
       createdBy: promotion.createdBy
     });
 

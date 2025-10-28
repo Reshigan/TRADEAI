@@ -93,7 +93,7 @@ exports.syncCustomers = asyncHandler(async (req, res, next) => {
           },
           creditLimit: {
             amount: parseFloat(sapCustomer.KLIMK) || 0,
-            currency: sapCustomer.WAERS || 'USD'
+            currency: sapCustomer.WAERS || 'ZAR'
           },
           status: sapCustomer.LOEVM ? 'inactive' : 'active'
         };
@@ -180,7 +180,7 @@ exports.syncProducts = asyncHandler(async (req, res, next) => {
           },
           pricing: {
             listPrice: parseFloat(sapProduct.STPRS) || 0,
-            currency: sapProduct.WAERS || 'USD'
+            currency: sapProduct.WAERS || 'ZAR'
           },
           weight: {
             gross: parseFloat(sapProduct.BRGEW) || 0,

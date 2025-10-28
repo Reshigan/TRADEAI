@@ -107,20 +107,22 @@ class AnalyticsController {
    * Used by frontend Dashboard component
    */
   getDashboardAnalytics = async (options = {}) => {
-    const { userId, period = '30days', currency = 'USD' } = options;
+    const { userId, period = '30days', currency = 'ZAR' } = options;
     
     try {
-      // Get currency info
+      // Get currency info (expanded to include ZAR and more)
       const currencySymbols = {
-        'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥', 'CAD': 'C$', 'AUD': 'A$'
+        'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥', 'CAD': 'C$', 'AUD': 'A$',
+        'ZAR': 'R', 'INR': '₹', 'CNY': '¥'
       };
-      const currencySymbol = currencySymbols[currency] || '$';
+      const currencySymbol = currencySymbols[currency] || 'R';
       
       // Generate realistic demo data based on currency
       const exchangeRates = {
-        'USD': 1, 'EUR': 0.85, 'GBP': 0.73, 'JPY': 110, 'CAD': 1.25, 'AUD': 1.35
+        'USD': 1, 'EUR': 0.85, 'GBP': 0.73, 'JPY': 110, 'CAD': 1.25, 'AUD': 1.35,
+        'ZAR': 18.5, 'INR': 83, 'CNY': 7.2
       };
-      const rate = exchangeRates[currency] || 1;
+      const rate = exchangeRates[currency] || 18.5;
       
       // Base amounts in USD, converted to selected currency
       const totalBudget = Math.round(5000000 * rate);
