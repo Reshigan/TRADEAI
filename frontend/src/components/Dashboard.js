@@ -37,7 +37,7 @@ import {
   CheckCircle,
   School as SchoolIcon
 } from '@mui/icons-material';
-import { AIAssistant } from './common';
+import { AIChatbotFAB } from './common';
 import { WalkthroughTour } from './training';
 import { AIInsightsFeed } from './contextual-ai';
 import { analyticsService, budgetService, promotionService, customerService, currencyService } from '../services/api';
@@ -110,8 +110,8 @@ const Dashboard = ({ user }) => {
   
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* AI Assistant */}
-      <AIAssistant context="dashboard" />
+      {/* AI Assistant with Ollama */}
+      <AIChatbotFAB pageContext="dashboard" contextData={dashboardData} />
       
       {/* Walkthrough Tour */}
       <WalkthroughTour 

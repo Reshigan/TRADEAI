@@ -12,7 +12,7 @@ const HOST = '0.0.0.0';
 
 // Middleware
 app.use(cors({
-    origin: ['https://tradeai.gonxt.tech', 'http://localhost:3000'],
+    origin: ['https://tradeai.gonxt.tech', 'http://localhost:3000', 'http://localhost:12000', 'https://work-1-fymmzbejnnaxkqet.prod-runtime.all-hands.dev'],
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -21,7 +21,97 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    if (req.body && Object.keys(req.body).length > 0) {
+        console.log('Request body:', JSON.stringify(req.body));
+    }
     next();
+});
+
+// Response logging
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    res.send = function(data) {
+        console.log(`Response for ${req.method} ${req.path}:`, typeof data === 'string' ? data.substring(0, 200) : JSON.stringify(data).substring(0, 200));
+        originalSend.call(this, data);
+    };
+    next();
+});
+
+// Authentication endpoints
+app.post('/api/auth/login', (req, res) => {
+    try {
+        const { email, password, username } = req.body;
+        
+        // For development/demo: accept any credentials
+        // In production, you would verify against a database
+        if ((email || username) && password) {
+            // Generate a simple token (in production, use JWT)
+            const token = `demo-token-${Date.now()}`;
+            const user = {
+                id: 'user-1',
+                email: email || `${username}@example.com`,
+                username: username || email?.split('@')[0],
+                firstName: 'Demo',
+                lastName: 'User',
+                role: 'admin',
+                tenant: 'mondelez'
+            };
+            
+            res.json({
+                success: true,
+                token: token,
+                data: {
+                    user: user,
+                    tokens: {
+                        accessToken: token,
+                        refreshToken: `refresh-${Date.now()}`
+                    }
+                },
+                message: 'Login successful'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                error: 'Email/username and password are required'
+            });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Login failed',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Logged out successfully'
+    });
+});
+
+app.get('/api/auth/verify', (req, res) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (token && token.startsWith('demo-token-')) {
+        res.json({
+            success: true,
+            valid: true,
+            user: {
+                id: 'user-1',
+                email: 'demo@example.com',
+                role: 'admin'
+            }
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            valid: false,
+            error: 'Invalid token'
+        });
+    }
 });
 
 // Health check endpoint
@@ -30,7 +120,7 @@ app.get('/api/health', (req, res) => {
         status: 'healthy',
         timestamp: new Date().toISOString(),
         version: '2.1.3',
-        features: ['ai-promotion', 'ml-validation', 'ollama-integration'],
+        features: ['ai-promotion', 'ml-validation', 'ollama-integration', 'authentication'],
         uptime: process.uptime()
     });
 });

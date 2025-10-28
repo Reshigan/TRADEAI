@@ -336,12 +336,12 @@ export const AIChatbotFAB = ({ pageContext, contextData }) => {
     <>
       <Tooltip title="AI Assistant" placement="left">
         <Fab
-          color="primary"
+          color="secondary"
           onClick={() => setOpen(!open)}
           sx={{
             position: 'fixed',
             bottom: 24,
-            right: 24,
+            right: 104,
             zIndex: 1200,
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             '&:hover': {
