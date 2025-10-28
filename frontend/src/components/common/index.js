@@ -11,3 +11,8 @@ export { default as Breadcrumbs } from './Breadcrumbs';
 export * from './LoadingState';
 export { default as EmptyState } from './EmptyState';
 export { NoDataState, SearchEmptyState, ErrorState, InfoState } from './EmptyState';
+
+// New AI-Enhanced Components
+export { default as AIEnhancedPage } from './AIEnhancedPage';
+export { default as SmartDataGrid } from './SmartDataGrid';
+export { default as SmartForm } from './SmartForm';
