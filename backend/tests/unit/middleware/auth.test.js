@@ -1,14 +1,16 @@
 const { protect, restrictTo, optionalAuth } = require('../../../middleware/auth');
 const { generateAccessToken } = require('../../../utils/jwt');
-const User = require('../../../src/models/User');
 
 // Mock dependencies
-jest.mock('../../../src/models/User');
+jest.mock('../../../models/User');
 jest.mock('../../../utils/logger', () => ({
   error: jest.fn(),
   warn: jest.fn(),
   info: jest.fn()
 }));
+
+// Get mocked User after jest.mock
+const User = require('../../../models/User');
 
 describe('Authentication Middleware Tests', () => {
   let req, res, next;

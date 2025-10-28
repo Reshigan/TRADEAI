@@ -129,21 +129,15 @@ describe('JWT Utilities Tests', () => {
         { id: 'user123' },
         process.env.JWT_SECRET || 'default-secret-change-this',
         {
-          expiresIn: '0s',
+          expiresIn: '-1h', // Already expired
           issuer: 'tradeai-api',
           audience: 'tradeai-client'
         }
       );
 
-      // Wait a bit to ensure expiration
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          expect(() => {
-            verifyAccessToken(expiredToken);
-          }).toThrow();
-          resolve();
-        }, 100);
-      });
+      expect(() => {
+        verifyAccessToken(expiredToken);
+      }).toThrow();
     });
   });
 
@@ -277,16 +271,15 @@ describe('JWT Utilities Tests', () => {
     it('should generate different tokens for same payload', () => {
       const payload = { id: 'user123' };
       
-      // Add small delay to ensure different iat
       const token1 = generateAccessToken(payload);
+      // Wait 1 second to ensure different iat timestamp
+      const start = Date.now();
+      while (Date.now() - start < 1100) {
+        // Busy wait
+      }
+      const token2 = generateAccessToken(payload);
       
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const token2 = generateAccessToken(payload);
-          expect(token1).not.toBe(token2);
-          resolve();
-        }, 10);
-      });
+      expect(token1).not.toBe(token2);
     });
 
     it('should not include sensitive data in token', () => {
