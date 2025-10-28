@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken');
  */
 const generateAccessToken = (payload) => {
     const secret = process.env.JWT_SECRET || 'default-secret-change-this';
-    const expiresIn = process.env.JWT_EXPIRE || '15m';
+    // Changed from 15m to 24h for production stability
+    const expiresIn = process.env.JWT_EXPIRE || '24h';
     
     return jwt.sign(payload, secret, {
         expiresIn,
@@ -80,7 +81,7 @@ const generateTokenPair = (user) => {
     return {
         accessToken,
         refreshToken,
-        expiresIn: process.env.JWT_EXPIRE || '15m'
+        expiresIn: process.env.JWT_EXPIRE || '24h'
     };
 };
 
