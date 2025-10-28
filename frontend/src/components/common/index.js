@@ -16,3 +16,4 @@ export { NoDataState, SearchEmptyState, ErrorState, InfoState } from './EmptySta
 export { default as AIEnhancedPage } from './AIEnhancedPage';
 export { default as SmartDataGrid } from './SmartDataGrid';
 export { default as SmartForm } from './SmartForm';
+export { default as AIChatbot, AIChatbotFAB } from './AIChatbot';
