@@ -56,6 +56,7 @@ const transactionRoutes = require('./routes/transaction');
 const baselineRoutes = require('./routes/baseline');
 const cannibalizationRoutes = require('./routes/cannibalization');
 const forwardBuyRoutes = require('./routes/forwardBuy');
+const currencyRoutes = require('./routes/currency');
 
 // Create Express app
 const app = express();
@@ -279,6 +280,9 @@ app.use('/api/analytics', authenticateToken, analyticsRoutes);
 app.use('/api/advanced', advancedAnalyticsRoutes); // Phase 2 - Advanced Analytics (has own auth)
 app.use('/api/integration', authenticateToken, integrationRoutes);
 app.use('/api/ml', authenticateToken, mlRoutes);
+
+// Currency conversion routes
+app.use('/api', authenticateToken, currencyRoutes);
 
 // Sales and inventory
 app.use('/api/sales', authenticateToken, salesRoutes);

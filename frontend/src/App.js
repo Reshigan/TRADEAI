@@ -25,6 +25,10 @@ import ExecutiveDashboardEnhanced from './components/enterprise/dashboards/Execu
 import TransactionManagement from './components/enterprise/transactions/TransactionManagement';
 import ForecastingDashboard from './components/forecasting/ForecastingDashboard';
 
+// New World-Class UI Components
+import RealTimeDashboard from './pages/RealTimeDashboard';
+import PromotionFlow from './pages/flows/PromotionFlow';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -542,6 +546,31 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <ExecutiveDashboardEnhanced />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        {/* New World-Class UI Routes */}
+        <Route 
+          path="/realtime-dashboard" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <RealTimeDashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/flows/promotion" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionFlow />
               </Layout>
             ) : (
               <Navigate to="/" replace />

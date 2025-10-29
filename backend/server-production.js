@@ -664,6 +664,139 @@ app.get('/api/analytics/dashboard', protect, (req, res) => {
 });
 
 // ==============================================================================
+// CURRENCY ENDPOINTS
+// ==============================================================================
+
+/**
+ * @swagger
+ * /api/analytics/currencies:
+ *   get:
+ *     summary: Get list of supported currencies
+ *     tags: [Analytics]
+ *     security:
+ *       - BearerAuth: []
+ */
+app.get('/api/analytics/currencies', protect, (req, res) => {
+    const currencies = [
+        { code: 'USD', name: 'US Dollar', symbol: '$', rate: 1.0 },
+        { code: 'ZAR', name: 'South African Rand', symbol: 'R', rate: 18.5 },
+        { code: 'EUR', name: 'Euro', symbol: '€', rate: 0.92 },
+        { code: 'GBP', name: 'British Pound', symbol: '£', rate: 0.79 },
+        { code: 'JPY', name: 'Japanese Yen', symbol: '¥', rate: 149.5 },
+        { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', rate: 7.24 },
+        { code: 'INR', name: 'Indian Rupee', symbol: '₹', rate: 83.2 },
+        { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', rate: 1.53 }
+    ];
+    
+    res.json({
+        success: true,
+        currencies,
+        message: 'Currencies retrieved successfully'
+    });
+});
+
+/**
+ * @swagger
+ * /api/currencies:
+ *   get:
+ *     summary: Get list of supported currencies (alternative endpoint)
+ *     tags: [Currencies]
+ *     security:
+ *       - BearerAuth: []
+ */
+app.get('/api/currencies', protect, (req, res) => {
+    const currencies = [
+        { code: 'USD', name: 'US Dollar', symbol: '$', rate: 1.0 },
+        { code: 'ZAR', name: 'South African Rand', symbol: 'R', rate: 18.5 },
+        { code: 'EUR', name: 'Euro', symbol: '€', rate: 0.92 },
+        { code: 'GBP', name: 'British Pound', symbol: '£', rate: 0.79 },
+        { code: 'JPY', name: 'Japanese Yen', symbol: '¥', rate: 149.5 },
+        { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', rate: 7.24 },
+        { code: 'INR', name: 'Indian Rupee', symbol: '₹', rate: 83.2 },
+        { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', rate: 1.53 }
+    ];
+    
+    res.json({
+        success: true,
+        currencies,
+        message: 'Currencies retrieved successfully'
+    });
+});
+
+/**
+ * @swagger
+ * /api/currencies/convert:
+ *   get:
+ *     summary: Convert currency amount
+ *     tags: [Currencies]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: amount
+ *         required: true
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: from
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: to
+ *         required: true
+ *         schema:
+ *           type: string
+ */
+app.get('/api/currencies/convert', protect, (req, res) => {
+    const { amount, from, to } = req.query;
+    
+    if (!amount || !from || !to) {
+        return res.status(400).json({
+            success: false,
+            message: 'Missing required parameters: amount, from, to'
+        });
+    }
+    
+    const exchangeRates = {
+        USD: 1.0,
+        ZAR: 18.5,
+        EUR: 0.92,
+        GBP: 0.79,
+        JPY: 149.5,
+        CNY: 7.24,
+        INR: 83.2,
+        AUD: 1.53
+    };
+    
+    const fromRate = exchangeRates[from.toUpperCase()];
+    const toRate = exchangeRates[to.toUpperCase()];
+    
+    if (!fromRate || !toRate) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid currency code'
+        });
+    }
+    
+    // Convert to USD first, then to target currency
+    const amountInUSD = parseFloat(amount) / fromRate;
+    const convertedAmount = amountInUSD * toRate;
+    
+    res.json({
+        success: true,
+        data: {
+            originalAmount: parseFloat(amount),
+            originalCurrency: from.toUpperCase(),
+            convertedAmount: Math.round(convertedAmount * 100) / 100,
+            targetCurrency: to.toUpperCase(),
+            exchangeRate: toRate / fromRate
+        },
+        message: 'Currency conversion successful'
+    });
+});
+
+// ==============================================================================
 // PROTECTED ROUTE EXAMPLES
 // ==============================================================================
 

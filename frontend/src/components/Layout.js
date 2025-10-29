@@ -88,6 +88,14 @@ const getMenuItems = (user) => {
         { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulations' },
       ]
     },
+    {
+      text: '🚀 AI-Powered Flows',
+      icon: <DashboardIcon />,
+      subItems: [
+        { text: 'Real-Time Dashboard', icon: <DashboardIcon />, path: '/realtime-dashboard' },
+        { text: 'Promotion Flow', icon: <PromotionIcon />, path: '/flows/promotion' },
+      ]
+    },
   ];
 
   // Add Companies menu item only for super admin
@@ -112,7 +120,8 @@ const Layout = ({ children, user, onLogout }) => {
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,
-    'Analytics & Insights': true
+    'Analytics & Insights': true,
+    '🚀 AI-Powered Flows': true
   });
   
   const location = useLocation();
