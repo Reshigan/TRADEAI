@@ -584,4 +584,8 @@ function App() {
   );
 }
 
-export default App;
+export default App;// Add to routes section
+import AdminDashboard from './pages/admin/AdminDashboard';
+
+// Add route:
+// <Route path="/admin" element={<AdminDashboard />} />
