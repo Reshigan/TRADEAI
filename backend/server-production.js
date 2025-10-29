@@ -797,6 +797,391 @@ app.get('/api/currencies/convert', protect, (req, res) => {
 });
 
 // ==============================================================================
+// CRUD ENDPOINTS - CUSTOMERS, PROMOTIONS, PRODUCTS
+// ==============================================================================
+
+/**
+ * Customers endpoints
+ */
+// GET all customers
+app.get('/api/customers', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Customer = require('./src/models/Customer');
+        const customers = await Customer.find({ company: req.user.tenant })
+            .sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            data: customers,
+            message: 'Customers retrieved successfully'
+        });
+    } else {
+        res.json({
+            success: true,
+            data: [],
+            message: 'No database connection - in-memory mode'
+        });
+    }
+}));
+
+// GET single customer
+app.get('/api/customers/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Customer = require('./src/models/Customer');
+        const customer = await Customer.findOne({
+            _id: req.params.id,
+            company: req.user.tenant
+        });
+        if (!customer) {
+            return res.status(404).json({
+                success: false,
+                message: 'Customer not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: customer,
+            message: 'Customer retrieved successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// POST create customer
+app.post('/api/customers', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Customer = require('./src/models/Customer');
+        const customerData = {
+            ...req.body,
+            company: req.user.tenant,
+            createdBy: req.user.id
+        };
+        const customer = await Customer.create(customerData);
+        res.status(201).json({
+            success: true,
+            data: customer,
+            message: 'Customer created successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// PUT update customer
+app.put('/api/customers/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Customer = require('./src/models/Customer');
+        const customer = await Customer.findOneAndUpdate(
+            { _id: req.params.id, company: req.user.tenant },
+            { ...req.body, updatedBy: req.user.id },
+            { new: true, runValidators: true }
+        );
+        if (!customer) {
+            return res.status(404).json({
+                success: false,
+                message: 'Customer not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: customer,
+            message: 'Customer updated successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// DELETE customer
+app.delete('/api/customers/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Customer = require('./src/models/Customer');
+        const customer = await Customer.findOneAndDelete({
+            _id: req.params.id,
+            company: req.user.tenant
+        });
+        if (!customer) {
+            return res.status(404).json({
+                success: false,
+                message: 'Customer not found'
+            });
+        }
+        res.json({
+            success: true,
+            message: 'Customer deleted successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+/**
+ * Promotions endpoints
+ */
+// GET all promotions
+app.get('/api/promotions', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Promotion = require('./src/models/Promotion');
+        const promotions = await Promotion.find({ company: req.user.tenant })
+            .sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            data: promotions,
+            message: 'Promotions retrieved successfully'
+        });
+    } else {
+        res.json({
+            success: true,
+            data: [],
+            message: 'No database connection - in-memory mode'
+        });
+    }
+}));
+
+// GET single promotion
+app.get('/api/promotions/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Promotion = require('./src/models/Promotion');
+        const promotion = await Promotion.findOne({
+            _id: req.params.id,
+            company: req.user.tenant
+        });
+        if (!promotion) {
+            return res.status(404).json({
+                success: false,
+                message: 'Promotion not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: promotion,
+            message: 'Promotion retrieved successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// POST create promotion
+app.post('/api/promotions', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Promotion = require('./src/models/Promotion');
+        const promotionData = {
+            ...req.body,
+            company: req.user.tenant,
+            createdBy: req.user.id
+        };
+        const promotion = await Promotion.create(promotionData);
+        res.status(201).json({
+            success: true,
+            data: promotion,
+            message: 'Promotion created successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// PUT update promotion
+app.put('/api/promotions/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Promotion = require('./src/models/Promotion');
+        const promotion = await Promotion.findOneAndUpdate(
+            { _id: req.params.id, company: req.user.tenant },
+            { ...req.body, updatedBy: req.user.id },
+            { new: true, runValidators: true }
+        );
+        if (!promotion) {
+            return res.status(404).json({
+                success: false,
+                message: 'Promotion not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: promotion,
+            message: 'Promotion updated successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// DELETE promotion
+app.delete('/api/promotions/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Promotion = require('./src/models/Promotion');
+        const promotion = await Promotion.findOneAndDelete({
+            _id: req.params.id,
+            company: req.user.tenant
+        });
+        if (!promotion) {
+            return res.status(404).json({
+                success: false,
+                message: 'Promotion not found'
+            });
+        }
+        res.json({
+            success: true,
+            message: 'Promotion deleted successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+/**
+ * Products endpoints
+ */
+// GET all products
+app.get('/api/products', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Product = require('./src/models/Product');
+        const products = await Product.find({ company: req.user.tenant })
+            .sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            data: products,
+            message: 'Products retrieved successfully'
+        });
+    } else {
+        res.json({
+            success: true,
+            data: [],
+            message: 'No database connection - in-memory mode'
+        });
+    }
+}));
+
+// GET single product
+app.get('/api/products/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Product = require('./src/models/Product');
+        const product = await Product.findOne({
+            _id: req.params.id,
+            company: req.user.tenant
+        });
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: product,
+            message: 'Product retrieved successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// POST create product
+app.post('/api/products', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Product = require('./src/models/Product');
+        const productData = {
+            ...req.body,
+            company: req.user.tenant,
+            createdBy: req.user.id
+        };
+        const product = await Product.create(productData);
+        res.status(201).json({
+            success: true,
+            data: product,
+            message: 'Product created successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// PUT update product
+app.put('/api/products/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Product = require('./src/models/Product');
+        const product = await Product.findOneAndUpdate(
+            { _id: req.params.id, company: req.user.tenant },
+            { ...req.body, updatedBy: req.user.id },
+            { new: true, runValidators: true }
+        );
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+        res.json({
+            success: true,
+            data: product,
+            message: 'Product updated successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// DELETE product
+app.delete('/api/products/:id', protect, catchAsync(async (req, res) => {
+    if (dbConnected) {
+        const Product = require('./src/models/Product');
+        const product = await Product.findOneAndDelete({
+            _id: req.params.id,
+            company: req.user.tenant
+        });
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+        res.json({
+            success: true,
+            message: 'Product deleted successfully'
+        });
+    } else {
+        res.status(503).json({
+            success: false,
+            message: 'Database required for this operation'
+        });
+    }
+}));
+
+// ==============================================================================
 // PROTECTED ROUTE EXAMPLES
 // ==============================================================================
 
