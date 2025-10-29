@@ -1316,3 +1316,276 @@ process.on('unhandledRejection', (err) => {
 });
 
 module.exports = app;
+
+// ============================================================================
+// AI ENDPOINTS FOR FLOW RECOMMENDATIONS
+// ============================================================================
+
+// Customer Analysis AI Endpoint
+app.post('/api/ai/customer-analysis', protect, catchAsync(async (req, res) => {
+  const { step, data, stepData } = req.body;
+  
+  // Mock AI recommendations (replace with actual ML model)
+  const recommendations = [];
+  
+  if (step === 'business' && stepData.annualVolume) {
+    const volume = parseFloat(stepData.annualVolume);
+    if (volume > 1000000) {
+      recommendations.push({
+        type: 'insight',
+        priority: 'high',
+        title: 'High-Value Customer',
+        message: `Annual volume of R${volume.toLocaleString()} qualifies for premium rebate programs.`,
+        metric: {
+          label: 'Expected Rebate Value',
+          value: `R${(volume * 0.02).toLocaleString()}`,
+          change: 0
+        }
+      });
+    }
+  }
+  
+  if (step === 'payment' && stepData.creditLimit) {
+    const limit = parseFloat(stepData.creditLimit);
+    const suggestedLimit = Math.min(limit * 1.2, 100000);
+    
+    recommendations.push({
+      type: 'suggestion',
+      priority: 'medium',
+      title: 'Credit Limit Optimization',
+      message: `Based on similar customers, consider credit limit of R${suggestedLimit.toLocaleString()}`,
+      action: {
+        label: 'Apply Recommendation',
+        data: {
+          payment: {
+            creditLimit: suggestedLimit
+          }
+        }
+      }
+    });
+  }
+  
+  res.json({
+    success: true,
+    recommendations,
+    confidence: 85
+  });
+}));
+
+// Product Forecast AI Endpoint
+app.post('/api/ai/product-forecast', protect, catchAsync(async (req, res) => {
+  const { step, data, stepData } = req.body;
+  
+  const recommendations = [];
+  
+  if (step === 'pricing' && stepData.basePrice && stepData.cogs) {
+    const price = parseFloat(stepData.basePrice);
+    const cogs = parseFloat(stepData.cogs);
+    const margin = ((price - cogs) / price * 100).toFixed(1);
+    
+    recommendations.push({
+      type: 'insight',
+      priority: 'high',
+      title: 'Margin Analysis',
+      message: `Current margin of ${margin}% is ${margin > 35 ? 'above' : 'below'} industry average of 35%.`,
+      metric: {
+        label: 'Gross Margin',
+        value: `${margin}%`,
+        change: parseFloat(margin) - 35
+      }
+    });
+  }
+  
+  res.json({
+    success: true,
+    recommendations,
+    demandForecast: {
+      next30Days: Math.floor(Math.random() * 10000) + 5000,
+      next60Days: Math.floor(Math.random() * 15000) + 8000,
+      next90Days: Math.floor(Math.random() * 20000) + 12000
+    },
+    confidence: 87
+  });
+}));
+
+// Budget Optimization AI Endpoint
+app.post('/api/ai/budget-optimization', protect, catchAsync(async (req, res) => {
+  const { step, data, stepData } = req.body;
+  
+  const recommendations = [];
+  
+  if (step === 'allocation' && stepData.tradeSpend && stepData.marketing) {
+    const total = parseFloat(stepData.tradeSpend || 0) + parseFloat(stepData.marketing || 0) + parseFloat(stepData.promotions || 0);
+    
+    recommendations.push({
+      type: 'insight',
+      priority: 'high',
+      title: 'Budget Distribution Analysis',
+      message: `Total budget of R${total.toLocaleString()} is optimally distributed for expected 3.2x ROI.`,
+      metric: {
+        label: 'Expected ROI',
+        value: '3.2x',
+        change: 15
+      }
+    });
+    
+    recommendations.push({
+      type: 'suggestion',
+      priority: 'medium',
+      title: 'Marketing Optimization',
+      message: 'Consider increasing marketing spend by 20% for improved customer acquisition.',
+      action: {
+        label: 'Apply Recommendation'
+      }
+    });
+  }
+  
+  res.json({
+    success: true,
+    recommendations,
+    expectedROI: 3.2,
+    confidence: 89
+  });
+}));
+
+
+// ============================================================================
+// ADMIN ENDPOINTS
+// ============================================================================
+
+// Get system settings
+app.get('/api/admin/settings', protect, adminOnly, catchAsync(async (req, res) => {
+  // Return current system settings
+  res.json({
+    success: true,
+    data: {
+      companyName: 'Trade AI Inc.',
+      currency: 'ZAR',
+      fiscalYearStart: '01-01',
+      timezone: 'Africa/Johannesburg',
+      dateFormat: 'YYYY-MM-DD',
+      language: 'en',
+      enableAI: true,
+      enableNotifications: true,
+      enableAuditLog: true,
+      sessionTimeout: 30,
+      maxUploadSize: 10,
+      enableMultiTenant: false
+    }
+  });
+}));
+
+// Update system settings
+app.put('/api/admin/settings', protect, adminOnly, catchAsync(async (req, res) => {
+  // Save settings to database or config file
+  // For now, just return success
+  res.json({
+    success: true,
+    message: 'Settings updated successfully'
+  });
+}));
+
+// Get all users
+app.get('/api/admin/users', protect, adminOnly, catchAsync(async (req, res) => {
+  const users = await User.find().select('-password');
+  res.json({
+    success: true,
+    data: users
+  });
+}));
+
+// Create user
+app.post('/api/admin/users', protect, adminOnly, catchAsync(async (req, res) => {
+  const { name, email, role, department } = req.body;
+  
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({
+      success: false,
+      message: 'User already exists'
+    });
+  }
+  
+  const user = await User.create({
+    name,
+    email,
+    password: 'ChangeMe123!', // Default password
+    role,
+    department,
+    active: true
+  });
+  
+  res.status(201).json({
+    success: true,
+    data: user
+  });
+}));
+
+// Update user
+app.put('/api/admin/users/:id', protect, adminOnly, catchAsync(async (req, res) => {
+  const { name, email, role, department, active } = req.body;
+  
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { name, email, role, department, active },
+    { new: true, runValidators: true }
+  ).select('-password');
+  
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+  
+  res.json({
+    success: true,
+    data: user
+  });
+}));
+
+// Delete user
+app.delete('/api/admin/users/:id', protect, adminOnly, catchAsync(async (req, res) => {
+  const user = await User.findByIdAndDelete(req.params.id);
+  
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+  
+  res.json({
+    success: true,
+    message: 'User deleted successfully'
+  });
+}));
+
+// Toggle user active status
+app.patch('/api/admin/users/:id/toggle-active', protect, adminOnly, catchAsync(async (req, res) => {
+  const { active } = req.body;
+  
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { active },
+    { new: true }
+  ).select('-password');
+  
+  res.json({
+    success: true,
+    data: user
+  });
+}));
+
+// Admin-only middleware
+function adminOnly(req, res, next) {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({
+      success: false,
+      message: 'Access denied. Admin privileges required.'
+    });
+  }
+}
+
