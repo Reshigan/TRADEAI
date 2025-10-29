@@ -1818,3 +1818,82 @@ app.get('/api/analytics/margin-trends', protect, catchAsync(async (req, res) => 
   });
 }));
 
+
+// ============================================================================
+// SIMULATION ENDPOINTS
+// ============================================================================
+
+const simulationEngine = require('./src/simulation/simulationEngine');
+const forecastingService = require('./src/simulation/forecastingService');
+
+// Run business simulation
+app.post('/api/simulation/run', protect, catchAsync(async (req, res) => {
+  const { scenarioType, baseData, days } = req.body;
+  
+  const defaultBaseData = {
+    dailyRevenue: 100000,
+    dailyVolume: 5000,
+    marginPercent: 35
+  };
+  
+  const results = await simulationEngine.runSimulation(
+    scenarioType || 'baseline',
+    baseData || defaultBaseData,
+    days || 30
+  );
+  
+  res.json({
+    success: true,
+    data: results
+  });
+}));
+
+// Compare all scenarios
+app.post('/api/simulation/compare', protect, catchAsync(async (req, res) => {
+  const { baseData } = req.body;
+  
+  const defaultBaseData = {
+    dailyRevenue: 100000,
+    dailyVolume: 5000,
+    marginPercent: 35
+  };
+  
+  const comparison = await simulationEngine.compareScenarios(baseData || defaultBaseData);
+  
+  res.json({
+    success: true,
+    data: comparison
+  });
+}));
+
+// Generate revenue forecast
+app.post('/api/simulation/forecast', protect, catchAsync(async (req, res) => {
+  const { historicalData, days } = req.body;
+  
+  // Mock historical data if not provided
+  const mockData = [];
+  for (let i = 0; i < 60; i++) {
+    mockData.push({
+      day: i + 1,
+      value: 90000 + Math.random() * 20000 + (i * 100)
+    });
+  }
+  
+  const forecast = forecastingService.forecastRevenue(
+    historicalData || mockData,
+    days || 30
+  );
+  
+  const trend = forecastingService.analyzeTrend(historicalData || mockData);
+  const anomalies = forecastingService.detectAnomalies(historicalData || mockData);
+  
+  res.json({
+    success: true,
+    data: {
+      forecast,
+      trend,
+      anomalies
+    }
+  });
+}));
+
