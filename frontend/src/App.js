@@ -31,6 +31,10 @@ import PromotionFlow from './pages/flows/PromotionFlow';
 
 // AI-Powered Flow Components (Refactored UX)
 import PromotionEntryFlow from './pages/flows/PromotionEntryFlow';
+import CustomerEntryFlow from './pages/flows/CustomerEntryFlow';
+import ProductEntryFlow from './pages/flows/ProductEntryFlow';
+import TradeSpendEntryFlow from './pages/flows/TradeSpendEntryFlow';
+import BudgetPlanningFlow from './pages/flows/BudgetPlanningFlow';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -124,6 +128,16 @@ function App() {
           } 
         />
         <Route 
+          path="/budgets/new-flow" 
+          element={
+            isAuthenticated ? (
+              <BudgetPlanningFlow />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/budgets/:id" 
           element={
             isAuthenticated ? (
@@ -142,6 +156,16 @@ function App() {
               <Layout user={user} onLogout={handleLogout}>
                 <TradeSpendList />
               </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trade-spends/new-flow" 
+          element={
+            isAuthenticated ? (
+              <TradeSpendEntryFlow />
             ) : (
               <Navigate to="/" replace />
             )
@@ -206,6 +230,16 @@ function App() {
           } 
         />
         <Route 
+          path="/customers/new-flow" 
+          element={
+            isAuthenticated ? (
+              <CustomerEntryFlow />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/customers/:id" 
           element={
             isAuthenticated ? (
@@ -224,6 +258,16 @@ function App() {
               <Layout user={user} onLogout={handleLogout}>
                 <ProductList />
               </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/products/new-flow" 
+          element={
+            isAuthenticated ? (
+              <ProductEntryFlow />
             ) : (
               <Navigate to="/" replace />
             )
