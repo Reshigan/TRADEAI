@@ -37,9 +37,11 @@ import {
   CheckCircle,
   School as SchoolIcon
 } from '@mui/icons-material';
-import { AIAssistant } from './common';
+import { AIChatbotFAB } from './common';
 import { WalkthroughTour } from './training';
+import { AIInsightsFeed } from './contextual-ai';
 import { analyticsService, budgetService, promotionService, customerService, currencyService } from '../services/api';
+import { safeNumber, safeToFixed, formatNumber, formatPercentage } from '../utils/formatters';
 
 const Dashboard = ({ user }) => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
@@ -109,8 +111,8 @@ const Dashboard = ({ user }) => {
   
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* AI Assistant */}
-      <AIAssistant context="dashboard" />
+      {/* AI Assistant with Ollama */}
+      <AIChatbotFAB pageContext="dashboard" contextData={dashboardData} />
       
       {/* Walkthrough Tour */}
       <WalkthroughTour 
@@ -175,33 +177,38 @@ const Dashboard = ({ user }) => {
         </Box>
       ) : (
         <>
+          {/* AI Insights Feed */}
+          <Box sx={{ mb: 4 }}>
+            <AIInsightsFeed userId={user?.id} />
+          </Box>
+
           {/* KPI Cards */}
           <Grid container spacing={3} sx={{ mb: 4, mt: 1 }}>
             {dashboardData.summary && [
               {
                 title: 'Total Budget',
-                value: `${dashboardData.summary.currencySymbol}${(dashboardData.summary.totalBudget / 1000000).toFixed(1)}M`,
+                value: `${dashboardData.summary.currencySymbol}${safeToFixed(safeNumber(dashboardData.summary.totalBudget) / 1000000, 1)}M`,
                 icon: <AttachMoney color="primary" />,
                 change: '+12%',
                 trend: 'up'
               },
               {
                 title: 'Active Promotions',
-                value: dashboardData.summary.activePromotions.toString(),
+                value: safeNumber(dashboardData.summary.activePromotions, 0).toString(),
                 icon: <LocalOffer color="secondary" />,
-                change: `+${dashboardData.summary.activePromotions}`,
+                change: `+${safeNumber(dashboardData.summary.activePromotions, 0)}`,
                 trend: 'up'
               },
               {
                 title: 'Customers',
-                value: dashboardData.summary.totalCustomers.toString(),
+                value: safeNumber(dashboardData.summary.totalCustomers, 0).toString(),
                 icon: <ShoppingCart color="success" />,
                 change: '0',
                 trend: 'neutral'
               },
               {
                 title: 'Budget Utilization',
-                value: `${dashboardData.summary.budgetUtilization.toFixed(0)}%`,
+                value: formatPercentage(dashboardData.summary.budgetUtilization, 0),
                 icon: <Assessment color="warning" />,
                 change: '+8%',
                 trend: 'up'
@@ -258,15 +265,15 @@ const Dashboard = ({ user }) => {
                 <Box sx={{ my: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="body2">
-                      {dashboardData.summary.currencySymbol}{(dashboardData.summary.totalUsed / 1000000).toFixed(1)}M Used
+                      {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalUsed) / 1000000, 1)}M Used
                     </Typography>
                     <Typography variant="body2">
-                      {dashboardData.summary.currencySymbol}{(dashboardData.summary.totalBudget / 1000000).toFixed(1)}M Total
+                      {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalBudget) / 1000000, 1)}M Total
                     </Typography>
                   </Box>
                   <LinearProgress 
                     variant="determinate" 
-                    value={dashboardData.summary.budgetUtilization} 
+                    value={safeNumber(dashboardData.summary.budgetUtilization, 0)} 
                     sx={{ height: 10, borderRadius: 5 }}
                   />
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
@@ -275,7 +282,7 @@ const Dashboard = ({ user }) => {
                         Allocated
                       </Typography>
                       <Typography variant="h6">
-                        {dashboardData.summary.currencySymbol}{(dashboardData.summary.totalUsed / 1000000).toFixed(1)}M
+                        {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalUsed) / 1000000, 1)}M
                       </Typography>
                     </Box>
                     <Box>
@@ -283,7 +290,7 @@ const Dashboard = ({ user }) => {
                         Remaining
                       </Typography>
                       <Typography variant="h6">
-                        {dashboardData.summary.currencySymbol}{((dashboardData.summary.totalBudget - dashboardData.summary.totalUsed) / 1000000).toFixed(1)}M
+                        {dashboardData.summary.currencySymbol}{safeToFixed((safeNumber(dashboardData.summary.totalBudget) - safeNumber(dashboardData.summary.totalUsed)) / 1000000, 1)}M
                       </Typography>
                     </Box>
                     <Box>
@@ -291,7 +298,7 @@ const Dashboard = ({ user }) => {
                         % Used
                       </Typography>
                       <Typography variant="h6">
-                        {dashboardData.summary.budgetUtilization.toFixed(0)}%
+                        {formatPercentage(dashboardData.summary.budgetUtilization, 0)}
                       </Typography>
                     </Box>
                   </Box>

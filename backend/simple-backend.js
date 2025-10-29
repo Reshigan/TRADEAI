@@ -12,7 +12,7 @@ const HOST = '0.0.0.0';
 
 // Middleware
 app.use(cors({
-    origin: ['https://tradeai.gonxt.tech', 'http://localhost:3000'],
+    origin: ['https://tradeai.gonxt.tech', 'http://localhost:3000', 'http://localhost:12000', 'https://work-1-fymmzbejnnaxkqet.prod-runtime.all-hands.dev'],
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -21,7 +21,97 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    if (req.body && Object.keys(req.body).length > 0) {
+        console.log('Request body:', JSON.stringify(req.body));
+    }
     next();
+});
+
+// Response logging
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    res.send = function(data) {
+        console.log(`Response for ${req.method} ${req.path}:`, typeof data === 'string' ? data.substring(0, 200) : JSON.stringify(data).substring(0, 200));
+        originalSend.call(this, data);
+    };
+    next();
+});
+
+// Authentication endpoints
+app.post('/api/auth/login', (req, res) => {
+    try {
+        const { email, password, username } = req.body;
+        
+        // For development/demo: accept any credentials
+        // In production, you would verify against a database
+        if ((email || username) && password) {
+            // Generate a simple token (in production, use JWT)
+            const token = `demo-token-${Date.now()}`;
+            const user = {
+                id: 'user-1',
+                email: email || `${username}@example.com`,
+                username: username || email?.split('@')[0],
+                firstName: 'Demo',
+                lastName: 'User',
+                role: 'admin',
+                tenant: 'mondelez'
+            };
+            
+            res.json({
+                success: true,
+                token: token,
+                data: {
+                    user: user,
+                    tokens: {
+                        accessToken: token,
+                        refreshToken: `refresh-${Date.now()}`
+                    }
+                },
+                message: 'Login successful'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                error: 'Email/username and password are required'
+            });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Login failed',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Logged out successfully'
+    });
+});
+
+app.get('/api/auth/verify', (req, res) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (token && token.startsWith('demo-token-')) {
+        res.json({
+            success: true,
+            valid: true,
+            user: {
+                id: 'user-1',
+                email: 'demo@example.com',
+                role: 'admin'
+            }
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            valid: false,
+            error: 'Invalid token'
+        });
+    }
 });
 
 // Health check endpoint
@@ -30,9 +120,66 @@ app.get('/api/health', (req, res) => {
         status: 'healthy',
         timestamp: new Date().toISOString(),
         version: '2.1.3',
-        features: ['ai-promotion', 'ml-validation', 'ollama-integration'],
+        features: ['ai-promotion', 'ml-validation', 'ollama-integration', 'authentication', 'dashboard-analytics'],
         uptime: process.uptime()
     });
+});
+
+// Dashboard Analytics endpoint
+app.get('/api/analytics/dashboard', (req, res) => {
+    try {
+        // Return mock dashboard data for demo purposes
+        res.json({
+            success: true,
+            data: {
+                summary: {
+                    totalRevenue: 2800000,
+                    totalSpend: 456000,
+                    activePromotions: 12,
+                    totalCustomers: 5,
+                    pendingApprovals: 3,
+                    budgetUtilization: 68.5,
+                    roi: 4.2
+                },
+                monthlySpend: [
+                    { month: 'Jan', spend: 38000, budget: 45000 },
+                    { month: 'Feb', spend: 42000, budget: 45000 },
+                    { month: 'Mar', spend: 39000, budget: 45000 },
+                    { month: 'Apr', spend: 41000, budget: 45000 },
+                    { month: 'May', spend: 43000, budget: 45000 },
+                    { month: 'Jun', spend: 45000, budget: 45000 }
+                ],
+                topCustomers: [
+                    { id: 1, name: 'Shoprite Checkers', revenue: 425000, growth: 12.5 },
+                    { id: 2, name: 'Pick n Pay', revenue: 380000, growth: 8.3 },
+                    { id: 3, name: 'Spar', revenue: 320000, growth: -2.1 },
+                    { id: 4, name: 'Woolworths', revenue: 285000, growth: 15.8 },
+                    { id: 5, name: 'Makro', revenue: 245000, growth: 5.2 }
+                ],
+                categoryPerformance: [
+                    { category: 'Chocolate', revenue: 850000, growth: 18.5, margin: 32.4 },
+                    { category: 'Confectionery', revenue: 620000, growth: 12.3, margin: 28.1 },
+                    { category: 'Biscuits', revenue: 580000, growth: 8.7, margin: 25.3 },
+                    { category: 'Beverages', revenue: 450000, growth: -3.2, margin: 22.8 },
+                    { category: 'Gum', revenue: 300000, growth: 5.4, margin: 35.2 }
+                ],
+                pendingApprovals: [],
+                forecast: {
+                    projectedRevenue: 3200000,
+                    projectedSpend: 495000,
+                    confidence: 87.5,
+                    trend: 'up'
+                }
+            },
+            message: 'Dashboard data retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Dashboard API error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to retrieve dashboard data'
+        });
+    }
 });
 
 // API root endpoint

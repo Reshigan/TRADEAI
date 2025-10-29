@@ -1,0 +1,309 @@
+# TRADEAI ML Configuration
+# Production-grade ML system configuration
+
+# Environment
+environment: production  # development, staging, production
+
+# Data Paths
+data:
+  raw_data_path: /data/raw
+  processed_data_path: /data/processed
+  feature_store_path: /data/features
+  model_artifacts_path: /data/models
+
+# Database Configuration
+database:
+  mongodb:
+    host: ${MONGO_HOST:localhost}
+    port: ${MONGO_PORT:27017}
+    database: tradeai
+    username: ${MONGO_USER}
+    password: ${MONGO_PASSWORD}
+  
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    db: 0
+    password: ${REDIS_PASSWORD}
+
+# MLflow Configuration
+mlflow:
+  tracking_uri: ${MLFLOW_TRACKING_URI:http://localhost:5000}
+  experiment_name: tradeai-ml
+  registry_uri: ${MLFLOW_REGISTRY_URI:http://localhost:5000}
+  artifact_location: s3://tradeai-ml-artifacts
+
+# Model Configuration
+models:
+  demand_forecasting:
+    enabled: true
+    version: 1.2.3
+    algorithm: ensemble  # xgboost, prophet, lstm, ensemble
+    target_metric: mape
+    target_value: 0.15  # MAPE < 15%
+    features_count: 120
+    training_frequency: weekly
+    retraining_trigger:
+      accuracy_drop_threshold: 0.05  # Retrain if accuracy drops >5%
+      data_drift_threshold: 0.2  # PSI threshold
+    hyperparameters:
+      xgboost:
+        n_estimators: 1000
+        learning_rate: 0.01
+        max_depth: 8
+        subsample: 0.8
+        colsample_bytree: 0.8
+      prophet:
+        seasonality_mode: multiplicative
+        yearly_seasonality: true
+        weekly_seasonality: true
+        daily_seasonality: false
+      lstm:
+        hidden_size: 128
+        num_layers: 3
+        dropout: 0.2
+        epochs: 100
+        batch_size: 32
+  
+  price_optimization:
+    enabled: true
+    version: 2.1.0
+    algorithm: bayesian_rl  # bayesian, reinforcement_learning, bayesian_rl
+    target_metric: profit_improvement
+    target_value: 0.12  # 12% improvement
+    features_count: 50
+    training_frequency: biweekly
+    hyperparameters:
+      bayesian:
+        n_calls: 100
+        acq_func: EI  # Expected Improvement
+        n_random_starts: 10
+      rl:
+        algorithm: PPO
+        learning_rate: 0.0003
+        n_steps: 2048
+        batch_size: 64
+        n_epochs: 10
+        gamma: 0.99
+  
+  promotion_lift:
+    enabled: true
+    version: 1.0.5
+    algorithm: causal_impact
+    target_metric: confidence_level
+    target_value: 0.95  # 95% confidence
+    features_count: 30
+    training_frequency: on_promotion_completion
+    hyperparameters:
+      prior_level_sd: 0.01
+      niter: 1000
+      standardize_data: true
+  
+  recommendation:
+    enabled: true
+    version: 1.3.2
+    algorithm: hybrid  # collaborative, content_based, hybrid
+    target_metric: ctr
+    target_value: 0.15  # 15% CTR
+    features_count: 80
+    training_frequency: daily
+    hyperparameters:
+      collaborative:
+        n_factors: 100
+        n_epochs: 20
+        lr_all: 0.005
+        reg_all: 0.02
+      content_based:
+        similarity_metric: cosine
+        n_neighbors: 20
+
+# Feature Engineering
+feature_engineering:
+  time_features:
+    - day_of_week
+    - week_of_year
+    - month
+    - quarter
+    - is_weekend
+    - is_month_start
+    - is_month_end
+    - is_quarter_start
+    - is_quarter_end
+  
+  lag_features:
+    lags: [1, 7, 14, 30, 365]  # days
+    target_columns:
+      - sales_volume
+      - sales_revenue
+      - price
+  
+  rolling_features:
+    windows: [7, 30, 90]  # days
+    aggregations:
+      - mean
+      - std
+      - min
+      - max
+    target_columns:
+      - sales_volume
+      - sales_revenue
+  
+  categorical_encoding:
+    method: target_encoding  # onehot, label, target
+    smoothing: 1.0
+    
+  scaling:
+    method: standard  # standard, minmax, robust
+    features:
+      - price
+      - volume
+      - revenue
+
+# Model Serving
+serving:
+  api:
+    host: 0.0.0.0
+    port: 8001
+    workers: 4
+    timeout: 30
+    max_requests: 1000
+  
+  caching:
+    enabled: true
+    ttl: 3600  # 1 hour
+    max_size: 10000
+  
+  batch_prediction:
+    enabled: true
+    batch_size: 1000
+    max_batch_size: 10000
+  
+  monitoring:
+    enabled: true
+    log_predictions: true
+    log_features: false  # Privacy
+    alert_on_errors: true
+
+# Monitoring & Alerting
+monitoring:
+  metrics:
+    - model_accuracy
+    - prediction_latency
+    - throughput
+    - error_rate
+    - data_drift
+    - concept_drift
+  
+  alerting:
+    enabled: true
+    channels:
+      - email
+      - slack
+      - pagerduty
+    thresholds:
+      accuracy_drop: 0.05  # 5%
+      latency_p99: 200  # ms
+      error_rate: 0.01  # 1%
+      data_drift_psi: 0.2
+  
+  dashboards:
+    grafana_url: ${GRAFANA_URL:http://localhost:3000}
+    prometheus_url: ${PROMETHEUS_URL:http://localhost:9090}
+
+# Data Validation
+data_validation:
+  enabled: true
+  rules:
+    sales_volume:
+      min: 0
+      max: 1000000
+      allow_null: false
+    price:
+      min: 0
+      max: 10000
+      allow_null: false
+    date:
+      format: "%Y-%m-%d"
+      allow_null: false
+  
+  drift_detection:
+    enabled: true
+    reference_window: 30  # days
+    comparison_window: 7  # days
+    threshold: 0.2  # PSI
+
+# Model Governance
+governance:
+  model_cards:
+    enabled: true
+    required_fields:
+      - model_description
+      - intended_use
+      - training_data
+      - performance_metrics
+      - limitations
+      - bias_assessment
+  
+  explainability:
+    enabled: true
+    methods:
+      - shap
+      - lime
+    sample_size: 100
+  
+  fairness:
+    enabled: true
+    protected_attributes:
+      - customer_size
+      - region
+    metrics:
+      - statistical_parity
+      - equal_opportunity
+  
+  audit_logging:
+    enabled: true
+    log_level: INFO
+    retention_days: 90
+
+# A/B Testing
+ab_testing:
+  enabled: true
+  traffic_split:
+    model_a: 0.5
+    model_b: 0.5
+  duration_days: 14
+  success_metric: mape
+  significance_level: 0.05
+
+# AutoML
+automl:
+  enabled: false  # Enable for automated model search
+  framework: optuna
+  n_trials: 100
+  timeout_hours: 24
+  pruning: true
+
+# Deployment
+deployment:
+  staging:
+    auto_deploy: true
+    validation_required: true
+    approval_required: false
+  
+  production:
+    auto_deploy: false
+    validation_required: true
+    approval_required: true
+    rollback_on_error: true
+    canary_deployment: true
+    canary_traffic_pct: 10
+
+# Logging
+logging:
+  level: INFO
+  format: json
+  output: stdout
+  file: /var/log/tradeai-ml.log
+  rotation:
+    max_bytes: 104857600  # 100MB
+    backup_count: 10

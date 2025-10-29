@@ -33,11 +33,11 @@ const getCurrencySettings = () => {
     console.warn('Error getting currency settings from user context:', error);
   }
   
-  // Fallback to USD if no company currency is available
+  // Fallback to ZAR (South Africa) if no company currency is available
   return {
-    currency: 'USD',
-    symbol: '$',
-    locale: 'en-US'
+    currency: 'ZAR',
+    symbol: 'R',
+    locale: 'en-ZA'
   };
 };
 
@@ -49,7 +49,7 @@ const getCurrencySettings = () => {
  */
 export const formatCurrency = (amount, options = {}) => {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return '$0';
+    return 'R0';
   }
 
   const settings = getCurrencySettings();
@@ -117,6 +117,31 @@ export const formatNumber = (value, useCompact = true) => {
   }
   
   return Number(value).toLocaleString('en-US');
+};
+
+/**
+ * Safely convert value to number, returning 0 if invalid
+ * @param {any} value - The value to convert
+ * @param {number} defaultValue - Default value if conversion fails
+ * @returns {number} Numeric value or default
+ */
+export const safeNumber = (value, defaultValue = 0) => {
+  if (value === null || value === undefined || value === '') {
+    return defaultValue;
+  }
+  const num = Number(value);
+  return isNaN(num) ? defaultValue : num;
+};
+
+/**
+ * Safely format number with decimal places
+ * @param {number} value - The value to format
+ * @param {number} decimals - Number of decimal places
+ * @returns {string} Formatted number string
+ */
+export const safeToFixed = (value, decimals = 2) => {
+  const num = safeNumber(value, 0);
+  return num.toFixed(decimals);
 };
 
 /**

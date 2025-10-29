@@ -37,6 +37,7 @@ import { format } from 'date-fns';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { customerService, budgetService, promotionService, tradeSpendService } from '../../services/api';
+import { CustomerIntelligencePanel } from '../contextual-ai';
 import CustomerForm from './CustomerForm';
 import { formatCurrency } from '../../utils/formatters';
 
@@ -276,8 +277,9 @@ const CustomerDetail = () => {
       />
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Card>
+        {/* LEFT: Customer Information (70%) */}
+        <Grid item xs={12} md={8}>
+          <Card sx={{ mb: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar 
@@ -640,6 +642,18 @@ const CustomerDetail = () => {
               </Grid>
             </CardContent>
           </Card>
+        </Grid>
+
+        {/* RIGHT: AI Intelligence Panel (30%) */}
+        <Grid item xs={12} md={4}>
+          <CustomerIntelligencePanel
+            customerId={id}
+            customerData={{
+              avgOrderValue: 42000,
+              daysSinceLastOrder: 5,
+              avgOrderFrequency: 7
+            }}
+          />
         </Grid>
       </Grid>
 

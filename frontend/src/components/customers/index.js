@@ -1,3 +1,3 @@
-export { default as CustomerList } from './CustomerList';
-export { default as CustomerDetail } from './CustomerDetail';
+export { default as CustomerList } from './CustomerListEnhanced';
+export { default as CustomerDetail } from './CustomerDetailEnhanced';
 export { default as CustomerForm } from './CustomerForm';

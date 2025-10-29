@@ -14,6 +14,11 @@ const mlService = require('../services/mlService');
  * Advanced dashboard system with real-time KPIs, drill-downs, and analytics
  */
 
+// Helper: Get currency from tenant/company context
+const getCurrency = (req) => {
+  return req.tenant?.currency || req.user?.company?.currency || 'ZAR';
+};
+
 // =====================================================
 // EXECUTIVE DASHBOARDS
 // =====================================================
@@ -709,7 +714,7 @@ function calculateGrowth(current, comparison) {
 /**
  * Get KPI metrics for a date range
  */
-async function getKPIMetrics(dateRange, filters = {}) {
+async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
   const matchCriteria = {
     date: { $gte: dateRange.start, $lte: dateRange.end }
   };
@@ -765,7 +770,7 @@ async function getKPIMetrics(dateRange, filters = {}) {
   return {
     revenue: {
       value: sales.totalRevenue || 0,
-      unit: 'USD',
+      unit: currency,
       format: 'currency'
     },
     volume: {
@@ -775,7 +780,7 @@ async function getKPIMetrics(dateRange, filters = {}) {
     },
     margin: {
       value: sales.totalMargin || 0,
-      unit: 'USD',
+      unit: currency,
       format: 'currency'
     },
     marginPercent: {
@@ -785,7 +790,7 @@ async function getKPIMetrics(dateRange, filters = {}) {
     },
     tradeSpend: {
       value: spend.totalSpend || 0,
-      unit: 'USD',
+      unit: currency,
       format: 'currency'
     },
     roi: {
@@ -805,7 +810,7 @@ async function getKPIMetrics(dateRange, filters = {}) {
     },
     avgTransactionValue: {
       value: sales.transactions > 0 ? sales.totalRevenue / sales.transactions : 0,
-      unit: 'USD',
+      unit: currency,
       format: 'currency'
     }
   };
@@ -990,7 +995,7 @@ async function generateInsights(data) {
  * KPI Helper Functions
  */
 
-async function getRevenueKPI(tenantId, dateRange) {
+async function getRevenueKPI(tenantId, dateRange, currency = 'ZAR') {
   const aggregate = await SalesHistory.aggregate([
     {
       $match: {
@@ -1014,11 +1019,11 @@ async function getRevenueKPI(tenantId, dateRange) {
     value: result.current,
     change: 0, // TODO: Calculate vs previous period
     trend: 'stable',
-    unit: 'USD'
+    unit: currency
   };
 }
 
-async function getMarginKPI(tenantId, dateRange) {
+async function getMarginKPI(tenantId, dateRange, currency = 'ZAR') {
   const aggregate = await SalesHistory.aggregate([
     {
       $match: {
@@ -1043,7 +1048,7 @@ async function getMarginKPI(tenantId, dateRange) {
     percent: marginPercent,
     change: 0,
     trend: 'stable',
-    unit: 'USD'
+    unit: currency
   };
 }
 
