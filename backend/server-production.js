@@ -1769,3 +1769,52 @@ app.post('/api/rebate-accruals/:id/settle', protect, catchAsync(async (req, res)
   });
 }));
 
+
+// ============================================================================
+// ANALYTICS ENDPOINTS
+// ============================================================================
+
+const netMarginService = require('./src/analytics/netMarginService');
+
+// Financial waterfall for transaction
+app.post('/api/analytics/financial-waterfall', protect, catchAsync(async (req, res) => {
+  const { transaction } = req.body;
+  
+  const waterfall = netMarginService.calculateFinancialWaterfall(transaction);
+  
+  res.json({
+    success: true,
+    data: waterfall
+  });
+}));
+
+// Store-level margin analytics
+app.post('/api/analytics/store-margins', protect, catchAsync(async (req, res) => {
+  const { transactions } = req.body;
+  
+  const storeMargins = netMarginService.aggregateByStore(transactions);
+  
+  res.json({
+    success: true,
+    data: storeMargins
+  });
+}));
+
+// Margin trend analysis
+app.get('/api/analytics/margin-trends', protect, catchAsync(async (req, res) => {
+  const { startDate, endDate, groupBy = 'month' } = req.query;
+  
+  // Mock data for now
+  const trends = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    grossMargin: [35, 36, 34, 37, 38, 36],
+    netMargin: [18, 19, 17, 20, 21, 19],
+    revenue: [1500000, 1600000, 1550000, 1700000, 1750000, 1680000]
+  };
+  
+  res.json({
+    success: true,
+    data: trends
+  });
+}));
+
