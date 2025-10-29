@@ -1,0 +1,151 @@
+{
+  "timestamp": "2025-10-29T15:28:20.088425",
+  "duration": 7.188902854919434,
+  "results": {
+    "passed": 15,
+    "failed": 5,
+    "warnings": 3,
+    "tests": [
+      {
+        "name": "API Health Check",
+        "status": "PASS",
+        "message": "Status: healthy",
+        "details": "Database: connected"
+      },
+      {
+        "name": "Database Connection",
+        "status": "PASS",
+        "message": "MongoDB connected successfully",
+        "details": ""
+      },
+      {
+        "name": "Response Time: health",
+        "status": "PASS",
+        "message": "Fast response: 301ms",
+        "details": ""
+      },
+      {
+        "name": "Response Time: root",
+        "status": "PASS",
+        "message": "Fast response: 300ms",
+        "details": ""
+      },
+      {
+        "name": "Authentication",
+        "status": "PASS",
+        "message": "Logged in as: admin",
+        "details": "Token received: eyJhbGciOiJIUzI1NiIs..."
+      },
+      {
+        "name": "CORS Configuration",
+        "status": "PASS",
+        "message": "CORS enabled: *",
+        "details": ""
+      },
+      {
+        "name": "Unauthorized Access Protection",
+        "status": "PASS",
+        "message": "Protected endpoints require authentication",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Homepage",
+        "status": "PASS",
+        "message": "Route accessible: /",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Login Page",
+        "status": "PASS",
+        "message": "Route accessible: /login",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Dashboard",
+        "status": "PASS",
+        "message": "Route accessible: /dashboard",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Promotion Flow",
+        "status": "PASS",
+        "message": "Route accessible: /promotions/new-flow",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Customer Flow",
+        "status": "PASS",
+        "message": "Route accessible: /customers/new-flow",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Product Flow",
+        "status": "PASS",
+        "message": "Route accessible: /products/new-flow",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Trade Spend Flow",
+        "status": "PASS",
+        "message": "Route accessible: /trade-spends/new-flow",
+        "details": ""
+      },
+      {
+        "name": "Frontend Route: Budget Flow",
+        "status": "PASS",
+        "message": "Route accessible: /budgets/new-flow",
+        "details": ""
+      },
+      {
+        "name": "API: Get Customers",
+        "status": "FAIL",
+        "message": "HTTP 400",
+        "details": "{\"success\":false,\"error\":\"Invalid company: mondelez\",\"code\":\"INVALID_ID\"}"
+      },
+      {
+        "name": "API: Get Products",
+        "status": "FAIL",
+        "message": "HTTP 400",
+        "details": "{\"success\":false,\"error\":\"Invalid company: mondelez\",\"code\":\"INVALID_ID\"}"
+      },
+      {
+        "name": "API: Get Promotions",
+        "status": "FAIL",
+        "message": "HTTP 400",
+        "details": "{\"success\":false,\"error\":\"Invalid company: mondelez\",\"code\":\"INVALID_ID\"}"
+      },
+      {
+        "name": "API: Get Trade Spends",
+        "status": "FAIL",
+        "message": "HTTP 404",
+        "details": "{\"success\":false,\"error\":\"Route /api/trade-spends not found\",\"code\":\"ROUTE_NOT_FOUND\"}"
+      },
+      {
+        "name": "API: Get Budgets",
+        "status": "FAIL",
+        "message": "HTTP 404",
+        "details": "{\"success\":false,\"error\":\"Route /api/budgets not found\",\"code\":\"ROUTE_NOT_FOUND\"}"
+      },
+      {
+        "name": "AI: Promotion Optimization",
+        "status": "WARNING",
+        "message": "Endpoint not implemented (client-side fallback active)",
+        "details": ""
+      },
+      {
+        "name": "AI: Customer Analysis",
+        "status": "WARNING",
+        "message": "Endpoint not implemented (client-side fallback active)",
+        "details": ""
+      },
+      {
+        "name": "Create Customer",
+        "status": "WARNING",
+        "message": "HTTP 400",
+        "details": "Creation may not be implemented yet"
+      }
+    ]
+  },
+  "pass_rate": 65.21739130434783,
+  "base_url": "https://tradeai.gonxt.tech"
+}
