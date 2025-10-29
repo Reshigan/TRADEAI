@@ -29,6 +29,9 @@ import ForecastingDashboard from './components/forecasting/ForecastingDashboard'
 import RealTimeDashboard from './pages/RealTimeDashboard';
 import PromotionFlow from './pages/flows/PromotionFlow';
 
+// AI-Powered Flow Components (Refactored UX)
+import PromotionEntryFlow from './pages/flows/PromotionEntryFlow';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -163,6 +166,16 @@ function App() {
               <Layout user={user} onLogout={handleLogout}>
                 <PromotionList />
               </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/promotions/new-flow" 
+          element={
+            isAuthenticated ? (
+              <PromotionEntryFlow />
             ) : (
               <Navigate to="/" replace />
             )
