@@ -1,0 +1,154 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  IconButton
+} from '@mui/material';
+import { Add, Edit, Delete, PlayArrow, Stop } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
+
+const RebatesList = () => {
+  const navigate = useNavigate();
+  const [rebates, setRebates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRebates();
+  }, []);
+
+  const loadRebates = async () => {
+    try {
+      const response = await api.get('/rebates');
+      if (response.data.success) {
+        setRebates(response.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to load rebates:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this rebate?')) {
+      try {
+        await api.delete(`/rebates/${id}`);
+        loadRebates();
+      } catch (error) {
+        console.error('Failed to delete rebate:', error);
+      }
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      draft: 'default',
+      active: 'success',
+      inactive: 'warning',
+      expired: 'error'
+    };
+    return colors[status] || 'default';
+  };
+
+  const getTypeLabel = (type) => {
+    const labels = {
+      'volume': 'Volume Rebate',
+      'growth': 'Growth Rebate',
+      'early-payment': 'Early Payment',
+      'slotting': 'Slotting Fee',
+      'coop': 'Co-op Marketing',
+      'off-invoice': 'Off-Invoice',
+      'billback': 'Bill-Back',
+      'display': 'Display/Feature'
+    };
+    return labels[type] || type;
+  };
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Rebates Management
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Configure and manage all rebate programs
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => navigate('/rebates/new')}
+        >
+          New Rebate
+        </Button>
+      </Box>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Rate/Amount</TableCell>
+              <TableCell>Period</TableCell>
+              <TableCell>Accrued</TableCell>
+              <TableCell>Paid</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rebates.map((rebate) => (
+              <TableRow key={rebate._id}>
+                <TableCell>{rebate.name}</TableCell>
+                <TableCell>
+                  <Chip label={getTypeLabel(rebate.type)} size="small" />
+                </TableCell>
+                <TableCell>
+                  <Chip 
+                    label={rebate.status}
+                    color={getStatusColor(rebate.status)}
+                    size="small"
+                  />
+                </TableCell>
+                <TableCell>
+                  {rebate.calculationType === 'percentage' 
+                    ? `${rebate.rate}%`
+                    : `R${rebate.amount?.toLocaleString()}`
+                  }
+                </TableCell>
+                <TableCell>
+                  {rebate.startDate ? new Date(rebate.startDate).toLocaleDateString() : '-'}
+                </TableCell>
+                <TableCell>R{(rebate.totalAccrued || 0).toLocaleString()}</TableCell>
+                <TableCell>R{(rebate.totalPaid || 0).toLocaleString()}</TableCell>
+                <TableCell align="right">
+                  <IconButton size="small" onClick={() => navigate(`/rebates/${rebate._id}`)}>
+                    <Edit />
+                  </IconButton>
+                  <IconButton size="small" color="error" onClick={() => handleDelete(rebate._id)}>
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
+  );
+};
+
+export default RebatesList;

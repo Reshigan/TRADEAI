@@ -1589,3 +1589,183 @@ function adminOnly(req, res, next) {
   }
 }
 
+
+// ============================================================================
+// REBATES ENDPOINTS
+// ============================================================================
+
+const Rebate = require('./src/models/Rebate');
+const RebateAccrual = require('./src/models/RebateAccrual');
+const rebateCalculationService = require('./src/services/rebateCalculationService');
+
+// Get all rebates
+app.get('/api/rebates', protect, catchAsync(async (req, res) => {
+  const rebates = await Rebate.find().populate('createdBy', 'name email');
+  res.json({
+    success: true,
+    data: rebates
+  });
+}));
+
+// Get single rebate
+app.get('/api/rebates/:id', protect, catchAsync(async (req, res) => {
+  const rebate = await Rebate.findById(req.params.id)
+    .populate('createdBy', 'name email')
+    .populate('eligibleCustomers', 'name type')
+    .populate('eligibleProducts', 'name sku');
+  
+  if (!rebate) {
+    return res.status(404).json({
+      success: false,
+      message: 'Rebate not found'
+    });
+  }
+  
+  res.json({
+    success: true,
+    data: rebate
+  });
+}));
+
+// Create rebate
+app.post('/api/rebates', protect, catchAsync(async (req, res) => {
+  const rebate = await Rebate.create({
+    ...req.body,
+    createdBy: req.user._id
+  });
+  
+  res.status(201).json({
+    success: true,
+    data: rebate
+  });
+}));
+
+// Update rebate
+app.put('/api/rebates/:id', protect, catchAsync(async (req, res) => {
+  const rebate = await Rebate.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  );
+  
+  if (!rebate) {
+    return res.status(404).json({
+      success: false,
+      message: 'Rebate not found'
+    });
+  }
+  
+  res.json({
+    success: true,
+    data: rebate
+  });
+}));
+
+// Delete rebate
+app.delete('/api/rebates/:id', protect, catchAsync(async (req, res) => {
+  const rebate = await Rebate.findByIdAndDelete(req.params.id);
+  
+  if (!rebate) {
+    return res.status(404).json({
+      success: false,
+      message: 'Rebate not found'
+    });
+  }
+  
+  res.json({
+    success: true,
+    message: 'Rebate deleted successfully'
+  });
+}));
+
+// Calculate rebates for transaction
+app.post('/api/rebates/calculate', protect, catchAsync(async (req, res) => {
+  const { transaction } = req.body;
+  
+  const rebates = await rebateCalculationService.calculateRebatesForTransaction(transaction);
+  
+  res.json({
+    success: true,
+    data: rebates
+  });
+}));
+
+// Calculate net margin with all rebates
+app.post('/api/rebates/net-margin', protect, catchAsync(async (req, res) => {
+  const { transaction } = req.body;
+  
+  const margin = await rebateCalculationService.calculateNetMargin(transaction);
+  
+  res.json({
+    success: true,
+    data: margin
+  });
+}));
+
+// Get rebate accruals
+app.get('/api/rebate-accruals', protect, catchAsync(async (req, res) => {
+  const { period, status, customerId } = req.query;
+  const query = {};
+  
+  if (period) query.period = period;
+  if (status) query.status = status;
+  if (customerId) query.customer = customerId;
+  
+  const accruals = await RebateAccrual.find(query)
+    .populate('rebate', 'name type')
+    .populate('customer', 'name')
+    .sort('-periodStart');
+  
+  res.json({
+    success: true,
+    data: accruals
+  });
+}));
+
+// Approve rebate accrual
+app.post('/api/rebate-accruals/:id/approve', protect, catchAsync(async (req, res) => {
+  const accrual = await RebateAccrual.findById(req.params.id);
+  
+  if (!accrual) {
+    return res.status(404).json({
+      success: false,
+      message: 'Accrual not found'
+    });
+  }
+  
+  accrual.status = 'approved';
+  accrual.approvedBy = req.user._id;
+  accrual.approvedAt = new Date();
+  await accrual.save();
+  
+  res.json({
+    success: true,
+    data: accrual
+  });
+}));
+
+// Process settlement
+app.post('/api/rebate-accruals/:id/settle', protect, catchAsync(async (req, res) => {
+  const { paymentMethod, reference } = req.body;
+  const accrual = await RebateAccrual.findById(req.params.id);
+  
+  if (!accrual) {
+    return res.status(404).json({
+      success: false,
+      message: 'Accrual not found'
+    });
+  }
+  
+  accrual.status = 'paid';
+  accrual.paidAmount = accrual.rebateAmount;
+  accrual.settlementDate = new Date();
+  accrual.settlementReference = reference;
+  accrual.paymentMethod = paymentMethod;
+  await accrual.save();
+  
+  res.json({
+    success: true,
+    data: accrual
+  });
+}));
+
