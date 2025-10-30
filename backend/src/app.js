@@ -303,8 +303,8 @@ app.use('/api/baseline', authenticateToken, baselineRoutes);
 app.use('/api/cannibalization', authenticateToken, cannibalizationRoutes);
 app.use('/api/forward-buy', authenticateToken, forwardBuyRoutes);
 
-// Missing routes fix - Add aliases and additional endpoints
-app.use('/api', authenticateToken, missingRoutesFixRoutes);
+// ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
+// app.use('/api', authenticateToken, missingRoutesFixRoutes);
 
 // Socket.IO middleware
 io.use(async (socket, next) => {

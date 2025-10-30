@@ -5,89 +5,7 @@ const Campaign = require('../models/Campaign');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
-// Mock activity grid data for testing
-const mockActivities = [
-  {
-    _id: '1',
-    date: new Date('2024-10-15'),
-    activityType: 'promotion',
-    title: 'October Promo - Shoprite',
-    description: 'End-of-month promotion for selected products',
-    customer: { _id: 'cust1', name: 'Shoprite', code: 'SH001' },
-    products: [
-      { _id: 'prod1', name: 'Product A', sku: 'SKU001' }
-    ],
-    vendor: { _id: 'vend1', name: 'Vendor ABC', code: 'V001' },
-    value: 25000,
-    status: 'scheduled',
-    priority: 'high',
-    conflicts: []
-  },
-  {
-    _id: '2',
-    date: new Date('2024-10-20'),
-    activityType: 'trade_spend',
-    title: 'Trade Spend - Pick n Pay',
-    description: 'Listing fee for new products',
-    customer: { _id: 'cust2', name: 'Pick n Pay', code: 'PNP001' },
-    products: [
-      { _id: 'prod2', name: 'Product B', sku: 'SKU002' }
-    ],
-    vendor: { _id: 'vend2', name: 'Vendor XYZ', code: 'V002' },
-    value: 15000,
-    status: 'scheduled',
-    priority: 'medium',
-    conflicts: []
-  },
-  {
-    _id: '3',
-    date: new Date('2024-10-25'),
-    activityType: 'campaign',
-    title: 'Marketing Campaign - Woolworths',
-    description: 'Social media and in-store campaign',
-    customer: { _id: 'cust3', name: 'Woolworths', code: 'WW001' },
-    products: [
-      { _id: 'prod3', name: 'Product C', sku: 'SKU003' }
-    ],
-    vendor: { _id: 'vend1', name: 'Vendor ABC', code: 'V001' },
-    value: 30000,
-    status: 'scheduled',
-    priority: 'high',
-    conflicts: []
-  },
-  {
-    _id: '4',
-    date: new Date('2024-10-18'),
-    activityType: 'promotion',
-    title: 'Mid-Month Special - Checkers',
-    description: 'Flash sale for clearance items',
-    customer: { _id: 'cust4', name: 'Checkers', code: 'CK001' },
-    products: [
-      { _id: 'prod4', name: 'Product D', sku: 'SKU004' }
-    ],
-    vendor: { _id: 'vend2', name: 'Vendor XYZ', code: 'V002' },
-    value: 18000,
-    status: 'scheduled',
-    priority: 'medium',
-    conflicts: []
-  },
-  {
-    _id: '5',
-    date: new Date('2024-10-28'),
-    activityType: 'trade_spend',
-    title: 'Trade Investment - Spar',
-    description: 'Marketing support for regional stores',
-    customer: { _id: 'cust5', name: 'Spar', code: 'SP001' },
-    products: [
-      { _id: 'prod5', name: 'Product E', sku: 'SKU005' }
-    ],
-    vendor: { _id: 'vend1', name: 'Vendor ABC', code: 'V001' },
-    value: 12000,
-    status: 'scheduled',
-    priority: 'low',
-    conflicts: []
-  }
-];
+// ✅ PRODUCTION: All mock data removed - using real MongoDB only
 
 // Get all activity grids (list view)
 exports.getActivityGrids = asyncHandler(async (req, res, next) => {
@@ -185,54 +103,14 @@ exports.getActivityGrid = asyncHandler(async (req, res, next) => {
     limit = 100
   } = req.query;
   
-  // Check if using mock database
-  const useMockData = !process.env.MONGODB_URI || process.env.USE_MOCK_DB === 'true';
+  // ✅ PRODUCTION: Always use real MongoDB - no mock data fallback
+  // Build query with tenant isolation
+  const query = { 
+    tenantId: req.user.tenantId,
+    company: req.user.company
+  };
   
-  if (useMockData) {
-    // Use mock data
-    let filteredActivities = [...mockActivities];
-    
-    // Filter by date range
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      filteredActivities = filteredActivities.filter(activity => {
-        const activityDate = new Date(activity.date);
-        return activityDate >= start && activityDate <= end;
-      });
-    }
-    
-    // Filter by activity types
-    if (activityTypes) {
-      const types = Array.isArray(activityTypes) ? activityTypes : [activityTypes];
-      filteredActivities = filteredActivities.filter(activity => 
-        types.includes(activity.activityType)
-      );
-    }
-    
-    const count = filteredActivities.length;
-    const paginatedActivities = filteredActivities.slice((page - 1) * limit, page * limit);
-    
-    // Format for grid view
-    const gridData = formatGridData(paginatedActivities, view);
-    
-    return res.json({
-      success: true,
-      data: {
-        activities: gridData,
-        view,
-        pagination: {
-          total: count,
-          page: parseInt(page),
-          pages: Math.ceil(count / limit)
-        }
-      }
-    });
-  }
-  
-  // Build query for real database
-  const query = {};
-  
+  // Filter by date range
   if (startDate && endDate) {
     query.date = {
       $gte: new Date(startDate),
@@ -487,18 +365,10 @@ exports.getHeatMap = asyncHandler(async (req, res, next) => {
 exports.getConflicts = asyncHandler(async (req, res, next) => {
   const { startDate, endDate, severity } = req.query;
   
-  // Check if using mock database
-  const useMockData = !process.env.MONGODB_URI || process.env.USE_MOCK_DB === 'true';
-  
-  if (useMockData) {
-    // Return empty conflicts for mock data (no conflicts in mock data)
-    return res.json({
-      success: true,
-      data: []
-    });
-  }
-  
+  // ✅ PRODUCTION: Always use real MongoDB queries
   const query = {
+    tenantId: req.user.tenantId,
+    company: req.user.company,
     'conflicts.0': { $exists: true }
   };
   
