@@ -1,0 +1,111 @@
+.csv-import {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.csv-import h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.import-actions {
+  margin-bottom: 16px;
+}
+
+.file-input-wrapper {
+  margin: 16px 0;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+}
+
+.file-label:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.import-error {
+  margin: 12px 0;
+  padding: 12px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.import-result {
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+}
+
+.result-success {
+  color: #065f46;
+  margin: 4px 0;
+}
+
+.result-warning {
+  color: #92400e;
+  margin: 4px 0;
+}
+
+.result-total {
+  color: #374151;
+  margin: 4px 0;
+  font-weight: 600;
+}
+
+.upload-btn {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.btn-secondary, .btn-primary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background-color: #d1d5db;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
