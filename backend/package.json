@@ -17,6 +17,7 @@
     "seed:minimal": "node src/seeds/minimal-seed.js",
     "seed:production": "node src/seeds/production-seed.js",
     "seed:clean": "node src/seeds/clean-production-seed.js",
+    "seed:mondelez": "node src/seeders/mondelez-sa-seed.js",
     "check-db": "node src/scripts/check-db.js",
     "migrate": "node src/migrations/index.js",
     "lint": "eslint src/",
