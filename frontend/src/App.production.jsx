@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Layout
+import MainLayout from './components/layout/MainLayout';
+
 // Auth
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -29,6 +32,18 @@ import PromotionDashboard from './pages/dashboards/PromotionDashboard';
 // Budgets
 import BudgetOverview from './pages/budgets/BudgetOverview';
 import BudgetAnalytics from './pages/budgets/BudgetAnalytics';
+
+// Promotions & Campaigns
+import PromotionList from './pages/promotions/PromotionList';
+import CampaignList from './pages/campaigns/CampaignList';
+
+// Master Data
+import CustomerList from './pages/customers/CustomerList';
+import ProductList from './pages/products/ProductList';
+import VendorList from './pages/vendors/VendorList';
+
+// Reports
+import ReportBuilder from './pages/reports/ReportBuilder';
 
 // Admin Tools
 import CacheManagement from './pages/admin-tools/CacheManagement';
@@ -73,7 +88,7 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <MainLayout>{children}</MainLayout>;
 }
 
 function AppProduction() {
@@ -243,6 +258,58 @@ function AppProduction() {
             element={
               <ProtectedRoute>
                 <BudgetAnalytics />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected Routes - Master Data */}
+          <Route 
+            path="/promotions" 
+            element={
+              <ProtectedRoute>
+                <PromotionList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/campaigns" 
+            element={
+              <ProtectedRoute>
+                <CampaignList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/customers" 
+            element={
+              <ProtectedRoute>
+                <CustomerList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/products" 
+            element={
+              <ProtectedRoute>
+                <ProductList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/vendors" 
+            element={
+              <ProtectedRoute>
+                <VendorList />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected Routes - Reports */}
+          <Route 
+            path="/reports" 
+            element={
+              <ProtectedRoute>
+                <ReportBuilder />
               </ProtectedRoute>
             } 
           />
