@@ -1,0 +1,221 @@
+.twofa-setup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 24px;
+}
+
+.twofa-card {
+  background: white;
+  border-radius: 16px;
+  padding: 48px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.twofa-card h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.setup-steps {
+  margin-bottom: 24px;
+}
+
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.step-content p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.qr-code-wrapper {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.qr-code-wrapper img {
+  max-width: 200px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.manual-entry {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.manual-entry code {
+  background-color: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.verification-input {
+  width: 100%;
+  max-width: 200px;
+  padding: 12px;
+  font-size: 24px;
+  text-align: center;
+  letter-spacing: 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.verification-input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.error-message {
+  padding: 12px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-secondary, .btn-primary {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background-color: #d1d5db;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.success-icon {
+  font-size: 64px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.backup-codes-section {
+  background-color: #fef3c7;
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.backup-codes-section h3 {
+  margin: 0 0 8px 0;
+  color: #92400e;
+}
+
+.backup-codes-section p {
+  margin: 0 0 16px 0;
+  color: #78350f;
+  font-size: 14px;
+}
+
+.backup-codes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.backup-code {
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid #fbbf24;
+}
+
+.download-btn {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .twofa-card {
+    padding: 32px 24px;
+  }
+  
+  .backup-codes {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .btn-secondary, .btn-primary {
+    width: 100%;
+  }
+}
