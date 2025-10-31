@@ -18,6 +18,7 @@ import RebatesList from './pages/rebates/RebatesList';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UsersManagement from './pages/admin/UsersManagement';
 import SystemSettings from './pages/admin/SystemSettings';
+import AnalyticsDashboard from './pages/reports/AnalyticsDashboard';
 
 export const App: React.FC = () => {
   return (
@@ -48,6 +49,7 @@ export const App: React.FC = () => {
               <Route path="admin" element={<AdminDashboard />} />
               <Route path="admin/users" element={<UsersManagement />} />
               <Route path="admin/settings" element={<SystemSettings />} />
+              <Route path="analytics" element={<AnalyticsDashboard />} />
               <Route path="ml" element={<MLPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
