@@ -22,7 +22,7 @@ export default function AIChatbotPage() {
   const [input, setInput] = useState('')
 
   const chatMutation = useMutation({
-    mutationFn: aiApi.chat,
+    mutationFn: (message: string) => aiApi.chat(message),
     onSuccess: (response) => {
       const aiMessage: Message = {
         id: Date.now().toString(),
