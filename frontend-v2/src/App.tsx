@@ -15,6 +15,9 @@ import { BudgetsList } from './pages/budgets/BudgetsList';
 import { MLPage } from './pages/ml/MLPage';
 import { CustomerFlow } from './components/workflows/CustomerFlow';
 import RebatesList from './pages/rebates/RebatesList';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UsersManagement from './pages/admin/UsersManagement';
+import SystemSettings from './pages/admin/SystemSettings';
 
 export const App: React.FC = () => {
   return (
@@ -42,6 +45,9 @@ export const App: React.FC = () => {
               <Route path="products" element={<ProductsList />} />
               <Route path="budgets" element={<BudgetsList />} />
               <Route path="rebates" element={<RebatesList />} />
+              <Route path="admin" element={<AdminDashboard />} />
+              <Route path="admin/users" element={<UsersManagement />} />
+              <Route path="admin/settings" element={<SystemSettings />} />
               <Route path="ml" element={<MLPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

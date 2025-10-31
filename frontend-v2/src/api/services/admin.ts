@@ -27,6 +27,54 @@ export interface SystemHealth {
   services: { name: string; status: string }[];
 }
 
+export interface AuditLog {
+  _id: string;
+  userId: string;
+  userName: string;
+  action: string;
+  resource: string;
+  resourceId?: string;
+  details?: any;
+  ipAddress: string;
+  userAgent: string;
+  timestamp: string;
+  status: 'success' | 'failure';
+}
+
+export interface SystemSettings {
+  maintenance: {
+    enabled: boolean;
+    message?: string;
+    scheduledStart?: string;
+    scheduledEnd?: string;
+  };
+  security: {
+    passwordMinLength: number;
+    passwordRequireSpecialChar: boolean;
+    sessionTimeout: number;
+    maxLoginAttempts: number;
+    mfaEnabled: boolean;
+  };
+  notifications: {
+    emailEnabled: boolean;
+    slackEnabled: boolean;
+    webhookUrl?: string;
+  };
+  features: {
+    aiInsights: boolean;
+    mlPredictions: boolean;
+    realTimeSync: boolean;
+    advancedAnalytics: boolean;
+  };
+}
+
+export interface Permission {
+  id: string;
+  name: string;
+  description: string;
+  category: 'users' | 'roles' | 'data' | 'system' | 'reports';
+}
+
 export const adminService = {
   // User Management
   getUsers: async (): Promise<User[]> => {
@@ -91,6 +139,39 @@ export const adminService = {
 
   updateSystemSettings: async (settings: any) => {
     const response = await apiClient.put('/admin/settings', settings);
+    return response.data;
+  },
+
+  // Permission Management
+  getPermissions: async (): Promise<Permission[]> => {
+    const response = await apiClient.get('/admin/permissions');
+    return response.data;
+  },
+
+  // User Actions
+  activateUser: async (id: string): Promise<User> => {
+    const response = await apiClient.post(`/admin/users/${id}/activate`);
+    return response.data;
+  },
+
+  deactivateUser: async (id: string): Promise<User> => {
+    const response = await apiClient.post(`/admin/users/${id}/deactivate`);
+    return response.data;
+  },
+
+  resetUserPassword: async (id: string): Promise<{ temporaryPassword: string }> => {
+    const response = await apiClient.post(`/admin/users/${id}/reset-password`);
+    return response.data;
+  },
+
+  // Analytics
+  getUserStats: async () => {
+    const response = await apiClient.get('/admin/stats/users');
+    return response.data;
+  },
+
+  getActivityStats: async (period: 'day' | 'week' | 'month' | 'year') => {
+    const response = await apiClient.get('/admin/stats/activity', { params: { period } });
     return response.data;
   },
 };
