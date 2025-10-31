@@ -1,4 +1,4 @@
-import axios from '../axios';
+import apiClient from '../../lib/axios';
 
 export interface User {
   _id: string;
@@ -30,67 +30,67 @@ export interface SystemHealth {
 export const adminService = {
   // User Management
   getUsers: async (): Promise<User[]> => {
-    const response = await axios.get('/admin/users');
+    const response = await apiClient.get('/admin/users');
     return response.data;
   },
 
   getUser: async (id: string): Promise<User> => {
-    const response = await axios.get(`/admin/users/${id}`);
+    const response = await apiClient.get(`/admin/users/${id}`);
     return response.data;
   },
 
   createUser: async (data: Partial<User>): Promise<User> => {
-    const response = await axios.post('/admin/users', data);
+    const response = await apiClient.post('/admin/users', data);
     return response.data;
   },
 
   updateUser: async (id: string, data: Partial<User>): Promise<User> => {
-    const response = await axios.put(`/admin/users/${id}`, data);
+    const response = await apiClient.put(`/admin/users/${id}`, data);
     return response.data;
   },
 
   deleteUser: async (id: string): Promise<void> => {
-    await axios.delete(`/admin/users/${id}`);
+    await apiClient.delete(`/admin/users/${id}`);
   },
 
   // Role Management
   getRoles: async (): Promise<Role[]> => {
-    const response = await axios.get('/admin/roles');
+    const response = await apiClient.get('/admin/roles');
     return response.data;
   },
 
   createRole: async (data: Partial<Role>): Promise<Role> => {
-    const response = await axios.post('/admin/roles', data);
+    const response = await apiClient.post('/admin/roles', data);
     return response.data;
   },
 
   updateRole: async (id: string, data: Partial<Role>): Promise<Role> => {
-    const response = await axios.put(`/admin/roles/${id}`, data);
+    const response = await apiClient.put(`/admin/roles/${id}`, data);
     return response.data;
   },
 
   deleteRole: async (id: string): Promise<void> => {
-    await axios.delete(`/admin/roles/${id}`);
+    await apiClient.delete(`/admin/roles/${id}`);
   },
 
   // System Monitoring
   getSystemHealth: async (): Promise<SystemHealth> => {
-    const response = await axios.get('/admin/system/health');
+    const response = await apiClient.get('/admin/system/health');
     return response.data;
   },
 
   getAuditLogs: async (filters?: any) => {
-    const response = await axios.get('/admin/audit-logs', { params: filters });
+    const response = await apiClient.get('/admin/audit-logs', { params: filters });
     return response.data;
   },
 
   getSystemSettings: async () => {
-    const response = await axios.get('/admin/settings');
+    const response = await apiClient.get('/admin/settings');
     return response.data;
   },
 
   updateSystemSettings: async (settings: any) => {
-    const response = await axios.put('/admin/settings', settings);
+    const response = await apiClient.put('/admin/settings', settings);
     return response.data;
   },
 };

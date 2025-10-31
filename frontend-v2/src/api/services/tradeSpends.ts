@@ -1,4 +1,4 @@
-import axios from '../axios';
+import apiClient from '../../lib/axios';
 
 export interface TradeSpend {
   _id: string;
@@ -18,36 +18,36 @@ export interface TradeSpend {
 
 export const tradeSpendService = {
   getAll: async (): Promise<TradeSpend[]> => {
-    const response = await axios.get('/trade-spends');
+    const response = await apiClient.get('/trade-spends');
     return response.data;
   },
 
   getById: async (id: string): Promise<TradeSpend> => {
-    const response = await axios.get(`/trade-spends/${id}`);
+    const response = await apiClient.get(`/trade-spends/${id}`);
     return response.data;
   },
 
   create: async (data: Partial<TradeSpend>): Promise<TradeSpend> => {
-    const response = await axios.post('/trade-spends', data);
+    const response = await apiClient.post('/trade-spends', data);
     return response.data;
   },
 
   update: async (id: string, data: Partial<TradeSpend>): Promise<TradeSpend> => {
-    const response = await axios.put(`/trade-spends/${id}`, data);
+    const response = await apiClient.put(`/trade-spends/${id}`, data);
     return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
-    await axios.delete(`/trade-spends/${id}`);
+    await apiClient.delete(`/trade-spends/${id}`);
   },
 
   approve: async (id: string): Promise<TradeSpend> => {
-    const response = await axios.post(`/trade-spends/${id}/approve`);
+    const response = await apiClient.post(`/trade-spends/${id}/approve`);
     return response.data;
   },
 
   reject: async (id: string, reason: string): Promise<TradeSpend> => {
-    const response = await axios.post(`/trade-spends/${id}/reject`, { reason });
+    const response = await apiClient.post(`/trade-spends/${id}/reject`, { reason });
     return response.data;
   },
 };

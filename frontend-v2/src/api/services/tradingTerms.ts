@@ -1,4 +1,4 @@
-import axios from '../axios';
+import apiClient from '../../lib/axios';
 
 export interface TradingTerm {
   _id: string;
@@ -17,31 +17,31 @@ export interface TradingTerm {
 
 export const tradingTermService = {
   getAll: async (): Promise<TradingTerm[]> => {
-    const response = await axios.get('/trading-terms');
+    const response = await apiClient.get('/trading-terms');
     return response.data;
   },
 
   getById: async (id: string): Promise<TradingTerm> => {
-    const response = await axios.get(`/trading-terms/${id}`);
+    const response = await apiClient.get(`/trading-terms/${id}`);
     return response.data;
   },
 
   getByCustomer: async (customerId: string): Promise<TradingTerm[]> => {
-    const response = await axios.get(`/trading-terms/customer/${customerId}`);
+    const response = await apiClient.get(`/trading-terms/customer/${customerId}`);
     return response.data;
   },
 
   create: async (data: Partial<TradingTerm>): Promise<TradingTerm> => {
-    const response = await axios.post('/trading-terms', data);
+    const response = await apiClient.post('/trading-terms', data);
     return response.data;
   },
 
   update: async (id: string, data: Partial<TradingTerm>): Promise<TradingTerm> => {
-    const response = await axios.put(`/trading-terms/${id}`, data);
+    const response = await apiClient.put(`/trading-terms/${id}`, data);
     return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
-    await axios.delete(`/trading-terms/${id}`);
+    await apiClient.delete(`/trading-terms/${id}`);
   },
 };

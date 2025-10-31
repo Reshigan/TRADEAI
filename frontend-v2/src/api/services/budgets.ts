@@ -1,4 +1,4 @@
-import axios from '../axios';
+import apiClient from '../../lib/axios';
 
 export interface Budget {
   _id: string;
@@ -18,31 +18,31 @@ export interface Budget {
 
 export const budgetService = {
   getAll: async (): Promise<Budget[]> => {
-    const response = await axios.get('/budgets');
+    const response = await apiClient.get('/budgets');
     return response.data;
   },
 
   getById: async (id: string): Promise<Budget> => {
-    const response = await axios.get(`/budgets/${id}`);
+    const response = await apiClient.get(`/budgets/${id}`);
     return response.data;
   },
 
   create: async (data: Partial<Budget>): Promise<Budget> => {
-    const response = await axios.post('/budgets', data);
+    const response = await apiClient.post('/budgets', data);
     return response.data;
   },
 
   update: async (id: string, data: Partial<Budget>): Promise<Budget> => {
-    const response = await axios.put(`/budgets/${id}`, data);
+    const response = await apiClient.put(`/budgets/${id}`, data);
     return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
-    await axios.delete(`/budgets/${id}`);
+    await apiClient.delete(`/budgets/${id}`);
   },
 
   getAllocation: async (id: string) => {
-    const response = await axios.get(`/budgets/${id}/allocation`);
+    const response = await apiClient.get(`/budgets/${id}/allocation`);
     return response.data;
   },
 };

@@ -1,4 +1,4 @@
-import axios from '../axios';
+import apiClient from '../../lib/axios';
 
 export interface MLPrediction {
   model: string;
@@ -23,7 +23,7 @@ export interface ForecastResult {
 export const mlService = {
   // Get ML model predictions
   predict: async (model: string, features: any): Promise<MLPrediction> => {
-    const response = await axios.post('/ml/predict', { model, features });
+    const response = await apiClient.post('/ml/predict', { model, features });
     return response.data;
   },
 
@@ -32,31 +32,31 @@ export const mlService = {
     productId: string,
     horizon: number = 30
   ): Promise<ForecastResult> => {
-    const response = await axios.post('/ml/forecast/sales', { productId, horizon });
+    const response = await apiClient.post('/ml/forecast/sales', { productId, horizon });
     return response.data;
   },
 
   // Revenue forecasting
   forecastRevenue: async (horizon: number = 30): Promise<ForecastResult> => {
-    const response = await axios.post('/ml/forecast/revenue', { horizon });
+    const response = await apiClient.post('/ml/forecast/revenue', { horizon });
     return response.data;
   },
 
   // Customer churn prediction
   predictChurn: async (customerId: string) => {
-    const response = await axios.get(`/ml/customers/${customerId}/churn`);
+    const response = await apiClient.get(`/ml/customers/${customerId}/churn`);
     return response.data;
   },
 
   // Customer lifetime value
   predictLTV: async (customerId: string) => {
-    const response = await axios.get(`/ml/customers/${customerId}/ltv`);
+    const response = await apiClient.get(`/ml/customers/${customerId}/ltv`);
     return response.data;
   },
 
   // Product recommendation
   recommendProducts: async (customerId: string, limit: number = 10) => {
-    const response = await axios.get(`/ml/customers/${customerId}/recommendations`, {
+    const response = await apiClient.get(`/ml/customers/${customerId}/recommendations`, {
       params: { limit },
     });
     return response.data;
@@ -64,25 +64,25 @@ export const mlService = {
 
   // Promotion optimization
   optimizePromotion: async (promotionData: any) => {
-    const response = await axios.post('/ml/promotions/optimize', promotionData);
+    const response = await apiClient.post('/ml/promotions/optimize', promotionData);
     return response.data;
   },
 
   // Basket analysis
   analyzeBasket: async (customerId: string) => {
-    const response = await axios.get(`/ml/customers/${customerId}/basket-analysis`);
+    const response = await apiClient.get(`/ml/customers/${customerId}/basket-analysis`);
     return response.data;
   },
 
   // Price elasticity
   analyzePriceElasticity: async (productId: string) => {
-    const response = await axios.get(`/ml/products/${productId}/price-elasticity`);
+    const response = await apiClient.get(`/ml/products/${productId}/price-elasticity`);
     return response.data;
   },
 
   // Get model performance metrics
   getModelMetrics: async (modelName: string) => {
-    const response = await axios.get(`/ml/models/${modelName}/metrics`);
+    const response = await apiClient.get(`/ml/models/${modelName}/metrics`);
     return response.data;
   },
 };
