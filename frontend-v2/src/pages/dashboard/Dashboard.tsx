@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Ca
 import { TrendingUp, Package, Users, DollarSign, Activity } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AIInsightsWidget } from '../../components/ai/AIInsightsWidget';
 
 export const Dashboard: React.FC = () => {
   // Fetch real dashboard stats
@@ -99,6 +100,9 @@ export const Dashboard: React.FC = () => {
           );
         })}
       </div>
+
+      {/* AI Insights */}
+      <AIInsightsWidget context="dashboard" limit={5} />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

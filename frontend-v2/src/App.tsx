@@ -11,6 +11,9 @@ import { PromotionsList } from './pages/promotions/PromotionsList';
 import { CreatePromotion } from './pages/promotions/CreatePromotion';
 import { CustomersList } from './pages/customers/CustomersList';
 import { ProductsList } from './pages/products/ProductsList';
+import { BudgetsList } from './pages/budgets/BudgetsList';
+import { MLPage } from './pages/ml/MLPage';
+import { CustomerFlow } from './components/workflows/CustomerFlow';
 
 export const App: React.FC = () => {
   return (
@@ -34,7 +37,10 @@ export const App: React.FC = () => {
               <Route path="promotions" element={<PromotionsList />} />
               <Route path="promotions/create" element={<CreatePromotion />} />
               <Route path="customers" element={<CustomersList />} />
+              <Route path="customers/create" element={<CustomerFlow />} />
               <Route path="products" element={<ProductsList />} />
+              <Route path="budgets" element={<BudgetsList />} />
+              <Route path="ml" element={<MLPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
