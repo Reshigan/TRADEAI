@@ -1,0 +1,158 @@
+[
+  {
+    "method": "GET",
+    "path": "/health",
+    "status": 200,
+    "description": "Health check",
+    "timestamp": "2025-10-31T06:00:02.155315",
+    "success": true,
+    "auth_required": false,
+    "response": {
+      "status": "ok",
+      "timestamp": "2025-10-31T06:00:02.105Z",
+      "uptime": 36844,
+      "environment": "production",
+      "version": "1.0.0"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/",
+    "status": 401,
+    "description": "Root endpoint",
+    "timestamp": "2025-10-31T06:00:02.269623",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "message": "Access token required"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api",
+    "status": 401,
+    "description": "API root",
+    "timestamp": "2025-10-31T06:00:02.386077",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "message": "Access token required"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/docs",
+    "status": 401,
+    "description": "API documentation",
+    "timestamp": "2025-10-31T06:00:02.489674",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "message": "Access token required"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/swagger",
+    "status": 401,
+    "description": "Swagger docs",
+    "timestamp": "2025-10-31T06:00:02.599799",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "message": "Access token required"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/openapi.json",
+    "status": 401,
+    "description": "OpenAPI spec",
+    "timestamp": "2025-10-31T06:00:02.704758",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "message": "Access token required"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/auth/login",
+    "status": 429,
+    "description": "Login attempt",
+    "timestamp": "2025-10-31T06:00:02.805652",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "error": "Too many login attempts.",
+      "message": "For security reasons, your account has been temporarily locked. Please try again after 15 minutes.",
+      "lockedUntil": "2025-10-31T06:15:02.756Z"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/auth/register",
+    "status": 429,
+    "description": "Registration",
+    "timestamp": "2025-10-31T06:00:02.913069",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "error": "Too many login attempts.",
+      "message": "For security reasons, your account has been temporarily locked. Please try again after 15 minutes.",
+      "lockedUntil": "2025-10-31T06:15:02.859Z"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/auth/me",
+    "status": 429,
+    "description": "Get current user",
+    "timestamp": "2025-10-31T06:00:03.016061",
+    "success": false,
+    "auth_required": true,
+    "response": {
+      "success": false,
+      "error": "Too many login attempts.",
+      "message": "For security reasons, your account has been temporarily locked. Please try again after 15 minutes.",
+      "lockedUntil": "2025-10-31T06:15:02.963Z"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/auth/refresh",
+    "status": 429,
+    "description": "Refresh token",
+    "timestamp": "2025-10-31T06:00:03.125259",
+    "success": false,
+    "auth_required": false,
+    "response": {
+      "success": false,
+      "error": "Too many login attempts.",
+      "message": "For security reasons, your account has been temporarily locked. Please try again after 15 minutes.",
+      "lockedUntil": "2025-10-31T06:15:03.067Z"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/auth/logout",
+    "status": 429,
+    "description": "Logout",
+    "timestamp": "2025-10-31T06:00:03.753434",
+    "success": false,
+    "auth_required": true,
+    "response": {
+      "success": false,
+      "error": "Too many login attempts.",
+      "message": "For security reasons, your account has been temporarily locked. Please try again after 15 minutes.",
+      "lockedUntil": "2025-10-31T06:15:03.703Z"
+    }
+  }
+]

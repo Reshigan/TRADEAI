@@ -1,0 +1,8 @@
+{
+  "endpoint": "/users/1",
+  "method": "GET",
+  "description": "Get user by ID",
+  "status": "401",
+  "timestamp": "2025-10-31T05:58:15+00:00",
+  "response": {"success":false,"message":"Access token required"}
+}

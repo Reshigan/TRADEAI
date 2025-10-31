@@ -1,0 +1,8 @@
+{
+  "endpoint": "/health",
+  "method": "GET",
+  "description": "Health check endpoint",
+  "status": "200",
+  "timestamp": "2025-10-31T05:58:06+00:00",
+  "response": {"status":"ok","timestamp":"2025-10-31T05:58:06.595Z","uptime":36729,"environment":"production","version":"1.0.0"}
+}

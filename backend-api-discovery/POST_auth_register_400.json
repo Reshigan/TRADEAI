@@ -1,0 +1,8 @@
+{
+  "endpoint": "/auth/register",
+  "method": "POST",
+  "description": "User registration",
+  "status": "400",
+  "timestamp": "2025-10-31T05:58:09+00:00",
+  "response": {"success":false,"error":{"message":"Validation failed: undefined: First name is required, undefined: Last name is required, undefined: Employee ID is required, undefined: Invalid role, undefined: Invalid department","code":"VALIDATION_ERROR"}}
+}

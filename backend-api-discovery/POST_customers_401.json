@@ -1,0 +1,8 @@
+{
+  "endpoint": "/customers",
+  "method": "POST",
+  "description": "Create customer",
+  "status": "401",
+  "timestamp": "2025-10-31T05:58:20+00:00",
+  "response": {"success":false,"message":"Access token required"}
+}

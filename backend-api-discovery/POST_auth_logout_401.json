@@ -1,0 +1,8 @@
+{
+  "endpoint": "/auth/logout",
+  "method": "POST",
+  "description": "User logout",
+  "status": "401",
+  "timestamp": "2025-10-31T05:58:11+00:00",
+  "response": {"success":false,"message":"Access token required"}
+}

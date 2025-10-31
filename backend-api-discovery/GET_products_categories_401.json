@@ -1,0 +1,8 @@
+{
+  "endpoint": "/products/categories",
+  "method": "GET",
+  "description": "Product categories",
+  "status": "401",
+  "timestamp": "2025-10-31T05:58:28+00:00",
+  "response": {"success":false,"message":"Access token required"}
+}
