@@ -1,0 +1,98 @@
+{
+  "total_tests": 11,
+  "passed": 5,
+  "failed": 5,
+  "warnings": 1,
+  "start_time": "2025-10-31T02:11:32.745404",
+  "end_time": "2025-10-31T02:12:09.975814",
+  "tests": [
+    {
+      "name": "Homepage Load",
+      "status": "failed",
+      "duration": 1.5960937409981852,
+      "details": "CSS not loaded - no background color",
+      "screenshot": "screenshots/01_login_page_error_20251031_021134.png",
+      "timestamp": "2025-10-31T02:11:35.059630"
+    },
+    {
+      "name": "Login Authentication",
+      "status": "passed",
+      "duration": 0.8797841589985183,
+      "details": "Login successful, redirected to dashboard",
+      "screenshot": "screenshots/02_dashboard_after_login_20251031_021136.png",
+      "timestamp": "2025-10-31T02:11:36.939716"
+    },
+    {
+      "name": "Dashboard Metrics",
+      "status": "failed",
+      "duration": 0.020133489000727423,
+      "details": "Expected at least 4 percentage indicators, found 3",
+      "screenshot": "screenshots/03_dashboard_error_20251031_021137.png",
+      "timestamp": "2025-10-31T02:11:38.038185"
+    },
+    {
+      "name": "Navigation - Promotions",
+      "status": "passed",
+      "duration": 1.6150710499969136,
+      "details": "Promotions page loaded successfully",
+      "screenshot": "screenshots/04_promotions_page_20251031_021140.png",
+      "timestamp": "2025-10-31T02:11:40.654375"
+    },
+    {
+      "name": "Create Promotion Stepper",
+      "status": "failed",
+      "duration": 5.529497305000405,
+      "details": "Page.wait_for_selector: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\"[class*=\\\"stepper\\\"], [class*=\\\"Stepper\\\"]\") to be visible\n",
+      "screenshot": "screenshots/05_stepper_error_20251031_021147.png",
+      "timestamp": "2025-10-31T02:11:47.273794"
+    },
+    {
+      "name": "Navigation - Customers",
+      "status": "passed",
+      "duration": 0.6125844460002554,
+      "details": "Customers page loaded",
+      "screenshot": "screenshots/06_customers_page_20251031_021148.png",
+      "timestamp": "2025-10-31T02:11:48.886700"
+    },
+    {
+      "name": "Navigation - Products",
+      "status": "passed",
+      "duration": 0.6155688740000187,
+      "details": "Products page loaded",
+      "screenshot": "screenshots/07_products_page_20251031_021150.png",
+      "timestamp": "2025-10-31T02:11:50.502501"
+    },
+    {
+      "name": "Navigation - Budgets",
+      "status": "failed",
+      "duration": 5.530233294997743,
+      "details": "Page.wait_for_selector: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\"h1:has-text(\\\"Budgets\\\")\") to be visible\n",
+      "screenshot": "screenshots/08_budgets_error_20251031_021157.png",
+      "timestamp": "2025-10-31T02:11:57.103818"
+    },
+    {
+      "name": "Navigation - Analytics",
+      "status": "failed",
+      "duration": 5.528001106002193,
+      "details": "Page.wait_for_selector: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\"h1:has-text(\\\"Analytics\\\")\") to be visible\n",
+      "screenshot": "screenshots/09_analytics_error_20251031_021203.png",
+      "timestamp": "2025-10-31T02:12:03.707283"
+    },
+    {
+      "name": "Responsive Design",
+      "status": "passed",
+      "duration": 2.6458724349977274,
+      "details": "Responsive design tested",
+      "screenshot": "screenshots/10_mobile_view_20251031_021206.png",
+      "timestamp": "2025-10-31T02:12:07.354262"
+    },
+    {
+      "name": "Logout Functionality",
+      "status": "warning",
+      "duration": 0.5243155170028331,
+      "details": "Logout test inconclusive: Page.click: Unexpected token \"=\" while parsing css selector \"button:has-text(\"Logout\"), a:has-text(\"Logout\"), text=/Sign Out/i\". Did you mean to CSS.escape it?\nCall log:\n  - waiting for button:has-text(\"Logout\"), a:has-text(\"Logout\"), text=/Sign Out/i\n",
+      "screenshot": "screenshots/11_logout_error_20251031_021208.png",
+      "timestamp": "2025-10-31T02:12:08.951362"
+    }
+  ]
+}
