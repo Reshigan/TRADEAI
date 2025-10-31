@@ -31,6 +31,10 @@ venv/
 .venv/
 ENV/
 
+# Exception: frontend source lib directories should not be ignored
+!frontend-v2/src/lib/
+!frontend/src/lib/
+
 # Docker
 .dockerignore
 
