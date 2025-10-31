@@ -34,9 +34,67 @@ export default function MainLayout() {
         <nav className="mt-8">
           <Link
             to="/dashboard"
-            className="flex items-center px-4 py-3 hover:bg-gray-800"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
           >
+            <span className={sidebarOpen ? 'ml-0' : ''}>📊</span>
             {sidebarOpen && <span className="ml-3">Dashboard</span>}
+          </Link>
+          <Link
+            to="/budgets"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>💰</span>
+            {sidebarOpen && <span className="ml-3">Budgets</span>}
+          </Link>
+          <Link
+            to="/promotions"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>🎯</span>
+            {sidebarOpen && <span className="ml-3">Promotions</span>}
+          </Link>
+          <Link
+            to="/customers"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>👥</span>
+            {sidebarOpen && <span className="ml-3">Customers</span>}
+          </Link>
+          <Link
+            to="/products"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>📦</span>
+            {sidebarOpen && <span className="ml-3">Products</span>}
+          </Link>
+          <Link
+            to="/analytics"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>📈</span>
+            {sidebarOpen && <span className="ml-3">Analytics</span>}
+          </Link>
+          <Link
+            to="/reports"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>📄</span>
+            {sidebarOpen && <span className="ml-3">Reports</span>}
+          </Link>
+          <div className="border-t border-gray-700 my-4"></div>
+          <Link
+            to="/ml"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>🤖</span>
+            {sidebarOpen && <span className="ml-3">ML/AI</span>}
+          </Link>
+          <Link
+            to="/ai-chatbot"
+            className="flex items-center px-4 py-3 hover:bg-gray-800 transition-colors"
+          >
+            <span className={sidebarOpen ? 'ml-0' : ''}>💬</span>
+            {sidebarOpen && <span className="ml-3">AI Assistant</span>}
           </Link>
         </nav>
       </aside>
