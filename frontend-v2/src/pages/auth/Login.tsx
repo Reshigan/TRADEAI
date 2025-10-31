@@ -20,8 +20,19 @@ export const Login: React.FC = () => {
 
     try {
       const response = await authService.login(email, password);
-      setUser(response.user);
-      navigate('/');
+      // Backend returns user in response.data.user
+      if (response.data?.user) {
+        setUser({
+          _id: response.data.user.id,
+          email: response.data.user.email,
+          name: `${response.data.user.firstName} ${response.data.user.lastName}`,
+          role: response.data.user.role as 'admin' | 'manager' | 'user',
+          tenant: response.data.user.company || 'default',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+        navigate('/');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

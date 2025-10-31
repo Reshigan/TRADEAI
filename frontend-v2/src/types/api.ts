@@ -101,6 +101,21 @@ export interface TradeSpend {
 
 export interface AuthResponse {
   success: boolean;
+  message: string;
   token: string;
-  user: User;
+  data: {
+    user: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      role: string;
+      department: string;
+      company: string | null;
+    };
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  };
 }
