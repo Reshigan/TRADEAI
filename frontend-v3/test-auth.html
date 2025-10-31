@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADEAI Authentication Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">🔐 TRADEAI Authentication Test</h1>
+            
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Backend API Status</h2>
+                <div class="bg-gray-50 p-4 rounded">
+                    <p class="text-sm text-gray-600 mb-2">Backend URL:</p>
+                    <p class="font-mono text-sm bg-white p-2 rounded">https://tradeai.gonxt.tech/api</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Test Authentication</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                            placeholder="admin@tradeai.com"
+                            value="admin@tradeai.com"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                            placeholder="password123"
+                            value="password123"
+                        />
+                    </div>
+                    
+                    <button 
+                        onclick="testLogin()"
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                    >
+                        Test Login
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Results</h2>
+                <div id="results" class="bg-gray-50 p-4 rounded min-h-[200px]">
+                    <p class="text-gray-500 text-sm">Click "Test Login" to see results...</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Current Session</h2>
+                <div id="session" class="bg-gray-50 p-4 rounded">
+                    <button 
+                        onclick="checkSession()"
+                        class="mb-4 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700"
+                    >
+                        Check Session
+                    </button>
+                    <div id="sessionData" class="text-sm">
+                        <p class="text-gray-500">No session data yet...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+                <div class="flex gap-4">
+                    <button 
+                        onclick="testBackend()"
+                        class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+                    >
+                        Test Backend Health
+                    </button>
+                    <button 
+                        onclick="clearSession()"
+                        class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
+                    >
+                        Clear Session
+                    </button>
+                    <a 
+                        href="/"
+                        class="bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 inline-block"
+                    >
+                        Go to App
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://tradeai.gonxt.tech/api';
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: 'text-blue-600',
+                success: 'text-green-600',
+                error: 'text-red-600',
+                warning: 'text-yellow-600'
+            };
+            
+            const entry = document.createElement('div');
+            entry.className = `mb-2 ${colors[type]}`;
+            entry.innerHTML = `<span class="text-gray-400 text-xs">[${timestamp}]</span> ${message}`;
+            results.appendChild(entry);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        async function testBackend() {
+            log('Testing backend health...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                log(`✅ Backend is healthy! Status: ${data.status}`, 'success');
+                log(`Response: ${JSON.stringify(data, null, 2)}`, 'info');
+            } catch (error) {
+                log(`❌ Backend health check failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            document.getElementById('results').innerHTML = '';
+            log('🔐 Attempting login...', 'info');
+            log(`Email: ${email}`, 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    log('✅ Login successful!', 'success');
+                    log(`User: ${data.data.user.email}`, 'success');
+                    log(`Role: ${data.data.user.role}`, 'success');
+                    
+                    // Store tokens
+                    localStorage.setItem('accessToken', data.data.accessToken);
+                    localStorage.setItem('refreshToken', data.data.refreshToken);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    log('💾 Tokens stored in localStorage', 'success');
+                    log(`Access Token (first 50 chars): ${data.data.accessToken.substring(0, 50)}...`, 'info');
+                    
+                    checkSession();
+                } else {
+                    log(`❌ Login failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    log(`Response: ${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Network error: ${error.message}`, 'error');
+                log('💡 Tip: Check if backend is running and CORS is configured', 'warning');
+            }
+        }
+
+        function checkSession() {
+            const sessionData = document.getElementById('sessionData');
+            const accessToken = localStorage.getItem('accessToken');
+            const user = localStorage.getItem('user');
+            
+            if (!accessToken || !user) {
+                sessionData.innerHTML = '<p class="text-red-600">❌ No active session</p>';
+                return;
+            }
+            
+            const userData = JSON.parse(user);
+            sessionData.innerHTML = `
+                <div class="space-y-2">
+                    <p class="text-green-600 font-semibold">✅ Active Session</p>
+                    <div class="bg-white p-3 rounded">
+                        <p class="text-sm"><strong>Email:</strong> ${userData.email}</p>
+                        <p class="text-sm"><strong>Role:</strong> ${userData.role}</p>
+                        <p class="text-sm"><strong>Token:</strong> ${accessToken.substring(0, 30)}...</p>
+                    </div>
+                </div>
+            `;
+            log('✅ Session data retrieved from localStorage', 'success');
+        }
+
+        function clearSession() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            
+            document.getElementById('sessionData').innerHTML = '<p class="text-gray-500">Session cleared</p>';
+            log('🗑️ Session cleared from localStorage', 'warning');
+        }
+
+        // Auto-check session on load
+        window.onload = () => {
+            log('🚀 TRADEAI Authentication Test loaded', 'info');
+            checkSession();
+        };
+    </script>
+</body>
+</html>
