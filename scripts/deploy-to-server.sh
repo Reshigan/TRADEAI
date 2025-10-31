@@ -20,7 +20,7 @@ NC='\033[0m'
 # Configuration
 SSH_KEY="/workspace/project/Vantax-2.pem"
 SERVER_USER="ubuntu"
-SERVER_HOST="tradeai.gonxt.tech"
+SERVER_HOST="3.10.212.143"  # Production server IP
 GITHUB_TOKEN="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"
 DEPLOY_DIR="/tmp/tradeai-deploy"
 FRONTEND_DIR="/var/www/tradeai-frontend"
