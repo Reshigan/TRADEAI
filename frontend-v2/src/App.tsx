@@ -19,6 +19,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import UsersManagement from './pages/admin/UsersManagement';
 import SystemSettings from './pages/admin/SystemSettings';
 import AnalyticsDashboard from './pages/reports/AnalyticsDashboard';
+import ReportsManagement from './pages/reports/ReportsManagement';
 
 export const App: React.FC = () => {
   return (
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
               <Route path="admin/users" element={<UsersManagement />} />
               <Route path="admin/settings" element={<SystemSettings />} />
               <Route path="analytics" element={<AnalyticsDashboard />} />
+              <Route path="reports" element={<ReportsManagement />} />
               <Route path="ml" element={<MLPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
