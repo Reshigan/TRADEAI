@@ -17,13 +17,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const loadUser = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
+      // Check if authenticated
+      if (authService.isAuthenticated()) {
         try {
+          // Try to get stored user first for fast load
+          const storedUser = authService.getStoredUser();
+          if (storedUser) {
+            setUser(storedUser);
+          }
+          
+          // Then verify and get fresh data from server
           const userData = await authService.getCurrentUser();
           setUser(userData);
         } catch (error) {
+          console.error('Failed to load user:', error);
+          // Clear all auth data on error
           localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          setUser(null);
         }
       }
       setIsLoading(false);
