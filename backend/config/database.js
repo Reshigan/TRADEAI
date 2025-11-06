@@ -19,7 +19,7 @@ const logger = winston.createLogger({
 
 const connectDatabase = async () => {
     try {
-        const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/trade-ai';
+        const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/tradeai';
         
         logger.info('Attempting to connect to MongoDB...');
         

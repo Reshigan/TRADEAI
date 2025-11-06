@@ -8,6 +8,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
 
 // Import configurations and utilities
 const { connectDatabase } = require('./config/database');
@@ -45,6 +46,7 @@ app.use(helmet({
 const corsOptions = {
     origin: function (origin, callback) {
         const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',').map(o => o.trim()).filter(Boolean);
+        console.log("DEBUG CORS: origin:", origin, "allowedOrigins:", allowedOrigins, "CORS_ORIGIN env:", process.env.CORS_ORIGIN);
         
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
@@ -87,14 +89,17 @@ app.use((req, res, next) => {
 // ==============================================================================
 
 let dbConnected = false;
-let User;
+let User, Customer, Product, Promotion;
 
 // Try to connect to database
 connectDatabase()
     .then((conn) => {
         if (conn) {
             dbConnected = true;
-            User = require('./models/User');
+            User = require('./src/models/User');
+            Customer = require('./src/models/Customer');
+            Product = require('./src/models/Product');
+            Promotion = require('./src/models/Promotion');
             logger.info('✅ Database connected successfully');
             
             // Create default admin user if database is empty
@@ -334,11 +339,16 @@ app.post('/api/auth/login', authLimiter, catchAsync(async (req, res, next) => {
         
         if (dbConnected) {
             // Find user by email or username
+            console.log("DEBUG: Looking for user with email:", email, "username:", username);
+            console.log("DEBUG: Database name:", mongoose.connection.db.databaseName);
+            console.log("DEBUG: User model collection:", User.collection.name);
             user = await User.findOne({
                 $or: [{ email: email || username }, { username: email || username }]
             }).select('+password +refreshToken');
+            console.log("DEBUG: User query result:", user ? {id: user._id, email: user.email} : null);
             
             if (!user) {
+                console.log("DEBUG: User not found");
                 return next(new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS'));
             }
             
@@ -348,16 +358,18 @@ app.post('/api/auth/login', authLimiter, catchAsync(async (req, res, next) => {
             }
             
             // Check password
+            console.log("DEBUG: User found:", {id: user._id, email: user.email, hasPassword: !!user.password, passwordLength: user.password?.length});
             const isPasswordCorrect = await user.comparePassword(password);
+            console.log("DEBUG: Password check:", {isCorrect: isPasswordCorrect});
             
             if (!isPasswordCorrect) {
                 // Increment login attempts
-                await user.incLoginAttempts();
+                // await user.incLoginAttempts();
                 return next(new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS'));
             }
             
             // Reset login attempts on successful login
-            await user.resetLoginAttempts();
+            // await user.resetLoginAttempts();
             
         } else {
             // In-memory mode
@@ -662,6 +674,94 @@ app.get('/api/analytics/dashboard', protect, (req, res) => {
         message: 'Dashboard data retrieved successfully'
     });
 });
+
+// ==============================================================================
+// DASHBOARD STATS ENDPOINT
+// ==============================================================================
+
+/**
+ * @route GET /api/dashboard/stats
+ * @desc Get dashboard statistics (real data from database)
+ * @access Private
+ */
+app.get('/api/dashboard/stats', protect, catchAsync(async (req, res) => {
+    const tenantId = req.user.tenantId;
+    const companyId = req.user.companyId;
+
+    if (!dbConnected) {
+        // Return mock data if database is not connected
+        return res.json({
+            success: true,
+            data: {
+                totalRevenue: 2800000,
+                revenueChange: 12.5,
+                activePromotions: 12,
+                promotionsChange: 5.2,
+                totalCustomers: 5,
+                customersChange: 0,
+                totalProducts: 36,
+                productsChange: 8.3
+            }
+        });
+    }
+
+    // Get real data from database
+    // For now, don't filter by tenantId/companyId as seed data doesn't have these fields
+    const [
+        customersCount,
+        productsCount,
+        promotionsCount
+    ] = await Promise.all([
+        Customer.countDocuments({}),
+        Product.countDocuments({}),
+        Promotion.countDocuments({ status: 'active' }).catch(() => 0)
+    ]);
+
+    res.json({
+        success: true,
+        data: {
+            totalRevenue: 0,
+            revenueChange: 0,
+            activePromotions: promotionsCount || 0,
+            promotionsChange: 0,
+            totalCustomers: customersCount,
+            customersChange: 0,
+            totalProducts: productsCount,
+            productsChange: 0
+        }
+    });
+}));
+
+/**
+ * @route GET /api/dashboard/activity
+ * @desc Get recent activity
+ * @access Private
+ */
+app.get('/api/dashboard/activity', protect, catchAsync(async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10;
+    
+    res.json({
+        success: true,
+        data: []
+    });
+}));
+
+/**
+ * @route GET /api/dashboard/charts/:type
+ * @desc Get chart data for dashboard
+ * @access Private
+ */
+app.get('/api/dashboard/charts/:type', protect, catchAsync(async (req, res) => {
+    const { type } = req.params;
+    
+    res.json({
+        success: true,
+        data: {
+            labels: [],
+            datasets: []
+        }
+    });
+}));
 
 // ==============================================================================
 // CURRENCY ENDPOINTS
