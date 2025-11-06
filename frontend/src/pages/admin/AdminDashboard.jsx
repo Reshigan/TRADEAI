@@ -15,7 +15,7 @@ import {
   Settings,
   People,
   LocalOffer,
-  Workflow,
+  AccountTree,
   Psychology,
   Security,
   Backup,
@@ -54,7 +54,7 @@ const AdminDashboard = () => {
     {
       id: 'workflows',
       label: 'Workflow Automation',
-      icon: <Workflow />,
+      icon: <AccountTree />,
       component: WorkflowAutomation,
       description: 'Setup approval chains and notifications'
     }
@@ -109,7 +109,7 @@ const AdminDashboard = () => {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Workflow color="info" sx={{ fontSize: 40 }} />
+                <AccountTree color="info" sx={{ fontSize: 40 }} />
                 <Box>
                   <Typography variant="h4">12</Typography>
                   <Typography variant="body2" color="text.secondary">
