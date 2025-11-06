@@ -9,6 +9,7 @@ import RebateEligibilityStep from './customer/steps/RebateEligibilityStep';
 import AIAnalysisStep from './customer/steps/AIAnalysisStep';
 import ReviewSubmitStep from './customer/steps/ReviewSubmitStep';
 import api from '../../services/api';
+import { stepValidators } from '../../utils/customerValidation';
 
 const CustomerFlow = () => {
   const navigate = useNavigate();
@@ -19,68 +20,48 @@ const CustomerFlow = () => {
       title: 'Basic Information',
       description: 'Enter customer basic details',
       component: BasicInfoStep,
-      validation: {
-        fields: {
-          name: { required: true, minLength: 3 },
-          type: { required: true },
-          territory: { required: true }
-        }
-      },
-      aiEnabled: true
-    },
-    {
-      id: 'contact',
-      title: 'Contact Details',
-      description: 'Enter contact information',
-      component: ContactDetailsStep,
-      validation: {
-        fields: {
-          email: { required: true, email: true },
-          phone: { required: true },
-          address: { required: false }
-        }
-      },
+      validator: stepValidators[0],
       aiEnabled: true
     },
     {
       id: 'business',
       title: 'Business Profile',
-      description: 'Enter business information',
+      description: 'Enter business information and performance metrics',
       component: BusinessProfileStep,
-      validation: {
-        fields: {
-          industry: { required: true },
-          annualVolume: { required: true, number: true, min: 0 }
-        }
-      },
+      validator: stepValidators[1],
+      aiEnabled: true
+    },
+    {
+      id: 'contact',
+      title: 'Contact Details',
+      description: 'Enter contact information and address',
+      component: ContactDetailsStep,
+      validator: stepValidators[2],
       aiEnabled: true
     },
     {
       id: 'payment',
       title: 'Payment Terms',
-      description: 'Configure payment terms',
+      description: 'Configure payment terms and financial details',
       component: PaymentTermsStep,
-      validation: {
-        fields: {
-          creditLimit: { required: true, number: true, min: 0 },
-          paymentDays: { required: true, number: true, min: 0, max: 90 }
-        }
-      },
+      validator: stepValidators[3],
       aiEnabled: true
     },
     {
       id: 'rebates',
       title: 'Rebate Eligibility',
-      description: 'Select eligible rebate programs',
+      description: 'Configure rebate programs and trading terms',
       component: RebateEligibilityStep,
+      validator: stepValidators[4],
       optional: true,
       aiEnabled: true
     },
     {
       id: 'ai-analysis',
       title: 'AI Analysis',
-      description: 'AI-powered risk and growth analysis',
+      description: 'AI-powered risk assessment and growth analysis',
       component: AIAnalysisStep,
+      validator: stepValidators[5],
       aiEnabled: true
     },
     {
@@ -88,6 +69,7 @@ const CustomerFlow = () => {
       title: 'Review & Submit',
       description: 'Review all information before submitting',
       component: ReviewSubmitStep,
+      validator: stepValidators[6],
       aiEnabled: false
     }
   ];
