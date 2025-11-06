@@ -9,6 +9,22 @@ const transactionController = require('../controllers/transactionController');
 const { authenticateToken, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
 const { body, param, query } = require('express-validator');
+const multer = require('multer');
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(csv|xlsx|xls)$/)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV and Excel files are allowed'));
+    }
+  }
+});
 
 // Apply authentication to all transaction routes
 router.use(authenticateToken);
@@ -102,6 +118,26 @@ router.post('/bulk/approve',
   validate,
   authorize('manager', 'admin'),
   transactionController.bulkApprove
+);
+
+// Bulk upload
+router.post('/bulk/upload',
+  upload.single('file'),
+  transactionController.bulkUpload
+);
+
+// Download template
+router.get('/template',
+  query('format').optional().isIn(['csv', 'xlsx']),
+  validate,
+  transactionController.downloadTemplate
+);
+
+// Export transactions
+router.get('/export',
+  query('format').optional().isIn(['csv', 'xlsx']),
+  validate,
+  transactionController.exportTransactions
 );
 
 module.exports = router;

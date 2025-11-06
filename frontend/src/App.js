@@ -37,6 +37,10 @@ import TradeSpendEntryFlow from './pages/flows/TradeSpendEntryFlow';
 import BudgetPlanningFlow from './pages/flows/BudgetPlanningFlow';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
+// Transaction Components (Feature 2)
+import TransactionEntryFlow from './pages/transactions/TransactionEntryFlow';
+import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -592,6 +596,30 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <TransactionManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/transactions/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TransactionEntryFlow />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/transactions/bulk-upload" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BulkUploadTransactions />
               </Layout>
             ) : (
               <Navigate to="/" replace />
