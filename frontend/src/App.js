@@ -35,6 +35,7 @@ import CustomerEntryFlow from './pages/flows/CustomerEntryFlow';
 import ProductEntryFlow from './pages/flows/ProductEntryFlow';
 import TradeSpendEntryFlow from './pages/flows/TradeSpendEntryFlow';
 import BudgetPlanningFlow from './pages/flows/BudgetPlanningFlow';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -641,8 +642,4 @@ function App() {
   );
 }
 
-export default App;// Add to routes section
-import AdminDashboard from './pages/admin/AdminDashboard';
-
-// Add route:
-// <Route path="/admin" element={<AdminDashboard />} />
+export default App;
