@@ -7,7 +7,7 @@ import {
   useDeactivateUser,
   useResetPassword,
 } from '../../hooks/useAdmin';
-import DataTable from '../../components/DataTable/DataTable';
+import { DataTable } from '../../components/DataTable/DataTable';
 import { User } from '../../api/services/admin';
 
 export default function UsersManagement() {

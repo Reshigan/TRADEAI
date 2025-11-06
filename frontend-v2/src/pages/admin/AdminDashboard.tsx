@@ -1,6 +1,6 @@
 import { Users, Shield, Activity, Settings, AlertCircle, CheckCircle } from 'lucide-react';
 import { useSystemHealth, useUserStats, useActivityStats } from '../../hooks/useAdmin';
-import { Link } from 'router-dom';
+import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const { data: healthData } = useSystemHealth();

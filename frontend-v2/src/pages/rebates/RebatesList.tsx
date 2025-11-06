@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, DollarSign, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { useRebates, useRebateAnalytics, useDeleteRebate } from '../../hooks/useRebates';
-import DataTable from '../../components/DataTable/DataTable';
+import { DataTable } from '../../components/DataTable/DataTable';
 import { Rebate } from '../../api/services/rebates';
 import { useNavigate } from 'react-router-dom';
 

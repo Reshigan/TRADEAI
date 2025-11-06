@@ -3,8 +3,17 @@ import { ApiResponse, Customer, PaginatedResponse } from '../../types/api';
 
 export const customersService = {
   async getAll(params?: any): Promise<PaginatedResponse<Customer>> {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Customer>>>('/customers', { params });
-    return response.data.data;
+    const response = await apiClient.get('/customers', { params });
+    // Backend returns: {success, data: [...], total, totalPages, currentPage}
+    // We need to return: {data: [...], total, page, limit, totalPages}
+    const { data, total, totalPages, currentPage } = response.data;
+    return {
+      data,
+      total,
+      totalPages,
+      page: parseInt(currentPage) || 1,
+      limit: params?.limit || 20
+    };
   },
 
   async getById(id: string): Promise<Customer> {

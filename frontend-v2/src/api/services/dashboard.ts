@@ -22,17 +22,17 @@ export interface RecentActivity {
 export const dashboardService = {
   getStats: async (): Promise<DashboardStats> => {
     const response = await apiClient.get('/dashboard/stats');
-    return response.data;
+    return response.data.data; // Backend returns {success, data} structure
   },
 
   getRecentActivity: async (limit = 10): Promise<RecentActivity[]> => {
     const response = await apiClient.get(`/dashboard/activity?limit=${limit}`);
-    return response.data;
+    return response.data.data; // Backend returns {success, data} structure
   },
 
   getChartData: async (type: string, dateRange?: { start: string; end: string }) => {
     const params = dateRange ? `?start=${dateRange.start}&end=${dateRange.end}` : '';
     const response = await apiClient.get(`/dashboard/charts/${type}${params}`);
-    return response.data;
+    return response.data.data; // Backend returns {success, data} structure
   },
 };

@@ -33,6 +33,76 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// Dashboard stats endpoint for frontend-v2
+router.get('/stats', async (req, res, next) => {
+  try {
+    const Customer = require('../models/Customer');
+    const Product = require('../models/Product');
+    const Promotion = require('../models/Promotion');
+    const TradeSpend = require('../models/TradeSpend');
+
+    // Get current counts
+    const totalCustomers = await Customer.countDocuments({ status: { $ne: 'deleted' } });
+    const totalProducts = await Product.countDocuments({ status: { $ne: 'deleted' } });
+    const activePromotions = await Promotion.countDocuments({ 
+      status: 'active',
+      'period.endDate': { $gte: new Date() }
+    });
+
+    // Calculate total revenue from trade spends
+    const revenueResult = await TradeSpend.aggregate([
+      { $match: { status: { $in: ['approved', 'completed'] } } },
+      { $group: { _id: null, total: { $sum: '$amount.spent' } } }
+    ]);
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
+    // Return stats
+    res.json({
+      success: true,
+      data: {
+        totalRevenue,
+        revenueChange: 0,
+        activePromotions,
+        promotionsChange: 0,
+        totalCustomers,
+        customersChange: 0,
+        totalProducts,
+        productsChange: 0
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Dashboard activity endpoint
+router.get('/activity', async (req, res, next) => {
+  try {
+    const { limit = 10 } = req.query;
+    // For now, return empty array - can be populated later
+    res.json({
+      success: true,
+      data: []
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Dashboard chart data endpoint
+router.get('/charts/:type', async (req, res, next) => {
+  try {
+    const { type } = req.params;
+    // For now, return empty array - can be populated later
+    res.json({
+      success: true,
+      data: []
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Executive Dashboard - restricted to senior roles
 router.get('/executive',
   authorize('director', 'board', 'admin', 'super_admin'),

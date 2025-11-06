@@ -550,83 +550,106 @@ const AnalyticsDashboard = () => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Total Sales
+          {analyticsData && analyticsData.summary ? (
+            <>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Total Budget
+                      </Typography>
+                      <Typography variant="h5" color="primary">
+                        {analyticsData.summary.currencySymbol || '$'}
+                        {(analyticsData.summary.totalBudget || 0).toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {analyticsData.summary.activePromotions || 0} active promotions
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Total Used
+                      </Typography>
+                      <Typography variant="h5" color="primary">
+                        {analyticsData.summary.currencySymbol || '$'}
+                        {(analyticsData.summary.totalUsed || 0).toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" color={analyticsData.summary.budgetUtilization > 80 ? "error.main" : "success.main"}>
+                        {analyticsData.summary.budgetUtilization || 0}% utilization
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Total Customers
+                      </Typography>
+                      <Typography variant="h5" color="primary">
+                        {(analyticsData.summary.totalCustomers || 0).toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Active customer base
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+              
+              {analyticsData.topCustomers && analyticsData.topCustomers.length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Top Performing Customers
                   </Typography>
-                  <Typography variant="h5" color="primary">
-                    $12,345,678
+                  <ul>
+                    {analyticsData.topCustomers.slice(0, 4).map((customer, index) => (
+                      <li key={index}>
+                        <Typography variant="body2">
+                          {customer.name} - {analyticsData.summary.currencySymbol || '$'}
+                          {(customer.totalSpend || 0).toLocaleString()} 
+                          <span style={{ color: customer.growth > 0 ? 'green' : 'red' }}>
+                            {' '}({customer.growth > 0 ? '+' : ''}{customer.growth}% growth)
+                          </span>
+                        </Typography>
+                      </li>
+                    ))}
+                  </ul>
+                </Box>
+              )}
+              
+              {analyticsData.categoryPerformance && analyticsData.categoryPerformance.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Category Performance (ROI)
                   </Typography>
-                  <Typography variant="body2" color="success.main">
-                    +12.5% vs. previous period
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            
-            <Grid item xs={12} md={4}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Total Trade Spend
-                  </Typography>
-                  <Typography variant="h5" color="primary">
-                    $2,468,135
-                  </Typography>
-                  <Typography variant="body2" color="error.main">
-                    +8.3% vs. previous period
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            
-            <Grid item xs={12} md={4}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    ROI
-                  </Typography>
-                  <Typography variant="h5" color="primary">
-                    5.2x
-                  </Typography>
-                  <Typography variant="body2" color="success.main">
-                    +0.4x vs. previous period
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-          
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Key Insights
-            </Typography>
-            <ul>
-              <li>
-                <Typography variant="body2">
-                  Walmart promotions showed the highest ROI at 7.3x, a 15% increase from the previous period.
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="body2">
-                  Premium Cereal continues to be the top-performing product with $2.1M in sales.
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="body2">
-                  Budget utilization is at 68%, which is on track for this point in the fiscal year.
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="body2">
-                  AI predicts a 14% increase in sales for Q3 based on current promotion plans.
-                </Typography>
-              </li>
-            </ul>
-          </Box>
+                  <ul>
+                    {analyticsData.categoryPerformance.slice(0, 3).map((cat, index) => (
+                      <li key={index}>
+                        <Typography variant="body2">
+                          {cat.category} - ROI: {cat.roi}x (Spend: {analyticsData.summary.currencySymbol || '$'}
+                          {(cat.spend || 0).toLocaleString()})
+                        </Typography>
+                      </li>
+                    ))}
+                  </ul>
+                </Box>
+              )}
+            </>
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 3 }}>
+              <Typography color="text.secondary">
+                No analytics data available. Please check back later.
+              </Typography>
+            </Box>
+          )}
         </CardContent>
       </Card>
     </Box>
