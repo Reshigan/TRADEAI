@@ -1,0 +1,96 @@
+config:
+  target: "https://tradeai.gonxt.tech"
+  phases:
+    # Normal load: 20 users for 2 minutes
+    - duration: 120
+      arrivalRate: 20
+      name: "Normal load - 20 users"
+    
+    # Spike: sudden jump to 500 users for 1 minute
+    - duration: 60
+      arrivalRate: 500
+      name: "SPIKE - 500 users"
+    
+    # Return to normal: 20 users for 2 minutes
+    - duration: 120
+      arrivalRate: 20
+      name: "Recovery - 20 users"
+    
+    # Second spike: 800 users for 1 minute
+    - duration: 60
+      arrivalRate: 800
+      name: "SPIKE 2 - 800 users"
+    
+    # Final recovery: 10 users
+    - duration: 60
+      arrivalRate: 10
+      name: "Final recovery - 10 users"
+  
+  plugins:
+    expect: {}
+  
+  # Thresholds for spike test
+  ensure:
+    maxErrorRate: 5                    # Max 5% errors during spike
+    p95: 6000                          # 95th percentile < 6s
+    p99: 20000                         # 99th percentile < 20s
+  
+  timeout: 60
+  
+  http:
+    pool: 800
+  
+  variables:
+    testEmail: "admin@trade-ai.com"
+    testPassword: "Admin@123"
+
+scenarios:
+  - name: "Quick API Check"
+    weight: 35
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Homepage Access"
+    weight: 30
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+
+  - name: "Authentication Flow"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          expect:
+            - statusCode: 200
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+  - name: "AI Data Request"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"

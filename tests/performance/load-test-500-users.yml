@@ -1,0 +1,149 @@
+config:
+  target: "https://tradeai.gonxt.tech"
+  phases:
+    # Warm-up: ramp to 50 users over 2 minutes
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 50
+      name: "Warm-up to 50 users"
+    
+    # Ramp up stage 1: 50 to 200 users over 3 minutes
+    - duration: 180
+      arrivalRate: 50
+      rampTo: 200
+      name: "Ramp up to 200 users"
+    
+    # Ramp up stage 2: 200 to 500 users over 3 minutes
+    - duration: 180
+      arrivalRate: 200
+      rampTo: 500
+      name: "Ramp up to 500 users"
+    
+    # Sustained high load: maintain 500 users for 5 minutes
+    - duration: 300
+      arrivalRate: 500
+      name: "Sustained load - 500 users"
+    
+    # Ramp down: decrease to 50 users over 2 minutes
+    - duration: 120
+      arrivalRate: 500
+      rampTo: 50
+      name: "Ramp down"
+  
+  plugins:
+    expect: {}
+  
+  # Performance thresholds for 500 users
+  ensure:
+    maxErrorRate: 5                    # Max 5% error rate under high load
+    p95: 5000                          # 95th percentile < 5s
+    p99: 15000                         # 99th percentile < 15s
+  
+  # Request timeout
+  timeout: 45
+  
+  # Connection pool settings for high concurrency
+  http:
+    pool: 500
+  
+  # Variables
+  variables:
+    testEmail: "admin@trade-ai.com"
+    testPassword: "Admin@123"
+
+scenarios:
+  - name: "Quick Health Check"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Homepage Access"
+    weight: 25
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+
+  - name: "Fast Authentication"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          expect:
+            - statusCode: 200
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+  - name: "Single AI Widget Load"
+    weight: 15
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Load one widget (randomly via weight)
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+
+  - name: "Full Dashboard Load (High Load)"
+    weight: 10
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Load all widgets
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+      
+      - get:
+          url: "/api/ai/optimize/price"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - get:
+          url: "/api/ai/segment/customers"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - get:
+          url: "/api/ai/detect/anomalies"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            timeRange: "30d"
+      
+      - get:
+          url: "/api/ai/models/health"
+          headers:
+            Authorization: "Bearer {{ authToken }}"

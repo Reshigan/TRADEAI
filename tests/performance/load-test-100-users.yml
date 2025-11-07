@@ -1,0 +1,217 @@
+config:
+  target: "https://tradeai.gonxt.tech"
+  phases:
+    # Warm-up: ramp to 20 users over 2 minutes
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 20
+      name: "Warm-up to 20 users"
+    
+    # Ramp up: increase from 20 to 100 users over 3 minutes
+    - duration: 180
+      arrivalRate: 20
+      rampTo: 100
+      name: "Ramp up to 100 users"
+    
+    # Sustained load: maintain 100 users for 5 minutes
+    - duration: 300
+      arrivalRate: 100
+      name: "Sustained load - 100 users"
+    
+    # Ramp down: decrease to 10 users over 2 minutes
+    - duration: 120
+      arrivalRate: 100
+      rampTo: 10
+      name: "Ramp down"
+  
+  plugins:
+    expect: {}
+  
+  # Performance thresholds for 100 users
+  ensure:
+    maxErrorRate: 2                    # Max 2% error rate
+    p95: 3000                          # 95th percentile < 3s
+    p99: 8000                          # 99th percentile < 8s
+  
+  # Request timeout
+  timeout: 30
+  
+  # Variables
+  variables:
+    testEmail: "admin@trade-ai.com"
+    testPassword: "Admin@123"
+
+scenarios:
+  - name: "Homepage and Static Assets"
+    weight: 25
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      
+      - think: 1  # User reads the page for 1 second
+
+  - name: "API Health Monitoring"
+    weight: 15
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      - get:
+          url: "/ml/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+
+  - name: "User Authentication"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          expect:
+            - statusCode: 200
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 0.5
+      
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  - name: "AI Dashboard - Demand Forecast Workflow"
+    weight: 12
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 1
+      
+      # Get demand forecast
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+          expect:
+            - statusCode: 200
+      
+      - think: 2  # User analyzes forecast data
+
+  - name: "AI Dashboard - Price Optimization Workflow"
+    weight: 12
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 1
+      
+      # Get price optimization
+      - get:
+          url: "/api/ai/optimize/price"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 2
+
+  - name: "AI Dashboard - Customer Segmentation Workflow"
+    weight: 8
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 1
+      
+      # Get customer segments
+      - get:
+          url: "/api/ai/segment/customers"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 2
+
+  - name: "AI Dashboard - Full Dashboard Load"
+    weight: 8
+    flow:
+      # Login
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 1
+      
+      # Load all AI widgets (parallel user behavior simulation)
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+      
+      - get:
+          url: "/api/ai/optimize/price"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - get:
+          url: "/api/ai/segment/customers"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - get:
+          url: "/api/ai/detect/anomalies"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            timeRange: "30d"
+      
+      - get:
+          url: "/api/ai/models/health"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 5  # User reviews dashboard

@@ -1,0 +1,153 @@
+config:
+  target: "https://tradeai.gonxt.tech"
+  phases:
+    # Warm-up phase: gradually ramp up to 10 users
+    - duration: 60
+      arrivalRate: 1
+      name: "Warm-up"
+    
+    # Baseline load: 10 concurrent users
+    - duration: 180
+      arrivalRate: 10
+      name: "Baseline load - 10 users"
+    
+    # Ramp down
+    - duration: 30
+      arrivalRate: 1
+      name: "Ramp down"
+  
+  plugins:
+    expect: {}
+  
+  # Performance thresholds
+  ensure:
+    maxErrorRate: 1                    # Max 1% error rate
+    p95: 2000                          # 95th percentile < 2s
+    p99: 5000                          # 99th percentile < 5s
+  
+  # Variables for authentication
+  variables:
+    testEmail: "admin@trade-ai.com"
+    testPassword: "Admin@123"
+
+scenarios:
+  - name: "Website Home Page"
+    weight: 20
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+            - contentType: text/html
+            - hasHeader: "content-type"
+
+  - name: "API Health Check"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: status
+            - equals:
+                - "{{ status }}"
+                - "ok"
+
+  - name: "ML Service Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/ml/health"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: status
+
+  - name: "Authentication Flow"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: token
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: email
+
+  - name: "AI Dashboard Data Flow"
+    weight: 15
+    flow:
+      # Login first
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Get demand forecast data
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      # Get price optimization data
+      - get:
+          url: "/api/ai/optimize/price"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      # Get customer segmentation data
+      - get:
+          url: "/api/ai/segment/customers"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      # Get anomaly detection data
+      - get:
+          url: "/api/ai/detect/anomalies"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            timeRange: "30d"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      # Get model health data
+      - get:
+          url: "/api/ai/models/health"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - contentType: json

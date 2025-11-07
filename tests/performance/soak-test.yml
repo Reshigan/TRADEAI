@@ -1,0 +1,159 @@
+config:
+  target: "https://tradeai.gonxt.tech"
+  phases:
+    # Ramp up to moderate load
+    - duration: 300
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp up to 50 users"
+    
+    # Sustained moderate load for 30 minutes (endurance test)
+    - duration: 1800
+      arrivalRate: 50
+      name: "Soak test - 50 users for 30 minutes"
+    
+    # Ramp down
+    - duration: 180
+      arrivalRate: 50
+      rampTo: 5
+      name: "Ramp down"
+  
+  plugins:
+    expect: {}
+  
+  # Strict thresholds for soak test (should maintain quality over time)
+  ensure:
+    maxErrorRate: 1                    # Max 1% error rate
+    p95: 2500                          # 95th percentile < 2.5s
+    p99: 6000                          # 99th percentile < 6s
+  
+  timeout: 30
+  
+  http:
+    pool: 100
+  
+  variables:
+    testEmail: "admin@trade-ai.com"
+    testPassword: "Admin@123"
+
+scenarios:
+  - name: "Homepage Access Pattern"
+    weight: 20
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      
+      - think: 3
+
+  - name: "API Health Monitoring"
+    weight: 15
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+      
+      - think: 5
+      
+      - get:
+          url: "/ml/health"
+          expect:
+            - statusCode: 200
+      
+      - think: 5
+
+  - name: "Realistic User Session - Authentication"
+    weight: 25
+    flow:
+      # User visits homepage
+      - get:
+          url: "/"
+      
+      - think: 2
+      
+      # User logs in
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          expect:
+            - statusCode: 200
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 1
+      
+      # User checks profile
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 3
+
+  - name: "Realistic User Session - Dashboard Browsing"
+    weight: 40
+    flow:
+      # User logs in
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - think: 2
+      
+      # User views demand forecast
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+      
+      - think: 8  # User analyzes forecast
+      
+      # User views price optimization
+      - get:
+          url: "/api/ai/optimize/price"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 6  # User reviews prices
+      
+      # User checks customer segments
+      - get:
+          url: "/api/ai/segment/customers"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 5  # User analyzes segments
+      
+      # User checks model health
+      - get:
+          url: "/api/ai/models/health"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 3
+      
+      # User refreshes demand forecast
+      - get:
+          url: "/api/ai/forecast/demand"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2025-01-01"
+            endDate: "2025-12-31"
+      
+      - think: 5
