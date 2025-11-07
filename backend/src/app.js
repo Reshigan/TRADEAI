@@ -59,6 +59,7 @@ const baselineRoutes = require('./routes/baseline');
 const cannibalizationRoutes = require('./routes/cannibalization');
 const forwardBuyRoutes = require('./routes/forwardBuy');
 const currencyRoutes = require('./routes/currency');
+const rebateRoutes = require('./routes/rebate');
 
 // Create Express app
 const app = express();
@@ -267,6 +268,7 @@ app.use('/api/products', authenticateToken, productRoutes);
 app.use('/api/vendors', authenticateToken, vendorRoutes);
 app.use('/api/budgets', authenticateToken, budgetRoutes);
 app.use('/api/promotions', authenticateToken, promotionRoutes);
+app.use('/api/rebates', authenticateToken, rebateRoutes);
 app.use('/api/campaigns', authenticateToken, campaignRoutes);
 app.use('/api/trade-spends', authenticateToken, tradeSpendRoutes);
 app.use('/api/activity-grid', authenticateToken, activityGridRoutes);
