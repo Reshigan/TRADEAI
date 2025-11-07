@@ -41,6 +41,9 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import TransactionEntryFlow from './pages/transactions/TransactionEntryFlow';
 import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions';
 
+// AI Dashboard (Feature 7.2)
+import AIDashboard from './pages/ai/AIDashboard';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -296,6 +299,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <AnalyticsDashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/ai-dashboard" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <AIDashboard />
               </Layout>
             ) : (
               <Navigate to="/" replace />
