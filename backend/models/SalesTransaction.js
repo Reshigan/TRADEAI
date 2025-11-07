@@ -212,4 +212,4 @@ salesTransactionSchema.statics.getTopProducts = function(companyId, limit = 10) 
   ]);
 };
 
-module.exports = mongoose.model('SalesTransaction', salesTransactionSchema);
+module.exports = mongoose.models.SalesTransaction || mongoose.model('SalesTransaction', salesTransactionSchema);
