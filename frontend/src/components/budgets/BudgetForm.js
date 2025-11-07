@@ -81,7 +81,28 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await onSubmit(formData);
+      // Find selected customer name
+      const selectedCustomer = customers.find(c => c.id === formData.customer_id);
+      const customerName = selectedCustomer ? selectedCustomer.name : 'Unknown';
+      
+      // Transform form data to match backend Budget model
+      const transformedData = {
+        name: `${customerName} ${formData.year} Budget`,
+        code: `BUD-${formData.year}-${formData.customer_id.substring(0, 8).toUpperCase()}`,
+        year: parseInt(formData.year),
+        budgetType: 'budget',
+        scope: {
+          level: 'customer',
+          customers: [formData.customer_id]
+        },
+        status: formData.status,
+        allocated: parseFloat(formData.total_amount) || 0,
+        remaining: parseFloat(formData.total_amount) || 0,
+        spent: 0,
+        notes: formData.notes
+      };
+      
+      await onSubmit(transformedData);
       setLoading(false);
     } catch (error) {
       console.error('Error submitting form:', error);
