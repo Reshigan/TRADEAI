@@ -6,9 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const mlService = require('../../services/mlService');
-const { authenticateJWT } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
-router.use(authenticateJWT);
+router.use(authenticate);
 
 router.get('/health', async (req, res) => {
   const health = await mlService.healthCheck();
