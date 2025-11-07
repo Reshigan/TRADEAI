@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const rebateController = require('../controllers/rebateController');
-const { authenticate } = require('../middleware/auth');
-const { authorize } = require('../middleware/authorize');
+const { authenticate, authorize } = require('../middleware/auth');
 
 // All routes require authentication
 router.use(authenticate);
