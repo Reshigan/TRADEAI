@@ -49,6 +49,12 @@ const cannibalizationRoutes = require('./cannibalization');
 // Forward Buy Detection Routes
 const forwardBuyRoutes = require('./forwardBuy');
 
+// Rebate Routes
+const rebateRoutes = require('./rebate');
+
+// Trade Spend Analytics Routes
+const tradeSpendAnalyticsRoutes = require('./tradeSpendAnalytics');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -95,6 +101,12 @@ router.use('/cannibalization', cannibalizationRoutes);
 
 // Forward Buy Detection Routes
 router.use('/forward-buy', forwardBuyRoutes);
+
+// Rebate Routes
+router.use('/rebates', rebateRoutes);
+
+// Trade Spend Analytics Routes
+router.use('/trade-spend-analytics', tradeSpendAnalyticsRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {
