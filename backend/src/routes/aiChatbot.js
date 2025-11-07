@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const aiChatbotController = require('../controllers/aiChatbotController');
-const auth = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
 // All routes require authentication
-router.use(auth);
+router.use(authenticate);
 
 /**
  * @route   GET /api/ai/chatbot/initialize

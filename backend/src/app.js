@@ -48,6 +48,9 @@ const analyticsRoutes = require('./routes/analytics');
 const advancedAnalyticsRoutes = require('./routes/advancedAnalytics');
 const integrationRoutes = require('./routes/integration');
 const mlRoutes = require('./routes/ml');
+const aiRoutes = require('./routes/ai');
+const aiPromotionRoutes = require('./routes/aiPromotion');
+const aiChatbotRoutes = require('./routes/aiChatbot');
 const salesRoutes = require('./routes/sales');
 const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
@@ -288,6 +291,9 @@ app.use('/api/analytics', authenticateToken, analyticsRoutes);
 app.use('/api/advanced', advancedAnalyticsRoutes); // Phase 2 - Advanced Analytics (has own auth)
 app.use('/api/integration', authenticateToken, integrationRoutes);
 app.use('/api/ml', authenticateToken, mlRoutes);
+app.use('/api/ai', aiRoutes); // AI routes have their own auth middleware
+app.use('/api/ai-promotion', authenticateToken, aiPromotionRoutes);
+app.use('/api/ai-chatbot', authenticateToken, aiChatbotRoutes);
 
 // Currency conversion routes
 app.use('/api', authenticateToken, currencyRoutes);
