@@ -281,9 +281,29 @@ const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
                 <Typography variant="body2" color="textSecondary" gutterBottom>
                   <strong>Summary:</strong>
                 </Typography>
-                <Typography variant="caption" display="block">
-                  {anomalies.summary}
-                </Typography>
+                <Box display="flex" gap={1} flexWrap="wrap">
+                  {anomalies.summary.high > 0 && (
+                    <Chip
+                      label={`High: ${anomalies.summary.high}`}
+                      color="error"
+                      size="small"
+                    />
+                  )}
+                  {anomalies.summary.medium > 0 && (
+                    <Chip
+                      label={`Medium: ${anomalies.summary.medium}`}
+                      color="warning"
+                      size="small"
+                    />
+                  )}
+                  {anomalies.summary.low > 0 && (
+                    <Chip
+                      label={`Low: ${anomalies.summary.low}`}
+                      color="info"
+                      size="small"
+                    />
+                  )}
+                </Box>
               </Box>
             )}
           </>

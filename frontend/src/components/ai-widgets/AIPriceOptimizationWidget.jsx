@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 
-const AIPriceOptimizationWidget = ({ productId, currentPrice }) => {
+const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 25.99 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [optimization, setOptimization] = useState(null);
@@ -49,7 +49,13 @@ const AIPriceOptimizationWidget = ({ productId, currentPrice }) => {
         `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/optimize/price`,
         {
           productId,
-          currentPrice
+          currentPrice,
+          cost: currentPrice * 0.6,  // Assume 40% margin
+          constraints: {
+            min_price: currentPrice * 0.8,
+            max_price: currentPrice * 1.3
+          },
+          optimizationObjective: 'profit'
         },
         {
           headers: {
@@ -58,7 +64,20 @@ const AIPriceOptimizationWidget = ({ productId, currentPrice }) => {
         }
       );
 
-      setOptimization(response.data);
+      // Transform ML service response to widget format
+      const data = response.data;
+      const transformedOptimization = {
+        productId: data.product_id,
+        currentPrice: data.current_price,
+        optimizedPrice: data.optimal_price,
+        priceChangePct: data.price_change_pct,
+        expectedImpact: data.expected_impact,
+        confidence: data.confidence * 100,  // Convert to percentage
+        modelVersion: data.model_version,
+        timestamp: data.timestamp
+      };
+
+      setOptimization(transformedOptimization);
     } catch (err) {
       console.error('Optimization error:', err);
       setError(err.response?.data?.message || 'Failed to load optimization');
@@ -69,7 +88,7 @@ const AIPriceOptimizationWidget = ({ productId, currentPrice }) => {
 
   const calculatePriceChange = () => {
     if (!optimization) return null;
-    const change = ((optimization.optimizedPrice - currentPrice) / currentPrice) * 100;
+    const change = optimization.priceChangePct || ((optimization.optimizedPrice - currentPrice) / currentPrice) * 100;
     return {
       direction: change >= 0 ? 'increase' : 'decrease',
       percentage: Math.abs(change).toFixed(1)

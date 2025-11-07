@@ -36,7 +36,7 @@ import {
 } from 'recharts';
 import axios from 'axios';
 
-const AIDemandForecastWidget = ({ productId, customerId, days = 7 }) => {
+const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 7 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [forecast, setForecast] = useState(null);
@@ -56,7 +56,8 @@ const AIDemandForecastWidget = ({ productId, customerId, days = 7 }) => {
         {
           productId,
           customerId,
-          days
+          horizonDays: days,
+          includePromotions: true
         },
         {
           headers: {
@@ -65,7 +66,22 @@ const AIDemandForecastWidget = ({ productId, customerId, days = 7 }) => {
         }
       );
 
-      setForecast(response.data);
+      // Transform ML service response to widget format
+      const data = response.data;
+      const transformedForecast = {
+        predictions: data.forecast.map(f => ({
+          date: f.date,
+          value: f.predicted_volume,
+          confidenceLower: f.confidence_lower,
+          confidenceUpper: f.confidence_upper
+        })),
+        confidence: data.accuracy_estimate ? Math.round((1 - data.accuracy_estimate) * 100) : 89,
+        modelVersion: data.model_version,
+        featuresCount: data.features_count,
+        timestamp: data.timestamp
+      };
+
+      setForecast(transformedForecast);
     } catch (err) {
       console.error('Forecast error:', err);
       setError(err.response?.data?.message || 'Failed to load forecast');
