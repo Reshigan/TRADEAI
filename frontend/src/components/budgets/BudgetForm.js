@@ -81,14 +81,31 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     e.preventDefault();
     setLoading(true);
     try {
+      // Get company ID from user data
+      const userData = localStorage.getItem('user');
+      let companyId = null;
+      if (userData) {
+        const user = JSON.parse(userData);
+        companyId = user.companyId || user.company?.id || user.company?._id;
+      }
+      
+      if (!companyId) {
+        throw new Error('Company ID not found. Please log in again.');
+      }
+      
       // Find selected customer name
       const selectedCustomer = customers.find(c => c.id === formData.customer_id);
       const customerName = selectedCustomer ? selectedCustomer.name : 'Unknown';
       
+      // Generate a safe code from customer_id
+      const customerId = formData.customer_id || '';
+      const customerCode = customerId.length >= 8 ? customerId.substring(0, 8).toUpperCase() : customerId.toUpperCase().padEnd(8, '0');
+      
       // Transform form data to match backend Budget model
       const transformedData = {
+        company: companyId,
         name: `${customerName} ${formData.year} Budget`,
-        code: `BUD-${formData.year}-${formData.customer_id.substring(0, 8).toUpperCase()}`,
+        code: `BUD-${formData.year}-${customerCode}`,
         year: parseInt(formData.year),
         budgetType: 'budget',
         scope: {
@@ -102,6 +119,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
         notes: formData.notes
       };
       
+      console.log('Transformed budget data:', transformedData);
       await onSubmit(transformedData);
       setLoading(false);
     } catch (error) {
