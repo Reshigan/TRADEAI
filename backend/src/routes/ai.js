@@ -51,4 +51,85 @@ router.post('/recommend/products', async (req, res) => {
   res.json(result.success ? result.data : { recommendations: result.fallback, error: result.error, usingFallback: true });
 });
 
+router.post('/segment/customers', async (req, res) => {
+  try {
+    const { method = 'rfm', tenantId, startDate, endDate } = req.body;
+    const tenant = tenantId || req.user.tenantId;
+    
+    if (!tenant) {
+      return res.status(400).json({ error: 'Tenant ID required' });
+    }
+    
+    const result = await mlService.segmentCustomers({ 
+      method, 
+      tenant, 
+      startDate, 
+      endDate 
+    });
+    
+    res.json(result.success ? result.data : { 
+      ...result.fallback, 
+      error: result.error, 
+      usingFallback: true 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/segment/customers/:customerId', async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    
+    if (!customerId) {
+      return res.status(400).json({ error: 'Customer ID required' });
+    }
+    
+    const result = await mlService.getCustomerSegment(customerId);
+    
+    res.json(result.success ? result.data : { 
+      error: result.error, 
+      usingFallback: true 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/detect/anomalies', async (req, res) => {
+  try {
+    const { 
+      metricType, 
+      tenantId, 
+      startDate, 
+      endDate, 
+      threshold 
+    } = req.body;
+    
+    const tenant = tenantId || req.user.tenantId;
+    
+    if (!tenant || !metricType) {
+      return res.status(400).json({ 
+        error: 'Tenant ID and metric type required' 
+      });
+    }
+    
+    const result = await mlService.detectAnomalies({ 
+      metricType, 
+      tenant, 
+      startDate, 
+      endDate, 
+      threshold 
+    });
+    
+    res.json(result.success ? result.data : { 
+      ...result.fallback, 
+      error: result.error, 
+      usingFallback: true 
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

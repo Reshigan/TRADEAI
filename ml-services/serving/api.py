@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional, Any
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import logging
 import sys
 import os
@@ -119,12 +119,58 @@ class ProductRecommendationResponse(BaseModel):
     model_version: str
     timestamp: str
 
+class CustomerSegmentationRequest(BaseModel):
+    method: str = Field("rfm", description="Segmentation method: rfm, abc, or clustering")
+    tenant_id: str = Field(..., description="Tenant identifier")
+    start_date: Optional[str] = Field(None, description="Start date for analysis")
+    end_date: Optional[str] = Field(None, description="End date for analysis")
+
+class Segment(BaseModel):
+    name: str
+    count: int
+    percentage: float
+    avgRevenue: float
+    color: str
+
+class CustomerSegmentationResponse(BaseModel):
+    method: str
+    totalCustomers: int
+    segments: List[Segment]
+    insights: List[Dict[str, str]]
+    timestamp: str
+
+class AnomalyDetectionRequest(BaseModel):
+    metric_type: str = Field(..., description="Metric type: sales, inventory, returns, etc.")
+    tenant_id: str = Field(..., description="Tenant identifier")
+    start_date: Optional[str] = Field(None, description="Start date for analysis")
+    end_date: Optional[str] = Field(None, description="End date for analysis")
+    threshold: float = Field(2.5, description="Anomaly detection threshold (std deviations)")
+
+class Anomaly(BaseModel):
+    id: str
+    date: str
+    metricType: str
+    actualValue: float
+    expectedValue: float
+    deviation: float
+    severity: str
+    description: str
+
+class AnomalyDetectionResponse(BaseModel):
+    metricType: str
+    detectedAnomalies: int
+    anomalies: List[Anomaly]
+    summary: Dict[str, int]
+    timestamp: str
+
 # Global model cache
 model_cache = {
     'demand_forecasting': None,
     'price_optimization': None,
     'promotion_lift': None,
-    'recommendations': None
+    'recommendations': None,
+    'customer_segmentation': None,
+    'anomaly_detection': None
 }
 
 # Model loading functions
@@ -395,6 +441,100 @@ async def recommend_products(request: ProductRecommendationRequest):
         
     except Exception as e:
         logger.error(f"Recommendations failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Customer Segmentation Endpoint
+@app.post("/api/v1/segment/customers", response_model=CustomerSegmentationResponse)
+async def segment_customers(request: CustomerSegmentationRequest):
+    """Segment customers using RFM, ABC, or clustering methods"""
+    
+    logger.info(f"Customer segmentation request: method={request.method}, tenant={request.tenant_id}")
+    
+    try:
+        # Fallback data for now (ML model integration later)
+        segments_data = {
+            'rfm': [
+                {'name': 'Champions', 'count': 45, 'percentage': 15.0, 'avgRevenue': 85000, 'color': '#10b981'},
+                {'name': 'Loyal Customers', 'count': 62, 'percentage': 20.7, 'avgRevenue': 52000, 'color': '#3b82f6'},
+                {'name': 'Potential Loyalists', 'count': 38, 'percentage': 12.7, 'avgRevenue': 35000, 'color': '#8b5cf6'},
+                {'name': 'At Risk', 'count': 28, 'percentage': 9.3, 'avgRevenue': 42000, 'color': '#f59e0b'},
+                {'name': 'Need Attention', 'count': 127, 'percentage': 42.3, 'avgRevenue': 18000, 'color': '#6b7280'}
+            ],
+            'abc': [
+                {'name': 'Segment A', 'count': 60, 'percentage': 20.0, 'avgRevenue': 95000, 'color': '#10b981'},
+                {'name': 'Segment B', 'count': 90, 'percentage': 30.0, 'avgRevenue': 35000, 'color': '#3b82f6'},
+                {'name': 'Segment C', 'count': 150, 'percentage': 50.0, 'avgRevenue': 12000, 'color': '#6b7280'}
+            ]
+        }
+        
+        segments = segments_data.get(request.method, segments_data['rfm'])
+        total_customers = sum(s['count'] for s in segments)
+        
+        insights = [
+            {'type': 'info', 'message': f'Total customers analyzed: {total_customers}'},
+            {'type': 'success', 'message': f'{segments[0]["name"]} represent {segments[0]["percentage"]}% of customers'}
+        ]
+        
+        return CustomerSegmentationResponse(
+            method=request.method,
+            totalCustomers=total_customers,
+            segments=segments,
+            insights=insights,
+            timestamp=datetime.now().isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Customer segmentation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Anomaly Detection Endpoint
+@app.post("/api/v1/detect/anomalies", response_model=AnomalyDetectionResponse)
+async def detect_anomalies(request: AnomalyDetectionRequest):
+    """Detect anomalies in metrics (sales, inventory, returns, etc.)"""
+    
+    logger.info(f"Anomaly detection request: metric={request.metric_type}, tenant={request.tenant_id}")
+    
+    try:
+        # Fallback data for now (ML model integration later)
+        anomalies = [
+            {
+                'id': 'anom_001',
+                'date': (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'),
+                'metricType': request.metric_type,
+                'actualValue': 45000,
+                'expectedValue': 78000,
+                'deviation': -42.3,
+                'severity': 'high',
+                'description': f'Significant drop in {request.metric_type}'
+            },
+            {
+                'id': 'anom_002',
+                'date': (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d'),
+                'metricType': request.metric_type,
+                'actualValue': 125000,
+                'expectedValue': 80000,
+                'deviation': 56.3,
+                'severity': 'medium',
+                'description': f'Unusual spike in {request.metric_type}'
+            }
+        ]
+        
+        summary = {
+            'high': sum(1 for a in anomalies if a['severity'] == 'high'),
+            'medium': sum(1 for a in anomalies if a['severity'] == 'medium'),
+            'low': sum(1 for a in anomalies if a['severity'] == 'low')
+        }
+        
+        return AnomalyDetectionResponse(
+            metricType=request.metric_type,
+            detectedAnomalies=len(anomalies),
+            anomalies=anomalies,
+            summary=summary,
+            timestamp=datetime.now().isoformat()
+        )
+        
+    except Exception as e:
+        logger.error(f"Anomaly detection failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Model Information Endpoint

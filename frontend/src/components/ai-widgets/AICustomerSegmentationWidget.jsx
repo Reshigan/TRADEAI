@@ -58,7 +58,8 @@ const AICustomerSegmentationWidget = ({ companyId }) => {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/segment/customers`,
         {
-          companyId
+          method: 'rfm',
+          tenantId: companyId
         },
         {
           headers: {
@@ -67,13 +68,39 @@ const AICustomerSegmentationWidget = ({ companyId }) => {
         }
       );
 
-      setSegmentation(response.data);
+      const data = response.data;
+      
+      // Transform data to match widget format
+      const transformedData = {
+        totalCustomers: data.totalCustomers || 0,
+        confidence: data.usingFallback ? 50 : 85,
+        status: data.usingFallback ? 'degraded' : 'active',
+        segments: (data.segments || []).map(seg => ({
+          name: seg.name,
+          count: seg.count,
+          percentage: seg.percentage,
+          avgValue: seg.avgRevenue,
+          colorKey: getColorKey(seg.name)
+        })),
+        insights: (data.insights || []).map(i => i.message || i),
+        recommendations: (data.recommendations || []).map(r => r.action || r)
+      };
+
+      setSegmentation(transformedData);
     } catch (err) {
       console.error('Segmentation error:', err);
       setError(err.response?.data?.message || 'Failed to load segmentation');
     } finally {
       setLoading(false);
     }
+  };
+
+  const getColorKey = (segmentName) => {
+    const name = segmentName.toLowerCase();
+    if (name.includes('champion') || name.includes('segment a')) return 'highValue';
+    if (name.includes('at risk') || name.includes('lost')) return 'atRisk';
+    if (name.includes('loyal') || name.includes('potential')) return 'medium';
+    return 'lowValue';
   };
 
   const getSegmentIcon = (segment) => {

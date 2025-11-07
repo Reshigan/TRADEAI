@@ -57,8 +57,8 @@ const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/detect/anomalies`,
         {
-          scope,
-          timeRange: '24h'
+          metricType: scope === 'all' ? 'sales' : scope,
+          threshold: 2.5
         },
         {
           headers: {
@@ -67,7 +67,26 @@ const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
         }
       );
 
-      setAnomalies(response.data);
+      const data = response.data;
+      
+      // Transform data to match widget format
+      const transformedData = {
+        count: data.detectedAnomalies || 0,
+        status: data.warning ? 'degraded' : 'active',
+        items: (data.anomalies || []).map(a => ({
+          id: a.id,
+          type: a.metricType,
+          severity: a.severity,
+          description: a.description,
+          timestamp: a.date,
+          value: a.actualValue,
+          expectedValue: a.expectedValue,
+          deviation: a.deviation
+        })),
+        summary: data.summary || { high: 0, medium: 0, low: 0 }
+      };
+
+      setAnomalies(transformedData);
     } catch (err) {
       console.error('Anomaly detection error:', err);
       setError(err.response?.data?.message || 'Failed to load anomalies');
