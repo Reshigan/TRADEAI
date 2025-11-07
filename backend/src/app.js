@@ -60,6 +60,7 @@ const cannibalizationRoutes = require('./routes/cannibalization');
 const forwardBuyRoutes = require('./routes/forwardBuy');
 const currencyRoutes = require('./routes/currency');
 const rebateRoutes = require('./routes/rebate');
+const tradeSpendAnalyticsRoutes = require('./routes/tradeSpendAnalytics');
 
 // Create Express app
 const app = express();
@@ -271,6 +272,7 @@ app.use('/api/promotions', authenticateToken, promotionRoutes);
 app.use('/api/rebates', authenticateToken, rebateRoutes);
 app.use('/api/campaigns', authenticateToken, campaignRoutes);
 app.use('/api/trade-spends', authenticateToken, tradeSpendRoutes);
+app.use('/api/trade-spend-analytics', authenticateToken, tradeSpendAnalyticsRoutes);
 app.use('/api/activity-grid', authenticateToken, activityGridRoutes);
 app.use('/api/activities', authenticateToken, activitiesRoutes);
 app.use('/api/auth-enhanced', authEnhancedRoutes);
