@@ -92,10 +92,10 @@ const BudgetList = () => {
     try {
       if (selectedBudget) {
         // Update existing budget
-        // await budgetService.update(selectedBudget.id, budgetData);
+        await budgetService.update(selectedBudget.id, budgetData);
       } else {
         // Create new budget
-        // await budgetService.create(budgetData);
+        await budgetService.create(budgetData);
       }
       
       // Refresh budgets
@@ -103,7 +103,7 @@ const BudgetList = () => {
       setOpenForm(false);
     } catch (err) {
       console.error('Error saving budget:', err);
-      // Handle error
+      setError(err.message || 'Failed to save budget');
     }
   };
 
