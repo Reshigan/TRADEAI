@@ -13,8 +13,11 @@ const Register = () => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    companyId: '',
-    tenantId: ''
+    companyId: '690c703c755f331594b3c503', // Default company ID
+    tenantId: '690c7011bb89caac6d854b0a', // Default tenant ID
+    employeeId: '',
+    role: 'analyst',
+    department: 'sales'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -32,7 +35,7 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...registerData } = formData;
-      const response = await axios.post(`${API_BASE_URL}/auth-enhanced/register`, registerData);
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, registerData);
 
       if (response.data.success) {
         localStorage.setItem('token', response.data.tokens.accessToken);
@@ -56,7 +59,7 @@ const Register = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, #1976D2 0%, #0D47A1 100%)',
       padding: '20px'
     }}>
       <div style={{
@@ -186,7 +189,55 @@ const Register = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
+                Employee ID
+              </label>
+              <input
+                type="text"
+                value={formData.employeeId}
+                onChange={(e) => setFormData(prev => ({ ...prev, employeeId: e.target.value }))}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box'
+                }}
+                placeholder="EMP001"
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
+                Department
+              </label>
+              <select
+                value={formData.department}
+                onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <option value="sales">Sales</option>
+                <option value="marketing">Marketing</option>
+                <option value="finance">Finance</option>
+                <option value="operations">Operations</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
                 Company ID
@@ -204,6 +255,7 @@ const Register = () => {
                   fontSize: '14px',
                   boxSizing: 'border-box'
                 }}
+                placeholder="COMP001"
               />
             </div>
 
@@ -224,6 +276,7 @@ const Register = () => {
                   fontSize: '14px',
                   boxSizing: 'border-box'
                 }}
+                placeholder="TEN001"
               />
             </div>
           </div>
@@ -234,7 +287,7 @@ const Register = () => {
             style={{
               width: '100%',
               padding: '14px',
-              backgroundColor: loading ? '#9ca3af' : '#667eea',
+              backgroundColor: loading ? '#9ca3af' : '#1976D2',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -243,8 +296,8 @@ const Register = () => {
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'background 0.2s'
             }}
-            onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = '#5568d3')}
-            onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = '#667eea')}
+            onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = '#1565C0')}
+            onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = '#1976D2')}
           >
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
@@ -257,7 +310,7 @@ const Register = () => {
             style={{
               background: 'none',
               border: 'none',
-              color: '#667eea',
+              color: '#1976D2',
               fontWeight: '600',
               cursor: 'pointer',
               textDecoration: 'underline'
