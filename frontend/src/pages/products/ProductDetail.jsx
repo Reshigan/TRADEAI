@@ -76,12 +76,29 @@ const ProductDetail = () => {
         <section className="detail-section">
           <h2>Information</h2>
           <div className="detail-grid">
-            {Object.keys(data).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(key => (
-              <div key={key} className="detail-item">
-                <label>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</label>
-                <p>{typeof data[key] === 'object' ? JSON.stringify(data[key]) : (data[key] || 'N/A')}</p>
-              </div>
-            ))}
+            {Object.keys(data).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(key => {
+              let displayValue = 'N/A';
+              try {
+                if (data[key] === null || data[key] === undefined) {
+                  displayValue = 'N/A';
+                } else if (typeof data[key] === 'object') {
+                  displayValue = JSON.stringify(data[key]);
+                } else if (typeof data[key] === 'number') {
+                  displayValue = data[key].toLocaleString();
+                } else {
+                  displayValue = String(data[key]);
+                }
+              } catch (error) {
+                displayValue = 'N/A';
+              }
+              
+              return (
+                <div key={key} className="detail-item">
+                  <label>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</label>
+                  <p>{displayValue}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -90,11 +107,11 @@ const ProductDetail = () => {
           <div className="detail-grid">
             <div className="detail-item">
               <label>Created At</label>
-              <p>{data.createdAt ? new Date(data.createdAt).toLocaleString() : 'N/A'}</p>
+              <p>{data.createdAt && data.createdAt !== 'N/A' ? new Date(data.createdAt).toLocaleString() : 'N/A'}</p>
             </div>
             <div className="detail-item">
               <label>Last Updated</label>
-              <p>{data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'N/A'}</p>
+              <p>{data.updatedAt && data.updatedAt !== 'N/A' ? new Date(data.updatedAt).toLocaleString() : 'N/A'}</p>
             </div>
           </div>
         </section>
