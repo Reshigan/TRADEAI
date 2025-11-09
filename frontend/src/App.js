@@ -49,6 +49,8 @@ import AIAssistant from './components/AIAssistant/AIAssistant';
 
 // Command Center (New Home Dashboard)
 import CommandCenter from './components/CommandCenter/CommandCenter';
+import BudgetPlanningWizard from './components/Wizards/BudgetPlanningWizard';
+import PromotionWizard from './components/Wizards/PromotionWizard';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -157,7 +159,9 @@ function App() {
           path="/budgets/new-flow" 
           element={
             isAuthenticated ? (
-              <BudgetPlanningFlow />
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetPlanningWizard />
+              </Layout>
             ) : (
               <Navigate to="/" replace />
             )
@@ -225,7 +229,9 @@ function App() {
           path="/promotions/new-flow" 
           element={
             isAuthenticated ? (
-              <PromotionEntryFlow />
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionWizard />
+              </Layout>
             ) : (
               <Navigate to="/" replace />
             )
