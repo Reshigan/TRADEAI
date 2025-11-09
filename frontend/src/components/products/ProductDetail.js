@@ -124,7 +124,7 @@ const ProductDetail = () => {
 
   // Handle edit product
   const handleEditProduct = () => {
-    setOpenEditForm(true);
+    navigate(`/products/${id}/edit`);
   };
 
   // Handle delete product

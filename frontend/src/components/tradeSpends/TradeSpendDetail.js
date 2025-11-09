@@ -89,7 +89,7 @@ const TradeSpendDetail = () => {
 
   // Handle edit trade spend
   const handleEditTradeSpend = () => {
-    setOpenEditForm(true);
+    navigate(`/trade-spends/${id}/edit`);
   };
 
   // Handle delete trade spend

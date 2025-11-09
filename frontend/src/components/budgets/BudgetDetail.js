@@ -88,7 +88,7 @@ const BudgetDetail = () => {
 
   // Handle edit budget
   const handleEditBudget = () => {
-    setOpenEditForm(true);
+    navigate(`/budgets/${id}/edit`);
   };
 
   // Handle delete budget

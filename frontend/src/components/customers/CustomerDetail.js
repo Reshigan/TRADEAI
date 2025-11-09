@@ -119,7 +119,7 @@ const CustomerDetail = () => {
 
   // Handle edit customer
   const handleEditCustomer = () => {
-    setOpenEditForm(true);
+    navigate(`/customers/${id}/edit`);
   };
 
   // Handle delete customer

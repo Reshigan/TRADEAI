@@ -93,7 +93,7 @@ const PromotionDetail = () => {
 
   // Handle edit promotion
   const handleEditPromotion = () => {
-    setOpenEditForm(true);
+    navigate(`/promotions/${id}/edit`);
   };
 
   // Handle delete promotion

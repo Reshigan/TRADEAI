@@ -52,6 +52,13 @@ import CommandCenter from './components/CommandCenter/CommandCenter';
 import BudgetPlanningWizard from './components/Wizards/BudgetPlanningWizard';
 import PromotionWizard from './components/Wizards/PromotionWizard';
 
+// Edit Components for CRUD operations
+import BudgetEdit from './components/budgets/BudgetEdit';
+import PromotionEdit from './components/promotions/PromotionEdit';
+import TradeSpendEdit from './components/tradeSpends/TradeSpendEdit';
+import CustomerEdit from './components/customers/CustomerEdit';
+import ProductEdit from './components/products/ProductEdit';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -168,6 +175,18 @@ function App() {
           } 
         />
         <Route 
+          path="/budgets/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetEdit />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/budgets/:id" 
           element={
             isAuthenticated ? (
@@ -196,6 +215,18 @@ function App() {
           element={
             isAuthenticated ? (
               <TradeSpendEntryFlow />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trade-spends/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeSpendEdit />
+              </Layout>
             ) : (
               <Navigate to="/" replace />
             )
@@ -238,6 +269,18 @@ function App() {
           } 
         />
         <Route 
+          path="/promotions/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionEdit />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/promotions/:id" 
           element={
             isAuthenticated ? (
@@ -272,6 +315,18 @@ function App() {
           } 
         />
         <Route 
+          path="/customers/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CustomerEdit />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/customers/:id" 
           element={
             isAuthenticated ? (
@@ -300,6 +355,18 @@ function App() {
           element={
             isAuthenticated ? (
               <ProductEntryFlow />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/products/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ProductEdit />
+              </Layout>
             ) : (
               <Navigate to="/" replace />
             )
