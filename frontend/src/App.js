@@ -47,6 +47,9 @@ import AIDashboard from './pages/ai/AIDashboard';
 // AI Assistant Component
 import AIAssistant from './components/AIAssistant/AIAssistant';
 
+// Command Center (New Home Dashboard)
+import CommandCenter from './components/CommandCenter/CommandCenter';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -116,6 +119,18 @@ function App() {
         />
         <Route 
           path="/dashboard" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CommandCenter user={user} />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/classic" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>

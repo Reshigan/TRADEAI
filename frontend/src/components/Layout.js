@@ -45,7 +45,12 @@ import {
   Timeline as ForecastingIcon,
   ExpandLess,
   ExpandMore,
-  AccountCircle as AccountCircleIcon
+  AccountCircle as AccountCircleIcon,
+  Psychology as AIIcon,
+  Lightbulb as LightbulbIcon,
+  Rocket as RocketIcon,
+  TrendingUp as MonitorIcon,
+  Storage as DataIcon
 } from '@mui/icons-material';
 import QuickActions from './common/QuickActions';
 import SearchBar from './common/SearchBar';
@@ -59,42 +64,45 @@ const drawerWidth = 240;
 
 const getMenuItems = (user) => {
   const baseItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'NEW' },
     {
-      text: 'Trade Management',
-      icon: <TradeSpendIcon />,
+      text: '📊 Plan & Budget',
+      icon: <BudgetIcon />,
       subItems: [
-        { text: 'Marketing Budget', icon: <BudgetIcon />, path: '/budgets' },
-        { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
-        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-        { text: 'Promotions', icon: <PromotionIcon />, path: '/promotions' },
-        { text: 'Activity Grid', icon: <ActivityGridIcon />, path: '/activity-grid' },
+        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow', badge: 'AI' },
+        { text: 'Budget Management', icon: <BudgetIcon />, path: '/budgets' },
+        { text: 'Budget Monitoring', icon: <MonitorIcon />, path: '/budgets?view=monitor' },
       ]
     },
     {
-      text: 'Master Data',
-      icon: <CustomerIcon />,
+      text: '✨ Create & Execute',
+      icon: <RocketIcon />,
+      subItems: [
+        { text: 'Promotion Wizard', icon: <PromotionIcon />, path: '/promotions/new-flow', badge: 'AI' },
+        { text: 'Trade Spend Request', icon: <TradeSpendIcon />, path: '/trade-spends/new' },
+        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
+        { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
+        { text: 'All Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
+      ]
+    },
+    {
+      text: '📈 Monitor & Optimize',
+      icon: <MonitorIcon />,
+      subItems: [
+        { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
+        { text: 'AI Insights', icon: <AIIcon />, path: '/analytics' },
+        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
+        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
+        { text: 'Simulations', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
+    {
+      text: '📚 Data & Master Files',
+      icon: <DataIcon />,
       subItems: [
         { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
         { text: 'Products', icon: <ProductIcon />, path: '/products' },
-      ]
-    },
-    {
-      text: 'Analytics & Insights',
-      icon: <AnalyticsIcon />,
-      subItems: [
-        { text: 'Analytics Dashboard', icon: <AnalyticsIcon />, path: '/analytics' },
-        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
-        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulations' },
-      ]
-    },
-    {
-      text: '🚀 AI-Powered Flows',
-      icon: <DashboardIcon />,
-      subItems: [
-        { text: 'Real-Time Dashboard', icon: <DashboardIcon />, path: '/realtime-dashboard' },
-        { text: 'Promotion Flow', icon: <PromotionIcon />, path: '/flows/promotion' },
       ]
     },
   ];
