@@ -44,6 +44,9 @@ import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions'
 // AI Dashboard (Feature 7.2)
 import AIDashboard from './pages/ai/AIDashboard';
 
+// AI Assistant Component
+import AIAssistant from './components/AIAssistant/AIAssistant';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'

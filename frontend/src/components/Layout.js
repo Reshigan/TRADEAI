@@ -50,9 +50,10 @@ import {
 import QuickActions from './common/QuickActions';
 import SearchBar from './common/SearchBar';
 import Breadcrumbs from './common/Breadcrumbs';
+import AIAssistant from './AIAssistant/AIAssistant';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
-// import { AIAssistant, Walkthrough } from './common';
+// import { Walkthrough } from './common';
 
 const drawerWidth = 240;
 
@@ -504,8 +505,8 @@ const Layout = ({ children, user, onLogout }) => {
         <QuickActions />
       </Box>
       
-      {/* TEMPORARILY DISABLE AI ASSISTANT AND WALKTHROUGH */}
-      {/* <AIAssistant context={walkthroughFeature || location.pathname.split('/')[1] || 'dashboard'} /> */}
+      {/* AI Assistant - Powered by Llama3.2 */}
+      <AIAssistant />
       
       {/* <Walkthrough 
         open={walkthroughOpen} 
