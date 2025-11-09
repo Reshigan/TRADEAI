@@ -70,84 +70,20 @@ const AIInsightsFeed = ({ userId }) => {
 
   const generatePersonalizedFeed = async (userId) => {
     // This would integrate with ML service to get personalized recommendations
-    // For now, generating smart static content
+    // For now, return empty data to show "No data available" state
     
     return {
-      actions: [
-        {
-          priority: 'urgent',
-          icon: <Warning />,
-          color: 'error',
-          title: 'Customer Reorder Due',
-          description: 'Shoprite Checkers - Expected R42K order in 3 days',
-          buttonText: 'Prepare Quote',
-          link: '/customers/shoprite-001'
-        },
-        {
-          priority: 'opportunity',
-          icon: <AttachMoney />,
-          color: 'success',
-          title: 'Price Optimization Available',
-          description: '12 products can be optimized for +R28K/month profit',
-          buttonText: 'View Products',
-          link: '/products?optimize=true'
-        },
-        {
-          priority: 'info',
-          icon: <LocalOffer />,
-          color: 'warning',
-          title: 'Promotion Ending Soon',
-          description: '"Summer Sale" ends in 2 days - 127% of target achieved',
-          buttonText: 'View Details',
-          link: '/promotions/summer-sale-001'
-        }
-      ],
-      performance: {
-        today: { actual: 125000, forecast: 118000, variance: 5.9 },
-        week: { actual: 642000, forecast: 615000, variance: 4.4 },
-        month: { actual: 2800000, forecast: 2900000, variance: -3.4 }
-      },
-      insights: [
-        {
-          type: 'success',
-          message: 'Chocolate category demand up 35% (seasonal peak)'
-        },
-        {
-          type: 'warning',
-          message: 'Competitor launched 20% off promotion on confectionery'
-        },
-        {
-          type: 'info',
-          message: '3 customers showing early churn signals'
-        }
-      ]
+      actions: [],
+      performance: null,
+      insights: []
     };
   };
 
-  const generateFallbackActions = () => [
-    {
-      priority: 'urgent',
-      icon: <Warning />,
-      color: 'error',
-      title: 'Action Required',
-      description: 'Review pending items',
-      buttonText: 'View',
-      link: '#'
-    }
-  ];
+  const generateFallbackActions = () => [];
 
-  const generateFallbackPerformance = () => ({
-    today: { actual: 125000, forecast: 118000, variance: 5.9 },
-    week: { actual: 642000, forecast: 615000, variance: 4.4 },
-    month: { actual: 2800000, forecast: 2900000, variance: -3.4 }
-  });
+  const generateFallbackPerformance = () => null;
 
-  const generateFallbackInsights = () => [
-    {
-      type: 'info',
-      message: 'System operating normally'
-    }
-  ];
+  const generateFallbackInsights = () => [];
 
   const getPriorityColor = (priority) => {
     if (priority === 'urgent') return 'error';
@@ -192,53 +128,64 @@ const AIInsightsFeed = ({ userId }) => {
           <Typography variant="h6" gutterBottom>
             📌 Priority Actions Today
           </Typography>
-          <Grid container spacing={2}>
-            {actions.map((action, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card 
-                  variant="outlined"
-                  sx={{ 
-                    height: '100%',
-                    borderColor: `${action.color}.main`,
-                    borderWidth: 2
-                  }}
-                >
-                  <CardContent>
-                    <Stack spacing={2}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Box color={`${action.color}.main`}>
-                          {action.icon}
+          {actions.length === 0 ? (
+            <Box textAlign="center" py={4}>
+              <Typography variant="body1" color="textSecondary">
+                No priority actions at this time
+              </Typography>
+              <Typography variant="body2" color="textSecondary" mt={1}>
+                Actions will appear here when there are items requiring your attention
+              </Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={2}>
+              {actions.map((action, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <Card 
+                    variant="outlined"
+                    sx={{ 
+                      height: '100%',
+                      borderColor: `${action.color}.main`,
+                      borderWidth: 2
+                    }}
+                  >
+                    <CardContent>
+                      <Stack spacing={2}>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Box color={`${action.color}.main`}>
+                            {action.icon}
+                          </Box>
+                          <Chip 
+                            label={action.priority.toUpperCase()} 
+                            color={getPriorityColor(action.priority)}
+                            size="small"
+                          />
                         </Box>
-                        <Chip 
-                          label={action.priority.toUpperCase()} 
-                          color={getPriorityColor(action.priority)}
-                          size="small"
-                        />
-                      </Box>
-                      
-                      <Typography variant="h6">
-                        {action.title}
-                      </Typography>
-                      
-                      <Typography variant="body2" color="textSecondary">
-                        {action.description}
-                      </Typography>
-                      
-                      <Button
-                        variant="contained"
-                        color={action.color}
-                        endIcon={<ArrowForward />}
-                        href={action.link}
-                        fullWidth
-                      >
-                        {action.buttonText}
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                        
+                        <Typography variant="h6">
+                          {action.title}
+                        </Typography>
+                        
+                        <Typography variant="body2" color="textSecondary">
+                          {action.description}
+                        </Typography>
+                        
+                        <Button
+                          variant="contained"
+                          color={action.color}
+                          endIcon={<ArrowForward />}
+                          href={action.link}
+                          fullWidth
+                        >
+                          {action.buttonText}
+                        </Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </CardContent>
       </Card>
 
