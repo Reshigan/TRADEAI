@@ -1,0 +1,170 @@
+{
+  "session_id": "crud_1762582882",
+  "timestamp": "2025-11-08T06:21:22.187394",
+  "modules": {
+    "customers": {
+      "module": "customers",
+      "create": {
+        "tested": false,
+        "passed": false
+      },
+      "read": {
+        "tested": true,
+        "passed": false
+      },
+      "update": {
+        "tested": true,
+        "passed": false,
+        "note": "Edit button not found"
+      },
+      "delete": {
+        "tested": true,
+        "passed": false,
+        "note": "Not available in UI"
+      },
+      "created_record_id": null
+    },
+    "budgets": {
+      "module": "budgets",
+      "create": {
+        "tested": true,
+        "passed": true
+      },
+      "read": {
+        "tested": true,
+        "passed": true
+      },
+      "update": {
+        "tested": true,
+        "passed": false,
+        "note": "Edit not available"
+      },
+      "delete": {
+        "tested": true,
+        "passed": false,
+        "note": "Not available"
+      }
+    },
+    "products": {
+      "module": "products",
+      "create": {
+        "tested": false,
+        "passed": false,
+        "note": "Read-only module"
+      },
+      "read": {
+        "tested": true,
+        "passed": true
+      },
+      "update": {
+        "tested": false,
+        "passed": false,
+        "note": "Read-only module"
+      },
+      "delete": {
+        "tested": false,
+        "passed": false,
+        "note": "Read-only module"
+      }
+    },
+    "trade_spends": {
+      "module": "trade_spends",
+      "create": {
+        "tested": true,
+        "passed": true
+      },
+      "read": {
+        "tested": true,
+        "passed": true
+      },
+      "update": {
+        "tested": false,
+        "passed": false
+      },
+      "delete": {
+        "tested": false,
+        "passed": false
+      }
+    },
+    "promotions": {
+      "module": "promotions",
+      "create": {
+        "tested": true,
+        "passed": true
+      },
+      "read": {
+        "tested": true,
+        "passed": true
+      },
+      "update": {
+        "tested": false,
+        "passed": false
+      },
+      "delete": {
+        "tested": false,
+        "passed": false
+      }
+    }
+  },
+  "ml_training_data": [
+    {
+      "entity_type": "budget",
+      "data": {
+        "name": "CRUD Budget 99392",
+        "amount": 660050,
+        "year": "2025",
+        "quarter": "Q1",
+        "category": "Marketing",
+        "description": "CRUD test budget allocation"
+      },
+      "timestamp": "2025-11-08T06:21:59.298310"
+    },
+    {
+      "entity_type": "trade_spend",
+      "data": {
+        "description": "CRUD Trade Spend 5858",
+        "amount": 37441,
+        "spendDate": "2025-11-08",
+        "category": "Promotions",
+        "vendor": "Test Vendor"
+      },
+      "timestamp": "2025-11-08T06:22:26.663620"
+    },
+    {
+      "entity_type": "promotion",
+      "data": {
+        "name": "CRUD Promotion 1541",
+        "startDate": "2025-11-08",
+        "endDate": "2025-12-08",
+        "discountType": "Percentage",
+        "discountValue": 17,
+        "budget": 29152
+      },
+      "timestamp": "2025-11-08T06:22:45.071283"
+    }
+  ],
+  "total_tests": 14,
+  "passed": 8,
+  "failed": 3,
+  "ml_training": {
+    "models_trained": [
+      {
+        "entity_type": "budget",
+        "status": "failed",
+        "error": "HTTP 404"
+      },
+      {
+        "entity_type": "trade_spend",
+        "status": "failed",
+        "error": "HTTP 404"
+      },
+      {
+        "entity_type": "promotion",
+        "status": "failed",
+        "error": "HTTP 404"
+      }
+    ],
+    "training_data_points": 3,
+    "status": "completed"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "generated_at": "2025-11-08T04:32:34.413700",
+  "created_data": {
+    "customers": [],
+    "products": [],
+    "vendors": [],
+    "budgets": [],
+    "promotions": [],
+    "trade_spends": []
+  },
+  "summary": {
+    "customers": 0,
+    "products": 0,
+    "vendors": 0,
+    "budgets": 0,
+    "promotions": 0,
+    "trade_spends": 0
+  }
+}

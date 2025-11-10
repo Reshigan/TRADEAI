@@ -1,0 +1,314 @@
+{
+  "timestamp": "2025-11-08T12:32:09.993991",
+  "current_layout": {},
+  "navigation_structure": {
+    "total_items": 12,
+    "items": [
+      "Dashboard",
+      "Marketing Budget",
+      "Trade Spends",
+      "Trading Terms",
+      "Promotions",
+      "Activity Grid",
+      "Customers",
+      "Products",
+      "Companies",
+      "Reports",
+      "Analytics",
+      "Settings"
+    ],
+    "issues": []
+  },
+  "screen_utilization": {
+    "dashboard": {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "has_header": true,
+      "has_sidebar": true,
+      "has_main_content": true,
+      "widgets": 0,
+      "charts": 40
+    },
+    "modules": {
+      "Customers": {
+        "path": "/customers",
+        "title": "Customers",
+        "action_buttons": 11,
+        "filters": 0,
+        "has_table": true,
+        "has_grid": true,
+        "layout_type": "table"
+      },
+      "Budgets": {
+        "path": "/budgets",
+        "title": "Budgets",
+        "action_buttons": 13,
+        "filters": 0,
+        "has_table": true,
+        "has_grid": true,
+        "layout_type": "table"
+      },
+      "Products": {
+        "path": "/products",
+        "title": "Products",
+        "action_buttons": 11,
+        "filters": 0,
+        "has_table": true,
+        "has_grid": true,
+        "layout_type": "table"
+      },
+      "Trade Spends": {
+        "path": "/trade-spends",
+        "title": "Trade Spends",
+        "action_buttons": 13,
+        "filters": 0,
+        "has_table": true,
+        "has_grid": true,
+        "layout_type": "table"
+      },
+      "Promotions": {
+        "path": "/promotions",
+        "title": "Promotions",
+        "action_buttons": 12,
+        "filters": 0,
+        "has_table": true,
+        "has_grid": true,
+        "layout_type": "table"
+      }
+    }
+  },
+  "ux_issues": [
+    {
+      "location": "Dashboard",
+      "issue": "Underutilized screen space",
+      "impact": "Users not getting comprehensive overview"
+    },
+    {
+      "location": "Dashboard",
+      "issue": "Low information density",
+      "recommendation": "Add more KPIs, charts, and actionable insights"
+    }
+  ],
+  "recommendations": {
+    "navigation": {
+      "primary_workflows": [
+        {
+          "section": "Core Workflows",
+          "icon": "\ud83d\udcbc",
+          "items": [
+            {
+              "name": "Budgets",
+              "path": "/budgets",
+              "icon": "\ud83d\udcb0",
+              "priority": 1
+            },
+            {
+              "name": "Promotions",
+              "path": "/promotions",
+              "icon": "\ud83c\udfaf",
+              "priority": 1
+            },
+            {
+              "name": "Trade Spends",
+              "path": "/trade-spends",
+              "icon": "\ud83d\udcb5",
+              "priority": 1
+            },
+            {
+              "name": "Rebates",
+              "path": "/rebates",
+              "icon": "\ud83d\udcb8",
+              "priority": 1
+            }
+          ]
+        },
+        {
+          "section": "Master Data",
+          "icon": "\ud83d\udcca",
+          "items": [
+            {
+              "name": "Customers",
+              "path": "/customers",
+              "icon": "\ud83d\udc65",
+              "priority": 2
+            },
+            {
+              "name": "Products",
+              "path": "/products",
+              "icon": "\ud83d\udce6",
+              "priority": 2
+            },
+            {
+              "name": "Vendors",
+              "path": "/vendors",
+              "icon": "\ud83c\udfe2",
+              "priority": 2
+            }
+          ]
+        },
+        {
+          "section": "Analytics & Reports",
+          "icon": "\ud83d\udcc8",
+          "items": [
+            {
+              "name": "Dashboard",
+              "path": "/dashboard",
+              "icon": "\ud83c\udfe0",
+              "priority": 3
+            },
+            {
+              "name": "Reports",
+              "path": "/reports",
+              "icon": "\ud83d\udcc4",
+              "priority": 3
+            },
+            {
+              "name": "Analytics",
+              "path": "/analytics",
+              "icon": "\ud83d\udcca",
+              "priority": 3
+            }
+          ]
+        },
+        {
+          "section": "Administration",
+          "icon": "\u2699\ufe0f",
+          "collapsible": true,
+          "items": [
+            {
+              "name": "Users",
+              "path": "/users",
+              "icon": "\ud83d\udc64",
+              "priority": 4
+            },
+            {
+              "name": "Settings",
+              "path": "/settings",
+              "icon": "\ud83d\udd27",
+              "priority": 4
+            },
+            {
+              "name": "Integrations",
+              "path": "/integrations",
+              "icon": "\ud83d\udd17",
+              "priority": 4
+            }
+          ]
+        }
+      ],
+      "quick_actions": [
+        "Create Budget",
+        "New Promotion",
+        "Log Trade Spend",
+        "Process Rebate"
+      ]
+    },
+    "dashboard": {
+      "layout": "3-column responsive grid",
+      "sections": [
+        {
+          "name": "Key Performance Indicators",
+          "position": "top-full-width",
+          "components": [
+            {
+              "type": "metric-card",
+              "label": "Total Budget",
+              "value": "dynamic",
+              "trend": true
+            },
+            {
+              "type": "metric-card",
+              "label": "Active Promotions",
+              "value": "dynamic",
+              "trend": true
+            },
+            {
+              "type": "metric-card",
+              "label": "Trade Spend MTD",
+              "value": "dynamic",
+              "trend": true
+            },
+            {
+              "type": "metric-card",
+              "label": "Pending Rebates",
+              "value": "dynamic",
+              "trend": true
+            }
+          ]
+        },
+        {
+          "name": "Budget Overview",
+          "position": "left-column",
+          "components": [
+            {
+              "type": "donut-chart",
+              "data": "budget-allocation"
+            },
+            {
+              "type": "progress-bars",
+              "data": "budget-utilization"
+            }
+          ]
+        },
+        {
+          "name": "Promotion Performance",
+          "position": "center-column",
+          "components": [
+            {
+              "type": "bar-chart",
+              "data": "top-promotions"
+            },
+            {
+              "type": "table",
+              "data": "active-promotions",
+              "limit": 5
+            }
+          ]
+        },
+        {
+          "name": "Recent Activity",
+          "position": "right-column",
+          "components": [
+            {
+              "type": "activity-feed",
+              "data": "recent-transactions",
+              "limit": 10
+            },
+            {
+              "type": "alert-box",
+              "data": "pending-approvals"
+            }
+          ]
+        },
+        {
+          "name": "Analytics Insights",
+          "position": "bottom-left",
+          "components": [
+            {
+              "type": "line-chart",
+              "data": "spend-trend",
+              "period": "6-months"
+            }
+          ]
+        },
+        {
+          "name": "Quick Actions",
+          "position": "bottom-right",
+          "components": [
+            {
+              "type": "action-buttons",
+              "actions": [
+                "Create Budget",
+                "New Promotion",
+                "Log Trade Spend",
+                "Process Rebate"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

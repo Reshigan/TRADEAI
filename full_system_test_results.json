@@ -1,0 +1,628 @@
+{
+  "results": {
+    "timestamp": "2025-11-08T05:35:24.345476",
+    "server": "https://tradeai.gonxt.tech",
+    "total_tests": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "modules": {
+      "customers": {
+        "tests": [
+          {
+            "test": "list_view",
+            "passed": true,
+            "count": 10
+          },
+          {
+            "test": "create",
+            "passed": true,
+            "data": "Functional Test Customer 41652"
+          },
+          {
+            "test": "view_detail",
+            "passed": true
+          },
+          {
+            "test": "edit",
+            "passed": true,
+            "skipped": true
+          },
+          {
+            "test": "search",
+            "passed": true,
+            "results": 1
+          }
+        ],
+        "passed": 5,
+        "failed": 0
+      },
+      "budgets": {
+        "tests": [
+          {
+            "test": "list_view",
+            "passed": true,
+            "count": 1
+          },
+          {
+            "test": "create",
+            "passed": true,
+            "data": "Functional Test Budget 97948"
+          }
+        ],
+        "passed": 2,
+        "failed": 0
+      },
+      "products": {
+        "tests": [
+          {
+            "test": "list_view",
+            "passed": true,
+            "count": 10
+          },
+          {
+            "test": "detail_view",
+            "passed": true
+          },
+          {
+            "test": "search",
+            "passed": true
+          }
+        ],
+        "passed": 3,
+        "failed": 0
+      },
+      "trade_spends": {
+        "tests": [
+          {
+            "test": "access",
+            "passed": true,
+            "path": "/trade-spends"
+          },
+          {
+            "test": "create_attempt",
+            "passed": true
+          }
+        ],
+        "passed": 2,
+        "failed": 0
+      },
+      "promotions": {
+        "tests": [
+          {
+            "test": "access",
+            "passed": true,
+            "path": "/promotions"
+          }
+        ],
+        "passed": 1,
+        "failed": 0
+      },
+      "dashboard": {
+        "tests": [
+          {
+            "test": "load",
+            "passed": true
+          }
+        ],
+        "passed": 1,
+        "failed": 0
+      }
+    },
+    "pass_rate": "100.0%"
+  },
+  "test_data": {
+    "created_records": {
+      "customer": {
+        "name": "Functional Test Customer 41652",
+        "email": "functest24546@example.com",
+        "phone": "+27111193402"
+      },
+      "budget": {
+        "name": "Functional Test Budget 97948",
+        "amount": 420590
+      }
+    },
+    "test_results": [],
+    "errors": [],
+    "warnings": []
+  },
+  "logs": [
+    {
+      "timestamp": "2025-11-08T05:35:24.755670",
+      "module": null,
+      "test": "User Authentication",
+      "step": "Navigating to login page",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:29.036370",
+      "module": null,
+      "test": "User Authentication",
+      "step": "Screenshot captured",
+      "status": "success",
+      "details": "/tmp/test_login_page.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:29.036384",
+      "module": null,
+      "test": "User Authentication",
+      "step": "Entering credentials",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:29.092236",
+      "module": null,
+      "test": "User Authentication",
+      "step": "Submitting login form",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:31.715445",
+      "module": null,
+      "test": "User Authentication",
+      "step": "Login successful",
+      "status": "success",
+      "details": "Token: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik..."
+    },
+    {
+      "timestamp": "2025-11-08T05:35:31.715469",
+      "module": "CUSTOMERS",
+      "test": "Customers - List View",
+      "step": "Navigating to customers page",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:33.740880",
+      "module": "CUSTOMERS",
+      "test": "Customers - List View",
+      "step": "Screenshot: customers_list",
+      "status": "debug",
+      "details": "/tmp/test_customers_list.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:33.753768",
+      "module": "CUSTOMERS",
+      "test": "Customers - List View",
+      "step": "Customers loaded",
+      "status": "success",
+      "details": "Found 10 customers"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:33.756839",
+      "module": "CUSTOMERS",
+      "test": "Customers - List View",
+      "step": "Table structure validated",
+      "status": "success",
+      "details": "Found 5 columns"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:35.531603",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Looking for create button",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:37.638676",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Clicked Create Button",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.041323",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Screenshot: customers_create_form",
+      "status": "debug",
+      "details": "/tmp/test_customers_create_form.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.041356",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Filling customer form",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.086851",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Filled Name",
+      "status": "success",
+      "details": "Value: Functional Test Customer 41652"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.106503",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Could not fill Email",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.120313",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Could not fill Phone",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.126885",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Could not fill Address",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.130679",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Could not fill Contact Person",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.134451",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Could not fill Customer Type",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.547007",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Screenshot: customers_form_filled",
+      "status": "debug",
+      "details": "/tmp/test_customers_form_filled.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:38.547020",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Submitting form",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:41.684660",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Clicked Submit Button",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:42.026807",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Screenshot: customers_after_submit",
+      "status": "debug",
+      "details": "/tmp/test_customers_after_submit.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:42.029994",
+      "module": "CUSTOMERS",
+      "test": "Customers - Create",
+      "step": "Customer created successfully",
+      "status": "success",
+      "details": "Redirected to list"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:43.766658",
+      "module": "CUSTOMERS",
+      "test": "Customers - View Detail",
+      "step": "Clicking first customer",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:45.169693",
+      "module": "CUSTOMERS",
+      "test": "Customers - View Detail",
+      "step": "Screenshot: customers_detail",
+      "status": "debug",
+      "details": "/tmp/test_customers_detail.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:45.172141",
+      "module": "CUSTOMERS",
+      "test": "Customers - View Detail",
+      "step": "Detail view loaded",
+      "status": "success",
+      "details": "Found 0 detail sections"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:45.172163",
+      "module": "CUSTOMERS",
+      "test": "Customers - Edit",
+      "step": "Looking for edit button",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:45.181602",
+      "module": "CUSTOMERS",
+      "test": "Customers - Edit",
+      "step": "Could not click Edit Button",
+      "status": "warning",
+      "details": "Button not found or not clickable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:45.181614",
+      "module": "CUSTOMERS",
+      "test": "Customers - Edit",
+      "step": "Edit button not found",
+      "status": "warning",
+      "details": "May not have permission"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:46.921682",
+      "module": "CUSTOMERS",
+      "test": "Customers - Search",
+      "step": "Looking for search field",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:49.092294",
+      "module": "CUSTOMERS",
+      "test": "Customers - Search",
+      "step": "Screenshot: customers_search_results",
+      "status": "debug",
+      "details": "/tmp/test_customers_search_results.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:49.094847",
+      "module": "CUSTOMERS",
+      "test": "Customers - Search",
+      "step": "Search executed",
+      "status": "success",
+      "details": "Found 1 results"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:51.058899",
+      "module": "BUDGETS",
+      "test": "Budgets - List View",
+      "step": "Screenshot: budgets_list",
+      "status": "debug",
+      "details": "/tmp/test_budgets_list.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:51.069412",
+      "module": "BUDGETS",
+      "test": "Budgets - List View",
+      "step": "Budgets loaded",
+      "status": "success",
+      "details": "Found 1 budgets"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:54.905640",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Clicked Create Button",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.160945",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Screenshot: budgets_create_form_initial",
+      "status": "debug",
+      "details": "/tmp/test_budgets_create_form_initial.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.160970",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Filling budget form",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.168476",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Could not fill Budget Name",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.214245",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Filled Amount",
+      "status": "success",
+      "details": "Value: 420590"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.256890",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Filled Year",
+      "status": "success",
+      "details": "Value: 2025"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.263712",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Could not fill Category",
+      "status": "warning",
+      "details": "Field not found or not fillable"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.292508",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Filled Description",
+      "status": "success",
+      "details": "Value: Functional test budget allocation"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.628425",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Screenshot: budgets_form_filled",
+      "status": "debug",
+      "details": "/tmp/test_budgets_form_filled.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.628441",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Attempting form submission",
+      "status": "info",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:35:57.642183",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Submit button state",
+      "status": "debug",
+      "details": "Visible: True, Enabled: True"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:00.804871",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Screenshot: budgets_after_submit",
+      "status": "debug",
+      "details": "/tmp/test_budgets_after_submit.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:00.804898",
+      "module": "BUDGETS",
+      "test": "Budgets - Create",
+      "step": "Budget created successfully",
+      "status": "success",
+      "details": "Redirected to list"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:02.816488",
+      "module": "PRODUCTS",
+      "test": "Products - List View",
+      "step": "Screenshot: products_list",
+      "status": "debug",
+      "details": "/tmp/test_products_list.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:02.829093",
+      "module": "PRODUCTS",
+      "test": "Products - List View",
+      "step": "Products loaded",
+      "status": "success",
+      "details": "Found 10 products"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:06.014794",
+      "module": "PRODUCTS",
+      "test": "Products - Detail View",
+      "step": "Screenshot: products_detail",
+      "status": "debug",
+      "details": "/tmp/test_products_detail.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:06.014812",
+      "module": "PRODUCTS",
+      "test": "Products - Detail View",
+      "step": "Product detail viewed",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:36:09.962480",
+      "module": "PRODUCTS",
+      "test": "Products - Search",
+      "step": "Screenshot: products_search",
+      "status": "debug",
+      "details": "/tmp/test_products_search.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:09.962492",
+      "module": "PRODUCTS",
+      "test": "Products - Search",
+      "step": "Search executed",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:36:11.959686",
+      "module": "TRADE SPENDS",
+      "test": "Trade Spends - Access",
+      "step": "Screenshot: trade_spends_page",
+      "status": "debug",
+      "details": "/tmp/test_trade_spends_page.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:11.959700",
+      "module": "TRADE SPENDS",
+      "test": "Trade Spends - Access",
+      "step": "Module accessible at /trade-spends",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:36:14.418659",
+      "module": "TRADE SPENDS",
+      "test": "Trade Spends - Create Attempt",
+      "step": "Screenshot: trade_spends_form",
+      "status": "debug",
+      "details": "/tmp/test_trade_spends_form.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:14.418674",
+      "module": "TRADE SPENDS",
+      "test": "Trade Spends - Create Attempt",
+      "step": "Create form opened",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:36:16.425854",
+      "module": "PROMOTIONS",
+      "test": "Promotions - Access",
+      "step": "Screenshot: promotions_page",
+      "status": "debug",
+      "details": "/tmp/test_promotions_page.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:16.425867",
+      "module": "PROMOTIONS",
+      "test": "Promotions - Access",
+      "step": "Module accessible at /promotions",
+      "status": "success",
+      "details": ""
+    },
+    {
+      "timestamp": "2025-11-08T05:36:21.416495",
+      "module": "DASHBOARD",
+      "test": "Dashboard - Load",
+      "step": "Screenshot: dashboard_full",
+      "status": "debug",
+      "details": "/tmp/test_dashboard_full.png"
+    },
+    {
+      "timestamp": "2025-11-08T05:36:21.428154",
+      "module": "DASHBOARD",
+      "test": "Dashboard - Load",
+      "step": "Dashboard loaded",
+      "status": "success",
+      "details": "Found 1 content areas"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-11-08T12:42:21.509691",
+  "screenshots_captured": [
+    {
+      "name": "dashboard",
+      "title": "Dashboard Overview",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/dashboard_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/dashboard_hero.png"
+    },
+    {
+      "name": "budgets",
+      "title": "Budget Management",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/budgets_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/budgets_hero.png"
+    },
+    {
+      "name": "promotions",
+      "title": "Promotion Campaigns",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/promotions_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/promotions_hero.png"
+    },
+    {
+      "name": "trade_spends",
+      "title": "Trade Spend Tracking",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/trade_spends_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/trade_spends_hero.png"
+    },
+    {
+      "name": "customers",
+      "title": "Customer Management",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/customers_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/customers_hero.png"
+    },
+    {
+      "name": "products",
+      "title": "Product Catalog",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/products_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/products_hero.png"
+    },
+    {
+      "name": "analytics",
+      "title": "Analytics & Insights",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/analytics_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/analytics_hero.png"
+    },
+    {
+      "name": "reports",
+      "title": "Reports Dashboard",
+      "full_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/reports_full.png",
+      "hero_path": "/workspace/project/TRADEAI/marketing_assets/screenshots/reports_hero.png"
+    }
+  ],
+  "components_created": [
+    "KPICard.jsx",
+    "ChartWidget.jsx",
+    "ActivityFeed.jsx",
+    "QuickActions.jsx",
+    "Dashboard.jsx"
+  ],
+  "files_modified": [],
+  "marketing_updated": true
+}

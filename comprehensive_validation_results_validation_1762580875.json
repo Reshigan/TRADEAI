@@ -1,0 +1,266 @@
+{
+  "session_id": "validation_1762580875",
+  "timestamp": "2025-11-08T05:47:55.948348",
+  "transactions_created": [
+    {
+      "module": "budgets",
+      "screen": "create_budget",
+      "data": {
+        "name": "Validation Budget 86174",
+        "amount": 785031,
+        "year": "2025",
+        "quarter": "Q1",
+        "category": "Marketing",
+        "description": "Comprehensive validation test budget"
+      },
+      "fields_filled": [
+        "amount",
+        "year",
+        "description"
+      ],
+      "timestamp": "2025-11-08T05:48:16.618135",
+      "success": true
+    },
+    {
+      "module": "products",
+      "screen": "product_analytics",
+      "products_analyzed": 10,
+      "timestamp": "2025-11-08T05:48:22.252445",
+      "success": true
+    },
+    {
+      "module": "trade_spends",
+      "screen": "create_trade_spend",
+      "data": {
+        "description": "Validation Trade Spend 2186",
+        "amount": 4234,
+        "date": "2025-11-08",
+        "category": "Promotions",
+        "customer": "Test Customer"
+      },
+      "form_fields": 15,
+      "timestamp": "2025-11-08T05:48:26.932086",
+      "success": true
+    },
+    {
+      "module": "promotions",
+      "screen": "create_promotion",
+      "data": {
+        "name": "Validation Promotion 8671",
+        "start_date": "2025-11-08",
+        "end_date": "2025-12-08",
+        "discount_type": "Percentage",
+        "discount_value": 19,
+        "budget": 18107
+      },
+      "form_fields": 17,
+      "timestamp": "2025-11-08T05:48:32.024933",
+      "success": true
+    }
+  ],
+  "database_validations": [
+    {
+      "collection": "budgets",
+      "query": {
+        "year": 2025
+      },
+      "expected": 1,
+      "found": 1,
+      "success": true,
+      "timestamp": "2025-11-08T05:48:16.955178"
+    },
+    {
+      "collection": "products",
+      "query": {},
+      "expected": 10,
+      "found": 1,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:21.922100"
+    },
+    {
+      "collection": "promotions",
+      "query": {},
+      "expected": 1,
+      "found": 1,
+      "success": true,
+      "timestamp": "2025-11-08T05:48:32.347133"
+    }
+  ],
+  "report_validations": [
+    {
+      "report_type": "product_performance",
+      "parameters": {
+        "limit": 10
+      },
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:22.251518"
+    },
+    {
+      "report_type": "dashboard_summary",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:35.954551"
+    },
+    {
+      "report_type": "sales_summary",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:36.275151"
+    },
+    {
+      "report_type": "budget_utilization",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:36.600293"
+    },
+    {
+      "report_type": "sales_report",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:39.229685"
+    },
+    {
+      "report_type": "customer_report",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:39.552057"
+    },
+    {
+      "report_type": "budget_report",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:39.871748"
+    },
+    {
+      "report_type": "trade_spend_report",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:40.197740"
+    },
+    {
+      "report_type": "promotion_performance",
+      "parameters": null,
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:40.521555"
+    }
+  ],
+  "analytics_validations": [
+    {
+      "screen": "dashboard",
+      "metrics_count": 0,
+      "charts_count": 0,
+      "timestamp": "2025-11-08T05:48:35.634665"
+    }
+  ],
+  "ml_predictions": [
+    {
+      "model_type": "sales_forecast",
+      "input_data": {
+        "product_id": "PROD001",
+        "period": "Q1_2025",
+        "historical_data": [
+          1000,
+          1200,
+          1100,
+          1300
+        ]
+      },
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:40.827260"
+    },
+    {
+      "model_type": "budget_optimization",
+      "input_data": {
+        "total_budget": 785031,
+        "categories": [
+          "marketing",
+          "promotions",
+          "discounts"
+        ],
+        "historical_performance": [
+          0.25,
+          0.35,
+          0.4
+        ]
+      },
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:42.132424"
+    },
+    {
+      "model_type": "promotion_effectiveness",
+      "input_data": {
+        "promotion_type": "discount",
+        "discount_percentage": 15,
+        "target_products": [
+          "PROD001",
+          "PROD002"
+        ],
+        "duration_days": 30
+      },
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:43.440165"
+    },
+    {
+      "model_type": "customer_segmentation",
+      "input_data": {
+        "customer_data": {
+          "purchase_frequency": "monthly",
+          "average_order_value": 5000,
+          "product_categories": [
+            "beverages",
+            "snacks"
+          ]
+        }
+      },
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:44.749034"
+    },
+    {
+      "model_type": "demand_prediction",
+      "input_data": {
+        "product_id": "PROD001",
+        "season": "summer",
+        "promotion_active": true,
+        "historical_demand": [
+          500,
+          600,
+          550,
+          700
+        ]
+      },
+      "status_code": 404,
+      "success": false,
+      "timestamp": "2025-11-08T05:48:46.051485"
+    }
+  ],
+  "issues": [
+    {
+      "module": "customers",
+      "error": "Could not complete customer creation"
+    }
+  ],
+  "summary": {
+    "duration_seconds": 51.1048800945282,
+    "transactions_created": 4,
+    "database_validations": 3,
+    "successful_db_validations": 2,
+    "report_validations": 9,
+    "successful_reports": 0,
+    "ml_predictions": 5,
+    "successful_ml": 0,
+    "issues_found": 1
+  }
+}

@@ -5,7 +5,7 @@ console.log('[apiClient.js] process.env.REACT_APP_API_URL:', process.env.REACT_A
 
 // Create an axios instance with default config
 const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL !== undefined ? process.env.REACT_APP_API_URL : '/api',
+  baseURL: process.env.REACT_APP_API_URL || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'

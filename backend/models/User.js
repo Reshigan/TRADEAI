@@ -35,7 +35,17 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin', 'manager', 'analyst'],
+        enum: [
+            'user',
+            'admin',
+            'super_admin',
+            'sales_manager',    // Sales Manager - oversees sales team and strategies
+            'kam',             // Key Account Manager - manages key customer accounts
+            'finance_manager', // Finance Manager - financial oversight and budgets
+            'inventory_manager', // Inventory Manager - stock and product management
+            'analyst',         // Data Analyst - analytics and insights
+            'manager'          // General Manager role
+        ],
         default: 'user'
     },
     tenant: {

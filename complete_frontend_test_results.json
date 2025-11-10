@@ -1,0 +1,164 @@
+{
+  "timestamp": "2025-11-08T05:20:34.974664",
+  "server": "https://tradeai.gonxt.tech",
+  "total_tests": 16,
+  "passed_tests": 14,
+  "failed_tests": 2,
+  "modules": {
+    "dashboard": {
+      "view": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "metrics": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "charts": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "filters": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      }
+    },
+    "customers": {
+      "create": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "view_list": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "view_detail": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "edit": {
+        "attempted": true,
+        "success": false,
+        "error": null
+      },
+      "delete": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "search": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "filter": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      }
+    },
+    "budgets": {
+      "create": {
+        "attempted": true,
+        "success": false,
+        "error": null
+      },
+      "view_list": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "view_detail": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "edit": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "allocate": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "error": "Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button[type=\\\"submit\\\"], button:has-text(\\\"Save\\\"), button:has-text(\\\"Submit\\\"), button:has-text(\\\"Create\\\"), button:has-text(\\\"Add Budget\\\")\").first\n    - locator resolved to <button tabindex=\"0\" type=\"button\" class=\"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-1upyuqc\">\u2026</button>\n  - attempting click action\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div tabindex=\"-1\" role=\"presentation\" class=\"MuiDialog-container MuiDialog-scrollPaper css-ekeie0\">\u2026</div> from <div role=\"presentation\" class=\"MuiDialog-root MuiModal-root css-126xj0f\">\u2026</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div tabindex=\"-1\" role=\"presentation\" class=\"MuiDialog-container MuiDialog-scrollPaper css-ekeie0\">\u2026</div> from <div role=\"presentation\" class=\"MuiDialog-root MuiModal-root css-126xj0f\">\u2026</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    50 \u00d7 waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div tabindex=\"-1\" role=\"presentation\" class=\"MuiDialog-container MuiDialog-scrollPaper css-ekeie0\">\u2026</div> from <div role=\"presentation\" class=\"MuiDialog-root MuiModal-root css-126xj0f\">\u2026</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+    },
+    "products": {
+      "view_list": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "view_detail": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "search": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "filter": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      }
+    },
+    "trade_spends": {
+      "view_list": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "create": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "approve": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      }
+    },
+    "promotions": {
+      "view_list": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "create": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      }
+    },
+    "reports": {
+      "view_list": {
+        "attempted": true,
+        "success": true,
+        "error": null
+      },
+      "generate": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      },
+      "export": {
+        "attempted": false,
+        "success": false,
+        "error": null
+      }
+    }
+  }
+}

@@ -1,0 +1,294 @@
+{
+  "timestamp": "2025-11-08T05:10:57.245785",
+  "server": "https://tradeai.gonxt.tech",
+  "modules_tested": [
+    {
+      "module": "dashboard",
+      "load_time": 0.883352,
+      "widgets": 0,
+      "charts": 0
+    },
+    {
+      "module": "customers",
+      "load_time": 0.85609,
+      "transactions": 1
+    },
+    {
+      "module": "budgets",
+      "load_time": 0.83522,
+      "transactions": 0
+    },
+    {
+      "module": "products",
+      "load_time": 0.87638,
+      "transactions": 0
+    }
+  ],
+  "transactions_created": [
+    {
+      "module": "customers",
+      "action": "create",
+      "data": {
+        "name": "Test Customer 1081"
+      },
+      "timestamp": "2025-11-08T05:11:17.786420",
+      "status": "submitted"
+    }
+  ],
+  "ux_evaluations": [
+    {
+      "page": "Login Page",
+      "category": "performance",
+      "timestamp": "2025-11-08T05:10:59.663041",
+      "checks": [
+        {
+          "item": "Page load time",
+          "status": "warning",
+          "details": "Loaded in 2.03s",
+          "benchmark": "< 2s excellent, < 5s acceptable, > 5s poor"
+        }
+      ]
+    },
+    {
+      "module": "Login",
+      "category": "navigation",
+      "timestamp": "2025-11-08T05:10:59.663059",
+      "checks": [
+        {
+          "item": "Main navigation visible",
+          "status": "fail",
+          "details": "Navigation menu not found"
+        },
+        {
+          "item": "Breadcrumbs present",
+          "status": "info",
+          "details": "Consider adding breadcrumbs for better navigation"
+        },
+        {
+          "item": "Page title",
+          "status": "pass",
+          "details": "Title: Trade AI Platform | Enterprise Trade Intelligence"
+        }
+      ]
+    },
+    {
+      "module": "Login Form",
+      "category": "forms",
+      "timestamp": "2025-11-08T05:10:59.892837",
+      "checks": [
+        {
+          "item": "Form inputs present",
+          "status": "pass",
+          "details": "Found 2 form fields"
+        },
+        {
+          "item": "Field labels",
+          "status": "warning",
+          "details": "Consider adding labels to all form fields"
+        },
+        {
+          "item": "Required field indicators",
+          "status": "pass",
+          "details": "Found 2 required fields marked"
+        },
+        {
+          "item": "Submit button",
+          "status": "pass",
+          "details": "Found 1 submit button(s)"
+        }
+      ]
+    },
+    {
+      "action": "Login",
+      "category": "feedback",
+      "timestamp": "2025-11-08T05:11:02.606316",
+      "checks": [
+        {
+          "item": "Success feedback",
+          "status": "info",
+          "details": "No success message detected"
+        },
+        {
+          "item": "Error feedback",
+          "status": "info",
+          "details": "Found 0 error message(s)"
+        },
+        {
+          "item": "Loading indicators",
+          "status": "pass",
+          "details": "Found 1 loading indicator(s)"
+        }
+      ]
+    },
+    {
+      "module": "Dashboard",
+      "category": "navigation",
+      "timestamp": "2025-11-08T05:11:04.764913",
+      "checks": [
+        {
+          "item": "Main navigation visible",
+          "status": "pass",
+          "details": "Navigation menu is clearly visible"
+        },
+        {
+          "item": "Breadcrumbs present",
+          "status": "info",
+          "details": "Consider adding breadcrumbs for better navigation"
+        },
+        {
+          "item": "Page title",
+          "status": "pass",
+          "details": "Title: Trade AI Platform | Enterprise Trade Intelligence"
+        }
+      ]
+    },
+    {
+      "page": "Dashboard",
+      "category": "performance",
+      "timestamp": "2025-11-08T05:11:08.834975",
+      "checks": [
+        {
+          "item": "Page load time",
+          "status": "pass",
+          "details": "Loaded in 0.88s",
+          "benchmark": "< 2s excellent, < 5s acceptable, > 5s poor"
+        }
+      ]
+    },
+    {
+      "module": "Customers",
+      "category": "navigation",
+      "timestamp": "2025-11-08T05:11:17.786433",
+      "checks": [
+        {
+          "item": "Main navigation visible",
+          "status": "pass",
+          "details": "Navigation menu is clearly visible"
+        },
+        {
+          "item": "Breadcrumbs present",
+          "status": "info",
+          "details": "Consider adding breadcrumbs for better navigation"
+        },
+        {
+          "item": "Page title",
+          "status": "pass",
+          "details": "Title: Trade AI Platform | Enterprise Trade Intelligence"
+        }
+      ]
+    },
+    {
+      "page": "Customers",
+      "category": "performance",
+      "timestamp": "2025-11-08T05:11:17.797255",
+      "checks": [
+        {
+          "item": "Page load time",
+          "status": "pass",
+          "details": "Loaded in 0.86s",
+          "benchmark": "< 2s excellent, < 5s acceptable, > 5s poor"
+        }
+      ]
+    },
+    {
+      "module": "Budgets",
+      "category": "navigation",
+      "timestamp": "2025-11-08T05:11:23.337452",
+      "checks": [
+        {
+          "item": "Main navigation visible",
+          "status": "pass",
+          "details": "Navigation menu is clearly visible"
+        },
+        {
+          "item": "Breadcrumbs present",
+          "status": "info",
+          "details": "Consider adding breadcrumbs for better navigation"
+        },
+        {
+          "item": "Page title",
+          "status": "pass",
+          "details": "Title: Trade AI Platform | Enterprise Trade Intelligence"
+        }
+      ]
+    },
+    {
+      "page": "Budgets",
+      "category": "performance",
+      "timestamp": "2025-11-08T05:11:23.351032",
+      "checks": [
+        {
+          "item": "Page load time",
+          "status": "pass",
+          "details": "Loaded in 0.84s",
+          "benchmark": "< 2s excellent, < 5s acceptable, > 5s poor"
+        }
+      ]
+    },
+    {
+      "module": "Products",
+      "category": "navigation",
+      "timestamp": "2025-11-08T05:11:26.405665",
+      "checks": [
+        {
+          "item": "Main navigation visible",
+          "status": "pass",
+          "details": "Navigation menu is clearly visible"
+        },
+        {
+          "item": "Breadcrumbs present",
+          "status": "info",
+          "details": "Consider adding breadcrumbs for better navigation"
+        },
+        {
+          "item": "Page title",
+          "status": "pass",
+          "details": "Title: Trade AI Platform | Enterprise Trade Intelligence"
+        }
+      ]
+    },
+    {
+      "page": "Products",
+      "category": "performance",
+      "timestamp": "2025-11-08T05:11:26.422298",
+      "checks": [
+        {
+          "item": "Page load time",
+          "status": "pass",
+          "details": "Loaded in 0.88s",
+          "benchmark": "< 2s excellent, < 5s acceptable, > 5s poor"
+        }
+      ]
+    }
+  ],
+  "database_validations": [],
+  "report_validations": [],
+  "ml_validations": [],
+  "issues_found": [],
+  "recommendations": [
+    {
+      "priority": "medium",
+      "category": "performance",
+      "issue": "Page load time",
+      "recommendation": "Loaded in 2.03s"
+    },
+    {
+      "priority": "high",
+      "category": "navigation",
+      "issue": "Main navigation visible",
+      "recommendation": "Navigation menu not found"
+    },
+    {
+      "priority": "medium",
+      "category": "forms",
+      "issue": "Field labels",
+      "recommendation": "Consider adding labels to all form fields"
+    },
+    {
+      "priority": "high",
+      "category": "general",
+      "issue": "Overall UX pass rate below 80%",
+      "recommendation": "Conduct comprehensive UX audit and implement improvements"
+    }
+  ]
+}

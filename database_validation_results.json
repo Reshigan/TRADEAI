@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-11-08T05:12:17.791923",
+  "validations": [
+    {
+      "module": "customers",
+      "total_records": "15",
+      "test_records": "",
+      "status": "info"
+    },
+    {
+      "module": "budgets",
+      "total_records": "1",
+      "test_records": "",
+      "status": "info"
+    },
+    {
+      "module": "products",
+      "total_records": "36",
+      "status": "pass"
+    },
+    {
+      "module": "tradespends",
+      "total_records": "0",
+      "status": "info"
+    },
+    {
+      "module": "promotions",
+      "total_records": "0",
+      "status": "info"
+    },
+    {
+      "module": "users",
+      "total_records": "7",
+      "admin_users": "",
+      "status": "pass"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "generated_at": "2025-11-08T04:32:34.413680",
+  "total_bugs": 5,
+  "critical": 5,
+  "high": 0,
+  "medium": 0,
+  "low": 0,
+  "bugs": [
+    {
+      "id": "BUG-100",
+      "timestamp": "2025-11-08T04:30:22.275169",
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Login failed for super_admin: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=\\\"email\\\"]\")\n",
+      "role": "super_admin",
+      "screenshot": null,
+      "status": "open"
+    },
+    {
+      "id": "BUG-101",
+      "timestamp": "2025-11-08T04:30:55.212700",
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Login failed for sales_manager: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=\\\"email\\\"]\")\n",
+      "role": "sales_manager",
+      "screenshot": null,
+      "status": "open"
+    },
+    {
+      "id": "BUG-102",
+      "timestamp": "2025-11-08T04:31:28.124676",
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Login failed for kam: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=\\\"email\\\"]\")\n",
+      "role": "kam",
+      "screenshot": null,
+      "status": "open"
+    },
+    {
+      "id": "BUG-103",
+      "timestamp": "2025-11-08T04:32:01.063261",
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Login failed for finance_manager: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=\\\"email\\\"]\")\n",
+      "role": "finance_manager",
+      "screenshot": null,
+      "status": "open"
+    },
+    {
+      "id": "BUG-104",
+      "timestamp": "2025-11-08T04:32:33.983405",
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Login failed for analyst: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=\\\"email\\\"]\")\n",
+      "role": "analyst",
+      "screenshot": null,
+      "status": "open"
+    }
+  ]
+}
