@@ -1,292 +1,56 @@
-# Node.js
+# Dependencies
 node_modules/
 npm-debug.log
-yarn-debug.log
 yarn-error.log
 package-lock.json
-.npm
+yarn.lock
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
+# Build
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-venv/
-.venv/
-ENV/
+build/
+.next/
+out/
 
-# Exception: frontend source lib directories should not be ignored
-!frontend-v2/src/lib/
-!frontend/src/lib/
-
-# Docker
-.dockerignore
-
-# Environment variables - NEVER commit these!
+# Environment
 .env
 .env.local
+.env.production.local
 .env.development.local
 .env.test.local
-.env.production
-.env.production.local
-.env.staging
 
-# Exception: .env.test is the template for E2E tests and should be committed
-!.env.test
-
-# SSH Keys and Certificates - CRITICAL SECURITY
-*.pem
-*.key
-*.crt
-*.cer
-*.p12
-*.pfx
-id_rsa*
-*.pub
-ssl/privkey.pem
-ssl/fullchain.pem
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE files
-.idea/
-.vscode/
-*.swp
-*.swo
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-*.sublime-project
-
 # Testing
 coverage/
 .nyc_output/
-.coverage
-htmlcov/
-.pytest_cache/
-uat-*.txt
-test-results-*.txt
-*-results.txt
 
-# Playwright
-playwright-report/
-test-results/
-playwright/.cache/
-.playwright/
+# Certificates
+*.pem
+*.key
+*.crt
 
-# Build files
-/build/
-/dist/
-/.next/
-/out/
+# Backup files
+*.backup
+backups/
+
+# OS
+Thumbs.db
+.DS_Store
 
 # Temporary files
-*.tmp
-*.temp
-.cache/
 tmp/
-
-# Data files
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-*.zip
-*.tar
-*.tar.gz
-*.rar
-*.7z
-
-# Exceptions - keep these files
-!test_data/*.csv
-!test_data/*.json
-!requirements.txt
-!package.json
-!yarn.lock
-
-# Redis dump files
-backend/dump.rdb
-dump.rdb
-
-# Test files (temporary)
-backend/test-backend.js
-frontend/test-frontend.html
-/tmp/trade-ai-uat-*
-
-# Development artifacts and temporary files
-*_GUIDE.md
-*_REPORT.md
-*_CREDENTIALS.md
-*_SUMMARY.md
-*_ANALYSIS.md
-*_CHECKLIST.md
-*_STATUS.md
-*_COMPLETE.md
-*_RESULTS.md
-*_INDEX.md
-*_DOCUMENTATION.md
-*_TEST*.md
-*_UAT*.md
-*_E2E*.md
-*_DEPLOYMENT*.md
-*_PRODUCTION*.md
-*_FINAL*.md
-*_COMPREHENSIVE*.md
-*_ENTERPRISE*.md
-*_IMPLEMENTATION*.md
-*_EVALUATION*.md
-*_TESTING*.md
-*_COVERAGE*.md
-*_STRATEGY*.md
-*_ARCHITECTURE*.md
-*_FEATURES*.md
-*_PLAN*.md
-*_ROADMAP*.md
-*_TRANSFORMATION*.md
-*_READY*.md
-*_SUCCESS*.md
-*_COMPLETION*.md
-*_BULLETPROOF*.md
-*_REALITY*.md
-*_FINDINGS*.md
-*_BREAKDOWN*.md
-*_EXECUTIVE*.md
-*_MASTER*.md
-*_QUICK*.md
-*_GETTING*.md
-*_START*.md
-*_ACCESS*.md
-*_CRITICAL*.md
-*_URGENT*.md
-*_HOST*.md
-*_SECURITY*.md
-*_SPECIFICATION*.md
-*_COMPONENT*.md
-*_ROUTING*.md
-*_RELEASE*.md
-*_PHASE*.md
-*_POST*.md
-*_CONFIGURATION*.md
-*_PACKAGE*.md
-*_GO_LIVE*.md
-*_LAUNCH*.md
-*_BETA*.md
-*_AUTOMATED*.md
-*_API_FIX*.md
-*_CLEANUP*.md
-*_WORK*.md
-*_TODAYS*.md
-*_KNOWN*.md
-*_LOCAL*.md
-*_LOGIN*.md
-*_PERFECT*.md
-*_PROJECT*.md
-*_SYSTEM*.md
-*_UI_DESIGN*.md
-*_ENV*.md
-*_GITHUB*.md
-*_BUTTON*.md
-*_GREEN*.md
-
-# Script files (development artifacts - DISABLED FOR NOW)
-# *.sh
-# *.py
-# *.js
-# !package.json
-# !init-mongo.js
-# !ecosystem.config.js
-# !jest.config.js
-# !playwright.config.js
-# !cypress.config.js
-
-# Test output files (DISABLED FOR NOW)
-# *.json
-# !package.json
-# !package-lock.json
-# !tsconfig.json
-# !jsconfig.json
-
-# Image files (unless in assets)
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.bmp
-*.svg
-!assets/**/*.png
-!assets/**/*.jpg
-!assets/**/*.jpeg
-!assets/**/*.gif
-!assets/**/*.bmp
-!assets/**/*.svg
-!frontend/public/**/*.png
-!frontend/public/**/*.jpg
-!frontend/public/**/*.jpeg
-!frontend/public/**/*.gif
-!frontend/public/**/*.bmp
-!frontend/public/**/*.svg
-
-# Text files
-*.txt
-!requirements.txt
-
-# Archive files
-*.tar.gz
-*.zip
-*.rar
-*.7z
-
-# Old directories
-test-reports/
-archive/
-tradeai-v2/
-
-# Old config files
-cypress.config.js
-docker-compose.dev.yml
-docker-compose.override.yml*
-docker-compose-arm64.yml
-nginx-*.conf
-
-# Cleanup script
-cleanup_repository.sh
-
-*.html
-
-# Generated secrets (never commit)
-.secrets/
-.env
+temp/
+*.tmp
