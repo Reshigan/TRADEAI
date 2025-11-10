@@ -14,6 +14,7 @@ import {
 
 import BudgetList from './BudgetList';
 import HierarchicalBudgetManager from './HierarchicalBudgetManager';
+import BudgetReports from '../reports/modules/BudgetReports';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -81,14 +82,7 @@ const BudgetPage = () => {
       </TabPanel>
 
       <TabPanel value={activeTab} index={2}>
-        <Paper sx={{ p: 3, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary">
-            Budget Reports
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            Comprehensive budget reporting and analytics coming soon...
-          </Typography>
-        </Paper>
+        <BudgetReports />
       </TabPanel>
     </Box>
   );

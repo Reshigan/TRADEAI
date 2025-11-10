@@ -257,6 +257,18 @@ function App() {
           } 
         />
         <Route 
+          path="/promotions/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionEdit />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/promotions/new-flow" 
           element={
             isAuthenticated ? (
