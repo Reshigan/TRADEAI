@@ -32,7 +32,7 @@ const PromotionListEnhanced = () => {
     
     const insights = [];
     const activePromos = promotions.filter(p => p.status === 'active').length;
-    const avgROI = promotions.reduce((sum, p) => sum + (p.roi || 0), 0) / promotions.length;
+    const avgROI = promotions.reduce((sum, p) => sum + (p.metrics?.roi || 0), 0) / promotions.length;
     
     if (activePromos > 0) {
       insights.push({
@@ -95,15 +95,16 @@ const PromotionListEnhanced = () => {
   const generateRowInsights = () => {
     const insights = {};
     promotions.forEach(promo => {
-      if (promo.roi > 200) {
+      const roi = promo.metrics?.roi || 0;
+      if (roi > 200) {
         insights[promo.id || promo._id] = {
           type: 'opportunity',
-          message: `🔥 High ROI: ${promo.roi}% - Consider extending or replicating`
+          message: `🔥 High ROI: ${roi}% - Consider extending or replicating`
         };
-      } else if (promo.roi < 100) {
+      } else if (roi < 100) {
         insights[promo.id || promo._id] = {
           type: 'risk',
-          message: `⚠️ Low ROI: ${promo.roi}% - Review and optimize`
+          message: `⚠️ Low ROI: ${roi}% - Review and optimize`
         };
       } else if (promo.status === 'active') {
         insights[promo.id || promo._id] = {
@@ -154,13 +155,16 @@ const PromotionListEnhanced = () => {
       id: 'roi',
       label: 'ROI',
       sortable: true,
-      render: (value) => (
-        <Chip
-          label={`${value}%`}
-          size="small"
-          color={value > 150 ? 'success' : value > 100 ? 'primary' : 'warning'}
-        />
-      )
+      render: (value, row) => {
+        const roiValue = row.metrics?.roi || 0;
+        return (
+          <Chip
+            label={`${roiValue.toFixed(2)}%`}
+            size="small"
+            color={roiValue > 150 ? 'success' : roiValue > 100 ? 'primary' : 'warning'}
+          />
+        );
+      }
     },
     {
       id: 'startDate',
