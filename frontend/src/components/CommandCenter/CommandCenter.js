@@ -39,7 +39,13 @@ const CommandCenter = () => {
     aiInsight: {},
     quickActions: [],
     activeWorkflows: [],
-    kpis: {}
+    kpis: {
+      totalBudget: 0,
+      totalSpent: 0,
+      utilizationRate: 0,
+      activePromotions: 0,
+      pendingApprovals: 0
+    }
   });
 
   useEffect(() => {
@@ -353,11 +359,11 @@ const CommandCenter = () => {
                 Budget Utilization
               </Typography>
               <Typography variant="h4" fontWeight="bold" gutterBottom>
-                {dashboardData.kpis.utilizationRate.toFixed(1)}%
+                {(dashboardData.kpis.utilizationRate ?? 0).toFixed(1)}%
               </Typography>
               <LinearProgress 
                 variant="determinate" 
-                value={dashboardData.kpis.utilizationRate} 
+                value={dashboardData.kpis.utilizationRate ?? 0} 
                 sx={{ height: 8, borderRadius: 1, mb: 3 }}
               />
 
@@ -365,14 +371,14 @@ const CommandCenter = () => {
                 Total Budget
               </Typography>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
-                ${dashboardData.kpis.totalBudget.toLocaleString()}
+                ${(dashboardData.kpis.totalBudget ?? 0).toLocaleString()}
               </Typography>
 
               <Typography variant="body2" color="textSecondary" gutterBottom mt={2}>
                 Total Spent
               </Typography>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
-                ${dashboardData.kpis.totalSpent.toLocaleString()}
+                ${(dashboardData.kpis.totalSpent ?? 0).toLocaleString()}
               </Typography>
 
               <Divider sx={{ my: 2 }} />
@@ -382,7 +388,7 @@ const CommandCenter = () => {
                   Active Promotions
                 </Typography>
                 <Typography variant="h6" fontWeight="bold">
-                  {dashboardData.kpis.activePromotions}
+                  {dashboardData.kpis.activePromotions ?? 0}
                 </Typography>
               </Box>
 
@@ -391,9 +397,9 @@ const CommandCenter = () => {
                   Pending Approvals
                 </Typography>
                 <Chip 
-                  label={dashboardData.kpis.pendingApprovals} 
+                  label={dashboardData.kpis.pendingApprovals ?? 0} 
                   size="small"
-                  color={dashboardData.kpis.pendingApprovals > 0 ? 'warning' : 'default'}
+                  color={(dashboardData.kpis.pendingApprovals ?? 0) > 0 ? 'warning' : 'default'}
                 />
               </Box>
             </Box>
