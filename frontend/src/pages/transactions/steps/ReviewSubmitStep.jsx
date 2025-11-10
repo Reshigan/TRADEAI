@@ -26,6 +26,7 @@ import {
   Info as InfoIcon,
   Warning as WarningIcon
 } from '@mui/icons-material';
+import { formatCurrency } from '../../../utils/formatters';
 
 const TRANSACTION_TYPE_LABELS = {
   order: 'Order',
@@ -128,7 +129,7 @@ export default function ReviewSubmitStep({ data, customers, products }) {
 
         {requiresApproval && (
           <Alert severity="info" sx={{ mt: 2 }} icon={<InfoIcon />}>
-            This transaction requires management approval due to the amount (≥ $1,000).
+            This transaction requires management approval due to the amount (≥ {formatCurrency(1000)}).
             It will be submitted for review after creation.
           </Alert>
         )}

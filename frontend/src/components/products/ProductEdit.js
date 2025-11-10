@@ -23,6 +23,25 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        const currencyMap = {
+          'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+          'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
+        };
+        return currencyMap[user.company.currency] || 'R';
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency symbol:', error);
+  }
+  return 'R';
+};
+
 const ProductEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -271,7 +290,7 @@ const ProductEdit = () => {
               value={product.unitPrice || 0}
               onChange={(e) => handleChange('unitPrice', parseFloat(e.target.value) || 0)}
               InputProps={{
-                startAdornment: '$'
+                startAdornment: getCurrencySymbol()
               }}
             />
           </Grid>
@@ -284,7 +303,7 @@ const ProductEdit = () => {
               value={product.cost || 0}
               onChange={(e) => handleChange('cost', parseFloat(e.target.value) || 0)}
               InputProps={{
-                startAdornment: '$'
+                startAdornment: getCurrencySymbol()
               }}
             />
           </Grid>

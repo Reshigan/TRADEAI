@@ -24,6 +24,7 @@ import {
   Delete as DeleteIcon,
   Calculate as CalculateIcon
 } from '@mui/icons-material';
+import { formatCurrency } from '../../../utils/formatters';
 
 export default function LineItemsStep({ data, errors, onChange, products }) {
   const [items, setItems] = useState(data.items || []);
@@ -330,7 +331,7 @@ export default function LineItemsStep({ data, errors, onChange, products }) {
             {totals.grandTotal >= 1000 && (
               <Alert severity="info" sx={{ mt: 2 }} icon={<CalculateIcon />}>
                 <Typography variant="caption">
-                  This transaction requires management approval (amount ≥ $1,000)
+                  This transaction requires management approval (amount ≥ {formatCurrency(1000)})
                 </Typography>
               </Alert>
             )}

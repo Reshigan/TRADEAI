@@ -27,13 +27,13 @@ const getCurrencySymbol = () => {
           'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
           'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
         };
-        return currencyMap[user.company.currency] || '$';
+        return currencyMap[user.company.currency] || 'R';
       }
     }
   } catch (error) {
     console.warn('Error getting currency symbol:', error);
   }
-  return '$'; // Fallback
+  return 'R'; // Fallback to ZAR
 };
 
 const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {

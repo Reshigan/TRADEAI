@@ -19,6 +19,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { addDays } from 'date-fns';
+import { formatCurrency } from '../../../utils/formatters';
 
 const PAYMENT_METHODS = [
   { value: 'credit', label: 'Credit Card' },
@@ -65,7 +66,7 @@ export default function PaymentTermsStep({ data, errors, onChange }) {
 
       {amount === 0 && (
         <Alert severity="warning" sx={{ mb: 3 }}>
-          Transaction amount is $0.00. Please add line items in the previous step.
+          Transaction amount is {formatCurrency(0)}. Please add line items in the previous step.
         </Alert>
       )}
 

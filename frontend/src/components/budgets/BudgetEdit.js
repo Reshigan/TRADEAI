@@ -32,6 +32,25 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        const currencyMap = {
+          'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+          'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
+        };
+        return currencyMap[user.company.currency] || 'R';
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency symbol:', error);
+  }
+  return 'R';
+};
+
 const BudgetEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -241,7 +260,7 @@ const BudgetEdit = () => {
               value={budget.totalBudget}
               onChange={(e) => handleChange('totalBudget', e.target.value)}
               InputProps={{
-                startAdornment: '$'
+                startAdornment: getCurrencySymbol()
               }}
             />
           </Grid>
@@ -333,7 +352,7 @@ const BudgetEdit = () => {
                           value={allocation.amount || 0}
                           onChange={(e) => handleAllocationChange(index, 'amount', e.target.value)}
                           InputProps={{
-                            startAdornment: '$'
+                            startAdornment: getCurrencySymbol()
                           }}
                         />
                       </TableCell>

@@ -44,6 +44,25 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        const currencyMap = {
+          'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+          'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
+        };
+        return currencyMap[user.company.currency] || 'R';
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency symbol:', error);
+  }
+  return 'R';
+};
+
 const steps = [
   'Budget Overview',
   'AI Analysis',
@@ -438,7 +457,7 @@ const BudgetPlanningWizard = () => {
                         <Chip label={`${item.percentage}%`} size="small" />
                       </TableCell>
                       <TableCell align="right">
-                        ${item.amount.toLocaleString()}
+                        {getCurrencySymbol()}{item.amount.toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
                         <TextField
@@ -446,7 +465,7 @@ const BudgetPlanningWizard = () => {
                           size="small"
                           value={item.customAmount}
                           onChange={(e) => handleAllocationChange(index, 'customAmount', parseFloat(e.target.value) || 0)}
-                          InputProps={{ startAdornment: '$' }}
+                          InputProps={{ startAdornment: getCurrencySymbol() }}
                           sx={{ width: 150 }}
                         />
                       </TableCell>
