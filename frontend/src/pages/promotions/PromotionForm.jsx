@@ -20,18 +20,84 @@ const PromotionForm = () => {
     budget: '',
     description: '',
     products: [],
-    customers: []
+    customers: [],
+    productHierarchy: {
+      level1: '',
+      level2: '',
+      level3: ''
+    },
+    customerHierarchy: {
+      level1: '',
+      level2: '',
+      level3: ''
+    }
   });
 
   const [loading, setLoading] = useState(isEditMode);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [productHierarchies, setProductHierarchies] = useState({ level1: [], level2: [], level3: [] });
+  const [customerHierarchies, setCustomerHierarchies] = useState({ level1: [], level2: [], level3: [] });
 
   useEffect(() => {
+    fetchProducts();
+    fetchCustomers();
     if (isEditMode) {
       fetchPromotion();
     }
   }, [id]);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/products`);
+      const productsData = response.data.data || response.data;
+      setProducts(productsData);
+      
+      // Extract unique hierarchies
+      const hierarchies = { level1: [], level2: [], level3: [] };
+      productsData.forEach(product => {
+        if (product.hierarchy?.level1?.name && !hierarchies.level1.find(h => h === product.hierarchy.level1.name)) {
+          hierarchies.level1.push(product.hierarchy.level1.name);
+        }
+        if (product.hierarchy?.level2?.name && !hierarchies.level2.find(h => h === product.hierarchy.level2.name)) {
+          hierarchies.level2.push(product.hierarchy.level2.name);
+        }
+        if (product.hierarchy?.level3?.name && !hierarchies.level3.find(h => h === product.hierarchy.level3.name)) {
+          hierarchies.level3.push(product.hierarchy.level3.name);
+        }
+      });
+      setProductHierarchies(hierarchies);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/customers`);
+      const customersData = response.data.data || response.data;
+      setCustomers(customersData);
+      
+      // Extract unique hierarchies
+      const hierarchies = { level1: [], level2: [], level3: [] };
+      customersData.forEach(customer => {
+        if (customer.hierarchy?.level1?.name && !hierarchies.level1.find(h => h === customer.hierarchy.level1.name)) {
+          hierarchies.level1.push(customer.hierarchy.level1.name);
+        }
+        if (customer.hierarchy?.level2?.name && !hierarchies.level2.find(h => h === customer.hierarchy.level2.name)) {
+          hierarchies.level2.push(customer.hierarchy.level2.name);
+        }
+        if (customer.hierarchy?.level3?.name && !hierarchies.level3.find(h => h === customer.hierarchy.level3.name)) {
+          hierarchies.level3.push(customer.hierarchy.level3.name);
+        }
+      });
+      setCustomerHierarchies(hierarchies);
+    } catch (err) {
+      console.error('Failed to fetch customers:', err);
+    }
+  };
 
   const fetchPromotion = async () => {
     try {
@@ -64,6 +130,16 @@ const PromotionForm = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleHierarchyChange = (type, level, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [`${type}Hierarchy`]: {
+        ...prev[`${type}Hierarchy`],
+        [level]: value
+      }
     }));
   };
 
@@ -234,6 +310,102 @@ const PromotionForm = () => {
                 step="0.01"
                 placeholder="0.00"
               />
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h2>Product Hierarchy Selection</h2>
+          <p className="section-description">Select product categories to target with this promotion</p>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="productLevel1">Product Category (Level 1)</label>
+              <select
+                id="productLevel1"
+                value={formData.productHierarchy.level1}
+                onChange={(e) => handleHierarchyChange('product', 'level1', e.target.value)}
+              >
+                <option value="">All Categories</option>
+                {productHierarchies.level1.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="productLevel2">Product Sub-Category (Level 2)</label>
+              <select
+                id="productLevel2"
+                value={formData.productHierarchy.level2}
+                onChange={(e) => handleHierarchyChange('product', 'level2', e.target.value)}
+              >
+                <option value="">All Sub-Categories</option>
+                {productHierarchies.level2.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="productLevel3">Product Type (Level 3)</label>
+              <select
+                id="productLevel3"
+                value={formData.productHierarchy.level3}
+                onChange={(e) => handleHierarchyChange('product', 'level3', e.target.value)}
+              >
+                <option value="">All Types</option>
+                {productHierarchies.level3.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h2>Customer Hierarchy Selection</h2>
+          <p className="section-description">Select customer segments to target with this promotion</p>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="customerLevel1">Customer Group (Level 1)</label>
+              <select
+                id="customerLevel1"
+                value={formData.customerHierarchy.level1}
+                onChange={(e) => handleHierarchyChange('customer', 'level1', e.target.value)}
+              >
+                <option value="">All Customer Groups</option>
+                {customerHierarchies.level1.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="customerLevel2">Customer Segment (Level 2)</label>
+              <select
+                id="customerLevel2"
+                value={formData.customerHierarchy.level2}
+                onChange={(e) => handleHierarchyChange('customer', 'level2', e.target.value)}
+              >
+                <option value="">All Segments</option>
+                {customerHierarchies.level2.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="customerLevel3">Customer Type (Level 3)</label>
+              <select
+                id="customerLevel3"
+                value={formData.customerHierarchy.level3}
+                onChange={(e) => handleHierarchyChange('customer', 'level3', e.target.value)}
+              >
+                <option value="">All Types</option>
+                {customerHierarchies.level3.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

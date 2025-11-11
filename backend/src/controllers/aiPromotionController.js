@@ -19,6 +19,7 @@ class AIPromotionController {
             
             // Validate required fields
             const requiredFields = ['productId', 'currentPrice', 'proposedPrice', 'expectedUplift', 'category'];
+            const missingFields = requiredFields.filter(field => !promotionData[field]);
             
             if (missingFields.length > 0) {
                 return res.status(400).json({
@@ -66,7 +67,8 @@ class AIPromotionController {
             const promotionData = req.body;
             
             // Validate required fields
-            const requiredFields = ['productId', 'currentPrice', 'proposedPrice', 'expectedUplift', 'category'];
+            const requiredFields = ['productId', 'currentPrice', 'proposedPrice', 'category'];
+            const missingFields = requiredFields.filter(field => !promotionData[field]);
             
             if (missingFields.length > 0) {
                 return res.status(400).json({
@@ -115,6 +117,7 @@ class AIPromotionController {
             
             // Validate required fields
             const requiredFields = ['productId', 'currentPrice', 'proposedPrice', 'expectedUplift', 'category'];
+            const missingFields = requiredFields.filter(field => !simulationData[field]);
             
             if (missingFields.length > 0) {
                 return res.status(400).json({

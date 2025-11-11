@@ -36,6 +36,10 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+.coverage
+__pycache__/
+*.pyc
+*.pyo
 
 # Certificates
 *.pem
