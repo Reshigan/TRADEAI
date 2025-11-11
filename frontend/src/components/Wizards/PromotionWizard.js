@@ -62,11 +62,21 @@ const PromotionWizard = () => {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   
+  // Hierarchy state
+  const [customerHierarchies, setCustomerHierarchies] = useState([]);
+  const [productHierarchies, setProductHierarchies] = useState([]);
+  
   const [promotionData, setPromotionData] = useState({
     description: '',
     type: 'discount',
     customer: '',
     product: '',
+    customerHierarchyLevel1: '',
+    customerHierarchyLevel2: '',
+    customerHierarchyLevel3: '',
+    productHierarchyLevel1: '',
+    productHierarchyLevel2: '',
+    productHierarchyLevel3: '',
     startDate: null,
     endDate: null,
     discountPercentage: '',
@@ -80,6 +90,8 @@ const PromotionWizard = () => {
   useEffect(() => {
     fetchCustomers();
     fetchProducts();
+    fetchCustomerHierarchies();
+    fetchProductHierarchies();
   }, []);
 
   const fetchCustomers = async () => {
@@ -97,6 +109,24 @@ const PromotionWizard = () => {
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchCustomerHierarchies = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/hierarchies/customer`);
+      setCustomerHierarchies(response.data);
+    } catch (error) {
+      console.error('Error fetching customer hierarchies:', error);
+    }
+  };
+
+  const fetchProductHierarchies = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/hierarchies/product`);
+      setProductHierarchies(response.data);
+    } catch (error) {
+      console.error('Error fetching product hierarchies:', error);
     }
   };
 
@@ -498,6 +528,128 @@ const PromotionWizard = () => {
                     {products.map((product) => (
                       <MenuItem key={product._id} value={product._id}>
                         {product.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Customer Hierarchy Selectors */}
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Customer Hierarchy Level 1</InputLabel>
+                  <Select
+                    value={promotionData.customerHierarchyLevel1}
+                    label="Customer Hierarchy Level 1"
+                    onChange={(e) => setPromotionData({ ...promotionData, customerHierarchyLevel1: e.target.value })}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {customerHierarchies.filter(h => h.level === 1).map((hierarchy) => (
+                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                        {hierarchy.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Customer Hierarchy Level 2</InputLabel>
+                  <Select
+                    value={promotionData.customerHierarchyLevel2}
+                    label="Customer Hierarchy Level 2"
+                    onChange={(e) => setPromotionData({ ...promotionData, customerHierarchyLevel2: e.target.value })}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {customerHierarchies.filter(h => h.level === 2).map((hierarchy) => (
+                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                        {hierarchy.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Customer Hierarchy Level 3</InputLabel>
+                  <Select
+                    value={promotionData.customerHierarchyLevel3}
+                    label="Customer Hierarchy Level 3"
+                    onChange={(e) => setPromotionData({ ...promotionData, customerHierarchyLevel3: e.target.value })}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {customerHierarchies.filter(h => h.level === 3).map((hierarchy) => (
+                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                        {hierarchy.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Product Hierarchy Selectors */}
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Product Hierarchy Level 1</InputLabel>
+                  <Select
+                    value={promotionData.productHierarchyLevel1}
+                    label="Product Hierarchy Level 1"
+                    onChange={(e) => setPromotionData({ ...promotionData, productHierarchyLevel1: e.target.value })}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {productHierarchies.filter(h => h.level === 1).map((hierarchy) => (
+                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                        {hierarchy.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Product Hierarchy Level 2</InputLabel>
+                  <Select
+                    value={promotionData.productHierarchyLevel2}
+                    label="Product Hierarchy Level 2"
+                    onChange={(e) => setPromotionData({ ...promotionData, productHierarchyLevel2: e.target.value })}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {productHierarchies.filter(h => h.level === 2).map((hierarchy) => (
+                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                        {hierarchy.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Product Hierarchy Level 3</InputLabel>
+                  <Select
+                    value={promotionData.productHierarchyLevel3}
+                    label="Product Hierarchy Level 3"
+                    onChange={(e) => setPromotionData({ ...promotionData, productHierarchyLevel3: e.target.value })}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {productHierarchies.filter(h => h.level === 3).map((hierarchy) => (
+                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                        {hierarchy.name}
                       </MenuItem>
                     ))}
                   </Select>
