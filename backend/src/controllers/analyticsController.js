@@ -124,6 +124,18 @@ class AnalyticsController {
       const TradeSpend = require('../models/TradeSpend');
       
       // Query real data from database
+      // Check for both 'active' and 'completed' promotions for stats
+      const now = new Date();
+      const promotionQuery = {
+        $or: [
+          { status: 'active' },
+          { 
+            status: 'completed',
+            endDate: { $gte: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000) } // Last 90 days
+          }
+        ]
+      };
+      
       const [
         totalCustomers,
         activePromotions,
@@ -132,15 +144,34 @@ class AnalyticsController {
         budgets
       ] = await Promise.all([
         Customer.countDocuments({ status: 'active' }),
-        Promotion.countDocuments({ status: 'active' }),
+        Promotion.countDocuments(promotionQuery),
         Customer.find({ status: 'active' }).limit(10).lean(),
-        Promotion.find({ status: 'active' }).limit(20).lean(),
+        Promotion.find(promotionQuery).limit(20).lean(),
         Budget.find({}).lean()
       ]);
       
       // Calculate totals from real data
-      const totalBudget = budgets.reduce((sum, b) => sum + (b.totalAmount || 0), 0) || 5000000;
-      const totalUsed = budgets.reduce((sum, b) => sum + (b.usedAmount || 0), 0) || 2150000;
+      // Budget uses annualTotals.tradeSpend.total for planned budget
+      // and sum of spent across all categories for actual spend
+      const totalBudget = budgets.reduce((sum, b) => {
+        return sum + (b.annualTotals?.tradeSpend?.total || 0);
+      }, 0) || 5000000;
+      
+      const totalUsed = budgets.reduce((sum, b) => {
+        // Sum all spent amounts from budget lines
+        if (b.budgetLines && b.budgetLines.length > 0) {
+          const budgetSpent = b.budgetLines.reduce((lineSum, line) => {
+            return lineSum + 
+              (line.tradeSpend?.marketing?.spent || 0) +
+              (line.tradeSpend?.cashCoop?.spent || 0) +
+              (line.tradeSpend?.tradingTerms?.spent || 0) +
+              (line.tradeSpend?.promotions?.spent || 0);
+          }, 0);
+          return sum + budgetSpent;
+        }
+        return sum;
+      }, 0) || 2150000;
+      
       const budgetUtilization = totalBudget > 0 ? Math.round((totalUsed / totalBudget) * 100) : 43;
       
       // Get top customers based on real data

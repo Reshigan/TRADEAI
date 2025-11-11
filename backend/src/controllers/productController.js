@@ -39,9 +39,21 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
     throw new AppError('Access denied', 403);
   }
 
+  // Transform product to match UI expectations
+  const productObj = product.toObject();
+  const transformedProduct = {
+    ...productObj,
+    price: productObj.unitPrice || 0,
+    cost: productObj.costPrice || 0,
+    stock: productObj.stock || 0,
+    margin: productObj.unitPrice && productObj.costPrice 
+      ? ((productObj.unitPrice - productObj.costPrice) / productObj.unitPrice * 100).toFixed(2)
+      : 0
+  };
+
   res.json({
     success: true,
-    data: product
+    data: transformedProduct
   });
 });
 
@@ -170,9 +182,25 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 
   const total = await Product.countDocuments(query);
 
+  // Transform products to match UI expectations
+  const transformedProducts = products.map(product => {
+    const productObj = product.toObject();
+    return {
+      ...productObj,
+      // Map DB field names to UI field names
+      price: productObj.unitPrice || 0,
+      cost: productObj.costPrice || 0,
+      // Calculate missing fields
+      stock: productObj.stock || 0,
+      margin: productObj.unitPrice && productObj.costPrice 
+        ? ((productObj.unitPrice - productObj.costPrice) / productObj.unitPrice * 100).toFixed(2)
+        : 0
+    };
+  });
+
   res.json({
     success: true,
-    data: products,
+    data: transformedProducts,
     pagination: {
       total,
       page: parseInt(page),
