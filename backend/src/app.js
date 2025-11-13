@@ -51,6 +51,8 @@ const mlRoutes = require('./routes/ml');
 const aiRoutes = require('./routes/ai');
 const aiPromotionRoutes = require('./routes/aiPromotion');
 const aiChatbotRoutes = require('./routes/aiChatbot');
+const aiOrchestratorRoutes = require('./routes/aiOrchestrator');
+const ollamaRoutes = require('./routes/ollama');
 const salesRoutes = require('./routes/sales');
 const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
@@ -294,6 +296,8 @@ app.use('/api/ml', authenticateToken, mlRoutes);
 app.use('/api/ai', aiRoutes); // AI routes have their own auth middleware
 app.use('/api/ai-promotion', authenticateToken, aiPromotionRoutes);
 app.use('/api/ai-chatbot', authenticateToken, aiChatbotRoutes);
+app.use('/api/ai-orchestrator', aiOrchestratorRoutes); // AI orchestrator with Ollama
+app.use('/api/ollama', ollamaRoutes); // Ollama LLM endpoints
 
 // Currency conversion routes
 app.use('/api', authenticateToken, currencyRoutes);

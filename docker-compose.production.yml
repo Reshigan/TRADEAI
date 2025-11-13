@@ -72,6 +72,9 @@ services:
       REDIS_KEY_PREFIX: ${REDIS_KEY_PREFIX}
       ML_SERVICE_URL: http://ml-service:8001
       ML_SERVICE_TIMEOUT: 300000
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: phi3:mini
+      OLLAMA_TIMEOUT: 60000
     volumes:
       - ./backend/uploads:/app/uploads
       - ./backend/logs:/app/logs
@@ -84,6 +87,8 @@ services:
       redis:
         condition: service_healthy
       ml-service:
+        condition: service_healthy
+      ollama:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "healthcheck.js"]
@@ -172,6 +177,33 @@ services:
       retries: 3
       start_period: 60s
 
+  # Ollama Service - LLM for AI Orchestration and Explanations
+  ollama:
+    image: ollama/ollama:latest
+    container_name: tradeai-ollama
+    restart: unless-stopped
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: /root/.ollama/models
+    volumes:
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - tradeai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
   # Background Job Processor
   worker:
     build:
@@ -195,6 +227,7 @@ services:
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       ML_SERVICE_URL: http://ml-service:8001
+      OLLAMA_URL: http://ollama:11434
     volumes:
       - ./backend/logs:/app/logs
       - ./backend/temp:/app/temp
@@ -335,6 +368,8 @@ volumes:
   mongodb_data:
     driver: local
   redis_data:
+    driver: local
+  ollama_models:
     driver: local
   prometheus_data:
     driver: local
