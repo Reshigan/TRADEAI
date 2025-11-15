@@ -69,6 +69,11 @@ import ProductEdit from './components/products/ProductEdit';
 import TradeSpendListNew from './pages/tradespend/TradeSpendList';
 import TradingTermsListNew from './pages/tradingterms/TradingTermsList';
 import ActivityGridCalendar from './pages/activitygrid/ActivityGridCalendar';
+import SimulationStudioNew from './pages/simulation/SimulationStudio';
+import PromotionsTimelineNew from './pages/timeline/PromotionsTimeline';
+import Customer360New from './pages/customer360/Customer360';
+import BudgetConsoleNew from './pages/budgetconsole/BudgetConsole';
+import PromotionPlannerNew from './pages/promotions/PromotionPlanner';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -433,7 +438,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <CustomerDetail />
+                <Customer360New />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -780,6 +785,66 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <SimulationStudio />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/simulation-studio" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <SimulationStudioNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/promotions-timeline" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionsTimelineNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/promotion-planner" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionPlannerNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/budget-console" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetConsoleNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/customer-360/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <Customer360New />
               </Layout>
             ) : (
               <Navigate to="/" replace />
