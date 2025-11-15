@@ -66,6 +66,10 @@ import TradeSpendEdit from './components/tradeSpends/TradeSpendEdit';
 import CustomerEdit from './components/customers/CustomerEdit';
 import ProductEdit from './components/products/ProductEdit';
 
+import TradeSpendListNew from './pages/tradespend/TradeSpendList';
+import TradingTermsListNew from './pages/tradingterms/TradingTermsList';
+import ActivityGridCalendar from './pages/activitygrid/ActivityGridCalendar';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -289,7 +293,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendList />
+                <TradeSpendListNew />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -715,7 +719,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <ActivityGrid />
+                <ActivityGridCalendar />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -727,7 +731,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <TradingTermsList />
+                <TradingTermsListNew />
               </Layout>
             ) : (
               <Navigate to="/" replace />
