@@ -170,6 +170,27 @@ export const TimelineSkeleton = () => (
   </Box>
 );
 
+export const SkeletonLoader = ({ type, ...props }) => {
+  switch (type) {
+    case 'table':
+      return <TableSkeleton {...props} />;
+    case 'card':
+      return <CardSkeleton {...props} />;
+    case 'dashboard':
+      return <DashboardSkeleton {...props} />;
+    case 'hierarchy':
+      return <HierarchySkeleton {...props} />;
+    case 'chart':
+      return <ChartSkeleton {...props} />;
+    case 'detail':
+      return <DetailPageSkeleton {...props} />;
+    case 'timeline':
+      return <TimelineSkeleton {...props} />;
+    default:
+      return <TableSkeleton {...props} />;
+  }
+};
+
 export default {
   TableSkeleton,
   CardSkeleton,
@@ -177,5 +198,6 @@ export default {
   HierarchySkeleton,
   ChartSkeleton,
   DetailPageSkeleton,
-  TimelineSkeleton
+  TimelineSkeleton,
+  SkeletonLoader
 };
