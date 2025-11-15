@@ -47,6 +47,7 @@ const JAMDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
+    analytics.trackPageView('jam_dashboard');
   }, []);
 
   const loadDashboardData = async () => {
