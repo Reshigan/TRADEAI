@@ -20,14 +20,34 @@ class RevenueImpactService {
    */
   async calculatePromotionImpact(tenantId, promotionData) {
     try {
+      if (!tenantId) {
+        throw new Error('Tenant ID is required');
+      }
+
+      if (!promotionData || typeof promotionData !== 'object') {
+        throw new Error('Promotion data is required and must be an object');
+      }
+
       const {
-        customers,
-        products,
-        discountPercentage,
+        customers = [],
+        products = [],
+        discountPercentage = 0,
         startDate,
         endDate,
-        promotionType
+        promotionType = 'price_discount'
       } = promotionData;
+
+      if (!Array.isArray(customers) || customers.length === 0) {
+        throw new Error('At least one customer is required');
+      }
+
+      if (!Array.isArray(products) || products.length === 0) {
+        throw new Error('At least one product is required');
+      }
+
+      if (discountPercentage <= 0 || discountPercentage > 100) {
+        throw new Error('Discount percentage must be between 0 and 100');
+      }
 
       const customerNodes = await this.expandCustomerHierarchy(tenantId, customers);
       
@@ -359,6 +379,15 @@ class RevenueImpactService {
    */
   async segmentCustomers(tenantId, method = 'rfm', rootCustomerId = null) {
     try {
+      if (!tenantId) {
+        throw new Error('Tenant ID is required');
+      }
+
+      const validMethods = ['rfm', 'hierarchy', 'value'];
+      if (!validMethods.includes(method)) {
+        throw new Error(`Invalid segmentation method. Must be one of: ${validMethods.join(', ')}`);
+      }
+
       let customers;
 
       if (rootCustomerId) {
@@ -536,7 +565,19 @@ class RevenueImpactService {
    */
   async recommendProducts(tenantId, customerId, options = {}) {
     try {
+      if (!tenantId) {
+        throw new Error('Tenant ID is required');
+      }
+
+      if (!customerId) {
+        throw new Error('Customer ID is required');
+      }
+
       const { limit = 10, excludeCurrentProducts = true } = options;
+
+      if (limit <= 0 || limit > 100) {
+        throw new Error('Limit must be between 1 and 100');
+      }
 
       const customer = await Customer.findOne({ _id: customerId, tenantId });
       if (!customer) {

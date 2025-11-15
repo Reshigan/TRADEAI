@@ -5,24 +5,60 @@
 
 const express = require('express');
 const router = express.Router();
+const { body, validationResult } = require('express-validator');
 const aiOrchestratorService = require('../services/aiOrchestratorService');
 const { authenticate } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
 router.use(authenticate);
 
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      error: 'Validation failed',
+      details: errors.array()
+    });
+  }
+  next();
+};
+
 /**
  * POST /api/ai-orchestrator/orchestrate
  * Main orchestration endpoint - routes user intent to appropriate ML tool
  */
-router.post('/orchestrate', async (req, res) => {
+router.post('/orchestrate', [
+  body('userIntent')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 1000 })
+    .withMessage('User intent must be a string between 1 and 1000 characters'),
+  body('intent')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 1000 })
+    .withMessage('Intent must be a string between 1 and 1000 characters'),
+  body('context')
+    .optional()
+    .isObject()
+    .withMessage('Context must be an object'),
+  body('context.tenantId')
+    .optional()
+    .isString()
+    .withMessage('Tenant ID must be a string'),
+  handleValidationErrors
+], async (req, res) => {
   try {
-    const { intent, context } = req.body;
+    const { intent, userIntent, context } = req.body;
+    const intentValue = userIntent || intent;
     
-    if (!intent) {
+    if (!intentValue) {
       return res.status(400).json({
         success: false,
-        error: 'Intent is required'
+        error: 'Intent or userIntent is required'
       });
     }
 
@@ -33,14 +69,14 @@ router.post('/orchestrate', async (req, res) => {
       userRole: req.user.role
     };
 
-    const result = await aiOrchestratorService.orchestrate(intent, fullContext);
+    const result = await aiOrchestratorService.orchestrate(intentValue, fullContext);
     
     logger.logAudit({
       action: 'ai_orchestration',
       userId: req.user._id,
       tenantId: req.user.tenantId,
       details: {
-        intent,
+        intent: intentValue,
         tool: result.tool,
         success: result.success
       }
@@ -65,16 +101,30 @@ router.post('/orchestrate', async (req, res) => {
  * POST /api/ai-orchestrator/explain
  * Generate natural language explanation for ML results
  */
-router.post('/explain', async (req, res) => {
+router.post('/explain', [
+  body('data')
+    .exists()
+    .withMessage('Data is required'),
+  body('context')
+    .optional()
+    .isObject()
+    .withMessage('Context must be an object'),
+  body('context.userIntent')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('User intent must be a string with max 500 characters'),
+  body('context.toolName')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Tool name must be a string with max 100 characters'),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { data, context } = req.body;
-    
-    if (!data) {
-      return res.status(400).json({
-        success: false,
-        error: 'Data is required'
-      });
-    }
 
     const fullContext = {
       ...context,
