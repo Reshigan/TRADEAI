@@ -1015,10 +1015,35 @@ async function getRevenueKPI(tenantId, dateRange, currency = 'ZAR') {
 
   const result = aggregate[0] || { current: 0, gross: 0, count: 0 };
 
+  const periodLength = new Date(dateRange.end) - new Date(dateRange.start);
+  const previousStart = new Date(new Date(dateRange.start) - periodLength);
+  const previousEnd = new Date(dateRange.start);
+
+  const previousAggregate = await SalesHistory.aggregate([
+    {
+      $match: {
+        tenantId,
+        date: { $gte: previousStart, $lt: previousEnd }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        previous: { $sum: '$revenue.net' }
+      }
+    }
+  ]);
+
+  const previousResult = previousAggregate[0] || { previous: 0 };
+  const change = previousResult.previous > 0 
+    ? ((result.current - previousResult.previous) / previousResult.previous) * 100 
+    : 0;
+  const trend = change > 0 ? 'up' : change < 0 ? 'down' : 'stable';
+
   return {
     value: result.current,
-    change: 0, // TODO: Calculate vs previous period
-    trend: 'stable',
+    change: Math.round(change * 10) / 10,
+    trend,
     unit: currency
   };
 }

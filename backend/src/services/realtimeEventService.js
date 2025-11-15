@@ -99,19 +99,47 @@ class RealtimeEventService extends EventEmitter {
   /**
    * Authenticate WebSocket client
    */
-  authenticateClient(ws, userId, token) {
-    // TODO: Validate token with JWT service
-    // For now, simple registration
-    this.clients.set(userId, ws);
-    this.subscriptions.set(userId, new Set());
-    
-    ws.send(JSON.stringify({
-      type: 'authenticated',
-      userId,
-      timestamp: new Date().toISOString()
-    }));
+  async authenticateClient(ws, userId, token) {
+    try {
+      // Validate token with JWT service
+      const jwt = require('jsonwebtoken');
+      const config = require('../config');
+      const User = require('../models/User');
+      
+      const decoded = jwt.verify(token, config.jwt.secret, {
+        algorithms: ['HS256']
+      });
+      
+      const user = await User.findById(decoded.userId || decoded._id);
+      if (!user || !user.isActive) {
+        ws.send(JSON.stringify({
+          type: 'error',
+          message: 'Authentication failed',
+          timestamp: new Date().toISOString()
+        }));
+        ws.close();
+        return;
+      }
+      
+      this.clients.set(userId, ws);
+      this.subscriptions.set(userId, new Set());
+      
+      ws.send(JSON.stringify({
+        type: 'authenticated',
+        userId,
+        timestamp: new Date().toISOString()
+      }));
 
-    console.log(`Client ${userId} authenticated`);
+      console.log(`Client ${userId} authenticated`);
+    } catch (error) {
+      console.error('WebSocket authentication error:', error);
+      ws.send(JSON.stringify({
+        type: 'error',
+        message: 'Authentication failed',
+        timestamp: new Date().toISOString()
+      }));
+      ws.close();
+    }
   }
 
   /**
