@@ -1,5 +1,5 @@
-const ANALYTICS_ENABLED = import.meta.env.VITE_ANALYTICS_ENABLED === 'true';
-const ANALYTICS_ENDPOINT = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const ANALYTICS_ENABLED = process.env.REACT_APP_ANALYTICS_ENABLED === 'true';
+const ANALYTICS_ENDPOINT = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 class Analytics {
   constructor() {
