@@ -15,6 +15,7 @@ import {
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { authService } from '../services/api';
 import { validateEmail, validatePassword, validateForm } from '../utils/validation';
+import newLogo from '../assets/new_logo.svg';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -141,7 +142,7 @@ const Login = ({ onLogin }) => {
           <Box flex={1} pr={4} className="slide-in">
             <Box display="flex" alignItems="center" mb={3}>
               <img 
-                src="/images/corporate-logo.svg" 
+                src={newLogo} 
                 alt="Trade AI Logo"
                 style={{ height: '60px', marginRight: '1rem' }}
               />

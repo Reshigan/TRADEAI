@@ -8,6 +8,7 @@
 const axios = require('axios');
 const ollamaService = require('../../services/ollamaService');
 const mlIntegrationService = require('./mlIntegrationService');
+const revenueImpactService = require('./revenueImpactService');
 const logger = require('../utils/logger');
 
 class AIOrchestratorService {
@@ -67,30 +68,6 @@ class AIOrchestratorService {
         }
       },
       {
-        name: 'predict_customer_ltv',
-        description: 'Predict customer lifetime value with confidence intervals',
-        parameters: {
-          type: 'object',
-          properties: {
-            tenantId: { type: 'string', description: 'Tenant identifier' },
-            customerId: { type: 'string', description: 'Customer identifier' }
-          },
-          required: ['tenantId', 'customerId']
-        }
-      },
-      {
-        name: 'predict_churn',
-        description: 'Predict customer churn risk and identify contributing factors',
-        parameters: {
-          type: 'object',
-          properties: {
-            tenantId: { type: 'string', description: 'Tenant identifier' },
-            customerId: { type: 'string', description: 'Customer identifier' }
-          },
-          required: ['tenantId', 'customerId']
-        }
-      },
-      {
         name: 'segment_customers',
         description: 'Segment customers using RFM analysis or ML clustering',
         parameters: {
@@ -100,6 +77,19 @@ class AIOrchestratorService {
             method: { type: 'string', enum: ['rfm', 'kmeans'], description: 'Segmentation method' }
           },
           required: ['tenantId']
+        }
+      },
+      {
+        name: 'recommend_products',
+        description: 'Recommend products for a customer based on hierarchy and performance',
+        parameters: {
+          type: 'object',
+          properties: {
+            tenantId: { type: 'string', description: 'Tenant identifier' },
+            customerId: { type: 'string', description: 'Customer identifier' },
+            limit: { type: 'number', description: 'Maximum number of recommendations (default: 10)' }
+          },
+          required: ['tenantId', 'customerId']
         }
       },
       {
@@ -304,30 +294,21 @@ Respond with ONLY valid JSON, no other text.`;
       };
     }
     
-    if (intent.includes('lifetime value') || intent.includes('ltv') || intent.includes('customer value')) {
-      return {
-        tool: 'predict_customer_ltv',
-        parameters: { tenantId: context.tenantId },
-        confidence: 0.7,
-        reasoning: 'Keyword match: LTV'
-      };
-    }
-    
-    if (intent.includes('churn') || intent.includes('retention') || intent.includes('at risk')) {
-      return {
-        tool: 'predict_churn',
-        parameters: { tenantId: context.tenantId },
-        confidence: 0.7,
-        reasoning: 'Keyword match: churn/retention'
-      };
-    }
-    
     if (intent.includes('segment') || intent.includes('rfm') || intent.includes('customer groups')) {
       return {
         tool: 'segment_customers',
         parameters: { tenantId: context.tenantId, method: 'rfm' },
         confidence: 0.7,
         reasoning: 'Keyword match: segment'
+      };
+    }
+    
+    if (intent.includes('recommend') || intent.includes('suggest products') || intent.includes('product recommendations')) {
+      return {
+        tool: 'recommend_products',
+        parameters: { tenantId: context.tenantId },
+        confidence: 0.7,
+        reasoning: 'Keyword match: recommend/suggest'
       };
     }
     
@@ -384,25 +365,37 @@ Respond with ONLY valid JSON, no other text.`;
           break;
 
         case 'analyze_promotion_lift':
-          result = { message: 'Promotion lift analysis not yet implemented' };
-          break;
-
-        case 'predict_customer_ltv':
-          result = await mlIntegrationService.predictCustomerLifetimeValue(
+          result = await revenueImpactService.calculatePromotionImpact(
             fullParams.tenantId,
-            fullParams.customerId
+            {
+              customers: fullParams.customers || [],
+              products: fullParams.products || [],
+              discountPercentage: fullParams.discountPercentage || 10,
+              startDate: fullParams.startDate || new Date(),
+              endDate: fullParams.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+              promotionType: fullParams.promotionType || 'price_discount'
+            }
           );
           break;
 
-        case 'predict_churn':
-          result = await mlIntegrationService.predictChurn(
-            fullParams.tenantId,
-            fullParams.customerId
-          );
-          break;
 
         case 'segment_customers':
-          result = { message: 'Customer segmentation not yet implemented' };
+          result = await revenueImpactService.segmentCustomers(
+            fullParams.tenantId,
+            fullParams.method || 'rfm',
+            fullParams.rootCustomerId || null
+          );
+          break;
+
+        case 'recommend_products':
+          result = await revenueImpactService.recommendProducts(
+            fullParams.tenantId,
+            fullParams.customerId,
+            {
+              limit: fullParams.limit || 10,
+              excludeCurrentProducts: fullParams.excludeCurrentProducts !== false
+            }
+          );
           break;
 
         case 'detect_anomalies':

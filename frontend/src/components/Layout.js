@@ -56,6 +56,7 @@ import QuickActions from './common/QuickActions';
 import SearchBar from './common/SearchBar';
 import Breadcrumbs from './common/Breadcrumbs';
 import AIAssistant from './AIAssistant/AIAssistant';
+import newLogo from '../assets/new_logo.svg';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
 // import { Walkthrough } from './common';
@@ -198,7 +199,7 @@ const Layout = ({ children, user, onLogout }) => {
     <div>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src={require('../assets/new_logo.svg')} alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
+          <img src={newLogo} alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
           <Typography 
             variant="h6" 
             noWrap 

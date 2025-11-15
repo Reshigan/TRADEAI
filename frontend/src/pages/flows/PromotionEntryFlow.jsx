@@ -82,64 +82,55 @@ const PromotionEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-        // Simulate ML API call (replace with real endpoint)
         const response = await axios.post(
-          `${API_BASE_URL}/ai/promotion-optimize`,
+          `${API_BASE_URL}/api/ai-orchestrator/orchestrate`,
           {
-            type: formData.type,
-            discount: parseFloat(formData.discount) || 0,
-            budget: parseFloat(formData.budget) || 0,
-            startDate: formData.startDate,
-            endDate: formData.endDate
+            userIntent: `Optimize promotion with ${formData.discount}% discount and ${formData.budget} budget for ${formData.type} promotion`,
+            context: {
+              tenantId: localStorage.getItem('tenantId'),
+              promotionData: {
+                type: formData.type,
+                discount: parseFloat(formData.discount) || 0,
+                budget: parseFloat(formData.budget) || 0,
+                startDate: formData.startDate,
+                endDate: formData.endDate
+              }
+            }
           },
-          { timeout: 10000 }
+          { 
+            timeout: 30000,
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
         );
         
-        setMlCalculations(response.data.calculations);
-        setAiSuggestions(response.data.suggestions);
-        setRisks(response.data.risks || []);
+        if (response.data.success) {
+          const data = response.data.data;
+          setMlCalculations({
+            estimatedRevenue: data.promotionalRevenue || 0,
+            incrementalRevenue: data.incrementalRevenue || 0,
+            roi: data.roi || 0,
+            confidence: data.confidence || 0.7
+          });
+          setAiSuggestions({
+            explanation: response.data.explanation,
+            breakdown: data.breakdown
+          });
+        } else {
+          throw new Error(response.data.error || 'AI orchestrator failed');
+        }
       } catch (error) {
-        // Fallback to client-side calculations
-        const discount = parseFloat(formData.discount) || 0;
-        const budget = parseFloat(formData.budget) || 0;
-        
-        // Simple ROI calculation
-        const estimatedRevenue = budget * (2 + (discount / 10));
-        const roi = estimatedRevenue / budget;
-        const breakEvenDays = Math.ceil(30 / roi);
-        
-        setMlCalculations({
-          estimatedRevenue: estimatedRevenue.toFixed(0),
-          roi: roi.toFixed(2),
-          breakEvenDays,
-          successProbability: Math.min(95, 60 + discount).toFixed(0)
-        });
-        
-        // Generate AI suggestions
+        console.error('AI orchestrator error:', error);
+        // Show error to user - no fallback calculations
+        setMlCalculations(null);
         setAiSuggestions({
-          optimalDiscount: Math.max(10, Math.min(25, discount + 3)),
-          reasoning: `Based on historical data, ${discount}% is ${discount < 15 ? 'conservative' : discount > 25 ? 'aggressive' : 'balanced'}.`,
-          alternatives: [
-            { discount: discount - 2, expectedROI: (roi + 0.3).toFixed(2) },
-            { discount: discount + 2, expectedROI: (roi - 0.2).toFixed(2) }
-          ]
+          error: 'Unable to generate AI predictions. Please ensure Ollama service is running.'
         });
-        
-        // Risk assessment
-        const detectedRisks = [];
-        if (discount > 25) {
-          detectedRisks.push({
-            level: 'high',
-            message: 'High discount may erode margins significantly'
-          });
-        }
-        if (budget > 100000) {
-          detectedRisks.push({
-            level: 'medium',
-            message: 'Large budget allocation - ensure sufficient inventory'
-          });
-        }
-        setRisks(detectedRisks);
+        setRisks([{
+          level: 'high',
+          message: 'AI service unavailable - predictions cannot be generated'
+        }]);
       } finally {
         setIsCalculating(false);
       }
@@ -155,17 +146,15 @@ const PromotionEntryFlow = () => {
     const loadHistoricalData = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/promotions/similar`, {
-          params: { type: formData.type }
+          params: { type: formData.type },
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         });
         setHistoricalData(response.data);
       } catch (error) {
-        // Use mock data
-        setHistoricalData({
-          avgBudget: 75000,
-          avgDiscount: 18,
-          avgROI: 2.5,
-          totalCampaigns: 47
-        });
+        console.error('Failed to load historical data:', error);
+        setHistoricalData(null);
       }
     };
     
