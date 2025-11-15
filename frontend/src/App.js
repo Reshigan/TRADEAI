@@ -44,6 +44,9 @@ import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions'
 // AI Dashboard (Feature 7.2)
 import AIDashboard from './pages/ai/AIDashboard';
 
+import JAMDashboard from './pages/dashboards/JAMDashboard';
+import ManagerDashboard from './pages/dashboards/ManagerDashboard';
+
 // AI Assistant Component
 import AIAssistant from './components/AIAssistant/AIAssistant';
 
@@ -131,7 +134,37 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <CommandCenter user={user} />
+                {user?.role === 'jam' || user?.role === 'key_account_manager' ? (
+                  <JAMDashboard />
+                ) : user?.role === 'manager' || user?.role === 'admin' ? (
+                  <ManagerDashboard />
+                ) : (
+                  <CommandCenter user={user} />
+                )}
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/jam" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <JAMDashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/manager" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ManagerDashboard />
               </Layout>
             ) : (
               <Navigate to="/" replace />
