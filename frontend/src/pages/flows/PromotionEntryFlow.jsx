@@ -19,6 +19,7 @@ import {
   Psychology as PsychologyIcon
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
+import PromotionAIInsights from '../../components/ai/promotions/PromotionAIInsights';
 import axios from 'axios';
 import { preFlightCheck } from '../../utils/apiHealth';
 
@@ -455,6 +456,31 @@ const PromotionEntryFlow = () => {
         </Alert>
       )}
       
+      {/* AI Insights Section */}
+      <Box sx={{ mb: 4 }}>
+        <PromotionAIInsights 
+          promotion={formData}
+          onApplyUplift={(upliftData) => {
+            console.log('Apply uplift prediction:', upliftData);
+          }}
+          onApplyPricing={(pricingData) => {
+            console.log('Apply pricing recommendation:', pricingData);
+            if (pricingData.optimalPrice) {
+              setFormData({ ...formData, discount: pricingData.optimalDiscount || formData.discount });
+            }
+          }}
+          onApplyTiming={(timingData) => {
+            console.log('Apply timing recommendation:', timingData);
+          }}
+          onApplyBudget={(budgetData) => {
+            console.log('Apply budget recommendation:', budgetData);
+            if (budgetData.recommendedBudget) {
+              setFormData({ ...formData, budget: budgetData.recommendedBudget });
+            }
+          }}
+        />
+      </Box>
+
       {/* Form Fields */}
       <Box sx={{ maxWidth: '800px' }}>
         <Typography variant="h6" sx={{ mb: 3, color: '#1a237e' }}>

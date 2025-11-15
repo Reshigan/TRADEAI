@@ -189,25 +189,19 @@ class AIOrchestratorService {
    * @returns {Promise<object>} Selected tool and parameters
    */
   async selectTool(userIntent, context) {
-    try {
-      const ollamaAvailable = await this.isOllamaAvailable();
-      
-      if (!ollamaAvailable) {
-        return this.selectToolFallback(userIntent, context);
-      }
-
-      const prompt = this.buildToolSelectionPrompt(userIntent, context);
-      
-      const response = await this.callOllama(prompt, { temperature: 0.1 });
-      
-      const toolSelection = this.parseToolSelection(response);
-      
-      return toolSelection;
-
-    } catch (error) {
-      logger.warn('Ollama tool selection failed, using fallback', { error: error.message });
-      return this.selectToolFallback(userIntent, context);
+    const ollamaAvailable = await this.isOllamaAvailable();
+    
+    if (!ollamaAvailable) {
+      throw new Error('Ollama service is not available. Please ensure Ollama is running.');
     }
+
+    const prompt = this.buildToolSelectionPrompt(userIntent, context);
+    
+    const response = await this.callOllama(prompt, { temperature: 0.1 });
+    
+    const toolSelection = this.parseToolSelection(response);
+    
+    return toolSelection;
   }
 
   /**
@@ -441,7 +435,7 @@ Respond with ONLY valid JSON, no other text.`;
       const ollamaAvailable = await this.isOllamaAvailable();
       
       if (!ollamaAvailable) {
-        return this.generateExplanationFallback(toolName, mlResult);
+        throw new Error('Ollama service is not available. Please ensure Ollama is running.');
       }
 
       const prompt = this.buildExplanationPrompt(userIntent, toolName, mlResult, context);
@@ -451,8 +445,8 @@ Respond with ONLY valid JSON, no other text.`;
       return explanation;
 
     } catch (error) {
-      logger.warn('Ollama explanation failed, using fallback', { error: error.message });
-      return this.generateExplanationFallback(toolName, mlResult);
+      logger.error('Ollama explanation failed', { error: error.message });
+      throw error;
     }
   }
 

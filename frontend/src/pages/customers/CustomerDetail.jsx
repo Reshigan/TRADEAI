@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import CustomerAIInsights from '../../components/ai/customers/CustomerAIInsights';
 import './CustomerDetail.css';
 
 const CustomerDetail = () => {
@@ -73,6 +74,21 @@ const CustomerDetail = () => {
       </div>
 
       <div className="detail-content">
+        <section className="detail-section">
+          <CustomerAIInsights 
+            customer={data}
+            onApplySegmentation={(segmentData) => {
+              console.log('Apply segmentation:', segmentData);
+            }}
+            onApplyNextBestAction={(actionData) => {
+              console.log('Apply next best action:', actionData);
+            }}
+            onApplyRecommendations={(recommendations) => {
+              console.log('Apply recommendations:', recommendations);
+            }}
+          />
+        </section>
+
         <section className="detail-section">
           <h2>Information</h2>
           <div className="detail-grid">

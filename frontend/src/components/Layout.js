@@ -198,7 +198,7 @@ const Layout = ({ children, user, onLogout }) => {
     <div>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/images/modern-logo-bold-new.svg" alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
+          <img src={require('../assets/new_logo.svg')} alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
           <Typography 
             variant="h6" 
             noWrap 
