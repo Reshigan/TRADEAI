@@ -66,6 +66,10 @@ const forwardBuyRoutes = require('./routes/forwardBuy');
 const currencyRoutes = require('./routes/currency');
 const rebateRoutes = require('./routes/rebate');
 const tradeSpendAnalyticsRoutes = require('./routes/tradeSpendAnalytics');
+const simulationsRoutes = require('./routes/simulations');
+const recommendationsRoutes = require('./routes/recommendations');
+const optimizerRoutes = require('./routes/optimizer');
+const conflictsRoutes = require('./routes/conflicts');
 
 // Create Express app
 const app = express();
@@ -316,6 +320,12 @@ app.use('/api/transactions', authenticateToken, transactionRoutes);
 app.use('/api/baseline', authenticateToken, baselineRoutes);
 app.use('/api/cannibalization', authenticateToken, cannibalizationRoutes);
 app.use('/api/forward-buy', authenticateToken, forwardBuyRoutes);
+
+// Simulation and optimization routes
+app.use('/api/simulations', authenticateToken, simulationsRoutes);
+app.use('/api/recommendations', authenticateToken, recommendationsRoutes);
+app.use('/api/optimizer', authenticateToken, optimizerRoutes);
+app.use('/api/promotions/conflicts', authenticateToken, conflictsRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
