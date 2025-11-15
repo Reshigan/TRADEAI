@@ -4,6 +4,8 @@ import './styles/App.css';
 
 // Import components
 import ErrorBoundary from './components/common/ErrorBoundary';
+import { ToastProvider } from './components/common/ToastNotification';
+import analytics from './utils/analytics';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
@@ -96,6 +98,10 @@ function App() {
       console.log('App.js useEffect - checking auth:', { authStatus, userData });
       setIsAuthenticated(authStatus);
       setUser(userData);
+      
+      if (userData && userData._id && userData.tenantId) {
+        analytics.setUser(userData._id, userData.tenantId);
+      }
     };
 
     // Check on mount
@@ -163,7 +169,8 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router>
+      <ToastProvider>
+        <Router>
         {/* Global Command Bar */}
         {isAuthenticated && (
           <>
@@ -938,7 +945,8 @@ function App() {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
+        </Router>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }
