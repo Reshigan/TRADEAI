@@ -2,34 +2,19 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
-  Card,
-  CardContent,
   Typography,
   Button,
-  Chip,
-  Alert,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-  IconButton,
-  Tooltip
+  Alert
 } from '@mui/material';
 import {
-  TrendingUp,
-  Warning,
-  CheckCircle,
-  Assignment,
   Add,
   Refresh,
-  ArrowForward,
-  AccountBalance,
-  ShoppingCart
+  TrendingUp
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import DecisionCard from '../../components/decision/DecisionCard';
+import simulationService from '../../services/simulation/simulationService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -50,43 +35,15 @@ const JAMDashboard = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const tenantId = localStorage.getItem('tenantId');
-      const token = localStorage.getItem('token');
-
-      const [promotionsRes, customersRes, approvalsRes] = await Promise.all([
-        axios.post(
-          `${API_BASE_URL}/api/ai-orchestrator/orchestrate`,
-          {
-            userIntent: 'Recommend next best promotions for my accounts',
-            context: { tenantId }
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        ),
-        axios.post(
-          `${API_BASE_URL}/api/ai-orchestrator/orchestrate`,
-          {
-            userIntent: 'Segment customers and identify at-risk accounts',
-            context: { tenantId }
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        ),
-        axios.get(`${API_BASE_URL}/api/promotions`, {
-          params: { status: 'pending_approval', limit: 5 },
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
-
+      const recommendationsRes = await simulationService.getNextBestPromotions(null, 5);
+      
       setDashboardData({
-        nextBestPromotions: promotionsRes.data.success 
-          ? (promotionsRes.data.data.recommendations || []).slice(0, 5)
-          : [],
-        accountWatchlist: customersRes.data.success
-          ? extractWatchlistAccounts(customersRes.data.data)
-          : [],
-        approvalQueue: approvalsRes.data.promotions || [],
+        nextBestPromotions: recommendationsRes.recommendations || [],
+        accountWatchlist: [],
+        approvalQueue: [],
         quickStats: {
-          activePromotions: approvalsRes.data.total || 0,
-          pendingApprovals: (approvalsRes.data.promotions || []).length
+          activePromotions: 0,
+          pendingApprovals: 0
         }
       });
     } catch (error) {
