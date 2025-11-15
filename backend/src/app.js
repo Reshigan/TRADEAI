@@ -70,6 +70,9 @@ const simulationsRoutes = require('./routes/simulations');
 const recommendationsRoutes = require('./routes/recommendations');
 const optimizerRoutes = require('./routes/optimizer');
 const conflictsRoutes = require('./routes/conflicts');
+const approvalsRoutes = require('./routes/approvals');
+const claimsRoutes = require('./routes/claims');
+const deductionsRoutes = require('./routes/deductions');
 
 // Create Express app
 const app = express();
@@ -326,6 +329,10 @@ app.use('/api/simulations', authenticateToken, simulationsRoutes);
 app.use('/api/recommendations', authenticateToken, recommendationsRoutes);
 app.use('/api/optimizer', authenticateToken, optimizerRoutes);
 app.use('/api/promotions/conflicts', authenticateToken, conflictsRoutes);
+
+app.use('/api/approvals', authenticateToken, approvalsRoutes);
+app.use('/api/claims', authenticateToken, claimsRoutes);
+app.use('/api/deductions', authenticateToken, deductionsRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);

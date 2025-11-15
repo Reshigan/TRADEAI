@@ -1239,23 +1239,254 @@ async function getSalesTrend(dateRange, groupBy = 'week', filters = {}) {
 }
 
 async function getTopProducts(dateRange, filters = {}, limit = 10) {
-  return { products: [] }; // Placeholder
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  if (filters.customerId) match.customerId = filters.customerId;
+  if (filters.region) match.region = filters.region;
+  
+  const aggregate = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: '$productId',
+        totalRevenue: { $sum: '$revenue.net' },
+        totalUnits: { $sum: '$quantity' },
+        totalOrders: { $sum: 1 },
+        avgPrice: { $avg: '$unitPrice' }
+      }
+    },
+    { $sort: { totalRevenue: -1 } },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'product'
+      }
+    },
+    { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } }
+  ]);
+  
+  return {
+    products: aggregate.map(item => ({
+      productId: item._id,
+      productCode: item.product?.code || 'Unknown',
+      productName: item.product?.name || 'Unknown Product',
+      revenue: item.totalRevenue,
+      units: item.totalUnits,
+      orders: item.totalOrders,
+      avgPrice: item.avgPrice
+    }))
+  };
 }
 
 async function getTopCustomers(dateRange, filters = {}, limit = 10) {
-  return { customers: [] }; // Placeholder
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  if (filters.region) match.region = filters.region;
+  if (filters.productId) match.productId = filters.productId;
+  
+  const aggregate = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: '$customerId',
+        totalRevenue: { $sum: '$revenue.net' },
+        totalUnits: { $sum: '$quantity' },
+        totalOrders: { $sum: 1 },
+        avgOrderValue: { $avg: '$revenue.net' }
+      }
+    },
+    { $sort: { totalRevenue: -1 } },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: 'customers',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'customer'
+      }
+    },
+    { $unwind: { path: '$customer', preserveNullAndEmptyArrays: true } }
+  ]);
+  
+  return {
+    customers: aggregate.map(item => ({
+      customerId: item._id,
+      customerCode: item.customer?.code || 'Unknown',
+      customerName: item.customer?.name || 'Unknown Customer',
+      revenue: item.totalRevenue,
+      units: item.totalUnits,
+      orders: item.totalOrders,
+      avgOrderValue: item.avgOrderValue
+    }))
+  };
 }
 
 async function getRegionPerformance(dateRange, filters = {}) {
-  return { regions: [] }; // Placeholder
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  if (filters.customerId) match.customerId = filters.customerId;
+  if (filters.productId) match.productId = filters.productId;
+  
+  const aggregate = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: '$region',
+        totalRevenue: { $sum: '$revenue.net' },
+        totalUnits: { $sum: '$quantity' },
+        totalOrders: { $sum: 1 },
+        uniqueCustomers: { $addToSet: '$customerId' }
+      }
+    },
+    {
+      $project: {
+        region: '$_id',
+        revenue: '$totalRevenue',
+        units: '$totalUnits',
+        orders: '$totalOrders',
+        customerCount: { $size: '$uniqueCustomers' }
+      }
+    },
+    { $sort: { revenue: -1 } }
+  ]);
+  
+  return {
+    regions: aggregate.map(item => ({
+      region: item.region || 'Unknown',
+      revenue: item.revenue,
+      units: item.units,
+      orders: item.orders,
+      customerCount: item.customerCount
+    }))
+  };
 }
 
 async function getSalesForecast(dateRange, filters = {}) {
-  return { forecast: [], confidence: 0.8 }; // Placeholder
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  if (filters.customerId) match.customerId = filters.customerId;
+  if (filters.region) match.region = filters.region;
+  
+  const historicalData = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$date" } },
+        revenue: { $sum: '$revenue.net' },
+        units: { $sum: '$quantity' }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ]);
+  
+  if (historicalData.length < 3) {
+    return { forecast: [], confidence: 0.5 };
+  }
+  
+  const revenues = historicalData.map(d => d.revenue);
+  const avgRevenue = revenues.reduce((a, b) => a + b, 0) / revenues.length;
+  const trend = revenues.length > 1 ? (revenues[revenues.length - 1] - revenues[0]) / revenues.length : 0;
+  
+  const forecast = [];
+  const lastDate = new Date(historicalData[historicalData.length - 1]._id + '-01');
+  
+  for (let i = 1; i <= 3; i++) {
+    const forecastDate = new Date(lastDate);
+    forecastDate.setMonth(forecastDate.getMonth() + i);
+    const forecastValue = avgRevenue + (trend * (historicalData.length + i));
+    
+    forecast.push({
+      period: forecastDate.toISOString().substring(0, 7),
+      revenue: Math.max(0, forecastValue),
+      lower: Math.max(0, forecastValue * 0.85),
+      upper: forecastValue * 1.15
+    });
+  }
+  
+  return { 
+    forecast,
+    confidence: Math.min(0.9, 0.5 + (historicalData.length * 0.05))
+  };
 }
 
 async function getCohortAnalysis(dateRange, filters = {}) {
-  return { cohorts: [] }; // Placeholder
+  const match = {
+    tenantId: filters.tenantId,
+    date: { $gte: new Date(dateRange.start), $lte: new Date(dateRange.end) }
+  };
+  
+  const customerFirstPurchase = await SalesHistory.aggregate([
+    { $match: { tenantId: filters.tenantId } },
+    {
+      $group: {
+        _id: '$customerId',
+        firstPurchaseDate: { $min: '$date' }
+      }
+    }
+  ]);
+  
+  const cohortMap = new Map();
+  customerFirstPurchase.forEach(item => {
+    const cohortMonth = new Date(item.firstPurchaseDate).toISOString().substring(0, 7);
+    cohortMap.set(item._id.toString(), cohortMonth);
+  });
+  
+  const salesWithCohort = await SalesHistory.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: {
+          customerId: '$customerId',
+          month: { $dateToString: { format: "%Y-%m", date: "$date" } }
+        },
+        revenue: { $sum: '$revenue.net' },
+        orders: { $sum: 1 }
+      }
+    }
+  ]);
+  
+  const cohorts = {};
+  salesWithCohort.forEach(item => {
+    const cohortMonth = cohortMap.get(item._id.customerId.toString());
+    if (cohortMonth) {
+      if (!cohorts[cohortMonth]) {
+        cohorts[cohortMonth] = {
+          cohort: cohortMonth,
+          customers: new Set(),
+          revenue: 0,
+          orders: 0
+        };
+      }
+      cohorts[cohortMonth].customers.add(item._id.customerId.toString());
+      cohorts[cohortMonth].revenue += item.revenue;
+      cohorts[cohortMonth].orders += item.orders;
+    }
+  });
+  
+  return {
+    cohorts: Object.values(cohorts).map(c => ({
+      cohort: c.cohort,
+      customerCount: c.customers.size,
+      revenue: c.revenue,
+      orders: c.orders,
+      avgRevenuePerCustomer: c.customers.size > 0 ? c.revenue / c.customers.size : 0
+    })).sort((a, b) => a.cohort.localeCompare(b.cohort))
+  };
 }
 
 async function generateSalesInsights(metrics, trend) {
@@ -1307,43 +1538,296 @@ async function generateProductInsights(performance, profitability) {
  */
 
 async function getBudgetOverview(criteria) {
+  const match = { tenantId: criteria.tenantId };
+  
+  if (criteria.year) {
+    match.year = criteria.year;
+  }
+  if (criteria.category) {
+    match.category = criteria.category;
+  }
+  
+  const budgets = await Budget.find(match);
+  
+  const allocated = budgets.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+  const spent = budgets.reduce((sum, b) => sum + (b.spentAmount || 0), 0);
+  const remaining = allocated - spent;
+  const utilization = allocated > 0 ? (spent / allocated) * 100 : 0;
+  
   return {
-    allocated: 0,
-    spent: 0,
-    remaining: 0,
-    utilization: 0
+    allocated,
+    spent,
+    remaining,
+    utilization: Math.round(utilization * 10) / 10
   };
 }
 
 async function getBudgetUtilizationByCategory(criteria) {
-  return [];
+  const match = { tenantId: criteria.tenantId };
+  
+  if (criteria.year) {
+    match.year = criteria.year;
+  }
+  
+  const aggregate = await Budget.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: '$category',
+        allocated: { $sum: '$totalAmount' },
+        spent: { $sum: '$spentAmount' }
+      }
+    },
+    {
+      $project: {
+        category: '$_id',
+        allocated: 1,
+        spent: 1,
+        remaining: { $subtract: ['$allocated', '$spent'] },
+        utilization: {
+          $cond: {
+            if: { $gt: ['$allocated', 0] },
+            then: { $multiply: [{ $divide: ['$spent', '$allocated'] }, 100] },
+            else: 0
+          }
+        }
+      }
+    },
+    { $sort: { allocated: -1 } }
+  ]);
+  
+  return aggregate;
 }
 
-async function getMonthlyBudgetUtilization(year) {
-  return [];
+async function getMonthlyBudgetUtilization(year, tenantId) {
+  const months = [];
+  for (let month = 1; month <= 12; month++) {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+    
+    const budgets = await Budget.find({
+      tenantId,
+      year,
+      $or: [
+        { startDate: { $lte: endDate }, endDate: { $gte: startDate } },
+        { year }
+      ]
+    });
+    
+    const tradeSpends = await TradeSpend.find({
+      tenantId,
+      date: { $gte: startDate, $lte: endDate }
+    });
+    
+    const allocated = budgets.reduce((sum, b) => sum + (b.totalAmount || 0) / 12, 0);
+    const spent = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    
+    months.push({
+      month,
+      monthName: startDate.toLocaleString('default', { month: 'short' }),
+      allocated: Math.round(allocated),
+      spent: Math.round(spent),
+      utilization: allocated > 0 ? Math.round((spent / allocated) * 100) : 0
+    });
+  }
+  
+  return months;
 }
 
-async function getTopBudgetSpenders(criteria, limit) {
-  return [];
+async function getTopBudgetSpenders(criteria, limit = 10) {
+  const match = { tenantId: criteria.tenantId };
+  
+  if (criteria.year) {
+    const startDate = new Date(criteria.year, 0, 1);
+    const endDate = new Date(criteria.year, 11, 31);
+    match.date = { $gte: startDate, $lte: endDate };
+  }
+  
+  const aggregate = await TradeSpend.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: '$category',
+        totalSpent: { $sum: '$amount' },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { totalSpent: -1 } },
+    { $limit: limit },
+    {
+      $project: {
+        category: '$_id',
+        spent: '$totalSpent',
+        transactionCount: '$count'
+      }
+    }
+  ]);
+  
+  return aggregate;
 }
 
 async function getBudgetAlerts(criteria) {
-  return [];
+  const match = { tenantId: criteria.tenantId };
+  
+  if (criteria.year) {
+    match.year = criteria.year;
+  }
+  
+  const budgets = await Budget.find(match);
+  const alerts = [];
+  
+  for (const budget of budgets) {
+    const utilization = budget.totalAmount > 0 ? (budget.spentAmount / budget.totalAmount) * 100 : 0;
+    
+    if (utilization >= 100) {
+      alerts.push({
+        type: 'critical',
+        budgetId: budget._id,
+        budgetName: budget.name,
+        category: budget.category,
+        message: `Budget exceeded: ${Math.round(utilization)}% utilized`,
+        utilization: Math.round(utilization),
+        overspend: budget.spentAmount - budget.totalAmount
+      });
+    } else if (utilization >= 90) {
+      alerts.push({
+        type: 'warning',
+        budgetId: budget._id,
+        budgetName: budget.name,
+        category: budget.category,
+        message: `Budget nearing limit: ${Math.round(utilization)}% utilized`,
+        utilization: Math.round(utilization),
+        remaining: budget.totalAmount - budget.spentAmount
+      });
+    } else if (utilization >= 75) {
+      alerts.push({
+        type: 'info',
+        budgetId: budget._id,
+        budgetName: budget.name,
+        category: budget.category,
+        message: `Budget tracking high: ${Math.round(utilization)}% utilized`,
+        utilization: Math.round(utilization),
+        remaining: budget.totalAmount - budget.spentAmount
+      });
+    }
+  }
+  
+  return alerts.sort((a, b) => {
+    const severity = { critical: 3, warning: 2, info: 1 };
+    return severity[b.type] - severity[a.type];
+  });
 }
 
-async function getBudgetForecast(year) {
-  return { forecast: [], confidence: 0.75 };
+async function getBudgetForecast(year, tenantId) {
+  const historicalYears = [year - 2, year - 1, year];
+  const yearlySpend = [];
+  
+  for (const y of historicalYears) {
+    const startDate = new Date(y, 0, 1);
+    const endDate = new Date(y, 11, 31);
+    
+    const tradeSpends = await TradeSpend.find({
+      tenantId,
+      date: { $gte: startDate, $lte: endDate }
+    });
+    
+    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    yearlySpend.push({ year: y, spend: totalSpend });
+  }
+  
+  if (yearlySpend.length < 2) {
+    return { forecast: [], confidence: 0.5 };
+  }
+  
+  const avgSpend = yearlySpend.reduce((sum, ys) => sum + ys.spend, 0) / yearlySpend.length;
+  const trend = yearlySpend.length > 1 
+    ? (yearlySpend[yearlySpend.length - 1].spend - yearlySpend[0].spend) / (yearlySpend.length - 1)
+    : 0;
+  
+  const forecast = [];
+  for (let i = 1; i <= 3; i++) {
+    const forecastYear = year + i;
+    const forecastValue = avgSpend + (trend * (yearlySpend.length + i - 1));
+    
+    forecast.push({
+      year: forecastYear,
+      projected: Math.max(0, Math.round(forecastValue)),
+      lower: Math.max(0, Math.round(forecastValue * 0.85)),
+      upper: Math.round(forecastValue * 1.15)
+    });
+  }
+  
+  return {
+    forecast,
+    confidence: Math.min(0.9, 0.6 + (yearlySpend.length * 0.1))
+  };
 }
 
 function generateBudgetRecommendations(overview, utilization) {
-  return [
-    {
-      type: 'info',
-      title: 'Budget Analysis',
-      description: 'Budget recommendations in progress',
-      confidence: 0.8
+  const recommendations = [];
+  
+  if (overview.utilization > 90) {
+    recommendations.push({
+      type: 'warning',
+      title: 'High Budget Utilization',
+      description: `Overall budget is ${overview.utilization}% utilized. Consider requesting additional budget or reallocating from underutilized categories.`,
+      confidence: 0.95,
+      action: 'review_budget_allocation'
+    });
+  }
+  
+  if (Array.isArray(utilization)) {
+    const overutilized = utilization.filter(u => u.utilization > 100);
+    const underutilized = utilization.filter(u => u.utilization < 50 && u.allocated > 0);
+    
+    if (overutilized.length > 0 && underutilized.length > 0) {
+      recommendations.push({
+        type: 'opportunity',
+        title: 'Budget Reallocation Opportunity',
+        description: `${overutilized.length} categories are over budget while ${underutilized.length} are underutilized. Consider reallocating funds.`,
+        confidence: 0.85,
+        action: 'reallocate_budget',
+        details: {
+          overutilized: overutilized.map(u => u.category),
+          underutilized: underutilized.map(u => u.category)
+        }
+      });
     }
-  ];
+    
+    underutilized.forEach(u => {
+      if (u.utilization < 25 && u.allocated > 10000) {
+        recommendations.push({
+          type: 'info',
+          title: `Low Utilization: ${u.category}`,
+          description: `Only ${Math.round(u.utilization)}% of ${u.category} budget utilized. Consider reducing allocation or increasing spend.`,
+          confidence: 0.8,
+          action: 'review_category_budget',
+          category: u.category
+        });
+      }
+    });
+  }
+  
+  if (overview.remaining < 0) {
+    recommendations.push({
+      type: 'critical',
+      title: 'Budget Overspend',
+      description: `Budget exceeded by ${Math.abs(overview.remaining).toLocaleString()}. Immediate action required.`,
+      confidence: 1.0,
+      action: 'address_overspend'
+    });
+  }
+  
+  if (recommendations.length === 0) {
+    recommendations.push({
+      type: 'success',
+      title: 'Budget On Track',
+      description: `Budget utilization at ${overview.utilization}% is within healthy range.`,
+      confidence: 0.9
+    });
+  }
+  
+  return recommendations;
 }
 
 // Export additional helper functions for use in other controllers
