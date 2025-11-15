@@ -5,14 +5,31 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Alert
+  Alert,
+  Card,
+  CardContent,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Tooltip,
+  IconButton,
+  Divider,
+  Chip
 } from '@mui/material';
 import {
   Add,
   Refresh,
-  TrendingUp
+  TrendingUp,
+  ShoppingCart,
+  ArrowForward,
+  Warning,
+  Assignment,
+  CheckCircle,
+  AccountBalance
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
 
