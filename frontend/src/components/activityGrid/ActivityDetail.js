@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
-import { activityGridService } from '../../services/activityGridService';
+import activityGridService from '../../services/api/activityGridService';
 import ActivityForm from './ActivityForm';
 
 const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
