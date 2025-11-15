@@ -21,7 +21,7 @@ const TwoFASetup = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/auth/2fa/generate`
+        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/auth/2fa/generate`
       );
       setQrCode(response.data.qrCode);
       setSecret(response.data.secret);
@@ -42,7 +42,7 @@ const TwoFASetup = () => {
       setLoading(true);
       setError(null);
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/auth/2fa/verify`,
+        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/auth/2fa/verify`,
         {
           token: verificationCode,
           secret: secret

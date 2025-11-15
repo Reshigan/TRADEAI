@@ -51,7 +51,7 @@ const PromotionForm = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/products`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products`);
       const productsData = response.data.data || response.data;
       setProducts(productsData);
       
@@ -76,7 +76,7 @@ const PromotionForm = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/customers`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/customers`);
       const customersData = response.data.data || response.data;
       setCustomers(customersData);
       
@@ -102,7 +102,7 @@ const PromotionForm = () => {
   const fetchPromotion = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
       const promotion = response.data.data || response.data;
       
       setFormData({
@@ -168,12 +168,12 @@ const PromotionForm = () => {
 
       if (isEditMode) {
         await axios.put(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`,
+          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`,
           payload
         );
       } else {
         await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions`,
+          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions`,
           payload
         );
       }

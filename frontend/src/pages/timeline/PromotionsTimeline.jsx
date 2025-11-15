@@ -42,7 +42,7 @@ import activityGridService from '../../services/activitygrid/activityGridService
 import simulationService from '../../services/simulation/simulationService';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');

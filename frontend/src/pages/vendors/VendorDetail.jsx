@@ -19,7 +19,7 @@ const VendorDetail = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
       setData(response.data.data || response.data);
       setError(null);
     } catch (err) {
@@ -36,7 +36,7 @@ const VendorDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
         navigate('/vendors');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete vendor');

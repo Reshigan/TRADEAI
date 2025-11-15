@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Zap, TrendingUp, Users, DollarSign, Calendar, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 const CommandBar = ({ isOpen, onClose, onExecute }) => {
   const [query, setQuery] = useState('');

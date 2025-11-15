@@ -25,7 +25,7 @@ const ProductDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
       setData(response.data.data || response.data);
       setError(null);
       
@@ -50,7 +50,7 @@ const ProductDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
         analytics.trackEvent('product_deleted', { productId: id });
         toast.success('Product deleted successfully!');
         navigate('/products');

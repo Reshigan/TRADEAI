@@ -4,7 +4,7 @@ import axios from 'axios';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import newLogo from '../../assets/new_logo.svg';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
 const Login = () => {
   const navigate = useNavigate();

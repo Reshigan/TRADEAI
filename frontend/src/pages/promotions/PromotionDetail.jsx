@@ -25,7 +25,7 @@ const PromotionDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
       setPromotion(response.data.data || response.data);
       setError(null);
       
@@ -50,7 +50,7 @@ const PromotionDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this promotion?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
         analytics.trackEvent('promotion_deleted', { promotionId: id });
         toast.success('Promotion deleted successfully!');
         navigate('/promotions');
