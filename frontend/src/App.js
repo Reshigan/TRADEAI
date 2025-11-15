@@ -80,9 +80,12 @@ import PromotionPlannerNew from './pages/promotions/PromotionPlanner';
 
 // Approvals, Claims, and Deductions Components
 import ApprovalsList from './pages/approvals/ApprovalsList';
+import ApprovalDetail from './pages/approvals/ApprovalDetail';
 import ClaimsList from './pages/claims/ClaimsList';
+import ClaimDetail from './pages/claims/ClaimDetail';
 import CreateClaim from './pages/claims/CreateClaim';
 import DeductionsList from './pages/deductions/DeductionsList';
+import DeductionDetail from './pages/deductions/DeductionDetail';
 import ReconciliationDashboard from './pages/deductions/ReconciliationDashboard';
 
 function App() {
@@ -975,7 +978,19 @@ function App() {
           } 
         />
         <Route 
-          path="/claims" 
+          path="/approvals/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ApprovalDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/claims"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
@@ -999,6 +1014,18 @@ function App() {
           } 
         />
         <Route 
+          path="/claims/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ClaimDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/deductions" 
           element={
             isAuthenticated ? (
@@ -1011,7 +1038,19 @@ function App() {
           } 
         />
         <Route 
-          path="/deductions/reconciliation" 
+          path="/deductions/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DeductionDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deductions/reconciliation"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
