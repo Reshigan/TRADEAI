@@ -37,10 +37,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
 import customerService from '../../services/customer/customerService';
+import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
+import { useToast } from '../../components/common/ToastNotification';
+import analytics from '../../utils/analytics';
 
 const Customer360 = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
@@ -56,6 +60,7 @@ const Customer360 = () => {
   const loadCustomerData = async () => {
     setLoading(true);
     try {
+      const startTime = Date.now();
       const customerData = await customerService.getCustomer(id);
       setCustomer(customerData);
 
@@ -64,6 +69,7 @@ const Customer360 = () => {
         setHierarchyData(hierarchyResponse.hierarchy || hierarchyResponse);
       } catch (error) {
         console.error('Failed to load customer hierarchy:', error);
+        toast.warning('Could not load customer hierarchy');
       }
 
       try {
@@ -71,9 +77,16 @@ const Customer360 = () => {
         setPerformanceData(performanceResponse.performance || performanceResponse);
       } catch (error) {
         console.error('Failed to load customer performance:', error);
+        toast.warning('Could not load customer performance data');
       }
+
+      analytics.trackPageView('customer_360', {
+        customerId: id,
+        loadTime: Date.now() - startTime
+      });
     } catch (error) {
       console.error('Failed to load customer data:', error);
+      toast.error('Failed to load customer data. Please try again.');
       setCustomer(null);
     } finally {
       setLoading(false);
@@ -94,7 +107,9 @@ const Customer360 = () => {
   };
 
   const handleSimulateRecommendation = (recommendation) => {
-    navigate('/simulations', {
+    analytics.trackAIRecommendationAction('simulate', 'next_best_promotion', true);
+    toast.info('Opening simulation studio...');
+    navigate('/simulation-studio', {
       state: {
         prefill: {
           customerId: id,
@@ -105,7 +120,9 @@ const Customer360 = () => {
   };
 
   const handleCreatePromotion = (recommendation) => {
-    navigate('/promotions/new-flow', {
+    analytics.trackAIRecommendationAction('create_promotion', 'next_best_promotion', true);
+    toast.success('Creating promotion from recommendation...');
+    navigate('/promotion-planner', {
       state: {
         prefill: {
           customerId: id,

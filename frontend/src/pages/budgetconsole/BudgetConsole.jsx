@@ -35,9 +35,13 @@ import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
 import budgetService from '../../services/budget/budgetService';
+import { DashboardSkeleton, ChartSkeleton } from '../../components/common/SkeletonLoader';
+import { useToast } from '../../components/common/ToastNotification';
+import analytics from '../../utils/analytics';
 
 const BudgetConsole = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [budgets, setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
@@ -61,6 +65,7 @@ const BudgetConsole = () => {
   const loadBudgets = async () => {
     setLoading(true);
     try {
+      const startTime = Date.now();
       const response = await budgetService.getBudgets({ period });
       const budgetsData = response.budgets || response.data || response;
       const budgetsArray = Array.isArray(budgetsData) ? budgetsData : [budgetsData];
@@ -69,8 +74,15 @@ const BudgetConsole = () => {
       if (budgetsArray.length > 0) {
         setSelectedBudget(budgetsArray[0]);
       }
+
+      analytics.trackPageView('budget_console', {
+        period,
+        budgetCount: budgetsArray.length,
+        loadTime: Date.now() - startTime
+      });
     } catch (error) {
       console.error('Failed to load budgets:', error);
+      toast.error('Failed to load budgets. Please try again.');
       setBudgets([]);
     } finally {
       setLoading(false);
