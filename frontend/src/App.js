@@ -86,6 +86,7 @@ import ClaimDetail from './pages/claims/ClaimDetail';
 import CreateClaim from './pages/claims/CreateClaim';
 import DeductionsList from './pages/deductions/DeductionsList';
 import DeductionDetail from './pages/deductions/DeductionDetail';
+import CreateDeduction from './pages/deductions/CreateDeduction';
 import ReconciliationDashboard from './pages/deductions/ReconciliationDashboard';
 
 function App() {
@@ -1031,6 +1032,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <DeductionsList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deductions/create" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CreateDeduction />
               </Layout>
             ) : (
               <Navigate to="/" replace />
