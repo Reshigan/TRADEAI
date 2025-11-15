@@ -50,7 +50,10 @@ import {
   Lightbulb as LightbulbIcon,
   Rocket as RocketIcon,
   TrendingUp as MonitorIcon,
-  Storage as DataIcon
+  Storage as DataIcon,
+  Assignment as AssignmentIcon,
+  Receipt as ReceiptIcon,
+  Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import QuickActions from './common/QuickActions';
 import SearchBar from './common/SearchBar';
@@ -105,6 +108,22 @@ const getMenuItems = (user) => {
         { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
         { text: 'Budget Reallocation', icon: <BudgetIcon />, path: '/budget-console' },
         { text: 'Scenario Planning', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
+    {
+      text: '✅ Approvals',
+      icon: <AssignmentIcon />,
+      subItems: [
+        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'NEW' },
+      ]
+    },
+    {
+      text: '💰 Claims & Deductions',
+      icon: <ReceiptIcon />,
+      subItems: [
+        { text: 'Claims', icon: <ReceiptIcon />, path: '/claims', badge: 'NEW' },
+        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions', badge: 'NEW' },
+        { text: 'Reconciliation', icon: <AssessmentIcon />, path: '/deductions/reconciliation', badge: 'NEW' },
       ]
     },
     {
