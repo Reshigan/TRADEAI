@@ -4,33 +4,47 @@ import axios from 'axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import CustomerAIInsights from '../../components/ai/customers/CustomerAIInsights';
+import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
+import { useToast } from '../../components/common/ToastNotification';
+import analytics from '../../utils/analytics';
 import './CustomerDetail.css';
 
 const CustomerDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
+    analytics.trackPageView('customer_detail', { customerId: id });
   }, [id]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
+      const startTime = Date.now();
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/customers/${id}`);
       setData(response.data.data || response.data);
       setError(null);
+      
+      analytics.trackEvent('customer_detail_loaded', {
+        customerId: id,
+        loadTime: Date.now() - startTime
+      });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load customer details');
+      const errorMsg = err.response?.data?.message || 'Failed to load customer details';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = () => {
+    analytics.trackEvent('customer_edit_clicked', { customerId: id });
     navigate(`/customers/${id}/edit`);
   };
 
@@ -38,14 +52,18 @@ const CustomerDetail = () => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
         await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/customers/${id}`);
+        analytics.trackEvent('customer_deleted', { customerId: id });
+        toast.success('Customer deleted successfully!');
         navigate('/customers');
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete customer');
+        const errorMsg = err.response?.data?.message || 'Failed to delete customer';
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DetailPageSkeleton />;
   if (error) return <ErrorMessage message={error} />;
   if (!data) return <ErrorMessage message="Customer not found" />;
 

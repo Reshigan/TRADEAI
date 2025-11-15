@@ -32,13 +32,15 @@ import { formatCurrency } from '../../utils/formatters';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { budgetService, tradeSpendService } from '../../services/api';
 import BudgetForm from './BudgetForm';
-
-// Mock data for development
+import { DetailPageSkeleton } from '../common/SkeletonLoader';
+import { useToast } from '../common/ToastNotification';
+import analytics from '../../utils/analytics';
 
 
 const BudgetDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [budget, setBudget] = useState(null);
   const [tradeSpends, setTradeSpends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,24 +50,31 @@ const BudgetDetail = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Fetch budget and trade spends on component mount
   useEffect(() => {
     fetchBudget();
     fetchTradeSpends();
+    analytics.trackPageView('budget_detail', { budgetId: id });
   }, [id]);
 
-  // Fetch budget from API
   const fetchBudget = async () => {
     setLoading(true);
     setError(null);
     
     try {
+      const startTime = Date.now();
       const response = await budgetService.getById(id);
       setBudget(response.data || response);
       setLoading(false);
+      
+      analytics.trackEvent('budget_detail_loaded', {
+        budgetId: id,
+        loadTime: Date.now() - startTime
+      });
     } catch (error) {
       console.error('Error loading budget:', error);
-      setError(error.message || 'Failed to load budget');
+      const errorMsg = error.message || 'Failed to load budget';
+      setError(errorMsg);
+      toast.error(errorMsg);
       setLoading(false);
     }
   };
@@ -86,47 +95,44 @@ const BudgetDetail = () => {
     setTabValue(newValue);
   };
 
-  // Handle edit budget
   const handleEditBudget = () => {
+    analytics.trackEvent('budget_edit_clicked', { budgetId: id });
     navigate(`/budgets/${id}/edit`);
   };
 
-  // Handle delete budget
   const handleDeleteBudget = () => {
     setOpenDeleteDialog(true);
   };
 
-  // Handle confirm delete
   const handleConfirmDelete = async () => {
     setDeleteLoading(true);
     
     try {
-      // In a real app, we would call the API
-      // await budgetService.delete(id);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setDeleteLoading(false);
-        setOpenDeleteDialog(false);
-        navigate('/budgets');
-      }, 1000);
+      await budgetService.delete(id);
+      analytics.trackEvent('budget_deleted', { budgetId: id });
+      toast.success('Budget deleted successfully!');
+      setDeleteLoading(false);
+      setOpenDeleteDialog(false);
+      navigate('/budgets');
     } catch (err) {
       console.error('Failed to delete budget:', err);
+      const errorMsg = err.message || 'Failed to delete budget';
+      toast.error(errorMsg);
       setDeleteLoading(false);
     }
   };
 
-  // Handle form submit
   const handleFormSubmit = async (budgetData) => {
     try {
-      // In a real app, we would call the API
-      // await budgetService.update(id, budgetData);
-      
-      // Refresh budget
+      await budgetService.update(id, budgetData);
+      analytics.trackEvent('budget_updated', { budgetId: id });
+      toast.success('Budget updated successfully!');
       fetchBudget();
       setOpenEditForm(false);
     } catch (err) {
       console.error('Error updating budget:', err);
+      const errorMsg = err.message || 'Failed to update budget';
+      toast.error(errorMsg);
     }
   };
 
