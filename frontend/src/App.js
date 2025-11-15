@@ -6,6 +6,7 @@ import './styles/App.css';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { ToastProvider } from './components/common/ToastNotification';
 import analytics from './utils/analytics';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
@@ -88,6 +89,7 @@ function App() {
   const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [copilotContext, setCopilotContext] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Effect to check for authentication changes
   useEffect(() => {
@@ -101,6 +103,11 @@ function App() {
       
       if (userData && userData._id && userData.tenantId) {
         analytics.setUser(userData._id, userData.tenantId);
+        
+        const onboardingCompleted = localStorage.getItem('onboarding_completed');
+        if (!onboardingCompleted && authStatus) {
+          setShowOnboarding(true);
+        }
       }
     };
 
@@ -184,6 +191,11 @@ function App() {
               onClose={() => setIsCopilotOpen(false)}
               context={copilotContext}
               recommendations={copilotContext?.recommendations}
+            />
+            <OnboardingWizard
+              open={showOnboarding}
+              onClose={() => setShowOnboarding(false)}
+              userRole={user?.role}
             />
           </>
         )}
