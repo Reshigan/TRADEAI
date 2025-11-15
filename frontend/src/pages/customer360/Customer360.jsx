@@ -36,6 +36,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
+import customerService from '../../services/customer/customerService';
 
 const Customer360 = () => {
   const { id } = useParams();
@@ -55,71 +56,25 @@ const Customer360 = () => {
   const loadCustomerData = async () => {
     setLoading(true);
     try {
-      const mockCustomer = {
-        id: id,
-        name: 'National Retail Chain',
-        type: 'National Chain',
-        status: 'active',
-        tier: 'platinum',
-        aiInsights: {
-          ltv: 2500000,
-          churnRisk: 0.15,
-          churnReason: 'Declining purchase frequency',
-          segment: 'High-Value Strategic',
-          nextBestAction: 'Offer volume discount to increase order size',
-          priceSensitivity: 0.65,
-          preferredChannels: ['In-store', 'Online'],
-          seasonalPatterns: {
-            peak: 'Q4',
-            low: 'Q2'
-          }
-        },
-        hierarchy: {
-          level: 1,
-          children: [
-            {
-              id: 'reg-1',
-              name: 'Northeast Region',
-              level: 2,
-              revenue: 1200000,
-              growth: 0.15,
-              children: [
-                { id: 'store-1', name: 'Store #101 - Boston', level: 3, revenue: 500000, growth: 0.20 },
-                { id: 'store-2', name: 'Store #102 - New York', level: 3, revenue: 700000, growth: 0.12 }
-              ]
-            },
-            {
-              id: 'reg-2',
-              name: 'Southeast Region',
-              level: 2,
-              revenue: 800000,
-              growth: -0.05,
-              children: [
-                { id: 'store-3', name: 'Store #201 - Atlanta', level: 3, revenue: 450000, growth: -0.08 },
-                { id: 'store-4', name: 'Store #202 - Miami', level: 3, revenue: 350000, growth: -0.02 }
-              ]
-            }
-          ]
-        },
-        performance: {
-          totalRevenue: 2000000,
-          revenueGrowth: 0.08,
-          avgOrderValue: 15000,
-          orderFrequency: 24,
-          lastOrderDate: '2025-11-10',
-          topProducts: [
-            { name: 'Premium Brand A', revenue: 800000, share: 0.40 },
-            { name: 'Value Brand B', revenue: 600000, share: 0.30 },
-            { name: 'Premium Snacks', revenue: 600000, share: 0.30 }
-          ]
-        }
-      };
+      const customerData = await customerService.getCustomer(id);
+      setCustomer(customerData);
 
-      setCustomer(mockCustomer);
-      setHierarchyData(mockCustomer.hierarchy);
-      setPerformanceData(mockCustomer.performance);
+      try {
+        const hierarchyResponse = await customerService.getCustomerHierarchy(id);
+        setHierarchyData(hierarchyResponse.hierarchy || hierarchyResponse);
+      } catch (error) {
+        console.error('Failed to load customer hierarchy:', error);
+      }
+
+      try {
+        const performanceResponse = await customerService.getCustomerPerformance(id);
+        setPerformanceData(performanceResponse.performance || performanceResponse);
+      } catch (error) {
+        console.error('Failed to load customer performance:', error);
+      }
     } catch (error) {
       console.error('Failed to load customer data:', error);
+      setCustomer(null);
     } finally {
       setLoading(false);
     }

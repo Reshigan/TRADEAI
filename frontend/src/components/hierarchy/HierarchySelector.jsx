@@ -18,7 +18,8 @@ import {
   Alert,
   Switch,
   FormControlLabel,
-  Tooltip
+  Tooltip,
+  CircularProgress
 } from '@mui/material';
 import {
   ExpandMore,
@@ -33,6 +34,8 @@ import {
   Category,
   Inventory
 } from '@mui/icons-material';
+import customerService from '../../services/customer/customerService';
+import productService from '../../services/product/productService';
 
 const HierarchySelector = ({ 
   type = 'customer', // 'customer' or 'product'
@@ -61,96 +64,18 @@ const HierarchySelector = ({
   const loadHierarchyData = async () => {
     setLoading(true);
     try {
-      const mockData = type === 'customer' ? [
-        {
-          id: 'nat-1',
-          name: 'National Chains',
-          level: 1,
-          type: 'customer',
-          children: [
-            {
-              id: 'reg-1',
-              name: 'Northeast Region',
-              level: 2,
-              type: 'customer',
-              children: [
-                { id: 'store-1', name: 'Store #101 - Boston', level: 3, type: 'customer', revenue: 500000 },
-                { id: 'store-2', name: 'Store #102 - New York', level: 3, type: 'customer', revenue: 750000 },
-                { id: 'store-3', name: 'Store #103 - Philadelphia', level: 3, type: 'customer', revenue: 450000 }
-              ]
-            },
-            {
-              id: 'reg-2',
-              name: 'Southeast Region',
-              level: 2,
-              type: 'customer',
-              children: [
-                { id: 'store-4', name: 'Store #201 - Atlanta', level: 3, type: 'customer', revenue: 600000 },
-                { id: 'store-5', name: 'Store #202 - Miami', level: 3, type: 'customer', revenue: 550000 }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'ind-1',
-          name: 'Independent Retailers',
-          level: 1,
-          type: 'customer',
-          children: [
-            { id: 'ind-store-1', name: 'Corner Market', level: 2, type: 'customer', revenue: 150000 },
-            { id: 'ind-store-2', name: 'Main Street Grocery', level: 2, type: 'customer', revenue: 200000 }
-          ]
-        }
-      ] : [
-        {
-          id: 'cat-1',
-          name: 'Beverages',
-          level: 1,
-          type: 'product',
-          children: [
-            {
-              id: 'brand-1',
-              name: 'Premium Brand A',
-              level: 2,
-              type: 'product',
-              children: [
-                { id: 'sku-1', name: 'SKU-001 - 12oz Can', level: 3, type: 'product', volume: 10000 },
-                { id: 'sku-2', name: 'SKU-002 - 20oz Bottle', level: 3, type: 'product', volume: 8000 }
-              ]
-            },
-            {
-              id: 'brand-2',
-              name: 'Value Brand B',
-              level: 2,
-              type: 'product',
-              children: [
-                { id: 'sku-3', name: 'SKU-101 - 12oz Can', level: 3, type: 'product', volume: 15000 }
-              ]
-            }
-          ]
-        },
-        {
-          id: 'cat-2',
-          name: 'Snacks',
-          level: 1,
-          type: 'product',
-          children: [
-            {
-              id: 'brand-3',
-              name: 'Premium Snacks',
-              level: 2,
-              type: 'product',
-              children: [
-                { id: 'sku-4', name: 'SKU-201 - Chips 8oz', level: 3, type: 'product', volume: 12000 }
-              ]
-            }
-          ]
-        }
-      ];
+      let response;
+      if (type === 'customer') {
+        response = await customerService.getCustomerHierarchy();
+      } else {
+        response = await productService.getProductHierarchy();
+      }
 
-      setHierarchyData(mockData);
+      const hierarchyData = response.hierarchy || response.data || response;
+      setHierarchyData(Array.isArray(hierarchyData) ? hierarchyData : [hierarchyData]);
     } catch (error) {
       console.error('Failed to load hierarchy data:', error);
+      setHierarchyData([]);
     } finally {
       setLoading(false);
     }
@@ -337,12 +262,15 @@ const HierarchySelector = ({
 
       <Paper variant="outlined" sx={{ maxHeight: 400, overflow: 'auto', mb: 2 }}>
         {loading ? (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Box sx={{ p: 3, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <CircularProgress />
             <Typography color="text.secondary">Loading hierarchy...</Typography>
           </Box>
         ) : hierarchyData.length === 0 ? (
           <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography color="text.secondary">No data available</Typography>
+            <Alert severity="info">
+              No {type} hierarchy data available. Please ensure {type}s are configured in the system.
+            </Alert>
           </Box>
         ) : (
           <List>

@@ -34,6 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
+import budgetService from '../../services/budget/budgetService';
 
 const BudgetConsole = () => {
   const navigate = useNavigate();
@@ -60,55 +61,17 @@ const BudgetConsole = () => {
   const loadBudgets = async () => {
     setLoading(true);
     try {
-      const mockBudgets = [
-        {
-          id: 'budget-1',
-          name: 'Q4 2025 Trade Promotions',
-          period: '2025-Q4',
-          totalBudget: 500000,
-          allocated: 420000,
-          spent: 350000,
-          remaining: 80000,
-          status: 'active',
-          hierarchy: [
-            {
-              id: 'nat-1',
-              name: 'National Chains',
-              allocated: 300000,
-              spent: 250000,
-              roi: 2.5,
-              children: [
-                { id: 'reg-1', name: 'Northeast Region', allocated: 180000, spent: 150000, roi: 2.8 },
-                { id: 'reg-2', name: 'Southeast Region', allocated: 120000, spent: 100000, roi: 2.1 }
-              ]
-            },
-            {
-              id: 'ind-1',
-              name: 'Independent Retailers',
-              allocated: 120000,
-              spent: 100000,
-              roi: 1.8,
-              children: []
-            }
-          ],
-          performance: {
-            avgROI: 2.3,
-            utilizationRate: 0.84,
-            topPerformers: [
-              { name: 'Northeast Region', roi: 2.8, budget: 180000 },
-              { name: 'National Chains', roi: 2.5, budget: 300000 }
-            ],
-            underPerformers: [
-              { name: 'Independent Retailers', roi: 1.8, budget: 120000 }
-            ]
-          }
-        }
-      ];
-
-      setBudgets(mockBudgets);
-      setSelectedBudget(mockBudgets[0]);
+      const response = await budgetService.getBudgets({ period });
+      const budgetsData = response.budgets || response.data || response;
+      const budgetsArray = Array.isArray(budgetsData) ? budgetsData : [budgetsData];
+      
+      setBudgets(budgetsArray);
+      if (budgetsArray.length > 0) {
+        setSelectedBudget(budgetsArray[0]);
+      }
     } catch (error) {
       console.error('Failed to load budgets:', error);
+      setBudgets([]);
     } finally {
       setLoading(false);
     }

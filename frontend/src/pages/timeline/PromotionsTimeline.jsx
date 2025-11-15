@@ -40,6 +40,14 @@ import {
 import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';
 import simulationService from '../../services/simulation/simulationService';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const PromotionsTimeline = () => {
   const navigate = useNavigate();
