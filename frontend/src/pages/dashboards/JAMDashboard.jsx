@@ -32,6 +32,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
+import { trackEvent } from '../../utils/analytics';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -47,7 +48,7 @@ const JAMDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
-    analytics.trackPageView('jam_dashboard');
+    trackEvent('page_view', { page: 'jam_dashboard' });
   }, []);
 
   const loadDashboardData = async () => {
