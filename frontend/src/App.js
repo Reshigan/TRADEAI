@@ -47,6 +47,10 @@ import AIDashboard from './pages/ai/AIDashboard';
 import JAMDashboard from './pages/dashboards/JAMDashboard';
 import ManagerDashboard from './pages/dashboards/ManagerDashboard';
 
+// World-Class Redesign Components
+import CommandBar from './components/command/CommandBar';
+import CopilotPanel from './components/copilot/CopilotPanel';
+
 // AI Assistant Component
 import AIAssistant from './components/AIAssistant/AIAssistant';
 
@@ -70,6 +74,9 @@ function App() {
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
   });
+  const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [copilotContext, setCopilotContext] = useState(null);
 
   // Effect to check for authentication changes
   useEffect(() => {
@@ -92,6 +99,36 @@ function App() {
       window.removeEventListener('storage', checkAuth);
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandBarOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleCommandExecute = (result) => {
+    if (result.type === 'navigate') {
+      window.location.href = result.path;
+    } else if (result.type === 'api') {
+      setCopilotContext({
+        explanation: `Command "${result.command}" executed successfully`,
+        data: result.data
+      });
+      setIsCopilotOpen(true);
+    } else if (result.type === 'error') {
+      setCopilotContext({
+        explanation: `Error: ${result.error}`,
+        risks: [{ level: 'high', message: result.error }]
+      });
+      setIsCopilotOpen(true);
+    }
+  };
 
   const handleLogin = (userData) => {
     console.log('handleLogin called with userData:', userData);
@@ -118,6 +155,22 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
+        {/* Global Command Bar */}
+        {isAuthenticated && (
+          <>
+            <CommandBar
+              isOpen={isCommandBarOpen}
+              onClose={() => setIsCommandBarOpen(false)}
+              onExecute={handleCommandExecute}
+            />
+            <CopilotPanel
+              isOpen={isCopilotOpen}
+              onClose={() => setIsCopilotOpen(false)}
+              context={copilotContext}
+              recommendations={copilotContext?.recommendations}
+            />
+          </>
+        )}
         <Routes>
         <Route 
           path="/" 
