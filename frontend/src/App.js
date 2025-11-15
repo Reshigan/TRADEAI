@@ -89,6 +89,11 @@ import DeductionDetail from './pages/deductions/DeductionDetail';
 import CreateDeduction from './pages/deductions/CreateDeduction';
 import ReconciliationDashboard from './pages/deductions/ReconciliationDashboard';
 
+// Campaign Components
+import CampaignList from './pages/campaigns/CampaignList';
+import CampaignForm from './pages/campaigns/CampaignForm';
+import CampaignDetail from './pages/campaigns/CampaignDetail';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -336,6 +341,18 @@ function App() {
           } 
         />
         <Route 
+          path="/trade-spends/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeSpendEntryFlow />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/trade-spends/new-flow" 
           element={
             isAuthenticated ? (
@@ -346,7 +363,7 @@ function App() {
           } 
         />
         <Route 
-          path="/trade-spends/:id/edit" 
+          path="/trade-spends/:id/edit"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
@@ -746,6 +763,54 @@ function App() {
               </Layout>
             ) : (
               <Navigate to="/dashboard" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
             )
           } 
         />
