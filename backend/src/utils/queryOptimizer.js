@@ -16,19 +16,19 @@ class QueryOptimizer {
    */
   async executeWithMonitoring(query, description = 'Unknown query') {
     const startTime = Date.now();
-    
+
     try {
       const result = await query;
       const duration = Date.now() - startTime;
-      
+
       // Log slow queries
       if (duration > this.slowQueryThreshold) {
         console.warn(`Slow query detected: ${description} took ${duration}ms`);
       }
-      
+
       // Update statistics
       this.updateQueryStats(description, duration);
-      
+
       return result;
     } catch (error) {
       const duration = Date.now() - startTime;
@@ -50,7 +50,7 @@ class QueryOptimizer {
         minTime: Infinity
       });
     }
-    
+
     const stats = this.queryStats.get(description);
     stats.count++;
     stats.totalTime += duration;
@@ -80,12 +80,12 @@ class QueryOptimizer {
        */
       findByTenant: async (tenantId, filter = {}, options = {}) => {
         const query = Model.find({ tenantId, ...filter });
-        
+
         // Apply projection if specified
         if (options.select) {
           query.select(options.select);
         }
-        
+
         // Apply sorting with index-friendly patterns
         if (options.sort) {
           query.sort(options.sort);
@@ -93,21 +93,21 @@ class QueryOptimizer {
           // Default sort by creation date (indexed)
           query.sort({ createdAt: -1 });
         }
-        
+
         // Apply pagination
         if (options.limit) {
           query.limit(options.limit);
         }
-        
+
         if (options.skip) {
           query.skip(options.skip);
         }
-        
+
         // Use lean for read-only operations
         if (options.lean !== false) {
           query.lean();
         }
-        
+
         return query;
       },
 
@@ -127,7 +127,7 @@ class QueryOptimizer {
           { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
           ...pipeline
         ];
-        
+
         return Model.aggregate(optimizedPipeline);
       },
 
@@ -136,7 +136,7 @@ class QueryOptimizer {
        */
       bulkWriteByTenant: async (tenantId, operations) => {
         // Add tenant filter to all operations
-        const tenantOperations = operations.map(op => {
+        const tenantOperations = operations.map((op) => {
           if (op.insertOne) {
             op.insertOne.document.tenantId = tenantId;
           } else if (op.updateOne || op.updateMany) {
@@ -148,7 +148,7 @@ class QueryOptimizer {
           }
           return op;
         });
-        
+
         return Model.bulkWrite(tenantOperations, { ordered: false });
       },
 
@@ -160,15 +160,15 @@ class QueryOptimizer {
           tenantId,
           $text: { $search: searchText }
         });
-        
+
         // Add text score for sorting
         query.select({ score: { $meta: 'textScore' } });
         query.sort({ score: { $meta: 'textScore' } });
-        
+
         if (options.limit) {
           query.limit(options.limit);
         }
-        
+
         return query;
       },
 
@@ -183,18 +183,18 @@ class QueryOptimizer {
             $lte: endDate
           }
         });
-        
+
         // Sort by date (uses index)
         query.sort({ createdAt: options.sortOrder === 'asc' ? 1 : -1 });
-        
+
         if (options.select) {
           query.select(options.select);
         }
-        
+
         if (options.limit) {
           query.limit(options.limit);
         }
-        
+
         return query.lean();
       }
     };
@@ -310,7 +310,7 @@ class QueryOptimizer {
         'Use sparse indexes for optional fields',
         'Consider partial indexes for filtered queries'
       ],
-      
+
       querying: [
         'Always filter by tenantId first in queries',
         'Use projection to limit returned fields',
@@ -318,7 +318,7 @@ class QueryOptimizer {
         'Implement pagination for large result sets',
         'Use aggregation pipelines for complex operations'
       ],
-      
+
       performance: [
         'Monitor slow queries (>100ms)',
         'Use explain() to analyze query execution',
@@ -335,23 +335,23 @@ class QueryOptimizer {
   static createPerformanceMiddleware() {
     return (req, res, next) => {
       const startTime = Date.now();
-      
+
       // Override res.json to capture response time
       const originalJson = res.json;
-      res.json = function(data) {
+      res.json = function (data) {
         const duration = Date.now() - startTime;
-        
+
         // Add performance headers
         res.set('X-Response-Time', `${duration}ms`);
-        
+
         // Log slow requests
         if (duration > 1000) { // 1 second threshold
           console.warn(`Slow request: ${req.method} ${req.path} took ${duration}ms`);
         }
-        
+
         return originalJson.call(this, data);
       };
-      
+
       next();
     };
   }
@@ -368,9 +368,9 @@ class QueryOptimizer {
       serverSelectionTimeoutMS: 5000, // How long to try selecting a server
       socketTimeoutMS: 45000, // How long to wait for a response
       bufferMaxEntries: 0, // Disable mongoose buffering
-      bufferCommands: false, // Disable mongoose buffering
+      bufferCommands: false // Disable mongoose buffering
     };
-    
+
     return connectionOptions;
   }
 }

@@ -12,7 +12,7 @@ router.get('/types', authenticateToken, asyncHandler(async (req, res) => {
     { id: 'vendors', name: 'Vendors', count: 0 },
     { id: 'users', name: 'Users', count: 0 }
   ];
-  
+
   res.json({
     success: true,
     data: types
@@ -20,17 +20,17 @@ router.get('/types', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Export master data
-router.post('/export', 
+router.post('/export',
   bulkOperationsLimiter,
-  authenticateToken, 
-  authorize('admin'), 
+  authenticateToken,
+  authorize('admin'),
   asyncHandler(async (req, res) => {
     const { type, format = 'xlsx' } = req.body;
-    
+
     if (!type) {
       throw new AppError('Data type is required', 400);
     }
-    
+
     // Implementation would export data based on type
     res.json({
       success: true,
@@ -40,18 +40,18 @@ router.post('/export',
 );
 
 // Import master data
-router.post('/import', 
+router.post('/import',
   bulkOperationsLimiter,
   fileUploadLimiter,
-  authenticateToken, 
-  authorize('admin'), 
+  authenticateToken,
+  authorize('admin'),
   asyncHandler(async (req, res) => {
     const { type, data } = req.body;
-    
+
     if (!type || !data) {
       throw new AppError('Type and data are required', 400);
     }
-    
+
     // Implementation would import data based on type
     res.json({
       success: true,
@@ -64,7 +64,7 @@ router.post('/import',
 // Sync with SAP
 router.post('/sync', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
   const { type, direction = 'both' } = req.body;
-  
+
   // Implementation would sync with SAP
   res.json({
     success: true,

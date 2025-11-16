@@ -20,20 +20,20 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
 const upload = multer({
-  storage: storage,
+  storage,
   limits: {
     fileSize: 50 * 1024 * 1024 // 50MB limit
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.xlsx', '.xls', '.csv'];
     const ext = path.extname(file.originalname).toLowerCase();
-    
+
     if (allowedTypes.includes(ext)) {
       cb(null, true);
     } else {
@@ -248,7 +248,7 @@ class BulkOperationsController {
 
     if (result.success) {
       const fileName = `${modelType}_template.${result.format}`;
-      
+
       res.download(result.filePath, fileName, (err) => {
         if (err) {
           console.error('Template download error:', err);
@@ -295,7 +295,7 @@ class BulkOperationsController {
       try {
         // Parse file
         const data = await this.bulkService.parseFile(req.file.path);
-        
+
         // Validate data
         const validation = await this.bulkService.validateData(data, modelType, tenantId);
 

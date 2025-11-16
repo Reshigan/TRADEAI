@@ -27,13 +27,13 @@ class EnterpriseCrudService {
   async create(data, options = {}) {
     try {
       const record = new this.model(data);
-      
+
       if (options.validate) {
         await this.validateData(data);
       }
 
       await record.save();
-      
+
       if (options.auditLog) {
         await this.logAudit('create', record._id, data, options.userId);
       }
@@ -145,7 +145,7 @@ class EnterpriseCrudService {
 
     // Apply search if provided
     if (search && searchFields.length > 0) {
-      query.$or = searchFields.map(field => ({
+      query.$or = searchFields.map((field) => ({
         [field]: { $regex: search, $options: 'i' }
       }));
     }
@@ -190,7 +190,7 @@ class EnterpriseCrudService {
     const { limit = 20, skip = 0 } = options;
 
     const searchQuery = {
-      $or: fields.map(field => ({
+      $or: fields.map((field) => ({
         [field]: { $regex: searchTerm, $options: 'i' }
       }))
     };
@@ -216,7 +216,7 @@ class EnterpriseCrudService {
     ];
 
     const facets = {};
-    facetFields.forEach(field => {
+    facetFields.forEach((field) => {
       facets[field] = [
         { $group: { _id: `$${field}`, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
@@ -306,7 +306,7 @@ class EnterpriseCrudService {
   // Bulk update
   async bulkUpdate(filter, updates, options = {}) {
     const records = await this.model.find(filter);
-    
+
     const results = {
       success: [],
       failed: [],
@@ -329,7 +329,7 @@ class EnterpriseCrudService {
   // Mass update with custom function
   async massUpdate(filter, updateFn, options = {}) {
     const records = await this.model.find(filter);
-    
+
     for (const record of records) {
       await updateFn(record);
       await record.save();
@@ -422,22 +422,22 @@ class EnterpriseCrudService {
   // Export to CSV
   async exportToCSV(filters = {}, fields = []) {
     const records = await this.model.find(filters).lean();
-    
+
     if (records.length === 0) {
       return null;
     }
 
     // Convert to CSV format
     const selectedFields = fields.length > 0 ? fields : Object.keys(records[0]);
-    
-    let csv = selectedFields.join(',') + '\n';
-    
-    records.forEach(record => {
-      const row = selectedFields.map(field => {
+
+    let csv = `${selectedFields.join(',')}\n`;
+
+    records.forEach((record) => {
+      const row = selectedFields.map((field) => {
         const value = this.getNestedValue(record, field);
         return this.escapeCSV(value);
       });
-      csv += row.join(',') + '\n';
+      csv += `${row.join(',')}\n`;
     });
 
     return csv;
@@ -446,45 +446,45 @@ class EnterpriseCrudService {
   // Export to Excel
   async exportToExcel(filters = {}, fields = []) {
     const records = await this.model.find(filters).lean();
-    
+
     if (records.length === 0) {
       return null;
     }
 
     const selectedFields = fields.length > 0 ? fields : Object.keys(records[0]);
-    
-    const data = records.map(record => {
-      const row = {};
-      selectedFields.forEach(field => {
-        row[field] = this.getNestedValue(record, field);
-      
-    // Lazy-load xlsx to avoid startup dependency
-    let xlsx;
-    try {
-      xlsx = require('xlsx');
-    } catch (e) {
-      throw new AppError('Excel export unavailable: xlsx module not installed', 500);
-    }
 
-});
+    const data = records.map((record) => {
+      const row = {};
+      selectedFields.forEach((field) => {
+        row[field] = this.getNestedValue(record, field);
+
+        // Lazy-load xlsx to avoid startup dependency
+        let xlsx;
+        try {
+          xlsx = require('xlsx');
+        } catch (e) {
+          throw new AppError('Excel export unavailable: xlsx module not installed', 500);
+        }
+
+      });
       return row;
     });
 
     const ws = xlsx.utils.json_to_sheet(data);
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, ws, this.modelName);
-    
+
     return xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
   }
 
   // Export to JSON
   async exportToJSON(filters = {}, fields = []) {
     let query = this.model.find(filters);
-    
+
     if (fields.length > 0) {
       query = query.select(fields.join(' '));
     }
-    
+
     const records = await query.lean();
     return JSON.stringify(records, null, 2);
   }
@@ -498,7 +498,7 @@ class EnterpriseCrudService {
     };
 
     const records = [];
-    
+
     return new Promise((resolve, reject) => {
       fs.createReadStream(filePath)
         .pipe(csvParser())
@@ -692,7 +692,7 @@ class EnterpriseCrudService {
   }
 
   getNestedValue(obj, path) {
-    return path.split('.').reduce((current, key) => 
+    return path.split('.').reduce((current, key) =>
       current && current[key] !== undefined ? current[key] : '', obj
     );
   }

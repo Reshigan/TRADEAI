@@ -10,7 +10,7 @@ class TenantContext {
   constructor() {
     this.contexts = new Map();
   }
-  
+
   setTenant(requestId, tenantData) {
     this.contexts.set(requestId, {
       id: tenantData._id.toString(),
@@ -24,24 +24,24 @@ class TenantContext {
       isSuspended: tenantData.isSuspended
     });
   }
-  
+
   getTenant(requestId) {
     return this.contexts.get(requestId);
   }
-  
+
   clearTenant(requestId) {
     this.contexts.delete(requestId);
   }
-  
+
   hasFeature(requestId, featureName) {
     const tenant = this.getTenant(requestId);
     return tenant && tenant.features && tenant.features[featureName] === true;
   }
-  
+
   canPerformAction(requestId, action, currentUsage = 0) {
     const tenant = this.getTenant(requestId);
     if (!tenant) return false;
-    
+
     const actionLimits = {
       'add_user': tenant.limits.maxUsers,
       'add_customer': tenant.limits.maxCustomers,
@@ -49,7 +49,7 @@ class TenantContext {
       'add_promotion': tenant.limits.maxPromotions,
       'api_call': tenant.limits.maxAPICallsPerMonth
     };
-    
+
     const actionUsage = {
       'add_user': tenant.usage.users,
       'add_customer': tenant.usage.customers,
@@ -57,10 +57,10 @@ class TenantContext {
       'add_promotion': tenant.usage.promotions,
       'api_call': tenant.usage.apiCallsThisMonth
     };
-    
+
     const limit = actionLimits[action];
     const usage = actionUsage[action] || currentUsage;
-    
+
     return limit === -1 || usage < limit; // -1 means unlimited
   }
 }
@@ -76,10 +76,10 @@ function extractTenantId(req) {
   // 2. Subdomain
   // 3. X-Tenant-ID header
   // 4. JWT token
-  
+
   let tenantId = null;
   let tenantSlug = null;
-  
+
   // 1. Check subdomain (skip in development/localhost)
   const host = req.headers.host;
   if (host) {
@@ -117,18 +117,18 @@ function extractTenantId(req) {
       // Token invalid, continue to other methods
     }
   }
-  
+
   // 4. Check query parameter
   tenantId = req.query.tenantId;
   if (tenantId) {
     return { type: 'id', value: tenantId };
   }
-  
+
   tenantSlug = req.query.tenantSlug;
   if (tenantSlug) {
     return { type: 'slug', value: tenantSlug };
   }
-  
+
   return null;
 }
 
@@ -166,8 +166,8 @@ function isPublicRoute(path) {
     '/swagger',
     '/openapi.json'
   ];
-  
-  return publicRoutes.some(route => path.startsWith(route));
+
+  return publicRoutes.some((route) => path.startsWith(route));
 }
 
 /**
@@ -179,8 +179,8 @@ function isAdminRoute(path) {
     '/api/v1/system',
     '/api/v1/tenants/admin'
   ];
-  
-  return adminRoutes.some(route => path.startsWith(route));
+
+  return adminRoutes.some((route) => path.startsWith(route));
 }
 
 /**
@@ -193,17 +193,17 @@ const tenantIsolation = async (req, res, next) => {
   console.log('[TenantIsolation] originalUrl:', req.originalUrl);
   console.log('[TenantIsolation] method:', req.method);
   try {
-    
+
     // Generate unique request ID for context tracking
-    req.requestId = req.headers['x-request-id'] || 
+    req.requestId = req.headers['x-request-id'] ||
                    `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Skip tenant check for public routes
     if (isPublicRoute(req.path)) {
       console.log('[TenantIsolation] Public route, skipping');
       return next();
     }
-    
+
     // Handle admin routes differently
     if (isAdminRoute(req.path)) {
       // Admin routes require system admin privileges
@@ -211,14 +211,14 @@ const tenantIsolation = async (req, res, next) => {
       console.log('[TenantIsolation] Admin route, skipping');
       return next();
     }
-    
+
     // Extract tenant information
     const tenantInfo = extractTenantId(req);
-    
+
     console.log('[TenantIsolation] Path:', req.path);
     console.log('[TenantIsolation] TenantInfo:', tenantInfo);
     console.log('[TenantIsolation] Auth header:', req.headers.authorization ? 'Present' : 'Missing');
-    
+
     if (!tenantInfo) {
       // No tenant info found - let the auth middleware handle authentication
       // The auth middleware will return 401 if token is missing/invalid
@@ -226,10 +226,10 @@ const tenantIsolation = async (req, res, next) => {
       console.log('[TenantIsolation] No tenant info found, continuing without tenant');
       return next();
     }
-    
+
     // Find tenant in database
     let tenant;
-    
+
     // In mock mode, create a mock tenant to avoid database queries
     if (process.env.USE_MOCK_DB === 'true') {
       tenant = {
@@ -267,19 +267,19 @@ const tenantIsolation = async (req, res, next) => {
     } else {
       console.log('[TenantIsolation] Looking up tenant:', tenantInfo);
       console.log('[TenantIsolation] TenantInfo type:', tenantInfo.type, 'value:', tenantInfo.value);
-      
+
       if (tenantInfo.type === 'id') {
         console.log('[TenantIsolation] Using Tenant.findById with value:', tenantInfo.value);
         tenant = await Tenant.findById(tenantInfo.value);
-        console.log('[TenantIsolation] Result from findById:', tenant ? {id: tenant._id, name: tenant.name} : 'NULL');
+        console.log('[TenantIsolation] Result from findById:', tenant ? { id: tenant._id, name: tenant.name } : 'NULL');
       } else if (tenantInfo.type === 'slug') {
         console.log('[TenantIsolation] Using Tenant.findBySlug with value:', tenantInfo.value);
         tenant = await Tenant.findBySlug(tenantInfo.value);
-        console.log('[TenantIsolation] Result from findBySlug:', tenant ? {id: tenant._id, name: tenant.name} : 'NULL');
+        console.log('[TenantIsolation] Result from findBySlug:', tenant ? { id: tenant._id, name: tenant.name } : 'NULL');
       }
-      
+
       console.log('[TenantIsolation] Tenant found:', tenant ? tenant.name : 'NO');
-      
+
       if (!tenant) {
         console.log('[TenantIsolation] Tenant not found in DB - tenantInfo was:', JSON.stringify(tenantInfo));
         return res.status(404).json({
@@ -287,13 +287,13 @@ const tenantIsolation = async (req, res, next) => {
           message: 'The specified tenant does not exist',
           code: 'TENANT_NOT_FOUND',
           debug: {
-            tenantInfo: tenantInfo,
+            tenantInfo,
             path: req.path
           }
         });
       }
     }
-    
+
     // Check tenant status
     if (!tenant.isActive) {
       return res.status(403).json({
@@ -302,7 +302,7 @@ const tenantIsolation = async (req, res, next) => {
         code: 'TENANT_INACTIVE'
       });
     }
-    
+
     if (tenant.isSuspended) {
       return res.status(403).json({
         error: 'Tenant suspended',
@@ -310,7 +310,7 @@ const tenantIsolation = async (req, res, next) => {
         code: 'TENANT_SUSPENDED'
       });
     }
-    
+
     // Check trial expiry
     if (tenant.isTrialExpired && tenant.subscription.plan === 'trial') {
       return res.status(402).json({
@@ -320,10 +320,10 @@ const tenantIsolation = async (req, res, next) => {
         trialEndDate: tenant.subscription.trialEndDate
       });
     }
-    
+
     // Set tenant context
     tenantContext.setTenant(req.requestId, tenant);
-    
+
     // Add tenant information to request
     req.tenant = {
       _id: tenant._id,  // Keep ObjectId for controller compatibility
@@ -336,25 +336,25 @@ const tenantIsolation = async (req, res, next) => {
       usage: tenant.usage,
       settings: tenant.settings
     };
-    
+
     console.log('[TenantIsolation] req.tenant set with _id:', req.tenant._id);
-    
+
     // Add helper methods to request
     req.hasFeature = (featureName) => tenantContext.hasFeature(req.requestId, featureName);
-    req.canPerformAction = (action, currentUsage) => 
+    req.canPerformAction = (action, currentUsage) =>
       tenantContext.canPerformAction(req.requestId, action, currentUsage);
-    
+
     // Update last activity (skip in mock mode)
     if (process.env.USE_MOCK_DB !== 'true') {
       tenant.lastActivityAt = new Date();
       await tenant.save();
-      
+
       // Increment API call usage
       if (req.method !== 'GET' || req.path.includes('/api/')) {
         await tenant.updateUsage('apiCallsThisMonth', 1);
       }
     }
-    
+
     next();
   } catch (error) {
     console.error('Tenant isolation middleware error:', error);
@@ -376,7 +376,7 @@ const tenantCleanup = (req, res, next) => {
       tenantContext.clearTenant(req.requestId);
     }
   });
-  
+
   next();
 };
 

@@ -21,7 +21,7 @@ const companySchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
-  
+
   // Company Details
   industry: {
     type: String,
@@ -43,7 +43,7 @@ const companySchema = new mongoose.Schema({
     required: true,
     default: 'Africa/Johannesburg'
   },
-  
+
   // Contact Information
   address: {
     street: String,
@@ -57,7 +57,7 @@ const companySchema = new mongoose.Schema({
     email: String,
     website: String
   },
-  
+
   // Subscription & Billing
   subscription: {
     plan: {
@@ -88,7 +88,7 @@ const companySchema = new mongoose.Schema({
       default: 5000
     }
   },
-  
+
   // Configuration
   settings: {
     dateFormat: {
@@ -118,7 +118,7 @@ const companySchema = new mongoose.Schema({
       }
     }
   },
-  
+
   // Features & Modules
   enabledModules: [{
     module: {
@@ -131,7 +131,7 @@ const companySchema = new mongoose.Schema({
     },
     permissions: [String]
   }],
-  
+
   // Integration Settings
   integrations: {
     sap: {
@@ -156,7 +156,7 @@ const companySchema = new mongoose.Schema({
       config: mongoose.Schema.Types.Mixed
     }
   },
-  
+
   // Security Settings
   security: {
     passwordPolicy: {
@@ -198,13 +198,13 @@ const companySchema = new mongoose.Schema({
       default: false
     }
   },
-  
+
   // Status
   isActive: {
     type: Boolean,
     default: true
   },
-  
+
   // Metadata
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -214,10 +214,10 @@ const companySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   // Notes
   notes: [{
     note: String,
@@ -269,9 +269,9 @@ companySchema.virtual('productsCount', {
 });
 
 // Methods
-companySchema.methods.isWithinLimits = function(type) {
+companySchema.methods.isWithinLimits = function (type) {
   const limits = this.subscription;
-  switch(type) {
+  switch (type) {
     case 'users':
       return this.activeUsersCount <= limits.maxUsers;
     case 'customers':
@@ -283,22 +283,22 @@ companySchema.methods.isWithinLimits = function(type) {
   }
 };
 
-companySchema.methods.hasModule = function(moduleName) {
-  const module = this.enabledModules.find(m => m.module === moduleName);
+companySchema.methods.hasModule = function (moduleName) {
+  const module = this.enabledModules.find((m) => m.module === moduleName);
   return module && module.enabled;
 };
 
-companySchema.methods.getModulePermissions = function(moduleName) {
-  const module = this.enabledModules.find(m => m.module === moduleName);
+companySchema.methods.getModulePermissions = function (moduleName) {
+  const module = this.enabledModules.find((m) => m.module === moduleName);
   return module ? module.permissions : [];
 };
 
 // Static methods
-companySchema.statics.findByDomain = function(domain) {
+companySchema.statics.findByDomain = function (domain) {
   return this.findOne({ domain: domain.toLowerCase(), isActive: true });
 };
 
-companySchema.statics.findByCode = function(code) {
+companySchema.statics.findByCode = function (code) {
   return this.findOne({ code: code.toUpperCase(), isActive: true });
 };
 

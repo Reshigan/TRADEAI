@@ -6,11 +6,11 @@ class SimpleCacheService {
     this.client = null;
     this.isConnected = false;
   }
-  
+
   async initialize() {
     try {
       console.log('🔄 Initializing Redis cache...');
-      
+
       // Create Redis client with modern API
       this.client = redis.createClient({
         socket: {
@@ -44,9 +44,9 @@ class SimpleCacheService {
 
       // Connect to Redis
       await this.client.connect();
-      
+
       console.log('✅ Redis cache initialized successfully');
-      
+
     } catch (error) {
       console.error('❌ Failed to initialize Redis cache:', error.message);
       console.log('⚠️ Continuing without Redis cache...');
@@ -58,7 +58,7 @@ class SimpleCacheService {
     if (!this.isConnected || !this.client) {
       return null;
     }
-    
+
     try {
       return await this.client.get(key);
     } catch (error) {
@@ -71,7 +71,7 @@ class SimpleCacheService {
     if (!this.isConnected || !this.client) {
       return false;
     }
-    
+
     try {
       if (ttl) {
         await this.client.setEx(key, ttl, value);
@@ -89,7 +89,7 @@ class SimpleCacheService {
     if (!this.isConnected || !this.client) {
       return false;
     }
-    
+
     try {
       await this.client.del(key);
       return true;
@@ -103,7 +103,7 @@ class SimpleCacheService {
     if (!this.isConnected || !this.client) {
       return false;
     }
-    
+
     try {
       const result = await this.client.exists(key);
       return result === 1;

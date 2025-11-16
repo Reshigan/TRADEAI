@@ -183,7 +183,7 @@ class MLController {
       }
 
       // Add tenant ID to each data item
-      const enrichedDataArray = dataArray.map(data => ({
+      const enrichedDataArray = dataArray.map((data) => ({
         ...data,
         tenantId
       }));
@@ -193,8 +193,8 @@ class MLController {
         enrichedDataArray
       );
 
-      const successCount = batchResults.filter(r => r.success).length;
-      const errorCount = batchResults.filter(r => !r.success).length;
+      const successCount = batchResults.filter((r) => r.success).length;
+      const errorCount = batchResults.filter((r) => !r.success).length;
 
       res.json({
         success: true,
@@ -335,10 +335,10 @@ class MLController {
   async getHybridRecommendations(req, res) {
     try {
       const { userId } = req.params;
-      const { 
-        limit = 10, 
+      const {
+        limit = 10,
         weights = { collaborative: 0.4, content: 0.3, popularity: 0.2, personal: 0.1 },
-        diversityFactor = 0.3 
+        diversityFactor = 0.3
       } = req.query;
       const tenantId = req.tenant?.id;
 

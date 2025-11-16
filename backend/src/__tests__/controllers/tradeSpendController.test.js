@@ -30,7 +30,7 @@ describe('TradeSpend Controller', () => {
   beforeAll(async () => {
     // Connect to test database
     await mongoose.connect(process.env.MONGODB_TEST_URI);
-    
+
     // Initialize factories
     factories = createFactories({
       TradeSpend,
@@ -42,7 +42,7 @@ describe('TradeSpend Controller', () => {
   beforeEach(async () => {
     // Clean database
     await TradeSpend.deleteMany({});
-    
+
     // Create test data
     testCompany = await factories.company.create();
     testUser = await factories.user.create({ companyId: testCompany._id });
@@ -60,7 +60,7 @@ describe('TradeSpend Controller', () => {
         amount: 10000,
         status: 'approved'
       });
-      
+
       const tradeSpend2 = await factories.tradeSpend.create({
         companyId: testCompany._id,
         amount: 15000,
@@ -83,7 +83,7 @@ describe('TradeSpend Controller', () => {
         companyId: testCompany._id,
         status: 'approved'
       });
-      
+
       await factories.tradeSpend.create({
         companyId: testCompany._id,
         status: 'pending'
@@ -123,7 +123,7 @@ describe('TradeSpend Controller', () => {
         amount: 5000,
         createdAt: new Date('2023-01-01')
       });
-      
+
       await factories.tradeSpend.create({
         companyId: testCompany._id,
         amount: 10000,
@@ -144,7 +144,7 @@ describe('TradeSpend Controller', () => {
         companyId: testCompany._id,
         description: 'Summer promotion campaign'
       });
-      
+
       await factories.tradeSpend.create({
         companyId: testCompany._id,
         description: 'Winter sale event'
@@ -652,7 +652,7 @@ describe('TradeSpend Controller', () => {
       await TradeSpend.insertMany(tradeSpends);
 
       const startTime = Date.now();
-      
+
       const response = await request(app)
         .get('/api/tradespends?limit=100')
         .set('Authorization', `Bearer ${generateTestToken(testUser)}`)

@@ -13,18 +13,18 @@ class ExternalIntegrationsService {
 
   async initialize() {
     if (this.initialized) return;
-    
+
     console.log('Initializing External Integrations Service...');
-    
+
     // Initialize default integrations
     await this.initializeDefaultIntegrations();
-    
+
     // Start sync scheduler
     this.startSyncScheduler();
-    
+
     // Start retry processor
     this.startRetryProcessor();
-    
+
     this.initialized = true;
     console.log('External Integrations Service initialized successfully');
   }
@@ -186,7 +186,7 @@ class ExternalIntegrationsService {
 
       // Store connection
       this.connectionPool.set(integrationId, connection);
-      
+
       // Update integration status
       integration.status = 'active';
       integration.lastSync = new Date();
@@ -236,16 +236,16 @@ class ExternalIntegrationsService {
       case 'bearer':
         connection.defaults.headers.common['Authorization'] = `Bearer ${auth.token}`;
         break;
-      
+
       case 'apikey':
         connection.defaults.headers.common['Authorization'] = `apikey ${auth.key}`;
         break;
-      
+
       case 'basic':
         const basicAuth = Buffer.from(`${auth.username}:${auth.password}`).toString('base64');
         connection.defaults.headers.common['Authorization'] = `Basic ${basicAuth}`;
         break;
-      
+
       case 'oauth2':
         if (auth.accessToken) {
           connection.defaults.headers.common['Authorization'] = `Bearer ${auth.accessToken}`;
@@ -255,7 +255,7 @@ class ExternalIntegrationsService {
           connection.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
         break;
-      
+
       case 'custom':
         if (auth.headers) {
           Object.assign(connection.defaults.headers.common, auth.headers);
@@ -304,12 +304,12 @@ class ExternalIntegrationsService {
       },
       (error) => {
         console.error(`[${integration.id}] Response error:`, error.response?.status, error.message);
-        
+
         // Handle rate limiting
         if (error.response?.status === 429) {
           const retryAfter = error.response.headers['retry-after'] || 60;
           console.log(`[${integration.id}] Rate limited, retrying after ${retryAfter}s`);
-          
+
           return new Promise((resolve) => {
             setTimeout(() => {
               resolve(connection.request(error.config));
@@ -346,7 +346,7 @@ class ExternalIntegrationsService {
 
     try {
       console.log(`Starting sync for integration: ${integration.name}`);
-      
+
       const syncResults = {};
       const { entities = Object.keys(integration.endpoints), fullSync = false } = options;
 
@@ -368,7 +368,7 @@ class ExternalIntegrationsService {
       integration.updatedAt = new Date();
 
       console.log(`Sync completed for integration: ${integration.name}`);
-      
+
       return {
         integrationId,
         syncResults,
@@ -379,7 +379,7 @@ class ExternalIntegrationsService {
       integration.lastError = error.message;
       integration.errorCount++;
       integration.updatedAt = new Date();
-      
+
       throw error;
     }
   }
@@ -410,7 +410,7 @@ class ExternalIntegrationsService {
           // Process and store data
           await this.processEntityData(integration.id, entity, data);
           syncedCount += data.length;
-          
+
           // Check if there are more pages
           hasMore = data.length === pageSize;
           page++;
@@ -457,14 +457,14 @@ class ExternalIntegrationsService {
 
   async processEntityData(integrationId, entity, data) {
     // Transform and store data based on entity type
-    const transformedData = data.map(item => this.transformEntityData(integrationId, entity, item));
-    
+    const transformedData = data.map((item) => this.transformEntityData(integrationId, entity, item));
+
     // Store in database (mock implementation)
     console.log(`Storing ${transformedData.length} ${entity} records from ${integrationId}`);
-    
+
     // Here you would typically save to your database
     // await this.database.saveIntegrationData(integrationId, entity, transformedData);
-    
+
     return transformedData;
   }
 
@@ -474,7 +474,7 @@ class ExternalIntegrationsService {
       integrationId,
       entity,
       externalId: data.id || data.external_id,
-      data: data,
+      data,
       syncedAt: new Date(),
       checksum: this.calculateChecksum(data)
     };
@@ -491,7 +491,7 @@ class ExternalIntegrationsService {
           address: this.standardizeAddress(data.address || data.billing_address)
         };
         break;
-      
+
       case 'products':
       case 'items':
         transformed.standardized = {
@@ -502,7 +502,7 @@ class ExternalIntegrationsService {
           description: data.description
         };
         break;
-      
+
       case 'orders':
       case 'transactions':
         transformed.standardized = {
@@ -521,7 +521,7 @@ class ExternalIntegrationsService {
 
   standardizeAddress(address) {
     if (!address) return null;
-    
+
     return {
       street: address.street || address.address_line_1,
       city: address.city,
@@ -573,12 +573,12 @@ class ExternalIntegrationsService {
     if (this.retryQueue.length === 0) return;
 
     const now = Date.now();
-    const itemsToRetry = this.retryQueue.filter(item => item.retryAt <= now);
-    
+    const itemsToRetry = this.retryQueue.filter((item) => item.retryAt <= now);
+
     for (const item of itemsToRetry) {
       try {
         await this.syncIntegration(item.integrationId, item.options);
-        
+
         // Remove from retry queue on success
         const index = this.retryQueue.indexOf(item);
         if (index > -1) {
@@ -644,13 +644,13 @@ class ExternalIntegrationsService {
 
   sanitizeIntegration(integration) {
     const sanitized = { ...integration };
-    
+
     // Remove sensitive information
     if (sanitized.authentication) {
       sanitized.authentication = {
         type: sanitized.authentication.type,
-        configured: !!(sanitized.authentication.token || 
-                      sanitized.authentication.key || 
+        configured: !!(sanitized.authentication.token ||
+                      sanitized.authentication.key ||
                       sanitized.authentication.clientId)
       };
     }
@@ -659,7 +659,7 @@ class ExternalIntegrationsService {
   }
 
   async delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // Webhook support methods
@@ -686,7 +686,7 @@ class ExternalIntegrationsService {
       if (!integration.webhooks) {
         integration.webhooks = [];
       }
-      
+
       integration.webhooks.push({
         id: response.data.id,
         url: webhookConfig.url,
@@ -735,7 +735,7 @@ class ExternalIntegrationsService {
 
   async processWebhookData(integrationId, data) {
     console.log(`Processing webhook data for ${integrationId}:`, data);
-    
+
     // Extract event type and data
     const eventType = data.event || data.type;
     const eventData = data.data || data.payload;
@@ -746,17 +746,17 @@ class ExternalIntegrationsService {
       case 'customer.updated':
         await this.processEntityData(integrationId, 'customers', [eventData]);
         break;
-      
+
       case 'order.created':
       case 'order.updated':
         await this.processEntityData(integrationId, 'orders', [eventData]);
         break;
-      
+
       case 'product.created':
       case 'product.updated':
         await this.processEntityData(integrationId, 'products', [eventData]);
         break;
-      
+
       default:
         console.log(`Unhandled webhook event type: ${eventType}`);
     }

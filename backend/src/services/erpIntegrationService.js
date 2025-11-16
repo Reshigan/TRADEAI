@@ -1,7 +1,7 @@
 /**
  * ERP INTEGRATION SERVICE
  * Connects TRADEAI with external ERP systems (SAP, Oracle, etc.)
- * 
+ *
  * Features:
  * - Bi-directional data sync
  * - Transaction import/export
@@ -44,7 +44,7 @@ class ERPIntegrationService {
     };
 
     this.connections.set(erpType, connection);
-    
+
     // Start auto-sync if enabled
     if (connection.enabled && connection.syncInterval) {
       this.startAutoSync(erpType);
@@ -405,7 +405,7 @@ class ERPIntegrationService {
     try {
       const connection = this.connections.get(erpType);
       const erpData = await this.fetchFromERP(connection, 'payment', erpPaymentId);
-      
+
       const mappedData = this.mapFromERP(
         erpData,
         connection.mappings.payment,
@@ -467,7 +467,7 @@ class ERPIntegrationService {
 
     try {
       const connection = this.connections.get(erpType);
-      
+
       // Sync Purchase Orders
       if (options.syncPOs !== false) {
         const erpPOs = await this.fetchAllFromERP(
@@ -551,10 +551,10 @@ class ERPIntegrationService {
     connection.syncIntervalId = setInterval(async () => {
       try {
         console.log(`Running auto-sync for ${erpType}...`);
-        
+
         // Get all customers with this ERP connection
         const customers = await this.getCustomersWithERP(erpType);
-        
+
         for (const customer of customers) {
           await this.syncCustomerTransactions(
             customer._id,
@@ -619,7 +619,7 @@ class ERPIntegrationService {
    */
   async sendToERP(connection, entityType, data, existingId = null) {
     const method = existingId ? 'PUT' : 'POST';
-    const url = existingId 
+    const url = existingId
       ? `${connection.baseUrl}/api/${entityType}/${existingId}`
       : `${connection.baseUrl}/api/${entityType}`;
 

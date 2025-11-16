@@ -204,8 +204,8 @@ class ReportingController {
 
     // Get all scheduled reports for the tenant
     const scheduledReports = Array.from(this.reportingEngine.scheduledReports.values())
-      .filter(report => report.tenantId === tenantId)
-      .map(report => ({
+      .filter((report) => report.tenantId === tenantId)
+      .map((report) => ({
         id: report.id,
         name: report.name,
         reportType: report.reportType,
@@ -233,7 +233,7 @@ class ReportingController {
     const updates = req.body;
 
     const scheduledReport = this.reportingEngine.scheduledReports.get(scheduleId);
-    
+
     if (!scheduledReport) {
       return res.status(404).json({
         success: false,
@@ -243,7 +243,7 @@ class ReportingController {
 
     // Update the scheduled report
     Object.assign(scheduledReport, updates);
-    
+
     // Recalculate next run if schedule changed
     if (updates.schedule) {
       scheduledReport.nextRun = this.reportingEngine.calculateNextRun(updates.schedule);
@@ -434,7 +434,7 @@ class ReportingController {
 
     try {
       this.reportingEngine.validateReportConfig(reportConfig);
-      
+
       res.json({
         success: true,
         message: 'Report configuration is valid',
@@ -476,7 +476,7 @@ class ReportingController {
 
     // Return a preview with limited data
     const preview = {};
-    Object.keys(reportData).forEach(key => {
+    Object.keys(reportData).forEach((key) => {
       if (Array.isArray(reportData[key])) {
         preview[key] = reportData[key].slice(0, 10); // First 10 records
       } else {
@@ -550,7 +550,7 @@ class ReportingController {
       configuration: {
         dataSources: [dataSource],
         filters,
-        columns: columns.map(col => ({
+        columns: columns.map((col) => ({
           field: col.key,
           label: col.header,
           type: col.type || 'text'
@@ -640,7 +640,7 @@ class ReportingController {
       configuration: {
         dataSources: [dataSource],
         filters,
-        columns: columns.map(col => ({
+        columns: columns.map((col) => ({
           field: col.key,
           label: col.header,
           type: col.type || 'text'
@@ -718,13 +718,13 @@ class ReportingController {
       name: title || 'Multi-Sheet Report',
       reportType: 'custom',
       configuration: {
-        dataSources: sheets.map(sheet => sheet.dataSource),
+        dataSources: sheets.map((sheet) => sheet.dataSource),
         filters: {},
         multiSheet: true,
-        sheets: sheets.map(sheet => ({
+        sheets: sheets.map((sheet) => ({
           name: sheet.name,
           dataSource: sheet.dataSource,
-          columns: sheet.columns.map(col => ({
+          columns: sheet.columns.map((col) => ({
             field: col.key,
             label: col.header,
             type: col.type || 'text'
@@ -851,7 +851,7 @@ class ReportingController {
 
     try {
       await fs.promises.access(filePath);
-      
+
       // Update download count
       await report.updatePerformance('export');
 

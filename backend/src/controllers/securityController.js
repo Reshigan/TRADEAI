@@ -154,7 +154,7 @@ class SecurityController {
       success: true,
       data: {
         userId,
-        roles: user.roles.map(role => ({
+        roles: user.roles.map((role) => ({
           id: role._id,
           name: role.name,
           displayName: role.displayName,
@@ -364,12 +364,12 @@ class SecurityController {
    */
   getPermissions = asyncHandler(async (req, res) => {
     const tenantId = req.tenant.id;
-    const { 
-      resource, 
-      category, 
-      riskLevel, 
-      isActive = true, 
-      includeSystem = false 
+    const {
+      resource,
+      category,
+      riskLevel,
+      isActive = true,
+      includeSystem = false
     } = req.query;
 
     const query = { tenantId, isActive };

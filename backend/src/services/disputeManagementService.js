@@ -153,7 +153,7 @@ class DisputeManagementService {
     // Update related documents
     if (dispute.deductionId) {
       const deduction = dispute.deductionId;
-      
+
       if (resolutionData.resolution === 'approved') {
         deduction.status = 'approved';
         deduction.approvedAmount = resolutionData.approvedAmount;
@@ -236,7 +236,7 @@ class DisputeManagementService {
       byPriority: {},
       overdue: 0,
       totalAmount: 0,
-      disputes: disputes
+      disputes
     };
 
     for (const dispute of disputes) {
@@ -434,7 +434,7 @@ class DisputeManagementService {
     const date = new Date();
     const year = date.getFullYear().toString().substr(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    
+
     const count = await Dispute.countDocuments({
       createdAt: {
         $gte: new Date(date.getFullYear(), date.getMonth(), 1),
@@ -452,7 +452,7 @@ class DisputeManagementService {
     // In production, integrate with email/notification service
     dispute.notifications.push({
       date: new Date(),
-      type: type,
+      type,
       recipient: userId,
       sent: true
     });

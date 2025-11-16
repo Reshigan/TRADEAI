@@ -101,7 +101,7 @@ class MasterDataManagementService {
       }
 
       // Calculate quality score
-      report.qualityScore = ((report.totalRecords - report.issues.length) / 
+      report.qualityScore = ((report.totalRecords - report.issues.length) /
                             report.totalRecords) * 100;
 
       // Generate recommendations
@@ -169,7 +169,7 @@ class MasterDataManagementService {
 
       for (const rule of rules) {
         const result = await this.executeRule(rule, data);
-        
+
         if (!result.passed) {
           validation.isValid = false;
           validation.errors.push({
@@ -214,7 +214,7 @@ class MasterDataManagementService {
           enrichment.original
         );
 
-        Object.keys(additionalData).forEach(key => {
+        Object.keys(additionalData).forEach((key) => {
           if (!enrichment.enriched[key]) {
             enrichment.enriched[key] = additionalData[key];
             enrichment.fieldsAdded.push(key);
@@ -295,7 +295,7 @@ class MasterDataManagementService {
 
   async createProductHierarchy(data) {
     const { companyId, name, levels } = data;
-    
+
     const hierarchy = {
       companyId,
       name,
@@ -320,7 +320,7 @@ class MasterDataManagementService {
 
   async getProductHierarchyTree(companyId) {
     const products = await Product.find({ companyId }).lean();
-    
+
     const tree = {
       companyId,
       levels: [
@@ -343,12 +343,12 @@ class MasterDataManagementService {
   }
 
   buildHierarchyLevel(products, field) {
-    const uniqueValues = [...new Set(products.map(p => p[field]).filter(Boolean))];
-    
-    return uniqueValues.map(value => ({
+    const uniqueValues = [...new Set(products.map((p) => p[field]).filter(Boolean))];
+
+    return uniqueValues.map((value) => ({
       id: value,
       name: value,
-      count: products.filter(p => p[field] === value).length,
+      count: products.filter((p) => p[field] === value).length,
       children: []
     }));
   }
@@ -365,7 +365,7 @@ class MasterDataManagementService {
 
   async createCustomerHierarchy(data) {
     const { companyId, name, levels } = data;
-    
+
     const hierarchy = {
       companyId,
       name,
@@ -387,7 +387,7 @@ class MasterDataManagementService {
 
   async getCustomerHierarchyTree(companyId) {
     const customers = await Customer.find({ companyId }).lean();
-    
+
     const tree = {
       companyId,
       levels: [
@@ -452,9 +452,9 @@ class MasterDataManagementService {
 
   generateQualityRecommendations(issues) {
     const recommendations = [];
-    
-    const missingFields = issues.flatMap(i => 
-      i.issues.filter(iss => iss.type === 'missing_required')
+
+    const missingFields = issues.flatMap((i) =>
+      i.issues.filter((iss) => iss.type === 'missing_required')
     );
 
     if (missingFields.length > 0) {
@@ -627,14 +627,14 @@ class MasterDataManagementService {
     let matches = 0;
     let totalFields = 0;
 
-    const compareFields = entityType === 'product' ? 
-      ['name', 'sku', 'category'] : 
+    const compareFields = entityType === 'product' ?
+      ['name', 'sku', 'category'] :
       ['name', 'email', 'phone'];
 
     for (const field of compareFields) {
       totalFields++;
-      if (record1[field] && record2[field] && 
-          record1[field].toString().toLowerCase() === 
+      if (record1[field] && record2[field] &&
+          record1[field].toString().toLowerCase() ===
           record2[field].toString().toLowerCase()) {
         matches++;
         matchFields.push(field);
@@ -654,7 +654,7 @@ class MasterDataManagementService {
 
     // Merge additional data from other records
     for (let i = 1; i < records.length; i++) {
-      Object.keys(records[i]).forEach(key => {
+      Object.keys(records[i]).forEach((key) => {
         if (!merged[key] && records[i][key]) {
           merged[key] = records[i][key];
         }

@@ -35,7 +35,7 @@ class TenantController {
 
       // Build filter
       const filter = {};
-      
+
       if (search) {
         filter.$or = [
           { name: { $regex: search, $options: 'i' } },
@@ -43,11 +43,11 @@ class TenantController {
           { 'contactInfo.email': { $regex: search, $options: 'i' } }
         ];
       }
-      
+
       if (status) {
         filter.status = status;
       }
-      
+
       if (subscriptionTier) {
         filter['subscription.tier'] = subscriptionTier;
       }
@@ -163,7 +163,7 @@ class TenantController {
 
     } catch (error) {
       logger.error('Create tenant error', { error: error.message, stack: error.stack });
-      
+
       if (error.code === 11000) {
         const field = Object.keys(error.keyPattern)[0];
         return res.status(400).json({
@@ -171,7 +171,7 @@ class TenantController {
           message: `${field} already exists`
         });
       }
-      
+
       if (error.name === 'ValidationError') {
         return res.status(400).json({
           error: 'Validation error',
@@ -194,12 +194,12 @@ class TenantController {
     try {
       const { id } = req.params;
       const updates = { ...req.body };
-      
+
       // Remove fields that shouldn't be updated directly
       delete updates._id;
       delete updates.createdAt;
       delete updates.createdBy;
-      
+
       // Set updatedBy
       updates.updatedBy = req.user._id;
 
@@ -247,7 +247,7 @@ class TenantController {
 
     } catch (error) {
       console.error('Update tenant error:', error);
-      
+
       if (error.name === 'ValidationError') {
         return res.status(400).json({
           error: 'Validation error',
@@ -402,7 +402,7 @@ class TenantController {
 
       // Build filter
       const filter = { tenantId: id };
-      
+
       if (search) {
         filter.$or = [
           { firstName: { $regex: search, $options: 'i' } },
@@ -410,11 +410,11 @@ class TenantController {
           { email: { $regex: search, $options: 'i' } }
         ];
       }
-      
+
       if (role) {
         filter.role = role;
       }
-      
+
       if (status) {
         filter.isActive = status === 'active';
       }

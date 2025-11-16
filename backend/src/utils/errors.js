@@ -13,7 +13,7 @@ class AppError extends Error {
     this.isOperational = isOperational;
     this.errors = errors;
     this.timestamp = new Date().toISOString();
-    
+
     Error.captureStackTrace(this, this.constructor);
   }
 }

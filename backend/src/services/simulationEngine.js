@@ -28,7 +28,7 @@ class SimulationEngine {
    */
   async simulatePromotionImpact(scenario) {
     console.log('[SimulationEngine] simulatePromotionImpact called', { scenario });
-    
+
     const {
       promotionType,
       discount,
@@ -40,7 +40,7 @@ class SimulationEngine {
       historicalData = true,
       tenantId
     } = scenario;
-    
+
     // Handle both discount and discountPercent parameters
     const discountValue = discount || discountPercent || 0;
     console.log('[SimulationEngine] Using discountValue:', discountValue);
@@ -398,7 +398,7 @@ class SimulationEngine {
     for (const variation of variations) {
       const variedScenario = { ...baseScenario, ...variation };
       const result = await this.runScenario(variedScenario);
-      
+
       results.variations.push({
         variation,
         result,
@@ -421,12 +421,12 @@ class SimulationEngine {
       const paramResults = [];
 
       for (const variation of variations) {
-        const variedScenario = { 
+        const variedScenario = {
           ...scenario,
           skipSensitivity: true  // Prevent infinite loop
         };
         variedScenario[param] = scenario[param] * (1 + variation / 100);
-        
+
         const result = await this.runScenario(variedScenario);
         paramResults.push({
           variation,
@@ -472,7 +472,7 @@ class SimulationEngine {
    */
 
   async runScenario(scenario) {
-    switch(scenario.type) {
+    switch (scenario.type) {
       case 'promotion_impact':
         return await this.simulatePromotionImpact(scenario);
       case 'budget_allocation':
@@ -573,12 +573,12 @@ class SimulationEngine {
   async optimizeBudgetAllocation(params) {
     // Optimization algorithm (could use linear programming, genetic algorithm, etc.)
     const { totalBudget, categories, historicalPerformance } = params;
-    
+
     // Simple equal allocation as baseline
     const allocation = {};
     const perCategory = totalBudget / categories.length;
-    
-    categories.forEach(category => {
+
+    categories.forEach((category) => {
       allocation[category] = perCategory;
     });
 
@@ -587,7 +587,7 @@ class SimulationEngine {
 
   async calculateExpectedOutcomes(allocation) {
     const outcomes = {};
-    
+
     for (const [category, budget] of Object.entries(allocation)) {
       outcomes[category] = {
         budget,
@@ -631,7 +631,7 @@ class SimulationEngine {
   calculateDemandResponse(priceChange, elasticity) {
     // Price elasticity of demand calculation
     const volumeChange = -elasticity * priceChange;
-    
+
     return {
       priceElasticity: elasticity,
       priceChange,
@@ -649,7 +649,7 @@ class SimulationEngine {
   calculateMarginImpact(currentData, priceChange, demandResponse) {
     const newRevenue = currentData.revenue * (1 + priceChange) * (1 + demandResponse.volumeChange);
     const newMargin = newRevenue * (currentData.margin / currentData.revenue);
-    
+
     return {
       current: currentData.margin,
       projected: newMargin,
@@ -771,7 +771,7 @@ class SimulationEngine {
   async runMonteCarloSimulation(mix, iterations) {
     // Monte Carlo simulation
     const results = [];
-    
+
     for (let i = 0; i < iterations; i++) {
       // Add random variation
       const roi = 150 + (Math.random() - 0.5) * 50;

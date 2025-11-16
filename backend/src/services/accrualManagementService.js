@@ -22,7 +22,7 @@ class AccrualManagementService {
 
     const accrual = new Accrual({
       accrualNumber: await this._generateAccrualNumber(),
-      period: period,
+      period,
       accrualType: 'trade_spend',
       customerId: tradeSpend.customerId,
       tradeSpendId: tradeSpend._id,
@@ -36,7 +36,7 @@ class AccrualManagementService {
         costCenter: tradeSpend.costCenter,
         productId: tradeSpend.productId,
         customerId: tradeSpend.customerId,
-        accrualAmount: accrualAmount,
+        accrualAmount,
         actualAmount: 0
       }],
       totalAccrual: accrualAmount,
@@ -63,7 +63,7 @@ class AccrualManagementService {
 
     const accrual = new Accrual({
       accrualNumber: await this._generateAccrualNumber(),
-      period: period,
+      period,
       accrualType: 'promotion',
       customerId: promotion.customerId,
       promotionId: promotion._id,
@@ -75,7 +75,7 @@ class AccrualManagementService {
         description: `Promotion - ${promotion.name}`,
         glAccount: promotion.glAccount || '5200',
         customerId: promotion.customerId,
-        accrualAmount: accrualAmount,
+        accrualAmount,
         actualAmount: 0
       }],
       totalAccrual: accrualAmount,
@@ -169,16 +169,16 @@ class AccrualManagementService {
     switch (tradeSpend.calculationMethod) {
       case 'percentage':
         return (tradeSpend.amount || 0) * ((tradeSpend.percentage || 0) / 100);
-      
+
       case 'fixed_amount':
         return tradeSpend.amount || 0;
-      
+
       case 'per_unit':
         return (tradeSpend.volume || 0) * (tradeSpend.ratePerUnit || 0);
-      
+
       case 'tiered':
         return this._calculateTieredAmount(tradeSpend);
-      
+
       default:
         return tradeSpend.amount || 0;
     }
@@ -291,7 +291,7 @@ class AccrualManagementService {
       accrualDate: new Date(),
       startDate: accrual.startDate,
       endDate: accrual.endDate,
-      lines: accrual.lines.map(line => ({
+      lines: accrual.lines.map((line) => ({
         ...line.toObject(),
         accrualAmount: -line.accrualAmount,
         actualAmount: 0
@@ -425,7 +425,7 @@ class AccrualManagementService {
     const date = new Date();
     const year = date.getFullYear().toString().substr(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    
+
     const count = await Accrual.countDocuments({
       'period.year': date.getFullYear(),
       'period.month': date.getMonth() + 1

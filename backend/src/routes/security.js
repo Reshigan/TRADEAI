@@ -18,107 +18,107 @@ router.post('/logout', securityController.logout);
 
 // Permission checking
 router.post('/permissions/check', securityController.checkPermission);
-router.get('/permissions/user/:userId', 
+router.get('/permissions/user/:userId',
   requirePermission('users', 'read'),
   securityController.getUserPermissions
 );
 
 // Role management
-router.get('/roles', 
+router.get('/roles',
   requirePermission('roles', 'read'),
   securityController.getRoles
 );
 
-router.post('/roles', 
+router.post('/roles',
   requirePermission('roles', 'create'),
   securityController.createRole
 );
 
-router.get('/roles/:id', 
+router.get('/roles/:id',
   requirePermission('roles', 'read'),
   securityController.getRole
 );
 
-router.put('/roles/:id', 
+router.put('/roles/:id',
   requirePermission('roles', 'update'),
   securityController.updateRole
 );
 
-router.delete('/roles/:id', 
+router.delete('/roles/:id',
   requirePermission('roles', 'delete'),
   securityController.deleteRole
 );
 
-router.post('/roles/:roleId/assign', 
+router.post('/roles/:roleId/assign',
   requirePermission('roles', 'manage'),
   securityController.assignRole
 );
 
 // Permission management
-router.get('/permissions', 
+router.get('/permissions',
   requirePermission('permissions', 'read'),
   securityController.getPermissions
 );
 
-router.get('/permissions/matrix', 
+router.get('/permissions/matrix',
   requirePermission('permissions', 'read'),
   securityController.getPermissionMatrix
 );
 
-router.post('/permissions', 
+router.post('/permissions',
   requirePermission('permissions', 'create'),
   securityController.createPermission
 );
 
 // Audit logs
-router.get('/audit-logs', 
+router.get('/audit-logs',
   requirePermission('audit_logs', 'read'),
   securityController.getAuditLogs
 );
 
-router.get('/audit-logs/summary', 
+router.get('/audit-logs/summary',
   requirePermission('audit_logs', 'read'),
   securityController.getAuditSummary
 );
 
-router.get('/audit-logs/:id', 
+router.get('/audit-logs/:id',
   requirePermission('audit_logs', 'read'),
   securityController.getAuditLog
 );
 
 // Security events
-router.get('/events', 
+router.get('/events',
   requirePermission('security_events', 'read'),
   securityController.getSecurityEvents
 );
 
-router.get('/dashboard', 
+router.get('/dashboard',
   requirePermission('security_events', 'read'),
   securityController.getSecurityDashboard
 );
 
-router.put('/events/:id', 
+router.put('/events/:id',
   requirePermission('security_events', 'update'),
   securityController.updateSecurityEvent
 );
 
-router.post('/events/:id/assign', 
+router.post('/events/:id/assign',
   requirePermission('security_events', 'manage'),
   securityController.assignSecurityEvent
 );
 
-router.post('/events/:id/notes', 
+router.post('/events/:id/notes',
   requirePermission('security_events', 'update'),
   securityController.addInvestigationNote
 );
 
-router.post('/events/:id/resolve', 
+router.post('/events/:id/resolve',
   requirePermission('security_events', 'manage'),
   securityController.resolveSecurityEvent
 );
 
 // Security monitoring
-router.get('/metrics', 
+router.get('/metrics',
   requirePermission('system', 'read'),
   securityController.getSecurityMetrics
 );
@@ -127,12 +127,12 @@ router.get('/metrics',
 router.post('/password/validate', securityController.validatePassword);
 
 // Security policies
-router.get('/policies', 
+router.get('/policies',
   requirePermission('system', 'read'),
   securityController.getSecurityPolicies
 );
 
-router.put('/policies', 
+router.put('/policies',
   requirePermission('system', 'admin'),
   securityController.updateSecurityPolicies
 );

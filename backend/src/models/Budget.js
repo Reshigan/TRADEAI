@@ -23,7 +23,7 @@ const budgetSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  
+
   // Budget Type and Version
   budgetType: {
     type: String,
@@ -39,7 +39,7 @@ const budgetSchema = new mongoose.Schema({
     enum: ['draft', 'submitted', 'approved', 'locked', 'archived'],
     default: 'draft'
   },
-  
+
   // Budget Scope
   scope: {
     level: {
@@ -69,7 +69,7 @@ const budgetSchema = new mongoose.Schema({
       value: String
     }
   },
-  
+
   // ML Forecast Data
   mlForecast: {
     generated: {
@@ -88,7 +88,7 @@ const budgetSchema = new mongoose.Schema({
       factors: mongoose.Schema.Types.Mixed
     }]
   },
-  
+
   // Budget Lines by Month
   budgetLines: [{
     month: {
@@ -97,14 +97,14 @@ const budgetSchema = new mongoose.Schema({
       min: 1,
       max: 12
     },
-    
+
     // Sales Targets
     sales: {
       units: { type: Number, default: 0 },
       value: { type: Number, default: 0 },
       adjustmentReason: String
     },
-    
+
     // Trade Spend Budgets
     tradeSpend: {
       marketing: {
@@ -132,7 +132,7 @@ const budgetSchema = new mongoose.Schema({
         spent: { type: Number, default: 0 }
       }
     },
-    
+
     // Profitability
     profitability: {
       grossMargin: { type: Number, default: 0 },
@@ -140,7 +140,7 @@ const budgetSchema = new mongoose.Schema({
       roi: { type: Number, default: 0 }
     }
   }],
-  
+
   // Annual Totals (calculated)
   annualTotals: {
     sales: {
@@ -160,7 +160,7 @@ const budgetSchema = new mongoose.Schema({
       roi: { type: Number, default: 0 }
     }
   },
-  
+
   // Comparison Baselines
   comparisons: [{
     budgetId: {
@@ -173,7 +173,7 @@ const budgetSchema = new mongoose.Schema({
       enum: ['previous_year', 'previous_version', 'scenario']
     }
   }],
-  
+
   // Assumptions and Notes
   assumptions: [{
     category: String,
@@ -185,7 +185,7 @@ const budgetSchema = new mongoose.Schema({
     },
     addedDate: Date
   }],
-  
+
   // Approval Workflow
   approvals: [{
     level: {
@@ -205,7 +205,7 @@ const budgetSchema = new mongoose.Schema({
     conditions: String,
     date: Date
   }],
-  
+
   // Lock Information
   lockedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -213,7 +213,7 @@ const budgetSchema = new mongoose.Schema({
   },
   lockedDate: Date,
   lockReason: String,
-  
+
   // Audit Trail
   history: [{
     action: String,
@@ -225,7 +225,7 @@ const budgetSchema = new mongoose.Schema({
     performedDate: Date,
     comment: String
   }],
-  
+
   // Created/Modified By
   // Simple Budget Tracking (for frontend compatibility)
   allocated: {
@@ -240,7 +240,7 @@ const budgetSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -265,7 +265,7 @@ budgetSchema.index({ 'scope.level': 1 });
 budgetSchema.index({ year: 1, budgetType: 1, status: 1 });
 
 // Pre-save middleware to calculate annual totals
-budgetSchema.pre('save', function(next) {
+budgetSchema.pre('save', function (next) {
   // Reset annual totals
   this.annualTotals = {
     sales: { units: 0, value: 0 },
@@ -282,103 +282,103 @@ budgetSchema.pre('save', function(next) {
       roi: 0
     }
   };
-  
+
   // Calculate totals from budget lines
-  this.budgetLines.forEach(line => {
+  this.budgetLines.forEach((line) => {
     // Sales
     this.annualTotals.sales.units += line.sales.units || 0;
     this.annualTotals.sales.value += line.sales.value || 0;
-    
+
     // Trade Spend
     this.annualTotals.tradeSpend.marketing += line.tradeSpend.marketing.budget || 0;
     this.annualTotals.tradeSpend.cashCoop += line.tradeSpend.cashCoop.budget || 0;
     this.annualTotals.tradeSpend.tradingTerms += line.tradeSpend.tradingTerms.budget || 0;
     this.annualTotals.tradeSpend.promotions += line.tradeSpend.promotions.budget || 0;
-    
+
     // Profitability
     this.annualTotals.profitability.grossMargin += line.profitability.grossMargin || 0;
     this.annualTotals.profitability.netMargin += line.profitability.netMargin || 0;
   });
-  
+
   // Calculate total trade spend
-  this.annualTotals.tradeSpend.total = 
+  this.annualTotals.tradeSpend.total =
     this.annualTotals.tradeSpend.marketing +
     this.annualTotals.tradeSpend.cashCoop +
     this.annualTotals.tradeSpend.tradingTerms +
     this.annualTotals.tradeSpend.promotions;
-  
+
   // Calculate ROI if we have sales and spend
   if (this.annualTotals.tradeSpend.total > 0) {
-    this.annualTotals.profitability.roi = 
-      ((this.annualTotals.sales.value - this.annualTotals.tradeSpend.total) / 
+    this.annualTotals.profitability.roi =
+      ((this.annualTotals.sales.value - this.annualTotals.tradeSpend.total) /
        this.annualTotals.tradeSpend.total) * 100;
   }
-  
+
   next();
 });
 
 // Methods
-budgetSchema.methods.lock = async function(userId, reason) {
+budgetSchema.methods.lock = async function (userId, reason) {
   this.status = 'locked';
   this.lockedBy = userId;
   this.lockedDate = new Date();
   this.lockReason = reason;
-  
+
   this.history.push({
     action: 'locked',
     performedBy: userId,
     performedDate: new Date(),
     comment: reason
   });
-  
+
   await this.save();
 };
 
-budgetSchema.methods.submitForApproval = async function(userId) {
+budgetSchema.methods.submitForApproval = async function (userId) {
   this.status = 'submitted';
   this.lastModifiedBy = userId;
-  
+
   this.history.push({
     action: 'submitted_for_approval',
     performedBy: userId,
     performedDate: new Date()
   });
-  
+
   await this.save();
 };
 
-budgetSchema.methods.approve = async function(level, userId, comments) {
-  const approval = this.approvals.find(a => a.level === level);
+budgetSchema.methods.approve = async function (level, userId, comments) {
+  const approval = this.approvals.find((a) => a.level === level);
   if (approval) {
     approval.status = 'approved';
     approval.approver = userId;
     approval.comments = comments;
     approval.date = new Date();
   }
-  
+
   // Check if all required approvals are complete
-  const allApproved = this.approvals.every(a => a.status === 'approved');
+  const allApproved = this.approvals.every((a) => a.status === 'approved');
   if (allApproved) {
     this.status = 'approved';
   }
-  
+
   this.history.push({
     action: 'approved',
     performedBy: userId,
     performedDate: new Date(),
     comment: `${level} approval: ${comments}`
   });
-  
+
   await this.save();
 };
 
-budgetSchema.methods.createNewVersion = async function() {
+budgetSchema.methods.createNewVersion = async function () {
   const newBudget = new this.constructor(this.toObject());
   newBudget._id = new mongoose.Types.ObjectId();
   newBudget.version = this.version + 1;
   newBudget.status = 'draft';
   newBudget.code = `${this.code}_v${newBudget.version}`;
-  newBudget.approvals = this.approvals.map(a => ({
+  newBudget.approvals = this.approvals.map((a) => ({
     ...a.toObject(),
     status: 'pending',
     approver: null,
@@ -391,13 +391,13 @@ budgetSchema.methods.createNewVersion = async function() {
     performedDate: new Date(),
     comment: `Created from version ${this.version}`
   }];
-  
+
   await newBudget.save();
   return newBudget;
 };
 
 // Statics
-budgetSchema.statics.findLatestApproved = function(year, scope) {
+budgetSchema.statics.findLatestApproved = function (year, scope) {
   return this.findOne({
     year,
     status: 'approved',

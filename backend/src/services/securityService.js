@@ -39,11 +39,11 @@ class SecurityService {
   async authenticateUser(email, password, ipAddress, userAgent, tenantId) {
     try {
       const startTime = Date.now();
-      
+
       // Check for account lockout
       const lockoutKey = `${email}_${tenantId}`;
       const failedAttempt = this.failedAttempts.get(lockoutKey);
-      
+
       if (failedAttempt && failedAttempt.lockedUntil > Date.now()) {
         await this.logSecurityEvent({
           type: 'AUTHENTICATION_BLOCKED',
@@ -57,22 +57,22 @@ class SecurityService {
             lockedUntil: new Date(failedAttempt.lockedUntil)
           }
         });
-        
+
         throw new Error('Account temporarily locked due to failed login attempts');
       }
 
       // Find user with tenant context (or without if tenantId is null in single-tenant mode)
-      const userQuery = { 
+      const userQuery = {
         email: email.toLowerCase(),
         isActive: true,
         isDeleted: false
       };
-      
+
       // Only add tenantId filter if provided (for multi-tenant scenarios)
       if (tenantId) {
         userQuery.tenantId = tenantId;
       }
-      
+
       const user = await User.findOne(userQuery);
 
       if (!user) {
@@ -99,7 +99,7 @@ class SecurityService {
 
       // Verify password
       const isValidPassword = await bcrypt.compare(password, user.password);
-      
+
       if (!isValidPassword) {
         await this.recordFailedAttempt(lockoutKey, ipAddress, userAgent, effectiveTenantId);
         if (effectiveTenantId) {
@@ -249,7 +249,7 @@ class SecurityService {
       }
 
       // Super admin bypass
-      if (user.roles.some(role => role.name === 'super_admin')) {
+      if (user.roles.some((role) => role.name === 'super_admin')) {
         return { allowed: true, reason: 'Super admin access' };
       }
 
@@ -258,19 +258,19 @@ class SecurityService {
 
       // Check for specific permission
       const requiredPermission = `${resource}:${action}`;
-      const hasPermission = allPermissions.some(permission => {
+      const hasPermission = allPermissions.some((permission) => {
         // Exact match
         if (permission === requiredPermission) return true;
-        
+
         // Wildcard match (e.g., "reports:*" matches "reports:create")
         if (permission.endsWith(':*')) {
           const resourcePart = permission.split(':')[0];
           return requiredPermission.startsWith(`${resourcePart}:`);
         }
-        
+
         // Global wildcard
         if (permission === '*:*') return true;
-        
+
         return false;
       });
 
@@ -278,14 +278,14 @@ class SecurityService {
       if (hasPermission && context.resourceOwnerId) {
         const ownershipPermission = `${resource}:${action}:own`;
         const globalPermission = `${resource}:${action}:all`;
-        
+
         const hasOwnershipPermission = allPermissions.includes(ownershipPermission);
         const hasGlobalPermission = allPermissions.includes(globalPermission);
-        
+
         if (hasOwnershipPermission && context.resourceOwnerId.toString() !== userId.toString()) {
           return { allowed: false, reason: 'Can only access own resources' };
         }
-        
+
         if (!hasOwnershipPermission && !hasGlobalPermission) {
           return { allowed: false, reason: 'Insufficient ownership permissions' };
         }
@@ -470,7 +470,7 @@ class SecurityService {
    */
   async validateSession(sessionToken) {
     const session = this.sessionStore.get(sessionToken);
-    
+
     if (!session) {
       return { valid: false, reason: 'Session not found' };
     }
@@ -482,7 +482,7 @@ class SecurityService {
     // Check session timeout
     const now = Date.now();
     const sessionAge = now - session.createdAt.getTime();
-    
+
     if (sessionAge > this.securityPolicies.sessionTimeout) {
       this.sessionStore.delete(sessionToken);
       return { valid: false, reason: 'Session expired' };
@@ -501,7 +501,7 @@ class SecurityService {
   async invalidateSession(sessionToken, userId, tenantId, reason = 'USER_LOGOUT') {
     try {
       const session = this.sessionStore.get(sessionToken);
-      
+
       if (session) {
         session.isActive = false;
         this.sessionStore.delete(sessionToken);
@@ -564,12 +564,12 @@ class SecurityService {
       const algorithm = 'aes-256-gcm';
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipher(algorithm, key);
-      
+
       let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      
+
       const authTag = cipher.getAuthTag();
-      
+
       return {
         encrypted,
         iv: iv.toString('hex'),
@@ -585,12 +585,12 @@ class SecurityService {
     try {
       const algorithm = 'aes-256-gcm';
       const decipher = crypto.createDecipher(algorithm, key);
-      
+
       decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
-      
+
       let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8');
       decrypted += decipher.final('utf8');
-      
+
       return JSON.parse(decrypted);
     } catch (error) {
       logger.error('Decryption error:', error);
@@ -604,7 +604,7 @@ class SecurityService {
   async checkSecurityThreats(tenantId, timeWindow = 60 * 60 * 1000) { // 1 hour
     try {
       const since = new Date(Date.now() - timeWindow);
-      
+
       // Check for suspicious activities
       const suspiciousEvents = await SecurityEvent.aggregate([
         {
@@ -678,15 +678,15 @@ class SecurityService {
     const permissions = new Set();
 
     // Add permissions from roles
-    roles.forEach(role => {
+    roles.forEach((role) => {
       if (role.permissions && Array.isArray(role.permissions)) {
-        role.permissions.forEach(permission => permissions.add(permission));
+        role.permissions.forEach((permission) => permissions.add(permission));
       }
     });
 
     // Add direct permissions
     if (directPermissions && Array.isArray(directPermissions)) {
-      directPermissions.forEach(permission => permissions.add(permission));
+      directPermissions.forEach((permission) => permissions.add(permission));
     }
 
     return Array.from(permissions);
@@ -694,16 +694,16 @@ class SecurityService {
 
   isIpAllowed(ipAddress) {
     if (this.securityPolicies.allowedIpRanges.length === 0) return true;
-    
+
     // Simple IP range check - in production, use a proper IP range library
-    return this.securityPolicies.allowedIpRanges.some(range => {
+    return this.securityPolicies.allowedIpRanges.some((range) => {
       return ipAddress.startsWith(range.replace('*', ''));
     });
   }
 
   calculatePasswordStrength(password) {
     let score = 0;
-    
+
     if (password.length >= 8) score += 1;
     if (password.length >= 12) score += 1;
     if (/[a-z]/.test(password)) score += 1;
@@ -720,14 +720,14 @@ class SecurityService {
 
   calculateRiskLevel(suspiciousEvents, failedLogins, uniqueIPs) {
     let riskScore = 0;
-    
+
     if (failedLogins > 10) riskScore += 2;
     if (failedLogins > 50) riskScore += 3;
-    
+
     if (uniqueIPs > 20) riskScore += 2;
     if (uniqueIPs > 50) riskScore += 3;
-    
-    suspiciousEvents.forEach(event => {
+
+    suspiciousEvents.forEach((event) => {
       if (event.count > 5) riskScore += 2;
       if (event.count > 20) riskScore += 3;
     });

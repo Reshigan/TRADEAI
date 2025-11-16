@@ -28,7 +28,7 @@ class ForwardBuyService {
     // Calculate post-promotion period
     const postPromoStart = new Date(promotionEndDate);
     postPromoStart.setDate(postPromoStart.getDate() + 1);
-    
+
     const postPromoEnd = new Date(postPromoStart);
     postPromoEnd.setDate(postPromoEnd.getDate() + (postPromoPeriodWeeks * 7));
 
@@ -66,7 +66,7 @@ class ForwardBuyService {
     for (let i = 0; i < baseline.length; i++) {
       const baselineDay = baseline[i];
       const actualDay = actualSales.find(
-        s => s.date.toISOString().split('T')[0] === 
+        (s) => s.date.toISOString().split('T')[0] ===
              new Date(baselineDay.date).toISOString().split('T')[0]
       );
 
@@ -140,9 +140,9 @@ class ForwardBuyService {
         totalActual,
         totalDip,
         dipPercentage,
-        averageDailyDip: dailyAnalysis.length > 0 ? 
+        averageDailyDip: dailyAnalysis.length > 0 ?
           totalDip / dailyAnalysis.length : 0,
-        daysWithSignificantDip: dailyAnalysis.filter(d => d.isSignificantDip).length,
+        daysWithSignificantDip: dailyAnalysis.filter((d) => d.isSignificantDip).length,
         recoveryWeek
       },
       dailyAnalysis,
@@ -178,7 +178,7 @@ class ForwardBuyService {
     }
 
     // Find first week where sales recovered
-    const recoveredWeek = weeks.find(w => w.recovered);
+    const recoveredWeek = weeks.find((w) => w.recovered);
     return recoveredWeek ? recoveredWeek.weekNumber : null;
   }
 
@@ -269,7 +269,7 @@ class ForwardBuyService {
     const netIncremental = grossIncremental - forwardBuyVolume;
 
     const grossRevenue = incrementalResult.summary.totalIncrementalRevenue;
-    
+
     // Get product to calculate revenue impact
     const product = await Product.findById(productId);
     const forwardBuyRevenue = forwardBuyVolume * (product.price || 0);
@@ -364,7 +364,7 @@ class ForwardBuyService {
 
     // Analyze forward buy from historical promotions
     const historicalAnalyses = [];
-    
+
     for (const promo of historicalPromotions) {
       try {
         const analysis = await this.detectForwardBuy({
@@ -378,7 +378,7 @@ class ForwardBuyService {
 
         // Get discount percent from promotion
         const promoProduct = promo.products.find(
-          p => p.product.toString() === productId
+          (p) => p.product.toString() === productId
         );
         const discountPercent = promoProduct ? promoProduct.discountPercent : 0;
 
@@ -406,7 +406,7 @@ class ForwardBuyService {
 
     // Predict risk based on planned discount vs historical patterns
     const similarPromotions = historicalAnalyses.filter(
-      h => Math.abs(h.discountPercent - plannedDiscountPercent) < 10
+      (h) => Math.abs(h.discountPercent - plannedDiscountPercent) < 10
     );
 
     let predictedRisk = 'medium';
@@ -523,7 +523,7 @@ class ForwardBuyService {
 
     // Get completed promotions for these products
     const promotions = await Promotion.find({
-      'products.product': { $in: products.map(p => p._id) },
+      'products.product': { $in: products.map((p) => p._id) },
       status: 'completed',
       startDate: { $gte: startDate },
       endDate: { $lte: endDate },
@@ -568,11 +568,11 @@ class ForwardBuyService {
       categoryAnalysis,
       summary: {
         averageDipPercentage: categoryAnalysis.length > 0 ?
-          categoryAnalysis.reduce((sum, a) => sum + a.dipPercentage, 0) / 
+          categoryAnalysis.reduce((sum, a) => sum + a.dipPercentage, 0) /
           categoryAnalysis.length : 0,
-        severeCount: categoryAnalysis.filter(a => a.severity === 'severe').length,
-        highCount: categoryAnalysis.filter(a => a.severity === 'high').length,
-        moderateCount: categoryAnalysis.filter(a => a.severity === 'moderate').length
+        severeCount: categoryAnalysis.filter((a) => a.severity === 'severe').length,
+        highCount: categoryAnalysis.filter((a) => a.severity === 'high').length,
+        moderateCount: categoryAnalysis.filter((a) => a.severity === 'moderate').length
       }
     };
   }

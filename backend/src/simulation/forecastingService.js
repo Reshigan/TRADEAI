@@ -1,6 +1,6 @@
 /**
  * AI/ML Forecasting Service
- * 
+ *
  * Provides predictive analytics using historical data
  */
 
@@ -38,11 +38,11 @@ class ForecastingService {
     for (let i = 0; i < days; i++) {
       const x = startIndex + i + 1;
       const predicted = slope * x + intercept;
-      
+
       // Add seasonal factor (±10%)
       const seasonalFactor = 1 + (Math.sin((x / 30) * 2 * Math.PI) * 0.1);
       const adjustedPredicted = predicted * seasonalFactor;
-      
+
       forecast.push({
         day: i + 1,
         predictedRevenue: parseFloat(adjustedPredicted.toFixed(2)),
@@ -67,7 +67,7 @@ class ForecastingService {
    * Detect anomalies in data
    */
   detectAnomalies(data) {
-    const values = data.map(d => d.value);
+    const values = data.map((d) => d.value);
     const mean = values.reduce((a, b) => a + b, 0) / values.length;
     const stdDev = Math.sqrt(
       values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / values.length

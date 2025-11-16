@@ -45,53 +45,53 @@ router.get('/model-status', aiPromotionController.getModelStatus);
  * @access Private
  */
 router.post('/batch-validate', async (req, res) => {
-    try {
-        const { promotions } = req.body;
-        
-        if (!Array.isArray(promotions)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Promotions must be an array'
-            });
-        }
+  try {
+    const { promotions } = req.body;
 
-        const results = [];
-        for (const promotion of promotions) {
-            try {
-                const validation = await aiPromotionController.aiService.validatePromotionUplift(promotion);
-                results.push({
-                    promotionId: promotion.productId,
-                    validation: validation,
-                    success: true
-                });
-            } catch (error) {
-                results.push({
-                    promotionId: promotion.productId,
-                    error: error.message,
-                    success: false
-                });
-            }
-        }
-
-        res.json({
-            success: true,
-            data: {
-                results: results,
-                summary: {
-                    total: promotions.length,
-                    successful: results.filter(r => r.success).length,
-                }
-            }
-        });
-
-    } catch (error) {
-        console.error('Batch validation error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to run batch validation',
-            details: error.message
-        });
+    if (!Array.isArray(promotions)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Promotions must be an array'
+      });
     }
+
+    const results = [];
+    for (const promotion of promotions) {
+      try {
+        const validation = await aiPromotionController.aiService.validatePromotionUplift(promotion);
+        results.push({
+          promotionId: promotion.productId,
+          validation,
+          success: true
+        });
+      } catch (error) {
+        results.push({
+          promotionId: promotion.productId,
+          error: error.message,
+          success: false
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      data: {
+        results,
+        summary: {
+          total: promotions.length,
+          successful: results.filter((r) => r.success).length
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Batch validation error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to run batch validation',
+      details: error.message
+    });
+  }
 });
 
 module.exports = router;

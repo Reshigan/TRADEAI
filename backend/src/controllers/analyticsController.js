@@ -24,8 +24,8 @@ class AnalyticsController {
     const tenantId = req.tenant.id;
 
     const roi = await this.advancedAnalyticsEngine.calculateROI(
-      tenantId, 
-      promotionId, 
+      tenantId,
+      promotionId,
       { forceRefresh: forceRefresh === 'true' }
     );
 
@@ -45,8 +45,8 @@ class AnalyticsController {
     const tenantId = req.tenant.id;
 
     const lift = await this.advancedAnalyticsEngine.calculateLift(
-      tenantId, 
-      promotionId, 
+      tenantId,
+      promotionId,
       { forceRefresh: forceRefresh === 'true' }
     );
 
@@ -65,7 +65,7 @@ class AnalyticsController {
     const promotionData = req.body;
 
     const prediction = await this.analyticsEngine.predictPerformance(
-      tenantId, 
+      tenantId,
       promotionData
     );
 
@@ -91,8 +91,8 @@ class AnalyticsController {
     }
 
     const optimization = await this.analyticsEngine.optimizeSpendAllocation(
-      tenantId, 
-      budget, 
+      tenantId,
+      budget,
       constraints
     );
 
@@ -108,7 +108,7 @@ class AnalyticsController {
    */
   getDashboardAnalytics = async (options = {}) => {
     const { userId, period = '30days', currency = 'USD' } = options;
-    
+
     try {
       // Get currency info
       const currencySymbols = {
@@ -116,26 +116,26 @@ class AnalyticsController {
         'ZAR': 'R', 'INR': '₹', 'CNY': '¥'
       };
       const currencySymbol = currencySymbols[currency] || '$';
-      
+
       // Get models
       const Customer = require('../models/Customer');
       const Promotion = require('../models/Promotion');
       const Budget = require('../models/Budget');
       const TradeSpend = require('../models/TradeSpend');
-      
+
       // Query real data from database
       // Check for both 'active' and 'completed' promotions for stats
       const now = new Date();
       const promotionQuery = {
         $or: [
           { status: 'active' },
-          { 
+          {
             status: 'completed',
             endDate: { $gte: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000) } // Last 90 days
           }
         ]
       };
-      
+
       const [
         totalCustomers,
         activePromotions,
@@ -149,19 +149,19 @@ class AnalyticsController {
         Promotion.find(promotionQuery).limit(20).lean(),
         Budget.find({}).lean()
       ]);
-      
+
       // Calculate totals from real data
       // Budget uses annualTotals.tradeSpend.total for planned budget
       // and sum of spent across all categories for actual spend
       const totalBudget = budgets.reduce((sum, b) => {
         return sum + (b.annualTotals?.tradeSpend?.total || 0);
       }, 0) || 5000000;
-      
+
       const totalUsed = budgets.reduce((sum, b) => {
         // Sum all spent amounts from budget lines
         if (b.budgetLines && b.budgetLines.length > 0) {
           const budgetSpent = b.budgetLines.reduce((lineSum, line) => {
-            return lineSum + 
+            return lineSum +
               (line.tradeSpend?.marketing?.spent || 0) +
               (line.tradeSpend?.cashCoop?.spent || 0) +
               (line.tradeSpend?.tradingTerms?.spent || 0) +
@@ -171,21 +171,21 @@ class AnalyticsController {
         }
         return sum;
       }, 0) || 2150000;
-      
+
       const budgetUtilization = totalBudget > 0 ? Math.round((totalUsed / totalBudget) * 100) : 43;
-      
+
       // Get top customers based on real data
       // For now, use promotion counts as a proxy for customer spend
       const customerSpendMap = {};
-      promotions.forEach(promo => {
+      promotions.forEach((promo) => {
         const custId = promo.customer?.toString() || promo.customerId?.toString();
         if (custId) {
           customerSpendMap[custId] = (customerSpendMap[custId] || 0) + (promo.estimatedCost || promo.budget || 50000);
         }
       });
-      
+
       const topCustomers = customers
-        .map(c => ({
+        .map((c) => ({
           id: c._id,
           name: c.name || 'Unknown Customer',
           totalSpend: customerSpendMap[c._id?.toString()] || Math.floor(Math.random() * 200000) + 50000,
@@ -194,10 +194,10 @@ class AnalyticsController {
         }))
         .sort((a, b) => b.totalSpend - a.totalSpend)
         .slice(0, 4);
-      
+
       // Calculate category performance from promotions
       const categoryMap = {};
-      promotions.forEach(promo => {
+      promotions.forEach((promo) => {
         const cat = promo.type || promo.promotionType || 'General';
         if (!categoryMap[cat]) {
           categoryMap[cat] = { spend: 0, count: 0 };
@@ -205,7 +205,7 @@ class AnalyticsController {
         categoryMap[cat].spend += (promo.estimatedCost || promo.budget || 50000);
         categoryMap[cat].count += 1;
       });
-      
+
       const categoryPerformance = Object.entries(categoryMap)
         .map(([category, data]) => ({
           category,
@@ -214,7 +214,7 @@ class AnalyticsController {
         }))
         .sort((a, b) => b.spend - a.spend)
         .slice(0, 5);
-      
+
       // Monthly spend calculation (sample data for now, would need transaction history)
       const monthlySpend = [
         { month: 'Jan', amount: Math.round(totalUsed * 0.15), target: Math.round(totalBudget / 12) },
@@ -224,13 +224,13 @@ class AnalyticsController {
         { month: 'May', amount: Math.round(totalUsed * 0.17), target: Math.round(totalBudget / 12) },
         { month: 'Jun', amount: Math.round(totalUsed * 0.15), target: Math.round(totalBudget / 12) }
       ];
-      
+
       // Pending approvals from promotions
-      const pendingPromotions = await Promotion.find({ 
-        status: 'pending' 
+      const pendingPromotions = await Promotion.find({
+        status: 'pending'
       }).limit(3).populate('customer').lean();
-      
-      const pendingApprovals = pendingPromotions.map(p => ({
+
+      const pendingApprovals = pendingPromotions.map((p) => ({
         id: p._id,
         type: p.type || p.promotionType || 'Trade Promotion',
         customer: p.customer?.name || 'Unknown',
@@ -239,7 +239,7 @@ class AnalyticsController {
         date: p.createdAt || new Date(),
         status: p.status
       }));
-      
+
       const dashboardData = {
         summary: {
           totalBudget,
@@ -261,7 +261,7 @@ class AnalyticsController {
           riskFactors: ['Seasonal demand increase', 'New product launches']
         }
       };
-      
+
       return dashboardData;
     } catch (error) {
       console.error('Error generating dashboard analytics:', error);
@@ -311,8 +311,8 @@ class AnalyticsController {
     };
 
     const dashboard = await this.analyticsEngine.generatePerformanceDashboard(
-      tenantId, 
-      dateRange, 
+      tenantId,
+      dateRange,
       options
     );
 
@@ -338,7 +338,7 @@ class AnalyticsController {
     }
 
     const results = await Promise.allSettled(
-      promotionIds.map(promotionId => 
+      promotionIds.map((promotionId) =>
         this.analyticsEngine.calculateROI(tenantId, promotionId, options)
       )
     );
@@ -606,7 +606,7 @@ class AnalyticsController {
     }
 
     const results = await Promise.allSettled(
-      promotionIds.map(promotionId =>
+      promotionIds.map((promotionId) =>
         this.advancedAnalyticsEngine.calculateROI(
           tenantId,
           promotionId,
@@ -616,11 +616,11 @@ class AnalyticsController {
     );
 
     const successful = results
-      .filter(result => result.status === 'fulfilled')
-      .map(result => result.value);
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => result.value);
 
     const failed = results
-      .filter(result => result.status === 'rejected')
+      .filter((result) => result.status === 'rejected')
       .map((result, index) => ({
         promotionId: promotionIds[index],
         error: result.reason.message
@@ -656,7 +656,7 @@ class AnalyticsController {
     }
 
     const results = await Promise.allSettled(
-      promotionIds.map(promotionId =>
+      promotionIds.map((promotionId) =>
         this.advancedAnalyticsEngine.calculateLift(
           tenantId,
           promotionId,
@@ -666,11 +666,11 @@ class AnalyticsController {
     );
 
     const successful = results
-      .filter(result => result.status === 'fulfilled')
-      .map(result => result.value);
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => result.value);
 
     const failed = results
-      .filter(result => result.status === 'rejected')
+      .filter((result) => result.status === 'rejected')
       .map((result, index) => ({
         promotionId: promotionIds[index],
         error: result.reason.message

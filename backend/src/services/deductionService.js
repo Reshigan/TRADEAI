@@ -5,7 +5,7 @@ const Invoice = require('../models/Invoice');
 class DeductionService {
   async createDeduction(tenantId, deductionData, userId) {
     const deductionId = `DED-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    
+
     const deduction = new Deduction({
       company: tenantId,
       deductionId,
@@ -26,65 +26,65 @@ class DeductionService {
         details: { amount: deductionData.deductionAmount }
       }]
     });
-    
+
     await deduction.save();
     return deduction;
   }
-  
+
   async validateDeduction(deductionId, userId, validatedAmount) {
     const deduction = await Deduction.findById(deductionId);
-    
+
     if (!deduction) {
       throw new Error('Deduction not found');
     }
-    
+
     await deduction.validate(userId, validatedAmount);
     return deduction;
   }
-  
+
   async disputeDeduction(deductionId, userId, reason) {
     const deduction = await Deduction.findById(deductionId);
-    
+
     if (!deduction) {
       throw new Error('Deduction not found');
     }
-    
+
     await deduction.dispute(userId, reason);
     return deduction;
   }
-  
+
   async resolveDeduction(deductionId, userId, resolutionType, finalAmount, notes) {
     const deduction = await Deduction.findById(deductionId);
-    
+
     if (!deduction) {
       throw new Error('Deduction not found');
     }
-    
+
     await deduction.resolve(userId, resolutionType, finalAmount, notes);
     return deduction;
   }
-  
+
   async matchDeductionToClaim(deductionId, claimId, matchedAmount) {
     const deduction = await Deduction.findById(deductionId);
-    
+
     if (!deduction) {
       throw new Error('Deduction not found');
     }
-    
+
     await deduction.matchToClaim(claimId, matchedAmount);
-    
+
     const claim = await Claim.findById(claimId);
     if (claim) {
       await claim.matchToInvoice(deduction.invoice.invoiceId, deduction.invoice.invoiceNumber, matchedAmount);
     }
-    
+
     return deduction;
   }
-  
+
   async autoMatchDeductions(tenantId) {
     const unmatchedDeductions = await Deduction.findUnmatched(tenantId);
     const matchResults = [];
-    
+
     for (const deduction of unmatchedDeductions) {
       const claims = await Claim.find({
         company: tenantId,
@@ -96,67 +96,67 @@ class DeductionService {
           $lte: deduction.deductionDate
         }
       });
-      
+
       for (const claim of claims) {
-        const unmatchedClaimAmount = claim.claimAmount - 
+        const unmatchedClaimAmount = claim.claimAmount -
           (claim.matching.invoices?.reduce((sum, inv) => sum + inv.matchedAmount, 0) || 0);
-        
+
         if (unmatchedClaimAmount > 0) {
           const matchedAmount = Math.min(deduction.deductionAmount, unmatchedClaimAmount);
-          
+
           await deduction.matchToClaim(claim._id, matchedAmount);
           await claim.matchToInvoice(deduction.invoice?.invoiceId, deduction.invoice?.invoiceNumber, matchedAmount);
-          
+
           matchResults.push({
             deductionId: deduction._id,
             claimId: claim._id,
             matchedAmount,
             matchType: 'auto'
           });
-          
+
           break;
         }
       }
     }
-    
+
     return matchResults;
   }
-  
+
   async getUnmatchedDeductions(tenantId) {
     return await Deduction.findUnmatched(tenantId);
   }
-  
+
   async getDisputedDeductions(tenantId) {
     return await Deduction.findDisputed(tenantId);
   }
-  
+
   async getDeductionsByCustomer(tenantId, customerId, startDate, endDate) {
     const query = {
       company: tenantId,
       customer: customerId
     };
-    
+
     if (startDate || endDate) {
       query.deductionDate = {};
       if (startDate) query.deductionDate.$gte = new Date(startDate);
       if (endDate) query.deductionDate.$lte = new Date(endDate);
     }
-    
+
     return await Deduction.find(query)
       .populate('customer', 'name code')
       .populate('promotion', 'name code')
       .sort({ deductionDate: -1 });
   }
-  
+
   async getDeductionStatistics(tenantId, startDate, endDate) {
     const match = { company: tenantId };
-    
+
     if (startDate || endDate) {
       match.deductionDate = {};
       if (startDate) match.deductionDate.$gte = new Date(startDate);
       if (endDate) match.deductionDate.$lte = new Date(endDate);
     }
-    
+
     const stats = await Deduction.aggregate([
       { $match: match },
       {
@@ -168,7 +168,7 @@ class DeductionService {
         }
       }
     ]);
-    
+
     const disputeStats = await Deduction.aggregate([
       { $match: { ...match, 'dispute.isDisputed': true } },
       {
@@ -179,13 +179,13 @@ class DeductionService {
         }
       }
     ]);
-    
+
     return {
       byStatus: stats,
       disputes: disputeStats
     };
   }
-  
+
   async reconcileDeductionsWithClaims(tenantId, customerId, startDate, endDate) {
     const deductions = await this.getDeductionsByCustomer(tenantId, customerId, startDate, endDate);
     const claims = await Claim.find({
@@ -196,12 +196,12 @@ class DeductionService {
         $lte: new Date(endDate)
       }
     });
-    
+
     const totalDeductions = deductions.reduce((sum, d) => sum + d.deductionAmount, 0);
     const totalClaims = claims.reduce((sum, c) => sum + c.claimAmount, 0);
-    const matchedDeductions = deductions.filter(d => d.claim?.claimId).length;
-    const matchedClaims = claims.filter(c => c.matching.matchStatus === 'full').length;
-    
+    const matchedDeductions = deductions.filter((d) => d.claim?.claimId).length;
+    const matchedClaims = claims.filter((c) => c.matching.matchStatus === 'full').length;
+
     return {
       period: { startDate, endDate },
       customer: customerId,

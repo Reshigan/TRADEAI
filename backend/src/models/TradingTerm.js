@@ -23,7 +23,7 @@ const tradingTermSchema = new mongoose.Schema({
     trim: true
   },
   description: String,
-  
+
   // Term Type
   termType: {
     type: String,
@@ -95,7 +95,7 @@ const tradingTermSchema = new mongoose.Schema({
       discountValue: Number,
       rebatePercentage: Number
     }],
-    
+
     // Payment terms
     paymentTerms: {
       standardDays: Number,
@@ -103,7 +103,7 @@ const tradingTermSchema = new mongoose.Schema({
       earlyPaymentDiscount: Number,
       latePaymentPenalty: Number
     },
-    
+
     // Promotional terms
     promotionalTerms: {
       supportPercentage: Number,
@@ -112,7 +112,7 @@ const tradingTermSchema = new mongoose.Schema({
       listingFeeAmount: Number,
       slottingFeeAmount: Number
     },
-    
+
     // Growth incentives
     growthIncentives: {
       baselineVolume: Number,
@@ -242,7 +242,7 @@ const tradingTermSchema = new mongoose.Schema({
   },
   tags: [String],
   notes: String,
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -269,24 +269,24 @@ tradingTermSchema.index({ 'applicability.customers.customer': 1 });
 tradingTermSchema.index({ 'applicability.products.product': 1 });
 
 // Compound indexes for complex queries
-tradingTermSchema.index({ 
-  company: 1, 
-  termType: 1, 
+tradingTermSchema.index({
+  company: 1,
+  termType: 1,
   'approvalWorkflow.status': 1,
-  'validityPeriod.startDate': 1 
+  'validityPeriod.startDate': 1
 });
 
 // Virtual for active status
-tradingTermSchema.virtual('isCurrentlyActive').get(function() {
+tradingTermSchema.virtual('isCurrentlyActive').get(function () {
   const now = new Date();
-  return this.isActive && 
+  return this.isActive &&
          this.approvalWorkflow.status === 'approved' &&
          this.validityPeriod.startDate <= now &&
          this.validityPeriod.endDate >= now;
 });
 
 // Virtual for days until expiry
-tradingTermSchema.virtual('daysUntilExpiry').get(function() {
+tradingTermSchema.virtual('daysUntilExpiry').get(function () {
   const now = new Date();
   const expiry = new Date(this.validityPeriod.endDate);
   const diffTime = expiry - now;
@@ -294,7 +294,7 @@ tradingTermSchema.virtual('daysUntilExpiry').get(function() {
 });
 
 // Virtual for performance summary
-tradingTermSchema.virtual('performanceSummary').get(function() {
+tradingTermSchema.virtual('performanceSummary').get(function () {
   return {
     roi: this.performance.actualROI || 0,
     utilization: this.performance.utilizationRate || 0,
@@ -305,47 +305,47 @@ tradingTermSchema.virtual('performanceSummary').get(function() {
 });
 
 // Method to check if term applies to specific customer/product combination
-tradingTermSchema.methods.appliesTo = function(customerId, productId, orderValue, volume) {
+tradingTermSchema.methods.appliesTo = function (customerId, productId, orderValue, volume) {
   // Check customer applicability
-  const customerApplies = this.applicability.customers.some(c => 
-    c.customer?.toString() === customerId?.toString() || 
-    c.customerTier === 'all' || 
+  const customerApplies = this.applicability.customers.some((c) =>
+    c.customer?.toString() === customerId?.toString() ||
+    c.customerTier === 'all' ||
     c.customerType === 'all'
   );
-  
+
   // Check product applicability
-  const productApplies = this.applicability.products.length === 0 || 
-    this.applicability.products.some(p => 
+  const productApplies = this.applicability.products.length === 0 ||
+    this.applicability.products.some((p) =>
       p.product?.toString() === productId?.toString()
     );
-  
+
   // Check minimum order value
-  const orderValueMet = !this.applicability.minimumOrderValue || 
+  const orderValueMet = !this.applicability.minimumOrderValue ||
     orderValue >= this.applicability.minimumOrderValue;
-  
+
   // Check minimum volume
-  const volumeMet = !this.applicability.minimumVolume || 
+  const volumeMet = !this.applicability.minimumVolume ||
     volume >= this.applicability.minimumVolume;
-  
+
   return customerApplies && productApplies && orderValueMet && volumeMet;
 };
 
 // Method to calculate discount for given volume/value
-tradingTermSchema.methods.calculateDiscount = function(volume, value) {
+tradingTermSchema.methods.calculateDiscount = function (volume, value) {
   if (!this.termStructure.volumeTiers || this.termStructure.volumeTiers.length === 0) {
     return { discount: 0, rebate: 0, tier: null };
   }
-  
+
   // Find applicable tier
-  const applicableTier = this.termStructure.volumeTiers.find(tier => 
-    volume >= (tier.minVolume || 0) && 
+  const applicableTier = this.termStructure.volumeTiers.find((tier) =>
+    volume >= (tier.minVolume || 0) &&
     (!tier.maxVolume || volume <= tier.maxVolume)
   );
-  
+
   if (!applicableTier) {
     return { discount: 0, rebate: 0, tier: null };
   }
-  
+
   let discount = 0;
   if (applicableTier.discountType === 'percentage') {
     discount = value * (applicableTier.discountValue / 100);
@@ -354,30 +354,30 @@ tradingTermSchema.methods.calculateDiscount = function(volume, value) {
   } else if (applicableTier.discountType === 'unit_discount') {
     discount = volume * applicableTier.discountValue;
   }
-  
+
   const rebate = value * (applicableTier.rebatePercentage / 100 || 0);
-  
+
   return { discount, rebate, tier: applicableTier };
 };
 
 // Method to update performance metrics
-tradingTermSchema.methods.updatePerformance = async function(volume, revenue, cost) {
+tradingTermSchema.methods.updatePerformance = async function (volume, revenue, cost) {
   this.performance.actualVolume = (this.performance.actualVolume || 0) + volume;
   this.performance.actualRevenue = (this.performance.actualRevenue || 0) + revenue;
   this.performance.actualCost = (this.performance.actualCost || 0) + cost;
-  
+
   if (this.performance.actualCost > 0) {
     this.performance.actualROI = ((this.performance.actualRevenue - this.performance.actualCost) / this.performance.actualCost) * 100;
   }
-  
+
   this.performance.lastCalculatedAt = new Date();
   return this.save();
 };
 
 // Static method to find applicable terms for customer/product
-tradingTermSchema.statics.findApplicableTerms = function(companyId, customerId, productId, orderValue, volume) {
+tradingTermSchema.statics.findApplicableTerms = function (companyId, customerId, productId, orderValue, volume) {
   const now = new Date();
-  
+
   return this.find({
     company: companyId,
     isActive: true,
@@ -394,7 +394,7 @@ tradingTermSchema.statics.findApplicableTerms = function(companyId, customerId, 
 };
 
 // Pre-save middleware
-tradingTermSchema.pre('save', function(next) {
+tradingTermSchema.pre('save', function (next) {
   if (this.isNew) {
     this.auditTrail.push({
       action: 'created',

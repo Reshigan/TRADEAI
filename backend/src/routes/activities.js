@@ -8,9 +8,9 @@ const logger = require('../utils/logger');
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { status, activityType, performance, search } = req.query;
-    
+
     const query = { tenantId: req.user.tenantId };
-    
+
     if (status) query.status = status;
     if (activityType) query.activityType = activityType;
     if (performance) query.performance = performance;
@@ -80,7 +80,7 @@ router.get('/metrics', authenticateToken, async (req, res) => {
         totalBudget: { $sum: '$budget.allocated' },
         totalSpent: { $sum: '$budget.spent' },
         avgROI: { $avg: '$actualOutcome.roi' }
-      }}
+      } }
     ]);
 
     res.json({
@@ -111,7 +111,7 @@ router.get('/count', authenticateToken, async (req, res) => {
   try {
     const { status } = req.query;
     const query = { tenantId: req.user.tenantId };
-    
+
     if (status) query.status = status;
 
     const count = await Activity.countDocuments(query);

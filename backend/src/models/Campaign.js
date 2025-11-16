@@ -21,14 +21,14 @@ const campaignSchema = new mongoose.Schema({
   },
   description: String,
   objective: String,
-  
+
   // Campaign Type
   campaignType: {
     type: String,
     enum: ['brand_awareness', 'product_launch', 'seasonal', 'clearance', 'loyalty', 'competitive', 'tactical'],
     required: true
   },
-  
+
   // Period
   period: {
     startDate: {
@@ -40,7 +40,7 @@ const campaignSchema = new mongoose.Schema({
       required: true
     }
   },
-  
+
   // Target Audience
   targetAudience: {
     demographics: {
@@ -59,7 +59,7 @@ const campaignSchema = new mongoose.Schema({
       urbanity: [String]
     }
   },
-  
+
   // Scope
   scope: {
     national: Boolean,
@@ -77,7 +77,7 @@ const campaignSchema = new mongoose.Schema({
     productCategories: [String],
     brands: [String]
   },
-  
+
   // Marketing Mix
   marketingMix: {
     // Advertising
@@ -111,7 +111,7 @@ const campaignSchema = new mongoose.Schema({
         locations: Number
       }
     },
-    
+
     // In-store
     inStore: {
       displays: {
@@ -132,7 +132,7 @@ const campaignSchema = new mongoose.Schema({
         events: Number
       }
     },
-    
+
     // Digital Marketing
     digital: {
       socialMedia: {
@@ -158,7 +158,7 @@ const campaignSchema = new mongoose.Schema({
         influencers: Number
       }
     },
-    
+
     // Trade Marketing
     trade: {
       tradeshows: {
@@ -178,7 +178,7 @@ const campaignSchema = new mongoose.Schema({
       }
     }
   },
-  
+
   // Budget
   budget: {
     total: {
@@ -208,13 +208,13 @@ const campaignSchema = new mongoose.Schema({
       other: Number
     }
   },
-  
+
   // Associated Promotions
   promotions: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Promotion'
   }],
-  
+
   // KPIs and Targets
   kpis: [{
     metric: String,
@@ -226,7 +226,7 @@ const campaignSchema = new mongoose.Schema({
       enum: ['on_track', 'at_risk', 'off_track', 'completed']
     }
   }],
-  
+
   // AI-Generated Content and Suggestions
   aiContent: {
     suggestedCaptions: [{
@@ -255,7 +255,7 @@ const campaignSchema = new mongoose.Schema({
       confidence: Number
     }
   },
-  
+
   // Performance Tracking
   performance: {
     reach: {
@@ -284,7 +284,7 @@ const campaignSchema = new mongoose.Schema({
     roi: Number,
     effectiveness: Number
   },
-  
+
   // Creative Assets
   creativeAssets: [{
     name: String,
@@ -308,14 +308,14 @@ const campaignSchema = new mongoose.Schema({
       default: 'pending'
     }
   }],
-  
+
   // Status and Workflow
   status: {
     type: String,
     enum: ['planning', 'pending_approval', 'approved', 'active', 'completed', 'cancelled'],
     default: 'planning'
   },
-  
+
   // Approvals
   approvals: [{
     level: {
@@ -334,7 +334,7 @@ const campaignSchema = new mongoose.Schema({
     comments: String,
     date: Date
   }],
-  
+
   // Execution Timeline
   timeline: [{
     milestone: String,
@@ -350,7 +350,7 @@ const campaignSchema = new mongoose.Schema({
     },
     notes: String
   }],
-  
+
   // Analytics and Insights
   analytics: {
     competitorActivity: [{
@@ -370,7 +370,7 @@ const campaignSchema = new mongoose.Schema({
       recommendation: String
     }]
   },
-  
+
   // Created/Modified By
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -381,7 +381,7 @@ const campaignSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // History
   history: [{
     action: String,
@@ -408,7 +408,7 @@ campaignSchema.index({ 'scope.customers': 1 });
 campaignSchema.index({ 'scope.products': 1 });
 
 // Virtual for days remaining
-campaignSchema.virtual('daysRemaining').get(function() {
+campaignSchema.virtual('daysRemaining').get(function () {
   if (this.period.endDate) {
     const today = new Date();
     const endDate = new Date(this.period.endDate);
@@ -420,7 +420,7 @@ campaignSchema.virtual('daysRemaining').get(function() {
 });
 
 // Virtual for budget utilization
-campaignSchema.virtual('budgetUtilization').get(function() {
+campaignSchema.virtual('budgetUtilization').get(function () {
   if (this.budget.total > 0) {
     return (this.budget.spent / this.budget.total) * 100;
   }
@@ -428,10 +428,10 @@ campaignSchema.virtual('budgetUtilization').get(function() {
 });
 
 // Pre-save middleware
-campaignSchema.pre('save', function(next) {
+campaignSchema.pre('save', function (next) {
   // Calculate allocated budget
   if (this.isModified('budget.breakdown')) {
-    this.budget.allocated = 
+    this.budget.allocated =
       (this.budget.breakdown.advertising || 0) +
       (this.budget.breakdown.inStore || 0) +
       (this.budget.breakdown.digital || 0) +
@@ -439,15 +439,15 @@ campaignSchema.pre('save', function(next) {
       (this.budget.breakdown.production || 0) +
       (this.budget.breakdown.other || 0);
   }
-  
+
   // Calculate ROI if we have performance data
   if (this.performance.sales.incremental && this.budget.spent > 0) {
-    this.performance.roi = 
+    this.performance.roi =
       ((this.performance.sales.incremental - this.budget.spent) / this.budget.spent) * 100;
   }
-  
+
   // Update KPI statuses
-  this.kpis.forEach(kpi => {
+  this.kpis.forEach((kpi) => {
     if (kpi.target && kpi.actual !== undefined) {
       const achievement = (kpi.actual / kpi.target) * 100;
       if (achievement >= 90) {
@@ -459,41 +459,41 @@ campaignSchema.pre('save', function(next) {
       }
     }
   });
-  
+
   next();
 });
 
 // Methods
-campaignSchema.methods.allocateBudget = async function(category, amount) {
+campaignSchema.methods.allocateBudget = async function (category, amount) {
   if (!this.budget.breakdown[category]) {
     this.budget.breakdown[category] = 0;
   }
-  
+
   this.budget.breakdown[category] += amount;
   await this.save();
 };
 
-campaignSchema.methods.recordSpend = async function(amount, category) {
+campaignSchema.methods.recordSpend = async function (amount, category) {
   this.budget.spent += amount;
-  
+
   this.history.push({
     action: 'spend_recorded',
     changes: { amount, category },
     performedDate: new Date()
   });
-  
+
   await this.save();
 };
 
-campaignSchema.methods.updateKPI = async function(metric, actualValue) {
-  const kpi = this.kpis.find(k => k.metric === metric);
+campaignSchema.methods.updateKPI = async function (metric, actualValue) {
+  const kpi = this.kpis.find((k) => k.metric === metric);
   if (kpi) {
     kpi.actual = actualValue;
     await this.save();
   }
 };
 
-campaignSchema.methods.generateAISuggestions = async function() {
+campaignSchema.methods.generateAISuggestions = async function () {
   // This would integrate with AI service to generate content suggestions
   // Placeholder for AI integration
   return {
@@ -504,7 +504,7 @@ campaignSchema.methods.generateAISuggestions = async function() {
 };
 
 // Statics
-campaignSchema.statics.findActive = function() {
+campaignSchema.statics.findActive = function () {
   const today = new Date();
   return this.find({
     'period.startDate': { $lte: today },
@@ -513,7 +513,7 @@ campaignSchema.statics.findActive = function() {
   });
 };
 
-campaignSchema.statics.findByProduct = function(productId) {
+campaignSchema.statics.findByProduct = function (productId) {
   return this.find({
     'scope.products': productId
   });

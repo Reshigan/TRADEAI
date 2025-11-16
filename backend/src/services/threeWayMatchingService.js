@@ -59,7 +59,7 @@ class ThreeWayMatchingService {
     }
 
     // Calculate overall match confidence
-    const matchedLines = matchResult.lineMatches.filter(m => m.matched).length;
+    const matchedLines = matchResult.lineMatches.filter((m) => m.matched).length;
     const totalLines = invoice.lines.length;
     matchResult.confidence = Math.round((matchedLines / totalLines) * 100);
 
@@ -116,7 +116,7 @@ class ThreeWayMatchingService {
       matched: false,
       confidence: 0,
       poLine: null,
-      invoiceLine: invoiceLine,
+      invoiceLine,
       matchedAmount: 0,
       variances: {
         price: 0,
@@ -145,7 +145,7 @@ class ThreeWayMatchingService {
         continue;
       }
 
-      if (quantityVariance > this.tolerances.quantityVariance && 
+      if (quantityVariance > this.tolerances.quantityVariance &&
           invoiceLine.quantity > remainingQty) {
         continue;
       }
@@ -159,8 +159,8 @@ class ThreeWayMatchingService {
         bestMatch = {
           matched: true,
           confidence: Math.round(confidence),
-          poLine: poLine,
-          invoiceLine: invoiceLine,
+          poLine,
+          invoiceLine,
           matchedAmount: invoiceLine.netAmount,
           variances: {
             price: priceVariance,
@@ -216,7 +216,7 @@ class ThreeWayMatchingService {
   async complete3WayMatch(purchaseOrderId, invoiceId, paymentId) {
     // Step 1: Match Invoice to PO
     const poMatchResult = await this.matchInvoiceToPO(invoiceId, purchaseOrderId);
-    
+
     if (!poMatchResult.matched) {
       return {
         success: false,
@@ -231,7 +231,7 @@ class ThreeWayMatchingService {
     const payment = await Payment.findById(paymentId);
 
     const paymentAmount = Math.min(payment.unappliedAmount, invoice.outstandingAmount);
-    
+
     const paymentMatchResult = await this.matchPaymentToInvoice(
       paymentId,
       invoiceId,
@@ -307,8 +307,8 @@ class ThreeWayMatchingService {
       paymentNumber: payment.paymentNumber,
       totalAmount: payment.amount,
       appliedAmount: payment.amount - remainingAmount,
-      remainingAmount: remainingAmount,
-      matches: matches,
+      remainingAmount,
+      matches,
       fullyApplied: remainingAmount === 0
     };
   }
@@ -344,7 +344,7 @@ class ThreeWayMatchingService {
       for (const po of openPOs) {
         try {
           const matchResult = await this.matchInvoiceToPO(invoice._id, po._id, { dryRun: true });
-          
+
           if (matchResult.confidence > bestConfidence) {
             bestMatch = { po, matchResult };
             bestConfidence = matchResult.confidence;

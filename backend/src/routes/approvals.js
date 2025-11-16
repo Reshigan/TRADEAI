@@ -8,7 +8,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const { entityType, entityId, amount, metadata } = req.body;
     const tenantId = req.user.company;
     const requestedBy = req.user._id;
-    
+
     const approval = await approvalService.createApproval(
       tenantId,
       entityType,
@@ -17,7 +17,7 @@ router.post('/', authenticateToken, async (req, res) => {
       amount,
       metadata
     );
-    
+
     res.status(201).json({
       success: true,
       data: approval
@@ -35,7 +35,7 @@ router.get('/pending', authenticateToken, async (req, res) => {
   try {
     const userId = req.user._id;
     const approvals = await approvalService.getPendingApprovalsForUser(userId);
-    
+
     res.json({
       success: true,
       data: approvals
@@ -53,7 +53,7 @@ router.get('/overdue', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const approvals = await approvalService.getOverdueApprovals(tenantId);
-    
+
     res.json({
       success: true,
       data: approvals
@@ -71,7 +71,7 @@ router.get('/entity/:entityType/:entityId', authenticateToken, async (req, res) 
   try {
     const { entityType, entityId } = req.params;
     const approvals = await approvalService.getApprovalsByEntity(entityType, entityId);
-    
+
     res.json({
       success: true,
       data: approvals
@@ -90,9 +90,9 @@ router.post('/:id/approve', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { comments } = req.body;
     const approverId = req.user._id;
-    
+
     const approval = await approvalService.approveApproval(id, approverId, comments);
-    
+
     res.json({
       success: true,
       data: approval
@@ -111,9 +111,9 @@ router.post('/:id/reject', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { reason } = req.body;
     const approverId = req.user._id;
-    
+
     const approval = await approvalService.rejectApproval(id, approverId, reason);
-    
+
     res.json({
       success: true,
       data: approval
@@ -132,9 +132,9 @@ router.post('/:id/cancel', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { reason } = req.body;
     const userId = req.user._id;
-    
+
     const approval = await approvalService.cancelApproval(id, userId, reason);
-    
+
     res.json({
       success: true,
       data: approval
@@ -152,7 +152,7 @@ router.get('/:id/sla', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const isOverdue = await approvalService.checkSLA(id);
-    
+
     res.json({
       success: true,
       data: { isOverdue }

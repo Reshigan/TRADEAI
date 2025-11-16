@@ -147,28 +147,28 @@ settlementSchema.index({ status: 1, settlementDate: -1 });
 settlementSchema.index({ createdAt: -1 });
 
 // Virtuals
-settlementSchema.virtual('itemCount').get(function() {
+settlementSchema.virtual('itemCount').get(function () {
   return this.items.length;
 });
 
-settlementSchema.virtual('settledItemCount').get(function() {
-  return this.items.filter(item => item.settled).length;
+settlementSchema.virtual('settledItemCount').get(function () {
+  return this.items.filter((item) => item.settled).length;
 });
 
-settlementSchema.virtual('completionPercent').get(function() {
+settlementSchema.virtual('completionPercent').get(function () {
   if (this.items.length === 0) return 0;
   return Math.round((this.settledItemCount / this.items.length) * 100);
 });
 
 // Pre-save middleware
-settlementSchema.pre('save', function(next) {
+settlementSchema.pre('save', function (next) {
   // Calculate totals
   this.totalInvoices = 0;
   this.totalPayments = 0;
   this.totalDeductions = 0;
   this.totalAdjustments = 0;
 
-  this.items.forEach(item => {
+  this.items.forEach((item) => {
     switch (item.itemType) {
       case 'invoice':
         this.totalInvoices += item.amount;
@@ -194,13 +194,13 @@ settlementSchema.pre('save', function(next) {
 });
 
 // Methods
-settlementSchema.methods.addItem = function(itemData) {
+settlementSchema.methods.addItem = function (itemData) {
   this.items.push(itemData);
   return this.save();
 };
 
-settlementSchema.methods.removeItem = function(itemId) {
-  const index = this.items.findIndex(item => item._id.toString() === itemId.toString());
+settlementSchema.methods.removeItem = function (itemId) {
+  const index = this.items.findIndex((item) => item._id.toString() === itemId.toString());
   if (index === -1) {
     throw new Error('Item not found');
   }
@@ -208,7 +208,7 @@ settlementSchema.methods.removeItem = function(itemId) {
   return this.save();
 };
 
-settlementSchema.methods.approve = function(userId) {
+settlementSchema.methods.approve = function (userId) {
   if (this.status !== 'pending_approval' && this.status !== 'draft') {
     throw new Error('Only pending or draft settlements can be approved');
   }
@@ -219,7 +219,7 @@ settlementSchema.methods.approve = function(userId) {
   return this.save();
 };
 
-settlementSchema.methods.process = function() {
+settlementSchema.methods.process = function () {
   if (this.status !== 'approved') {
     throw new Error('Only approved settlements can be processed');
   }
@@ -228,13 +228,13 @@ settlementSchema.methods.process = function() {
   return this.save();
 };
 
-settlementSchema.methods.complete = function() {
+settlementSchema.methods.complete = function () {
   if (this.status !== 'processing') {
     throw new Error('Only processing settlements can be completed');
   }
 
   // Mark all items as settled
-  this.items.forEach(item => {
+  this.items.forEach((item) => {
     item.settled = true;
     item.settledDate = new Date();
   });
@@ -243,23 +243,23 @@ settlementSchema.methods.complete = function() {
   return this.save();
 };
 
-settlementSchema.methods.fail = function(reason) {
+settlementSchema.methods.fail = function (reason) {
   this.status = 'failed';
-  this.internalNotes = (this.internalNotes || '') + `\nFailed: ${reason}`;
+  this.internalNotes = `${this.internalNotes || ''}\nFailed: ${reason}`;
   return this.save();
 };
 
-settlementSchema.methods.cancel = function(reason) {
+settlementSchema.methods.cancel = function (reason) {
   if (this.status === 'completed') {
     throw new Error('Cannot cancel completed settlement');
   }
 
   this.status = 'cancelled';
-  this.internalNotes = (this.internalNotes || '') + `\nCancelled: ${reason}`;
+  this.internalNotes = `${this.internalNotes || ''}\nCancelled: ${reason}`;
   return this.save();
 };
 
-settlementSchema.methods.postToGL = function(glDocument) {
+settlementSchema.methods.postToGL = function (glDocument) {
   if (this.status !== 'completed') {
     throw new Error('Only completed settlements can be posted to GL');
   }
@@ -274,7 +274,7 @@ settlementSchema.methods.postToGL = function(glDocument) {
   return this.save();
 };
 
-settlementSchema.methods.reconcile = function(userId, bankStatementId) {
+settlementSchema.methods.reconcile = function (userId, bankStatementId) {
   if (this.status !== 'completed') {
     throw new Error('Only completed settlements can be reconciled');
   }
@@ -287,7 +287,7 @@ settlementSchema.methods.reconcile = function(userId, bankStatementId) {
 };
 
 // Statics
-settlementSchema.statics.getUnreconciledSettlements = function(customerId) {
+settlementSchema.statics.getUnreconciledSettlements = function (customerId) {
   const query = {
     status: 'completed',
     reconciled: false
@@ -300,7 +300,7 @@ settlementSchema.statics.getUnreconciledSettlements = function(customerId) {
   return this.find(query).populate('customerId');
 };
 
-settlementSchema.statics.getPendingSettlements = function(customerId) {
+settlementSchema.statics.getPendingSettlements = function (customerId) {
   const query = {
     status: { $in: ['draft', 'pending_approval', 'approved', 'processing'] }
   };

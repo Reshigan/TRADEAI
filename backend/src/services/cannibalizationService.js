@@ -68,7 +68,7 @@ class CannibalizationService {
       const totalBaseline = baseline.reduce((sum, b) => sum + b.baselineQuantity, 0);
       const totalActual = actualSales.reduce((sum, s) => sum + s.quantity, 0);
       const cannibalizedVolume = totalBaseline - totalActual;
-      const cannibalizationRate = totalBaseline > 0 ? 
+      const cannibalizationRate = totalBaseline > 0 ?
         (cannibalizedVolume / totalBaseline * 100) : 0;
 
       // Only include if significant cannibalization detected (>10% decline)
@@ -117,7 +117,7 @@ class CannibalizationService {
         totalCannibalizedVolume,
         totalRevenueImpact,
         averageCannibalizationRate: cannibalizationResults.length > 0 ?
-          cannibalizationResults.reduce((sum, r) => sum + r.cannibalizationRate, 0) / 
+          cannibalizationResults.reduce((sum, r) => sum + r.cannibalizationRate, 0) /
           cannibalizationResults.length : 0
       }
     };
@@ -140,14 +140,14 @@ class CannibalizationService {
 
     // Filter products that have sales history with this customer
     const productsWithSales = [];
-    
+
     for (const product of relatedProducts) {
       const hasSales = await SalesHistory.exists({
         productId: product._id,
         customerId,
         tenantId
       });
-      
+
       if (hasSales) {
         productsWithSales.push(product);
       }
@@ -197,7 +197,7 @@ class CannibalizationService {
 
     // Get all promotions in this period
     const promotions = await Promotion.find({
-      'products.product': { $in: products.map(p => p._id) },
+      'products.product': { $in: products.map((p) => p._id) },
       startDate: { $lte: endDate },
       endDate: { $gte: startDate },
       tenantId
@@ -330,10 +330,10 @@ class CannibalizationService {
       summary: {
         affectedCategories: categoryImpacts.length,
         totalCannibalization: categoryImpacts
-          .filter(c => c.type === 'cannibalization')
+          .filter((c) => c.type === 'cannibalization')
           .reduce((sum, c) => sum + c.impact, 0),
         totalHaloEffect: categoryImpacts
-          .filter(c => c.type === 'halo_effect')
+          .filter((c) => c.type === 'halo_effect')
           .reduce((sum, c) => sum + Math.abs(c.impact), 0)
       }
     };
@@ -433,7 +433,7 @@ class CannibalizationService {
 
     // Analyze cannibalization from historical promotions
     const historicalCannibalization = [];
-    
+
     for (const promo of historicalPromotions) {
       const analysis = await this.analyzePromotion({
         promotionId: promo._id,
@@ -457,8 +457,8 @@ class CannibalizationService {
 
     // Identify commonly affected products
     const affectedProductCounts = {};
-    historicalCannibalization.forEach(h => {
-      h.affectedProducts.forEach(ap => {
+    historicalCannibalization.forEach((h) => {
+      h.affectedProducts.forEach((ap) => {
         const key = ap.product._id.toString();
         if (!affectedProductCounts[key]) {
           affectedProductCounts[key] = {
@@ -473,8 +473,8 @@ class CannibalizationService {
     });
 
     const likelyAffectedProducts = Object.values(affectedProductCounts)
-      .filter(p => p.count >= historicalPromotions.length * 0.5)
-      .map(p => ({
+      .filter((p) => p.count >= historicalPromotions.length * 0.5)
+      .map((p) => ({
         ...p.product,
         frequency: p.count / historicalPromotions.length,
         avgImpact: p.totalImpact / p.count
@@ -493,12 +493,12 @@ class CannibalizationService {
         confidence: historicalPromotions.length >= 3 ? 'high' : 'medium'
       },
       likelyAffectedProducts,
-      historicalPromotions: historicalPromotions.map(p => ({
+      historicalPromotions: historicalPromotions.map((p) => ({
         id: p._id,
         startDate: p.startDate,
         endDate: p.endDate,
         cannibalizationRate: historicalCannibalization.find(
-          h => h.promotionPeriod.start.getTime() === p.startDate.getTime()
+          (h) => h.promotionPeriod.start.getTime() === p.startDate.getTime()
         )?.summary.averageCannibalizationRate || 0
       }))
     };

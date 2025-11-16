@@ -29,17 +29,17 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 // Generate promotion effectiveness report
 router.get('/promotion-effectiveness', authenticateToken, asyncHandler(async (req, res) => {
   const { promotionId, startDate, endDate } = req.query;
-  
+
   if (!promotionId) {
     throw new AppError('Promotion ID is required', 400);
   }
-  
+
   const report = await reportController.generatePromotionEffectivenessReport({
     promotionId,
     startDate,
     endDate
   });
-  
+
   res.json({
     success: true,
     data: report
@@ -49,13 +49,13 @@ router.get('/promotion-effectiveness', authenticateToken, asyncHandler(async (re
 // Generate budget utilization report
 router.get('/budget-utilization', authenticateToken, asyncHandler(async (req, res) => {
   const { budgetId, year, quarter } = req.query;
-  
+
   const report = await reportController.generateBudgetUtilizationReport({
     budgetId,
     year: year ? parseInt(year) : new Date().getFullYear(),
     quarter
   });
-  
+
   res.json({
     success: true,
     data: report
@@ -65,14 +65,14 @@ router.get('/budget-utilization', authenticateToken, asyncHandler(async (req, re
 // Generate customer performance report
 router.get('/customer-performance', authenticateToken, asyncHandler(async (req, res) => {
   const { customerId, startDate, endDate } = req.query;
-  
+
   const report = await reportController.generateCustomerPerformanceReport({
     customerId,
     startDate,
     endDate,
     tenantId: req.tenant?.id
   });
-  
+
   res.json({
     success: true,
     data: report
@@ -82,13 +82,13 @@ router.get('/customer-performance', authenticateToken, asyncHandler(async (req, 
 // Generate product performance report
 router.get('/product-performance', authenticateToken, asyncHandler(async (req, res) => {
   const { productId, startDate, endDate } = req.query;
-  
+
   const report = await reportController.generateProductPerformanceReport({
     productId,
     startDate,
     endDate
   });
-  
+
   res.json({
     success: true,
     data: report
@@ -98,14 +98,14 @@ router.get('/product-performance', authenticateToken, asyncHandler(async (req, r
 // Generate trade spend ROI report
 router.get('/trade-spend-roi', authenticateToken, asyncHandler(async (req, res) => {
   const { startDate, endDate, customerId, vendorId } = req.query;
-  
+
   const report = await reportController.generateTradeSpendROIReport({
     startDate,
     endDate,
     customerId,
     vendorId
   });
-  
+
   res.json({
     success: true,
     data: report
@@ -115,17 +115,17 @@ router.get('/trade-spend-roi', authenticateToken, asyncHandler(async (req, res) 
 // Export report as Excel
 router.post('/export', authenticateToken, asyncHandler(async (req, res) => {
   const { reportType, filters, format = 'xlsx' } = req.body;
-  
+
   if (!reportType) {
     throw new AppError('Report type is required', 400);
   }
-  
+
   const exportData = await reportController.exportReport({
     reportType,
     filters,
     format
   });
-  
+
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', `attachment; filename=${reportType}-report-${Date.now()}.${format}`);
   res.send(exportData);
@@ -134,7 +134,7 @@ router.post('/export', authenticateToken, asyncHandler(async (req, res) => {
 // Schedule report
 router.post('/schedule', authenticateToken, asyncHandler(async (req, res) => {
   const { reportType, filters, schedule, recipients } = req.body;
-  
+
   const scheduledReport = await reportController.scheduleReport({
     reportType,
     filters,
@@ -142,7 +142,7 @@ router.post('/schedule', authenticateToken, asyncHandler(async (req, res) => {
     recipients,
     createdBy: req.user._id
   });
-  
+
   res.status(201).json({
     success: true,
     data: scheduledReport

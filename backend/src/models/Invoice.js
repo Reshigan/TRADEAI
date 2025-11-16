@@ -199,12 +199,12 @@ invoiceSchema.index({ purchaseOrderId: 1, status: 1 });
 invoiceSchema.index({ createdAt: -1 });
 
 // Virtual for outstanding amount
-invoiceSchema.virtual('outstandingAmount').get(function() {
+invoiceSchema.virtual('outstandingAmount').get(function () {
   return this.total - this.amountPaid;
 });
 
 // Virtual for days overdue
-invoiceSchema.virtual('daysOverdue').get(function() {
+invoiceSchema.virtual('daysOverdue').get(function () {
   if (!this.dueDate || this.status === 'paid') return 0;
   const today = new Date();
   const due = new Date(this.dueDate);
@@ -213,15 +213,15 @@ invoiceSchema.virtual('daysOverdue').get(function() {
 });
 
 // Virtual for payment completion percentage
-invoiceSchema.virtual('paymentPercent').get(function() {
+invoiceSchema.virtual('paymentPercent').get(function () {
   if (this.total === 0) return 0;
   return Math.round((this.amountPaid / this.total) * 100);
 });
 
 // Pre-save middleware
-invoiceSchema.pre('save', function(next) {
+invoiceSchema.pre('save', function (next) {
   // Calculate line amounts
-  this.lines.forEach(line => {
+  this.lines.forEach((line) => {
     line.amount = line.quantity * line.unitPrice;
     line.netAmount = line.amount - line.discountAmount + line.taxAmount;
   });
@@ -247,9 +247,9 @@ invoiceSchema.pre('save', function(next) {
   }
 
   // Update match status
-  const allMatched = this.lines.every(line => line.matched);
-  const someMatched = this.lines.some(line => line.matched);
-  
+  const allMatched = this.lines.every((line) => line.matched);
+  const someMatched = this.lines.some((line) => line.matched);
+
   if (allMatched && this.purchaseOrderId) {
     this.matchStatus = '3way_matched';
   } else if (allMatched) {
@@ -262,7 +262,7 @@ invoiceSchema.pre('save', function(next) {
 });
 
 // Methods
-invoiceSchema.methods.recordPayment = function(amount, paymentId) {
+invoiceSchema.methods.recordPayment = function (amount, paymentId) {
   this.amountPaid += amount;
   if (this.amountPaid >= this.total) {
     this.status = 'paid';
@@ -272,12 +272,12 @@ invoiceSchema.methods.recordPayment = function(amount, paymentId) {
   return this.save();
 };
 
-invoiceSchema.methods.matchToPO = function(purchaseOrder) {
+invoiceSchema.methods.matchToPO = function (purchaseOrder) {
   this.purchaseOrderId = purchaseOrder._id;
   this.poNumber = purchaseOrder.poNumber;
   this.matchStatus = 'matched';
   this.matchedAt = new Date();
-  
+
   // Initialize matching details
   this.matchingDetails = {
     poMatched: true,
@@ -292,7 +292,7 @@ invoiceSchema.methods.matchToPO = function(purchaseOrder) {
   return this.save();
 };
 
-invoiceSchema.methods.approve = function(userId) {
+invoiceSchema.methods.approve = function (userId) {
   this.approvalStatus = 'approved';
   this.status = 'approved';
   this.approvedBy = userId;
@@ -300,26 +300,26 @@ invoiceSchema.methods.approve = function(userId) {
   return this.save();
 };
 
-invoiceSchema.methods.reject = function(userId, reason) {
+invoiceSchema.methods.reject = function (userId, reason) {
   this.approvalStatus = 'rejected';
   this.status = 'cancelled';
-  this.internalNotes = (this.internalNotes || '') + `\nRejected by ${userId}: ${reason}`;
+  this.internalNotes = `${this.internalNotes || ''}\nRejected by ${userId}: ${reason}`;
   return this.save();
 };
 
-invoiceSchema.methods.dispute = function(reason) {
+invoiceSchema.methods.dispute = function (reason) {
   this.status = 'disputed';
-  this.internalNotes = (this.internalNotes || '') + `\nDisputed: ${reason}`;
+  this.internalNotes = `${this.internalNotes || ''}\nDisputed: ${reason}`;
   return this.save();
 };
 
-invoiceSchema.methods.canBePostedToGL = function() {
-  return this.status === 'approved' && 
-         this.matchStatus === '3way_matched' && 
+invoiceSchema.methods.canBePostedToGL = function () {
+  return this.status === 'approved' &&
+         this.matchStatus === '3way_matched' &&
          !this.glPosted;
 };
 
-invoiceSchema.methods.postToGL = function(glDocument) {
+invoiceSchema.methods.postToGL = function (glDocument) {
   if (!this.canBePostedToGL()) {
     throw new Error('Invoice cannot be posted to GL');
   }

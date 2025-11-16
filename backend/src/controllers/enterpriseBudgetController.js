@@ -11,7 +11,7 @@ const logger = require('../utils/logger');
 // Create Budget Scenario
 exports.createScenario = asyncHandler(async (req, res) => {
   const { basebudgetId, scenarioParams } = req.body;
-  
+
   let baseData = {};
   if (baseBudgetId) {
     const baseBudget = await Budget.findById(baseBudgetId);
@@ -38,8 +38,8 @@ exports.createScenario = asyncHandler(async (req, res) => {
 // Compare Multiple Scenarios
 exports.compareScenarios = asyncHandler(async (req, res) => {
   const { scenarioIds } = req.body;
-  
-  const scenarios = await Budget.find({ 
+
+  const scenarios = await Budget.find({
     _id: { $in: scenarioIds },
     type: 'scenario',
     companyId: req.user.companyId
@@ -77,7 +77,7 @@ exports.analyzeVariance = asyncHandler(async (req, res) => {
 // Create Multi-Year Plan
 exports.createMultiYearPlan = asyncHandler(async (req, res) => {
   const planParams = req.body;
-  
+
   const plan = await enterpriseBudgetService.createMultiYearPlan(planParams);
 
   logger.logAudit('multi_year_plan_created', req.user._id, {
@@ -189,9 +189,9 @@ exports.bulkCreate = asyncHandler(async (req, res) => {
       });
       results.created.push({ id: budget._id, name: budget.name });
     } catch (error) {
-      results.failed.push({ 
-        data: budgetData, 
-        error: error.message 
+      results.failed.push({
+        data: budgetData,
+        error: error.message
       });
     }
   }
@@ -224,26 +224,26 @@ exports.bulkUpdate = asyncHandler(async (req, res) => {
   for (const update of updates) {
     try {
       const budget = await Budget.findOneAndUpdate(
-        { 
+        {
           _id: update.budgetId,
-          companyId: req.user.companyId 
+          companyId: req.user.companyId
         },
         update.data,
         { new: true, runValidators: true }
       );
-      
+
       if (budget) {
         results.updated.push({ id: budget._id, name: budget.name });
       } else {
-        results.failed.push({ 
-          budgetId: update.budgetId, 
-          error: 'Budget not found' 
+        results.failed.push({
+          budgetId: update.budgetId,
+          error: 'Budget not found'
         });
       }
     } catch (error) {
-      results.failed.push({ 
-        budgetId: update.budgetId, 
-        error: error.message 
+      results.failed.push({
+        budgetId: update.budgetId,
+        error: error.message
       });
     }
   }
@@ -302,20 +302,20 @@ exports.exportBudgets = asyncHandler(async (req, res) => {
     .lean();
 
   let exportData;
-  
+
   switch (format) {
     case 'csv':
       exportData = this.convertToCSV(budgets);
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename=budgets.csv');
       break;
-    
+
     case 'excel':
       exportData = await this.convertToExcel(budgets);
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=budgets.xlsx');
       break;
-    
+
     default:
       exportData = JSON.stringify(budgets, null, 2);
       res.setHeader('Content-Type', 'application/json');
@@ -335,7 +335,7 @@ exports.importBudgets = asyncHandler(async (req, res) => {
   const { format, data, validate } = req.body;
 
   let budgets = [];
-  
+
   switch (format) {
     case 'csv':
       budgets = this.parseCSV(data);
@@ -429,7 +429,7 @@ exports.runSimulation = asyncHandler(async (req, res) => {
     // Simulate outcomes
     const budgetTotal = budget.budgetLines.reduce((sum, line) => {
       if (line.tradeSpend) {
-        return sum + 
+        return sum +
           (line.tradeSpend.marketing?.budget || 0) +
           (line.tradeSpend.cashCoop?.budget || 0) +
           (line.tradeSpend.tradingTerms?.budget || 0) +
@@ -441,7 +441,7 @@ exports.runSimulation = asyncHandler(async (req, res) => {
     scenarioResult.outcomes = {
       totalSpend: budgetTotal * scenarioType.factor,
       expectedRevenue: budgetTotal * scenarioType.factor * 2.5,
-      expectedROI: ((budgetTotal * scenarioType.factor * 2.5 - budgetTotal * scenarioType.factor) / 
+      expectedROI: ((budgetTotal * scenarioType.factor * 2.5 - budgetTotal * scenarioType.factor) /
                      (budgetTotal * scenarioType.factor)) * 100,
       marketShare: 15 * scenarioType.factor,
       customerReach: 100000 * scenarioType.factor
@@ -478,7 +478,7 @@ exports.runSimulation = asyncHandler(async (req, res) => {
 // Helper methods
 exports.convertToCSV = (budgets) => {
   const headers = ['ID', 'Name', 'Year', 'Status', 'Total Budget', 'Created By', 'Created At'];
-  const rows = budgets.map(b => [
+  const rows = budgets.map((b) => [
     b._id,
     b.name,
     b.year,
@@ -489,17 +489,17 @@ exports.convertToCSV = (budgets) => {
   ]);
 
   return [headers, ...rows]
-    .map(row => row.map(cell => `"${cell}"`).join(','))
+    .map((row) => row.map((cell) => `"${cell}"`).join(','))
     .join('\n');
 };
 
 exports.parseCSV = (csvData) => {
   // Simplified CSV parsing - in production use a proper CSV library
   const lines = csvData.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
-  
-  return lines.slice(1).map(line => {
-    const values = line.split(',').map(v => v.replace(/"/g, '').trim());
+  const headers = lines[0].split(',').map((h) => h.replace(/"/g, '').trim());
+
+  return lines.slice(1).map((line) => {
+    const values = line.split(',').map((v) => v.replace(/"/g, '').trim());
     const obj = {};
     headers.forEach((header, index) => {
       obj[header.toLowerCase().replace(/ /g, '_')] = values[index];

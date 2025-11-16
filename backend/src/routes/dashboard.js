@@ -44,7 +44,7 @@ router.get('/stats', async (req, res, next) => {
     // Get current counts
     const totalCustomers = await Customer.countDocuments({ status: { $ne: 'deleted' } });
     const totalProducts = await Product.countDocuments({ status: { $ne: 'deleted' } });
-    const activePromotions = await Promotion.countDocuments({ 
+    const activePromotions = await Promotion.countDocuments({
       status: 'active',
       'period.endDate': { $gte: new Date() }
     });

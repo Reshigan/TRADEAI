@@ -1,6 +1,6 @@
 /**
  * Advanced Accrual Management Service
- * 
+ *
  * Features:
  * - Automatic accrual calculation from promotions and trade spend
  * - Accrual vs actual reconciliation
@@ -18,7 +18,7 @@ const logger = require('../../utils/logger');
 const { safeNumber } = require('../../utils/safeNumbers');
 
 class AdvancedAccrualService {
-  
+
   /**
    * Calculate accruals for a given period
    * @param {Object} params - { year, month, tenant, calculateBy }
@@ -26,10 +26,10 @@ class AdvancedAccrualService {
    */
   async calculateMonthlyAccruals(params) {
     const { year, month, tenant, calculateBy = 'promotion', userId } = params;
-    
+
     try {
       logger.info('Starting accrual calculation', { year, month, tenant, calculateBy });
-      
+
       const results = {
         year,
         month,
@@ -44,24 +44,24 @@ class AdvancedAccrualService {
           byType: {}
         }
       };
-      
+
       // Calculate based on method
       if (calculateBy === 'promotion') {
         const promotionAccruals = await this.calculatePromotionAccruals(year, month, tenant, userId);
         results.accruals.push(...promotionAccruals);
       }
-      
+
       if (calculateBy === 'trade_spend' || calculateBy === 'all') {
         const tradeSpendAccruals = await this.calculateTradeSpendAccruals(year, month, tenant, userId);
         results.accruals.push(...tradeSpendAccruals);
       }
-      
+
       // Calculate summary
-      results.accruals.forEach(accrual => {
+      results.accruals.forEach((accrual) => {
         results.summary.totalAccrualAmount += safeNumber(accrual.totalAccrual, 0);
         results.summary.totalActualAmount += safeNumber(accrual.totalActual, 0);
         results.summary.accrualCount++;
-        
+
         const type = accrual.accrualType;
         if (!results.summary.byType[type]) {
           results.summary.byType[type] = { count: 0, amount: 0 };
@@ -69,29 +69,29 @@ class AdvancedAccrualService {
         results.summary.byType[type].count++;
         results.summary.byType[type].amount += safeNumber(accrual.totalAccrual, 0);
       });
-      
+
       results.summary.totalVariance = results.summary.totalAccrualAmount - results.summary.totalActualAmount;
-      
-      logger.info('Accrual calculation complete', { 
+
+      logger.info('Accrual calculation complete', {
         accrualCount: results.summary.accrualCount,
         totalAmount: results.summary.totalAccrualAmount
       });
-      
+
       return results;
-      
+
     } catch (error) {
       logger.error('Error calculating monthly accruals', { error: error.message, year, month, tenant });
       throw error;
     }
   }
-  
+
   /**
    * Calculate accruals from promotions
    */
   async calculatePromotionAccruals(year, month, tenant, userId) {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
-    
+
     // Find active promotions in the period
     const promotions = await Promotion.find({
       tenant,
@@ -101,9 +101,9 @@ class AdvancedAccrualService {
       ],
       status: { $in: ['active', 'approved', 'completed'] }
     }).populate('customerId');
-    
+
     const accruals = [];
-    
+
     for (const promotion of promotions) {
       try {
         // Get actual sales for this promotion
@@ -125,31 +125,31 @@ class AdvancedAccrualService {
             }
           }
         ]);
-        
+
         const actualSales = sales[0] || { totalRevenue: 0, totalQuantity: 0, transactionCount: 0 };
-        
+
         // Calculate accrual based on promotion type
         let accrualAmount = 0;
         let calculationMethod = 'percentage';
         let calculationBasis = 'sales';
-        
+
         switch (promotion.promotionType) {
           case 'discount_percentage':
             accrualAmount = actualSales.totalRevenue * (safeNumber(promotion.discountPercentage, 0) / 100);
             calculationMethod = 'percentage';
             break;
-            
+
           case 'discount_fixed':
             accrualAmount = safeNumber(promotion.discountAmount, 0) * actualSales.transactionCount;
             calculationMethod = 'fixed_amount';
             break;
-            
+
           case 'volume_rebate':
             accrualAmount = safeNumber(promotion.rebatePerUnit, 0) * actualSales.totalQuantity;
             calculationMethod = 'per_unit';
             calculationBasis = 'volume';
             break;
-            
+
           case 'lump_sum':
             // Prorate lump sum over promotion period
             const promotionDays = Math.ceil((promotion.endDate - promotion.startDate) / (1000 * 60 * 60 * 24));
@@ -160,12 +160,12 @@ class AdvancedAccrualService {
             accrualAmount = (safeNumber(promotion.totalBudget, 0) / promotionDays) * daysInMonth;
             calculationMethod = 'fixed_amount';
             break;
-            
+
           default:
             // Default to percentage of sales
             accrualAmount = actualSales.totalRevenue * 0.05; // 5% default
         }
-        
+
         // Check if accrual already exists
         const existingAccrual = await Accrual.findOne({
           promotionId: promotion._id,
@@ -173,24 +173,24 @@ class AdvancedAccrualService {
           'period.month': month,
           tenant
         });
-        
+
         if (existingAccrual) {
           // Update existing
           existingAccrual.totalActual = actualSales.totalRevenue;
           existingAccrual.totalAccrual = accrualAmount;
           existingAccrual.totalVariance = accrualAmount - actualSales.totalRevenue;
-          existingAccrual.variancePercent = actualSales.totalRevenue > 0 
-            ? ((accrualAmount - actualSales.totalRevenue) / actualSales.totalRevenue) * 100 
+          existingAccrual.variancePercent = actualSales.totalRevenue > 0
+            ? ((accrualAmount - actualSales.totalRevenue) / actualSales.totalRevenue) * 100
             : 0;
           existingAccrual.updatedBy = userId;
-          
+
           await existingAccrual.save();
           accruals.push(existingAccrual);
-          
+
         } else {
           // Create new accrual
           const accrualNumber = await this.generateAccrualNumber(year, month, tenant);
-          
+
           const newAccrual = await Accrual.create({
             accrualNumber,
             tenant,
@@ -208,8 +208,8 @@ class AdvancedAccrualService {
             totalAccrual: accrualAmount,
             totalActual: actualSales.totalRevenue,
             totalVariance: accrualAmount - actualSales.totalRevenue,
-            variancePercent: actualSales.totalRevenue > 0 
-              ? ((accrualAmount - actualSales.totalRevenue) / actualSales.totalRevenue) * 100 
+            variancePercent: actualSales.totalRevenue > 0
+              ? ((accrualAmount - actualSales.totalRevenue) / actualSales.totalRevenue) * 100
               : 0,
             status: 'draft',
             calculationMethod,
@@ -222,47 +222,47 @@ class AdvancedAccrualService {
               costCenter: promotion.costCenter || 'TRADE',
               productId: promotion.productId,
               customerId: promotion.customerId?._id,
-              accrualAmount: accrualAmount,
+              accrualAmount,
               actualAmount: actualSales.totalRevenue,
               variance: accrualAmount - actualSales.totalRevenue,
-              variancePercent: actualSales.totalRevenue > 0 
-                ? ((accrualAmount - actualSales.totalRevenue) / actualSales.totalRevenue) * 100 
+              variancePercent: actualSales.totalRevenue > 0
+                ? ((accrualAmount - actualSales.totalRevenue) / actualSales.totalRevenue) * 100
                 : 0
             }],
             createdBy: userId,
             notes: `Auto-calculated from promotion: ${promotion.name}`
           });
-          
+
           accruals.push(newAccrual);
         }
-        
+
       } catch (error) {
-        logger.error('Error calculating accrual for promotion', { 
-          promotionId: promotion._id, 
-          error: error.message 
+        logger.error('Error calculating accrual for promotion', {
+          promotionId: promotion._id,
+          error: error.message
         });
       }
     }
-    
+
     return accruals;
   }
-  
+
   /**
    * Calculate accruals from trade spend activities
    */
   async calculateTradeSpendAccruals(year, month, tenant, userId) {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
-    
+
     const tradeSpends = await TradeSpend.find({
       tenant,
       startDate: { $lte: endDate },
       endDate: { $gte: startDate },
       status: { $in: ['active', 'approved', 'completed'] }
     }).populate('customerId');
-    
+
     const accruals = [];
-    
+
     for (const tradeSpend of tradeSpends) {
       try {
         // Calculate accrual amount (prorate if needed)
@@ -271,12 +271,12 @@ class AdvancedAccrualService {
           Math.ceil((endDate - Math.max(startDate, tradeSpend.startDate)) / (1000 * 60 * 60 * 24)),
           totalDays
         );
-        
+
         const accrualAmount = (safeNumber(tradeSpend.totalBudget, 0) / totalDays) * daysInMonth;
         const actualSpend = safeNumber(tradeSpend.actualSpend, 0);
-        
+
         const accrualNumber = await this.generateAccrualNumber(year, month, tenant);
-        
+
         const newAccrual = await Accrual.create({
           accrualNumber,
           tenant,
@@ -294,8 +294,8 @@ class AdvancedAccrualService {
           totalAccrual: accrualAmount,
           totalActual: actualSpend,
           totalVariance: accrualAmount - actualSpend,
-          variancePercent: actualSpend > 0 
-            ? ((accrualAmount - actualSpend) / actualSpend) * 100 
+          variancePercent: actualSpend > 0
+            ? ((accrualAmount - actualSpend) / actualSpend) * 100
             : 0,
           status: 'draft',
           calculationMethod: 'actuals',
@@ -307,80 +307,80 @@ class AdvancedAccrualService {
             glAccount: '50000',
             costCenter: 'TRADE',
             customerId: tradeSpend.customerId?._id,
-            accrualAmount: accrualAmount,
+            accrualAmount,
             actualAmount: actualSpend,
             variance: accrualAmount - actualSpend,
-            variancePercent: actualSpend > 0 
-              ? ((accrualAmount - actualSpend) / actualSpend) * 100 
+            variancePercent: actualSpend > 0
+              ? ((accrualAmount - actualSpend) / actualSpend) * 100
               : 0
           }],
           createdBy: userId,
-          notes: `Auto-calculated from trade spend activity`
+          notes: 'Auto-calculated from trade spend activity'
         });
-        
+
         accruals.push(newAccrual);
-        
+
       } catch (error) {
-        logger.error('Error calculating accrual for trade spend', { 
-          tradeSpendId: tradeSpend._id, 
-          error: error.message 
+        logger.error('Error calculating accrual for trade spend', {
+          tradeSpendId: tradeSpend._id,
+          error: error.message
         });
       }
     }
-    
+
     return accruals;
   }
-  
+
   /**
    * Reconcile accruals with actual spend
    */
   async reconcileAccruals(accrualId, actualAmount, userId) {
     try {
       const accrual = await Accrual.findById(accrualId);
-      
+
       if (!accrual) {
         throw new Error('Accrual not found');
       }
-      
+
       accrual.totalActual = safeNumber(actualAmount, 0);
       accrual.totalVariance = accrual.totalAccrual - actualAmount;
-      accrual.variancePercent = actualAmount > 0 
-        ? ((accrual.totalAccrual - actualAmount) / actualAmount) * 100 
+      accrual.variancePercent = actualAmount > 0
+        ? ((accrual.totalAccrual - actualAmount) / actualAmount) * 100
         : 0;
-      
+
       // Update line items proportionally
-      accrual.lines.forEach(line => {
+      accrual.lines.forEach((line) => {
         const proportion = line.accrualAmount / accrual.totalAccrual;
         line.actualAmount = actualAmount * proportion;
         line.variance = line.accrualAmount - line.actualAmount;
-        line.variancePercent = line.actualAmount > 0 
-          ? ((line.accrualAmount - line.actualAmount) / line.actualAmount) * 100 
+        line.variancePercent = line.actualAmount > 0
+          ? ((line.accrualAmount - line.actualAmount) / line.actualAmount) * 100
           : 0;
       });
-      
+
       accrual.reconciled = true;
       accrual.reconciledAt = new Date();
       accrual.reconciledBy = userId;
       accrual.status = 'reconciled';
       accrual.updatedBy = userId;
-      
+
       await accrual.save();
-      
-      logger.info('Accrual reconciled', { 
-        accrualId, 
+
+      logger.info('Accrual reconciled', {
+        accrualId,
         totalAccrual: accrual.totalAccrual,
         totalActual: actualAmount,
         variance: accrual.totalVariance
       });
-      
+
       return accrual;
-      
+
     } catch (error) {
       logger.error('Error reconciling accrual', { accrualId, error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Generate journal entries for posting to GL
    */
@@ -390,13 +390,13 @@ class AdvancedAccrualService {
         .populate('customerId')
         .populate('promotionId')
         .populate('tradeSpendId');
-      
+
       if (!accrual) {
         throw new Error('Accrual not found');
       }
-      
+
       const journalEntries = [];
-      
+
       // Debit: Trade Spend Expense
       journalEntries.push({
         account: '50000', // Trade Spend Expense
@@ -408,7 +408,7 @@ class AdvancedAccrualService {
         customerId: accrual.customerId?._id,
         customerName: accrual.customerId?.name
       });
-      
+
       // Credit: Accrued Trade Spend Liability
       journalEntries.push({
         account: '20500', // Accrued Liabilities
@@ -420,7 +420,7 @@ class AdvancedAccrualService {
         customerId: accrual.customerId?._id,
         customerName: accrual.customerId?.name
       });
-      
+
       return {
         accrualNumber: accrual.accrualNumber,
         period: `${accrual.period.year}-${String(accrual.period.month).padStart(2, '0')}`,
@@ -432,63 +432,63 @@ class AdvancedAccrualService {
         documentText: `Accrual ${accrual.accrualNumber} - ${accrual.accrualType}`,
         reference: accrual.accrualNumber
       };
-      
+
     } catch (error) {
       logger.error('Error generating journal entries', { accrualId, error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Post accrual to GL
    */
   async postAccrual(accrualId, glDocument, userId) {
     try {
       const accrual = await Accrual.findById(accrualId);
-      
+
       if (!accrual) {
         throw new Error('Accrual not found');
       }
-      
+
       if (accrual.glPosted) {
         throw new Error('Accrual already posted to GL');
       }
-      
+
       accrual.glPosted = true;
       accrual.glPostingDate = new Date();
       accrual.glDocument = glDocument;
       accrual.status = 'posted';
       accrual.updatedBy = userId;
-      
+
       await accrual.save();
-      
+
       logger.info('Accrual posted to GL', { accrualId, glDocument });
-      
+
       return accrual;
-      
+
     } catch (error) {
       logger.error('Error posting accrual to GL', { accrualId, error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Generate variance report
    */
   async generateVarianceReport(params) {
     const { year, month, tenant, thresholdPercent = 10 } = params;
-    
+
     try {
       const accruals = await Accrual.find({
         tenant,
         'period.year': year,
         'period.month': month
       })
-      .populate('customerId')
-      .populate('promotionId')
-      .populate('tradeSpendId')
-      .sort({ variancePercent: -1 });
-      
+        .populate('customerId')
+        .populate('promotionId')
+        .populate('tradeSpendId')
+        .sort({ variancePercent: -1 });
+
       const report = {
         period: { year, month },
         generatedAt: new Date(),
@@ -504,13 +504,13 @@ class AdvancedAccrualService {
         significantVariances: [],
         allAccruals: []
       };
-      
-      accruals.forEach(accrual => {
+
+      accruals.forEach((accrual) => {
         // Summary calculations
         report.summary.totalAccrualAmount += safeNumber(accrual.totalAccrual, 0);
         report.summary.totalActualAmount += safeNumber(accrual.totalActual, 0);
         report.summary.totalVariance += safeNumber(accrual.totalVariance, 0);
-        
+
         // By status
         const status = accrual.status;
         if (!report.summary.byStatus[status]) {
@@ -518,7 +518,7 @@ class AdvancedAccrualService {
         }
         report.summary.byStatus[status].count++;
         report.summary.byStatus[status].amount += safeNumber(accrual.totalAccrual, 0);
-        
+
         // By type
         const type = accrual.accrualType;
         if (!report.summary.byType[type]) {
@@ -527,7 +527,7 @@ class AdvancedAccrualService {
         report.summary.byType[type].count++;
         report.summary.byType[type].amount += safeNumber(accrual.totalAccrual, 0);
         report.summary.byType[type].variance += safeNumber(accrual.totalVariance, 0);
-        
+
         // Significant variances
         if (Math.abs(accrual.variancePercent) >= thresholdPercent) {
           report.summary.significantVariances++;
@@ -542,7 +542,7 @@ class AdvancedAccrualService {
             status: accrual.status
           });
         }
-        
+
         // All accruals
         report.allAccruals.push({
           accrualNumber: accrual.accrualNumber,
@@ -557,15 +557,15 @@ class AdvancedAccrualService {
           reconciled: accrual.reconciled
         });
       });
-      
+
       return report;
-      
+
     } catch (error) {
       logger.error('Error generating variance report', { error: error.message, year, month, tenant });
       throw error;
     }
   }
-  
+
   /**
    * Generate unique accrual number
    */
@@ -575,7 +575,7 @@ class AdvancedAccrualService {
       tenant,
       accrualNumber: { $regex: `^${prefix}` }
     });
-    
+
     return `${prefix}-${String(count + 1).padStart(4, '0')}`;
   }
 }

@@ -59,7 +59,7 @@ exports.updateCustomer = asyncHandler(async (req, res, next) => {
 
   Object.assign(customer, req.body);
   customer.lastModifiedBy = req.user._id;
-  
+
   await customer.save();
 
   logger.logAudit('customer_updated', req.user._id, {
@@ -89,10 +89,10 @@ exports.deleteCustomer = asyncHandler(async (req, res, next) => {
   // Check if customer is referenced in other documents
   const TradeSpend = require('../models/TradeSpend');
   const Promotion = require('../models/Promotion');
-  
+
   const tradeSpendCount = await TradeSpend.countDocuments({ customer: customer._id });
   const promotionCount = await Promotion.countDocuments({ 'scope.customers.customer': customer._id });
-  
+
   if (tradeSpendCount > 0 || promotionCount > 0) {
     throw new AppError('Cannot delete customer with existing trade spends or promotions', 400);
   }
@@ -126,7 +126,7 @@ exports.getCustomers = asyncHandler(async (req, res, next) => {
 
   // Build query
   const query = { company: req.user.company };
-  
+
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
@@ -134,23 +134,23 @@ exports.getCustomers = asyncHandler(async (req, res, next) => {
       { 'contact.email': { $regex: search, $options: 'i' } }
     ];
   }
-  
+
   if (status) {
     query.status = status;
   }
-  
+
   if (type) {
     query.type = type;
   }
-  
+
   if (tier) {
     query['classification.tier'] = tier;
   }
-  
+
   if (region) {
     query['classification.region'] = region;
   }
-  
+
   // Apply additional filters
   Object.assign(query, filters);
 
@@ -243,7 +243,7 @@ exports.bulkUpdateCustomers = asyncHandler(async (req, res, next) => {
   }
 
   const result = await Customer.updateMany(
-    { 
+    {
       _id: { $in: customerIds },
       company: req.user.company
     },

@@ -1,9 +1,9 @@
 /**
  * AUTOMATED DEDUCTION MATCHING SERVICE
- * 
+ *
  * AI-powered deduction matching with confidence scoring
  * Handles fuzzy matching, duplicate detection, and manual review queue
- * 
+ *
  * Features:
  * - Fuzzy string matching (Levenshtein distance)
  * - Confidence scoring (0-100%)
@@ -43,7 +43,7 @@ class DeductionMatchingService {
 
     for (const transaction of transactions) {
       const score = await this.calculateMatchScore(deduction, transaction);
-      
+
       if (score.total >= this.confidenceThreshold.reject) {
         matches.push({
           transactionId: transaction._id,
@@ -140,7 +140,7 @@ class DeductionMatchingService {
     if (percentDiff < 2) return 25; // Within 2%
     if (percentDiff < 5) return 15; // Within 5%
     if (percentDiff < 10) return 5; // Within 10%
-    
+
     return 0;
   }
 
@@ -149,7 +149,7 @@ class DeductionMatchingService {
    */
   scoreCustomerMatch(deductionCustomerId, transactionCustomerId) {
     if (!deductionCustomerId || !transactionCustomerId) return 0;
-    
+
     return deductionCustomerId.toString() === transactionCustomerId.toString() ? 20 : 0;
   }
 
@@ -169,7 +169,7 @@ class DeductionMatchingService {
     if (daysDiff <= 7) return 9; // 1 week
     if (daysDiff <= 14) return 6; // 2 weeks
     if (daysDiff <= 30) return 3; // 1 month
-    
+
     return 0;
   }
 
@@ -196,7 +196,7 @@ class DeductionMatchingService {
     if (similarity >= 90) return 10;
     if (similarity >= 80) return 7;
     if (similarity >= 70) return 4;
-    
+
     return 0;
   }
 
@@ -215,7 +215,7 @@ class DeductionMatchingService {
     // Word overlap
     const words1 = new Set(desc1.split(/\s+/));
     const words2 = new Set(desc2.split(/\s+/));
-    const intersection = new Set([...words1].filter(x => words2.has(x)));
+    const intersection = new Set([...words1].filter((x) => words2.has(x)));
     const union = new Set([...words1, ...words2]);
     const overlap = (intersection.size / union.size) * 100;
 
@@ -223,7 +223,7 @@ class DeductionMatchingService {
     if (overlap >= 60) return 7;
     if (overlap >= 40) return 5;
     if (overlap >= 20) return 3;
-    
+
     return 0;
   }
 
@@ -257,9 +257,9 @@ class DeductionMatchingService {
 
     return {
       total: deductions.length,
-      matched: results.filter(r => r.matched).length,
-      autoApproved: results.filter(r => r.recommendation === 'auto_approve').length,
-      needsReview: results.filter(r => r.recommendation === 'manual_review').length,
+      matched: results.filter((r) => r.matched).length,
+      autoApproved: results.filter((r) => r.recommendation === 'auto_approve').length,
+      needsReview: results.filter((r) => r.recommendation === 'manual_review').length,
       results
     };
   }
@@ -269,10 +269,10 @@ class DeductionMatchingService {
    */
   async getReviewQueue(deductions, transactions) {
     const batchResults = await this.batchMatch(deductions, transactions);
-    
+
     return {
       queue: batchResults.results.filter(
-        r => r.recommendation === 'manual_review' || r.recommendation === 'possible_match'
+        (r) => r.recommendation === 'manual_review' || r.recommendation === 'possible_match'
       ),
       count: batchResults.needsReview,
       summary: {
@@ -297,7 +297,7 @@ class DeductionMatchingService {
     if (thresholds.reject) {
       this.confidenceThreshold.reject = thresholds.reject;
     }
-    
+
     return this.confidenceThreshold;
   }
 }

@@ -87,7 +87,7 @@ class TenantDataMigration {
             name: company.name,
             domain: company.domain || `${company.name.toLowerCase().replace(/\s+/g, '-')}.tradeai.com`,
             status: company.isActive ? 'active' : 'suspended',
-            
+
             // Contact information
             contactInfo: {
               email: company.contactEmail || `admin@${company.domain || 'example.com'}`,
@@ -134,7 +134,7 @@ class TenantDataMigration {
 
             // Legacy reference
             legacyCompanyId: company._id,
-            
+
             // Audit fields
             createdAt: company.createdAt || new Date(),
             updatedAt: new Date(),
@@ -179,7 +179,7 @@ class TenantDataMigration {
         try {
           // Find corresponding tenant
           const tenant = await Tenant.findOne({ legacyCompanyId: user.companyId });
-          
+
           if (!tenant) {
             const errorMsg = `No tenant found for user ${user.email} with companyId ${user.companyId}`;
             this.log(errorMsg, 'error');
@@ -231,7 +231,7 @@ class TenantDataMigration {
       for (const customer of customers) {
         try {
           const tenant = await Tenant.findOne({ legacyCompanyId: customer.company });
-          
+
           if (!tenant) {
             const errorMsg = `No tenant found for customer ${customer.name} with companyId ${customer.company}`;
             this.log(errorMsg, 'error');
@@ -283,7 +283,7 @@ class TenantDataMigration {
       for (const product of products) {
         try {
           const tenant = await Tenant.findOne({ legacyCompanyId: product.company });
-          
+
           if (!tenant) {
             const errorMsg = `No tenant found for product ${product.name} with companyId ${product.company}`;
             this.log(errorMsg, 'error');
@@ -335,7 +335,7 @@ class TenantDataMigration {
       for (const promotion of promotions) {
         try {
           const tenant = await Tenant.findOne({ legacyCompanyId: promotion.company });
-          
+
           if (!tenant) {
             const errorMsg = `No tenant found for promotion ${promotion.name} with companyId ${promotion.company}`;
             this.log(errorMsg, 'error');
@@ -382,12 +382,12 @@ class TenantDataMigration {
 
     try {
       const tenants = await Tenant.find({});
-      
+
       for (const tenant of tenants) {
         try {
           // Count users
           const userCount = await User.countDocuments({ tenantId: tenant._id });
-          
+
           // Count other resources
           const customerCount = await Customer.countDocuments({ tenantId: tenant._id });
           const productCount = await Product.countDocuments({ tenantId: tenant._id });
@@ -431,21 +431,21 @@ class TenantDataMigration {
    */
   async run() {
     const startTime = Date.now();
-    
+
     this.log(`Starting tenant data migration${this.dryRun ? ' (DRY RUN)' : ''}...`);
-    
+
     try {
       await this.connectDatabase();
-      
+
       await this.createTenantsFromCompanies();
       await this.updateUsersWithTenants();
       await this.updateCustomersWithTenants();
       await this.updateProductsWithTenants();
       await this.updatePromotionsWithTenants();
       await this.updateTenantUsageStats();
-      
+
       const duration = (Date.now() - startTime) / 1000;
-      
+
       this.log('\n=== MIGRATION COMPLETED ===');
       this.log(`Duration: ${duration}s`);
       this.log(`Tenants created: ${this.stats.tenantsCreated}`);
@@ -454,12 +454,12 @@ class TenantDataMigration {
       this.log(`Products updated: ${this.stats.productsUpdated}`);
       this.log(`Promotions updated: ${this.stats.promotionsUpdated}`);
       this.log(`Errors: ${this.stats.errors.length}`);
-      
+
       if (this.stats.errors.length > 0) {
         this.log('\n=== ERRORS ===');
-        this.stats.errors.forEach(error => this.log(error, 'error'));
+        this.stats.errors.forEach((error) => this.log(error, 'error'));
       }
-      
+
     } catch (error) {
       this.log(`Migration failed: ${error.message}`, 'error');
       throw error;
@@ -472,7 +472,7 @@ class TenantDataMigration {
 // Run migration if called directly
 if (require.main === module) {
   const migration = new TenantDataMigration();
-  
+
   migration.run()
     .then(() => {
       console.log('Migration completed successfully');

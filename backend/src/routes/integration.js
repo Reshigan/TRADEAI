@@ -23,7 +23,7 @@ router.get('/status', authenticateToken, asyncHandler(async (req, res) => {
       status: 'inactive'
     }
   };
-  
+
   res.json({
     success: true,
     data: integrations
@@ -43,10 +43,10 @@ router.post('/sap/test', authenticateToken, authorize('admin'), asyncHandler(asy
 // Webhook endpoints
 router.post('/webhooks/:service', asyncHandler(async (req, res) => {
   const { service } = req.params;
-  
+
   // Log webhook data
   logger.info('Webhook received', { service, body: req.body });
-  
+
   res.json({
     success: true,
     message: 'Webhook processed'
@@ -57,7 +57,7 @@ router.post('/webhooks/:service', asyncHandler(async (req, res) => {
 router.put('/configure/:service', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
   const { service } = req.params;
   const config = req.body;
-  
+
   // Implementation would save configuration
   res.json({
     success: true,

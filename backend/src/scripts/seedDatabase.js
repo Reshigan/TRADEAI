@@ -57,7 +57,7 @@ const seedUsers = async () => {
     } else {
       logger.info(`Using existing tenant: ${tenant._id}`);
     }
-    
+
     const tenantId = tenant._id;
     const users = [
       {
@@ -123,7 +123,7 @@ const seedUsers = async () => {
       await user.save(); // This will trigger the pre-save hook to hash password
       createdUsers.push(user);
     }
-    
+
     logger.info(`Seeded ${createdUsers.length} users`);
     return createdUsers;
   } catch (error) {
@@ -135,8 +135,8 @@ const seedUsers = async () => {
 // Seed budgets
 const seedBudgets = async (users) => {
   try {
-    const john = users.find(u => u.email === 'john.doe@example.com');
-    const jane = users.find(u => u.email === 'jane.smith@example.com');
+    const john = users.find((u) => u.email === 'john.doe@example.com');
+    const jane = users.find((u) => u.email === 'jane.smith@example.com');
 
     const currentYear = new Date().getFullYear();
     const budgets = [
@@ -234,8 +234,8 @@ const seedBudgets = async (users) => {
 // Seed customers
 const seedCustomers = async (users) => {
   try {
-    const john = users.find(u => u.email === 'john.doe@example.com');
-    
+    const john = users.find((u) => u.email === 'john.doe@example.com');
+
     const customers = [
       {
         sapId: 'CUST001',
@@ -364,27 +364,27 @@ const seedCustomers = async (users) => {
 const seedDatabase = async () => {
   try {
     logger.info('Starting database seeding...');
-    
+
     await connectDB();
     await clearData();
-    
+
     const users = await seedUsers();
     const budgets = await seedBudgets(users);
     const customers = await seedCustomers(users);
-    
+
     logger.info('✅ Database seeding completed successfully!');
     logger.info(`Summary:
       - Users: ${users.length}
       - Budgets: ${budgets.length}
       - Customers: ${customers.length}
     `);
-    
+
     logger.info('\n📝 Test Credentials:');
     logger.info('Admin: admin@tradeai.com / Admin@123');
     logger.info('User 1: john.doe@example.com / User@123');
     logger.info('User 2: jane.smith@example.com / User@123');
     logger.info('Analyst: bob.wilson@example.com / User@123');
-    
+
   } catch (error) {
     logger.error('Error during seeding:', error);
   } finally {

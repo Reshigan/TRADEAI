@@ -47,7 +47,7 @@ const generateSeasonalSales = (baseAmount, month) => {
     11: 1.3, // November - holiday season
     12: 1.4  // December - peak holiday
   };
-  
+
   return Math.round(baseAmount * (seasonalMultipliers[month] || 1.0));
 };
 
@@ -135,7 +135,7 @@ const seedGONXTProductionData = async () => {
     // 3. Create Users for GONXT
     console.log('👥 Creating GONXT Users...');
     const gonxtUsers = [];
-    
+
     // Admin user
     const adminUser = new User({
       company: gonxtCompany._id,
@@ -250,7 +250,7 @@ const seedGONXTProductionData = async () => {
     // 4. Create Test Company Users
     console.log('👥 Creating Test Company Users...');
     const testUsers = [];
-    
+
     const testAdmin = new User({
       company: testCompany._id,
       employeeId: 'TEST001',
@@ -369,7 +369,7 @@ const seedGONXTProductionData = async () => {
       for (let i = 0; i < category.products.length; i++) {
         const productName = category.products[i];
         const vendor = gonxtVendors[randomNumber(0, gonxtVendors.length - 1)];
-        
+
         const product = new Product({
           company: gonxtCompany._id,
           sapMaterialId: `SAP${String(productCounter).padStart(6, '0')}`,
@@ -380,10 +380,10 @@ const seedGONXTProductionData = async () => {
           hierarchy: {
             level1: category.level1,
             level2: category.level2,
-            level3: { 
-              id: `${category.level2.id}_SUB`, 
-              name: `${category.level2.name} Subcategory`, 
-              code: `${category.level2.code}_SUB` 
+            level3: {
+              id: `${category.level2.id}_SUB`,
+              name: `${category.level2.name} Subcategory`,
+              code: `${category.level2.code}_SUB`
             }
           },
           productType: 'finished_good',
@@ -406,7 +406,7 @@ const seedGONXTProductionData = async () => {
           status: 'active',
           isActive: true
         });
-        
+
         await product.save();
         gonxtProducts.push(product);
         productCounter++;
@@ -417,7 +417,7 @@ const seedGONXTProductionData = async () => {
     while (gonxtProducts.length < 500) {
       const category = productCategories[randomNumber(0, productCategories.length - 1)];
       const vendor = gonxtVendors[randomNumber(0, gonxtVendors.length - 1)];
-      
+
       const product = new Product({
         company: gonxtCompany._id,
         sapMaterialId: `SAP${String(productCounter).padStart(6, '0')}`,
@@ -427,10 +427,10 @@ const seedGONXTProductionData = async () => {
         hierarchy: {
           level1: category.level1,
           level2: category.level2,
-          level3: { 
-            id: `${category.level2.id}_SUB`, 
-            name: `${category.level2.name} Subcategory`, 
-            code: `${category.level2.code}_SUB` 
+          level3: {
+            id: `${category.level2.id}_SUB`,
+            name: `${category.level2.name} Subcategory`,
+            code: `${category.level2.code}_SUB`
           }
         },
         productType: 'finished_good',
@@ -453,7 +453,7 @@ const seedGONXTProductionData = async () => {
         status: 'active',
         isActive: true
       });
-      
+
       await product.save();
       gonxtProducts.push(product);
       productCounter++;
@@ -478,7 +478,7 @@ const seedGONXTProductionData = async () => {
     for (const customerType of customerTypes) {
       for (let i = 0; i < customerType.count; i++) {
         const kam = gonxtUsers[randomNumber(2, 5)]; // Random KAM
-        
+
         const customer = new Customer({
           company: gonxtCompany._id,
           sapCustomerId: `SAPC${String(customerCounter).padStart(6, '0')}`,
@@ -537,7 +537,7 @@ const seedGONXTProductionData = async () => {
           accountManager: kam._id,
           status: 'active'
         });
-        
+
         await customer.save();
         gonxtCustomers.push(customer);
         customerCounter++;
@@ -556,28 +556,28 @@ const seedGONXTProductionData = async () => {
     for (let month = 0; month < 24; month++) {
       const currentDate = new Date(startDate);
       currentDate.setMonth(startDate.getMonth() + month);
-      
+
       console.log(`  📅 Generating sales data for ${currentDate.toISOString().slice(0, 7)}...`);
-      
+
       // Each customer buys from 10-30 different products per month
       for (const customer of gonxtCustomers.slice(0, 100)) { // Limit to first 100 customers for performance
         const productsThisMonth = randomNumber(10, 30);
         const selectedProducts = [];
-        
+
         // Randomly select products for this customer this month
         for (let p = 0; p < productsThisMonth; p++) {
           const product = gonxtProducts[randomNumber(0, gonxtProducts.length - 1)];
-          if (!selectedProducts.find(sp => sp._id.toString() === product._id.toString())) {
+          if (!selectedProducts.find((sp) => sp._id.toString() === product._id.toString())) {
             selectedProducts.push(product);
           }
         }
-        
+
         for (const product of selectedProducts) {
           const baseQuantity = randomNumber(10, 500);
           const quantity = generateSeasonalSales(baseQuantity, currentDate.getMonth() + 1);
           const unitPrice = product.pricing.listPrice * randomDecimal(0.8, 1.2); // Price variation
           const totalAmount = quantity * unitPrice;
-          
+
           const salesRecord = new SalesHistory({
             company: gonxtCompany._id,
             customer: customer._id,
@@ -595,7 +595,7 @@ const seedGONXTProductionData = async () => {
             region: 'NSW',
             status: 'completed'
           });
-          
+
           salesHistoryRecords.push(salesRecord);
         }
       }
@@ -609,20 +609,20 @@ const seedGONXTProductionData = async () => {
     // 9. Create Trade Spend Records
     console.log('💰 Creating Trade Spend Records...');
     const tradeSpendRecords = [];
-    
+
     for (let month = 0; month < 24; month++) {
       const currentDate = new Date(startDate);
       currentDate.setMonth(startDate.getMonth() + month);
-      
+
       // Create trade spend for top 50 customers
       for (const customer of gonxtCustomers.slice(0, 50)) {
         const spendTypes = ['marketing', 'cashCoop', 'tradingTerms', 'promotions'];
-        
+
         for (const spendType of spendTypes) {
           if (Math.random() > 0.3) { // 70% chance of spend this month
             const baseAmount = randomNumber(1000, 50000);
             const amount = generateSeasonalSales(baseAmount, currentDate.getMonth() + 1);
-            
+
             const tradeSpend = new TradeSpend({
               company: gonxtCompany._id,
               customer: customer._id,
@@ -637,7 +637,7 @@ const seedGONXTProductionData = async () => {
               approvedBy: gonxtUsers[randomNumber(1, 5)]._id,
               status: 'approved'
             });
-            
+
             tradeSpendRecords.push(tradeSpend);
           }
         }
@@ -651,14 +651,14 @@ const seedGONXTProductionData = async () => {
     console.log('🎯 Creating Campaigns and Promotions...');
     const campaigns = [];
     const promotions = [];
-    
+
     // Create quarterly campaigns for 2 years
     for (let quarter = 0; quarter < 8; quarter++) {
       const quarterStart = new Date(startDate);
       quarterStart.setMonth(startDate.getMonth() + (quarter * 3));
       const quarterEnd = new Date(quarterStart);
       quarterEnd.setMonth(quarterStart.getMonth() + 3);
-      
+
       const campaign = new Campaign({
         company: gonxtCompany._id,
         name: `Q${(quarter % 4) + 1} ${quarterStart.getFullYear()} Campaign`,
@@ -672,14 +672,14 @@ const seedGONXTProductionData = async () => {
           'Launch new products',
           'Strengthen customer relationships'
         ],
-        targetCustomers: gonxtCustomers.slice(0, 20).map(c => c._id),
-        targetProducts: gonxtProducts.slice(0, 50).map(p => p._id),
+        targetCustomers: gonxtCustomers.slice(0, 20).map((c) => c._id),
+        targetProducts: gonxtProducts.slice(0, 50).map((p) => p._id),
         createdBy: gonxtUsers[1]._id // Sales Director
       });
-      
+
       await campaign.save();
       campaigns.push(campaign);
-      
+
       // Create 3-5 promotions per campaign
       const promotionCount = randomNumber(3, 5);
       for (let p = 0; p < promotionCount; p++) {
@@ -692,12 +692,12 @@ const seedGONXTProductionData = async () => {
           startDate: randomDate(quarterStart, quarterEnd),
           endDate: randomDate(quarterStart, quarterEnd),
           budget: randomNumber(10000, 100000),
-          targetCustomers: gonxtCustomers.slice(0, 10).map(c => c._id),
-          targetProducts: gonxtProducts.slice(p * 10, (p + 1) * 10).map(p => p._id),
+          targetCustomers: gonxtCustomers.slice(0, 10).map((c) => c._id),
+          targetProducts: gonxtProducts.slice(p * 10, (p + 1) * 10).map((p) => p._id),
           status: quarter < 6 ? 'completed' : 'active',
           createdBy: gonxtUsers[randomNumber(2, 5)]._id
         });
-        
+
         await promotion.save();
         promotions.push(promotion);
       }
@@ -708,7 +708,7 @@ const seedGONXTProductionData = async () => {
     // 11. Create Budgets
     console.log('💼 Creating Budget Records...');
     const budgets = [];
-    
+
     for (let year = 2022; year <= 2023; year++) {
       const yearlyBudget = new Budget({
         company: gonxtCompany._id,
@@ -729,7 +729,7 @@ const seedGONXTProductionData = async () => {
         createdBy: gonxtUsers[1]._id,
         approvedBy: gonxtUsers[0]._id
       });
-      
+
       await yearlyBudget.save();
       budgets.push(yearlyBudget);
     }
@@ -739,7 +739,7 @@ const seedGONXTProductionData = async () => {
     // Summary
     console.log('\n🎉 GONXT Production Data Seeding Complete!');
     console.log('=====================================');
-    console.log(`📊 Companies: 2 (GONXT + Test)`);
+    console.log('📊 Companies: 2 (GONXT + Test)');
     console.log(`👥 Users: ${gonxtUsers.length + testUsers.length}`);
     console.log(`🏭 Vendors: ${gonxtVendors.length}`);
     console.log(`📦 Products: ${gonxtProducts.length}`);
@@ -779,14 +779,14 @@ module.exports = { seedGONXTProductionData };
 // Run if called directly
 if (require.main === module) {
   const mongoose = require('mongoose');
-  
+
   const runSeed = async () => {
     try {
       await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tradeai_production');
       console.log('📡 Connected to MongoDB');
-      
+
       await seedGONXTProductionData();
-      
+
       await mongoose.disconnect();
       console.log('📡 Disconnected from MongoDB');
       process.exit(0);
@@ -795,6 +795,6 @@ if (require.main === module) {
       process.exit(1);
     }
   };
-  
+
   runSeed();
 }

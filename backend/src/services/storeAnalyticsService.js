@@ -26,11 +26,11 @@ class StoreAnalyticsService {
 
     // Get all districts in region
     const districts = await District.find({ region: regionId, tenantId, isActive: true });
-    const districtIds = districts.map(d => d._id);
+    const districtIds = districts.map((d) => d._id);
 
     // Get all stores in region
     const stores = await Store.find({ region: regionId, tenantId, isActive: true });
-    const storeIds = stores.map(s => s._id);
+    const storeIds = stores.map((s) => s._id);
 
     // Aggregate sales data
     const salesData = await SalesHistory.aggregate([
@@ -38,7 +38,7 @@ class StoreAnalyticsService {
         $match: {
           storeId: { $in: storeIds },
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          tenantId: tenantId
+          tenantId
         }
       },
       {
@@ -54,11 +54,11 @@ class StoreAnalyticsService {
 
     // Rollup to district level
     const districtPerformance = await Promise.all(districts.map(async (district) => {
-      const districtStores = stores.filter(s => s.district.toString() === district._id.toString());
-      const districtStoreIds = districtStores.map(s => s._id.toString());
-      
-      const districtSales = salesData.filter(s => districtStoreIds.includes(s._id.toString()));
-      
+      const districtStores = stores.filter((s) => s.district.toString() === district._id.toString());
+      const districtStoreIds = districtStores.map((s) => s._id.toString());
+
+      const districtSales = salesData.filter((s) => districtStoreIds.includes(s._id.toString()));
+
       return {
         district: {
           _id: district._id,
@@ -66,7 +66,7 @@ class StoreAnalyticsService {
           name: district.name
         },
         storeCount: districtStores.length,
-        activeStores: districtStores.filter(s => s.isActive).length,
+        activeStores: districtStores.filter((s) => s.isActive).length,
         totalQuantity: districtSales.reduce((sum, s) => sum + s.totalQuantity, 0),
         totalRevenue: districtSales.reduce((sum, s) => sum + s.totalRevenue, 0),
         averageRevenuePerStore: districtStores.length > 0 ?
@@ -124,7 +124,7 @@ class StoreAnalyticsService {
 
     // Get all stores in district
     const stores = await Store.find({ district: districtId, tenantId, isActive: true });
-    const storeIds = stores.map(s => s._id);
+    const storeIds = stores.map((s) => s._id);
 
     // Aggregate sales data by store
     const salesData = await SalesHistory.aggregate([
@@ -132,7 +132,7 @@ class StoreAnalyticsService {
         $match: {
           storeId: { $in: storeIds },
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          tenantId: tenantId
+          tenantId
         }
       },
       {
@@ -147,9 +147,9 @@ class StoreAnalyticsService {
     ]);
 
     // Store-level performance
-    const storePerformance = stores.map(store => {
-      const storeSales = salesData.find(s => s._id.toString() === store._id.toString());
-      
+    const storePerformance = stores.map((store) => {
+      const storeSales = salesData.find((s) => s._id.toString() === store._id.toString());
+
       return {
         store: {
           _id: store._id,
@@ -212,7 +212,7 @@ class StoreAnalyticsService {
 
     const store = await Store.findOne({ _id: storeId, tenantId })
       .populate(['region', 'district']);
-    
+
     if (!store) {
       throw new Error('Store not found');
     }
@@ -223,7 +223,7 @@ class StoreAnalyticsService {
         $match: {
           storeId: store._id,
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          tenantId: tenantId
+          tenantId
         }
       },
       {
@@ -243,7 +243,7 @@ class StoreAnalyticsService {
         $match: {
           storeId: store._id,
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          tenantId: tenantId
+          tenantId
         }
       },
       {
@@ -265,7 +265,7 @@ class StoreAnalyticsService {
         $match: {
           storeId: store._id,
           date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          tenantId: tenantId
+          tenantId
         }
       },
       {
@@ -326,14 +326,14 @@ class StoreAnalyticsService {
         averageTransactionValue: summary.transactionCount > 0 ?
           summary.totalRevenue / summary.transactionCount : 0
       },
-      dailySales: dailySales.map(d => ({
+      dailySales: dailySales.map((d) => ({
         date: d._id,
         quantity: d.quantity,
         revenue: d.revenue,
         transactions: d.transactions,
         averageTransactionValue: d.transactions > 0 ? d.revenue / d.transactions : 0
       })),
-      categoryBreakdown: categoryBreakdown.map(c => ({
+      categoryBreakdown: categoryBreakdown.map((c) => ({
         category: c._id,
         quantity: c.quantity,
         revenue: c.revenue,
@@ -395,7 +395,7 @@ class StoreAnalyticsService {
             ((storeRevenue - districtAvgRevenue) / districtAvgRevenue * 100) : 0,
           ranking: districtPerf.storePerformance
             .sort((a, b) => b.totalRevenue - a.totalRevenue)
-            .findIndex(s => s.store._id.toString() === storeId) + 1,
+            .findIndex((s) => s.store._id.toString() === storeId) + 1,
           totalStores: districtPerf.storeCount
         },
         vsRegion: {
@@ -485,7 +485,7 @@ class StoreAnalyticsService {
         {
           $match: {
             storeId: store._id,
-            productId: { $in: promotion.products.map(p => p.product) },
+            productId: { $in: promotion.products.map((p) => p.product) },
             date: {
               $gte: promotion.startDate,
               $lte: promotion.endDate

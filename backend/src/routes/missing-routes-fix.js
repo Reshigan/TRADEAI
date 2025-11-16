@@ -90,7 +90,7 @@ router.post('/forecasting/generate', async (req, res) => {
   try {
     const { productId, customerId, horizon = 12, algorithm = 'ensemble' } = req.body;
     const tenantId = req.user?.tenantId || 'default';
-    
+
     // Generate the forecast using the real service
     const forecast = await forecastingService.generateSalesForecast(tenantId, {
       productId,
@@ -98,7 +98,7 @@ router.post('/forecasting/generate', async (req, res) => {
       horizon,
       algorithm
     });
-    
+
     res.json({
       success: true,
       message: 'Forecast generated successfully',
@@ -163,7 +163,7 @@ router.post('/forecasting/demand', async (req, res) => {
   try {
     // Mock demand forecast for now
     const { productIds = [], customerIds = [], horizon = 12 } = req.body;
-    
+
     const mockDemandForecast = {
       productIds,
       customerIds,
@@ -179,7 +179,7 @@ router.post('/forecasting/demand', async (req, res) => {
       },
       generatedAt: new Date().toISOString()
     };
-    
+
     res.json({
       success: true,
       message: 'Demand forecast generated successfully',
@@ -199,7 +199,7 @@ router.post('/forecasting/budget', async (req, res) => {
   try {
     // Mock budget forecast for now
     const { horizon = 12, includeInflation = true } = req.body;
-    
+
     const mockBudgetForecast = {
       horizon,
       includeInflation,
@@ -213,7 +213,7 @@ router.post('/forecasting/budget', async (req, res) => {
       },
       generatedAt: new Date().toISOString()
     };
-    
+
     res.json({
       success: true,
       message: 'Budget forecast generated successfully',
@@ -232,15 +232,15 @@ router.post('/forecasting/budget', async (req, res) => {
 router.post('/forecasting/export/:type', async (req, res) => {
   try {
     const { type } = req.params;
-    
+
     // Mock Excel export - in reality this would generate an actual Excel file
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename=${type}_forecast_${new Date().toISOString().split('T')[0]}.xlsx`);
-    
+
     // Send mock Excel data
-    const mockExcelData = Buffer.from('Mock Excel Data for ' + type + ' forecast');
+    const mockExcelData = Buffer.from(`Mock Excel Data for ${type} forecast`);
     res.send(mockExcelData);
-    
+
   } catch (error) {
     res.status(500).json({
       success: false,

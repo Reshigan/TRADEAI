@@ -12,7 +12,7 @@ router.use(authenticateToken);
  * @desc    Create budget scenario for what-if analysis
  * @access  Private (Manager+)
  */
-router.post('/scenarios', 
+router.post('/scenarios',
   authorize('manager', 'director', 'admin'),
   enterpriseBudgetController.createScenario
 );

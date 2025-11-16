@@ -108,7 +108,7 @@ router.put('/:id/subscription', tenantController.updateSubscription);
 router.get('/:id/features', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Check permissions
     if (req.user.role !== 'super_admin' && (!req.tenant || req.tenant.id !== id)) {
       return res.status(403).json({
@@ -205,7 +205,7 @@ router.put('/:id/features', async (req, res) => {
 router.get('/:id/usage', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Check permissions
     if (req.user.role !== 'super_admin' && (!req.tenant || req.tenant.id !== id)) {
       return res.status(403).json({

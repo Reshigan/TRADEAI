@@ -6,122 +6,122 @@ const { requirePermission } = require('../middleware/rbac');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 
 // ML Prediction Routes
-router.post('/predict/customer-behavior', 
+router.post('/predict/customer-behavior',
   authenticateToken,
-  requirePermission('ml:predict:customer'), 
+  requirePermission('ml:predict:customer'),
   mlController.predictCustomerBehavior
 );
 
-router.post('/predict/demand-forecast', 
+router.post('/predict/demand-forecast',
   authenticateToken,
-  requirePermission('ml:predict:demand'), 
+  requirePermission('ml:predict:demand'),
   mlController.forecastDemand
 );
 
-router.post('/predict/churn', 
+router.post('/predict/churn',
   authenticateToken,
-  requirePermission('ml:predict:churn'), 
+  requirePermission('ml:predict:churn'),
   mlController.predictChurn
 );
 
-router.post('/optimize/promotion', 
+router.post('/optimize/promotion',
   authenticateToken,
-  requirePermission('ml:optimize:promotion'), 
+  requirePermission('ml:optimize:promotion'),
   mlController.optimizePromotion
 );
 
-router.post('/optimize/price', 
+router.post('/optimize/price',
   authenticateToken,
-  requirePermission('ml:optimize:price'), 
+  requirePermission('ml:optimize:price'),
   mlController.optimizePrice
 );
 
-router.post('/predict/batch', 
+router.post('/predict/batch',
   authenticateToken,
-  requirePermission('ml:predict:batch'), 
+  requirePermission('ml:predict:batch'),
   mlController.batchPredict
 );
 
 // AI Recommendation Routes
-router.get('/recommendations/products/:userId', 
+router.get('/recommendations/products/:userId',
   authenticateToken,
-  requirePermission('ai:recommend:products'), 
+  requirePermission('ai:recommend:products'),
   mlController.getProductRecommendations
 );
 
-router.post('/recommendations/personalized-promotions/:userId', 
+router.post('/recommendations/personalized-promotions/:userId',
   authenticateToken,
-  requirePermission('ai:recommend:promotions'), 
+  requirePermission('ai:recommend:promotions'),
   mlController.getPersonalizedPromotions
 );
 
-router.get('/recommendations/hybrid/:userId', 
+router.get('/recommendations/hybrid/:userId',
   authenticateToken,
-  requirePermission('ai:recommend:hybrid'), 
+  requirePermission('ai:recommend:hybrid'),
   mlController.getHybridRecommendations
 );
 
-router.post('/recommendations/realtime/:userId', 
+router.post('/recommendations/realtime/:userId',
   authenticateToken,
-  requirePermission('ai:recommend:realtime'), 
+  requirePermission('ai:recommend:realtime'),
   mlController.getRealTimeRecommendations
 );
 
-router.post('/recommendations/batch', 
+router.post('/recommendations/batch',
   authenticateToken,
-  requirePermission('ai:recommend:batch'), 
+  requirePermission('ai:recommend:batch'),
   mlController.generateBatchRecommendations
 );
 
 // Customer Segmentation
-router.post('/segment/customer', 
+router.post('/segment/customer',
   authenticateToken,
-  requirePermission('ai:segment:customer'), 
+  requirePermission('ai:segment:customer'),
   mlController.segmentCustomer
 );
 
 // Automated Insights Routes
-router.get('/insights/generate', 
+router.get('/insights/generate',
   authenticateToken,
-  requirePermission('ai:insights:generate'), 
+  requirePermission('ai:insights:generate'),
   mlController.generateInsights
 );
 
-router.post('/alerts/check', 
+router.post('/alerts/check',
   authenticateToken,
-  requirePermission('ai:alerts:check'), 
+  requirePermission('ai:alerts:check'),
   mlController.checkAlerts
 );
 
 // Model Management Routes
-router.get('/models/metrics', 
+router.get('/models/metrics',
   authenticateToken,
-  requirePermission('ml:models:view'), 
+  requirePermission('ml:models:view'),
   mlController.getModelMetrics
 );
 
-router.get('/models/training-status', 
+router.get('/models/training-status',
   authenticateToken,
-  requirePermission('ml:models:view'), 
+  requirePermission('ml:models:view'),
   mlController.getTrainingStatus
 );
 
-router.post('/models/retrain', 
+router.post('/models/retrain',
   authenticateToken,
-  requirePermission('ml:models:train'), 
+  requirePermission('ml:models:train'),
   mlController.retrainModels
 );
 
 // A/B Testing Routes
-router.post('/ab-test/create', 
+router.post('/ab-test/create',
   authenticateToken,
-  requirePermission('ml:abtest:create'), 
+  requirePermission('ml:abtest:create'),
   mlController.createABTest
 );
 
-router.get('/ab-test/:testId/results', 
+router.get('/ab-test/:testId/results',
   authenticateToken,
-  requirePermission('ml:abtest:view'), 
+  requirePermission('ml:abtest:view'),
   mlController.getABTestResults
 );
 
@@ -169,7 +169,7 @@ router.get('/models', authenticateToken, asyncHandler(async (req, res) => {
       accuracy: 0.93
     }
   ];
-  
+
   res.json({
     success: true,
     data: models
@@ -178,11 +178,11 @@ router.get('/models', authenticateToken, asyncHandler(async (req, res) => {
 
 router.post('/forecast', authenticateToken, asyncHandler(async (req, res) => {
   const { type, targetId, horizon = 3 } = req.body;
-  
+
   if (!type || !targetId) {
     throw new AppError('Type and target ID are required', 400);
   }
-  
+
   // Enhanced forecast with ML predictions
   const forecast = {
     type,
@@ -198,7 +198,7 @@ router.post('/forecast', authenticateToken, asyncHandler(async (req, res) => {
     modelVersion: '2.0.0',
     generatedAt: new Date()
   };
-  
+
   res.json({
     success: true,
     data: forecast
@@ -207,11 +207,11 @@ router.post('/forecast', authenticateToken, asyncHandler(async (req, res) => {
 
 router.post('/train', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
   const { modelId, parameters } = req.body;
-  
+
   if (!modelId) {
     throw new AppError('Model ID is required', 400);
   }
-  
+
   res.json({
     success: true,
     message: `Enhanced training initiated for model ${modelId}`,
@@ -224,7 +224,7 @@ router.post('/train', authenticateToken, authorize('admin'), asyncHandler(async 
 
 router.get('/training/:jobId', authenticateToken, asyncHandler(async (req, res) => {
   const { jobId } = req.params;
-  
+
   res.json({
     success: true,
     data: {
@@ -245,7 +245,7 @@ router.get('/training/:jobId', authenticateToken, asyncHandler(async (req, res) 
 
 router.get('/insights/:modelId', authenticateToken, asyncHandler(async (req, res) => {
   const { modelId } = req.params;
-  
+
   const insights = {
     modelId,
     keyFactors: [
@@ -281,7 +281,7 @@ router.get('/insights/:modelId', authenticateToken, asyncHandler(async (req, res
       f1Score: 0.88
     }
   };
-  
+
   res.json({
     success: true,
     data: insights

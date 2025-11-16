@@ -30,12 +30,12 @@ router.get('/',
   protect,
   catchAsync(async (req, res) => {
     const { unreadOnly, limit } = req.query;
-    
+
     const notifications = notificationService.getNotifications(req.user._id, {
       unreadOnly: unreadOnly === 'true',
       limit: parseInt(limit) || 50
     });
-    
+
     res.status(200).json({
       success: true,
       count: notifications.length,
@@ -56,7 +56,7 @@ router.post('/:id/read',
       req.user._id,
       parseInt(req.params.id)
     );
-    
+
     res.status(200).json({
       success: true,
       data: notification
@@ -73,7 +73,7 @@ router.post('/read-all',
   protect,
   catchAsync(async (req, res) => {
     const result = notificationService.markAllAsRead(req.user._id);
-    
+
     res.status(200).json({
       success: true,
       data: result
@@ -90,7 +90,7 @@ router.delete('/',
   protect,
   catchAsync(async (req, res) => {
     const result = notificationService.clearNotifications(req.user._id);
-    
+
     res.status(200).json({
       success: true,
       data: result
@@ -113,9 +113,9 @@ router.get('/stats',
         error: 'Access denied'
       });
     }
-    
+
     const stats = notificationService.getStatistics();
-    
+
     res.status(200).json({
       success: true,
       data: stats

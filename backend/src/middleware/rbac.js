@@ -136,7 +136,7 @@ const requireAnyPermission = (permissions) => {
         ipAddress: context.ipAddress,
         userAgent: context.userAgent,
         details: {
-          requestedPermissions: permissions.map(p => `${p.resource}:${p.action}`),
+          requestedPermissions: permissions.map((p) => `${p.resource}:${p.action}`),
           requestUrl: req.originalUrl,
           requestMethod: req.method
         }
@@ -146,7 +146,7 @@ const requireAnyPermission = (permissions) => {
         success: false,
         error: 'Insufficient permissions',
         details: {
-          required: permissions.map(p => `${p.resource}:${p.action}`),
+          required: permissions.map((p) => `${p.resource}:${p.action}`),
           reason: 'None of the required permissions are granted'
         }
       });
@@ -212,7 +212,7 @@ const requireAllPermissions = (permissions) => {
           ipAddress: context.ipAddress,
           userAgent: context.userAgent,
           details: {
-            requestedPermissions: permissions.map(p => `${p.resource}:${p.action}`),
+            requestedPermissions: permissions.map((p) => `${p.resource}:${p.action}`),
             deniedPermissions,
             requestUrl: req.originalUrl,
             requestMethod: req.method
@@ -223,7 +223,7 @@ const requireAllPermissions = (permissions) => {
           success: false,
           error: 'Insufficient permissions',
           details: {
-            required: permissions.map(p => `${p.resource}:${p.action}`),
+            required: permissions.map((p) => `${p.resource}:${p.action}`),
             denied: deniedPermissions,
             reason: 'Not all required permissions are granted'
           }
@@ -263,8 +263,8 @@ const requireRole = (roles) => {
 
       // Check if user has any of the required roles
       const userRoles = user.roles || [];
-      const hasRequiredRole = roleArray.some(role => 
-        userRoles.some(userRole => 
+      const hasRequiredRole = roleArray.some((role) =>
+        userRoles.some((userRole) =>
           userRole.name === role || userRole === role
         )
       );
@@ -279,7 +279,7 @@ const requireRole = (roles) => {
           userAgent: req.get('User-Agent'),
           details: {
             requiredRoles: roleArray,
-            userRoles: userRoles.map(r => r.name || r),
+            userRoles: userRoles.map((r) => r.name || r),
             requestUrl: req.originalUrl,
             requestMethod: req.method
           }

@@ -9,20 +9,20 @@ const roleSchema = new mongoose.Schema({
     trim: true,
     index: true
   },
-  
+
   // Display name for UI
   displayName: {
     type: String,
     required: true,
     trim: true
   },
-  
+
   // Role description
   description: {
     type: String,
     trim: true
   },
-  
+
   // Role type/category
   type: {
     type: String,
@@ -30,7 +30,7 @@ const roleSchema = new mongoose.Schema({
     default: 'CUSTOM',
     index: true
   },
-  
+
   // Role level/hierarchy
   level: {
     type: Number,
@@ -38,25 +38,25 @@ const roleSchema = new mongoose.Schema({
     min: 0,
     max: 10
   },
-  
+
   // Permissions associated with this role
   permissions: [{
     type: String,
     required: true
   }],
-  
+
   // Parent role (for role hierarchy)
   parentRole: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Role'
   },
-  
+
   // Child roles
   childRoles: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Role'
   }],
-  
+
   // Role constraints
   constraints: {
     // Maximum number of users that can have this role
@@ -64,10 +64,10 @@ const roleSchema = new mongoose.Schema({
       type: Number,
       min: 1
     },
-    
+
     // IP address restrictions
     allowedIpRanges: [String],
-    
+
     // Time-based restrictions
     timeRestrictions: {
       allowedHours: {
@@ -80,14 +80,14 @@ const roleSchema = new mongoose.Schema({
       }],
       timezone: String
     },
-    
+
     // Session restrictions
     maxConcurrentSessions: {
       type: Number,
       min: 1,
       default: 5
     },
-    
+
     // Data access restrictions
     dataAccessLevel: {
       type: String,
@@ -95,56 +95,56 @@ const roleSchema = new mongoose.Schema({
       default: 'OWN'
     }
   },
-  
+
   // Role metadata
   metadata: {
     // Department association
     department: String,
-    
+
     // Cost center
     costCenter: String,
-    
+
     // Approval workflow
     requiresApproval: {
       type: Boolean,
       default: false
     },
-    
+
     // Auto-assignment rules
     autoAssignmentRules: [{
       condition: String, // e.g., "department === 'Sales'"
       priority: Number
     }],
-    
+
     // Role tags for categorization
     tags: [String]
   },
-  
+
   // Status and lifecycle
   isActive: {
     type: Boolean,
     default: true,
     index: true
   },
-  
+
   isSystem: {
     type: Boolean,
     default: false,
     index: true
   },
-  
+
   // Audit fields
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  
+
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Usage statistics
   statistics: {
     userCount: {
@@ -171,24 +171,24 @@ roleSchema.index({ tenantId: 1, isSystem: 1 });
 roleSchema.index({ tenantId: 1, 'metadata.department': 1 });
 
 // Virtual for full hierarchy path
-roleSchema.virtual('hierarchyPath').get(function() {
+roleSchema.virtual('hierarchyPath').get(function () {
   // This would be populated by a separate method that traverses the hierarchy
   return this._hierarchyPath || [this.name];
 });
 
 // Virtual for permission count
-roleSchema.virtual('permissionCount').get(function() {
+roleSchema.virtual('permissionCount').get(function () {
   return this.permissions ? this.permissions.length : 0;
 });
 
 // Virtual for effective permissions (including inherited)
-roleSchema.virtual('effectivePermissions').get(function() {
+roleSchema.virtual('effectivePermissions').get(function () {
   // This would be calculated by traversing parent roles
   return this._effectivePermissions || this.permissions;
 });
 
 // Static methods
-roleSchema.statics.findByPermission = function(tenantId, permission) {
+roleSchema.statics.findByPermission = function (tenantId, permission) {
   return this.find({
     tenantId,
     permissions: permission,
@@ -196,7 +196,7 @@ roleSchema.statics.findByPermission = function(tenantId, permission) {
   });
 };
 
-roleSchema.statics.findSystemRoles = function(tenantId) {
+roleSchema.statics.findSystemRoles = function (tenantId) {
   return this.find({
     tenantId,
     isSystem: true,
@@ -204,7 +204,7 @@ roleSchema.statics.findSystemRoles = function(tenantId) {
   }).sort({ level: 1, name: 1 });
 };
 
-roleSchema.statics.findCustomRoles = function(tenantId) {
+roleSchema.statics.findCustomRoles = function (tenantId) {
   return this.find({
     tenantId,
     isSystem: false,
@@ -212,7 +212,7 @@ roleSchema.statics.findCustomRoles = function(tenantId) {
   }).sort({ name: 1 });
 };
 
-roleSchema.statics.findByDepartment = function(tenantId, department) {
+roleSchema.statics.findByDepartment = function (tenantId, department) {
   return this.find({
     tenantId,
     'metadata.department': department,
@@ -220,7 +220,7 @@ roleSchema.statics.findByDepartment = function(tenantId, department) {
   });
 };
 
-roleSchema.statics.getRoleHierarchy = function(tenantId) {
+roleSchema.statics.getRoleHierarchy = function (tenantId) {
   return this.aggregate([
     { $match: { tenantId, isActive: true } },
     {
@@ -239,69 +239,69 @@ roleSchema.statics.getRoleHierarchy = function(tenantId) {
 };
 
 // Instance methods
-roleSchema.methods.addPermission = function(permission) {
+roleSchema.methods.addPermission = function (permission) {
   if (!this.permissions.includes(permission)) {
     this.permissions.push(permission);
   }
   return this.save();
 };
 
-roleSchema.methods.removePermission = function(permission) {
-  this.permissions = this.permissions.filter(p => p !== permission);
+roleSchema.methods.removePermission = function (permission) {
+  this.permissions = this.permissions.filter((p) => p !== permission);
   return this.save();
 };
 
-roleSchema.methods.hasPermission = function(permission) {
-  return this.permissions.includes(permission) || 
-         this.permissions.some(p => p.endsWith(':*') && permission.startsWith(p.split(':')[0] + ':'));
+roleSchema.methods.hasPermission = function (permission) {
+  return this.permissions.includes(permission) ||
+         this.permissions.some((p) => p.endsWith(':*') && permission.startsWith(`${p.split(':')[0]}:`));
 };
 
-roleSchema.methods.getEffectivePermissions = async function() {
+roleSchema.methods.getEffectivePermissions = async function () {
   const permissions = new Set(this.permissions);
-  
+
   // Add permissions from parent roles
   if (this.parentRole) {
     const parentRole = await this.constructor.findById(this.parentRole);
     if (parentRole) {
       const parentPermissions = await parentRole.getEffectivePermissions();
-      parentPermissions.forEach(p => permissions.add(p));
+      parentPermissions.forEach((p) => permissions.add(p));
     }
   }
-  
+
   return Array.from(permissions);
 };
 
-roleSchema.methods.canBeAssignedTo = function(user, context = {}) {
+roleSchema.methods.canBeAssignedTo = function (user, context = {}) {
   // Check constraints
   if (this.constraints.maxUsers && this.statistics.userCount >= this.constraints.maxUsers) {
     return { allowed: false, reason: 'Maximum user limit reached' };
   }
-  
+
   if (this.constraints.allowedIpRanges && this.constraints.allowedIpRanges.length > 0) {
     if (!context.ipAddress || !this.isIpAllowed(context.ipAddress)) {
       return { allowed: false, reason: 'IP address not in allowed ranges' };
     }
   }
-  
+
   if (this.metadata.requiresApproval && !context.approved) {
     return { allowed: false, reason: 'Role assignment requires approval' };
   }
-  
+
   return { allowed: true };
 };
 
-roleSchema.methods.isIpAllowed = function(ipAddress) {
+roleSchema.methods.isIpAllowed = function (ipAddress) {
   if (!this.constraints.allowedIpRanges || this.constraints.allowedIpRanges.length === 0) {
     return true;
   }
-  
-  return this.constraints.allowedIpRanges.some(range => {
+
+  return this.constraints.allowedIpRanges.some((range) => {
     // Simple IP range check - in production, use a proper IP range library
     return ipAddress.startsWith(range.replace('*', ''));
   });
 };
 
-roleSchema.methods.updateStatistics = function(action) {
+roleSchema.methods.updateStatistics = function (action) {
   switch (action) {
     case 'assigned':
       this.statistics.userCount += 1;
@@ -318,45 +318,45 @@ roleSchema.methods.updateStatistics = function(action) {
 };
 
 // Pre-save middleware
-roleSchema.pre('save', function(next) {
+roleSchema.pre('save', function (next) {
   // Ensure system roles cannot be modified by non-system operations
   if (this.isSystem && this.isModified() && !this._allowSystemModification) {
     return next(new Error('System roles cannot be modified'));
   }
-  
+
   // Validate permission format
   if (this.isModified('permissions')) {
-    const invalidPermissions = this.permissions.filter(p => {
+    const invalidPermissions = this.permissions.filter((p) => {
       return !/^[a-z_]+:[a-z_*]+(:own|:all)?$/.test(p);
     });
-    
+
     if (invalidPermissions.length > 0) {
       return next(new Error(`Invalid permission format: ${invalidPermissions.join(', ')}`));
     }
   }
-  
+
   next();
 });
 
 // Pre-remove middleware
-roleSchema.pre('remove', async function(next) {
+roleSchema.pre('remove', async function (next) {
   // Check if role is assigned to any users
   const User = mongoose.model('User');
   const userCount = await User.countDocuments({
     tenantId: this.tenantId,
     roles: this._id
   });
-  
+
   if (userCount > 0) {
     return next(new Error('Cannot delete role that is assigned to users'));
   }
-  
+
   // Remove from child roles' parent references
   await this.constructor.updateMany(
     { parentRole: this._id },
     { $unset: { parentRole: 1 } }
   );
-  
+
   next();
 });
 

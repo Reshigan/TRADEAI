@@ -12,7 +12,7 @@ module.exports = {
   // Environment
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 5002,
-  
+
   // Database
   mongodb: {
     uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/fmcg-trade-spend',
@@ -20,10 +20,10 @@ module.exports = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 5000
     }
   },
-  
+
   // Redis
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
@@ -39,7 +39,7 @@ module.exports = {
       report: 7200 // 2 hours
     }
   },
-  
+
   // JWT
   jwt: {
     secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this',
@@ -47,7 +47,7 @@ module.exports = {
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d'
   },
-  
+
   // Security
   security: {
     bcryptRounds: 10,
@@ -62,7 +62,7 @@ module.exports = {
       minSymbols: 1
     }
   },
-  
+
   // CORS
   cors: {
     origin: '*', // Allow all origins for development
@@ -71,16 +71,16 @@ module.exports = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   },
-  
+
   // Rate Limiting
   rateLimit: {
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
-    legacyHeaders: false,
+    legacyHeaders: false
   },
-  
+
   // File Upload
   upload: {
     maxFileSize: 10 * 1024 * 1024, // 10MB
@@ -96,7 +96,7 @@ module.exports = {
     uploadDir: process.env.UPLOAD_DIR || './uploads',
     tempDir: process.env.TEMP_DIR || './temp'
   },
-  
+
   // Email
   email: {
     provider: process.env.EMAIL_PROVIDER || 'sendgrid',
@@ -120,7 +120,7 @@ module.exports = {
       }
     }
   },
-  
+
   // SAP Integration
   sap: {
     baseUrl: process.env.SAP_BASE_URL,
@@ -134,7 +134,7 @@ module.exports = {
     retryAttempts: 3,
     retryDelay: 5000
   },
-  
+
   // ML/AI Configuration - LOCAL ONLY
   ml: {
     tensorflow: {
@@ -147,12 +147,12 @@ module.exports = {
       forecastDays: 90,
       confidenceInterval: 0.95,
       seasonalityPeriods: [7, 30, 365] // Weekly, monthly, yearly
-    },
+    }
   },
-  
+
   // AI Configuration - LOCAL PROCESSING ONLY
   ai: aiConfig,
-  
+
   // Business Rules
   businessRules: {
     tradeSpend: {
@@ -175,7 +175,7 @@ module.exports = {
       forecastUpdateFrequency: 'monthly'
     }
   },
-  
+
   // Logging
   logging: {
     level: process.env.LOG_LEVEL || 'info',
@@ -187,7 +187,7 @@ module.exports = {
       maxFiles: 5
     }
   },
-  
+
   // Jobs and Queues
   jobs: {
     redis: {
@@ -205,7 +205,7 @@ module.exports = {
       }
     }
   },
-  
+
   // Cache
   cache: {
     ttl: {
@@ -216,13 +216,13 @@ module.exports = {
       dashboard: 300 // 5 minutes
     }
   },
-  
+
   // Pagination
   pagination: {
     defaultLimit: 20,
     maxLimit: 100
   },
-  
+
   // API Documentation
   swagger: {
     definition: {

@@ -1,7 +1,7 @@
 /**
  * AI Orchestrator Service
  * Uses Ollama LLM to route requests to appropriate ML endpoints and generate explanations
- * 
+ *
  * Architecture: Ollama (routing + explanation) → ML Service (predictions) → Rule-based fallback
  */
 
@@ -17,9 +17,9 @@ class AIOrchestratorService {
     this.ollamaModel = process.env.OLLAMA_MODEL || 'phi3:mini';
     this.ollamaTimeout = parseInt(process.env.OLLAMA_TIMEOUT) || 60000;
     this.mlServiceURL = process.env.ML_SERVICE_URL || 'http://localhost:8001';
-    
+
     this.tools = this.defineTools();
-    
+
     this.cache = new Map();
     this.cacheTTL = 30 * 60 * 1000;
   }
@@ -117,9 +117,9 @@ class AIOrchestratorService {
   async orchestrate(userIntent, context = {}) {
     try {
       const startTime = Date.now();
-      
+
       const toolSelection = await this.selectTool(userIntent, context);
-      
+
       if (!toolSelection.tool) {
         return {
           success: false,
@@ -143,7 +143,7 @@ class AIOrchestratorService {
       );
 
       const duration = Date.now() - startTime;
-      
+
       logger.info('AI orchestration completed', {
         tool: toolSelection.tool,
         duration,
@@ -162,7 +162,7 @@ class AIOrchestratorService {
 
     } catch (error) {
       logger.error('AI orchestration failed', { error: error.message, context });
-      
+
       return {
         success: false,
         error: error.message,
@@ -180,17 +180,17 @@ class AIOrchestratorService {
    */
   async selectTool(userIntent, context) {
     const ollamaAvailable = await this.isOllamaAvailable();
-    
+
     if (!ollamaAvailable) {
       throw new Error('Ollama service is not available. Please ensure Ollama is running.');
     }
 
     const prompt = this.buildToolSelectionPrompt(userIntent, context);
-    
+
     const response = await this.callOllama(prompt, { temperature: 0.1 });
-    
+
     const toolSelection = this.parseToolSelection(response);
-    
+
     return toolSelection;
   }
 
@@ -199,7 +199,7 @@ class AIOrchestratorService {
    */
   buildToolSelectionPrompt(userIntent, context) {
     const toolsJSON = JSON.stringify(this.tools, null, 2);
-    
+
     return `You are an AI assistant for a trade promotions management platform. Your task is to select the most appropriate tool to fulfill the user's request.
 
 Available Tools:
@@ -241,20 +241,20 @@ Respond with ONLY valid JSON, no other text.`;
       if (!jsonMatch) {
         throw new Error('No JSON found in response');
       }
-      
+
       const parsed = JSON.parse(jsonMatch[0]);
-      
+
       if (!parsed.tool && parsed.tool !== null) {
         throw new Error('Missing tool field in response');
       }
-      
+
       return {
         tool: parsed.tool,
         parameters: parsed.parameters || {},
         confidence: parsed.confidence || 0.5,
         reasoning: parsed.reasoning || ''
       };
-      
+
     } catch (error) {
       logger.error('Failed to parse tool selection', { error: error.message, response });
       return { tool: null, confidence: 0, reasoning: 'Parse error' };
@@ -266,7 +266,7 @@ Respond with ONLY valid JSON, no other text.`;
    */
   selectToolFallback(userIntent, context) {
     const intent = userIntent.toLowerCase();
-    
+
     if (intent.includes('forecast') || intent.includes('demand') || intent.includes('predict sales')) {
       return {
         tool: 'forecast_demand',
@@ -275,7 +275,7 @@ Respond with ONLY valid JSON, no other text.`;
         reasoning: 'Keyword match: forecast/demand'
       };
     }
-    
+
     if (intent.includes('price') || intent.includes('pricing') || intent.includes('optimize price')) {
       return {
         tool: 'optimize_price',
@@ -284,7 +284,7 @@ Respond with ONLY valid JSON, no other text.`;
         reasoning: 'Keyword match: price/pricing'
       };
     }
-    
+
     if (intent.includes('promotion') || intent.includes('uplift') || intent.includes('lift')) {
       return {
         tool: 'analyze_promotion_lift',
@@ -293,7 +293,7 @@ Respond with ONLY valid JSON, no other text.`;
         reasoning: 'Keyword match: promotion/uplift'
       };
     }
-    
+
     if (intent.includes('segment') || intent.includes('rfm') || intent.includes('customer groups')) {
       return {
         tool: 'segment_customers',
@@ -302,7 +302,7 @@ Respond with ONLY valid JSON, no other text.`;
         reasoning: 'Keyword match: segment'
       };
     }
-    
+
     if (intent.includes('recommend') || intent.includes('suggest products') || intent.includes('product recommendations')) {
       return {
         tool: 'recommend_products',
@@ -311,7 +311,7 @@ Respond with ONLY valid JSON, no other text.`;
         reasoning: 'Keyword match: recommend/suggest'
       };
     }
-    
+
     if (intent.includes('anomaly') || intent.includes('unusual') || intent.includes('outlier')) {
       return {
         tool: 'detect_anomalies',
@@ -320,7 +320,7 @@ Respond with ONLY valid JSON, no other text.`;
         reasoning: 'Keyword match: anomaly'
       };
     }
-    
+
     return {
       tool: null,
       confidence: 0,
@@ -426,15 +426,15 @@ Respond with ONLY valid JSON, no other text.`;
   async generateExplanation(userIntent, toolName, mlResult, context) {
     try {
       const ollamaAvailable = await this.isOllamaAvailable();
-      
+
       if (!ollamaAvailable) {
         throw new Error('Ollama service is not available. Please ensure Ollama is running.');
       }
 
       const prompt = this.buildExplanationPrompt(userIntent, toolName, mlResult, context);
-      
+
       const explanation = await this.callOllama(prompt, { temperature: 0.3 });
-      
+
       return explanation;
 
     } catch (error) {
@@ -472,16 +472,16 @@ Respond with ONLY the explanation text, no JSON or formatting.`;
     switch (toolName) {
       case 'forecast_demand':
         return `Based on historical data, we predict demand will be ${mlResult.predictions?.[0]?.value || 'N/A'} units. This forecast has ${Math.round((mlResult.confidence || 0.85) * 100)}% confidence.`;
-      
+
       case 'optimize_price':
         return `The optimal price is $${mlResult.optimalPrice || 'N/A'}, which should generate ${mlResult.expectedImpact?.revenueChange || 'N/A'} in additional revenue.`;
-      
+
       case 'predict_customer_ltv':
         return `This customer's predicted lifetime value is $${mlResult.predictedCLV || 'N/A'} with ${Math.round((mlResult.confidence || 0.85) * 100)}% confidence.`;
-      
+
       case 'predict_churn':
         return `Churn risk is ${mlResult.riskLevel || 'medium'} with a ${Math.round((mlResult.churnProbability || 0.5) * 100)}% probability. Consider retention strategies.`;
-      
+
       default:
         return 'Analysis complete. Review the detailed results for insights.';
     }
@@ -531,15 +531,15 @@ Respond with ONLY the explanation text, no JSON or formatting.`;
   getFromCache(key) {
     const cached = this.cache.get(key);
     if (!cached) return null;
-    
+
     const { data, timestamp } = cached;
     const age = Date.now() - timestamp;
-    
+
     if (age > this.cacheTTL) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return data;
   }
 
@@ -548,7 +548,7 @@ Respond with ONLY the explanation text, no JSON or formatting.`;
       data,
       timestamp: Date.now()
     });
-    
+
     if (this.cache.size > 1000) {
       this.cleanCache();
     }

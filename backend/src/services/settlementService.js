@@ -38,7 +38,7 @@ class SettlementService {
     const items = [];
 
     // Add invoices
-    invoices.forEach(invoice => {
+    invoices.forEach((invoice) => {
       items.push({
         itemType: 'invoice',
         referenceId: invoice._id,
@@ -49,7 +49,7 @@ class SettlementService {
     });
 
     // Add payments
-    payments.forEach(payment => {
+    payments.forEach((payment) => {
       items.push({
         itemType: 'payment',
         referenceId: payment._id,
@@ -60,7 +60,7 @@ class SettlementService {
     });
 
     // Add deductions
-    deductions.forEach(deduction => {
+    deductions.forEach((deduction) => {
       items.push({
         itemType: 'deduction',
         referenceId: deduction._id,
@@ -115,13 +115,13 @@ class SettlementService {
         results.created++;
         results.settlements.push({
           settlementNumber: settlement.settlementNumber,
-          customerId: customerId,
+          customerId,
           netAmount: settlement.netSettlement,
           itemCount: settlement.items.length
         });
       } catch (error) {
         results.failed.push({
-          customerId: customerId,
+          customerId,
           error: error.message
         });
       }
@@ -149,8 +149,8 @@ class SettlementService {
       .populate('customerId')
       .populate({
         path: 'items.referenceId',
-        model: function(doc) {
-          return doc.items.map(item => item.referenceModel);
+        model(doc) {
+          return doc.items.map((item) => item.referenceModel);
         }
       });
 
@@ -442,7 +442,7 @@ class SettlementService {
       glEntries,
       totalDebit: glEntries.reduce((sum, e) => sum + e.debit, 0),
       totalCredit: glEntries.reduce((sum, e) => sum + e.credit, 0),
-      balanced: glEntries.reduce((sum, e) => sum + e.debit, 0) === 
+      balanced: glEntries.reduce((sum, e) => sum + e.debit, 0) ===
                 glEntries.reduce((sum, e) => sum + e.credit, 0)
     };
   }
@@ -454,7 +454,7 @@ class SettlementService {
     const date = new Date();
     const year = date.getFullYear().toString().substr(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    
+
     const count = await Settlement.countDocuments({
       createdAt: {
         $gte: new Date(date.getFullYear(), date.getMonth(), 1),

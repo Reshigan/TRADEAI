@@ -23,7 +23,7 @@ class HierarchicalDataService {
       if (cached && !options.forceRefresh) return cached;
 
       // Get all customers for tenant
-      const customers = await Customer.find({ 
+      const customers = await Customer.find({
         tenantId,
         isActive: true,
         isDeleted: false
@@ -61,7 +61,7 @@ class HierarchicalDataService {
       if (cached && !options.forceRefresh) return cached;
 
       // Get all products for tenant
-      const products = await Product.find({ 
+      const products = await Product.find({
         tenantId,
         isActive: true,
         isDeleted: false
@@ -94,7 +94,7 @@ class HierarchicalDataService {
    */
   generateMaterializedPath(hierarchyData) {
     const pathParts = [];
-    
+
     for (let i = 1; i <= 5; i++) {
       const level = hierarchyData[`level${i}`];
       if (level && level.id) {
@@ -118,11 +118,11 @@ class HierarchicalDataService {
   async findDescendants(tenantId, nodeId, entityType = 'customer') {
     try {
       const Model = entityType === 'customer' ? Customer : Product;
-      
+
       // Find the parent node first
-      const parentNode = await Model.findOne({ 
-        _id: nodeId, 
-        tenantId 
+      const parentNode = await Model.findOne({
+        _id: nodeId,
+        tenantId
       });
 
       if (!parentNode) {
@@ -158,11 +158,11 @@ class HierarchicalDataService {
   async findAncestors(tenantId, nodeId, entityType = 'customer') {
     try {
       const Model = entityType === 'customer' ? Customer : Product;
-      
+
       // Find the child node first
-      const childNode = await Model.findOne({ 
-        _id: nodeId, 
-        tenantId 
+      const childNode = await Model.findOne({
+        _id: nodeId,
+        tenantId
       });
 
       if (!childNode) {
@@ -182,7 +182,7 @@ class HierarchicalDataService {
       }
 
       const ancestors = await Model.find({
-        _id: { $in: ancestorIds.map(id => new mongoose.Types.ObjectId(id)) },
+        _id: { $in: ancestorIds.map((id) => new mongoose.Types.ObjectId(id)) },
         tenantId,
         isActive: true,
         isDeleted: false
@@ -207,7 +207,7 @@ class HierarchicalDataService {
   async moveNode(tenantId, nodeId, newParentId, entityType = 'customer') {
     try {
       const Model = entityType === 'customer' ? Customer : Product;
-      
+
       // Find the node to move
       const node = await Model.findOne({ _id: nodeId, tenantId });
       if (!node) {
@@ -279,7 +279,7 @@ class HierarchicalDataService {
 
       // Validate data structure
       const validationResults = this.validateHierarchicalData(data, entityType);
-      
+
       if (validationResults.errors.length > 0 && !options.ignoreErrors) {
         return {
           success: false,
@@ -311,7 +311,7 @@ class HierarchicalDataService {
         try {
           // Generate materialized path
           const materializedPath = this.generateMaterializedPath(record.hierarchy);
-          
+
           // Check if record exists
           const existingRecord = await Model.findOne({
             tenantId,
@@ -435,15 +435,15 @@ class HierarchicalDataService {
 
   buildHierarchyTree(items, entityType) {
     const tree = {};
-    
-    items.forEach(item => {
+
+    items.forEach((item) => {
       let currentLevel = tree;
-      
+
       // Navigate through hierarchy levels
       for (let i = 1; i <= 5; i++) {
         const level = item.hierarchy[`level${i}`];
         if (!level || !level.id) break;
-        
+
         if (!currentLevel[level.id]) {
           currentLevel[level.id] = {
             id: level.id,
@@ -454,11 +454,11 @@ class HierarchicalDataService {
             items: []
           };
         }
-        
+
         if (i === item.materializedPath?.depth) {
           currentLevel[level.id].items.push(item);
         }
-        
+
         currentLevel = currentLevel[level.id].children;
       }
     });
@@ -479,16 +479,16 @@ class HierarchicalDataService {
       stats.levelCounts[depth] = (stats.levelCounts[depth] || 0) + 1;
       stats.maxDepth = Math.max(stats.maxDepth, depth);
 
-      Object.values(node.children || {}).forEach(child => {
+      Object.values(node.children || {}).forEach((child) => {
         traverse(child, depth + 1);
       });
     };
 
-    Object.values(hierarchy).forEach(rootNode => {
+    Object.values(hierarchy).forEach((rootNode) => {
       traverse(rootNode, 1);
     });
 
-    stats.avgDepth = stats.totalNodes > 0 ? 
+    stats.avgDepth = stats.totalNodes > 0 ?
       Object.entries(stats.levelCounts)
         .reduce((sum, [level, count]) => sum + (parseInt(level) * count), 0) / stats.totalNodes : 0;
 
@@ -504,7 +504,7 @@ class HierarchicalDataService {
 
   groupByLevel(items) {
     const levels = {};
-    items.forEach(item => {
+    items.forEach((item) => {
       const depth = item.materializedPath?.depth || 0;
       if (!levels[depth]) levels[depth] = [];
       levels[depth].push(item);
@@ -513,7 +513,7 @@ class HierarchicalDataService {
   }
 
   buildAncestorPath(ancestors, child) {
-    return [...ancestors, child].map(node => ({
+    return [...ancestors, child].map((node) => ({
       id: node._id,
       name: node.name,
       code: node.code,
@@ -545,11 +545,11 @@ class HierarchicalDataService {
 
   async updateDescendantPaths(tenantId, descendants, oldPath, newPath, entityType) {
     const Model = entityType === 'customer' ? Customer : Product;
-    
-    const bulkOps = descendants.map(descendant => {
+
+    const bulkOps = descendants.map((descendant) => {
       const currentPath = descendant.materializedPath?.path || '';
       const updatedPath = currentPath.replace(oldPath, newPath);
-      
+
       return {
         updateOne: {
           filter: { _id: descendant._id, tenantId },
@@ -619,7 +619,7 @@ class HierarchicalDataService {
 
   transformToCSV(records, entityType) {
     // Implementation for CSV transformation
-    return records.map(record => ({
+    return records.map((record) => ({
       id: record._id,
       name: record.name,
       code: record.code,
@@ -664,7 +664,7 @@ class HierarchicalDataService {
         keysToDelete.push(key);
       }
     }
-    keysToDelete.forEach(key => this.cache.delete(key));
+    keysToDelete.forEach((key) => this.cache.delete(key));
   }
 
   clearCache() {

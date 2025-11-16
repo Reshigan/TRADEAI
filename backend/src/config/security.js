@@ -26,7 +26,7 @@ const limiter = rateLimit({
       path: req.path,
       userAgent: req.get('user-agent')
     });
-    
+
     res.status(429).json({
       success: false,
       error: 'Too many requests from this IP, please try again later',
@@ -49,7 +49,7 @@ const authLimiter = rateLimit({
       email: req.body.email || req.body.username,
       userAgent: req.get('user-agent')
     });
-    
+
     res.status(429).json({
       success: false,
       error: 'Too many login attempts, please try again later',
@@ -71,7 +71,7 @@ const passwordResetLimiter = rateLimit({
       email: req.body.email,
       userAgent: req.get('user-agent')
     });
-    
+
     res.status(429).json({
       success: false,
       error: 'Too many password reset attempts, please try again later'
@@ -106,23 +106,23 @@ const helmetConfig = helmet({
       upgradeInsecureRequests: []
     }
   },
-  
+
   crossOriginEmbedderPolicy: false, // Allow embedding for iframe support
-  
+
   hsts: {
     maxAge: 31536000, // 1 year
     includeSubDomains: true,
     preload: true
   },
-  
+
   noSniff: true,
-  
+
   frameguard: {
     action: 'deny' // Prevent clickjacking
   },
-  
+
   xssFilter: true,
-  
+
   referrerPolicy: {
     policy: 'strict-origin-when-cross-origin'
   }
@@ -132,10 +132,10 @@ const helmetConfig = helmet({
  * CORS configuration
  */
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin(origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:3000',
       'https://tradeai.gonxt.tech',
@@ -143,14 +143,14 @@ const corsOptions = {
       /\.gonxt\.tech$/,
       /\.all-hands\.dev$/ // For testing environments
     ];
-    
-    const isAllowed = allowedOrigins.some(allowed => {
+
+    const isAllowed = allowedOrigins.some((allowed) => {
       if (typeof allowed === 'string') {
         return origin === allowed;
       }
       return allowed.test(origin);
     });
-    
+
     if (isAllowed) {
       callback(null, true);
     } else {
@@ -217,17 +217,17 @@ const trustProxy = (req, res, next) => {
 const securityHeaders = (req, res, next) => {
   // Remove X-Powered-By header
   res.removeHeader('X-Powered-By');
-  
+
   // Add custom security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-  
+
   // Add request ID for tracking
   req.id = req.get('X-Request-ID') || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   res.setHeader('X-Request-ID', req.id);
-  
+
   next();
 };
 
@@ -237,7 +237,7 @@ const securityHeaders = (req, res, next) => {
 const validateContentType = (req, res, next) => {
   if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
     const contentType = req.get('Content-Type');
-    
+
     if (!contentType || (!contentType.includes('application/json') && !contentType.includes('multipart/form-data'))) {
       return res.status(400).json({
         success: false,
@@ -245,7 +245,7 @@ const validateContentType = (req, res, next) => {
       });
     }
   }
-  
+
   next();
 };
 
@@ -255,25 +255,25 @@ const validateContentType = (req, res, next) => {
 const applySecurityMiddleware = (app) => {
   // Trust proxy
   app.use(trustProxy);
-  
+
   // Helmet security headers
   app.use(helmetConfig);
-  
+
   // Custom security headers
   app.use(securityHeaders);
-  
+
   // CORS
   app.use(cors(corsOptions));
-  
+
   // MongoDB sanitization
   app.use(mongoSanitizeConfig);
-  
+
   // HPP protection
   app.use(hppConfig);
-  
+
   // Content-Type validation
   app.use(validateContentType);
-  
+
   logger.info('Security middleware applied');
 };
 

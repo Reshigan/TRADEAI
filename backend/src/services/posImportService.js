@@ -27,7 +27,7 @@ class POSImportService {
   async parseCSV(filePath) {
     return new Promise((resolve, reject) => {
       const results = [];
-      
+
       fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (data) => results.push(data))
@@ -68,10 +68,10 @@ class POSImportService {
    */
   async validateRow(row, rowIndex, tenantId) {
     const errors = [];
-    
+
     // Required fields validation
     const requiredFields = ['date', 'sku', 'customer', 'quantity', 'amount'];
-    
+
     for (const field of requiredFields) {
       if (!row[field] || row[field] === '') {
         errors.push({
@@ -117,7 +117,7 @@ class POSImportService {
 
     // Product validation (check if SKU exists)
     if (row.sku) {
-      const product = await Product.findOne({ 
+      const product = await Product.findOne({
         $or: [
           { sku: row.sku },
           { productCode: row.sku }
@@ -125,7 +125,7 @@ class POSImportService {
         tenantId,
         isDeleted: false
       });
-      
+
       if (!product) {
         errors.push({
           row: rowIndex + 1,
@@ -146,7 +146,7 @@ class POSImportService {
         tenantId,
         isDeleted: false
       });
-      
+
       if (!customer) {
         errors.push({
           row: rowIndex + 1,
@@ -169,7 +169,7 @@ class POSImportService {
 
     for (let i = 0; i < data.length; i++) {
       const errors = await this.validateRow(data[i], i, tenantId);
-      
+
       if (errors.length > 0) {
         allErrors.push(...errors);
       } else {
@@ -259,7 +259,7 @@ class POSImportService {
 
       try {
         const transformedData = [];
-        
+
         for (const row of batch) {
           try {
             const transformed = await this.transformRow(row, tenantId, userId);
@@ -348,7 +348,7 @@ class POSImportService {
     ]);
 
     // Upsert to SalesHistory
-    const operations = transactions.map(item => ({
+    const operations = transactions.map((item) => ({
       updateOne: {
         filter: {
           productId: item._id.productId,

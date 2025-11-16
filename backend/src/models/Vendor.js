@@ -4,7 +4,7 @@ const { addTenantSupport } = require('./BaseTenantModel');
 const vendorSchema = new mongoose.Schema({
   // Tenant Association - CRITICAL for multi-tenant isolation
   // Note: tenantId will be added by addTenantSupport()
-  
+
   // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,7 +17,7 @@ const vendorSchema = new mongoose.Schema({
     unique: true,
     index: true
   },
-  
+
   // Basic Information
   name: {
     type: String,
@@ -32,14 +32,14 @@ const vendorSchema = new mongoose.Schema({
   },
   legalName: String,
   taxId: String,
-  
+
   // Vendor Type
   vendorType: {
     type: String,
     enum: ['principal', 'manufacturer', 'distributor', 'importer', 'agent'],
     required: true
   },
-  
+
   // Contact Information
   contacts: [{
     name: String,
@@ -50,7 +50,7 @@ const vendorSchema = new mongoose.Schema({
     mobile: String,
     isPrimary: Boolean
   }],
-  
+
   // Address
   addresses: [{
     type: {
@@ -64,7 +64,7 @@ const vendorSchema = new mongoose.Schema({
     country: String,
     postalCode: String
   }],
-  
+
   // Financial Information
   bankDetails: {
     bankName: String,
@@ -82,7 +82,7 @@ const vendorSchema = new mongoose.Schema({
     type: String,
     default: 'USD'
   },
-  
+
   // Contract Information
   contracts: [{
     contractNumber: String,
@@ -104,7 +104,7 @@ const vendorSchema = new mongoose.Schema({
       default: 'active'
     }
   }],
-  
+
   // Budget Allocations by Vendor
   budgetAllocations: {
     marketing: {
@@ -126,7 +126,7 @@ const vendorSchema = new mongoose.Schema({
       available: { type: Number, default: 0 }
     }
   },
-  
+
   // Trading Terms with Vendor
   tradingTerms: {
     purchaseRebate: {
@@ -156,7 +156,7 @@ const vendorSchema = new mongoose.Schema({
       value: mongoose.Schema.Types.Mixed
     }]
   },
-  
+
   // Products
   products: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -167,7 +167,7 @@ const vendorSchema = new mongoose.Schema({
     name: String,
     isExclusive: Boolean
   }],
-  
+
   // Performance Metrics
   performance: {
     lastYearPurchases: { type: Number, default: 0 },
@@ -177,7 +177,7 @@ const vendorSchema = new mongoose.Schema({
     marginContribution: { type: Number, default: 0 },
     marketShare: { type: Number, default: 0 }
   },
-  
+
   // Compliance and Quality
   compliance: {
     certifications: [{
@@ -195,13 +195,13 @@ const vendorSchema = new mongoose.Schema({
     lastAuditDate: Date,
     auditScore: Number
   },
-  
+
   // Account Management
   accountManager: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Status
   status: {
     type: String,
@@ -213,7 +213,7 @@ const vendorSchema = new mongoose.Schema({
     enum: ['completed', 'in_progress', 'pending'],
     default: 'pending'
   },
-  
+
   // Integration
   lastSyncDate: Date,
   syncStatus: {
@@ -221,10 +221,10 @@ const vendorSchema = new mongoose.Schema({
     enum: ['synced', 'pending', 'error'],
     default: 'pending'
   },
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   // Metadata
   tags: [String],
   notes: [{
@@ -249,31 +249,31 @@ vendorSchema.index({ status: 1 });
 vendorSchema.index({ 'brands.name': 1 });
 
 // Pre-save middleware to calculate available budgets
-vendorSchema.pre('save', function(next) {
+vendorSchema.pre('save', function (next) {
   // Update available budgets
   const budgetTypes = ['marketing', 'cashCoop', 'rebates'];
-  
-  budgetTypes.forEach(type => {
+
+  budgetTypes.forEach((type) => {
     if (this.budgetAllocations[type]) {
-      this.budgetAllocations[type].available = 
+      this.budgetAllocations[type].available =
         this.budgetAllocations[type].allocated - this.budgetAllocations[type].spent;
     }
   });
-  
+
   next();
 });
 
 // Methods
-vendorSchema.methods.allocateBudget = async function(type, amount) {
+vendorSchema.methods.allocateBudget = async function (type, amount) {
   if (this.budgetAllocations[type]) {
     this.budgetAllocations[type].allocated += amount;
-    this.budgetAllocations[type].available = 
+    this.budgetAllocations[type].available =
       this.budgetAllocations[type].allocated - this.budgetAllocations[type].spent;
     await this.save();
   }
 };
 
-vendorSchema.methods.spendBudget = async function(type, amount) {
+vendorSchema.methods.spendBudget = async function (type, amount) {
   if (this.budgetAllocations[type] && this.budgetAllocations[type].available >= amount) {
     this.budgetAllocations[type].spent += amount;
     this.budgetAllocations[type].available -= amount;
@@ -283,25 +283,25 @@ vendorSchema.methods.spendBudget = async function(type, amount) {
   return false;
 };
 
-vendorSchema.methods.calculateRebate = function(purchaseAmount) {
+vendorSchema.methods.calculateRebate = function (purchaseAmount) {
   if (!this.tradingTerms.purchaseRebate) return 0;
-  
+
   // Check if tiered rebate applies
   if (this.tradingTerms.purchaseRebate.tiers && this.tradingTerms.purchaseRebate.tiers.length > 0) {
     const applicableTier = this.tradingTerms.purchaseRebate.tiers.find(
-      tier => purchaseAmount >= tier.minPurchase && purchaseAmount <= tier.maxPurchase
+      (tier) => purchaseAmount >= tier.minPurchase && purchaseAmount <= tier.maxPurchase
     );
-    
+
     if (applicableTier) {
       return purchaseAmount * (applicableTier.percentage / 100);
     }
   }
-  
+
   // Use flat percentage if no tiers
   if (this.tradingTerms.purchaseRebate.percentage) {
     return purchaseAmount * (this.tradingTerms.purchaseRebate.percentage / 100);
   }
-  
+
   return 0;
 };
 

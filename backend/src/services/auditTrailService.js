@@ -317,7 +317,7 @@ class AuditTrailService {
       .limit(10)
       .populate('userId', 'name email');
 
-    stats.recentActivity = recentLogs.map(log => ({
+    stats.recentActivity = recentLogs.map((log) => ({
       date: log.createdAt,
       action: log.action,
       entityType: log.entityType,
@@ -400,8 +400,8 @@ class AuditTrailService {
 
       changes.push({
         field: key,
-        oldValue: oldValue,
-        newValue: newValue,
+        oldValue,
+        newValue,
         dataType: this._getDataType(newValue)
       });
     }

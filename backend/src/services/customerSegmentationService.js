@@ -1,6 +1,6 @@
 /**
  * Customer Segmentation Service
- * 
+ *
  * Features:
  * - ABC Analysis (revenue contribution)
  * - RFM Segmentation (Recency, Frequency, Monetary)
@@ -15,7 +15,7 @@ const logger = require('../../utils/logger');
 const { safeNumber, calculatePercentage } = require('../../utils/safeNumbers');
 
 class CustomerSegmentationService {
-  
+
   /**
    * Perform ABC Analysis
    * A = Top 20% of customers by revenue (80% of revenue - Pareto principle)
@@ -24,10 +24,10 @@ class CustomerSegmentationService {
    */
   async performABCAnalysis(params) {
     const { tenant, startDate, endDate } = params;
-    
+
     try {
       logger.info('Starting ABC analysis', { tenant, startDate, endDate });
-      
+
       // Get customer revenue data
       const customerRevenue = await SalesTransaction.aggregate([
         {
@@ -49,25 +49,25 @@ class CustomerSegmentationService {
           $sort: { totalRevenue: -1 }
         }
       ]);
-      
+
       // Get customer details
-      const customerIds = customerRevenue.map(c => c._id);
+      const customerIds = customerRevenue.map((c) => c._id);
       const customers = await Customer.find({ _id: { $in: customerIds } });
-      const customerMap = new Map(customers.map(c => [c._id.toString(), c]));
-      
+      const customerMap = new Map(customers.map((c) => [c._id.toString(), c]));
+
       // Calculate totals
       const totalRevenue = customerRevenue.reduce((sum, c) => sum + c.totalRevenue, 0);
       const totalCustomers = customerRevenue.length;
-      
+
       // Assign segments
       let cumulativeRevenue = 0;
       let cumulativePercent = 0;
       const segmentedCustomers = [];
-      
+
       customerRevenue.forEach((data, index) => {
         cumulativeRevenue += data.totalRevenue;
         cumulativePercent = (cumulativeRevenue / totalRevenue) * 100;
-        
+
         let segment;
         if (cumulativePercent <= 80) {
           segment = 'A';
@@ -76,9 +76,9 @@ class CustomerSegmentationService {
         } else {
           segment = 'C';
         }
-        
+
         const customer = customerMap.get(data._id.toString());
-        
+
         segmentedCustomers.push({
           customerId: data._id,
           customerName: customer?.name || 'Unknown',
@@ -87,20 +87,20 @@ class CustomerSegmentationService {
           rank: index + 1,
           revenue: data.totalRevenue,
           revenuePercent: (data.totalRevenue / totalRevenue) * 100,
-          cumulativePercent: cumulativePercent,
+          cumulativePercent,
           transactionCount: data.transactionCount,
           avgTransactionValue: data.avgTransactionValue,
           totalQuantity: data.totalQuantity
         });
       });
-      
+
       // Calculate segment summaries
       const segments = {
-        A: segmentedCustomers.filter(c => c.segment === 'A'),
-        B: segmentedCustomers.filter(c => c.segment === 'B'),
-        C: segmentedCustomers.filter(c => c.segment === 'C')
+        A: segmentedCustomers.filter((c) => c.segment === 'A'),
+        B: segmentedCustomers.filter((c) => c.segment === 'B'),
+        C: segmentedCustomers.filter((c) => c.segment === 'C')
       };
-      
+
       const summary = {
         A: {
           customerCount: segments.A.length,
@@ -121,7 +121,7 @@ class CustomerSegmentationService {
           revenuePercent: (segments.C.reduce((sum, c) => sum + c.revenue, 0) / totalRevenue) * 100
         }
       };
-      
+
       const result = {
         period: { startDate, endDate },
         totalCustomers,
@@ -130,28 +130,28 @@ class CustomerSegmentationService {
         customers: segmentedCustomers,
         insights: this.generateABCInsights(summary, segmentedCustomers)
       };
-      
+
       logger.info('ABC analysis complete', {
         totalCustomers,
         segmentA: summary.A.customerCount,
         segmentB: summary.B.customerCount,
         segmentC: summary.C.customerCount
       });
-      
+
       return result;
-      
+
     } catch (error) {
       logger.error('Error performing ABC analysis', { error: error.message, params });
       throw error;
     }
   }
-  
+
   /**
    * Generate insights from ABC analysis
    */
   generateABCInsights(summary, customers) {
     const insights = [];
-    
+
     // Pareto validation
     if (summary.A.revenuePercent >= 70) {
       insights.push({
@@ -161,7 +161,7 @@ class CustomerSegmentationService {
         recommendation: 'Focus retention and growth strategies on Segment A customers'
       });
     }
-    
+
     // Concentration risk
     if (summary.A.customerCount < 10) {
       insights.push({
@@ -171,7 +171,7 @@ class CustomerSegmentationService {
         recommendation: 'Develop strategies to grow Segment B customers into Segment A'
       });
     }
-    
+
     // Segment C opportunity
     if (summary.C.customerCount > summary.A.customerCount * 3) {
       insights.push({
@@ -181,10 +181,10 @@ class CustomerSegmentationService {
         recommendation: 'Evaluate profitability and consider targeted growth campaigns or rationalization'
       });
     }
-    
+
     return insights;
   }
-  
+
   /**
    * Perform RFM Segmentation
    * Recency: How recently did the customer purchase?
@@ -193,10 +193,10 @@ class CustomerSegmentationService {
    */
   async performRFMAnalysis(params) {
     const { tenant, asOfDate = new Date() } = params;
-    
+
     try {
       logger.info('Starting RFM analysis', { tenant, asOfDate });
-      
+
       // Calculate RFM metrics for each customer
       const rfmData = await SalesTransaction.aggregate([
         {
@@ -214,43 +214,43 @@ class CustomerSegmentationService {
           }
         }
       ]);
-      
+
       // Calculate recency in days
       const analysisDate = new Date(asOfDate);
-      rfmData.forEach(data => {
+      rfmData.forEach((data) => {
         data.recency = Math.floor((analysisDate - new Date(data.lastPurchaseDate)) / (1000 * 60 * 60 * 24));
       });
-      
+
       // Calculate quartiles for scoring
-      const recencies = rfmData.map(d => d.recency).sort((a, b) => a - b);
-      const frequencies = rfmData.map(d => d.purchaseCount).sort((a, b) => a - b);
-      const monetaries = rfmData.map(d => d.totalSpend).sort((a, b) => a - b);
-      
+      const recencies = rfmData.map((d) => d.recency).sort((a, b) => a - b);
+      const frequencies = rfmData.map((d) => d.purchaseCount).sort((a, b) => a - b);
+      const monetaries = rfmData.map((d) => d.totalSpend).sort((a, b) => a - b);
+
       const getQuartile = (value, sortedArray) => {
         const q1 = sortedArray[Math.floor(sortedArray.length * 0.25)];
         const q2 = sortedArray[Math.floor(sortedArray.length * 0.50)];
         const q3 = sortedArray[Math.floor(sortedArray.length * 0.75)];
-        
+
         if (value <= q1) return 1;
         if (value <= q2) return 2;
         if (value <= q3) return 3;
         return 4;
       };
-      
+
       // Score each customer (1-4, where 4 is best)
-      const customerIds = rfmData.map(d => d._id);
+      const customerIds = rfmData.map((d) => d._id);
       const customers = await Customer.find({ _id: { $in: customerIds } });
-      const customerMap = new Map(customers.map(c => [c._id.toString(), c]));
-      
-      const scoredCustomers = rfmData.map(data => {
+      const customerMap = new Map(customers.map((c) => [c._id.toString(), c]));
+
+      const scoredCustomers = rfmData.map((data) => {
         // For recency, lower is better, so invert the score
         const rScore = 5 - getQuartile(data.recency, recencies);
         const fScore = getQuartile(data.purchaseCount, frequencies);
         const mScore = getQuartile(data.totalSpend, monetaries);
         const rfmScore = `${rScore}${fScore}${mScore}`;
-        
+
         const customer = customerMap.get(data._id.toString());
-        
+
         return {
           customerId: data._id,
           customerName: customer?.name || 'Unknown',
@@ -265,17 +265,17 @@ class CustomerSegmentationService {
           segment: this.getRFMSegment(rScore, fScore, mScore)
         };
       });
-      
+
       // Group by segment
       const segments = {};
-      scoredCustomers.forEach(customer => {
+      scoredCustomers.forEach((customer) => {
         const segment = customer.segment;
         if (!segments[segment]) {
           segments[segment] = [];
         }
         segments[segment].push(customer);
       });
-      
+
       // Calculate segment summaries
       const segmentSummaries = Object.entries(segments).map(([name, customers]) => ({
         name,
@@ -285,7 +285,7 @@ class CustomerSegmentationService {
         avgFrequency: customers.reduce((sum, c) => sum + c.frequency, 0) / customers.length,
         avgMonetary: customers.reduce((sum, c) => sum + c.monetary, 0) / customers.length
       })).sort((a, b) => b.totalRevenue - a.totalRevenue);
-      
+
       const result = {
         asOfDate: analysisDate,
         totalCustomers: scoredCustomers.length,
@@ -294,63 +294,63 @@ class CustomerSegmentationService {
         insights: this.generateRFMInsights(segmentSummaries),
         recommendations: this.generateRFMRecommendations(segments)
       };
-      
+
       logger.info('RFM analysis complete', {
         totalCustomers: scoredCustomers.length,
         segmentCount: Object.keys(segments).length
       });
-      
+
       return result;
-      
+
     } catch (error) {
       logger.error('Error performing RFM analysis', { error: error.message, params });
       throw error;
     }
   }
-  
+
   /**
    * Map RFM scores to business segments
    */
   getRFMSegment(r, f, m) {
     // Champions: High R, F, M
     if (r >= 4 && f >= 4 && m >= 4) return 'Champions';
-    
+
     // Loyal Customers: High F, M but moderate R
     if (f >= 4 && m >= 4) return 'Loyal Customers';
-    
+
     // Potential Loyalists: Recent customers with good F, M
     if (r >= 3 && f >= 2 && m >= 2) return 'Potential Loyalists';
-    
+
     // Recent Customers: High R but low F, M
     if (r >= 4 && f <= 2) return 'Recent Customers';
-    
+
     // At Risk: High F, M but low R
     if (r <= 2 && f >= 3 && m >= 3) return 'At Risk';
-    
+
     // Can't Lose Them: Low R but historically high F, M
     if (r === 1 && f >= 4 && m >= 4) return 'Can\'t Lose Them';
-    
+
     // Hibernating: Low R, moderate F, M
     if (r <= 2 && f >= 2 && m >= 2) return 'Hibernating';
-    
+
     // Lost: Very low R, F, M
     if (r <= 2 && f <= 2 && m <= 2) return 'Lost';
-    
+
     // About to Sleep: Moderate R, low F, M
     if (r === 3 && f <= 2 && m <= 2) return 'About to Sleep';
-    
+
     // Need Attention: Moderate scores
     return 'Need Attention';
   }
-  
+
   /**
    * Generate RFM insights
    */
   generateRFMInsights(segments) {
     const insights = [];
-    
+
     // Champions
-    const champions = segments.find(s => s.name === 'Champions');
+    const champions = segments.find((s) => s.name === 'Champions');
     if (champions && champions.customerCount > 0) {
       insights.push({
         type: 'success',
@@ -359,9 +359,9 @@ class CustomerSegmentationService {
         metric: champions.totalRevenue
       });
     }
-    
+
     // At Risk
-    const atRisk = segments.find(s => s.name === 'At Risk');
+    const atRisk = segments.find((s) => s.name === 'At Risk');
     if (atRisk && atRisk.customerCount > 0) {
       insights.push({
         type: 'warning',
@@ -370,9 +370,9 @@ class CustomerSegmentationService {
         metric: atRisk.totalRevenue
       });
     }
-    
+
     // Lost
-    const lost = segments.find(s => s.name === 'Lost');
+    const lost = segments.find((s) => s.name === 'Lost');
     if (lost && lost.customerCount > 0) {
       insights.push({
         type: 'critical',
@@ -381,19 +381,19 @@ class CustomerSegmentationService {
         metric: lost.totalRevenue
       });
     }
-    
+
     return insights;
   }
-  
+
   /**
    * Generate segment-specific recommendations
    */
   generateRFMRecommendations(segments) {
     const recommendations = [];
-    
+
     Object.entries(segments).forEach(([segmentName, customers]) => {
       let action;
-      
+
       switch (segmentName) {
         case 'Champions':
           action = 'Reward and retain. Offer exclusive benefits, early access, VIP programs.';
@@ -425,7 +425,7 @@ class CustomerSegmentationService {
         default:
           action = 'Monitor and engage based on behavior changes.';
       }
-      
+
       recommendations.push({
         segment: segmentName,
         customerCount: customers.length,
@@ -433,10 +433,10 @@ class CustomerSegmentationService {
         action
       });
     });
-    
+
     return recommendations.sort((a, b) => b.totalValue - a.totalValue);
   }
-  
+
   /**
    * Calculate Customer Lifetime Value
    */
@@ -444,7 +444,7 @@ class CustomerSegmentationService {
     try {
       const transactions = await SalesTransaction.find({ customerId })
         .sort({ transactionDate: 1 });
-      
+
       if (transactions.length === 0) {
         return {
           customerId,
@@ -454,22 +454,22 @@ class CustomerSegmentationService {
           customerLifespan: 0
         };
       }
-      
+
       const totalRevenue = transactions.reduce((sum, t) => sum + t.totalAmount, 0);
       const avgOrderValue = totalRevenue / transactions.length;
-      
+
       const firstPurchase = new Date(transactions[0].transactionDate);
       const lastPurchase = new Date(transactions[transactions.length - 1].transactionDate);
       const lifespanDays = Math.ceil((lastPurchase - firstPurchase) / (1000 * 60 * 60 * 24));
       const lifespanYears = lifespanDays / 365;
-      
+
       const purchaseFrequency = lifespanYears > 0 ? transactions.length / lifespanYears : transactions.length;
-      
+
       // Assume 40% gross margin and 3 year average customer lifespan
       const grossMargin = 0.40;
       const avgCustomerLifespan = 3;
       const ltv = avgOrderValue * purchaseFrequency * avgCustomerLifespan * grossMargin;
-      
+
       return {
         customerId,
         ltv,
@@ -481,13 +481,13 @@ class CustomerSegmentationService {
         firstPurchase,
         lastPurchase
       };
-      
+
     } catch (error) {
       logger.error('Error calculating customer LTV', { customerId, error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Predict churn probability
    */
@@ -505,14 +505,14 @@ class CustomerSegmentationService {
           }
         }
       ]);
-      
+
       const today = new Date();
       const churnPredictions = [];
-      
-      customers.forEach(customer => {
+
+      customers.forEach((customer) => {
         const daysSinceLastPurchase = Math.floor((today - new Date(customer.lastPurchase)) / (1000 * 60 * 60 * 24));
         const avgPurchaseInterval = customer.avgDaysBetweenPurchases || 30;
-        
+
         // Churn probability based on how overdue they are
         let churnProbability = 0;
         if (daysSinceLastPurchase > avgPurchaseInterval * 2) {
@@ -524,7 +524,7 @@ class CustomerSegmentationService {
         } else {
           churnProbability = 10;
         }
-        
+
         churnPredictions.push({
           customerId: customer._id,
           daysSinceLastPurchase,
@@ -533,19 +533,19 @@ class CustomerSegmentationService {
           churnRisk: churnProbability >= 60 ? 'high' : churnProbability >= 30 ? 'medium' : 'low'
         });
       });
-      
+
       // Sort by churn probability
       churnPredictions.sort((a, b) => b.churnProbability - a.churnProbability);
-      
+
       return {
         asOfDate: today,
         totalCustomers: churnPredictions.length,
-        highRisk: churnPredictions.filter(c => c.churnRisk === 'high').length,
-        mediumRisk: churnPredictions.filter(c => c.churnRisk === 'medium').length,
-        lowRisk: churnPredictions.filter(c => c.churnRisk === 'low').length,
+        highRisk: churnPredictions.filter((c) => c.churnRisk === 'high').length,
+        mediumRisk: churnPredictions.filter((c) => c.churnRisk === 'medium').length,
+        lowRisk: churnPredictions.filter((c) => c.churnRisk === 'low').length,
         predictions: churnPredictions
       };
-      
+
     } catch (error) {
       logger.error('Error predicting churn', { tenant, error: error.message });
       throw error;

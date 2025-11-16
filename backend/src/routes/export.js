@@ -54,9 +54,9 @@ router.get('/customers', authenticateToken, asyncHandler(async (req, res) => {
   await workbook.xlsx.write(res);
   res.end();
 
-  logger.info('Customers exported successfully', { 
-    count: customers.length, 
-    userId: req.user._id 
+  logger.info('Customers exported successfully', {
+    count: customers.length,
+    userId: req.user._id
   });
 }));
 
@@ -95,9 +95,9 @@ router.get('/products', authenticateToken, asyncHandler(async (req, res) => {
   await workbook.xlsx.write(res);
   res.end();
 
-  logger.info('Products exported successfully', { 
-    count: products.length, 
-    userId: req.user._id 
+  logger.info('Products exported successfully', {
+    count: products.length,
+    userId: req.user._id
   });
 }));
 
@@ -138,9 +138,9 @@ router.get('/promotions', authenticateToken, asyncHandler(async (req, res) => {
   await workbook.xlsx.write(res);
   res.end();
 
-  logger.info('Promotions exported successfully', { 
-    count: promotions.length, 
-    userId: req.user._id 
+  logger.info('Promotions exported successfully', {
+    count: promotions.length,
+    userId: req.user._id
   });
 }));
 
@@ -180,9 +180,9 @@ router.get('/budgets', authenticateToken, asyncHandler(async (req, res) => {
   await workbook.xlsx.write(res);
   res.end();
 
-  logger.info('Budgets exported successfully', { 
-    count: budgets.length, 
-    userId: req.user._id 
+  logger.info('Budgets exported successfully', {
+    count: budgets.length,
+    userId: req.user._id
   });
 }));
 
@@ -229,9 +229,9 @@ router.get('/transactions', authenticateToken, asyncHandler(async (req, res) => 
   await workbook.xlsx.write(res);
   res.end();
 
-  logger.info('Transactions exported successfully', { 
-    count: transactions.length, 
-    userId: req.user._id 
+  logger.info('Transactions exported successfully', {
+    count: transactions.length,
+    userId: req.user._id
   });
 }));
 
@@ -286,7 +286,7 @@ router.get('/template/:type', authenticateToken, asyncHandler(async (req, res) =
   }
 
   // Auto-fit columns
-  worksheet.columns.forEach(column => {
+  worksheet.columns.forEach((column) => {
     column.width = 20;
   });
 
@@ -305,7 +305,7 @@ router.get('/template/:type', authenticateToken, asyncHandler(async (req, res) =
   instructionsSheet.addRow(['- Use "Yes"/"No" for boolean fields']);
 
   instructionsSheet.getCell('A1').font = { bold: true, size: 14 };
-  instructionsSheet.columns.forEach(column => {
+  instructionsSheet.columns.forEach((column) => {
     column.width = 60;
   });
 

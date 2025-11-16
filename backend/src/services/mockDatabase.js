@@ -94,19 +94,19 @@ class MockDatabase {
 
   // User operations
   async findUserById(id) {
-    return this.users.find(user => user._id === id);
+    return this.users.find((user) => user._id === id);
   }
 
   async findUserByEmail(email) {
-    return this.users.find(user => user.email === email);
+    return this.users.find((user) => user.email === email);
   }
 
   async findUserByEmployeeId(employeeId) {
-    return this.users.find(user => user.employeeId === employeeId);
+    return this.users.find((user) => user.employeeId === employeeId);
   }
 
   async findUserByUsername(username) {
-    return this.users.find(user => user.username === username);
+    return this.users.find((user) => user.username === username);
   }
 
   async findUser(query) {
@@ -114,7 +114,7 @@ class MockDatabase {
     if (query.email) return this.findUserByEmail(query.email);
     if (query.employeeId) return this.findUserByEmployeeId(query.employeeId);
     if (query.username) return this.findUserByUsername(query.username);
-    
+
     // Handle $or queries
     if (query.$or) {
       for (const condition of query.$or) {
@@ -122,30 +122,30 @@ class MockDatabase {
         if (user) return user;
       }
     }
-    
+
     return null;
   }
 
   // Populate roles and permissions for a user
   populateUserRolesAndPermissions(user) {
     if (!user) return null;
-    
+
     const populatedUser = { ...user };
-    
+
     // Populate roles (array of role IDs becomes array of role objects)
     if (user.roles && Array.isArray(user.roles)) {
-      populatedUser.roles = user.roles.map(roleId => {
-        return mockRoles.find(r => r._id === roleId) || roleId;
+      populatedUser.roles = user.roles.map((roleId) => {
+        return mockRoles.find((r) => r._id === roleId) || roleId;
       }).filter(Boolean);
     } else {
       populatedUser.roles = [];
     }
-    
+
     // Permissions are directly on the user
     if (!populatedUser.permissions) {
       populatedUser.permissions = [];
     }
-    
+
     return populatedUser;
   }
 
@@ -159,28 +159,28 @@ class MockDatabase {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    
+
     this.users.push(newUser);
     return newUser;
   }
 
   async updateUser(id, updates) {
-    const index = this.users.findIndex(user => user._id === id);
+    const index = this.users.findIndex((user) => user._id === id);
     if (index === -1) return null;
-    
+
     this.users[index] = {
       ...this.users[index],
       ...updates,
       updatedAt: new Date()
     };
-    
+
     return this.users[index];
   }
 
   async deleteUser(id) {
-    const index = this.users.findIndex(user => user._id === id);
+    const index = this.users.findIndex((user) => user._id === id);
     if (index === -1) return false;
-    
+
     this.users.splice(index, 1);
     return true;
   }
@@ -197,12 +197,12 @@ class MockDatabase {
   async getSession(token) {
     const session = this.sessions.get(token);
     if (!session) return null;
-    
+
     if (new Date() > session.expiresAt) {
       this.sessions.delete(token);
       return null;
     }
-    
+
     return session;
   }
 
@@ -218,28 +218,28 @@ class MockDatabase {
   // Mock model methods
   createUserModel(userData) {
     const user = { ...userData };
-    
+
     // Add model methods
-    user.comparePassword = async function(candidatePassword) {
+    user.comparePassword = async function (candidatePassword) {
       return bcrypt.compare(candidatePassword, this.password);
     };
-    
-    user.select = function(fields) {
+
+    user.select = function (fields) {
       // Mock select method - just return the user
       return this;
     };
-    
-    user.changedPasswordAfter = function(JWTTimestamp) {
+
+    user.changedPasswordAfter = function (JWTTimestamp) {
       // Mock method - always return false (password not changed)
       return false;
     };
-    
-    user.generateAuthToken = function() {
+
+    user.generateAuthToken = function () {
       const jwt = require('jsonwebtoken');
       const config = require('../config');
-      
+
       return jwt.sign(
-        { 
+        {
           _id: this._id,
           email: this.email,
           role: this.role
@@ -248,24 +248,24 @@ class MockDatabase {
         { expiresIn: config.jwt.expiresIn }
       );
     };
-    
-    user.save = async function() {
+
+    user.save = async function () {
       // In mock mode, just update the user in the array
-      const index = mockUsers.findIndex(u => u._id === this._id);
+      const index = mockUsers.findIndex((u) => u._id === this._id);
       if (index !== -1) {
         mockUsers[index] = { ...this };
       }
       return this;
     };
-    
-    user.toJSON = function() {
+
+    user.toJSON = function () {
       const obj = { ...this };
       delete obj.password;
       delete obj.twoFactorSecret;
       return obj;
     };
 
-    user.hasPermission = function(module, action) {
+    user.hasPermission = function (module, action) {
       // Super admin and admin have all permissions
       if (this.role === 'super_admin' || this.role === 'admin') return true;
 
@@ -275,7 +275,7 @@ class MockDatabase {
           // If role is populated (object with permissions)
           if (role.permissions && Array.isArray(role.permissions)) {
             const requiredPermission = `${module}:${action}`;
-            const hasMatch = role.permissions.some(permission => {
+            const hasMatch = role.permissions.some((permission) => {
               // Exact match
               if (permission === requiredPermission) return true;
               // Wildcard match (e.g., "budget:*" matches "budget:read")
@@ -294,7 +294,7 @@ class MockDatabase {
 
       // Check direct permissions (legacy format: array of { module, actions })
       if (this.permissions && Array.isArray(this.permissions)) {
-        const permission = this.permissions.find(p => p.module === module);
+        const permission = this.permissions.find((p) => p.module === module);
         if (permission && permission.actions && permission.actions.includes(action)) {
           return true;
         }
@@ -302,7 +302,7 @@ class MockDatabase {
 
       return false;
     };
-    
+
     return user;
   }
 }
@@ -318,24 +318,24 @@ const MockUser = {
       _query: query,
       _populateFields: [],
       _selectFields: null,
-      
-      select: function(fields) {
+
+      select(fields) {
         this._selectFields = fields;
         return this;
       },
-      
-      populate: function(field, select) {
+
+      populate(field, select) {
         // Handle space-separated fields like 'roles permissions'
         if (typeof field === 'string' && field.includes(' ')) {
           const fields = field.split(' ');
-          fields.forEach(f => this._populateFields.push({ field: f.trim(), select }));
+          fields.forEach((f) => this._populateFields.push({ field: f.trim(), select }));
         } else {
           this._populateFields.push({ field, select });
         }
         return this;
       },
-      
-      then: async function(resolve, reject) {
+
+      async then(resolve, reject) {
         try {
           // Execute the actual query when awaited
           const user = await mockDatabase.findUser(this._query);
@@ -343,59 +343,59 @@ const MockUser = {
             resolve(null);
             return;
           }
-          
+
           // Apply populate if requested
           let userData = user;
           if (this._populateFields.length > 0) {
             // Check if roles or permissions are requested
-            const hasRolesOrPermissions = this._populateFields.some(p => 
+            const hasRolesOrPermissions = this._populateFields.some((p) =>
               p.field === 'roles' || p.field === 'permissions'
             );
-            
+
             if (hasRolesOrPermissions) {
               userData = mockDatabase.populateUserRolesAndPermissions(user);
             }
           }
-          
+
           const userModel = mockDatabase.createUserModel(userData);
           resolve(userModel);
         } catch (error) {
           reject(error);
         }
       },
-      
-      catch: function(reject) {
+
+      catch(reject) {
         return this.then(undefined, reject);
       }
     };
-    
+
     return mockQuery;
   },
-  
+
   findById(id) {
     // Create a chainable mock query object that can be used with .populate() and await
     const mockQuery = {
       _userId: id,
       _populateFields: [],
       _selectFields: null,
-      
-      select: function(fields) {
+
+      select(fields) {
         this._selectFields = fields;
         return this;
       },
-      
-      populate: function(field, select) {
+
+      populate(field, select) {
         // Handle space-separated fields like 'roles permissions'
         if (typeof field === 'string' && field.includes(' ')) {
           const fields = field.split(' ');
-          fields.forEach(f => this._populateFields.push({ field: f.trim(), select }));
+          fields.forEach((f) => this._populateFields.push({ field: f.trim(), select }));
         } else {
           this._populateFields.push({ field, select });
         }
         return this;
       },
-      
-      then: async function(resolve, reject) {
+
+      async then(resolve, reject) {
         try {
           // Execute the actual query when awaited
           const user = await mockDatabase.findUserById(this._userId);
@@ -403,66 +403,66 @@ const MockUser = {
             resolve(null);
             return;
           }
-          
+
           // Apply populate if requested
           let userData = user;
           if (this._populateFields.length > 0) {
             // Check if roles or permissions are requested
-            const hasRolesOrPermissions = this._populateFields.some(p => 
+            const hasRolesOrPermissions = this._populateFields.some((p) =>
               p.field === 'roles' || p.field === 'permissions'
             );
-            
+
             if (hasRolesOrPermissions) {
               userData = mockDatabase.populateUserRolesAndPermissions(user);
             }
           }
-          
+
           const userModel = mockDatabase.createUserModel(userData);
           resolve(userModel);
         } catch (error) {
           reject(error);
         }
       },
-      
-      catch: function(reject) {
+
+      catch(reject) {
         return this;
       }
     };
-    
+
     // Return the mock query object that can be chained
     return mockQuery;
   },
-  
+
   async create(userData) {
     const user = await mockDatabase.createUser(userData);
     return mockDatabase.createUserModel(user);
   },
-  
+
   async findByIdAndUpdate(id, updates, options = {}) {
     const user = await mockDatabase.updateUser(id, updates);
     return user ? mockDatabase.createUserModel(user) : null;
   },
-  
+
   async findByIdAndDelete(id) {
     const success = await mockDatabase.deleteUser(id);
     return success;
   },
-  
+
   async findByCredentials(email, password) {
     const user = await mockDatabase.findUserByEmail(email);
     if (!user || !user.isActive) {
       throw new Error('Invalid login credentials');
     }
-    
+
     const userModel = mockDatabase.createUserModel(user);
     const isMatch = await userModel.comparePassword(password);
     if (!isMatch) {
       throw new Error('Invalid login credentials');
     }
-    
+
     return userModel;
   },
-  
+
   // Add find method for querying multiple users
   find(query = {}) {
     // Create a chainable mock query object
@@ -473,103 +473,103 @@ const MockUser = {
       _sortFields: null,
       _limit: null,
       _skip: null,
-      
-      select: function(fields) {
+
+      select(fields) {
         this._selectFields = fields;
         return this;
       },
-      
-      populate: function(field, select) {
+
+      populate(field, select) {
         // Handle space-separated fields like 'roles permissions'
         if (typeof field === 'string' && field.includes(' ')) {
           const fields = field.split(' ');
-          fields.forEach(f => this._populateFields.push({ field: f.trim(), select }));
+          fields.forEach((f) => this._populateFields.push({ field: f.trim(), select }));
         } else {
           this._populateFields.push({ field, select });
         }
         return this;
       },
-      
-      sort: function(fields) {
+
+      sort(fields) {
         this._sortFields = fields;
         return this;
       },
-      
-      limit: function(num) {
+
+      limit(num) {
         this._limit = num;
         return this;
       },
-      
-      skip: function(num) {
+
+      skip(num) {
         this._skip = num;
         return this;
       },
-      
-      then: async function(resolve, reject) {
+
+      async then(resolve, reject) {
         try {
           // Execute the actual query when awaited
           let users = mockDatabase.users;
-          
+
           // Apply query filter (simple implementation)
           if (this._query && Object.keys(this._query).length > 0) {
-            users = users.filter(user => {
+            users = users.filter((user) => {
               for (const [key, value] of Object.entries(this._query)) {
                 if (user[key] !== value) return false;
               }
               return true;
             });
           }
-          
+
           // Apply skip
           if (this._skip) {
             users = users.slice(this._skip);
           }
-          
+
           // Apply limit
           if (this._limit) {
             users = users.slice(0, this._limit);
           }
-          
+
           // Apply populate if requested
           if (this._populateFields.length > 0) {
-            const hasRolesOrPermissions = this._populateFields.some(p => 
+            const hasRolesOrPermissions = this._populateFields.some((p) =>
               p.field === 'roles' || p.field === 'permissions'
             );
-            
+
             if (hasRolesOrPermissions) {
-              users = users.map(u => mockDatabase.populateUserRolesAndPermissions(u));
+              users = users.map((u) => mockDatabase.populateUserRolesAndPermissions(u));
             }
           }
-          
+
           // Convert to models
-          const userModels = users.map(u => mockDatabase.createUserModel(u));
+          const userModels = users.map((u) => mockDatabase.createUserModel(u));
           resolve(userModels);
         } catch (error) {
           reject(error);
         }
       },
-      
-      catch: function(reject) {
+
+      catch(reject) {
         return this;
       }
     };
-    
+
     return mockQuery;
   },
-  
+
   // Add countDocuments method
   async countDocuments(query = {}) {
     let users = mockDatabase.users;
-    
+
     if (query && Object.keys(query).length > 0) {
-      users = users.filter(user => {
+      users = users.filter((user) => {
         for (const [key, value] of Object.entries(query)) {
           if (user[key] !== value) return false;
         }
         return true;
       });
     }
-    
+
     return users.length;
   }
 };
@@ -875,44 +875,44 @@ const MockBudget = {
       _populateFields: [],
       _selectFields: null,
 
-      sort: function(sortOptions) {
+      sort(sortOptions) {
         this._sortOptions = sortOptions;
         return this;
       },
 
-      limit: function(limitValue) {
+      limit(limitValue) {
         this._limitValue = limitValue;
         return this;
       },
 
-      skip: function(skipValue) {
+      skip(skipValue) {
         this._skipValue = skipValue;
         return this;
       },
 
-      populate: function(field, select) {
+      populate(field, select) {
         this._populateFields.push({ field, select });
         return this;
       },
 
-      select: function(fields) {
+      select(fields) {
         this._selectFields = fields;
         return this;
       },
 
-      then: function(resolve, reject) {
+      then(resolve, reject) {
         try {
           let budgets = [...mockBudgets];
 
           // Apply query filter
           if (this._query._id) {
-            budgets = budgets.filter(b => b._id === this._query._id);
+            budgets = budgets.filter((b) => b._id === this._query._id);
           }
           if (this._query.year) {
-            budgets = budgets.filter(b => b.year === this._query.year);
+            budgets = budgets.filter((b) => b.year === this._query.year);
           }
           if (this._query.status) {
-            budgets = budgets.filter(b => b.status === this._query.status);
+            budgets = budgets.filter((b) => b.status === this._query.status);
           }
 
           // Apply sorting
@@ -940,7 +940,7 @@ const MockBudget = {
         }
       },
 
-      catch: function(reject) {
+      catch(reject) {
         return this.then(null, reject);
       }
     };
@@ -954,26 +954,26 @@ const MockBudget = {
       _populateFields: [],
       _selectFields: null,
 
-      populate: function(field, select) {
+      populate(field, select) {
         this._populateFields.push({ field, select });
         return this;
       },
 
-      select: function(fields) {
+      select(fields) {
         this._selectFields = fields;
         return this;
       },
 
-      then: function(resolve, reject) {
+      then(resolve, reject) {
         try {
-          const budget = mockBudgets.find(b => b._id === this._id);
+          const budget = mockBudgets.find((b) => b._id === this._id);
           resolve(budget || null);
         } catch (error) {
           reject(error);
         }
       },
 
-      catch: function(reject) {
+      catch(reject) {
         return this.then(null, reject);
       }
     };
@@ -987,24 +987,24 @@ const MockBudget = {
       _populateFields: [],
       _selectFields: null,
 
-      populate: function(field, select) {
+      populate(field, select) {
         this._populateFields.push({ field, select });
         return this;
       },
 
-      select: function(fields) {
+      select(fields) {
         this._selectFields = fields;
         return this;
       },
 
-      then: function(resolve, reject) {
+      then(resolve, reject) {
         try {
           let budget = null;
 
           if (this._query._id) {
-            budget = mockBudgets.find(b => b._id === this._query._id);
+            budget = mockBudgets.find((b) => b._id === this._query._id);
           } else if (this._query.year) {
-            budget = mockBudgets.find(b => b.year === this._query.year);
+            budget = mockBudgets.find((b) => b.year === this._query.year);
           }
 
           resolve(budget);
@@ -1013,7 +1013,7 @@ const MockBudget = {
         }
       },
 
-      catch: function(reject) {
+      catch(reject) {
         return this.then(null, reject);
       }
     };
@@ -1033,7 +1033,7 @@ const MockBudget = {
   },
 
   async findByIdAndUpdate(id, update, options = {}) {
-    const index = mockBudgets.findIndex(b => b._id === id);
+    const index = mockBudgets.findIndex((b) => b._id === id);
     if (index === -1) return null;
 
     mockBudgets[index] = {
@@ -1046,7 +1046,7 @@ const MockBudget = {
   },
 
   async findByIdAndDelete(id) {
-    const index = mockBudgets.findIndex(b => b._id === id);
+    const index = mockBudgets.findIndex((b) => b._id === id);
     if (index === -1) return null;
 
     const deleted = mockBudgets[index];
@@ -1058,10 +1058,10 @@ const MockBudget = {
     let budgets = [...mockBudgets];
 
     if (query.year) {
-      budgets = budgets.filter(b => b.year === query.year);
+      budgets = budgets.filter((b) => b.year === query.year);
     }
     if (query.status) {
-      budgets = budgets.filter(b => b.status === query.status);
+      budgets = budgets.filter((b) => b.status === query.status);
     }
 
     return budgets.length;
@@ -1078,44 +1078,44 @@ function createMockQuery(dataArray, query = {}) {
     _populateFields: [],
     _selectFields: null,
 
-    sort: function(sortOptions) {
+    sort(sortOptions) {
       this._sortOptions = sortOptions;
       return this;
     },
 
-    limit: function(limitValue) {
+    limit(limitValue) {
       this._limitValue = limitValue;
       return this;
     },
 
-    skip: function(skipValue) {
+    skip(skipValue) {
       this._skipValue = skipValue;
       return this;
     },
 
-    populate: function(field, select) {
+    populate(field, select) {
       this._populateFields.push({ field, select });
       return this;
     },
 
-    select: function(fields) {
+    select(fields) {
       this._selectFields = fields;
       return this;
     },
 
-    then: function(resolve, reject) {
+    then(resolve, reject) {
       try {
         let items = [...dataArray];
 
         // Apply basic filters
         if (this._query._id) {
-          items = items.filter(item => item._id === this._query._id);
+          items = items.filter((item) => item._id === this._query._id);
         }
         if (this._query.name) {
-          items = items.filter(item => item.name && item.name.toLowerCase().includes(this._query.name.toLowerCase()));
+          items = items.filter((item) => item.name && item.name.toLowerCase().includes(this._query.name.toLowerCase()));
         }
         if (this._query.status) {
-          items = items.filter(item => item.status === this._query.status);
+          items = items.filter((item) => item.status === this._query.status);
         }
 
         // Apply sorting
@@ -1143,7 +1143,7 @@ function createMockQuery(dataArray, query = {}) {
       }
     },
 
-    catch: function(reject) {
+    catch(reject) {
       return this.then(null, reject);
     }
   };
@@ -1157,9 +1157,9 @@ const MockCustomer = {
 
   findById(id) {
     const mockQuery = createMockQuery(mockCustomers, { _id: id });
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
-        const customer = mockCustomers.find(c => c._id === id);
+        const customer = mockCustomers.find((c) => c._id === id);
         resolve(customer || null);
       } catch (error) {
         reject(error);
@@ -1170,13 +1170,13 @@ const MockCustomer = {
 
   findOne(query) {
     const mockQuery = createMockQuery(mockCustomers, query);
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
         let customer = null;
         if (query._id) {
-          customer = mockCustomers.find(c => c._id === query._id);
+          customer = mockCustomers.find((c) => c._id === query._id);
         } else if (query.code) {
-          customer = mockCustomers.find(c => c.code === query.code);
+          customer = mockCustomers.find((c) => c.code === query.code);
         }
         resolve(customer);
       } catch (error) {
@@ -1198,14 +1198,14 @@ const MockCustomer = {
   },
 
   async findByIdAndUpdate(id, update, options = {}) {
-    const index = mockCustomers.findIndex(c => c._id === id);
+    const index = mockCustomers.findIndex((c) => c._id === id);
     if (index === -1) return null;
     mockCustomers[index] = { ...mockCustomers[index], ...update, updatedAt: new Date() };
     return mockCustomers[index];
   },
 
   async findByIdAndDelete(id) {
-    const index = mockCustomers.findIndex(c => c._id === id);
+    const index = mockCustomers.findIndex((c) => c._id === id);
     if (index === -1) return null;
     const deleted = mockCustomers[index];
     mockCustomers.splice(index, 1);
@@ -1215,7 +1215,7 @@ const MockCustomer = {
   async countDocuments(query = {}) {
     let items = [...mockCustomers];
     if (query.status) {
-      items = items.filter(c => c.status === query.status);
+      items = items.filter((c) => c.status === query.status);
     }
     return items.length;
   }
@@ -1229,9 +1229,9 @@ const MockProduct = {
 
   findById(id) {
     const mockQuery = createMockQuery(mockProducts, { _id: id });
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
-        const product = mockProducts.find(p => p._id === id);
+        const product = mockProducts.find((p) => p._id === id);
         resolve(product || null);
       } catch (error) {
         reject(error);
@@ -1242,13 +1242,13 @@ const MockProduct = {
 
   findOne(query) {
     const mockQuery = createMockQuery(mockProducts, query);
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
         let product = null;
         if (query._id) {
-          product = mockProducts.find(p => p._id === query._id);
+          product = mockProducts.find((p) => p._id === query._id);
         } else if (query.sku) {
-          product = mockProducts.find(p => p.sku === query.sku);
+          product = mockProducts.find((p) => p.sku === query.sku);
         }
         resolve(product);
       } catch (error) {
@@ -1270,14 +1270,14 @@ const MockProduct = {
   },
 
   async findByIdAndUpdate(id, update, options = {}) {
-    const index = mockProducts.findIndex(p => p._id === id);
+    const index = mockProducts.findIndex((p) => p._id === id);
     if (index === -1) return null;
     mockProducts[index] = { ...mockProducts[index], ...update, updatedAt: new Date() };
     return mockProducts[index];
   },
 
   async findByIdAndDelete(id) {
-    const index = mockProducts.findIndex(p => p._id === id);
+    const index = mockProducts.findIndex((p) => p._id === id);
     if (index === -1) return null;
     const deleted = mockProducts[index];
     mockProducts.splice(index, 1);
@@ -1287,7 +1287,7 @@ const MockProduct = {
   async countDocuments(query = {}) {
     let items = [...mockProducts];
     if (query.status) {
-      items = items.filter(p => p.status === query.status);
+      items = items.filter((p) => p.status === query.status);
     }
     return items.length;
   }
@@ -1301,9 +1301,9 @@ const MockPromotion = {
 
   findById(id) {
     const mockQuery = createMockQuery(mockPromotions, { _id: id });
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
-        const promotion = mockPromotions.find(p => p._id === id);
+        const promotion = mockPromotions.find((p) => p._id === id);
         resolve(promotion || null);
       } catch (error) {
         reject(error);
@@ -1314,13 +1314,13 @@ const MockPromotion = {
 
   findOne(query) {
     const mockQuery = createMockQuery(mockPromotions, query);
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
         let promotion = null;
         if (query._id) {
-          promotion = mockPromotions.find(p => p._id === query._id);
+          promotion = mockPromotions.find((p) => p._id === query._id);
         } else if (query.code) {
-          promotion = mockPromotions.find(p => p.code === query.code);
+          promotion = mockPromotions.find((p) => p.code === query.code);
         }
         resolve(promotion);
       } catch (error) {
@@ -1342,14 +1342,14 @@ const MockPromotion = {
   },
 
   async findByIdAndUpdate(id, update, options = {}) {
-    const index = mockPromotions.findIndex(p => p._id === id);
+    const index = mockPromotions.findIndex((p) => p._id === id);
     if (index === -1) return null;
     mockPromotions[index] = { ...mockPromotions[index], ...update, updatedAt: new Date() };
     return mockPromotions[index];
   },
 
   async findByIdAndDelete(id) {
-    const index = mockPromotions.findIndex(p => p._id === id);
+    const index = mockPromotions.findIndex((p) => p._id === id);
     if (index === -1) return null;
     const deleted = mockPromotions[index];
     mockPromotions.splice(index, 1);
@@ -1359,7 +1359,7 @@ const MockPromotion = {
   async countDocuments(query = {}) {
     let items = [...mockPromotions];
     if (query.status) {
-      items = items.filter(p => p.status === query.status);
+      items = items.filter((p) => p.status === query.status);
     }
     return items.length;
   }
@@ -1373,39 +1373,39 @@ const MockTradeSpend = {
       async exec() {
         let items = [...mockTradeSpends];
         if (query.company) {
-          items = items.filter(t => t.company === query.company);
+          items = items.filter((t) => t.company === query.company);
         }
         if (query.customer) {
-          items = items.filter(t => t.customer === query.customer);
+          items = items.filter((t) => t.customer === query.customer);
         }
         if (query.spendType) {
-          items = items.filter(t => t.spendType === query.spendType);
+          items = items.filter((t) => t.spendType === query.spendType);
         }
         if (query.status) {
-          items = items.filter(t => t.status === query.status);
+          items = items.filter((t) => t.status === query.status);
         }
-        
+
         // Populate customer if requested
         if (shouldPopulate) {
-          items = items.map(item => ({
+          items = items.map((item) => ({
             ...item,
-            customer: mockCustomers.find(c => c._id === item.customer) || item.customer
+            customer: mockCustomers.find((c) => c._id === item.customer) || item.customer
           }));
         }
-        
+
         return items;
       },
-      populate: function() { 
+      populate() {
         shouldPopulate = true;
-        return this; 
+        return this;
       },
-      sort: function() { return this; },
-      limit: function() { return this; },
-      skip: function() { return this; },
-      select: function() { return this; },
-      lean: function() { return this; }
+      sort() { return this; },
+      limit() { return this; },
+      skip() { return this; },
+      select() { return this; },
+      lean() { return this; }
     };
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
         resolve(this.exec());
       } catch (error) {
@@ -1418,12 +1418,12 @@ const MockTradeSpend = {
   findById(id) {
     const mockQuery = {
       async exec() {
-        return mockTradeSpends.find(t => t._id === id) || null;
+        return mockTradeSpends.find((t) => t._id === id) || null;
       },
-      populate: function() { return this; },
-      lean: function() { return this; }
+      populate() { return this; },
+      lean() { return this; }
     };
-    mockQuery.then = function(resolve, reject) {
+    mockQuery.then = function (resolve, reject) {
       try {
         resolve(this.exec());
       } catch (error) {
@@ -1445,14 +1445,14 @@ const MockTradeSpend = {
   },
 
   async findByIdAndUpdate(id, update, options = {}) {
-    const index = mockTradeSpends.findIndex(t => t._id === id);
+    const index = mockTradeSpends.findIndex((t) => t._id === id);
     if (index === -1) return null;
     mockTradeSpends[index] = { ...mockTradeSpends[index], ...update, updatedAt: new Date() };
     return mockTradeSpends[index];
   },
 
   async findByIdAndDelete(id) {
-    const index = mockTradeSpends.findIndex(t => t._id === id);
+    const index = mockTradeSpends.findIndex((t) => t._id === id);
     if (index === -1) return null;
     const deleted = mockTradeSpends[index];
     mockTradeSpends.splice(index, 1);
@@ -1462,10 +1462,10 @@ const MockTradeSpend = {
   async countDocuments(query = {}) {
     let items = [...mockTradeSpends];
     if (query.status) {
-      items = items.filter(t => t.status === query.status);
+      items = items.filter((t) => t.status === query.status);
     }
     if (query.company) {
-      items = items.filter(t => t.company === query.company);
+      items = items.filter((t) => t.company === query.company);
     }
     return items.length;
   },
@@ -1473,24 +1473,24 @@ const MockTradeSpend = {
   async aggregate(pipeline) {
     // Simple aggregation support for spending summary
     let items = [...mockTradeSpends];
-    
+
     // Apply $match stage
-    const matchStage = pipeline.find(stage => stage.$match);
+    const matchStage = pipeline.find((stage) => stage.$match);
     if (matchStage) {
       const match = matchStage.$match;
-      if (match.company) items = items.filter(t => t.company === match.company);
-      if (match.customer) items = items.filter(t => t.customer === match.customer);
-      if (match.spendType) items = items.filter(t => t.spendType === match.spendType);
-      if (match.status) items = items.filter(t => t.status === match.status);
+      if (match.company) items = items.filter((t) => t.company === match.company);
+      if (match.customer) items = items.filter((t) => t.customer === match.customer);
+      if (match.spendType) items = items.filter((t) => t.spendType === match.spendType);
+      if (match.status) items = items.filter((t) => t.status === match.status);
     }
-    
+
     // Apply $group stage for spending summary
-    const groupStage = pipeline.find(stage => stage.$group);
+    const groupStage = pipeline.find((stage) => stage.$group);
     if (groupStage) {
       const totalRequested = items.reduce((sum, t) => sum + (t.amount?.requested || 0), 0);
       const totalApproved = items.reduce((sum, t) => sum + (t.amount?.approved || 0), 0);
       const totalSpent = items.reduce((sum, t) => sum + (t.amount?.spent || 0), 0);
-      
+
       return [{
         _id: null,
         totalRequested,
@@ -1498,7 +1498,7 @@ const MockTradeSpend = {
         totalSpent
       }];
     }
-    
+
     return items;
   }
 };

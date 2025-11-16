@@ -90,7 +90,7 @@ router.post('/budget/reallocate', [
 
       if (highPerforming.length > 0) {
         const high = highPerforming[i % highPerforming.length];
-        
+
         recommendations.push({
           type: 'reallocate',
           from: {
@@ -140,10 +140,10 @@ router.post('/budget/reallocate', [
 
     const summary = {
       totalReallocation,
-      expectedRevenueGain: recommendations.reduce((sum, rec) => 
+      expectedRevenueGain: recommendations.reduce((sum, rec) =>
         sum + (rec.expectedImpact.revenueGain || 0), 0
       ),
-      expectedSavings: recommendations.reduce((sum, rec) => 
+      expectedSavings: recommendations.reduce((sum, rec) =>
         sum + (rec.expectedImpact.savingsRealized || 0), 0
       ),
       underperformingCount: underperforming.length,

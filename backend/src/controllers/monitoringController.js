@@ -94,8 +94,8 @@ const monitoringController = {
       const { companyId } = req.user;
       const { status, type, priority } = req.query;
 
-      let filter = { companyId };
-      
+      const filter = { companyId };
+
       if (status) filter.status = status;
       if (type) filter.type = type;
       if (priority) filter.priority = priority;
@@ -106,11 +106,11 @@ const monitoringController = {
         alerts,
         totalCount: alerts.length,
         summary: {
-          critical: alerts.filter(a => a.priority === 'critical').length,
-          warning: alerts.filter(a => a.priority === 'warning').length,
-          info: alerts.filter(a => a.priority === 'info').length,
-          active: alerts.filter(a => a.status === 'active').length,
-          resolved: alerts.filter(a => a.status === 'resolved').length
+          critical: alerts.filter((a) => a.priority === 'critical').length,
+          warning: alerts.filter((a) => a.priority === 'warning').length,
+          info: alerts.filter((a) => a.priority === 'info').length,
+          active: alerts.filter((a) => a.status === 'active').length,
+          resolved: alerts.filter((a) => a.status === 'resolved').length
         }
       });
 
@@ -244,7 +244,7 @@ const monitoringController = {
     });
 
     const totalPromotions = await Promotion.countDocuments({ companyId });
-    
+
     return {
       active: activePromotions,
       total: totalPromotions,
@@ -254,7 +254,7 @@ const monitoringController = {
 
   async _getTodaySpend(companyId, today) {
     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    
+
     const todaySpend = await TradeSpend.aggregate([
       {
         $match: {
@@ -273,7 +273,7 @@ const monitoringController = {
     ]);
 
     const data = todaySpend[0] || { totalActual: 0, totalPlanned: 0, count: 0 };
-    
+
     return {
       actual: data.totalActual,
       planned: data.totalPlanned,
@@ -301,7 +301,7 @@ const monitoringController = {
     ]);
 
     const data = budgets[0] || { totalBudget: 0, allocatedBudget: 0, count: 0 };
-    
+
     return {
       total: data.totalBudget,
       allocated: data.allocatedBudget,
@@ -312,7 +312,7 @@ const monitoringController = {
 
   async _getMonthlyPerformance(companyId, monthStart) {
     const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
-    
+
     const performance = await SalesHistory.aggregate([
       {
         $match: {
@@ -332,7 +332,7 @@ const monitoringController = {
     ]);
 
     const data = performance[0] || { totalValue: 0, totalUnits: 0, avgValue: 0, count: 0 };
-    
+
     return {
       revenue: data.totalValue,
       units: data.totalUnits,
@@ -427,7 +427,7 @@ const monitoringController = {
       }
     ];
 
-    return mockAlerts.filter(alert => {
+    return mockAlerts.filter((alert) => {
       if (filter.status && alert.status !== filter.status) return false;
       if (filter.type && alert.type !== filter.type) return false;
       if (filter.priority && alert.priority !== filter.priority) return false;
@@ -489,7 +489,7 @@ const monitoringController = {
     }
 
     // Emit alerts to real-time stream
-    results.forEach(alert => {
+    results.forEach((alert) => {
       monitoringEvents.emit('alert', {
         type: 'alert',
         companyId,
@@ -503,14 +503,14 @@ const monitoringController = {
 
   async _checkBudgetThresholds(companyId) {
     const alerts = [];
-    
+
     // Check budget utilization
     const budgets = await Budget.find({ companyId });
-    
+
     for (const budget of budgets) {
-      const utilizationRate = budget.totalAmount > 0 ? 
+      const utilizationRate = budget.totalAmount > 0 ?
         (budget.allocatedAmount / budget.totalAmount) * 100 : 0;
-      
+
       if (utilizationRate > 90) {
         alerts.push({
           type: 'budget_threshold',
@@ -535,11 +535,11 @@ const monitoringController = {
 
   async _checkPerformanceThresholds(companyId) {
     const alerts = [];
-    
+
     // Mock performance threshold checks
     const responseTime = 125; // ms
     const errorRate = 0.02; // 2%
-    
+
     if (responseTime > 200) {
       alerts.push({
         type: 'performance',
@@ -549,7 +549,7 @@ const monitoringController = {
         currentValue: responseTime
       });
     }
-    
+
     if (errorRate > 0.05) {
       alerts.push({
         type: 'performance',
@@ -565,12 +565,12 @@ const monitoringController = {
 
   async _checkSystemHealth() {
     const alerts = [];
-    
+
     // Mock system health checks
     const memoryUsage = 68; // %
     const cpuUsage = 45; // %
     const diskUsage = 32; // %
-    
+
     if (memoryUsage > 85) {
       alerts.push({
         type: 'system_health',
@@ -580,7 +580,7 @@ const monitoringController = {
         currentValue: memoryUsage
       });
     }
-    
+
     if (cpuUsage > 80) {
       alerts.push({
         type: 'system_health',

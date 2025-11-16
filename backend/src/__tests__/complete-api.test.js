@@ -10,7 +10,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
   beforeAll(async () => {
     // Setup test database connection
     await mongoose.connect(process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/tradeai_test');
-    
+
     // Create test user and get auth token
     const response = await request(app)
       .post('/api/auth/register')
@@ -20,7 +20,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
         name: 'Test User',
         role: 'admin'
       });
-    
+
     authToken = response.body.token;
     testUser = response.body.user;
   });
@@ -40,7 +40,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           password: 'Test123!@#',
           name: 'New User'
         });
-      
+
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('token');
       expect(res.body.user).toHaveProperty('email', 'newuser@example.com');
@@ -53,7 +53,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           email: 'test@example.com',
           password: 'Test123!@#'
         });
-      
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('token');
     });
@@ -62,7 +62,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/auth/me')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('email', 'test@example.com');
     });
@@ -71,7 +71,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .post('/api/auth/logout')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
     });
   });
@@ -90,7 +90,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           startDate: new Date(),
           endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         });
-      
+
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('name', 'Test Trade Spend');
       tradeSpendId = res.body._id;
@@ -100,7 +100,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/trade-spends')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });
@@ -109,7 +109,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get(`/api/trade-spends/${tradeSpendId}`)
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id', tradeSpendId);
     });
@@ -119,7 +119,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
         .put(`/api/trade-spends/${tradeSpendId}`)
         .set('Authorization', `Bearer ${authToken}`)
         .send({ amount: 15000 });
-      
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('amount', 15000);
     });
@@ -128,7 +128,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .delete(`/api/trade-spends/${tradeSpendId}`)
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
     });
   });
@@ -146,7 +146,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           period: 'quarterly',
           year: 2025
         });
-      
+
       expect(res.status).toBe(201);
       budgetId = res.body._id;
     });
@@ -155,7 +155,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/budgets')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });
@@ -173,7 +173,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           email: 'customer@example.com',
           type: 'retail'
         });
-      
+
       expect(res.status).toBe(201);
       customerId = res.body._id;
     });
@@ -182,7 +182,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/customers')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });
@@ -200,7 +200,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           sku: 'TEST-001',
           price: 99.99
         });
-      
+
       expect(res.status).toBe(201);
       productId = res.body._id;
     });
@@ -209,7 +209,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/products')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });
@@ -226,7 +226,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
           startDate: new Date(),
           endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         });
-      
+
       expect(res.status).toBe(201);
     });
 
@@ -234,7 +234,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/campaigns')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });
@@ -245,7 +245,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/analytics/dashboard')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('metrics');
     });
@@ -254,7 +254,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
       const res = await request(app)
         .get('/api/reports')
         .set('Authorization', `Bearer ${authToken}`);
-      
+
       expect(res.status).toBe(200);
     });
   });
@@ -262,7 +262,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
   describe('Health & System', () => {
     test('GET /api/health - should return health status', async () => {
       const res = await request(app).get('/api/health');
-      
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('status', 'UP');
     });

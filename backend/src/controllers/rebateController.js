@@ -11,7 +11,7 @@ const logger = require('../utils/logger');
 exports.getAllRebates = asyncHandler(async (req, res) => {
   const { status, type, customer } = req.query;
   const filter = { company: req.user.company };
-  
+
   if (status) filter.status = status;
   if (type) filter.type = type;
   if (customer) filter.customer = customer;
@@ -224,7 +224,7 @@ exports.calculateRebatesForTransaction = asyncHandler(async (req, res) => {
   });
 
   const calculations = [];
-  
+
   for (const rebate of activeRebates) {
     try {
       const result = await rebateCalculationService.calculateRebate(
@@ -232,7 +232,7 @@ exports.calculateRebatesForTransaction = asyncHandler(async (req, res) => {
         transaction,
         { /* additional context */ }
       );
-      
+
       if (result.eligible) {
         calculations.push({
           rebateId: rebate._id,
@@ -261,7 +261,7 @@ exports.calculateRebatesForTransaction = asyncHandler(async (req, res) => {
  */
 exports.getRebateStatistics = asyncHandler(async (req, res) => {
   const { startDate, endDate, customer } = req.query;
-  
+
   const filter = {
     company: req.user.company,
     status: { $in: ['active', 'completed'] }
@@ -270,7 +270,7 @@ exports.getRebateStatistics = asyncHandler(async (req, res) => {
   if (customer) filter.customer = customer;
 
   const rebates = await Rebate.find(filter);
-  
+
   const accrualFilter = { company: req.user.company };
   if (startDate && endDate) {
     accrualFilter.accrualDate = {
@@ -284,14 +284,14 @@ exports.getRebateStatistics = asyncHandler(async (req, res) => {
 
   const statistics = {
     totalRebates: rebates.length,
-    activeRebates: rebates.filter(r => r.status === 'active').length,
+    activeRebates: rebates.filter((r) => r.status === 'active').length,
     totalAccrued: accruals.reduce((sum, acc) => sum + acc.accruedAmount, 0),
-    totalPaid: accruals.filter(acc => acc.status === 'paid').reduce((sum, acc) => sum + acc.accruedAmount, 0),
-    totalPending: accruals.filter(acc => acc.status === 'pending').reduce((sum, acc) => sum + acc.accruedAmount, 0),
+    totalPaid: accruals.filter((acc) => acc.status === 'paid').reduce((sum, acc) => sum + acc.accruedAmount, 0),
+    totalPending: accruals.filter((acc) => acc.status === 'pending').reduce((sum, acc) => sum + acc.accruedAmount, 0),
     byType: {}
   };
 
-  rebates.forEach(rebate => {
+  rebates.forEach((rebate) => {
     if (!statistics.byType[rebate.type]) {
       statistics.byType[rebate.type] = {
         count: 0,
@@ -302,8 +302,8 @@ exports.getRebateStatistics = asyncHandler(async (req, res) => {
     statistics.byType[rebate.type].count++;
   });
 
-  accruals.forEach(accrual => {
-    const rebate = rebates.find(r => r._id.equals(accrual.rebate));
+  accruals.forEach((accrual) => {
+    const rebate = rebates.find((r) => r._id.equals(accrual.rebate));
     if (rebate && statistics.byType[rebate.type]) {
       statistics.byType[rebate.type].totalAccrued += accrual.accruedAmount;
       if (accrual.status === 'paid') {
@@ -323,9 +323,9 @@ exports.getRebateStatistics = asyncHandler(async (req, res) => {
  */
 exports.getRebateAccruals = asyncHandler(async (req, res) => {
   const { rebateId, status, startDate, endDate } = req.query;
-  
+
   const filter = { company: req.user.company };
-  
+
   if (rebateId) filter.rebate = rebateId;
   if (status) filter.status = status;
   if (startDate && endDate) {
@@ -373,12 +373,12 @@ exports.getCustomerRebateHistory = asyncHandler(async (req, res) => {
 
   const summary = {
     totalAccrued: accruals.reduce((sum, acc) => sum + acc.accruedAmount, 0),
-    totalPaid: accruals.filter(acc => acc.status === 'paid').reduce((sum, acc) => sum + acc.accruedAmount, 0),
-    totalPending: accruals.filter(acc => acc.status === 'pending').reduce((sum, acc) => sum + acc.accruedAmount, 0),
+    totalPaid: accruals.filter((acc) => acc.status === 'paid').reduce((sum, acc) => sum + acc.accruedAmount, 0),
+    totalPending: accruals.filter((acc) => acc.status === 'pending').reduce((sum, acc) => sum + acc.accruedAmount, 0),
     byRebateType: {}
   };
 
-  accruals.forEach(accrual => {
+  accruals.forEach((accrual) => {
     if (accrual.rebate) {
       const type = accrual.rebate.type;
       if (!summary.byRebateType[type]) {
@@ -427,11 +427,11 @@ exports.calculateNetMargin = asyncHandler(async (req, res) => {
   }).populate('rebate');
 
   const totalRebateAmount = accruals.reduce((sum, acc) => sum + acc.accruedAmount, 0);
-  
+
   const grossMargin = transaction.totalAmount - (transaction.costPrice || 0);
   const netMargin = grossMargin - totalRebateAmount;
-  const netMarginPercentage = transaction.totalAmount > 0 
-    ? (netMargin / transaction.totalAmount) * 100 
+  const netMarginPercentage = transaction.totalAmount > 0
+    ? (netMargin / transaction.totalAmount) * 100
     : 0;
 
   res.status(200).json({
@@ -444,7 +444,7 @@ exports.calculateNetMargin = asyncHandler(async (req, res) => {
       totalRebates: totalRebateAmount,
       netMargin,
       netMarginPercentage: parseFloat(netMarginPercentage.toFixed(2)),
-      rebateBreakdown: accruals.map(acc => ({
+      rebateBreakdown: accruals.map((acc) => ({
         rebateName: acc.rebate.name,
         type: acc.rebate.type,
         amount: acc.accruedAmount
@@ -478,7 +478,7 @@ exports.accrueRebatesForPeriod = asyncHandler(async (req, res) => {
     .sort({ date: 1 });
 
   const accrualResults = [];
-  
+
   for (const transaction of transactions) {
     try {
       const activeRebates = await Rebate.find({
@@ -516,7 +516,7 @@ exports.accrueRebatesForPeriod = asyncHandler(async (req, res) => {
               calculationDetails: result.details,
               status: 'pending'
             });
-            
+
             accrualResults.push(accrual);
           }
         }

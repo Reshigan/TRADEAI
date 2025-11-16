@@ -22,7 +22,7 @@ const validate = (schema, property = 'body') => {
 
     if (error) {
       // Format validation errors
-      const errors = error.details.map(detail => ({
+      const errors = error.details.map((detail) => ({
         field: detail.path.join('.'),
         message: detail.message.replace(/"/g, ''),
         type: detail.type
@@ -34,7 +34,7 @@ const validate = (schema, property = 'body') => {
 
     // Replace request data with validated/sanitized data
     req[property] = value;
-    
+
     // Attach validated flag for debugging
     req.validated = req.validated || {};
     req.validated[property] = true;
@@ -61,7 +61,7 @@ const validateMultiple = (schemas) => {
       });
 
       if (error) {
-        const errors = error.details.map(detail => ({
+        const errors = error.details.map((detail) => ({
           field: `${property}.${detail.path.join('.')}`,
           message: detail.message.replace(/"/g, ''),
           type: detail.type

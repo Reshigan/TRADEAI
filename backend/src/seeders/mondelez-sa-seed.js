@@ -1,12 +1,12 @@
 /**
  * Mondelez South Africa - Comprehensive Seed Data
- * 
+ *
  * This seed script creates a realistic dataset for Mondelez International (SA)
  * including products, customers, users, promotions, campaigns, and historical data.
- * 
+ *
  * Usage:
  *   node backend/src/seeders/mondelez-sa-seed.js
- * 
+ *
  * Or from within the app:
  *   npm run seed:mondelez
  */
@@ -32,7 +32,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tradeai', {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      useUnifiedTopology: true
     });
     console.log('✅ MongoDB Connected');
   } catch (error) {
@@ -51,9 +51,9 @@ const MONDELEZ_COMPANY_ID = new mongoose.Types.ObjectId();
 
 const createUsers = async () => {
   console.log('\n📝 Creating Mondelez SA Users...');
-  
+
   const hashedPassword = await bcrypt.hash('Mondelez@2024', 10);
-  
+
   const users = [
     {
       firstName: 'Thabo',
@@ -147,7 +147,7 @@ const createUsers = async () => {
 
 const createProducts = async () => {
   console.log('\n📦 Creating Mondelez Products...');
-  
+
   const products = [
     // Cadbury Chocolate
     {
@@ -457,7 +457,7 @@ const createProducts = async () => {
 
 const createCustomers = async () => {
   console.log('\n🏢 Creating South African Retailers...');
-  
+
   const customers = [
     {
       name: 'Pick n Pay',
@@ -628,16 +628,16 @@ const createCustomers = async () => {
 
 const createSalesHistory = async (products, customers) => {
   console.log('\n📊 Creating Historical Sales Data...');
-  
+
   const salesHistory = [];
   const months = 12; // Last 12 months
   const currentDate = new Date();
-  
+
   // Generate sales for each product-customer combination for past 12 months
   for (let monthsBack = 0; monthsBack < months; monthsBack++) {
     const date = new Date(currentDate);
     date.setMonth(date.getMonth() - monthsBack);
-    
+
     for (const product of products.slice(0, 5)) { // Top 5 products
       for (const customer of customers.slice(0, 4)) { // Top 4 customers
         const baseVolume = Math.floor(Math.random() * 1000) + 500;
@@ -645,7 +645,7 @@ const createSalesHistory = async (products, customers) => {
         const quantity = Math.floor(baseVolume * seasonalityFactor);
         const unitPrice = product.pricing.costPrice * 1.3; // 30% markup
         const grossRevenue = quantity * unitPrice;
-        
+
         salesHistory.push({
           date,
           year: date.getFullYear(),
@@ -676,7 +676,7 @@ const createSalesHistory = async (products, customers) => {
       }
     }
   }
-  
+
   const createdSales = await SalesHistory.insertMany(salesHistory);
   console.log(`✅ Created ${createdSales.length} sales history records`);
   return createdSales;
@@ -688,9 +688,9 @@ const createSalesHistory = async (products, customers) => {
 
 const createBudgets = async (products, customers) => {
   console.log('\n💰 Creating Annual Budget...');
-  
+
   const currentYear = new Date().getFullYear();
-  
+
   const budget = {
     year: currentYear,
     name: `Mondelez SA ${currentYear} Annual Budget`,
@@ -749,7 +749,7 @@ const createBudgets = async (products, customers) => {
   };
 
   const createdBudget = await Budget.create(budget);
-  console.log(`✅ Created annual budget`);
+  console.log('✅ Created annual budget');
   return createdBudget;
 };
 
@@ -759,7 +759,7 @@ const createBudgets = async (products, customers) => {
 
 const createPromotions = async (products, customers, users) => {
   console.log('\n🎯 Creating Promotions...');
-  
+
   const promotions = [
     {
       promotionId: 'PROMO-2024-00001',
@@ -912,7 +912,7 @@ const createPromotions = async (products, customers, users) => {
 
 const createCampaigns = async (products, customers, users) => {
   console.log('\n📢 Creating Marketing Campaigns...');
-  
+
   const campaigns = [
     {
       campaignId: 'CAMP-2024-001',
@@ -998,7 +998,7 @@ const createCampaigns = async (products, customers, users) => {
 
 const createTradeSpend = async (customers, products) => {
   console.log('\n💸 Creating Trade Spend Records...');
-  
+
   const tradeSpendRecords = [
     {
       spendId: 'TS-2024-001',
@@ -1074,7 +1074,7 @@ const createTradeSpend = async (customers, products) => {
 
 const createActivityGrid = async (promotions, campaigns, customers, products, users) => {
   console.log('\n📅 Creating Activity Grid...');
-  
+
   const activities = [
     {
       date: new Date('2024-11-01'),
@@ -1172,7 +1172,7 @@ const seedMondelezData = async () => {
     console.log(`   Products:       ${products.length}`);
     console.log(`   Customers:      ${customers.length}`);
     console.log(`   Sales Records:  ${salesHistory.length}`);
-    console.log(`   Budgets:        1`);
+    console.log('   Budgets:        1');
     console.log(`   Promotions:     ${promotions.length}`);
     console.log(`   Campaigns:      ${campaigns.length}`);
     console.log(`   Trade Spend:    ${tradeSpend.length}`);

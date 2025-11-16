@@ -7,36 +7,36 @@ const { bulkOperationsLimiter } = require('../middleware/security');
 
 // Get sales history with filters
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
-  const { 
-    startDate, 
-    endDate, 
-    customerId, 
+  const {
+    startDate,
+    endDate,
+    customerId,
     productId,
     aggregateBy = 'day',
     page = 1,
     limit = 100
   } = req.query;
-  
+
   const query = {};
-  
+
   if (startDate || endDate) {
     query.date = {};
     if (startDate) query.date.$gte = new Date(startDate);
     if (endDate) query.date.$lte = new Date(endDate);
   }
-  
+
   if (customerId) query.customer = customerId;
   if (productId) query.product = productId;
-  
+
   const salesHistory = await SalesHistory.find(query)
     .populate('customer', 'name code')
     .populate('product', 'name sku')
     .limit(limit * 1)
     .skip((page - 1) * limit)
     .sort({ date: -1 });
-  
+
   const count = await SalesHistory.countDocuments(query);
-  
+
   res.json({
     success: true,
     data: salesHistory,
@@ -48,27 +48,27 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 
 // Get aggregated sales data
 router.get('/aggregate', authenticateToken, asyncHandler(async (req, res) => {
-  const { 
-    startDate, 
-    endDate, 
-    customerId, 
+  const {
+    startDate,
+    endDate,
+    customerId,
     productId,
     groupBy = 'month'
   } = req.query;
-  
+
   const matchStage = {};
-  
+
   if (startDate || endDate) {
     matchStage.date = {};
     if (startDate) matchStage.date.$gte = new Date(startDate);
     if (endDate) matchStage.date.$lte = new Date(endDate);
   }
-  
+
   if (customerId) matchStage.customer = mongoose.Types.ObjectId(customerId);
   if (productId) matchStage.product = mongoose.Types.ObjectId(productId);
-  
+
   let groupStage = {};
-  
+
   switch (groupBy) {
     case 'day':
       groupStage = {
@@ -80,7 +80,7 @@ router.get('/aggregate', authenticateToken, asyncHandler(async (req, res) => {
       break;
     case 'week':
       groupStage = {
-        _id: { 
+        _id: {
           year: { $year: '$date' },
           week: { $week: '$date' }
         },
@@ -92,7 +92,7 @@ router.get('/aggregate', authenticateToken, asyncHandler(async (req, res) => {
     case 'month':
     default:
       groupStage = {
-        _id: { 
+        _id: {
           year: { $year: '$date' },
           month: { $month: '$date' }
         },
@@ -101,13 +101,13 @@ router.get('/aggregate', authenticateToken, asyncHandler(async (req, res) => {
         count: { $sum: 1 }
       };
   }
-  
+
   const aggregatedData = await SalesHistory.aggregate([
     { $match: matchStage },
     { $group: groupStage },
     { $sort: { '_id': 1 } }
   ]);
-  
+
   res.json({
     success: true,
     data: aggregatedData,
@@ -116,21 +116,21 @@ router.get('/aggregate', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Import sales history (bulk upload)
-router.post('/import', 
+router.post('/import',
   bulkOperationsLimiter,
-  authenticateToken, 
+  authenticateToken,
   asyncHandler(async (req, res) => {
     const { data } = req.body;
-    
+
     if (!Array.isArray(data) || data.length === 0) {
       throw new AppError('Invalid data format', 400);
     }
-    
-    const salesHistory = await SalesHistory.insertMany(data, { 
+
+    const salesHistory = await SalesHistory.insertMany(data, {
       ordered: false,
-      rawResult: true 
+      rawResult: true
     });
-    
+
     res.status(201).json({
       success: true,
       message: `Successfully imported ${salesHistory.insertedCount} records`,
@@ -142,10 +142,10 @@ router.post('/import',
 // Get sales trends
 router.get('/trends', authenticateToken, asyncHandler(async (req, res) => {
   const { customerId, productId, period = '12months' } = req.query;
-  
+
   const endDate = new Date();
-  let startDate = new Date();
-  
+  const startDate = new Date();
+
   switch (period) {
     case '3months':
       startDate.setMonth(startDate.getMonth() - 3);
@@ -157,19 +157,19 @@ router.get('/trends', authenticateToken, asyncHandler(async (req, res) => {
     default:
       startDate.setMonth(startDate.getMonth() - 12);
   }
-  
+
   const matchStage = {
     date: { $gte: startDate, $lte: endDate }
   };
-  
+
   if (customerId) matchStage.customer = mongoose.Types.ObjectId(customerId);
   if (productId) matchStage.product = mongoose.Types.ObjectId(productId);
-  
+
   const trends = await SalesHistory.aggregate([
     { $match: matchStage },
     {
       $group: {
-        _id: { 
+        _id: {
           year: { $year: '$date' },
           month: { $month: '$date' }
         },
@@ -180,7 +180,7 @@ router.get('/trends', authenticateToken, asyncHandler(async (req, res) => {
     },
     { $sort: { '_id.year': 1, '_id.month': 1 } }
   ]);
-  
+
   res.json({
     success: true,
     data: trends,

@@ -133,7 +133,7 @@ exports.compareScenarios = asyncHandler(async (req, res, next) => {
   const { scenarios } = req.body;
 
   // Add tenant and user info to all scenarios
-  scenarios.forEach(scenario => {
+  scenarios.forEach((scenario) => {
     scenario.tenantId = req.tenant._id;
     scenario.userId = req.user._id;
   });
@@ -165,7 +165,7 @@ exports.saveSimulation = asyncHandler(async (req, res, next) => {
     success: true,
     message: 'Simulation saved successfully',
     data: {
-      id: 'sim_' + Date.now(),
+      id: `sim_${Date.now()}`,
       name,
       savedAt: new Date()
     }

@@ -57,7 +57,7 @@ class AuditService {
     if (filters.action) query.action = filters.action;
     if (filters.resource) query.resource = filters.resource;
     if (filters.resourceId) query.resourceId = filters.resourceId;
-    
+
     if (filters.startDate || filters.endDate) {
       query.timestamp = {};
       if (filters.startDate) query.timestamp.$gte = new Date(filters.startDate);
@@ -97,14 +97,14 @@ class AuditService {
    */
   async generateComplianceReport({ startDate, endDate, userId, action }) {
     const logs = await this.getLogs({ startDate, endDate, userId, action });
-    
+
     const report = {
       period: { startDate, endDate },
       totalActions: logs.length,
       actionsByType: {},
       actionsByResource: {},
       actionsByUser: {},
-      logs: logs.map(log => ({
+      logs: logs.map((log) => ({
         timestamp: log.timestamp,
         user: log.userId ? `${log.userId.firstName} ${log.userId.lastName}` : 'Unknown',
         action: log.action,
@@ -115,10 +115,10 @@ class AuditService {
     };
 
     // Group by action type
-    logs.forEach(log => {
+    logs.forEach((log) => {
       report.actionsByType[log.action] = (report.actionsByType[log.action] || 0) + 1;
       report.actionsByResource[log.resource] = (report.actionsByResource[log.resource] || 0) + 1;
-      
+
       if (log.userId) {
         const userName = `${log.userId.firstName} ${log.userId.lastName}`;
         report.actionsByUser[userName] = (report.actionsByUser[userName] || 0) + 1;

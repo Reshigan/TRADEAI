@@ -16,20 +16,20 @@ class MLIntegrationService {
     this.trainingData = new Map();
     this.predictionCache = new Map();
     this.cacheTimeout = 30 * 60 * 1000; // 30 minutes
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing ML Integration Service...');
-      
+
       // Initialize pre-trained models
       await this.loadPretrainedModels();
-      
+
       // Start periodic model training
       this.startPeriodicTraining();
-      
+
       this.isInitialized = true;
       console.log('ML Integration Service initialized successfully');
     } catch (error) {
@@ -44,22 +44,22 @@ class MLIntegrationService {
     try {
       // Customer Lifetime Value (CLV) Model
       this.models.set('clv', await this.createCLVModel());
-      
+
       // Demand Forecasting Model
       this.models.set('demand_forecast', await this.createDemandForecastModel());
-      
+
       // Price Optimization Model
       this.models.set('price_optimization', await this.createPriceOptimizationModel());
-      
+
       // Churn Prediction Model
       this.models.set('churn_prediction', await this.createChurnPredictionModel());
-      
+
       // Recommendation Engine
       this.models.set('recommendations', await this.createRecommendationModel());
-      
+
       // Anomaly Detection Model
       this.models.set('anomaly_detection', await this.createAnomalyDetectionModel());
-      
+
       console.log('Pre-trained models loaded successfully');
     } catch (error) {
       console.error('Error loading pre-trained models:', error);
@@ -96,9 +96,9 @@ class MLIntegrationService {
   async createDemandForecastModel() {
     const model = tf.sequential({
       layers: [
-        tf.layers.lstm({ 
-          units: 50, 
-          returnSequences: true, 
+        tf.layers.lstm({
+          units: 50,
+          returnSequences: true,
           inputShape: [30, 5] // 30 days, 5 features
         }),
         tf.layers.dropout({ rate: 0.2 }),
@@ -287,7 +287,7 @@ class MLIntegrationService {
 
       // Get historical sales data
       const historicalData = await this.getHistoricalSalesData(tenantId, productId, 90);
-      
+
       if (historicalData.length < 30) {
         throw new Error('Insufficient historical data for forecasting');
       }
@@ -482,7 +482,7 @@ class MLIntegrationService {
   async detectAnomalies(tenantId, dataType, data, options = {}) {
     try {
       const { threshold = 0.1 } = options;
-      
+
       // Prepare data for anomaly detection
       const features = this.prepareAnomalyFeatures(data, dataType);
       const inputTensor = tf.tensor2d([features]);
@@ -581,26 +581,26 @@ class MLIntegrationService {
 
   prepareTimeSeriesData(historicalData) {
     // Prepare last 30 days of data with 5 features each
-    const data = historicalData.slice(-30).map(day => [
+    const data = historicalData.slice(-30).map((day) => [
       day.sales,
       day.price,
       day.promotions,
       new Date(day.date).getDay(), // Day of week
       new Date(day.date).getDate() // Day of month
     ]);
-    
+
     return data;
   }
 
   calculateOptimalPrice(currentPrice, elasticity, constraints) {
     const { minPrice = currentPrice * 0.7, maxPrice = currentPrice * 1.3 } = constraints;
-    
+
     // Simple optimization based on elasticity
     let optimalPrice = currentPrice * (1 + (elasticity - 0.5) * 0.2);
-    
+
     // Apply constraints
     optimalPrice = Math.max(minPrice, Math.min(maxPrice, optimalPrice));
-    
+
     return Math.round(optimalPrice * 100) / 100;
   }
 
@@ -612,7 +612,7 @@ class MLIntegrationService {
 
   async getTopRecommendations(tenantId, scores, limit, category) {
     // Mock recommendations - would query actual products
-    const products = await Product.find({ 
+    const products = await Product.find({
       tenantId,
       ...(category && { 'category.primary': category })
     }).limit(limit * 2);
@@ -653,21 +653,21 @@ class MLIntegrationService {
   // Utility methods
   calculateConfidence(features) {
     // Simple confidence calculation based on feature completeness
-    const completeness = features.filter(f => f !== 0).length / features.length;
+    const completeness = features.filter((f) => f !== 0).length / features.length;
     return Math.min(0.95, completeness * 0.8 + 0.2);
   }
 
   generateCLVRecommendations(clv, features) {
     const recommendations = [];
-    
+
     if (clv > 1000) {
       recommendations.push('High-value customer: Consider premium service offerings');
     }
-    
+
     if (features[3] > 30) { // Days since last order
       recommendations.push('Re-engagement needed: Send targeted offers');
     }
-    
+
     return recommendations;
   }
 
@@ -733,13 +733,13 @@ class MLIntegrationService {
 
   generateRetentionStrategies(churnProbability, features) {
     const strategies = [];
-    
+
     if (churnProbability > 0.5) {
       strategies.push('Immediate intervention required');
       strategies.push('Offer personalized discount');
       strategies.push('Assign dedicated account manager');
     }
-    
+
     return strategies;
   }
 
@@ -772,19 +772,19 @@ class MLIntegrationService {
 
   generatePricingRecommendations(optimalPrice, currentPrice, elasticity) {
     const recommendations = [];
-    
+
     if (optimalPrice > currentPrice) {
       recommendations.push('Consider price increase - demand is relatively inelastic');
     } else if (optimalPrice < currentPrice) {
       recommendations.push('Consider price reduction - could increase overall revenue');
     }
-    
+
     return recommendations;
   }
 
   calculateForecastConfidence(historicalData) {
     // Simple confidence based on data consistency
-    const variance = this.calculateVariance(historicalData.map(d => d.sales));
+    const variance = this.calculateVariance(historicalData.map((d) => d.sales));
     return Math.max(0.1, Math.min(0.95, 1 - variance / 1000));
   }
 
@@ -795,14 +795,14 @@ class MLIntegrationService {
 
   analyzeDemandTrends(historicalData) {
     // Simple trend analysis
-    const recent = historicalData.slice(-7).map(d => d.sales);
-    const older = historicalData.slice(-14, -7).map(d => d.sales);
-    
+    const recent = historicalData.slice(-7).map((d) => d.sales);
+    const older = historicalData.slice(-14, -7).map((d) => d.sales);
+
     const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
     const olderAvg = older.reduce((a, b) => a + b, 0) / older.length;
-    
+
     const trend = (recentAvg - olderAvg) / olderAvg;
-    
+
     return {
       direction: trend > 0.05 ? 'increasing' : trend < -0.05 ? 'decreasing' : 'stable',
       magnitude: Math.abs(trend),
@@ -822,18 +822,18 @@ class MLIntegrationService {
   generateForecastSeries(forecastValues, days) {
     const series = [];
     const baseDate = new Date();
-    
+
     for (let i = 0; i < days; i++) {
       const date = new Date(baseDate);
       date.setDate(date.getDate() + i + 1);
-      
+
       series.push({
         date: date.toISOString().split('T')[0],
         predictedDemand: Math.max(0, forecastValues[0] * (1 + (Math.random() - 0.5) * 0.2)),
         confidence: 0.8 - (i / days) * 0.3 // Confidence decreases over time
       });
     }
-    
+
     return series;
   }
 

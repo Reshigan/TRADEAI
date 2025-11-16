@@ -46,7 +46,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
     price: productObj.unitPrice || 0,
     cost: productObj.costPrice || 0,
     stock: productObj.stock || 0,
-    margin: productObj.unitPrice && productObj.costPrice 
+    margin: productObj.unitPrice && productObj.costPrice
       ? ((productObj.unitPrice - productObj.costPrice) / productObj.unitPrice * 100).toFixed(2)
       : 0
   };
@@ -72,7 +72,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 
   Object.assign(product, req.body);
   product.lastModifiedBy = req.user._id;
-  
+
   await product.save();
 
   logger.logAudit('product_updated', req.user._id, {
@@ -103,10 +103,10 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   // Check if product is referenced in other documents
   const TradeSpend = require('../models/TradeSpend');
   const Promotion = require('../models/Promotion');
-  
+
   const tradeSpendCount = await TradeSpend.countDocuments({ products: product._id });
   const promotionCount = await Promotion.countDocuments({ 'products.product': product._id });
-  
+
   if (tradeSpendCount > 0 || promotionCount > 0) {
     throw new AppError('Cannot delete product with existing trade spends or promotions', 400);
   }
@@ -142,7 +142,7 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 
   // Build query
   const query = { company: req.user.company };
-  
+
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
@@ -151,25 +151,25 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
       { category: { $regex: search, $options: 'i' } }
     ];
   }
-  
+
   if (status) {
     query.status = status;
   }
-  
+
   if (category) {
     query.category = category;
   }
-  
+
   if (brand) {
     query['attributes.brand'] = brand;
   }
-  
+
   if (minPrice || maxPrice) {
     query['pricing.sellingPrice'] = {};
     if (minPrice) query['pricing.sellingPrice'].$gte = parseFloat(minPrice);
     if (maxPrice) query['pricing.sellingPrice'].$lte = parseFloat(maxPrice);
   }
-  
+
   // Apply additional filters
   Object.assign(query, filters);
 
@@ -183,7 +183,7 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
   const total = await Product.countDocuments(query);
 
   // Transform products to match UI expectations
-  const transformedProducts = products.map(product => {
+  const transformedProducts = products.map((product) => {
     const productObj = product.toObject();
     return {
       ...productObj,
@@ -192,7 +192,7 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
       cost: productObj.costPrice || 0,
       // Calculate missing fields
       stock: productObj.stock || 0,
-      margin: productObj.unitPrice && productObj.costPrice 
+      margin: productObj.unitPrice && productObj.costPrice
         ? ((productObj.unitPrice - productObj.costPrice) / productObj.unitPrice * 100).toFixed(2)
         : 0
     };
@@ -261,20 +261,20 @@ exports.getProductStats = asyncHandler(async (req, res, next) => {
 // Get product categories
 exports.getProductCategories = asyncHandler(async (req, res, next) => {
   const categories = await Product.distinct('category', { company: req.user.company });
-  
+
   res.json({
     success: true,
-    data: categories.filter(cat => cat) // Remove null/undefined values
+    data: categories.filter((cat) => cat) // Remove null/undefined values
   });
 });
 
 // Get product brands
 exports.getProductBrands = asyncHandler(async (req, res, next) => {
   const brands = await Product.distinct('attributes.brand', { company: req.user.company });
-  
+
   res.json({
     success: true,
-    data: brands.filter(brand => brand) // Remove null/undefined values
+    data: brands.filter((brand) => brand) // Remove null/undefined values
   });
 });
 
@@ -287,7 +287,7 @@ exports.bulkUpdateProducts = asyncHandler(async (req, res, next) => {
   }
 
   const result = await Product.updateMany(
-    { 
+    {
       _id: { $in: productIds },
       company: req.user.company
     },
@@ -315,7 +315,7 @@ exports.bulkUpdateProducts = asyncHandler(async (req, res, next) => {
 // Update product inventory
 exports.updateProductInventory = asyncHandler(async (req, res, next) => {
   const { currentStock, reorderLevel, maxStock } = req.body;
-  
+
   const product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -330,7 +330,7 @@ exports.updateProductInventory = asyncHandler(async (req, res, next) => {
   if (currentStock !== undefined) product.inventory.currentStock = currentStock;
   if (reorderLevel !== undefined) product.inventory.reorderLevel = reorderLevel;
   if (maxStock !== undefined) product.inventory.maxStock = maxStock;
-  
+
   product.lastModifiedBy = req.user._id;
   await product.save();
 

@@ -36,11 +36,11 @@ class EnterpriseBudgetService {
 
       // Apply adjustments to create scenario
       if (baseData.budgetLines) {
-        scenario.budgetLines = baseData.budgetLines.map(line => {
+        scenario.budgetLines = baseData.budgetLines.map((line) => {
           const adjustedLine = { ...line };
-          
+
           // Apply percentage adjustments
-          Object.keys(adjustments).forEach(category => {
+          Object.keys(adjustments).forEach((category) => {
             if (adjustedLine.tradeSpend && adjustedLine.tradeSpend[category]) {
               const adjustment = 1 + (adjustments[category] / 100);
               adjustedLine.tradeSpend[category].budget *= adjustment;
@@ -53,7 +53,7 @@ class EnterpriseBudgetService {
 
       // Calculate scenario totals
       scenario.totals = this.calculateScenarioTotals(scenario.budgetLines);
-      
+
       // Run predictive analysis
       scenario.predictedOutcomes = await this.predictScenarioOutcomes(scenario);
 
@@ -91,7 +91,7 @@ class EnterpriseBudgetService {
 
       // Calculate comparative metrics
       comparison.metrics = this.calculateComparativeMetrics(comparison.scenarios);
-      
+
       // Generate recommendations
       comparison.recommendations = this.generateScenarioRecommendations(comparison.scenarios);
 
@@ -122,7 +122,7 @@ class EnterpriseBudgetService {
 
       // Analyze each budget category
       const categories = ['marketing', 'cashCoop', 'tradingTerms', 'promotions'];
-      
+
       for (const category of categories) {
         const categoryVariance = {
           name: category,
@@ -135,7 +135,7 @@ class EnterpriseBudgetService {
         };
 
         // Calculate budgeted amount
-        budget.budgetLines.forEach(line => {
+        budget.budgetLines.forEach((line) => {
           if (line.tradeSpend && line.tradeSpend[category]) {
             categoryVariance.budgeted += line.tradeSpend[category].budget || 0;
           }
@@ -143,15 +143,15 @@ class EnterpriseBudgetService {
 
         // Get actual amount
         categoryVariance.actual = actualData[category] || 0;
-        
+
         // Calculate variance
         categoryVariance.variance = categoryVariance.actual - categoryVariance.budgeted;
-        categoryVariance.variancePercent = 
+        categoryVariance.variancePercent =
           (categoryVariance.variance / categoryVariance.budgeted) * 100;
 
         // Determine trend
         categoryVariance.trend = this.determineTrend(categoryVariance.variancePercent);
-        
+
         // Identify reasons for variance
         categoryVariance.reasons = await this.identifyVarianceReasons(
           category,
@@ -174,7 +174,7 @@ class EnterpriseBudgetService {
 
       // Calculate summary
       variance.summary = this.calculateVarianceSummary(variance.categories);
-      
+
       // Identify trends
       variance.trends = await this.identifyVarianceTrends(budgetId, period);
 
@@ -219,7 +219,7 @@ class EnterpriseBudgetService {
 
         // Apply growth factors
         const growthFactor = Math.pow(1 + (growthAssumptions.annualGrowth / 100), i);
-        
+
         // Generate quarterly budgets
         for (let q = 1; q <= 4; q++) {
           const quarterBudget = await this.generateQuarterlyBudget(
@@ -234,7 +234,7 @@ class EnterpriseBudgetService {
 
         // Calculate year totals
         yearPlan.totals = this.calculateYearTotals(yearPlan.quarters);
-        
+
         // Map strategic initiatives
         yearPlan.initiatives = this.mapStrategicInitiatives(
           strategicInitiatives,
@@ -246,7 +246,7 @@ class EnterpriseBudgetService {
 
       // Calculate plan summary
       plan.summary = this.calculatePlanSummary(plan.years);
-      
+
       // Assess strategic alignment
       plan.strategicAlignment = this.assessStrategicAlignment(
         plan.years,
@@ -340,7 +340,7 @@ class EnterpriseBudgetService {
           workflow.newStatus = 'pending_approval';
           workflow.nextApprovers = await this.getNextApprovers(budget, 'manager');
           break;
-        
+
         case 'approve':
           const nextLevel = await this.getNextApprovalLevel(budget);
           if (nextLevel) {
@@ -350,15 +350,15 @@ class EnterpriseBudgetService {
             workflow.newStatus = 'approved';
           }
           break;
-        
+
         case 'reject':
           workflow.newStatus = 'rejected';
           break;
-        
+
         case 'revise':
           workflow.newStatus = 'revision_required';
           break;
-        
+
         default:
           throw new AppError('Invalid workflow action', 400);
       }
@@ -377,7 +377,7 @@ class EnterpriseBudgetService {
 
       // Check SLA
       workflow.slaStatus = this.checkWorkflowSLA(budget);
-      
+
       // Send notifications
       await this.sendWorkflowNotifications(budget, workflow);
 
@@ -404,11 +404,11 @@ class EnterpriseBudgetService {
       } = consolidationParams;
 
       const budgets = await Budget.find({ _id: { $in: budgetIds } });
-      
+
       const consolidation = {
         type,
         level,
-        budgets: budgets.map(b => ({
+        budgets: budgets.map((b) => ({
           id: b._id,
           name: b.name,
           department: b.department,
@@ -425,13 +425,13 @@ class EnterpriseBudgetService {
 
       // Aggregate budget lines
       const aggregatedLines = this.aggregateBudgetLines(budgets, type);
-      
+
       // Apply eliminations
       const afterEliminations = this.applyEliminations(
         aggregatedLines,
         eliminations
       );
-      
+
       // Apply adjustments
       consolidation.consolidated.budgetLines = this.applyAdjustments(
         afterEliminations,
@@ -493,19 +493,19 @@ class EnterpriseBudgetService {
         totalVariance: 0,
         utilizationRate: 0,
         budgetCount: budgets.length,
-        approvedCount: budgets.filter(b => b.status === 'approved').length,
-        pendingCount: budgets.filter(b => b.status.includes('pending')).length
+        approvedCount: budgets.filter((b) => b.status === 'approved').length,
+        pendingCount: budgets.filter((b) => b.status.includes('pending')).length
       };
 
       // Calculate KPIs
       dashboard.kpis = await this.calculateBudgetKPIs(budgets, period);
-      
+
       // Identify trends
       dashboard.trends = await this.identifyBudgetTrends(budgets, period);
-      
+
       // Generate alerts
       dashboard.alerts = await this.generateBudgetAlerts(budgets);
-      
+
       // Generate recommendations
       dashboard.recommendations = await this.generateBudgetRecommendations(
         dashboard.kpis,
@@ -532,9 +532,9 @@ class EnterpriseBudgetService {
 
     if (!budgetLines) return totals;
 
-    budgetLines.forEach(line => {
+    budgetLines.forEach((line) => {
       if (line.tradeSpend) {
-        Object.keys(totals).forEach(key => {
+        Object.keys(totals).forEach((key) => {
           if (key !== 'total' && line.tradeSpend[key]) {
             totals[key] += line.tradeSpend[key].budget || 0;
           }
@@ -542,7 +542,7 @@ class EnterpriseBudgetService {
       }
     });
 
-    totals.total = totals.marketing + totals.cashCoop + 
+    totals.total = totals.marketing + totals.cashCoop +
                    totals.tradingTerms + totals.promotions;
 
     return totals;
@@ -552,7 +552,7 @@ class EnterpriseBudgetService {
     // Simplified prediction - in production, use actual ML model
     const baseROI = 2.5;
     const totalSpend = scenario.totals?.total || 0;
-    
+
     return {
       expectedROI: baseROI,
       expectedRevenue: totalSpend * baseROI,
@@ -565,7 +565,7 @@ class EnterpriseBudgetService {
   async calculateROI(scenario) {
     const totalSpend = scenario.totals?.total || 0;
     const expectedReturn = totalSpend * 2.5; // Simplified calculation
-    
+
     return {
       roi: ((expectedReturn - totalSpend) / totalSpend) * 100,
       expectedReturn,
@@ -594,17 +594,17 @@ class EnterpriseBudgetService {
 
   calculateComparativeMetrics(scenarios) {
     return {
-      bestROI: Math.max(...scenarios.map(s => s.roi?.roi || 0)),
-      lowestRisk: Math.min(...scenarios.map(s => s.risk?.score || 10)),
-      averageSpend: scenarios.reduce((sum, s) => 
+      bestROI: Math.max(...scenarios.map((s) => s.roi?.roi || 0)),
+      lowestRisk: Math.min(...scenarios.map((s) => s.risk?.score || 10)),
+      averageSpend: scenarios.reduce((sum, s) =>
         sum + (s.totals?.total || 0), 0) / scenarios.length
     };
   }
 
   generateScenarioRecommendations(scenarios) {
     const recommendations = [];
-    
-    scenarios.forEach(scenario => {
+
+    scenarios.forEach((scenario) => {
       if (scenario.roi?.roi > 150) {
         recommendations.push({
           scenario: scenario.name,
@@ -626,7 +626,7 @@ class EnterpriseBudgetService {
 
   async identifyVarianceReasons(category, variance, actualData) {
     const reasons = [];
-    
+
     if (variance.variancePercent > 10) {
       reasons.push({
         reason: 'Overspending detected',
@@ -655,14 +655,14 @@ class EnterpriseBudgetService {
   calculateVarianceSummary(categories) {
     const totalBudgeted = categories.reduce((sum, c) => sum + c.budgeted, 0);
     const totalActual = categories.reduce((sum, c) => sum + c.actual, 0);
-    
+
     return {
       totalBudgeted,
       totalActual,
       totalVariance: totalActual - totalBudgeted,
       totalVariancePercent: ((totalActual - totalBudgeted) / totalBudgeted) * 100,
-      categoriesOverBudget: categories.filter(c => c.variance > 0).length,
-      categoriesUnderBudget: categories.filter(c => c.variance < 0).length
+      categoriesOverBudget: categories.filter((c) => c.variance > 0).length,
+      categoriesUnderBudget: categories.filter((c) => c.variance < 0).length
     };
   }
 
@@ -691,7 +691,7 @@ class EnterpriseBudgetService {
     };
 
     const startMonth = (quarter - 1) * 3 + 1;
-    
+
     for (let m = 0; m < 3; m++) {
       const month = startMonth + m;
       quarterBudget.months.push({
@@ -719,8 +719,8 @@ class EnterpriseBudgetService {
       total: 0
     };
 
-    quarters.forEach(q => {
-      q.months.forEach(m => {
+    quarters.forEach((q) => {
+      q.months.forEach((m) => {
         totals.sales += m.sales || 0;
         if (m.tradeSpend) {
           totals.marketing += m.tradeSpend.marketing?.budget || 0;
@@ -731,7 +731,7 @@ class EnterpriseBudgetService {
       });
     });
 
-    totals.total = totals.marketing + totals.cashCoop + 
+    totals.total = totals.marketing + totals.cashCoop +
                    totals.tradingTerms + totals.promotions;
 
     return totals;
@@ -739,8 +739,8 @@ class EnterpriseBudgetService {
 
   mapStrategicInitiatives(initiatives, year) {
     return initiatives
-      .filter(i => i.startYear <= year && i.endYear >= year)
-      .map(i => ({
+      .filter((i) => i.startYear <= year && i.endYear >= year)
+      .map((i) => ({
         name: i.name,
         budget: i.annualBudget,
         status: 'planned'
@@ -751,9 +751,9 @@ class EnterpriseBudgetService {
     return {
       totalYears: years.length,
       totalBudget: years.reduce((sum, y) => sum + (y.totals?.total || 0), 0),
-      averageAnnualBudget: years.reduce((sum, y) => 
+      averageAnnualBudget: years.reduce((sum, y) =>
         sum + (y.totals?.total || 0), 0) / years.length,
-      totalInitiatives: years.reduce((sum, y) => 
+      totalInitiatives: years.reduce((sum, y) =>
         sum + (y.initiatives?.length || 0), 0)
     };
   }
@@ -769,10 +769,10 @@ class EnterpriseBudgetService {
 
   applyBusinessRules(mlRecommendations, constraints) {
     const optimized = { ...mlRecommendations };
-    
+
     // Apply minimum spend requirements
     if (constraints.minimumSpend) {
-      Object.keys(constraints.minimumSpend).forEach(category => {
+      Object.keys(constraints.minimumSpend).forEach((category) => {
         if (optimized[category] < constraints.minimumSpend[category]) {
           optimized[category] = constraints.minimumSpend[category];
         }
@@ -811,19 +811,19 @@ class EnterpriseBudgetService {
 
   async getNextApprovalLevel(budget) {
     const currentStatus = budget.status;
-    
+
     if (currentStatus === 'pending_approval') return 'director';
     if (currentStatus === 'pending_director_approval') return 'executive';
-    
+
     return null;
   }
 
   checkWorkflowSLA(budget) {
     // Check if workflow is within SLA
     const slaHours = 48;
-    const hoursSinceSubmission = 
+    const hoursSinceSubmission =
       (Date.now() - budget.submittedAt) / (1000 * 60 * 60);
-    
+
     return {
       withinSLA: hoursSinceSubmission < slaHours,
       hoursRemaining: Math.max(0, slaHours - hoursSinceSubmission),
@@ -842,10 +842,10 @@ class EnterpriseBudgetService {
 
   aggregateBudgetLines(budgets, type) {
     const aggregated = [];
-    
-    budgets.forEach(budget => {
+
+    budgets.forEach((budget) => {
       if (budget.budgetLines) {
-        budget.budgetLines.forEach(line => {
+        budget.budgetLines.forEach((line) => {
           aggregated.push({
             ...line,
             source: budget._id
@@ -859,16 +859,16 @@ class EnterpriseBudgetService {
 
   applyEliminations(lines, eliminations) {
     // Remove inter-company transactions
-    return lines.filter(line => {
-      return !eliminations.some(e => 
+    return lines.filter((line) => {
+      return !eliminations.some((e) =>
         e.sourceId === line.source && e.type === 'elimination'
       );
     });
   }
 
   applyAdjustments(lines, adjustments) {
-    return lines.map(line => {
-      const adjustment = adjustments.find(a => a.lineId === line._id);
+    return lines.map((line) => {
+      const adjustment = adjustments.find((a) => a.lineId === line._id);
       if (adjustment) {
         return {
           ...line,
@@ -935,8 +935,8 @@ class EnterpriseBudgetService {
 
   async generateBudgetAlerts(budgets) {
     const alerts = [];
-    
-    budgets.forEach(budget => {
+
+    budgets.forEach((budget) => {
       if (budget.status === 'pending_approval') {
         const age = (Date.now() - budget.submittedAt) / (1000 * 60 * 60);
         if (age > 48) {

@@ -21,26 +21,26 @@ class MLPipelineService extends EventEmitter {
     this.evaluationMetrics = new Map();
     this.featureStore = new Map();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing ML Pipeline Service...');
-      
+
       // Initialize model registry
       await this.initializeModelRegistry();
-      
+
       // Setup feature store
       await this.initializeFeatureStore();
-      
+
       // Load existing pipelines
       await this.loadPipelines();
-      
+
       // Start monitoring jobs
       this.startMonitoring();
-      
+
       this.isInitialized = true;
       console.log('ML Pipeline Service initialized successfully');
     } catch (error) {
@@ -110,7 +110,7 @@ class MLPipelineService extends EventEmitter {
       }
     ];
 
-    modelTypes.forEach(modelType => {
+    modelTypes.forEach((modelType) => {
       this.modelRegistry.set(modelType.id, {
         ...modelType,
         versions: new Map(),
@@ -186,7 +186,7 @@ class MLPipelineService extends EventEmitter {
       }
     ];
 
-    featureGroups.forEach(group => {
+    featureGroups.forEach((group) => {
       this.featureStore.set(group.id, {
         ...group,
         data: new Map(),
@@ -374,7 +374,7 @@ class MLPipelineService extends EventEmitter {
       }
     ];
 
-    pipelines.forEach(pipeline => {
+    pipelines.forEach((pipeline) => {
       this.pipelines.set(pipeline.id, {
         ...pipeline,
         runs: [],
@@ -438,7 +438,7 @@ class MLPipelineService extends EventEmitter {
   async trainModel(modelId, versionId, trainingData) {
     const modelInfo = this.modelRegistry.get(modelId);
     const version = modelInfo?.versions.get(versionId);
-    
+
     if (!version) {
       throw new Error(`Model version ${versionId} not found`);
     }
@@ -464,12 +464,12 @@ class MLPipelineService extends EventEmitter {
     try {
       // Simulate training process
       await this.simulateTraining(trainingJob, trainingData);
-      
+
       // Update version with training results
       version.status = 'trained';
       version.trainingCompleted = new Date();
       version.metrics = trainingJob.metrics;
-      
+
       trainingJob.status = 'completed';
       trainingJob.endTime = new Date();
 
@@ -507,11 +507,11 @@ class MLPipelineService extends EventEmitter {
   async simulateTraining(trainingJob, trainingData) {
     const modelInfo = this.modelRegistry.get(trainingJob.modelId);
     const steps = 100;
-    
+
     for (let step = 1; step <= steps; step++) {
       // Simulate training progress
       trainingJob.progress = (step / steps) * 100;
-      
+
       // Add training logs
       if (step % 10 === 0) {
         trainingJob.logs.push({
@@ -524,9 +524,9 @@ class MLPipelineService extends EventEmitter {
           }
         });
       }
-      
+
       // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
 
     // Generate final metrics based on model type
@@ -553,7 +553,7 @@ class MLPipelineService extends EventEmitter {
           f1_score: 0.81 + Math.random() * 0.14,
           auc_roc: 0.88 + Math.random() * 0.1
         };
-      
+
       case 'regression':
         return {
           ...baseMetrics,
@@ -562,7 +562,7 @@ class MLPipelineService extends EventEmitter {
           r2_score: 0.7 + Math.random() * 0.25,
           mape: Math.random() * 15 + 5
         };
-      
+
       case 'time_series':
         return {
           ...baseMetrics,
@@ -571,7 +571,7 @@ class MLPipelineService extends EventEmitter {
           rmse: Math.random() * 800 + 400,
           seasonal_accuracy: 0.8 + Math.random() * 0.15
         };
-      
+
       case 'recommendation':
         return {
           ...baseMetrics,
@@ -581,7 +581,7 @@ class MLPipelineService extends EventEmitter {
           recall_at_10: 0.6 + Math.random() * 0.3,
           ndcg: 0.7 + Math.random() * 0.25
         };
-      
+
       default:
         return baseMetrics;
     }
@@ -636,7 +636,7 @@ class MLPipelineService extends EventEmitter {
     // Assign based on traffic split
     const hash = this.hashUserId(userId, experimentId);
     let cumulativeTraffic = 0;
-    
+
     for (const variant of experiment.variants) {
       cumulativeTraffic += variant.traffic;
       if (hash < cumulativeTraffic) {
@@ -646,7 +646,7 @@ class MLPipelineService extends EventEmitter {
     }
 
     // Fallback to control
-    const controlVariant = experiment.variants.find(v => v.id === 'control');
+    const controlVariant = experiment.variants.find((v) => v.id === 'control');
     const variantId = controlVariant ? controlVariant.id : experiment.variants[0].id;
     experiment.participants.set(userId, variantId);
     return variantId;
@@ -700,20 +700,20 @@ class MLPipelineService extends EventEmitter {
     };
 
     // Analyze each variant
-    experiment.variants.forEach(variant => {
+    experiment.variants.forEach((variant) => {
       const results = experiment.results.get(variant.id);
       if (!results) return;
 
       const variantAnalysis = {
         id: variant.id,
         versionId: variant.versionId,
-        participants: experiment.participants.size > 0 ? 
-          Array.from(experiment.participants.values()).filter(v => v === variant.id).length : 0,
+        participants: experiment.participants.size > 0 ?
+          Array.from(experiment.participants.values()).filter((v) => v === variant.id).length : 0,
         metrics: {}
       };
 
       // Calculate metrics
-      experiment.metrics.forEach(metric => {
+      experiment.metrics.forEach((metric) => {
         const events = results.events.get(metric) || [];
         variantAnalysis.metrics[metric] = {
           count: events.length,
@@ -727,24 +727,24 @@ class MLPipelineService extends EventEmitter {
 
     // Statistical significance test (simplified)
     if (analysis.variants.length >= 2) {
-      const control = analysis.variants.find(v => v.id === 'control') || analysis.variants[0];
-      const treatment = analysis.variants.find(v => v.id !== 'control') || analysis.variants[1];
-      
+      const control = analysis.variants.find((v) => v.id === 'control') || analysis.variants[0];
+      const treatment = analysis.variants.find((v) => v.id !== 'control') || analysis.variants[1];
+
       if (control && treatment) {
         const controlRate = control.metrics.conversion_rate?.rate || 0;
         const treatmentRate = treatment.metrics.conversion_rate?.rate || 0;
         const improvement = treatmentRate > 0 ? ((treatmentRate - controlRate) / controlRate) * 100 : 0;
-        
+
         analysis.significance = {
           control_rate: controlRate,
           treatment_rate: treatmentRate,
-          improvement: improvement,
+          improvement,
           significant: Math.abs(improvement) > 5 && Math.min(control.participants, treatment.participants) > 100
         };
 
         // Generate recommendation
         if (analysis.significance.significant) {
-          analysis.recommendation = improvement > 0 ? 
+          analysis.recommendation = improvement > 0 ?
             `Deploy treatment variant (${improvement.toFixed(1)}% improvement)` :
             `Keep control variant (${Math.abs(improvement).toFixed(1)}% degradation)`;
         } else {
@@ -762,7 +762,7 @@ class MLPipelineService extends EventEmitter {
   async deployModel(modelId, versionId, deploymentConfig) {
     const modelInfo = this.modelRegistry.get(modelId);
     const version = modelInfo?.versions.get(versionId);
-    
+
     if (!version || version.status !== 'trained') {
       throw new Error(`Model version ${versionId} not ready for deployment`);
     }
@@ -796,7 +796,7 @@ class MLPipelineService extends EventEmitter {
     try {
       // Simulate deployment process
       await this.simulateDeployment(deployment);
-      
+
       deployment.status = 'deployed';
       deployment.deployedAt = new Date();
 
@@ -837,10 +837,10 @@ class MLPipelineService extends EventEmitter {
   async simulateDeployment(deployment) {
     // Simulate deployment steps
     const steps = ['validating', 'building', 'testing', 'deploying'];
-    
+
     for (const step of steps) {
       console.log(`Deployment ${deployment.id}: ${step}...`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
@@ -957,42 +957,42 @@ class MLPipelineService extends EventEmitter {
   // Stage execution methods
   async executeDataIngestion(stage, stageRun) {
     stageRun.logs.push({ timestamp: new Date(), message: 'Starting data ingestion...' });
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     stageRun.metrics.recordsIngested = Math.floor(Math.random() * 100000) + 50000;
     stageRun.logs.push({ timestamp: new Date(), message: `Ingested ${stageRun.metrics.recordsIngested} records` });
   }
 
   async executeTransformation(stage, stageRun) {
     stageRun.logs.push({ timestamp: new Date(), message: 'Starting feature engineering...' });
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     stageRun.metrics.featuresCreated = Math.floor(Math.random() * 50) + 20;
     stageRun.logs.push({ timestamp: new Date(), message: `Created ${stageRun.metrics.featuresCreated} features` });
   }
 
   async executeTraining(stage, stageRun) {
     stageRun.logs.push({ timestamp: new Date(), message: 'Starting model training...' });
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     stageRun.metrics.accuracy = 0.85 + Math.random() * 0.1;
     stageRun.logs.push({ timestamp: new Date(), message: `Training completed with accuracy: ${stageRun.metrics.accuracy.toFixed(3)}` });
   }
 
   async executeEvaluation(stage, stageRun) {
     stageRun.logs.push({ timestamp: new Date(), message: 'Starting model evaluation...' });
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     stageRun.metrics.passed = true;
     stageRun.logs.push({ timestamp: new Date(), message: 'Model evaluation passed' });
   }
 
   async executeDeployment(stage, stageRun) {
     stageRun.logs.push({ timestamp: new Date(), message: 'Starting model deployment...' });
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     stageRun.metrics.deployed = true;
     stageRun.logs.push({ timestamp: new Date(), message: 'Model deployed successfully' });
   }
 
   async executeGenericStage(stage, stageRun) {
     stageRun.logs.push({ timestamp: new Date(), message: `Executing ${stage.name}...` });
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     stageRun.logs.push({ timestamp: new Date(), message: `${stage.name} completed` });
   }
 
@@ -1046,8 +1046,8 @@ class MLPipelineService extends EventEmitter {
     this.modelRegistry.forEach((modelInfo, modelId) => {
       if (modelInfo.activeVersion) {
         const deployment = Array.from(this.deployments.values())
-          .find(d => d.modelId === modelId && d.status === 'deployed');
-        
+          .find((d) => d.modelId === modelId && d.status === 'deployed');
+
         if (deployment && deployment.metrics.errors > deployment.metrics.requests * 0.1) {
           this.emit('retraining_needed', {
             modelId,
@@ -1109,11 +1109,11 @@ class MLPipelineService extends EventEmitter {
     let jobs = Array.from(this.trainingJobs.values());
 
     if (filters.modelId) {
-      jobs = jobs.filter(job => job.modelId === filters.modelId);
+      jobs = jobs.filter((job) => job.modelId === filters.modelId);
     }
 
     if (filters.status) {
-      jobs = jobs.filter(job => job.status === filters.status);
+      jobs = jobs.filter((job) => job.status === filters.status);
     }
 
     return jobs.sort((a, b) => b.startTime - a.startTime);
@@ -1123,7 +1123,7 @@ class MLPipelineService extends EventEmitter {
     let tests = Array.from(this.abTests.values());
 
     if (filters.status) {
-      tests = tests.filter(test => test.status === filters.status);
+      tests = tests.filter((test) => test.status === filters.status);
     }
 
     return tests.sort((a, b) => b.startDate - a.startDate);
@@ -1133,11 +1133,11 @@ class MLPipelineService extends EventEmitter {
     let deployments = Array.from(this.deployments.values());
 
     if (filters.modelId) {
-      deployments = deployments.filter(dep => dep.modelId === filters.modelId);
+      deployments = deployments.filter((dep) => dep.modelId === filters.modelId);
     }
 
     if (filters.status) {
-      deployments = deployments.filter(dep => dep.status === filters.status);
+      deployments = deployments.filter((dep) => dep.status === filters.status);
     }
 
     return deployments.sort((a, b) => b.createdAt - a.createdAt);

@@ -25,9 +25,9 @@ class AnalyticsEngine {
         return cached;
       }
 
-      const promotion = await Promotion.findOne({ 
-        _id: promotionId, 
-        tenantId 
+      const promotion = await Promotion.findOne({
+        _id: promotionId,
+        tenantId
       }).populate('products.productId customers.customerId');
 
       if (!promotion) {
@@ -37,17 +37,17 @@ class AnalyticsEngine {
       // Calculate baseline sales (pre-promotion period)
       const baselinePeriod = this.getBaselinePeriod(promotion.startDate, promotion.endDate);
       const baselineSales = await this.getBaselineSales(
-        tenantId, 
-        promotion.products.map(p => p.productId._id),
-        promotion.customers.map(c => c.customerId._id),
+        tenantId,
+        promotion.products.map((p) => p.productId._id),
+        promotion.customers.map((c) => c.customerId._id),
         baselinePeriod
       );
 
       // Calculate promotional sales
       const promotionalSales = await this.getPromotionalSales(
         tenantId,
-        promotion.products.map(p => p.productId._id),
-        promotion.customers.map(c => c.customerId._id),
+        promotion.products.map((p) => p.productId._id),
+        promotion.customers.map((c) => c.customerId._id),
         promotion.startDate,
         promotion.endDate
       );
@@ -105,9 +105,9 @@ class AnalyticsEngine {
         return cached;
       }
 
-      const promotion = await Promotion.findOne({ 
-        _id: promotionId, 
-        tenantId 
+      const promotion = await Promotion.findOne({
+        _id: promotionId,
+        tenantId
       }).populate('products.productId customers.customerId');
 
       if (!promotion) {
@@ -118,16 +118,16 @@ class AnalyticsEngine {
       const baselinePeriod = this.getBaselinePeriod(promotion.startDate, promotion.endDate);
       const baselineData = await this.getDetailedSalesData(
         tenantId,
-        promotion.products.map(p => p.productId._id),
-        promotion.customers.map(c => c.customerId._id),
+        promotion.products.map((p) => p.productId._id),
+        promotion.customers.map((c) => c.customerId._id),
         baselinePeriod.start,
         baselinePeriod.end
       );
 
       const promotionalData = await this.getDetailedSalesData(
         tenantId,
-        promotion.products.map(p => p.productId._id),
-        promotion.customers.map(c => c.customerId._id),
+        promotion.products.map((p) => p.productId._id),
+        promotion.customers.map((c) => c.customerId._id),
         promotion.startDate,
         promotion.endDate
       );
@@ -171,7 +171,7 @@ class AnalyticsEngine {
     try {
       // Find similar historical promotions
       const similarPromotions = await this.findSimilarPromotions(tenantId, promotionData);
-      
+
       if (similarPromotions.length === 0) {
         return this.getDefaultPrediction(promotionData);
       }
@@ -211,7 +211,7 @@ class AnalyticsEngine {
     try {
       // Get historical performance data
       const historicalData = await this.getHistoricalPerformanceData(tenantId, constraints);
-      
+
       // Apply optimization algorithm (simplified linear programming approach)
       const optimization = this.applyOptimizationAlgorithm(budget, historicalData, constraints);
 
@@ -220,7 +220,7 @@ class AnalyticsEngine {
         optimizedAllocation: optimization.allocation,
         expectedROI: optimization.expectedROI,
         expectedLift: optimization.expectedLift,
-        constraints: constraints,
+        constraints,
         recommendations: optimization.recommendations,
         calculatedAt: new Date()
       };
@@ -316,7 +316,7 @@ class AnalyticsEngine {
   calculateIncrementalSales(baseline, promotional, startDate, endDate) {
     const promotionDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
     const baselineDays = 30; // Assuming 30-day baseline
-    
+
     // Normalize baseline to promotion period
     const normalizedBaseline = {
       totalVolume: (baseline.totalVolume / baselineDays) * promotionDays,
@@ -335,10 +335,10 @@ class AnalyticsEngine {
 
   calculateTotalInvestment(promotion) {
     let total = 0;
-    
+
     // Add discount amounts
     if (promotion.discounts) {
-      promotion.discounts.forEach(discount => {
+      promotion.discounts.forEach((discount) => {
         if (discount.type === 'percentage') {
           // This would need actual sales data to calculate
           total += discount.value * 1000; // Mock calculation
@@ -361,12 +361,12 @@ class AnalyticsEngine {
   calculateROIMetrics(incrementalSales, totalInvestment) {
     const incrementalProfit = incrementalSales.valueIncrease * 0.3; // Assuming 30% margin
     const roi = totalInvestment > 0 ? (incrementalProfit / totalInvestment) * 100 : 0;
-    
+
     return {
-      roi: roi,
+      roi,
       incrementalRevenue: incrementalSales.valueIncrease,
-      incrementalProfit: incrementalProfit,
-      totalInvestment: totalInvestment,
+      incrementalProfit,
+      totalInvestment,
       paybackPeriod: incrementalProfit > 0 ? totalInvestment / (incrementalProfit / 30) : null, // Days
       profitability: incrementalProfit > totalInvestment ? 'profitable' : 'unprofitable'
     };
@@ -445,7 +445,7 @@ class AnalyticsEngine {
   calculateFrequencyLift(baseline, promotional) {
     const baselineFreq = baseline.transactions.length / baseline.summary.uniqueCustomers;
     const promotionalFreq = promotional.transactions.length / promotional.summary.uniqueCustomers;
-    
+
     return {
       absolute: promotionalFreq - baselineFreq,
       percentage: ((promotionalFreq / baselineFreq) - 1) * 100
@@ -495,7 +495,7 @@ class AnalyticsEngine {
     // Simplified prediction model
     const avgROI = historicalPerformance.reduce((sum, p) => sum + p.roi.metrics.roi, 0) / historicalPerformance.length;
     const avgVolumeLift = historicalPerformance.reduce((sum, p) => sum + p.lift.lift.volumeLift.percentage, 0) / historicalPerformance.length;
-    
+
     return {
       expectedROI: avgROI,
       expectedLift: {
@@ -513,15 +513,15 @@ class AnalyticsEngine {
 
   generateRecommendations(prediction, historicalPerformance) {
     const recommendations = [];
-    
+
     if (prediction.expectedROI < 10) {
       recommendations.push('Consider reducing investment or improving targeting');
     }
-    
+
     if (prediction.expectedLift.volume < 15) {
       recommendations.push('Consider increasing discount depth or expanding customer reach');
     }
-    
+
     return recommendations;
   }
 
@@ -597,7 +597,7 @@ class AnalyticsEngine {
 
   generateInsights(data) {
     const insights = [];
-    
+
     if (data.roiTrends.length > 0) {
       const latestROI = data.roiTrends[data.roiTrends.length - 1].roi;
       if (latestROI > 20) {
@@ -606,7 +606,7 @@ class AnalyticsEngine {
         insights.push('ROI performance needs improvement');
       }
     }
-    
+
     return insights;
   }
 }

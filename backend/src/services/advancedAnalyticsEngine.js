@@ -26,9 +26,9 @@ class AdvancedAnalyticsEngine {
       if (cached && !options.forceRefresh) return cached;
 
       // Get promotion data
-      const promotion = await Promotion.findOne({ 
-        _id: promotionId, 
-        tenantId 
+      const promotion = await Promotion.findOne({
+        _id: promotionId,
+        tenantId
       }).populate('products customers');
 
       if (!promotion) {
@@ -51,9 +51,9 @@ class AdvancedAnalyticsEngine {
 
       // Calculate baseline sales (pre-promotion average)
       const baselineSales = await this.calculateBaselineSales(
-        tenantId, 
-        promotion.products.map(p => p._id),
-        promotion.customers.map(c => c._id),
+        tenantId,
+        promotion.products.map((p) => p._id),
+        promotion.customers.map((c) => c._id),
         promotion.startDate
       );
 
@@ -62,7 +62,7 @@ class AdvancedAnalyticsEngine {
       const incrementalRevenue = incrementalSales * salesData.averagePrice;
 
       // Calculate ROI
-      const roi = totalInvestment > 0 ? 
+      const roi = totalInvestment > 0 ?
         ((incrementalRevenue - totalInvestment) / totalInvestment) * 100 : 0;
 
       const result = {
@@ -104,9 +104,9 @@ class AdvancedAnalyticsEngine {
       const cached = this.getFromCache(cacheKey);
       if (cached && !options.forceRefresh) return cached;
 
-      const promotion = await Promotion.findOne({ 
-        _id: promotionId, 
-        tenantId 
+      const promotion = await Promotion.findOne({
+        _id: promotionId,
+        tenantId
       }).populate('products customers');
 
       if (!promotion) {
@@ -119,8 +119,8 @@ class AdvancedAnalyticsEngine {
       // Get baseline sales data
       const baselineSales = await this.calculateBaselineSales(
         tenantId,
-        promotion.products.map(p => p._id),
-        promotion.customers.map(c => c._id),
+        promotion.products.map((p) => p._id),
+        promotion.customers.map((c) => c._id),
         promotion.startDate
       );
 
@@ -189,8 +189,8 @@ class AdvancedAnalyticsEngine {
           $match: {
             tenantId: new mongoose.Types.ObjectId(tenantId),
             date: { $gte: startDate, $lte: endDate },
-            ...(customerIds.length && { customerId: { $in: customerIds.map(id => new mongoose.Types.ObjectId(id)) } }),
-            ...(productIds.length && { productId: { $in: productIds.map(id => new mongoose.Types.ObjectId(id)) } })
+            ...(customerIds.length && { customerId: { $in: customerIds.map((id) => new mongoose.Types.ObjectId(id)) } }),
+            ...(productIds.length && { productId: { $in: productIds.map((id) => new mongoose.Types.ObjectId(id)) } })
           }
         },
         {
@@ -245,13 +245,13 @@ class AdvancedAnalyticsEngine {
         productMetrics,
         promotionMetrics,
         kpis: {
-          revenuePerCustomer: metrics.uniqueCustomerCount > 0 ? 
+          revenuePerCustomer: metrics.uniqueCustomerCount > 0 ?
             metrics.totalRevenue / metrics.uniqueCustomerCount : 0,
-          revenuePerProduct: metrics.uniqueProductCount > 0 ? 
+          revenuePerProduct: metrics.uniqueProductCount > 0 ?
             metrics.totalRevenue / metrics.uniqueProductCount : 0,
-          averageOrderValue: metrics.totalTransactions > 0 ? 
+          averageOrderValue: metrics.totalTransactions > 0 ?
             metrics.totalRevenue / metrics.totalTransactions : 0,
-          volumePerTransaction: metrics.totalTransactions > 0 ? 
+          volumePerTransaction: metrics.totalTransactions > 0 ?
             metrics.totalVolume / metrics.totalTransactions : 0
         },
         calculatedAt: new Date()
@@ -287,7 +287,7 @@ class AdvancedAnalyticsEngine {
 
       // Simple linear regression for trend analysis
       const trendAnalysis = this.calculateTrend(historicalData);
-      
+
       // Seasonal analysis
       const seasonalFactors = this.calculateSeasonalFactors(historicalData);
 
@@ -379,9 +379,9 @@ class AdvancedAnalyticsEngine {
         recommendations,
         summary: {
           totalRecommendations: recommendations.length,
-          highPriority: recommendations.filter(r => r.priority === 'high').length,
-          mediumPriority: recommendations.filter(r => r.priority === 'medium').length,
-          lowPriority: recommendations.filter(r => r.priority === 'low').length
+          highPriority: recommendations.filter((r) => r.priority === 'high').length,
+          mediumPriority: recommendations.filter((r) => r.priority === 'medium').length,
+          lowPriority: recommendations.filter((r) => r.priority === 'low').length
         },
         generatedAt: new Date()
       };
@@ -399,8 +399,8 @@ class AdvancedAnalyticsEngine {
       {
         $match: {
           tenantId: new mongoose.Types.ObjectId(tenantId),
-          productId: { $in: promotion.products.map(p => p._id) },
-          customerId: { $in: promotion.customers.map(c => c._id) },
+          productId: { $in: promotion.products.map((p) => p._id) },
+          customerId: { $in: promotion.customers.map((c) => c._id) },
           date: { $gte: promotion.startDate, $lte: promotion.endDate }
         }
       },

@@ -23,7 +23,7 @@ class EnhancedSecurityService {
     this.suspiciousActivities = new Map();
     this.activeTokens = new Map();
     this.securityPolicies = new Map();
-    
+
     this.initializeSecurityPolicies();
     this.startSecurityMonitoring();
   }
@@ -86,7 +86,7 @@ class EnhancedSecurityService {
       // Check failed attempts
       const failedKey = `${email}_${ipAddress}`;
       const failedAttempts = this.failedAttempts.get(failedKey) || 0;
-      
+
       if (failedAttempts >= this.securityPolicies.get('access').maxFailedAttempts) {
         await this.logSecurityEvent('account_locked', {
           email,
@@ -319,7 +319,7 @@ class EnhancedSecurityService {
       }
 
       // Check role permissions
-      const hasPermission = user.role.permissions.some(permission => {
+      const hasPermission = user.role.permissions.some((permission) => {
         return this.matchesPermission(permission, resource, action, context);
       });
 
@@ -475,9 +475,9 @@ class EnhancedSecurityService {
       }
 
       const activities = this.suspiciousActivities.get(key);
-      
+
       // Remove old activities outside time window
-      const recentActivities = activities.filter(activity => 
+      const recentActivities = activities.filter((activity) =>
         now - activity.timestamp < timeWindow
       );
 
@@ -496,7 +496,7 @@ class EnhancedSecurityService {
       }
 
       // Check for unusual IP addresses
-      const uniqueIPs = new Set(recentActivities.map(a => a.details.ipAddress));
+      const uniqueIPs = new Set(recentActivities.map((a) => a.details.ipAddress));
       if (uniqueIPs.size > 3) { // More than 3 different IPs
         await this.logSecurityEvent('suspicious_activity', {
           userId,
@@ -570,7 +570,7 @@ class EnhancedSecurityService {
       email: user.email,
       role: user.role.name,
       tenantId: user.tenantId,
-      permissions: user.role.permissions.map(p => p.name)
+      permissions: user.role.permissions.map((p) => p.name)
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -616,7 +616,7 @@ class EnhancedSecurityService {
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             scriptSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "https:"],
+            imgSrc: ["'self'", 'data:', 'https:'],
             connectSrc: ["'self'"],
             fontSrc: ["'self'"],
             objectSrc: ["'none'"],
@@ -666,9 +666,9 @@ class EnhancedSecurityService {
             );
 
             if (!permission.allowed) {
-              return res.status(403).json({ 
+              return res.status(403).json({
                 error: 'Insufficient permissions',
-                reason: permission.reason 
+                reason: permission.reason
               });
             }
 
@@ -749,7 +749,7 @@ class EnhancedSecurityService {
     if (permission.resource.includes('*') || permission.action.includes('*')) {
       const resourcePattern = new RegExp(permission.resource.replace('*', '.*'));
       const actionPattern = new RegExp(permission.action.replace('*', '.*'));
-      
+
       if (resourcePattern.test(resource) && actionPattern.test(action)) {
         return this.checkPermissionConstraints(permission, context);
       }
@@ -762,7 +762,7 @@ class EnhancedSecurityService {
     if (!permission.constraints) return true;
 
     // Check tenant constraint
-    if (permission.constraints.tenantId && 
+    if (permission.constraints.tenantId &&
         permission.constraints.tenantId !== context.tenantId) {
       return false;
     }
@@ -772,7 +772,7 @@ class EnhancedSecurityService {
       const now = new Date();
       const hour = now.getHours();
       const { startHour, endHour } = permission.constraints.timeRestriction;
-      
+
       if (hour < startHour || hour > endHour) {
         return false;
       }
@@ -784,7 +784,7 @@ class EnhancedSecurityService {
   async checkConstraints(user, resource, action, context) {
     // Check session constraints
     const sessionPolicy = this.securityPolicies.get('session');
-    
+
     // Check concurrent sessions
     const activeSessions = await this.getActiveSessionCount(user._id);
     if (activeSessions > sessionPolicy.maxConcurrentSessions) {
@@ -821,7 +821,7 @@ class EnhancedSecurityService {
   async triggerSecurityAlert(securityEvent) {
     // Implementation for security alerts (email, Slack, etc.)
     console.log(`SECURITY ALERT: ${securityEvent.eventType}`, securityEvent.details);
-    
+
     // Could integrate with notification services here
     this.emit('securityAlert', securityEvent);
   }
@@ -831,7 +831,7 @@ class EnhancedSecurityService {
       'password', '123456', 'password123', 'admin', 'qwerty',
       'letmein', 'welcome', 'monkey', '1234567890', 'abc123'
     ];
-    
+
     return commonPasswords.includes(password.toLowerCase());
   }
 
@@ -842,27 +842,27 @@ class EnhancedSecurityService {
       user.email?.split('@')[0]?.toLowerCase()
     ].filter(Boolean);
 
-    return personalInfo.some(info => 
+    return personalInfo.some((info) =>
       password.toLowerCase().includes(info)
     );
   }
 
   calculatePasswordStrength(password) {
     let score = 0;
-    
+
     // Length bonus
     score += Math.min(password.length * 2, 20);
-    
+
     // Character variety
     if (/[a-z]/.test(password)) score += 5;
     if (/[A-Z]/.test(password)) score += 5;
     if (/\d/.test(password)) score += 5;
     if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 10;
-    
+
     // Patterns penalty
     if (/(.)\1{2,}/.test(password)) score -= 10; // Repeated characters
     if (/123|abc|qwe/i.test(password)) score -= 10; // Sequential patterns
-    
+
     if (score < 30) return 'weak';
     if (score < 60) return 'medium';
     if (score < 80) return 'strong';
@@ -874,7 +874,7 @@ class EnhancedSecurityService {
     setInterval(() => {
       const now = Date.now();
       const lockoutDuration = this.securityPolicies.get('access').lockoutDuration;
-      
+
       for (const [key, timestamp] of this.failedAttempts) {
         if (now - timestamp > lockoutDuration) {
           this.failedAttempts.delete(key);
@@ -886,12 +886,12 @@ class EnhancedSecurityService {
     setInterval(() => {
       const now = Date.now();
       const timeWindow = 30 * 60 * 1000; // 30 minutes
-      
+
       for (const [key, activities] of this.suspiciousActivities) {
-        const recentActivities = activities.filter(activity => 
+        const recentActivities = activities.filter((activity) =>
           now - activity.timestamp < timeWindow
         );
-        
+
         if (recentActivities.length === 0) {
           this.suspiciousActivities.delete(key);
         } else {

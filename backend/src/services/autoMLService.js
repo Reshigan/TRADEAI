@@ -14,26 +14,26 @@ class AutoMLService extends EventEmitter {
     this.featureSelectors = new Map();
     this.optimizers = new Map();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing AutoML Service...');
-      
+
       // Initialize model templates
       this.initializeModelTemplates();
-      
+
       // Setup hyperparameter spaces
       this.setupHyperparameterSpaces();
-      
+
       // Initialize feature selectors
       this.initializeFeatureSelectors();
-      
+
       // Setup optimizers
       this.setupOptimizers();
-      
+
       this.isInitialized = true;
       console.log('AutoML Service initialized successfully');
     } catch (error) {
@@ -91,7 +91,7 @@ class AutoMLService extends EventEmitter {
         suitableFor: ['binary_classification', 'multiclass_classification', 'complex_patterns'],
         dataRequirements: { minSamples: 5000, maxFeatures: 50000 }
       },
-      
+
       // Regression templates
       {
         id: 'linear_regression',
@@ -126,7 +126,7 @@ class AutoMLService extends EventEmitter {
         suitableFor: ['complex_non_linear_relationships'],
         dataRequirements: { minSamples: 1000, maxFeatures: 5000 }
       },
-      
+
       // Time series templates
       {
         id: 'arima',
@@ -152,7 +152,7 @@ class AutoMLService extends EventEmitter {
       }
     ];
 
-    templates.forEach(template => {
+    templates.forEach((template) => {
       this.modelTemplates.set(template.id, template);
     });
 
@@ -170,7 +170,7 @@ class AutoMLService extends EventEmitter {
         penalty: { type: 'categorical', choices: ['l1', 'l2', 'elasticnet'] },
         solver: { type: 'categorical', choices: ['liblinear', 'saga', 'lbfgs'] }
       },
-      
+
       // Random Forest
       random_forest_classifier: {
         n_estimators: { type: 'int_uniform', low: 10, high: 500 },
@@ -178,14 +178,14 @@ class AutoMLService extends EventEmitter {
         min_samples_split: { type: 'int_uniform', low: 2, high: 20 },
         min_samples_leaf: { type: 'int_uniform', low: 1, high: 10 }
       },
-      
+
       random_forest_regressor: {
         n_estimators: { type: 'int_uniform', low: 10, high: 500 },
         max_depth: { type: 'int_uniform', low: 3, high: 20 },
         min_samples_split: { type: 'int_uniform', low: 2, high: 20 },
         min_samples_leaf: { type: 'int_uniform', low: 1, high: 10 }
       },
-      
+
       // Gradient Boosting
       gradient_boosting_classifier: {
         n_estimators: { type: 'int_uniform', low: 50, high: 300 },
@@ -193,14 +193,14 @@ class AutoMLService extends EventEmitter {
         max_depth: { type: 'int_uniform', low: 3, high: 10 },
         subsample: { type: 'uniform', low: 0.6, high: 1.0 }
       },
-      
+
       gradient_boosting_regressor: {
         n_estimators: { type: 'int_uniform', low: 50, high: 300 },
         learning_rate: { type: 'log_uniform', low: 0.01, high: 0.3 },
         max_depth: { type: 'int_uniform', low: 3, high: 10 },
         subsample: { type: 'uniform', low: 0.6, high: 1.0 }
       },
-      
+
       // Neural Networks
       neural_network_classifier: {
         hidden_layers: { type: 'int_uniform', low: 1, high: 5 },
@@ -208,7 +208,7 @@ class AutoMLService extends EventEmitter {
         learning_rate: { type: 'log_uniform', low: 0.0001, high: 0.1 },
         dropout_rate: { type: 'uniform', low: 0.0, high: 0.5 }
       },
-      
+
       // Time Series
       arima: {
         p: { type: 'int_uniform', low: 0, high: 5 },
@@ -218,7 +218,7 @@ class AutoMLService extends EventEmitter {
         seasonal_d: { type: 'int_uniform', low: 0, high: 1 },
         seasonal_q: { type: 'int_uniform', low: 0, high: 2 }
       },
-      
+
       lstm: {
         lstm_units: { type: 'int_uniform', low: 32, high: 256 },
         num_layers: { type: 'int_uniform', low: 1, high: 4 },
@@ -283,7 +283,7 @@ class AutoMLService extends EventEmitter {
       }
     ];
 
-    selectors.forEach(selector => {
+    selectors.forEach((selector) => {
       this.featureSelectors.set(selector.id, selector);
     });
 
@@ -321,7 +321,7 @@ class AutoMLService extends EventEmitter {
       }
     ];
 
-    optimizers.forEach(optimizer => {
+    optimizers.forEach((optimizer) => {
       this.optimizers.set(optimizer.id, optimizer);
     });
 
@@ -361,7 +361,7 @@ class AutoMLService extends EventEmitter {
     try {
       // Start experiment execution
       await this.executeExperiment(experiment);
-      
+
       experiment.status = 'completed';
       experiment.endTime = new Date();
 
@@ -418,10 +418,10 @@ class AutoMLService extends EventEmitter {
    */
   async preprocessData(experiment) {
     console.log('Preprocessing data...');
-    
+
     // Simulate data preprocessing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     experiment.preprocessing = {
       missingValues: 'imputed',
       categoricalEncoding: 'one_hot',
@@ -436,7 +436,7 @@ class AutoMLService extends EventEmitter {
 
     // Simulate feature engineering results
     experiment.engineeredFeatures = experiment.features.length * 2; // Double the features
-    
+
     console.log(`Data preprocessing completed. Features: ${experiment.engineeredFeatures}`);
   }
 
@@ -445,16 +445,16 @@ class AutoMLService extends EventEmitter {
    */
   async performFeatureSelection(experiment) {
     console.log('Performing feature selection...');
-    
+
     // Select appropriate feature selectors based on problem type and data size
     const selectedSelectors = this.selectFeatureSelectors(experiment);
-    
+
     for (const selectorId of selectedSelectors) {
       const selector = this.featureSelectors.get(selectorId);
       console.log(`Applying ${selector.name}...`);
-      
+
       // Simulate feature selection
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     // Simulate feature selection results
@@ -475,20 +475,20 @@ class AutoMLService extends EventEmitter {
    */
   async performModelSelection(experiment) {
     console.log('Performing model selection and hyperparameter tuning...');
-    
+
     // Select candidate models based on problem type
     const candidateModels = this.selectCandidateModels(experiment);
-    
+
     let bestScore = -Infinity;
     let bestModel = null;
 
     for (const modelId of candidateModels) {
       const model = this.modelTemplates.get(modelId);
       console.log(`Training ${model.name}...`);
-      
+
       // Perform hyperparameter tuning
       const tuningResult = await this.tuneHyperparameters(experiment, modelId);
-      
+
       // Create trial record
       const trial = {
         id: this.generateTrialId(),
@@ -513,7 +513,7 @@ class AutoMLService extends EventEmitter {
     }
 
     experiment.bestModel = bestModel;
-    
+
     // Create leaderboard
     experiment.leaderboard = experiment.trials
       .sort((a, b) => b.score - a.score)
@@ -528,40 +528,40 @@ class AutoMLService extends EventEmitter {
   async tuneHyperparameters(experiment, modelId) {
     const model = this.modelTemplates.get(modelId);
     const hyperparameterSpace = this.hyperparameterSpaces.get(modelId);
-    
+
     // Select optimization algorithm
     const optimizerId = this.selectOptimizer(experiment, model);
     const optimizer = this.optimizers.get(optimizerId);
-    
+
     console.log(`Tuning ${model.name} using ${optimizer.name}...`);
-    
+
     // Simulate hyperparameter tuning
     const startTime = Date.now();
     const numTrials = Math.min(20, experiment.maxTrials / 5); // Limit trials per model
-    
+
     let bestScore = -Infinity;
     let bestParams = {};
     let bestMetrics = {};
-    
+
     for (let i = 0; i < numTrials; i++) {
       // Sample hyperparameters
       const params = this.sampleHyperparameters(hyperparameterSpace);
-      
+
       // Simulate model training and evaluation
       const result = await this.simulateModelTraining(experiment, modelId, params);
-      
+
       if (result.score > bestScore) {
         bestScore = result.score;
         bestParams = params;
         bestMetrics = result.metrics;
       }
-      
+
       // Simulate training time
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
-    
+
     const trainingTime = Date.now() - startTime;
-    
+
     return {
       bestScore,
       bestParams,
@@ -576,18 +576,18 @@ class AutoMLService extends EventEmitter {
    */
   async createEnsemble(experiment) {
     console.log('Creating ensemble model...');
-    
+
     // Select top models for ensemble
     const topModels = experiment.leaderboard.slice(0, 5);
-    
+
     // Simulate ensemble creation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     // Create ensemble with weighted voting
     const ensembleScore = experiment.bestModel.score * 1.05; // 5% improvement
-    
+
     experiment.ensemble = {
-      models: topModels.map(model => ({
+      models: topModels.map((model) => ({
         modelId: model.modelId,
         weight: model.score / topModels.reduce((sum, m) => sum + m.score, 0)
       })),
@@ -613,13 +613,13 @@ class AutoMLService extends EventEmitter {
    */
   async generateModelExplanations(experiment) {
     console.log('Generating model explanations...');
-    
+
     // Simulate explanation generation
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     // Generate feature importance
     experiment.featureImportance = this.generateFeatureImportance(experiment);
-    
+
     // Generate model explanations
     experiment.modelExplanations = {
       globalExplanations: {
@@ -647,21 +647,21 @@ class AutoMLService extends EventEmitter {
    */
   selectFeatureSelectors(experiment) {
     const selectors = [];
-    
+
     // Always include basic filters
     selectors.push('variance_threshold', 'correlation_filter');
-    
+
     // Add selectors based on problem type and data size
     if (experiment.engineeredFeatures > 100) {
       selectors.push('univariate_selection');
     }
-    
+
     if (experiment.problemType === 'classification') {
       selectors.push('recursive_feature_elimination');
     } else if (experiment.problemType === 'regression') {
       selectors.push('lasso_selection');
     }
-    
+
     return selectors;
   }
 
@@ -670,7 +670,7 @@ class AutoMLService extends EventEmitter {
    */
   selectCandidateModels(experiment) {
     const models = [];
-    
+
     switch (experiment.problemType) {
       case 'classification':
         models.push(
@@ -678,13 +678,13 @@ class AutoMLService extends EventEmitter {
           'random_forest_classifier',
           'gradient_boosting_classifier'
         );
-        
+
         // Add neural network for complex problems
         if (experiment.selectedFeatures > 50) {
           models.push('neural_network_classifier');
         }
         break;
-        
+
       case 'regression':
         models.push(
           'linear_regression',
@@ -692,17 +692,17 @@ class AutoMLService extends EventEmitter {
           'gradient_boosting_regressor'
         );
         break;
-        
+
       case 'time_series':
         models.push('arima');
-        
+
         // Add LSTM for multivariate time series
         if (experiment.features.length > 1) {
           models.push('lstm');
         }
         break;
     }
-    
+
     return models;
   }
 
@@ -714,12 +714,12 @@ class AutoMLService extends EventEmitter {
     if (model.complexity === 'high') {
       return 'bayesian_optimization';
     }
-    
+
     // Use random search for medium complexity
     if (model.complexity === 'medium') {
       return 'random_search';
     }
-    
+
     // Use grid search for simple models
     return 'grid_search';
   }
@@ -729,7 +729,7 @@ class AutoMLService extends EventEmitter {
    */
   sampleHyperparameters(space) {
     const params = {};
-    
+
     Object.entries(space).forEach(([param, config]) => {
       switch (config.type) {
         case 'uniform':
@@ -748,7 +748,7 @@ class AutoMLService extends EventEmitter {
           break;
       }
     });
-    
+
     return params;
   }
 
@@ -758,18 +758,18 @@ class AutoMLService extends EventEmitter {
   async simulateModelTraining(experiment, modelId, params) {
     // Simulate training time based on model complexity
     const model = this.modelTemplates.get(modelId);
-    const baseTime = model.trainingTime === 'fast' ? 100 : 
-                    model.trainingTime === 'medium' ? 300 : 500;
-    
-    await new Promise(resolve => setTimeout(resolve, baseTime));
-    
+    const baseTime = model.trainingTime === 'fast' ? 100 :
+      model.trainingTime === 'medium' ? 300 : 500;
+
+    await new Promise((resolve) => setTimeout(resolve, baseTime));
+
     // Generate realistic performance metrics
     const baseScore = this.getBaseScore(experiment.problemType);
     const noise = (Math.random() - 0.5) * 0.1; // ±5% noise
     const score = Math.max(0, Math.min(1, baseScore + noise));
-    
+
     const metrics = this.generateMetrics(experiment.problemType, score);
-    
+
     return { score, metrics };
   }
 
@@ -826,7 +826,7 @@ class AutoMLService extends EventEmitter {
   generateFeatureImportance(experiment) {
     const importance = [];
     const numFeatures = Math.min(20, experiment.selectedFeatures);
-    
+
     for (let i = 0; i < numFeatures; i++) {
       importance.push({
         feature: `feature_${i + 1}`,
@@ -834,16 +834,16 @@ class AutoMLService extends EventEmitter {
         rank: i + 1
       });
     }
-    
+
     // Sort by importance
     importance.sort((a, b) => b.importance - a.importance);
-    
+
     // Normalize importance scores
     const maxImportance = importance[0].importance;
-    importance.forEach(item => {
+    importance.forEach((item) => {
       item.importance = item.importance / maxImportance;
     });
-    
+
     return importance;
   }
 
@@ -853,8 +853,8 @@ class AutoMLService extends EventEmitter {
   generatePartialDependencePlots(experiment) {
     const plots = [];
     const topFeatures = experiment.featureImportance.slice(0, 5);
-    
-    topFeatures.forEach(feature => {
+
+    topFeatures.forEach((feature) => {
       const plotData = [];
       for (let i = 0; i < 20; i++) {
         plotData.push({
@@ -862,13 +862,13 @@ class AutoMLService extends EventEmitter {
           y: Math.sin(i / 3) * 0.5 + Math.random() * 0.2
         });
       }
-      
+
       plots.push({
         feature: feature.feature,
         data: plotData
       });
     });
-    
+
     return plots;
   }
 
@@ -877,7 +877,7 @@ class AutoMLService extends EventEmitter {
    */
   assessModelComplexity(bestModel) {
     const model = this.modelTemplates.get(bestModel.modelId);
-    
+
     return {
       complexity: model?.complexity || 'unknown',
       interpretability: model?.interpretability || 'unknown',
@@ -892,12 +892,12 @@ class AutoMLService extends EventEmitter {
   generateCVScores(experiment) {
     const scores = [];
     const baseScore = experiment.bestModel.score;
-    
+
     for (let i = 0; i < 5; i++) {
       const noise = (Math.random() - 0.5) * 0.05; // ±2.5% noise
       scores.push(Math.max(0, Math.min(1, baseScore + noise)));
     }
-    
+
     return {
       scores,
       mean: scores.reduce((a, b) => a + b, 0) / scores.length,
@@ -912,15 +912,15 @@ class AutoMLService extends EventEmitter {
     const trainSizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
     const trainScores = [];
     const valScores = [];
-    
-    trainSizes.forEach(size => {
+
+    trainSizes.forEach((size) => {
       const trainScore = 0.6 + size * 0.3 + Math.random() * 0.05;
       const valScore = 0.5 + size * 0.25 + Math.random() * 0.05;
-      
+
       trainScores.push(trainScore);
       valScores.push(Math.min(trainScore - 0.05, valScore)); // Validation slightly lower
     });
-    
+
     return {
       trainSizes,
       trainScores,
@@ -935,18 +935,18 @@ class AutoMLService extends EventEmitter {
     if (experiment.problemType !== 'regression') {
       return null;
     }
-    
+
     const residuals = [];
     const predicted = [];
-    
+
     for (let i = 0; i < 100; i++) {
       const pred = Math.random() * 100;
       const residual = (Math.random() - 0.5) * 10;
-      
+
       predicted.push(pred);
       residuals.push(residual);
     }
-    
+
     return {
       predicted,
       residuals,
@@ -971,11 +971,11 @@ class AutoMLService extends EventEmitter {
     let experiments = Array.from(this.experiments.values());
 
     if (filters.status) {
-      experiments = experiments.filter(exp => exp.status === filters.status);
+      experiments = experiments.filter((exp) => exp.status === filters.status);
     }
 
     if (filters.problemType) {
-      experiments = experiments.filter(exp => exp.problemType === filters.problemType);
+      experiments = experiments.filter((exp) => exp.problemType === filters.problemType);
     }
 
     return experiments.sort((a, b) => b.startTime - a.startTime);
@@ -989,7 +989,7 @@ class AutoMLService extends EventEmitter {
     let templates = Array.from(this.modelTemplates.values());
 
     if (problemType) {
-      templates = templates.filter(template => template.type === problemType);
+      templates = templates.filter((template) => template.type === problemType);
     }
 
     return templates;

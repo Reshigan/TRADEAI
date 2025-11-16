@@ -9,13 +9,13 @@ const path = require('path');
 const aiConfig = {
   // AI Provider Configuration - LOCAL ONLY
   provider: process.env.AI_PROVIDER || 'local',
-  
+
   // TensorFlow.js Configuration
   tensorflow: {
     backend: process.env.TFJS_BACKEND || 'cpu', // cpu, webgl, or tensorflow (for GPU)
     platform: process.env.TFJS_PLATFORM || 'node',
     enableGPU: process.env.AI_ENABLE_GPU === 'true' || false,
-    maxMemory: parseInt(process.env.AI_MAX_MEMORY) || 2048, // MB
+    maxMemory: parseInt(process.env.AI_MAX_MEMORY) || 2048 // MB
   },
 
   // Local Model Paths
@@ -40,7 +40,7 @@ const aiConfig = {
       ridge: { enabled: true, alpha: 1.0 },
       lasso: { enabled: true, alpha: 1.0 }
     },
-    
+
     // Classification algorithms
     classification: {
       logistic: { enabled: true },
@@ -48,14 +48,14 @@ const aiConfig = {
       randomForest: { enabled: true, trees: 100 },
       neuralNetwork: { enabled: true, layers: [64, 32, 16] }
     },
-    
+
     // Clustering algorithms
     clustering: {
       kmeans: { enabled: true, maxClusters: 10 },
       hierarchical: { enabled: true },
       dbscan: { enabled: true }
     },
-    
+
     // Time series algorithms
     timeSeries: {
       arima: { enabled: true },
@@ -243,7 +243,7 @@ const aiConfig = {
 function validateLocalOnlyConfig() {
   const externalServices = aiConfig.external;
   const enabledServices = Object.keys(externalServices).filter(
-    service => externalServices[service].enabled
+    (service) => externalServices[service].enabled
   );
 
   if (enabledServices.length > 0) {
@@ -263,7 +263,7 @@ function validateLocalOnlyConfig() {
 async function initializeTensorFlow() {
   try {
     let tf;
-    
+
     // Try to load TensorFlow.js Node backend first
     try {
       tf = require('@tensorflow/tfjs-node');
@@ -280,7 +280,7 @@ async function initializeTensorFlow() {
 
     console.log(`✅ TensorFlow.js backend set to: ${tf.getBackend()}`);
     console.log(`✅ TensorFlow.js version: ${tf.version.tfjs}`);
-    
+
     return tf;
   } catch (error) {
     console.error('❌ Failed to initialize TensorFlow.js:', error);
@@ -293,22 +293,22 @@ module.exports = {
   aiConfig,
   validateLocalOnlyConfig,
   initializeTensorFlow,
-  
+
   // Helper functions
   getModelPath: (modelName) => {
     return path.join(aiConfig.models.basePath, aiConfig.models[modelName]);
   },
-  
+
   isLocalOnly: () => {
-    return aiConfig.provider === 'local' && 
-           Object.values(aiConfig.external).every(service => !service.enabled);
+    return aiConfig.provider === 'local' &&
+           Object.values(aiConfig.external).every((service) => !service.enabled);
   },
-  
+
   getEnabledAlgorithms: (category) => {
     const algorithms = aiConfig.algorithms[category];
     if (!algorithms) return [];
-    
-    return Object.keys(algorithms).filter(alg => algorithms[alg].enabled);
+
+    return Object.keys(algorithms).filter((alg) => algorithms[alg].enabled);
   }
 };
 

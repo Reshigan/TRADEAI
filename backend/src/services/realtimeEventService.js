@@ -1,7 +1,7 @@
 /**
  * REAL-TIME EVENT PROCESSING SERVICE
  * Event-driven architecture for transaction processing
- * 
+ *
  * Features:
  * - WebSocket connections for real-time updates
  * - Event streaming and pub/sub
@@ -21,7 +21,7 @@ class RealtimeEventService extends EventEmitter {
     this.maxEventStoreSize = 10000;
     this.subscriptions = new Map(); // userId -> Set of event types
     this.eventHandlers = new Map();
-    
+
     this.initializeEventHandlers();
   }
 
@@ -78,19 +78,19 @@ class RealtimeEventService extends EventEmitter {
       case 'authenticate':
         this.authenticateClient(ws, data.userId, data.token);
         break;
-      
+
       case 'subscribe':
         this.subscribeClient(data.userId, data.events);
         break;
-      
+
       case 'unsubscribe':
         this.unsubscribeClient(data.userId, data.events);
         break;
-      
+
       case 'ping':
         ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
         break;
-      
+
       default:
         ws.send(JSON.stringify({ error: 'Unknown message type' }));
     }
@@ -105,11 +105,11 @@ class RealtimeEventService extends EventEmitter {
       const jwt = require('jsonwebtoken');
       const config = require('../config');
       const User = require('../models/User');
-      
+
       const decoded = jwt.verify(token, config.jwt.secret, {
         algorithms: ['HS256']
       });
-      
+
       const user = await User.findById(decoded.userId || decoded._id);
       if (!user || !user.isActive) {
         ws.send(JSON.stringify({
@@ -120,10 +120,10 @@ class RealtimeEventService extends EventEmitter {
         ws.close();
         return;
       }
-      
+
       this.clients.set(userId, ws);
       this.subscriptions.set(userId, new Set());
-      
+
       ws.send(JSON.stringify({
         type: 'authenticated',
         userId,
@@ -147,13 +147,13 @@ class RealtimeEventService extends EventEmitter {
    */
   subscribeClient(userId, eventTypes) {
     const userSubs = this.subscriptions.get(userId) || new Set();
-    
-    eventTypes.forEach(eventType => {
+
+    eventTypes.forEach((eventType) => {
       userSubs.add(eventType);
     });
-    
+
     this.subscriptions.set(userId, userSubs);
-    
+
     const ws = this.clients.get(userId);
     if (ws) {
       ws.send(JSON.stringify({
@@ -170,11 +170,11 @@ class RealtimeEventService extends EventEmitter {
   unsubscribeClient(userId, eventTypes) {
     const userSubs = this.subscriptions.get(userId);
     if (!userSubs) return;
-    
-    eventTypes.forEach(eventType => {
+
+    eventTypes.forEach((eventType) => {
       userSubs.delete(eventType);
     });
-    
+
     const ws = this.clients.get(userId);
     if (ws) {
       ws.send(JSON.stringify({
@@ -193,30 +193,30 @@ class RealtimeEventService extends EventEmitter {
     this.registerEventHandler('transaction.po.created', this.handlePOCreated.bind(this));
     this.registerEventHandler('transaction.po.updated', this.handlePOUpdated.bind(this));
     this.registerEventHandler('transaction.po.approved', this.handlePOApproved.bind(this));
-    
+
     this.registerEventHandler('transaction.invoice.created', this.handleInvoiceCreated.bind(this));
     this.registerEventHandler('transaction.invoice.matched', this.handleInvoiceMatched.bind(this));
     this.registerEventHandler('transaction.invoice.approved', this.handleInvoiceApproved.bind(this));
-    
+
     this.registerEventHandler('transaction.payment.created', this.handlePaymentCreated.bind(this));
     this.registerEventHandler('transaction.payment.applied', this.handlePaymentApplied.bind(this));
-    
+
     // Matching events
     this.registerEventHandler('matching.completed', this.handleMatchingCompleted.bind(this));
     this.registerEventHandler('matching.failed', this.handleMatchingFailed.bind(this));
     this.registerEventHandler('matching.exception', this.handleMatchingException.bind(this));
-    
+
     // Dispute events
     this.registerEventHandler('dispute.created', this.handleDisputeCreated.bind(this));
     this.registerEventHandler('dispute.assigned', this.handleDisputeAssigned.bind(this));
     this.registerEventHandler('dispute.escalated', this.handleDisputeEscalated.bind(this));
     this.registerEventHandler('dispute.resolved', this.handleDisputeResolved.bind(this));
-    
+
     // Accrual events
     this.registerEventHandler('accrual.calculated', this.handleAccrualCalculated.bind(this));
     this.registerEventHandler('accrual.variance', this.handleAccrualVariance.bind(this));
     this.registerEventHandler('accrual.reconciled', this.handleAccrualReconciled.bind(this));
-    
+
     // Settlement events
     this.registerEventHandler('settlement.created', this.handleSettlementCreated.bind(this));
     this.registerEventHandler('settlement.approved', this.handleSettlementApproved.bind(this));
@@ -279,7 +279,7 @@ class RealtimeEventService extends EventEmitter {
    */
   storeEvent(event) {
     this.eventStore.push(event);
-    
+
     // Trim event store if too large
     if (this.eventStore.length > this.maxEventStoreSize) {
       this.eventStore.shift();
@@ -293,16 +293,16 @@ class RealtimeEventService extends EventEmitter {
     let events = [...this.eventStore];
 
     if (filters.type) {
-      events = events.filter(e => e.type === filters.type);
+      events = events.filter((e) => e.type === filters.type);
     }
 
     if (filters.since) {
       const since = new Date(filters.since);
-      events = events.filter(e => new Date(e.timestamp) >= since);
+      events = events.filter((e) => new Date(e.timestamp) >= since);
     }
 
     if (filters.entityId) {
-      events = events.filter(e => e.data.entityId === filters.entityId);
+      events = events.filter((e) => e.data.entityId === filters.entityId);
     }
 
     return events;
@@ -312,8 +312,8 @@ class RealtimeEventService extends EventEmitter {
    * Replay events
    */
   async replayEvents(eventIds, handler) {
-    const events = this.eventStore.filter(e => eventIds.includes(e.id));
-    
+    const events = this.eventStore.filter((e) => eventIds.includes(e.id));
+
     for (const event of events) {
       await handler(event);
     }
@@ -508,7 +508,7 @@ class RealtimeEventService extends EventEmitter {
       recentEvents: this.eventStore.slice(-10)
     };
 
-    this.eventStore.forEach(event => {
+    this.eventStore.forEach((event) => {
       stats.eventsByType[event.type] = (stats.eventsByType[event.type] || 0) + 1;
     });
 

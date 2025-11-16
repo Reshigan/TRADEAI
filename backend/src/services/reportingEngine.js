@@ -33,20 +33,20 @@ class ReportingEngine {
 
       // Add multiple sheets based on report type
       const sheets = await this.createExcelSheets(reportData, reportType, parameters);
-      
+
       for (const sheet of sheets) {
         const worksheet = workbook.addWorksheet(sheet.name);
-        
+
         // Add data - convert to rows format
         if (sheet.data && sheet.data.length > 0) {
           const headers = Object.keys(sheet.data[0]);
           worksheet.addRow(headers);
-          
-          sheet.data.forEach(row => {
-            const values = headers.map(header => row[header]);
+
+          sheet.data.forEach((row) => {
+            const values = headers.map((header) => row[header]);
             worksheet.addRow(values);
           });
-          
+
           // Apply formatting
           this.applyExcelFormattingExcelJS(worksheet, sheet.formatting, headers);
         }
@@ -55,7 +55,7 @@ class ReportingEngine {
       // Generate file
       const fileName = this.generateFileName(reportType, 'xlsx');
       const filePath = path.join(process.cwd(), 'temp', 'reports', fileName);
-      
+
       // Ensure directory exists
       const dir = path.dirname(filePath);
       if (!fs.existsSync(dir)) {
@@ -84,10 +84,10 @@ class ReportingEngine {
   async generatePDFReport(tenantId, reportType, parameters = {}) {
     try {
       const reportData = await this.getReportData(tenantId, reportType, parameters);
-      
+
       const fileName = this.generateFileName(reportType, 'pdf');
       const filePath = path.join(process.cwd(), 'temp', 'reports', fileName);
-      
+
       // Ensure directory exists
       const dir = path.dirname(filePath);
       if (!fs.existsSync(dir)) {
@@ -135,13 +135,13 @@ class ReportingEngine {
 
       // Build dynamic query based on configuration
       const query = this.buildDynamicQuery(tenantId, metrics, dimensions, filters);
-      
+
       // Execute query and get data
       const data = await this.executeDynamicQuery(query);
-      
+
       // Apply aggregations and calculations
       const processedData = this.processCustomReportData(data, metrics, dimensions);
-      
+
       // Generate report in requested format
       let result;
       if (format === 'excel') {
@@ -179,7 +179,7 @@ class ReportingEngine {
       } = scheduleConfig;
 
       const scheduleId = this.generateScheduleId();
-      
+
       const scheduledReport = {
         id: scheduleId,
         tenantId,
@@ -199,7 +199,7 @@ class ReportingEngine {
 
       // In a real implementation, you would integrate with a job scheduler like node-cron
       // For now, we'll store the configuration
-      
+
       return {
         success: true,
         scheduleId,
@@ -257,7 +257,7 @@ class ReportingEngine {
 
       // In a real implementation, you would send the report to recipients
       // For now, we'll just return the result
-      
+
       return {
         success: true,
         scheduleId,
@@ -382,11 +382,11 @@ class ReportingEngine {
     for (const sheetName of template.sheets) {
       const sheetData = await this.createSheetData(reportData, sheetName, reportType);
       const formatting = this.getSheetFormatting(sheetName, reportType);
-      
+
       sheets.push({
         name: sheetName,
         data: sheetData,
-        formatting: formatting
+        formatting
       });
     }
 
@@ -396,7 +396,7 @@ class ReportingEngine {
   async createSheetData(reportData, sheetName, reportType) {
     // This would contain the logic to transform report data into sheet-specific format
     // For brevity, returning mock data structure
-    
+
     switch (sheetName) {
       case 'summary':
         return this.createSummarySheet(reportData);
@@ -441,7 +441,7 @@ class ReportingEngine {
 
   createDetailsSheet(reportData) {
     // Mock detailed data
-    return reportData.customers?.map(customer => ({
+    return reportData.customers?.map((customer) => ({
       'Customer Code': customer.code,
       'Customer Name': customer.name,
       'Revenue': customer.revenue || 0,
@@ -463,7 +463,7 @@ class ReportingEngine {
 
   createHierarchySheet(reportData) {
     // Mock hierarchy data
-    return reportData.hierarchy?.map(item => ({
+    return reportData.hierarchy?.map((item) => ({
       'Level': item.level,
       'Parent': item.parent || 'Root',
       'Name': item.name,
@@ -474,7 +474,7 @@ class ReportingEngine {
 
   createROISummarySheet(reportData) {
     // Mock ROI data
-    return reportData.promotions?.map(promo => ({
+    return reportData.promotions?.map((promo) => ({
       'Promotion Name': promo.name,
       'Investment': promo.investment || 0,
       'Revenue': promo.revenue || 0,
@@ -485,7 +485,7 @@ class ReportingEngine {
 
   createLiftAnalysisSheet(reportData) {
     // Mock lift data
-    return reportData.lift?.map(item => ({
+    return reportData.lift?.map((item) => ({
       'Promotion': item.promotionName,
       'Volume Lift %': item.volumeLift || 0,
       'Value Lift %': item.valueLift || 0,
@@ -499,7 +499,7 @@ class ReportingEngine {
 
     // Apply basic formatting
     const range = XLSX.utils.decode_range(worksheet['!ref']);
-    
+
     // Header formatting
     if (formatting.headerStyle) {
       for (let col = range.s.c; col <= range.e.c; col++) {
@@ -576,7 +576,7 @@ class ReportingEngine {
     // Add header
     doc.fontSize(20).text(`${this.reportTemplates.get(reportType).name}`, 50, 50);
     doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, 50, 80);
-    
+
     let yPosition = 120;
 
     // Add summary section
@@ -584,7 +584,7 @@ class ReportingEngine {
     yPosition += 30;
 
     const summaryData = this.createSummarySheet(reportData);
-    summaryData.forEach(item => {
+    summaryData.forEach((item) => {
       doc.fontSize(12).text(`${item.Metric}: ${item.Value} (${item.Change})`, 70, yPosition);
       yPosition += 20;
     });
@@ -598,7 +598,7 @@ class ReportingEngine {
     // Add table headers
     const headers = ['Customer', 'Revenue', 'Orders', 'Status'];
     let xPosition = 50;
-    headers.forEach(header => {
+    headers.forEach((header) => {
       doc.fontSize(10).text(header, xPosition, yPosition);
       xPosition += 120;
     });
@@ -606,7 +606,7 @@ class ReportingEngine {
 
     // Add table data (limited to fit on page)
     const detailsData = this.createDetailsSheet(reportData).slice(0, 20);
-    detailsData.forEach(row => {
+    detailsData.forEach((row) => {
       xPosition = 50;
       doc.fontSize(9).text(row['Customer Name'] || '', xPosition, yPosition);
       xPosition += 120;
@@ -636,7 +636,7 @@ class ReportingEngine {
 
   validateReportConfig(config) {
     const required = ['name', 'metrics', 'dimensions', 'format'];
-    
+
     for (const field of required) {
       if (!config[field]) {
         throw new Error(`Missing required field: ${field}`);
@@ -657,7 +657,7 @@ class ReportingEngine {
       dimensions,
       filters,
       pipeline: [
-        { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
+        { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } }
         // Additional pipeline stages would be built dynamically
       ]
     };
@@ -674,16 +674,16 @@ class ReportingEngine {
 
   processCustomReportData(data, metrics, dimensions) {
     // Process and aggregate data based on metrics and dimensions
-    return data.map(row => {
+    return data.map((row) => {
       const processed = { ...row };
-      
+
       // Apply metric calculations
-      metrics.forEach(metric => {
+      metrics.forEach((metric) => {
         if (metric.calculation) {
           processed[metric.name] = this.applyCalculation(row, metric.calculation);
         }
       });
-      
+
       return processed;
     });
   }
@@ -709,7 +709,7 @@ class ReportingEngine {
 
     const fileName = this.generateFileName(`custom_${config.name.replace(/\s+/g, '_')}`, 'xlsx');
     const filePath = path.join(process.cwd(), 'temp', 'reports', fileName);
-    
+
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -728,7 +728,7 @@ class ReportingEngine {
   async generateCustomPDFReport(data, config) {
     const fileName = this.generateFileName(`custom_${config.name.replace(/\s+/g, '_')}`, 'pdf');
     const filePath = path.join(process.cwd(), 'temp', 'reports', fileName);
-    
+
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -745,19 +745,19 @@ class ReportingEngine {
     // Add data table
     let yPosition = 140;
     const headers = Object.keys(data[0] || {});
-    
+
     // Headers
     let xPosition = 50;
-    headers.forEach(header => {
+    headers.forEach((header) => {
       doc.fontSize(10).text(header, xPosition, yPosition);
       xPosition += 100;
     });
     yPosition += 20;
 
     // Data rows
-    data.slice(0, 30).forEach(row => { // Limit to 30 rows for PDF
+    data.slice(0, 30).forEach((row) => { // Limit to 30 rows for PDF
       xPosition = 50;
-      headers.forEach(header => {
+      headers.forEach((header) => {
         doc.fontSize(9).text(String(row[header] || ''), xPosition, yPosition);
         xPosition += 100;
       });
@@ -804,9 +804,9 @@ class ReportingEngine {
   }
 
   async getCustomerHierarchyData(tenantId, parameters) {
-    return await Customer.find({ 
-      tenantId, 
-      level: { $exists: true } 
+    return await Customer.find({
+      tenantId,
+      level: { $exists: true }
     }).sort({ level: 1, path: 1 }).lean();
   }
 
@@ -822,7 +822,7 @@ class ReportingEngine {
   }
 
   async getProductPromotionData(tenantId, parameters) {
-    return await Promotion.find({ 
+    return await Promotion.find({
       tenantId,
       'products.productId': { $exists: true }
     }).populate('products.productId').lean();
@@ -830,7 +830,7 @@ class ReportingEngine {
 
   async getPromotionROIData(tenantId, parameters) {
     const promotions = await Promotion.find({ tenantId }).lean();
-    
+
     // Calculate ROI for each promotion using analytics engine
     const roiData = await Promise.all(
       promotions.map(async (promo) => {
@@ -848,7 +848,7 @@ class ReportingEngine {
 
   async getPromotionLiftData(tenantId, parameters) {
     const promotions = await Promotion.find({ tenantId }).lean();
-    
+
     // Calculate lift for each promotion
     const liftData = await Promise.all(
       promotions.map(async (promo) => {

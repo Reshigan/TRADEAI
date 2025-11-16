@@ -16,20 +16,20 @@ const authenticateToken = async (req, res, next) => {
   console.log('MIDDLEWARE ENTRY POINT');
   try {
     logger.info('=== AUTH MIDDLEWARE CALLED ===');
-    logger.info('Path: ' + req.originalUrl);
-    logger.info('Method: ' + req.method);
-    
+    logger.info(`Path: ${req.originalUrl}`);
+    logger.info(`Method: ${req.method}`);
+
     // Get token from authorization header or cookies
     let token;
     const authHeader = req.headers.authorization;
-    logger.info('Auth header present: ' + !!authHeader);
-    
+    logger.info(`Auth header present: ${!!authHeader}`);
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1];
     } else if (req.cookies && req.cookies.jwt) {
       token = req.cookies.jwt;
     }
-    
+
     if (!token) {
       securityLogger.logAuth({ id: 'unknown' }, 'access', false, {
         ip: req.ip,
@@ -38,18 +38,18 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         reason: 'No token provided'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Access token required'
       });
     }
-    
+
     // Verify token
     const decoded = jwt.verify(token, config.jwt.secret, {
       algorithms: ['HS256'] // Explicitly specify algorithm
     });
-    
+
     // Check if token is in blacklist
     const isBlacklisted = await isTokenBlacklisted(token);
     if (isBlacklisted) {
@@ -60,21 +60,21 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         reason: 'Token is blacklisted'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Invalid token. Please login again.'
       });
     }
-    
+
     // Get user from database
     const userId = decoded.userId || decoded._id; // Support both userId and _id for compatibility
     console.log('Auth middleware - Looking for user with ID:', userId);
     console.log('Auth middleware - Decoded token:', { userId: decoded.userId, _id: decoded._id });
-    
+
     const user = await User.findById(userId)
       .populate('companyId', 'name code currency');
-    
+
     console.log('Auth middleware - User found:', !!user);
     if (user) {
       console.log('User details:', JSON.stringify({
@@ -86,7 +86,7 @@ const authenticateToken = async (req, res, next) => {
         assignedCustomers: user.assignedCustomers
       }));
     }
-    
+
     if (!user) {
       securityLogger.logAuth({ id: userId || 'unknown' }, 'access', false, {
         ip: req.ip,
@@ -95,13 +95,13 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         reason: 'User not found'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'User not found'
       });
     }
-    
+
     if (!user.isActive) {
       securityLogger.logAuth(user, 'access', false, {
         ip: req.ip,
@@ -110,13 +110,13 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         reason: 'Account is deactivated'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Account is deactivated'
       });
     }
-    
+
     // Check if password was changed after token was issued
     if (user.changedPasswordAfter && user.changedPasswordAfter(decoded.iat)) {
       securityLogger.logAuth(user, 'access', false, {
@@ -126,13 +126,13 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         reason: 'Password changed after token issued'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Password recently changed. Please login again.'
       });
     }
-    
+
     // Check for suspicious activity
     const isSuspicious = await checkForSuspiciousActivity(user, req);
     if (isSuspicious) {
@@ -143,16 +143,16 @@ const authenticateToken = async (req, res, next) => {
         path: req.originalUrl,
         method: req.method
       });
-      
+
       // In a real implementation, you might want to:
       // 1. Force re-authentication
       // 2. Require 2FA
       // 3. Lock the account
       // 4. Send notification to user and admin
-      
+
       // For now, we'll just log it and continue
     }
-    
+
     // Log successful authentication
     securityLogger.logAuth(user, 'access', true, {
       ip: req.ip,
@@ -160,7 +160,7 @@ const authenticateToken = async (req, res, next) => {
       path: req.originalUrl,
       method: req.method
     });
-    
+
     // Add user and token to request
     req.user = user;
     req.token = token;
@@ -177,13 +177,13 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         error: 'Invalid token'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Invalid token'
       });
     }
-    
+
     if (error.name === 'TokenExpiredError') {
       securityLogger.logAuth({ id: 'unknown' }, 'access', false, {
         ip: req.ip,
@@ -192,13 +192,13 @@ const authenticateToken = async (req, res, next) => {
         method: req.method,
         error: 'Token expired'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Token expired'
       });
     }
-    
+
     // Log other errors
     logger.error('Authentication error:', error);
     securityLogger.error('Authentication error', {
@@ -208,7 +208,7 @@ const authenticateToken = async (req, res, next) => {
       method: req.method,
       error: error.message
     });
-    
+
     return res.status(500).json({
       success: false,
       message: 'Authentication error'
@@ -225,16 +225,16 @@ const authorize = (...roles) => {
         userAgent: req.headers['user-agent'],
         reason: 'No authenticated user'
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Authentication required'
       });
     }
-    
+
     // Flatten roles array if it's nested (e.g., [['admin', 'user']] -> ['admin', 'user'])
     const allowedRoles = roles.flat();
-    
+
     if (!allowedRoles.includes(req.user.role)) {
       // Log unauthorized access attempt
       logger.warn('Unauthorized access attempt', {
@@ -243,7 +243,7 @@ const authorize = (...roles) => {
         requiredRoles: allowedRoles,
         path: req.path
       });
-      
+
       // Log to security audit
       securityLogger.logAccess(req.user, req.originalUrl, req.method, false, {
         ip: req.ip,
@@ -251,16 +251,16 @@ const authorize = (...roles) => {
         requiredRoles: allowedRoles,
         userRole: req.user.role
       });
-      
+
       // Check for repeated unauthorized access attempts
       checkForRepeatedUnauthorizedAccess(req.user, req);
-      
+
       return res.status(403).json({
         success: false,
         message: 'Insufficient permissions'
       });
     }
-    
+
     // Log successful authorization
     securityLogger.logAccess(req.user, req.originalUrl, req.method, true, {
       ip: req.ip,
@@ -268,7 +268,7 @@ const authorize = (...roles) => {
       requiredRoles: roles,
       userRole: req.user.role
     });
-    
+
     next();
   };
 };
@@ -283,7 +283,7 @@ const checkForRepeatedUnauthorizedAccess = (user, req) => {
   // 1. Track unauthorized access attempts in a database or cache
   // 2. Implement a threshold for suspicious activity
   // 3. Take action when threshold is exceeded (e.g., lock account, require 2FA)
-  
+
   // For now, we'll just log a warning if this is a sensitive endpoint
   const sensitiveEndpoints = [
     '/api/users',
@@ -291,8 +291,8 @@ const checkForRepeatedUnauthorizedAccess = (user, req) => {
     '/api/admin',
     '/api/reports'
   ];
-  
-  if (sensitiveEndpoints.some(endpoint => req.originalUrl.startsWith(endpoint))) {
+
+  if (sensitiveEndpoints.some((endpoint) => req.originalUrl.startsWith(endpoint))) {
     securityLogger.warn('Repeated access attempt to sensitive endpoint', {
       userId: user._id,
       userRole: user.role,
@@ -315,18 +315,18 @@ const checkPermission = (module, action) => {
         module,
         action
       });
-      
+
       return res.status(401).json({
         success: false,
         message: 'Authentication required'
       });
     }
-    
+
     // Check if user has permission
-    const hasPermission = req.user.hasPermission ? 
-                         req.user.hasPermission(module, action) : 
-                         false;
-    
+    const hasPermission = req.user.hasPermission ?
+      req.user.hasPermission(module, action) :
+      false;
+
     if (!hasPermission) {
       // Log permission denied
       logger.warn('Permission denied', {
@@ -335,7 +335,7 @@ const checkPermission = (module, action) => {
         action,
         path: req.path
       });
-      
+
       // Log to security audit
       securityLogger.logAccess(req.user, req.originalUrl, req.method, false, {
         ip: req.ip,
@@ -344,16 +344,16 @@ const checkPermission = (module, action) => {
         action,
         reason: 'Permission denied'
       });
-      
+
       // Check for repeated permission denials
       checkForRepeatedPermissionDenials(req.user, req, module, action);
-      
+
       return res.status(403).json({
         success: false,
         message: `Permission denied for ${module}:${action}`
       });
     }
-    
+
     // Log successful permission check
     securityLogger.logAccess(req.user, req.originalUrl, req.method, true, {
       ip: req.ip,
@@ -361,7 +361,7 @@ const checkPermission = (module, action) => {
       module,
       action
     });
-    
+
     next();
   };
 };
@@ -378,7 +378,7 @@ const checkForRepeatedPermissionDenials = (user, req, module, action) => {
   // 1. Track permission denials in a database or cache
   // 2. Implement a threshold for suspicious activity
   // 3. Take action when threshold is exceeded
-  
+
   // For now, we'll just log a warning for sensitive permissions
   const sensitivePermissions = [
     { module: 'users', action: 'create' },
@@ -387,11 +387,11 @@ const checkForRepeatedPermissionDenials = (user, req, module, action) => {
     { module: 'settings', action: 'update' },
     { module: 'admin', action: 'access' }
   ];
-  
+
   const isSensitive = sensitivePermissions.some(
-    p => p.module === module && p.action === action
+    (p) => p.module === module && p.action === action
   );
-  
+
   if (isSensitive) {
     securityLogger.warn('Repeated permission denial for sensitive operation', {
       userId: user._id,
@@ -410,28 +410,28 @@ const checkForRepeatedPermissionDenials = (user, req, module, action) => {
 const authorizeCustomer = async (req, res, next) => {
   try {
     const customerId = req.params.customerId || req.body.customerId;
-    
+
     if (!customerId) {
       return next();
     }
-    
+
     // Admin and board can access all customers
     if (['admin', 'board', 'director'].includes(req.user.role)) {
       return next();
     }
-    
+
     // Check if user is assigned to this customer
     const isAssigned = req.user.assignedCustomers.some(
-      customer => customer._id.toString() === customerId
+      (customer) => customer._id.toString() === customerId
     );
-    
+
     if (!isAssigned) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to access this customer'
       });
     }
-    
+
     next();
   } catch (error) {
     logger.error('Customer authorization error:', error);
@@ -446,28 +446,28 @@ const authorizeCustomer = async (req, res, next) => {
 const authorizeVendor = async (req, res, next) => {
   try {
     const vendorId = req.params.vendorId || req.body.vendorId;
-    
+
     if (!vendorId) {
       return next();
     }
-    
+
     // Admin and board can access all vendors
     if (['admin', 'board', 'director'].includes(req.user.role)) {
       return next();
     }
-    
+
     // Check if user is assigned to this vendor
     const isAssigned = req.user.assignedVendors.some(
-      vendor => vendor._id.toString() === vendorId
+      (vendor) => vendor._id.toString() === vendorId
     );
-    
+
     if (!isAssigned) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to access this vendor'
       });
     }
-    
+
     next();
   } catch (error) {
     logger.error('Vendor authorization error:', error);
@@ -483,18 +483,18 @@ const checkApprovalLimit = (type) => {
   return async (req, res, next) => {
     try {
       const amount = req.body.amount || req.body.totalAmount;
-      
+
       if (!amount) {
         return next();
       }
-      
+
       if (!req.user.canApprove(type, amount)) {
         return res.status(403).json({
           success: false,
           message: `Approval limit exceeded for ${type}. Your limit is ${req.user.approvalLimits[type]}`
         });
       }
-      
+
       next();
     } catch (error) {
       logger.error('Approval limit check error:', error);
@@ -519,7 +519,7 @@ const rateLimitByRole = (req, res, next) => {
     sales_admin: 150,
     analyst: 200
   };
-  
+
   const limit = roleLimits[req.user?.role] || 50;
   req.rateLimit = { max: limit };
   next();
@@ -533,7 +533,7 @@ const rateLimitByRole = (req, res, next) => {
 const isTokenBlacklisted = async (token) => {
   // In a real implementation, this would check a database or Redis cache
   // for blacklisted tokens
-  
+
   // For now, we'll simulate a token blacklist check
   return false;
 };
@@ -546,7 +546,7 @@ const isTokenBlacklisted = async (token) => {
 const blacklistToken = async (token) => {
   // In a real implementation, this would add the token to a database or Redis cache
   // with an expiration time matching the token's expiration
-  
+
   // For now, we'll simulate token blacklisting
   return true;
 };
@@ -564,7 +564,7 @@ const checkForSuspiciousActivity = async (user, req) => {
   // 3. Unusual access patterns
   // 4. Multiple failed login attempts
   // 5. Rapid succession of sensitive operations
-  
+
   // For now, we'll simulate suspicious activity detection
   return false;
 };
@@ -613,38 +613,38 @@ const refreshToken = async (req, res, next) => {
   try {
     // Get refresh token
     const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
-    
+
     if (!refreshToken) {
       return res.status(401).json({
         success: false,
         message: 'Refresh token required'
       });
     }
-    
+
     // Verify refresh token
     const decoded = jwt.verify(
       refreshToken,
       config.jwt.refreshSecret || config.jwt.secret,
       { algorithms: ['HS256'] }
     );
-    
+
     // Get user
     const user = await TestUser.findById(decoded._id);
-    
+
     if (!user) {
       return res.status(401).json({
         success: false,
         message: 'Invalid refresh token'
       });
     }
-    
+
     if (!user.isActive) {
       return res.status(401).json({
         success: false,
         message: 'Account is deactivated'
       });
     }
-    
+
     // Generate new access token
     const accessToken = jwt.sign(
       { _id: user._id },
@@ -654,7 +654,7 @@ const refreshToken = async (req, res, next) => {
         algorithm: 'HS256'
       }
     );
-    
+
     // Set cookie
     if (config.jwt.useCookies) {
       res.cookie('jwt', accessToken, {
@@ -664,13 +664,13 @@ const refreshToken = async (req, res, next) => {
         maxAge: 3600000 // 1 hour
       });
     }
-    
+
     // Log token refresh
     securityLogger.logAuth(user, 'token_refresh', true, {
       ip: req.ip,
       userAgent: req.headers['user-agent']
     });
-    
+
     // Send new access token
     res.status(200).json({
       success: true,
@@ -678,7 +678,7 @@ const refreshToken = async (req, res, next) => {
     });
   } catch (error) {
     logger.error('Token refresh error:', error);
-    
+
     return res.status(401).json({
       success: false,
       message: 'Invalid refresh token'
@@ -695,21 +695,21 @@ const logout = async (req, res) => {
   try {
     // Get token
     const token = req.token;
-    
+
     // Blacklist token if it exists
     if (token) {
       await blacklistToken(token);
     }
-    
+
     // Clear cookies
     if (req.cookies.jwt) {
       res.clearCookie('jwt');
     }
-    
+
     if (req.cookies.refreshToken) {
       res.clearCookie('refreshToken');
     }
-    
+
     // Log logout
     if (req.user) {
       securityLogger.logAuth(req.user, 'logout', true, {
@@ -717,14 +717,14 @@ const logout = async (req, res) => {
         userAgent: req.headers['user-agent']
       });
     }
-    
+
     res.status(200).json({
       success: true,
       message: 'Logged out successfully'
     });
   } catch (error) {
     logger.error('Logout error:', error);
-    
+
     res.status(500).json({
       success: false,
       message: 'Error logging out'

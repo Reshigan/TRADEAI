@@ -18,7 +18,7 @@ class ExportService {
     };
     headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
     headerRow.height = 30;
-    
+
     // Add borders
     headerRow.eachCell((cell) => {
       cell.border = {
@@ -34,9 +34,9 @@ class ExportService {
    * Auto-fit column widths
    */
   autoFitColumns(worksheet) {
-    worksheet.columns.forEach(column => {
+    worksheet.columns.forEach((column) => {
       let maxLength = 10;
-      column.eachCell({ includeEmpty: false }, cell => {
+      column.eachCell({ includeEmpty: false }, (cell) => {
         const length = cell.value ? cell.value.toString().length : 10;
         if (length > maxLength) maxLength = length;
       });
@@ -76,7 +76,7 @@ class ExportService {
 
       // Add company header
       this.addCompanyHeader(worksheet, companyName, 'Customers Export', 'A1:J1');
-      
+
       // Add timestamp
       this.addTimestamp(worksheet, 'A2:J2');
 
@@ -96,11 +96,11 @@ class ExportService {
         'Created Date',
         'Budget (R)'
       ]);
-      
+
       this.styleHeader(worksheet, headerRow);
 
       // Data rows
-      customers.forEach(customer => {
+      customers.forEach((customer) => {
         const row = worksheet.addRow([
           customer.code || '',
           customer.name || '',
@@ -164,12 +164,12 @@ class ExportService {
         'Active',
         'Created Date'
       ]);
-      
+
       this.styleHeader(worksheet, headerRow);
 
       // Data rows
-      products.forEach(product => {
-        const margin = product.unitPrice && product.unitCost 
+      products.forEach((product) => {
+        const margin = product.unitPrice && product.unitCost
           ? ((product.unitPrice - product.unitCost) / product.unitPrice * 100).toFixed(2)
           : 0;
 
@@ -237,10 +237,10 @@ class ExportService {
         'Spent (R)',
         'ROI %'
       ]);
-      
+
       this.styleHeader(worksheet, headerRow);
 
-      promotions.forEach(promo => {
+      promotions.forEach((promo) => {
         const row = worksheet.addRow([
           promo.promotionId || promo._id,
           promo.name || '',
@@ -302,10 +302,10 @@ class ExportService {
         'Utilization %',
         'Status'
       ]);
-      
+
       this.styleHeader(worksheet, headerRow);
 
-      budgets.forEach(budget => {
+      budgets.forEach((budget) => {
         const remaining = (budget.totalBudget || 0) - (budget.spent || 0);
         const utilization = budget.totalBudget ? ((budget.spent / budget.totalBudget) * 100).toFixed(2) : 0;
 
@@ -364,10 +364,10 @@ class ExportService {
         'Reference',
         'Created Date'
       ]);
-      
+
       this.styleHeader(worksheet, headerRow);
 
-      transactions.forEach(txn => {
+      transactions.forEach((txn) => {
         worksheet.addRow([
           txn.transactionId || txn._id,
           txn.type || '',
@@ -414,7 +414,7 @@ class ExportService {
       const headerRow = worksheet.addRow(headers);
       this.styleHeader(worksheet, headerRow);
 
-      data.forEach(row => {
+      data.forEach((row) => {
         worksheet.addRow(row);
       });
 

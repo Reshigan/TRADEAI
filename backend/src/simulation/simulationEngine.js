@@ -1,6 +1,6 @@
 /**
  * Business Simulation Engine
- * 
+ *
  * Simulates business scenarios over 30-day periods with:
  * - Revenue modeling
  * - Cost dynamics
@@ -83,7 +83,7 @@ class SimulationEngine {
     // Initialize starting values
     let currentRevenue = baseData.dailyRevenue || 100000;
     let currentVolume = baseData.dailyVolume || 5000;
-    let currentMargin = baseData.marginPercent || 35;
+    const currentMargin = baseData.marginPercent || 35;
     let cumulativeRevenue = 0;
     let cumulativeProfit = 0;
     let cumulativeRebates = 0;

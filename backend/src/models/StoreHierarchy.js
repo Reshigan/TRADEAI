@@ -256,43 +256,43 @@ storeSchema.index({ tenantId: 1, isActive: 1 });
 storeSchema.index({ location: '2dsphere' }); // For geo queries
 
 // Virtual for full hierarchy
-storeSchema.virtual('fullHierarchy').get(function() {
+storeSchema.virtual('fullHierarchy').get(function () {
   return `${this.region?.name || 'N/A'} > ${this.district?.name || 'N/A'} > ${this.name}`;
 });
 
 // Pre-save middleware
-regionSchema.pre('save', function(next) {
+regionSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-districtSchema.pre('save', function(next) {
+districtSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-storeSchema.pre('save', function(next) {
+storeSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
 // Methods
-regionSchema.methods.getDistrictCount = async function() {
+regionSchema.methods.getDistrictCount = async function () {
   const District = mongoose.model('District');
   return await District.countDocuments({ region: this._id, isActive: true });
 };
 
-regionSchema.methods.getStoreCount = async function() {
+regionSchema.methods.getStoreCount = async function () {
   const Store = mongoose.model('Store');
   return await Store.countDocuments({ region: this._id, isActive: true });
 };
 
-districtSchema.methods.getStoreCount = async function() {
+districtSchema.methods.getStoreCount = async function () {
   const Store = mongoose.model('Store');
   return await Store.countDocuments({ district: this._id, isActive: true });
 };
 
-storeSchema.methods.getHierarchy = async function() {
+storeSchema.methods.getHierarchy = async function () {
   await this.populate(['region', 'district']);
   return {
     region: this.region,

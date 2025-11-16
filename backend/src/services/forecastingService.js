@@ -60,14 +60,14 @@ class ForecastingService {
       });
 
       // Select best forecast or create ensemble
-      const finalForecast = algorithm === 'ensemble' ? 
-        this.createEnsembleForecast(forecasts) : 
+      const finalForecast = algorithm === 'ensemble' ?
+        this.createEnsembleForecast(forecasts) :
         forecasts[algorithm];
 
       // Calculate confidence intervals
       const confidenceIntervals = this.calculateConfidenceIntervals(
-        finalForecast, 
-        timeSeries, 
+        finalForecast,
+        timeSeries,
         horizon
       );
 
@@ -132,7 +132,7 @@ class ForecastingService {
             };
 
             const forecast = await this.generateSalesForecast(tenantId, forecastOptions);
-            
+
             const key = `${productId}_${customerId}`;
             scenarioForecasts[key] = forecast;
           }
@@ -177,7 +177,7 @@ class ForecastingService {
       // Get historical trade spend data
       const historicalSpend = await TradeSpend.find({
         tenantId,
-        actualDate: { 
+        actualDate: {
           $gte: new Date(Date.now() - 24 * 30 * 24 * 60 * 60 * 1000) // 24 months
         }
       }).sort({ actualDate: 1 });
@@ -189,7 +189,7 @@ class ForecastingService {
       const baseForecast = this.generateSpendForecast(spendTimeSeries, horizon);
 
       // Adjust for inflation
-      const inflationAdjustedForecast = includeInflation ? 
+      const inflationAdjustedForecast = includeInflation ?
         this.adjustForInflation(baseForecast, inflationRate) : baseForecast;
 
       // Add planned promotions impact
@@ -362,7 +362,7 @@ class ForecastingService {
 
   async getHistoricalSalesData(tenantId, options = {}) {
     const { productId, customerId, months = 24 } = options;
-    
+
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - months);
 
@@ -376,10 +376,10 @@ class ForecastingService {
   prepareTimeSeriesData(historicalData) {
     // Group by month and aggregate
     const monthlyData = {};
-    
-    historicalData.forEach(record => {
+
+    historicalData.forEach((record) => {
       const monthKey = `${record.date.getFullYear()}-${String(record.date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = {
           date: monthKey,
@@ -388,7 +388,7 @@ class ForecastingService {
           count: 0
         };
       }
-      
+
       monthlyData[monthKey].units += record.units || 0;
       monthlyData[monthKey].revenue += record.revenue || 0;
       monthlyData[monthKey].count += 1;
@@ -422,8 +422,8 @@ class ForecastingService {
 
   simpleMovingAverage(timeSeries, horizon, window = 3) {
     const forecast = [];
-    const values = timeSeries.map(d => d.units);
-    
+    const values = timeSeries.map((d) => d.units);
+
     // Calculate moving average for the last 'window' periods
     const lastValues = values.slice(-window);
     const average = lastValues.reduce((sum, val) => sum + val, 0) / lastValues.length;
@@ -442,8 +442,8 @@ class ForecastingService {
 
   exponentialSmoothing(timeSeries, horizon, alpha = 0.3) {
     const forecast = [];
-    const values = timeSeries.map(d => d.units);
-    
+    const values = timeSeries.map((d) => d.units);
+
     // Calculate exponentially smoothed value
     let smoothed = values[0];
     for (let i = 1; i < values.length; i++) {
@@ -452,7 +452,7 @@ class ForecastingService {
 
     // Project forward with trend
     const trend = this.calculateTrend(values);
-    
+
     for (let i = 0; i < horizon; i++) {
       const value = smoothed + (trend * (i + 1));
       forecast.push({
@@ -469,7 +469,7 @@ class ForecastingService {
     const forecast = [];
     const n = timeSeries.length;
     const x = Array.from({ length: n }, (_, i) => i + 1);
-    const y = timeSeries.map(d => d.units);
+    const y = timeSeries.map((d) => d.units);
 
     // Calculate linear regression coefficients
     const sumX = x.reduce((sum, val) => sum + val, 0);
@@ -484,7 +484,7 @@ class ForecastingService {
     for (let i = 0; i < horizon; i++) {
       const period = n + i + 1;
       const value = slope * period + intercept;
-      
+
       forecast.push({
         period: i + 1,
         value: Math.max(0, value),
@@ -498,16 +498,16 @@ class ForecastingService {
   seasonalForecast(timeSeries, horizon) {
     const forecast = [];
     const seasonalPeriod = 12; // Monthly seasonality
-    
+
     if (timeSeries.length < seasonalPeriod) {
       return this.simpleMovingAverage(timeSeries, horizon);
     }
 
     // Calculate seasonal indices
     const seasonalIndices = this.calculateSeasonalIndices(timeSeries, seasonalPeriod);
-    
+
     // Get trend
-    const trend = this.calculateTrend(timeSeries.map(d => d.units));
+    const trend = this.calculateTrend(timeSeries.map((d) => d.units));
     const lastValue = timeSeries[timeSeries.length - 1].units;
 
     // Project forward with seasonality
@@ -515,7 +515,7 @@ class ForecastingService {
       const seasonIndex = i % seasonalPeriod;
       const trendValue = lastValue + (trend * (i + 1));
       const seasonalValue = trendValue * seasonalIndices[seasonIndex];
-      
+
       forecast.push({
         period: i + 1,
         value: Math.max(0, seasonalValue),
@@ -530,28 +530,28 @@ class ForecastingService {
   arimaForecast(timeSeries, horizon) {
     // Simplified ARIMA implementation
     const forecast = [];
-    const values = timeSeries.map(d => d.units);
-    
+    const values = timeSeries.map((d) => d.units);
+
     // Use last 3 values for AR(3) model
     const p = Math.min(3, values.length - 1);
     const lastValues = values.slice(-p);
-    
+
     // Simple autoregressive coefficients (simplified)
     const coefficients = this.calculateARCoefficients(values, p);
-    
+
     let lastForecast = values[values.length - 1];
-    
+
     for (let i = 0; i < horizon; i++) {
       let forecastValue = 0;
-      
+
       // Apply AR coefficients
       for (let j = 0; j < Math.min(p, i + 1); j++) {
         const index = Math.max(0, lastValues.length - 1 - j);
         forecastValue += coefficients[j] * (j === 0 ? lastForecast : lastValues[index]);
       }
-      
+
       lastForecast = Math.max(0, forecastValue);
-      
+
       forecast.push({
         period: i + 1,
         value: lastForecast,
@@ -580,7 +580,7 @@ class ForecastingService {
         arima: 0.15
       };
 
-      methods.forEach(method => {
+      methods.forEach((method) => {
         if (forecasts[method][i]) {
           const weight = weights[method] || 0.1;
           weightedSum += forecasts[method][i].value * weight;
@@ -602,9 +602,9 @@ class ForecastingService {
   }
 
   calculateConfidenceIntervals(forecast, timeSeries, horizon) {
-    const values = timeSeries.map(d => d.units);
+    const values = timeSeries.map((d) => d.units);
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-    
+
     // Calculate standard deviation
     const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
     const stdDev = Math.sqrt(variance);
@@ -635,7 +635,7 @@ class ForecastingService {
     });
 
     // Apply promotion uplift
-    plannedPromotions.forEach(promotion => {
+    plannedPromotions.forEach((promotion) => {
       const promotionMonth = promotion.period.startDate.getMonth();
       const currentMonth = new Date().getMonth();
       const forecastIndex = (promotionMonth - currentMonth + 12) % 12;
@@ -679,7 +679,7 @@ class ForecastingService {
     });
 
     const mape = validPoints > 0 ? (totalError / validPoints) * 100 : 100;
-    
+
     return {
       mape: mape.toFixed(2),
       accuracy: mape < 10 ? 'high' : mape < 20 ? 'medium' : 'low',
@@ -690,7 +690,7 @@ class ForecastingService {
   detectSeasonality(timeSeries) {
     if (timeSeries.length < 24) return { detected: false, reason: 'insufficient_data' };
 
-    const values = timeSeries.map(d => d.units);
+    const values = timeSeries.map((d) => d.units);
     const seasonalPeriod = 12;
 
     // Calculate autocorrelation at seasonal lag
@@ -705,10 +705,10 @@ class ForecastingService {
   }
 
   analyzeTrend(timeSeries) {
-    const values = timeSeries.map(d => d.units);
+    const values = timeSeries.map((d) => d.units);
     const trend = this.calculateTrend(values);
-    
-    const trendPercent = values.length > 1 ? 
+
+    const trendPercent = values.length > 1 ?
       (trend / (values.reduce((sum, val) => sum + val, 0) / values.length)) * 100 : 0;
 
     return {
@@ -757,7 +757,7 @@ class ForecastingService {
   calculateARCoefficients(values, order) {
     // Simplified AR coefficient calculation using Yule-Walker equations
     const coefficients = new Array(order).fill(0.1); // Default small coefficients
-    
+
     if (values.length > order) {
       // Use simple correlation-based approach
       for (let i = 0; i < order; i++) {
@@ -792,11 +792,11 @@ class ForecastingService {
 
   getModelMetrics(forecasts) {
     const metrics = {};
-    
-    Object.keys(forecasts).forEach(method => {
+
+    Object.keys(forecasts).forEach((method) => {
       const forecast = forecasts[method];
-      const values = forecast.map(f => f.value);
-      
+      const values = forecast.map((f) => f.value);
+
       metrics[method] = {
         mean: values.reduce((sum, val) => sum + val, 0) / values.length,
         min: Math.min(...values),
@@ -820,21 +820,21 @@ class ForecastingService {
     const syntheticData = [];
     const baseValue = 50000 + Math.random() * 100000; // Base sales value
     const now = new Date();
-    
+
     for (let i = months - 1; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      
+
       // Add seasonality (higher in Q4, lower in Q1)
       const seasonalityFactor = 1 + 0.3 * Math.sin((date.getMonth() / 12) * 2 * Math.PI + Math.PI);
-      
+
       // Add trend (slight growth over time)
       const trendFactor = 1 + (months - i) * 0.005;
-      
+
       // Add random variation
       const randomFactor = 0.8 + Math.random() * 0.4;
-      
+
       const value = baseValue * seasonalityFactor * trendFactor * randomFactor;
-      
+
       syntheticData.push({
         date,
         value: Math.round(value),
@@ -846,7 +846,7 @@ class ForecastingService {
         synthetic: true // Mark as synthetic data
       });
     }
-    
+
     return syntheticData;
   }
 
@@ -875,10 +875,10 @@ class ForecastingService {
 
   prepareSpendTimeSeries(historicalSpend) {
     const monthlySpend = {};
-    
-    historicalSpend.forEach(spend => {
+
+    historicalSpend.forEach((spend) => {
       const monthKey = `${spend.actualDate.getFullYear()}-${String(spend.actualDate.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlySpend[monthKey]) {
         monthlySpend[monthKey] = {
           date: monthKey,
@@ -886,7 +886,7 @@ class ForecastingService {
           count: 0
         };
       }
-      
+
       monthlySpend[monthKey].amount += spend.actualAmount || spend.plannedAmount || 0;
       monthlySpend[monthKey].count += 1;
     });
@@ -896,7 +896,7 @@ class ForecastingService {
 
   generateSpendForecast(spendTimeSeries, horizon) {
     // Use exponential smoothing for spend forecast
-    return this.exponentialSmoothing(spendTimeSeries.map(s => ({ units: s.amount })), horizon);
+    return this.exponentialSmoothing(spendTimeSeries.map((s) => ({ units: s.amount })), horizon);
   }
 
   adjustForInflation(forecast, inflationRate) {
@@ -928,8 +928,8 @@ class ForecastingService {
   calculateCategoryAllocation(historicalSpend, forecast) {
     // Calculate spend allocation by category
     const categories = {};
-    
-    historicalSpend.forEach(spend => {
+
+    historicalSpend.forEach((spend) => {
       const category = spend.category || 'Other';
       categories[category] = (categories[category] || 0) + (spend.actualAmount || spend.plannedAmount || 0);
     });
@@ -938,7 +938,7 @@ class ForecastingService {
     const totalForecast = forecast.reduce((sum, point) => sum + point.value, 0);
 
     const allocation = {};
-    Object.keys(categories).forEach(category => {
+    Object.keys(categories).forEach((category) => {
       const percentage = totalHistorical > 0 ? categories[category] / totalHistorical : 0;
       allocation[category] = {
         historicalAmount: categories[category],
@@ -953,9 +953,9 @@ class ForecastingService {
   assessBudgetRisk(forecast, historicalData) {
     const forecastTotal = forecast.reduce((sum, point) => sum + point.value, 0);
     const historicalAverage = historicalData.reduce((sum, point) => sum + point.amount, 0) / historicalData.length * 12;
-    
+
     const variance = forecastTotal / historicalAverage - 1;
-    
+
     return {
       level: Math.abs(variance) > 0.2 ? 'high' : Math.abs(variance) > 0.1 ? 'medium' : 'low',
       variance: variance * 100,
@@ -967,20 +967,20 @@ class ForecastingService {
 
   identifyBudgetRiskFactors(variance) {
     const factors = [];
-    
+
     if (variance > 0.2) {
       factors.push('Significant budget increase projected');
     }
     if (variance < -0.2) {
       factors.push('Significant budget decrease projected');
     }
-    
+
     return factors;
   }
 
   generateBudgetRecommendations(forecast, risk) {
     const recommendations = [];
-    
+
     if (risk.level === 'high') {
       recommendations.push({
         type: 'risk_mitigation',
@@ -989,7 +989,7 @@ class ForecastingService {
         action: 'Conduct detailed budget review and establish monitoring checkpoints'
       });
     }
-    
+
     const totalBudget = forecast.reduce((sum, point) => sum + point.value, 0);
     if (totalBudget > 1000000) {
       recommendations.push({
@@ -999,13 +999,13 @@ class ForecastingService {
         action: 'Implement multi-level approval process for budget execution'
       });
     }
-    
+
     return recommendations;
   }
 
   generateDemandRecommendations(aggregateDemand, riskAnalysis) {
     const recommendations = [];
-    
+
     // Add demand-specific recommendations
     if (riskAnalysis.volatility > 0.3) {
       recommendations.push({
@@ -1015,36 +1015,36 @@ class ForecastingService {
         action: 'Develop flexible supply chain and inventory strategies'
       });
     }
-    
+
     return recommendations;
   }
 
   calculateAggregateDemand(forecasts, scenarios) {
     const aggregate = {};
-    
-    scenarios.forEach(scenario => {
+
+    scenarios.forEach((scenario) => {
       const scenarioTotal = Object.values(forecasts[scenario])
         .reduce((sum, forecast) => {
           return sum + forecast.forecast.reduce((fSum, point) => fSum + point.value, 0);
         }, 0);
-      
+
       aggregate[scenario] = scenarioTotal;
     });
-    
+
     return aggregate;
   }
 
   performRiskAnalysis(forecasts) {
     const scenarios = Object.keys(forecasts);
-    const values = scenarios.map(scenario => 
+    const values = scenarios.map((scenario) =>
       Object.values(forecasts[scenario])
         .reduce((sum, forecast) => sum + forecast.forecast.reduce((fSum, point) => fSum + point.value, 0), 0)
     );
-    
+
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
     const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
     const volatility = Math.sqrt(variance) / mean;
-    
+
     return {
       volatility,
       riskLevel: volatility > 0.3 ? 'high' : volatility > 0.15 ? 'medium' : 'low',

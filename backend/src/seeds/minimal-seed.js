@@ -27,7 +27,7 @@ const seedDatabase = async () => {
     // Create minimal users
     console.log('Creating users...');
     const password = await bcrypt.hash('Vantax1234#', 10);
-    
+
     const users = await User.insertMany([
       {
         email: 'info@vantax.co.za',
@@ -40,7 +40,7 @@ const seedDatabase = async () => {
         employeeId: 'EMP001'
       }
     ]);
-    
+
     console.log(`Created ${users.length} users`);
     console.log('\n✅ Minimal database seeded successfully!');
     console.log('\nLogin credentials:');

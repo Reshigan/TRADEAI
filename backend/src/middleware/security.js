@@ -21,7 +21,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const configureSecurityMiddleware = (app, config = {}) => {
   // Set security HTTP headers
   app.use(helmet());
-  
+
   // Enable CORS with options
   const corsOptions = config.cors || {
     origin: ['http://localhost:3000', 'https://trade-ai.com'],
@@ -31,7 +31,7 @@ const configureSecurityMiddleware = (app, config = {}) => {
     maxAge: 86400 // 24 hours
   };
   app.use(cors(corsOptions));
-  
+
   // Rate limiting
   const limiter = rateLimit({
     windowMs: config.rateLimitWindow || 15 * 60 * 1000, // 15 minutes
@@ -41,14 +41,14 @@ const configureSecurityMiddleware = (app, config = {}) => {
     legacyHeaders: false
   });
   app.use('/api/', limiter);
-  
+
   // Prevent parameter pollution
   app.use(hpp({
     whitelist: config.hppWhitelist || [
       'sort', 'fields', 'page', 'limit', 'expand', 'filter'
     ]
   }));
-  
+
   // Data sanitization against NoSQL injection
   app.use(mongoSanitize({
     replaceWith: '_',
@@ -56,14 +56,14 @@ const configureSecurityMiddleware = (app, config = {}) => {
       console.warn(`Sanitized request data at key: ${key}`);
     }
   }));
-  
+
   // XSS protection is handled by express-validator sanitizers in route handlers
   // CSRF protection note: For API-first applications with JWT auth, CSRF is mitigated by:
   // 1. Not using cookies for auth tokens
   // 2. Using custom headers (Authorization) which can't be set by attackers
   // 3. SameSite cookie attributes when cookies are used
   // If CSRF tokens are needed, implement per-route with a modern alternative like csrf-csrf
-  
+
   // Content Security Policy
   if (config.enableCsp !== false) {
     app.use(helmet.contentSecurityPolicy({
@@ -81,27 +81,27 @@ const configureSecurityMiddleware = (app, config = {}) => {
       }
     }));
   }
-  
+
   // Add security headers
   app.use((req, res, next) => {
     // Strict Transport Security
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-    
+
     // Prevent MIME type sniffing
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    
+
     // Clickjacking protection
     res.setHeader('X-Frame-Options', 'DENY');
-    
+
     // XSS protection
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    
+
     // Referrer policy
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    
+
     // Feature policy
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    
+
     next();
   });
 };
@@ -123,7 +123,7 @@ const validateRequest = (type) => {
           .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
           .not().isEmpty().withMessage('Password is required')
       ];
-      
+
     case 'user':
       return [
         body('name')
@@ -145,7 +145,7 @@ const validateRequest = (type) => {
           .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
           .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])/).withMessage('Password must contain at least one number, one uppercase letter, one lowercase letter, and one special character')
       ];
-      
+
     case 'product':
       return [
         body('name')
@@ -161,7 +161,7 @@ const validateRequest = (type) => {
           .trim()
           .escape()
       ];
-      
+
     case 'promotion':
       return [
         body('name')
@@ -184,7 +184,7 @@ const validateRequest = (type) => {
           .isNumeric().withMessage('Discount must be a number')
           .isFloat({ min: 0, max: 100 }).withMessage('Discount must be between 0 and 100')
       ];
-      
+
     default:
       return [];
   }
@@ -215,14 +215,14 @@ const handleValidationErrors = (req, res, next) => {
  */
 const sanitizeInput = (data) => {
   const sanitized = {};
-  
+
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string') {
       // Sanitize strings
       sanitized[key] = validator.escape(value.trim());
     } else if (Array.isArray(value)) {
       // Sanitize arrays
-      sanitized[key] = value.map(item => 
+      sanitized[key] = value.map((item) =>
         typeof item === 'string' ? validator.escape(item.trim()) : item
       );
     } else if (value && typeof value === 'object') {
@@ -233,7 +233,7 @@ const sanitizeInput = (data) => {
       sanitized[key] = value;
     }
   }
-  
+
   return sanitized;
 };
 
@@ -283,13 +283,13 @@ const detectAttackPatterns = (req, res, next) => {
     /\w*((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))/i,
     /((\%27)|(\'))union/i
   ];
-  
+
   // Check for NoSQL injection patterns
   const noSqlPatterns = [
     /\{\s*\$\w+\s*:/i,
     /\$\w+\s*:/i
   ];
-  
+
   // Check for path traversal
   const pathTraversalPatterns = [
     /(\.\.\/)/i,
@@ -298,29 +298,29 @@ const detectAttackPatterns = (req, res, next) => {
     /(%252e%252e%252f)/i,
     /(%c0%ae%c0%ae%c0%af)/i
   ];
-  
+
   // Check request parameters
   const checkParams = (obj) => {
     if (!obj) return false;
-    
+
     for (const key in obj) {
       if (typeof obj[key] === 'string') {
         const value = obj[key];
-        
+
         // Check SQL injection patterns
         for (const pattern of sqlPatterns) {
           if (pattern.test(value)) {
             return true;
           }
         }
-        
+
         // Check NoSQL injection patterns
         for (const pattern of noSqlPatterns) {
           if (pattern.test(value)) {
             return true;
           }
         }
-        
+
         // Check path traversal patterns
         for (const pattern of pathTraversalPatterns) {
           if (pattern.test(value)) {
@@ -333,13 +333,13 @@ const detectAttackPatterns = (req, res, next) => {
         }
       }
     }
-    
+
     return false;
   };
-  
+
   if (
-    checkParams(req.query) || 
-    checkParams(req.body) || 
+    checkParams(req.query) ||
+    checkParams(req.body) ||
     checkParams(req.params)
   ) {
     return res.status(403).json({
@@ -347,7 +347,7 @@ const detectAttackPatterns = (req, res, next) => {
       message: 'Potential security attack detected'
     });
   }
-  
+
   next();
 };
 

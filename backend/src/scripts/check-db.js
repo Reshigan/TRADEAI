@@ -5,9 +5,9 @@ const config = require('../config');
 async function checkDatabase() {
   try {
     await mongoose.connect(config.mongodb.uri, config.mongodb.options);
-    
+
     const userCount = await User.countDocuments();
-    
+
     if (userCount === 0) {
       console.log('No users found');
       process.exit(0);

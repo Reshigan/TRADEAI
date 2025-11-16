@@ -28,7 +28,7 @@ describe('EnhancedAuthService', () => {
 
       User.findOne.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue('hashedPassword');
-      
+
       const mockUser = {
         _id: 'user123',
         ...userData,

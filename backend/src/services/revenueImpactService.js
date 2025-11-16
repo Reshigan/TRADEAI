@@ -50,7 +50,7 @@ class RevenueImpactService {
       }
 
       const customerNodes = await this.expandCustomerHierarchy(tenantId, customers);
-      
+
       const productNodes = await this.expandProductHierarchy(tenantId, products);
 
       const baselineRevenue = await this.calculateBaselineRevenue(
@@ -198,7 +198,7 @@ class RevenueImpactService {
    */
   estimateWeeklyRevenue(customer, product) {
     const customerSales = customer.performance?.lastYearSales || 0;
-    
+
     const productPrice = product.pricing?.listPrice || 0;
     const productVolume = product.performance?.lastYearSales?.units || 0;
 
@@ -229,7 +229,7 @@ class RevenueImpactService {
 
       for (const [productId, revenue] of customerData.products) {
         const spend = revenue * (discountPercentage / 100);
-        
+
         customerAllocation.total += spend;
         customerAllocation.products.set(productId, spend);
 
@@ -268,12 +268,12 @@ class RevenueImpactService {
 
     if (historicalPromotions.length > 0) {
       const uplifts = historicalPromotions
-        .map(p => {
+        .map((p) => {
           const baseline = p.financial?.planned?.baselineVolume || 0;
           const actual = p.financial?.actual?.promotionalVolume || 0;
           return baseline > 0 ? actual / baseline : 1;
         })
-        .filter(u => u > 0 && u < 5); // Filter outliers
+        .filter((u) => u > 0 && u < 5); // Filter outliers
 
       if (uplifts.length > 0) {
         factors.average = uplifts.reduce((sum, u) => sum + u, 0) / uplifts.length;
@@ -290,7 +290,7 @@ class RevenueImpactService {
     }
 
     for (const product of products) {
-      const marginFactor = product.pricing?.marginPercentage 
+      const marginFactor = product.pricing?.marginPercentage
         ? 1 + (product.pricing.marginPercentage / 100)
         : 1.0;
       factors.byProduct.set(product._id.toString(), factors.average * marginFactor);
@@ -322,8 +322,8 @@ class RevenueImpactService {
       const customerPromotional = customerBaseline * customerUplift;
       const customerIncremental = customerPromotional - customerBaseline;
       const customerSpend = spendAllocation.byCustomer.get(customerId)?.total || 0;
-      const customerROI = customerSpend > 0 
-        ? ((customerIncremental - customerSpend) / customerSpend) * 100 
+      const customerROI = customerSpend > 0
+        ? ((customerIncremental - customerSpend) / customerSpend) * 100
         : 0;
 
       result.promotional += customerPromotional;
@@ -345,8 +345,8 @@ class RevenueImpactService {
       const productPromotional = productBaseline * productUplift;
       const productIncremental = productPromotional - productBaseline;
       const productSpend = spendAllocation.byProduct.get(productId) || 0;
-      const productROI = productSpend > 0 
-        ? ((productIncremental - productSpend) / productSpend) * 100 
+      const productROI = productSpend > 0
+        ? ((productIncremental - productSpend) / productSpend) * 100
         : 0;
 
       result.productBreakdown.push({
@@ -360,8 +360,8 @@ class RevenueImpactService {
       });
     }
 
-    result.roi = result.totalSpend > 0 
-      ? ((result.incremental - result.totalSpend) / result.totalSpend) * 100 
+    result.roi = result.totalSpend > 0
+      ? ((result.incremental - result.totalSpend) / result.totalSpend) * 100
       : 0;
 
     result.assumptions = [
@@ -447,7 +447,7 @@ class RevenueImpactService {
       }
     }
 
-    const segmentStats = Object.keys(segments).map(segmentName => ({
+    const segmentStats = Object.keys(segments).map((segmentName) => ({
       name: segmentName,
       count: segments[segmentName].length,
       percentage: (segments[segmentName].length / customers.length) * 100,
@@ -510,7 +510,7 @@ class RevenueImpactService {
    */
   performValueSegmentation(customers) {
     const sortedCustomers = customers
-      .map(c => ({
+      .map((c) => ({
         customerId: c._id,
         name: c.name,
         revenue: c.performance?.currentYearActual || 0
@@ -518,7 +518,7 @@ class RevenueImpactService {
       .sort((a, b) => b.revenue - a.revenue);
 
     const totalRevenue = sortedCustomers.reduce((sum, c) => sum + c.revenue, 0);
-    
+
     const segments = {
       'A - High Value': [],
       'B - Medium Value': [],
@@ -526,7 +526,7 @@ class RevenueImpactService {
     };
 
     let cumulativeRevenue = 0;
-    
+
     for (const customer of sortedCustomers) {
       cumulativeRevenue += customer.revenue;
       const cumulativePercentage = (cumulativeRevenue / totalRevenue) * 100;
@@ -540,7 +540,7 @@ class RevenueImpactService {
       }
     }
 
-    const segmentStats = Object.keys(segments).map(segmentName => ({
+    const segmentStats = Object.keys(segments).map((segmentName) => ({
       name: segmentName,
       count: segments[segmentName].length,
       percentage: (segments[segmentName].length / customers.length) * 100,
@@ -586,13 +586,13 @@ class RevenueImpactService {
 
       const currentProductIds = new Set(); // Would be populated from order history
 
-      const allProducts = await Product.find({ 
-        tenantId, 
+      const allProducts = await Product.find({
+        tenantId,
         status: 'active',
         'promotionSettings.isPromotable': true
       });
 
-      const scoredProducts = allProducts.map(product => {
+      const scoredProducts = allProducts.map((product) => {
         let score = 0;
 
         if (customer.tier === 'platinum' && product.pricing?.listPrice > 100) {
@@ -617,15 +617,15 @@ class RevenueImpactService {
           name: product.name,
           sku: product.sku,
           price: product.pricing?.listPrice || 0,
-          margin: margin,
-          score: score,
+          margin,
+          score,
           category: product.category?.primary || 'Unknown',
           brand: product.brand?.name || 'Unknown'
         };
       });
 
       const filteredProducts = excludeCurrentProducts
-        ? scoredProducts.filter(p => !currentProductIds.has(p.productId.toString()))
+        ? scoredProducts.filter((p) => !currentProductIds.has(p.productId.toString()))
         : scoredProducts;
 
       const recommendations = filteredProducts

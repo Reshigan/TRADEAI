@@ -20,29 +20,29 @@ class SecurityComplianceService extends EventEmitter {
     this.complianceRules = new Map();
     this.securityMetrics = new Map();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing Security and Compliance Service...');
-      
+
       // Initialize RBAC system
       await this.initializeRBAC();
-      
+
       // Setup encryption
       await this.initializeEncryption();
-      
+
       // Load compliance rules
       await this.loadComplianceRules();
-      
+
       // Setup security monitoring
       this.setupSecurityMonitoring();
-      
+
       // Start audit log cleanup
       this.startAuditLogCleanup();
-      
+
       this.isInitialized = true;
       console.log('Security and Compliance Service initialized successfully');
     } catch (error) {
@@ -61,50 +61,50 @@ class SecurityComplianceService extends EventEmitter {
       { id: 'analytics:create', name: 'Create Analytics', category: 'analytics' },
       { id: 'analytics:update', name: 'Update Analytics', category: 'analytics' },
       { id: 'analytics:delete', name: 'Delete Analytics', category: 'analytics' },
-      
+
       // Reporting permissions
       { id: 'reports:read', name: 'View Reports', category: 'reporting' },
       { id: 'reports:create', name: 'Create Reports', category: 'reporting' },
       { id: 'reports:schedule', name: 'Schedule Reports', category: 'reporting' },
       { id: 'reports:export', name: 'Export Reports', category: 'reporting' },
-      
+
       // Customer permissions
       { id: 'customers:read', name: 'View Customers', category: 'customers' },
       { id: 'customers:create', name: 'Create Customers', category: 'customers' },
       { id: 'customers:update', name: 'Update Customers', category: 'customers' },
       { id: 'customers:delete', name: 'Delete Customers', category: 'customers' },
-      
+
       // Product permissions
       { id: 'products:read', name: 'View Products', category: 'products' },
       { id: 'products:create', name: 'Create Products', category: 'products' },
       { id: 'products:update', name: 'Update Products', category: 'products' },
       { id: 'products:delete', name: 'Delete Products', category: 'products' },
-      
+
       // Promotion permissions
       { id: 'promotions:read', name: 'View Promotions', category: 'promotions' },
       { id: 'promotions:create', name: 'Create Promotions', category: 'promotions' },
       { id: 'promotions:update', name: 'Update Promotions', category: 'promotions' },
       { id: 'promotions:delete', name: 'Delete Promotions', category: 'promotions' },
       { id: 'promotions:approve', name: 'Approve Promotions', category: 'promotions' },
-      
+
       // Workflow permissions
       { id: 'workflows:read', name: 'View Workflows', category: 'workflows' },
       { id: 'workflows:create', name: 'Create Workflows', category: 'workflows' },
       { id: 'workflows:approve', name: 'Approve Workflows', category: 'workflows' },
       { id: 'workflows:admin', name: 'Workflow Administration', category: 'workflows' },
-      
+
       // Bulk operations permissions
       { id: 'bulk:import', name: 'Import Data', category: 'bulk' },
       { id: 'bulk:export', name: 'Export Data', category: 'bulk' },
       { id: 'bulk:update', name: 'Bulk Update', category: 'bulk' },
       { id: 'bulk:delete', name: 'Bulk Delete', category: 'bulk' },
-      
+
       // ML permissions
       { id: 'ml:read', name: 'View ML Models', category: 'ml' },
       { id: 'ml:predict', name: 'Run Predictions', category: 'ml' },
       { id: 'ml:train', name: 'Train Models', category: 'ml' },
       { id: 'ml:admin', name: 'ML Administration', category: 'ml' },
-      
+
       // System permissions
       { id: 'system:admin', name: 'System Administration', category: 'system' },
       { id: 'system:config', name: 'System Configuration', category: 'system' },
@@ -112,7 +112,7 @@ class SecurityComplianceService extends EventEmitter {
       { id: 'system:security', name: 'Security Management', category: 'system' }
     ];
 
-    permissions.forEach(permission => {
+    permissions.forEach((permission) => {
       this.permissions.set(permission.id, permission);
     });
 
@@ -123,7 +123,7 @@ class SecurityComplianceService extends EventEmitter {
         name: 'Viewer',
         description: 'Read-only access to data and reports',
         permissions: [
-          'analytics:read', 'reports:read', 'customers:read', 
+          'analytics:read', 'reports:read', 'customers:read',
           'products:read', 'promotions:read', 'workflows:read'
         ]
       },
@@ -132,8 +132,8 @@ class SecurityComplianceService extends EventEmitter {
         name: 'Analyst',
         description: 'Analytics and reporting capabilities',
         permissions: [
-          'analytics:read', 'analytics:create', 'reports:read', 
-          'reports:create', 'reports:export', 'customers:read', 
+          'analytics:read', 'analytics:create', 'reports:read',
+          'reports:create', 'reports:export', 'customers:read',
           'products:read', 'promotions:read', 'ml:read', 'ml:predict'
         ]
       },
@@ -142,7 +142,7 @@ class SecurityComplianceService extends EventEmitter {
         name: 'Manager',
         description: 'Management capabilities with approval rights',
         permissions: [
-          'analytics:read', 'analytics:create', 'reports:read', 
+          'analytics:read', 'analytics:create', 'reports:read',
           'reports:create', 'reports:schedule', 'reports:export',
           'customers:read', 'customers:create', 'customers:update',
           'products:read', 'products:create', 'products:update',
@@ -191,7 +191,7 @@ class SecurityComplianceService extends EventEmitter {
       }
     ];
 
-    roles.forEach(role => {
+    roles.forEach((role) => {
       this.roles.set(role.id, role);
     });
 
@@ -205,12 +205,12 @@ class SecurityComplianceService extends EventEmitter {
     // Generate master encryption key if not exists
     const masterKey = process.env.MASTER_ENCRYPTION_KEY || this.generateEncryptionKey();
     this.encryptionKeys.set('master', masterKey);
-    
+
     // Generate tenant-specific keys
     this.encryptionKeys.set('tenant_data', this.generateEncryptionKey());
     this.encryptionKeys.set('pii_data', this.generateEncryptionKey());
     this.encryptionKeys.set('financial_data', this.generateEncryptionKey());
-    
+
     console.log('Encryption system initialized');
   }
 
@@ -392,31 +392,31 @@ class SecurityComplianceService extends EventEmitter {
 
     // Apply filters
     if (filters.tenantId) {
-      logs = logs.filter(log => log.tenantId === filters.tenantId);
+      logs = logs.filter((log) => log.tenantId === filters.tenantId);
     }
 
     if (filters.userId) {
-      logs = logs.filter(log => log.userId === filters.userId);
+      logs = logs.filter((log) => log.userId === filters.userId);
     }
 
     if (filters.action) {
-      logs = logs.filter(log => log.action === filters.action);
+      logs = logs.filter((log) => log.action === filters.action);
     }
 
     if (filters.resource) {
-      logs = logs.filter(log => log.resource === filters.resource);
+      logs = logs.filter((log) => log.resource === filters.resource);
     }
 
     if (filters.startDate) {
-      logs = logs.filter(log => log.timestamp >= new Date(filters.startDate));
+      logs = logs.filter((log) => log.timestamp >= new Date(filters.startDate));
     }
 
     if (filters.endDate) {
-      logs = logs.filter(log => log.timestamp <= new Date(filters.endDate));
+      logs = logs.filter((log) => log.timestamp <= new Date(filters.endDate));
     }
 
     if (filters.success !== undefined) {
-      logs = logs.filter(log => log.success === filters.success);
+      logs = logs.filter((log) => log.success === filters.success);
     }
 
     // Sort by timestamp (newest first)
@@ -450,10 +450,10 @@ class SecurityComplianceService extends EventEmitter {
 
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipher('aes-256-gcm', key);
-    
+
     let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     const authTag = cipher.getAuthTag();
 
     return {
@@ -518,7 +518,7 @@ class SecurityComplianceService extends EventEmitter {
    */
   checkComplianceViolations(auditEntry) {
     this.complianceRules.forEach((compliance, complianceType) => {
-      compliance.rules.forEach(rule => {
+      compliance.rules.forEach((rule) => {
         try {
           const violation = rule.check(auditEntry);
           if (violation) {
@@ -564,7 +564,7 @@ class SecurityComplianceService extends EventEmitter {
    */
   generateComplianceReport(tenantId, complianceType, dateRange) {
     const { startDate, endDate } = dateRange;
-    
+
     // Get relevant audit logs
     const auditLogs = this.getAuditLogs({
       tenantId,
@@ -596,7 +596,7 @@ class SecurityComplianceService extends EventEmitter {
     };
 
     // Check each rule
-    compliance.rules.forEach(rule => {
+    compliance.rules.forEach((rule) => {
       const ruleResult = {
         ruleId: rule.id,
         description: rule.description,
@@ -605,7 +605,7 @@ class SecurityComplianceService extends EventEmitter {
         compliant: true
       };
 
-      auditLogs.forEach(auditEntry => {
+      auditLogs.forEach((auditEntry) => {
         try {
           const violation = rule.check(auditEntry);
           if (violation) {
@@ -638,7 +638,7 @@ class SecurityComplianceService extends EventEmitter {
   getSecurityMetrics(tenantId, timeRange = '24h') {
     const endDate = new Date();
     const startDate = new Date();
-    
+
     switch (timeRange) {
       case '1h':
         startDate.setHours(startDate.getHours() - 1);
@@ -663,13 +663,13 @@ class SecurityComplianceService extends EventEmitter {
     const metrics = {
       timeRange,
       totalEvents: auditLogs.length,
-      successfulEvents: auditLogs.filter(log => log.success).length,
-      failedEvents: auditLogs.filter(log => !log.success).length,
-      uniqueUsers: new Set(auditLogs.map(log => log.userId)).size,
+      successfulEvents: auditLogs.filter((log) => log.success).length,
+      failedEvents: auditLogs.filter((log) => !log.success).length,
+      uniqueUsers: new Set(auditLogs.map((log) => log.userId)).size,
       topActions: this.getTopActions(auditLogs),
       topResources: this.getTopResources(auditLogs),
-      failureRate: auditLogs.length > 0 ? 
-        (auditLogs.filter(log => !log.success).length / auditLogs.length * 100).toFixed(2) + '%' : '0%',
+      failureRate: auditLogs.length > 0 ?
+        `${(auditLogs.filter((log) => !log.success).length / auditLogs.length * 100).toFixed(2)}%` : '0%',
       securityAlerts: this.getSecurityAlerts(auditLogs),
       complianceStatus: this.getComplianceStatus(tenantId)
     };
@@ -748,7 +748,7 @@ class SecurityComplianceService extends EventEmitter {
 
   handleSuspiciousActivity(event) {
     console.warn('Suspicious activity detected:', event);
-    
+
     // Create high-priority audit log
     this.createAuditLog({
       ...event,
@@ -780,7 +780,7 @@ class SecurityComplianceService extends EventEmitter {
 
   detectUnusualAccess(userId, accesses) {
     // Simple anomaly detection
-    const recentAccesses = accesses.filter(access => 
+    const recentAccesses = accesses.filter((access) =>
       Date.now() - access.timestamp.getTime() < 60 * 60 * 1000 // Last hour
     );
 
@@ -795,13 +795,13 @@ class SecurityComplianceService extends EventEmitter {
 
   performSecurityScan() {
     console.log('Performing security scan...');
-    
+
     // Check for security policy violations
     this.checkSecurityPolicies();
-    
+
     // Check for expired tokens
     this.checkExpiredTokens();
-    
+
     // Check for inactive users
     this.checkInactiveUsers();
   }
@@ -823,7 +823,7 @@ class SecurityComplianceService extends EventEmitter {
 
   performAutoRemediation(violationEvent) {
     console.log('Performing auto-remediation for critical violation:', violationEvent.id);
-    
+
     // Mock auto-remediation actions
     switch (violationEvent.ruleId) {
       case 'card_data_encryption':
@@ -854,33 +854,33 @@ class SecurityComplianceService extends EventEmitter {
 
   getTopActions(auditLogs) {
     const actionCounts = {};
-    auditLogs.forEach(log => {
+    auditLogs.forEach((log) => {
       actionCounts[log.action] = (actionCounts[log.action] || 0) + 1;
     });
 
     return Object.entries(actionCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 10)
       .map(([action, count]) => ({ action, count }));
   }
 
   getTopResources(auditLogs) {
     const resourceCounts = {};
-    auditLogs.forEach(log => {
+    auditLogs.forEach((log) => {
       resourceCounts[log.resource] = (resourceCounts[log.resource] || 0) + 1;
     });
 
     return Object.entries(resourceCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 10)
       .map(([resource, count]) => ({ resource, count }));
   }
 
   getSecurityAlerts(auditLogs) {
     return auditLogs
-      .filter(log => !log.success || log.action === 'suspicious_activity')
+      .filter((log) => !log.success || log.action === 'suspicious_activity')
       .slice(0, 10)
-      .map(log => ({
+      .map((log) => ({
         timestamp: log.timestamp,
         severity: log.success ? 'medium' : 'high',
         message: log.errorMessage || 'Suspicious activity detected',
@@ -900,7 +900,7 @@ class SecurityComplianceService extends EventEmitter {
 
   generateComplianceRecommendations(report) {
     const recommendations = [];
-    
+
     if (report.summary.criticalViolations > 0) {
       recommendations.push({
         priority: 'critical',
@@ -908,7 +908,7 @@ class SecurityComplianceService extends EventEmitter {
         description: 'Immediate action required for critical compliance violations'
       });
     }
-    
+
     if (report.summary.violations > report.summary.totalEvents * 0.1) {
       recommendations.push({
         priority: 'high',
@@ -916,7 +916,7 @@ class SecurityComplianceService extends EventEmitter {
         description: 'High violation rate indicates need for policy review'
       });
     }
-    
+
     return recommendations;
   }
 
@@ -925,10 +925,10 @@ class SecurityComplianceService extends EventEmitter {
     setInterval(() => {
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 90); // Keep 90 days
-      
+
       const initialCount = this.auditLogs.length;
-      this.auditLogs = this.auditLogs.filter(log => log.timestamp > cutoff);
-      
+      this.auditLogs = this.auditLogs.filter((log) => log.timestamp > cutoff);
+
       const removedCount = initialCount - this.auditLogs.length;
       if (removedCount > 0) {
         console.log(`Cleaned up ${removedCount} old audit log entries`);

@@ -7,19 +7,19 @@ const logger = require('../utils/logger');
  */
 const correlationIdMiddleware = (req, res, next) => {
   // Check if correlation ID already exists in headers (from upstream services)
-  const correlationId = req.headers['x-correlation-id'] || 
-                       req.headers['x-request-id'] || 
+  const correlationId = req.headers['x-correlation-id'] ||
+                       req.headers['x-request-id'] ||
                        uuidv4();
-  
+
   // Attach to request object
   req.correlationId = correlationId;
-  
+
   // Add to response headers
   res.setHeader('X-Correlation-ID', correlationId);
-  
+
   // Track request start time
   req.startTime = Date.now();
-  
+
   // Log incoming request
   logger.info('Incoming Request', {
     correlationId,
@@ -28,12 +28,12 @@ const correlationIdMiddleware = (req, res, next) => {
     ip: req.ip,
     userAgent: req.headers['user-agent']
   });
-  
+
   // Intercept response to log duration
   const originalSend = res.send;
-  res.send = function(data) {
+  res.send = function (data) {
     const duration = Date.now() - req.startTime;
-    
+
     logger.info('Outgoing Response', {
       correlationId,
       method: req.method,
@@ -43,10 +43,10 @@ const correlationIdMiddleware = (req, res, next) => {
       userId: req.user?._id,
       companyId: req.user?.companyId
     });
-    
+
     originalSend.call(this, data);
   };
-  
+
   next();
 };
 

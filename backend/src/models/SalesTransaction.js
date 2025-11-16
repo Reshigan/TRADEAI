@@ -104,7 +104,7 @@ salesTransactionSchema.index({ company: 1, product: 1, date: -1 });
 salesTransactionSchema.index({ company: 1, promotion: 1 });
 
 // Virtual for profit margin
-salesTransactionSchema.virtual('profitMargin').get(function() {
+salesTransactionSchema.virtual('profitMargin').get(function () {
   if (this.totalAmount > 0) {
     return ((this.netAmount - (this.unitPrice * this.quantity * 0.7)) / this.netAmount) * 100;
   }
@@ -112,7 +112,7 @@ salesTransactionSchema.virtual('profitMargin').get(function() {
 });
 
 // Static methods for analytics
-salesTransactionSchema.statics.getRevenueByPeriod = function(companyId, startDate, endDate) {
+salesTransactionSchema.statics.getRevenueByPeriod = function (companyId, startDate, endDate) {
   return this.aggregate([
     {
       $match: {
@@ -138,7 +138,7 @@ salesTransactionSchema.statics.getRevenueByPeriod = function(companyId, startDat
   ]);
 };
 
-salesTransactionSchema.statics.getTopCustomers = function(companyId, limit = 10) {
+salesTransactionSchema.statics.getTopCustomers = function (companyId, limit = 10) {
   return this.aggregate([
     {
       $match: {
@@ -175,7 +175,7 @@ salesTransactionSchema.statics.getTopCustomers = function(companyId, limit = 10)
   ]);
 };
 
-salesTransactionSchema.statics.getTopProducts = function(companyId, limit = 10) {
+salesTransactionSchema.statics.getTopProducts = function (companyId, limit = 10) {
   return this.aggregate([
     {
       $match: {

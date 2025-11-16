@@ -21,7 +21,7 @@ class ApiDocGenerator {
       requestBody,
       responses = {},
       security = true,
-      deprecated = false,
+      deprecated = false
     } = config;
 
     this.routes.push({
@@ -34,7 +34,7 @@ class ApiDocGenerator {
       requestBody,
       responses,
       security,
-      deprecated,
+      deprecated
     });
   }
 
@@ -52,7 +52,7 @@ class ApiDocGenerator {
   generatePaths() {
     const paths = {};
 
-    this.routes.forEach(route => {
+    this.routes.forEach((route) => {
       const { method, path: routePath, ...routeConfig } = route;
 
       if (!paths[routePath]) {
@@ -65,7 +65,7 @@ class ApiDocGenerator {
         description: routeConfig.description,
         tags: routeConfig.tags,
         parameters: routeConfig.parameters,
-        responses: this.buildResponses(routeConfig.responses),
+        responses: this.buildResponses(routeConfig.responses)
       };
 
       // Add request body if present
@@ -98,42 +98,42 @@ class ApiDocGenerator {
         description: 'Bad Request',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/Error' },
-          },
-        },
+            schema: { $ref: '#/components/schemas/Error' }
+          }
+        }
       },
       '401': {
         description: 'Unauthorized',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/Error' },
-          },
-        },
+            schema: { $ref: '#/components/schemas/Error' }
+          }
+        }
       },
       '403': {
         description: 'Forbidden',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/Error' },
-          },
-        },
+            schema: { $ref: '#/components/schemas/Error' }
+          }
+        }
       },
       '404': {
         description: 'Not Found',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/Error' },
-          },
-        },
+            schema: { $ref: '#/components/schemas/Error' }
+          }
+        }
       },
       '500': {
         description: 'Internal Server Error',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/Error' },
-          },
-        },
-      },
+            schema: { $ref: '#/components/schemas/Error' }
+          }
+        }
+      }
     };
 
     return { ...customResponses, ...standardResponses };
@@ -147,13 +147,13 @@ class ApiDocGenerator {
         title: 'Trade AI Platform API',
         version: '2.0.0',
         description: 'Comprehensive API for the Trade AI Platform',
-        ...baseInfo,
+        ...baseInfo
       },
       servers: [
         {
           url: process.env.API_BASE_URL || 'http://localhost:3000/api',
-          description: 'Development server',
-        },
+          description: 'Development server'
+        }
       ],
       security: [{ bearerAuth: [] }],
       paths: this.generatePaths(),
@@ -162,12 +162,12 @@ class ApiDocGenerator {
           bearerAuth: {
             type: 'http',
             scheme: 'bearer',
-            bearerFormat: 'JWT',
-          },
+            bearerFormat: 'JWT'
+          }
         },
         schemas: Object.fromEntries(this.schemas),
-        examples: Object.fromEntries(this.examples),
-      },
+        examples: Object.fromEntries(this.examples)
+      }
     };
 
     return spec;
@@ -200,19 +200,19 @@ class ApiDocGenerator {
       routesByTag: {},
       totalSchemas: this.schemas.size,
       totalExamples: this.examples.size,
-      securedRoutes: this.routes.filter(r => r.security).length,
-      deprecatedRoutes: this.routes.filter(r => r.deprecated).length,
+      securedRoutes: this.routes.filter((r) => r.security).length,
+      deprecatedRoutes: this.routes.filter((r) => r.deprecated).length
     };
 
     // Count by method
-    this.routes.forEach(route => {
+    this.routes.forEach((route) => {
       const method = route.method.toUpperCase();
       stats.routesByMethod[method] = (stats.routesByMethod[method] || 0) + 1;
     });
 
     // Count by tag
-    this.routes.forEach(route => {
-      route.tags.forEach(tag => {
+    this.routes.forEach((route) => {
+      route.tags.forEach((tag) => {
         stats.routesByTag[tag] = (stats.routesByTag[tag] || 0) + 1;
       });
     });
@@ -223,7 +223,7 @@ class ApiDocGenerator {
   // Validate route configuration
   validateRoute(config) {
     const required = ['method', 'path', 'summary'];
-    const missing = required.filter(field => !config[field]);
+    const missing = required.filter((field) => !config[field]);
 
     if (missing.length > 0) {
       throw new Error(`Missing required fields: ${missing.join(', ')}`);
@@ -240,14 +240,14 @@ class ApiDocGenerator {
   // Generate route from Express route object
   generateFromExpressRoute(expressRoute) {
     const { method, path: routePath, stack } = expressRoute;
-    
+
     // Extract handler information
-    const handlers = stack.map(layer => layer.handle);
+    const handlers = stack.map((layer) => layer.handle);
     const lastHandler = handlers[handlers.length - 1];
-    
+
     // Try to extract documentation from handler
     const docs = lastHandler.apiDocs || {};
-    
+
     return {
       method: method.toLowerCase(),
       path: routePath,
@@ -261,29 +261,29 @@ class ApiDocGenerator {
           description: 'Success',
           content: {
             'application/json': {
-              schema: { type: 'object' },
-            },
-          },
-        },
+              schema: { type: 'object' }
+            }
+          }
+        }
       },
       security: docs.security !== false,
-      deprecated: docs.deprecated || false,
+      deprecated: docs.deprecated || false
     };
   }
 
   // Auto-generate documentation from Express app
   generateFromExpressApp(app) {
     const routes = [];
-    
+
     // Extract routes from Express app
-    app._router.stack.forEach(middleware => {
+    app._router.stack.forEach((middleware) => {
       if (middleware.route) {
         // Direct route
         const route = this.generateFromExpressRoute(middleware.route);
         routes.push(route);
       } else if (middleware.name === 'router') {
         // Router middleware
-        middleware.handle.stack.forEach(routerLayer => {
+        middleware.handle.stack.forEach((routerLayer) => {
           if (routerLayer.route) {
             const route = this.generateFromExpressRoute(routerLayer.route);
             routes.push(route);
@@ -293,7 +293,7 @@ class ApiDocGenerator {
     });
 
     // Register all found routes
-    routes.forEach(route => {
+    routes.forEach((route) => {
       this.registerRoute(route);
     });
 
@@ -306,7 +306,7 @@ class ApiDocGenerator {
       info: {
         name: 'Trade AI Platform API',
         description: 'API collection for Trade AI Platform',
-        schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+        schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
       },
       auth: {
         type: 'bearer',
@@ -314,29 +314,29 @@ class ApiDocGenerator {
           {
             key: 'token',
             value: '{{authToken}}',
-            type: 'string',
-          },
-        ],
+            type: 'string'
+          }
+        ]
       },
       variable: [
         {
           key: 'baseUrl',
           value: 'http://localhost:3000/api',
-          type: 'string',
+          type: 'string'
         },
         {
           key: 'authToken',
           value: '',
-          type: 'string',
-        },
+          type: 'string'
+        }
       ],
-      item: [],
+      item: []
     };
 
     // Group routes by tags
     const routesByTag = {};
-    this.routes.forEach(route => {
-      route.tags.forEach(tag => {
+    this.routes.forEach((route) => {
+      route.tags.forEach((tag) => {
         if (!routesByTag[tag]) {
           routesByTag[tag] = [];
         }
@@ -348,7 +348,7 @@ class ApiDocGenerator {
     Object.entries(routesByTag).forEach(([tag, routes]) => {
       const folder = {
         name: tag,
-        item: routes.map(route => ({
+        item: routes.map((route) => ({
           name: route.summary,
           request: {
             method: route.method.toUpperCase(),
@@ -356,11 +356,11 @@ class ApiDocGenerator {
             url: {
               raw: `{{baseUrl}}${route.path}`,
               host: ['{{baseUrl}}'],
-              path: route.path.split('/').filter(p => p),
+              path: route.path.split('/').filter((p) => p)
             },
-            description: route.description,
-          },
-        })),
+            description: route.description
+          }
+        }))
       };
 
       collection.item.push(folder);
@@ -392,23 +392,23 @@ apiDocGenerator.registerSchema('Error', {
   properties: {
     error: {
       type: 'string',
-      description: 'Error message',
+      description: 'Error message'
     },
     code: {
       type: 'string',
-      description: 'Error code',
+      description: 'Error code'
     },
     details: {
       type: 'object',
-      description: 'Additional error details',
+      description: 'Additional error details'
     },
     timestamp: {
       type: 'string',
       format: 'date-time',
-      description: 'Error timestamp',
-    },
+      description: 'Error timestamp'
+    }
   },
-  required: ['error'],
+  required: ['error']
 });
 
 apiDocGenerator.registerSchema('Pagination', {
@@ -416,27 +416,27 @@ apiDocGenerator.registerSchema('Pagination', {
   properties: {
     currentPage: {
       type: 'integer',
-      minimum: 1,
+      minimum: 1
     },
     totalPages: {
       type: 'integer',
-      minimum: 0,
+      minimum: 0
     },
     totalCount: {
       type: 'integer',
-      minimum: 0,
+      minimum: 0
     },
     hasNext: {
-      type: 'boolean',
+      type: 'boolean'
     },
     hasPrev: {
-      type: 'boolean',
-    },
-  },
+      type: 'boolean'
+    }
+  }
 });
 
 // Export the generator and utilities
 module.exports = {
   ApiDocGenerator,
-  apiDocGenerator,
+  apiDocGenerator
 };

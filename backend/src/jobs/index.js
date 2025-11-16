@@ -43,7 +43,7 @@ const initializeJobs = async () => {
         ...config.jobs.defaultJobOptions
       }
     );
-    
+
     // Budget Alerts - Every hour
     await queues.budgetAlert.add(
       'check-budgets',
@@ -53,7 +53,7 @@ const initializeJobs = async () => {
         ...config.jobs.defaultJobOptions
       }
     );
-    
+
     // Data Cleanup - Daily at 3 AM
     await queues.dataCleanup.add(
       'cleanup',
@@ -63,7 +63,7 @@ const initializeJobs = async () => {
         ...config.jobs.defaultJobOptions
       }
     );
-    
+
     // ML Training - Weekly on Sunday at 1 AM
     await queues.mlTraining.add(
       'weekly-training',
@@ -73,7 +73,7 @@ const initializeJobs = async () => {
         ...config.jobs.defaultJobOptions
       }
     );
-    
+
     // Anomaly Detection - Every 30 minutes
     await queues.anomalyDetection.add(
       'detect-anomalies',
@@ -83,7 +83,7 @@ const initializeJobs = async () => {
         ...config.jobs.defaultJobOptions
       }
     );
-    
+
     // Process jobs with error handling
     try {
       if (sapSyncJob && sapSyncJob.process) {
@@ -91,31 +91,31 @@ const initializeJobs = async () => {
       } else {
         logger.warn('sapSyncJob.process is not available');
       }
-      
+
       if (reportGenerationJob && reportGenerationJob.process) {
         queues.reportGeneration.process(reportGenerationJob.process);
       } else {
         logger.warn('reportGenerationJob.process is not available');
       }
-      
+
       if (budgetAlertJob && budgetAlertJob.process) {
         queues.budgetAlert.process(budgetAlertJob.process);
       } else {
         logger.warn('budgetAlertJob.process is not available');
       }
-      
+
       if (dataCleanupJob && dataCleanupJob.process) {
         queues.dataCleanup.process(dataCleanupJob.process);
       } else {
         logger.warn('dataCleanupJob.process is not available');
       }
-      
+
       if (mlTrainingJob && mlTrainingJob.process) {
         queues.mlTraining.process(mlTrainingJob.process);
       } else {
         logger.warn('mlTrainingJob.process is not available');
       }
-      
+
       if (anomalyDetectionJob && anomalyDetectionJob.process) {
         queues.anomalyDetection.process(anomalyDetectionJob.process);
       } else {
@@ -125,7 +125,7 @@ const initializeJobs = async () => {
       logger.error('Error setting up job processors:', error);
       throw error;
     }
-    
+
     // Event handlers
     Object.entries(queues).forEach(([name, queue]) => {
       queue.on('completed', (job, result) => {
@@ -135,7 +135,7 @@ const initializeJobs = async () => {
           result
         });
       });
-      
+
       queue.on('failed', (job, err) => {
         logger.error(`Job failed: ${name}`, {
           jobId: job.id,
@@ -144,7 +144,7 @@ const initializeJobs = async () => {
           stack: err.stack
         });
       });
-      
+
       queue.on('stalled', (job) => {
         logger.warn(`Job stalled: ${name}`, {
           jobId: job.id,
@@ -152,7 +152,7 @@ const initializeJobs = async () => {
         });
       });
     });
-    
+
     logger.info('Background jobs initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize jobs:', error);
@@ -165,18 +165,18 @@ const addJob = async (queueName, jobName, data, options = {}) => {
   if (!queues[queueName]) {
     throw new Error(`Queue ${queueName} not found`);
   }
-  
+
   const job = await queues[queueName].add(jobName, data, {
     ...config.jobs.defaultJobOptions,
     ...options
   });
-  
+
   logger.info(`Job added to queue: ${queueName}`, {
     jobId: job.id,
     jobName,
     data
   });
-  
+
   return job;
 };
 
@@ -185,7 +185,7 @@ const getQueueStatus = async (queueName) => {
   if (!queues[queueName]) {
     throw new Error(`Queue ${queueName} not found`);
   }
-  
+
   const queue = queues[queueName];
   const [waiting, active, completed, failed, delayed] = await Promise.all([
     queue.getWaitingCount(),
@@ -194,7 +194,7 @@ const getQueueStatus = async (queueName) => {
     queue.getFailedCount(),
     queue.getDelayedCount()
   ]);
-  
+
   return {
     name: queueName,
     counts: {
@@ -210,9 +210,9 @@ const getQueueStatus = async (queueName) => {
 // Get all queues status
 const getAllQueuesStatus = async () => {
   const statuses = await Promise.all(
-    Object.keys(queues).map(name => getQueueStatus(name))
+    Object.keys(queues).map((name) => getQueueStatus(name))
   );
-  
+
   return statuses;
 };
 
@@ -221,7 +221,7 @@ const cleanQueue = async (queueName, grace = 0) => {
   if (!queues[queueName]) {
     throw new Error(`Queue ${queueName} not found`);
   }
-  
+
   await queues[queueName].clean(grace);
   logger.info(`Queue cleaned: ${queueName}`);
 };
@@ -231,7 +231,7 @@ const pauseQueue = async (queueName) => {
   if (!queues[queueName]) {
     throw new Error(`Queue ${queueName} not found`);
   }
-  
+
   await queues[queueName].pause();
   logger.info(`Queue paused: ${queueName}`);
 };
@@ -240,7 +240,7 @@ const resumeQueue = async (queueName) => {
   if (!queues[queueName]) {
     throw new Error(`Queue ${queueName} not found`);
   }
-  
+
   await queues[queueName].resume();
   logger.info(`Queue resumed: ${queueName}`);
 };

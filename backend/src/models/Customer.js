@@ -5,14 +5,14 @@ const { addTenantSupport } = require('./BaseTenantModel');
 const customerSchema = new mongoose.Schema({
   // Tenant Association - CRITICAL for multi-tenant isolation
   // Note: tenantId will be added by addTenantSupport()
-  
+
   // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
     index: true
   },
-  
+
   // SAP Integration
   sapCustomerId: {
     type: String,
@@ -20,7 +20,7 @@ const customerSchema = new mongoose.Schema({
     index: true,
     sparse: true
   },
-  
+
   // Basic Information
   name: {
     type: String,
@@ -32,7 +32,7 @@ const customerSchema = new mongoose.Schema({
     required: true,
     uppercase: true
   },
-  
+
   // Enhanced Hierarchical Structure with Materialized Path
   // Traditional 5-Level Hierarchy (legacy support)
   hierarchy: {
@@ -62,7 +62,7 @@ const customerSchema = new mongoose.Schema({
       code: String
     }
   },
-  
+
   // Modern Tree Structure with Materialized Path
   parentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -87,7 +87,7 @@ const customerSchema = new mongoose.Schema({
     default: false,
     index: true
   },
-  
+
   // Tree metadata
   childrenCount: {
     type: Number,
@@ -97,7 +97,7 @@ const customerSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  
+
   // Customer Groups (5 groups)
   customerGroups: [{
     groupId: {
@@ -107,7 +107,7 @@ const customerSchema = new mongoose.Schema({
     groupName: String,
     priority: Number
   }],
-  
+
   // Classification
   customerType: {
     type: String,
@@ -126,7 +126,7 @@ const customerSchema = new mongoose.Schema({
     enum: ['platinum', 'gold', 'silver', 'bronze', 'standard'],
     default: 'standard'
   },
-  
+
   // Contact Information
   contacts: [{
     name: String,
@@ -135,7 +135,7 @@ const customerSchema = new mongoose.Schema({
     phone: String,
     isPrimary: Boolean
   }],
-  
+
   // Address Information
   addresses: [{
     type: {
@@ -153,7 +153,7 @@ const customerSchema = new mongoose.Schema({
       lng: Number
     }
   }],
-  
+
   // Financial Information
   creditLimit: {
     type: Number,
@@ -169,7 +169,7 @@ const customerSchema = new mongoose.Schema({
     default: 'USD'
   },
   taxId: String,
-  
+
   // Trading Terms
   tradingTerms: {
     retroActive: {
@@ -216,7 +216,7 @@ const customerSchema = new mongoose.Schema({
       validTo: Date
     }]
   },
-  
+
   // Budget Allocations
   budgetAllocations: {
     marketing: {
@@ -235,7 +235,7 @@ const customerSchema = new mongoose.Schema({
       available: { type: Number, default: 0 }
     }
   },
-  
+
   // Performance Metrics
   performance: {
     lastYearSales: { type: Number, default: 0 },
@@ -244,7 +244,7 @@ const customerSchema = new mongoose.Schema({
     growthRate: { type: Number, default: 0 },
     marketShare: { type: Number, default: 0 }
   },
-  
+
   // Account Management
   accountManager: {
     type: mongoose.Schema.Types.ObjectId,
@@ -257,7 +257,7 @@ const customerSchema = new mongoose.Schema({
     },
     role: String
   }],
-  
+
   // Status and Compliance
   status: {
     type: String,
@@ -277,7 +277,7 @@ const customerSchema = new mongoose.Schema({
       ref: 'User'
     }
   }],
-  
+
   // Integration
   lastSyncDate: Date,
   syncStatus: {
@@ -289,7 +289,7 @@ const customerSchema = new mongoose.Schema({
     error: String,
     date: Date
   }],
-  
+
   aiInsights: {
     ltv: {
       predicted: Number,
@@ -305,7 +305,7 @@ const customerSchema = new mongoose.Schema({
         impact: Number
       }]
     },
-    
+
     churnRisk: {
       score: Number,
       risk: {
@@ -320,7 +320,7 @@ const customerSchema = new mongoose.Schema({
       calculatedAt: Date,
       modelVersion: String
     },
-    
+
     // Customer Segmentation
     segment: {
       current: {
@@ -337,7 +337,7 @@ const customerSchema = new mongoose.Schema({
       previousSegment: String,
       segmentChangedAt: Date
     },
-    
+
     nextBestAction: {
       action: String,
       actionType: {
@@ -366,7 +366,7 @@ const customerSchema = new mongoose.Schema({
         notes: String
       }
     },
-    
+
     priceSensitivity: {
       elasticity: Number,
       optimalDiscountRange: {
@@ -375,7 +375,7 @@ const customerSchema = new mongoose.Schema({
       },
       calculatedAt: Date
     },
-    
+
     promotionResponsiveness: {
       score: Number,
       preferredMechanics: [String],
@@ -383,10 +383,10 @@ const customerSchema = new mongoose.Schema({
       calculatedAt: Date
     }
   },
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   // Metadata
   tags: [String],
   notes: [{
@@ -433,20 +433,20 @@ customerSchema.index({ status: 1 });
 customerSchema.index({ accountManager: 1 });
 
 // Compound indexes for hierarchy queries
-customerSchema.index({ 
+customerSchema.index({
   company: 1,
-  'hierarchy.level1.id': 1, 
-  'hierarchy.level2.id': 1, 
-  'hierarchy.level3.id': 1 
+  'hierarchy.level1.id': 1,
+  'hierarchy.level2.id': 1,
+  'hierarchy.level3.id': 1
 });
-customerSchema.index({ 
-  'hierarchy.level1.id': 1, 
-  'hierarchy.level2.id': 1, 
-  'hierarchy.level3.id': 1 
+customerSchema.index({
+  'hierarchy.level1.id': 1,
+  'hierarchy.level2.id': 1,
+  'hierarchy.level3.id': 1
 });
 
 // Virtual for hierarchy path
-customerSchema.virtual('hierarchyPath').get(function() {
+customerSchema.virtual('hierarchyPath').get(function () {
   const path = [];
   if (this.hierarchy.level1.name) path.push(this.hierarchy.level1.name);
   if (this.hierarchy.level2.name) path.push(this.hierarchy.level2.name);
@@ -457,19 +457,19 @@ customerSchema.virtual('hierarchyPath').get(function() {
 });
 
 // Methods
-customerSchema.methods.updateBudgetSpend = async function(type, amount) {
+customerSchema.methods.updateBudgetSpend = async function (type, amount) {
   if (this.budgetAllocations[type]) {
     this.budgetAllocations[type].ytd += amount;
-    this.budgetAllocations[type].available = 
+    this.budgetAllocations[type].available =
       this.budgetAllocations[type].annual - this.budgetAllocations[type].ytd;
     await this.save();
   }
 };
 
-customerSchema.methods.calculateTradingTermsValue = function(salesAmount, termType) {
+customerSchema.methods.calculateTradingTermsValue = function (salesAmount, termType) {
   let value = 0;
-  
-  switch(termType) {
+
+  switch (termType) {
     case 'retroActive':
       if (this.tradingTerms.retroActive.percentage) {
         value = salesAmount * (this.tradingTerms.retroActive.percentage / 100);
@@ -477,97 +477,97 @@ customerSchema.methods.calculateTradingTermsValue = function(salesAmount, termTy
       break;
     case 'volumeRebate':
       const applicableRebate = this.tradingTerms.volumeRebate.find(
-        rebate => salesAmount >= rebate.minVolume && salesAmount <= rebate.maxVolume
+        (rebate) => salesAmount >= rebate.minVolume && salesAmount <= rebate.maxVolume
       );
       if (applicableRebate) {
         value = salesAmount * (applicableRebate.percentage / 100);
       }
       break;
   }
-  
+
   return value;
 };
 
 // Hierarchical Methods
-customerSchema.methods.getAncestors = async function() {
+customerSchema.methods.getAncestors = async function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return await hierarchyManager.getAncestors(this.tenantId, this._id);
 };
 
-customerSchema.methods.getDescendants = async function(maxDepth = null) {
+customerSchema.methods.getDescendants = async function (maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return await hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
 };
 
-customerSchema.methods.getChildren = async function() {
+customerSchema.methods.getChildren = async function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return await hierarchyManager.getDirectChildren(this.tenantId, this._id);
 };
 
-customerSchema.methods.getSiblings = async function(includeSelf = false) {
+customerSchema.methods.getSiblings = async function (includeSelf = false) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return await hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
 };
 
-customerSchema.methods.getPathToRoot = async function() {
+customerSchema.methods.getPathToRoot = async function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return await hierarchyManager.getPathToRoot(this.tenantId, this._id);
 };
 
-customerSchema.methods.moveTo = async function(newParentId) {
+customerSchema.methods.moveTo = async function (newParentId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return await hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
 };
 
 // Static Methods for Hierarchy Management
-customerSchema.statics.createHierarchyNode = async function(tenantId, customerData, parentId = null) {
+customerSchema.statics.createHierarchyNode = async function (tenantId, customerData, parentId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return await hierarchyManager.createNode(tenantId, customerData, parentId);
 };
 
-customerSchema.statics.getTree = async function(tenantId, rootId = null, maxDepth = null) {
+customerSchema.statics.getTree = async function (tenantId, rootId = null, maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return await hierarchyManager.getTree(tenantId, rootId, maxDepth);
 };
 
-customerSchema.statics.searchInHierarchy = async function(tenantId, searchTerm, rootId = null) {
+customerSchema.statics.searchInHierarchy = async function (tenantId, searchTerm, rootId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return await hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
 };
 
-customerSchema.statics.validateHierarchy = async function(tenantId) {
+customerSchema.statics.validateHierarchy = async function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return await hierarchyManager.validateHierarchy(tenantId);
 };
 
-customerSchema.statics.repairHierarchy = async function(tenantId) {
+customerSchema.statics.repairHierarchy = async function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return await hierarchyManager.repairHierarchy(tenantId);
 };
 
-customerSchema.statics.getHierarchyStats = async function(tenantId) {
+customerSchema.statics.getHierarchyStats = async function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return await hierarchyManager.getHierarchyStats(tenantId);
 };
 
 // Geographic Methods
-customerSchema.methods.findNearby = async function(maxDistance = 10000) {
+customerSchema.methods.findNearby = async function (maxDistance = 10000) {
   if (!this.address || !this.address.location || !this.address.location.coordinates) {
     return [];
   }
-  
+
   return await this.constructor.find({
     tenantId: this.tenantId,
     _id: { $ne: this._id },
@@ -580,7 +580,7 @@ customerSchema.methods.findNearby = async function(maxDistance = 10000) {
   });
 };
 
-customerSchema.statics.findByLocation = async function(tenantId, longitude, latitude, maxDistance = 10000) {
+customerSchema.statics.findByLocation = async function (tenantId, longitude, latitude, maxDistance = 10000) {
   return await this.find({
     tenantId,
     'address.location': {

@@ -18,7 +18,7 @@ class RealtimeAnalyticsService extends EventEmitter {
     this.metrics = new Map(); // Real-time metrics cache
     this.redisClient = null;
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
@@ -38,10 +38,10 @@ class RealtimeAnalyticsService extends EventEmitter {
 
       // Start metrics collection
       this.startMetricsCollection();
-      
+
       // Start change stream monitoring
       this.startChangeStreamMonitoring();
-      
+
       this.isInitialized = true;
       console.log('Real-time Analytics Service initialized');
     } catch (error) {
@@ -53,7 +53,7 @@ class RealtimeAnalyticsService extends EventEmitter {
    * Create WebSocket server
    */
   createWebSocketServer(server) {
-    const wss = new WebSocket.Server({ 
+    const wss = new WebSocket.Server({
       server,
       path: '/ws/analytics'
     });
@@ -71,7 +71,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   handleWebSocketConnection(ws, req) {
     const connectionId = this.generateConnectionId();
     const tenantId = this.extractTenantFromRequest(req);
-    
+
     if (!tenantId) {
       ws.close(1008, 'Tenant ID required');
       return;
@@ -82,7 +82,7 @@ class RealtimeAnalyticsService extends EventEmitter {
       this.connections.set(tenantId, new Set());
     }
     this.connections.get(tenantId).add(ws);
-    
+
     // Initialize connection metadata
     ws.connectionId = connectionId;
     ws.tenantId = tenantId;
@@ -120,7 +120,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   handleWebSocketMessage(ws, data) {
     try {
       const message = JSON.parse(data);
-      
+
       switch (message.type) {
         case 'subscribe':
           this.handleSubscription(ws, message);
@@ -135,15 +135,15 @@ class RealtimeAnalyticsService extends EventEmitter {
           this.sendToConnection(ws, { type: 'pong', timestamp: new Date().toISOString() });
           break;
         default:
-          this.sendToConnection(ws, { 
-            type: 'error', 
-            message: `Unknown message type: ${message.type}` 
+          this.sendToConnection(ws, {
+            type: 'error',
+            message: `Unknown message type: ${message.type}`
           });
       }
     } catch (error) {
-      this.sendToConnection(ws, { 
-        type: 'error', 
-        message: 'Invalid message format' 
+      this.sendToConnection(ws, {
+        type: 'error',
+        message: 'Invalid message format'
       });
     }
   }
@@ -153,11 +153,11 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   handleSubscription(ws, message) {
     const { channel, filters = {} } = message;
-    
+
     if (!channel) {
-      this.sendToConnection(ws, { 
-        type: 'error', 
-        message: 'Channel is required for subscription' 
+      this.sendToConnection(ws, {
+        type: 'error',
+        message: 'Channel is required for subscription'
       });
       return;
     }
@@ -169,7 +169,7 @@ class RealtimeAnalyticsService extends EventEmitter {
     };
 
     ws.subscriptions.add(JSON.stringify(subscription));
-    
+
     this.sendToConnection(ws, {
       type: 'subscription_confirmed',
       channel,
@@ -186,10 +186,10 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   handleUnsubscription(ws, message) {
     const { channel, filters = {} } = message;
-    
+
     const subscription = JSON.stringify({ channel, filters });
     ws.subscriptions.delete(subscription);
-    
+
     this.sendToConnection(ws, {
       type: 'unsubscription_confirmed',
       channel,
@@ -202,10 +202,10 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   async handleMetricsRequest(ws, message) {
     const { metricsType, timeRange, filters = {} } = message;
-    
+
     try {
       let metrics;
-      
+
       switch (metricsType) {
         case 'dashboard':
           metrics = await this.getDashboardMetrics(ws.tenantId, timeRange, filters);
@@ -243,12 +243,12 @@ class RealtimeAnalyticsService extends EventEmitter {
   handleWebSocketClose(ws) {
     if (ws.tenantId && this.connections.has(ws.tenantId)) {
       this.connections.get(ws.tenantId).delete(ws);
-      
+
       if (this.connections.get(ws.tenantId).size === 0) {
         this.connections.delete(ws.tenantId);
       }
     }
-    
+
     console.log(`WebSocket connection closed: ${ws.connectionId}`);
   }
 
@@ -280,20 +280,20 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   startChangeStreamMonitoring() {
     const collections = ['promotions', 'customers', 'products', 'tradespends'];
-    
-    collections.forEach(collectionName => {
+
+    collections.forEach((collectionName) => {
       try {
         const collection = mongoose.connection.db.collection(collectionName);
         const changeStream = collection.watch([], { fullDocument: 'updateLookup' });
-        
+
         changeStream.on('change', (change) => {
           this.handleDatabaseChange(collectionName, change);
         });
-        
+
         changeStream.on('error', (error) => {
           console.error(`Change stream error for ${collectionName}:`, error);
         });
-        
+
         console.log(`Change stream started for ${collectionName}`);
       } catch (error) {
         console.warn(`Could not start change stream for ${collectionName}:`, error.message);
@@ -306,11 +306,11 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   handleDatabaseChange(collectionName, change) {
     const { operationType, fullDocument, documentKey } = change;
-    
+
     if (!fullDocument || !fullDocument.tenantId) return;
-    
+
     const tenantId = fullDocument.tenantId.toString();
-    
+
     // Broadcast change to relevant connections
     this.broadcastToTenant(tenantId, {
       type: 'data_change',
@@ -333,7 +333,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   async collectAndBroadcastMetrics() {
     for (const [tenantId, connections] of this.connections) {
       if (connections.size === 0) continue;
-      
+
       try {
         // Collect various metrics
         const [dashboardMetrics, performanceMetrics, alerts] = await Promise.all([
@@ -343,7 +343,7 @@ class RealtimeAnalyticsService extends EventEmitter {
         ]);
 
         // Broadcast to subscribed connections
-        connections.forEach(ws => {
+        connections.forEach((ws) => {
           if (ws.readyState === WebSocket.OPEN) {
             if (this.isSubscribedTo(ws, 'dashboard')) {
               this.sendToConnection(ws, {
@@ -353,7 +353,7 @@ class RealtimeAnalyticsService extends EventEmitter {
                 timestamp: new Date().toISOString()
               });
             }
-            
+
             if (this.isSubscribedTo(ws, 'performance')) {
               this.sendToConnection(ws, {
                 type: 'metrics_update',
@@ -362,7 +362,7 @@ class RealtimeAnalyticsService extends EventEmitter {
                 timestamp: new Date().toISOString()
               });
             }
-            
+
             if (this.isSubscribedTo(ws, 'alerts') && alerts.length > 0) {
               this.sendToConnection(ws, {
                 type: 'alerts_update',
@@ -401,7 +401,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   async getDashboardMetrics(tenantId, timeRange = '24h', filters = {}) {
     const endDate = new Date();
     const startDate = new Date();
-    
+
     switch (timeRange) {
       case '1h':
         startDate.setHours(startDate.getHours() - 1);
@@ -478,10 +478,10 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   async sendInitialData(ws, subscription) {
     const { channel, filters } = subscription;
-    
+
     try {
       let data;
-      
+
       switch (channel) {
         case 'dashboard':
           data = await this.getDashboardMetrics(ws.tenantId, '24h', filters);
@@ -516,8 +516,8 @@ class RealtimeAnalyticsService extends EventEmitter {
   broadcastToTenant(tenantId, message) {
     const connections = this.connections.get(tenantId);
     if (!connections) return;
-    
-    connections.forEach(ws => {
+
+    connections.forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {
         this.sendToConnection(ws, message);
       }
@@ -565,8 +565,8 @@ class RealtimeAnalyticsService extends EventEmitter {
   shouldRecalculateMetrics(collectionName, operationType) {
     const triggerCollections = ['promotions', 'tradespends'];
     const triggerOperations = ['insert', 'update', 'delete'];
-    
-    return triggerCollections.includes(collectionName) && 
+
+    return triggerCollections.includes(collectionName) &&
            triggerOperations.includes(operationType);
   }
 
@@ -576,15 +576,15 @@ class RealtimeAnalyticsService extends EventEmitter {
   scheduleMetricsRecalculation(tenantId) {
     // Debounce recalculation to avoid excessive processing
     const key = `recalc_${tenantId}`;
-    
+
     if (this.recalculationTimers && this.recalculationTimers[key]) {
       clearTimeout(this.recalculationTimers[key]);
     }
-    
+
     if (!this.recalculationTimers) {
       this.recalculationTimers = {};
     }
-    
+
     this.recalculationTimers[key] = setTimeout(async () => {
       try {
         await this.recalculateMetricsForTenant(tenantId);
@@ -600,14 +600,14 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   async recalculateMetricsForTenant(tenantId) {
     console.log(`Recalculating metrics for tenant: ${tenantId}`);
-    
+
     // Clear cache for this tenant
     this.analyticsEngine.cache.forEach((value, key) => {
       if (key.includes(tenantId)) {
         this.analyticsEngine.cache.delete(key);
       }
     });
-    
+
     // Trigger fresh metrics collection
     const connections = this.connections.get(tenantId);
     if (connections && connections.size > 0) {
@@ -624,7 +624,7 @@ class RealtimeAnalyticsService extends EventEmitter {
     delete sanitized.password;
     delete sanitized.apiKey;
     delete sanitized.secret;
-    
+
     return sanitized;
   }
 
@@ -633,9 +633,9 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   extractTenantFromRequest(req) {
     // Extract from query parameter, header, or JWT token
-    return req.url.includes('tenantId=') ? 
-           new URL(req.url, 'http://localhost').searchParams.get('tenantId') :
-           req.headers['x-tenant-id'];
+    return req.url.includes('tenantId=') ?
+      new URL(req.url, 'http://localhost').searchParams.get('tenantId') :
+      req.headers['x-tenant-id'];
   }
 
   /**
@@ -651,17 +651,17 @@ class RealtimeAnalyticsService extends EventEmitter {
   startHealthCheck() {
     setInterval(() => {
       this.connections.forEach((connections, tenantId) => {
-        connections.forEach(ws => {
+        connections.forEach((ws) => {
           if (!ws.isAlive) {
             ws.terminate();
             connections.delete(ws);
             return;
           }
-          
+
           ws.isAlive = false;
           ws.ping();
         });
-        
+
         if (connections.size === 0) {
           this.connections.delete(tenantId);
         }
@@ -678,20 +678,20 @@ class RealtimeAnalyticsService extends EventEmitter {
       tenantConnections: {},
       subscriptions: {}
     };
-    
+
     this.connections.forEach((connections, tenantId) => {
       stats.totalConnections += connections.size;
       stats.tenantConnections[tenantId] = connections.size;
-      
-      connections.forEach(ws => {
-        ws.subscriptions.forEach(sub => {
+
+      connections.forEach((ws) => {
+        ws.subscriptions.forEach((sub) => {
           const subscription = JSON.parse(sub);
-          stats.subscriptions[subscription.channel] = 
+          stats.subscriptions[subscription.channel] =
             (stats.subscriptions[subscription.channel] || 0) + 1;
         });
       });
     });
-    
+
     return stats;
   }
 
@@ -700,19 +700,19 @@ class RealtimeAnalyticsService extends EventEmitter {
    */
   async shutdown() {
     console.log('Shutting down Real-time Analytics Service...');
-    
+
     // Close all WebSocket connections
     this.connections.forEach((connections) => {
-      connections.forEach(ws => {
+      connections.forEach((ws) => {
         ws.close(1001, 'Server shutting down');
       });
     });
-    
+
     // Close Redis connection
     if (this.redisClient) {
       await this.redisClient.quit();
     }
-    
+
     console.log('Real-time Analytics Service shutdown complete');
   }
 }

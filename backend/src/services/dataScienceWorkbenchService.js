@@ -18,29 +18,29 @@ class DataScienceWorkbenchService extends EventEmitter {
     this.templates = new Map();
     this.collaborations = new Map();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing Data Science Workbench Service...');
-      
+
       // Initialize notebook templates
       this.initializeNotebookTemplates();
-      
+
       // Setup data exploration tools
       this.setupDataExplorationTools();
-      
+
       // Initialize feature engineering pipelines
       this.initializeFeatureEngineering();
-      
+
       // Setup model experimentation framework
       this.setupModelExperimentation();
-      
+
       // Initialize collaboration features
       this.initializeCollaboration();
-      
+
       this.isInitialized = true;
       console.log('Data Science Workbench Service initialized successfully');
     } catch (error) {
@@ -433,7 +433,7 @@ plt.show()`
       }
     ];
 
-    templates.forEach(template => {
+    templates.forEach((template) => {
       this.templates.set(template.id, template);
     });
 
@@ -635,7 +635,7 @@ plt.show()`
       ],
       metrics: {
         classification: [
-          'accuracy', 'precision', 'recall', 'f1_score', 'roc_auc', 
+          'accuracy', 'precision', 'recall', 'f1_score', 'roc_auc',
           'log_loss', 'matthews_corrcoef', 'cohen_kappa'
         ],
         regression: [
@@ -780,7 +780,7 @@ plt.show()`
     try {
       // Simulate code execution
       const result = await this.simulateCodeExecution(code, notebook.metadata.kernelspec.name);
-      
+
       // Update cell with execution results
       cell.execution_count = (cell.execution_count || 0) + 1;
       cell.outputs = result.outputs;
@@ -832,10 +832,10 @@ plt.show()`
    */
   async simulateCodeExecution(code, kernel) {
     const startTime = Date.now();
-    
+
     // Simulate execution time
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000 + 500));
+
     const executionTime = Date.now() - startTime;
     const outputs = [];
 
@@ -889,7 +889,7 @@ plt.show()`
     const printMatches = code.match(/print\((.*?)\)/g);
     if (!printMatches) return '';
 
-    return printMatches.map(match => {
+    return printMatches.map((match) => {
       const content = match.replace(/print\(|\)/g, '');
       return `Output: ${content}`;
     }).join('\n');
@@ -913,7 +913,7 @@ plt.show()`
     try {
       // Simulate data exploration
       const results = await this.performDataExploration(datasetId, explorationConfig);
-      
+
       exploration.results = results;
       exploration.status = 'completed';
       exploration.endTime = new Date();
@@ -947,7 +947,7 @@ plt.show()`
    */
   async performDataExploration(datasetId, config) {
     // Simulate data exploration process
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const results = {
       summary: {
@@ -1002,10 +1002,10 @@ plt.show()`
       correlations.push({
         variable1: `var_${i + 1}`,
         variable2: `var_${i + 2}`,
-        correlation: correlation,
+        correlation,
         pValue: Math.random() * 0.1,
-        significance: Math.abs(correlation) > 0.5 ? 'strong' : 
-                     Math.abs(correlation) > 0.3 ? 'moderate' : 'weak'
+        significance: Math.abs(correlation) > 0.5 ? 'strong' :
+          Math.abs(correlation) > 0.3 ? 'moderate' : 'weak'
       });
     }
 
@@ -1155,7 +1155,7 @@ plt.show()`
     try {
       // Simulate experiment execution
       const results = await this.executeExperiment(experiment);
-      
+
       experiment.results = results;
       experiment.status = 'completed';
       experiment.endTime = new Date();
@@ -1188,7 +1188,7 @@ plt.show()`
    */
   async executeExperiment(experiment) {
     // Simulate experiment execution based on type
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     const results = {
       bestScore: 0.85 + Math.random() * 0.1,
@@ -1321,15 +1321,15 @@ plt.show()`
     let notebooks = Array.from(this.notebooks.values());
 
     if (filters.userId) {
-      notebooks = notebooks.filter(nb => nb.userId === filters.userId);
+      notebooks = notebooks.filter((nb) => nb.userId === filters.userId);
     }
 
     if (filters.tenantId) {
-      notebooks = notebooks.filter(nb => nb.tenantId === filters.tenantId);
+      notebooks = notebooks.filter((nb) => nb.tenantId === filters.tenantId);
     }
 
     if (filters.status) {
-      notebooks = notebooks.filter(nb => nb.status === filters.status);
+      notebooks = notebooks.filter((nb) => nb.status === filters.status);
     }
 
     return notebooks.sort((a, b) => b.lastModified - a.lastModified);
@@ -1343,7 +1343,7 @@ plt.show()`
     let templates = Array.from(this.templates.values());
 
     if (category) {
-      templates = templates.filter(template => template.category === category);
+      templates = templates.filter((template) => template.category === category);
     }
 
     return templates;
@@ -1353,15 +1353,15 @@ plt.show()`
     let experiments = Array.from(this.experiments.values());
 
     if (filters.userId) {
-      experiments = experiments.filter(exp => exp.userId === filters.userId);
+      experiments = experiments.filter((exp) => exp.userId === filters.userId);
     }
 
     if (filters.type) {
-      experiments = experiments.filter(exp => exp.type === filters.type);
+      experiments = experiments.filter((exp) => exp.type === filters.type);
     }
 
     if (filters.status) {
-      experiments = experiments.filter(exp => exp.status === filters.status);
+      experiments = experiments.filter((exp) => exp.status === filters.status);
     }
 
     return experiments.sort((a, b) => b.createdAt - a.createdAt);
@@ -1435,12 +1435,12 @@ plt.show()`
       totalNotebooks: this.notebooks.size,
       totalExperiments: this.experiments.size,
       activeNotebooks: Array.from(this.notebooks.values())
-        .filter(nb => nb.status === 'active').length,
+        .filter((nb) => nb.status === 'active').length,
       runningExperiments: Array.from(this.experiments.values())
-        .filter(exp => exp.status === 'running').length,
+        .filter((exp) => exp.status === 'running').length,
       templatesAvailable: this.templates.size,
       collaborativeNotebooks: Array.from(this.notebooks.values())
-        .filter(nb => nb.collaborators.length > 0).length
+        .filter((nb) => nb.collaborators.length > 0).length
     };
   }
 }

@@ -126,11 +126,11 @@ class TenantIndexManager {
   async createIndex(collectionName, indexSpec) {
     try {
       const collection = mongoose.connection.db.collection(collectionName);
-      
+
       // Check if index already exists
       const existingIndexes = await collection.indexes();
-      const indexExists = existingIndexes.some(idx => idx.name === indexSpec.name);
-      
+      const indexExists = existingIndexes.some((idx) => idx.name === indexSpec.name);
+
       if (indexExists) {
         this.log(`Index ${indexSpec.name} already exists on ${collectionName}`, 'verbose');
         this.stats.indexesSkipped++;
@@ -142,11 +142,11 @@ class TenantIndexManager {
           name: indexSpec.name,
           background: true
         };
-        
+
         if (indexSpec.unique) {
           options.unique = true;
         }
-        
+
         if (indexSpec.sparse) {
           options.sparse = true;
         }
@@ -170,12 +170,12 @@ class TenantIndexManager {
    */
   async createAllIndexes() {
     this.log('Creating tenant-optimized database indexes...');
-    
+
     const indexes = this.getTenantIndexes();
-    
+
     for (const [collectionName, collectionIndexes] of Object.entries(indexes)) {
       this.log(`Processing ${collectionName} collection...`);
-      
+
       for (const indexSpec of collectionIndexes) {
         await this.createIndex(collectionName, indexSpec);
       }
@@ -187,10 +187,10 @@ class TenantIndexManager {
    */
   async analyzeQueryPerformance() {
     this.log('Analyzing query performance...');
-    
+
     try {
       const db = mongoose.connection.db;
-      
+
       // Sample queries to analyze
       const queries = [
         {
@@ -210,8 +210,8 @@ class TenantIndexManager {
         },
         {
           collection: 'promotions',
-          query: { 
-            tenantId: new mongoose.Types.ObjectId(), 
+          query: {
+            tenantId: new mongoose.Types.ObjectId(),
             startDate: { $lte: new Date() },
             endDate: { $gte: new Date() }
           },
@@ -223,23 +223,23 @@ class TenantIndexManager {
         try {
           const collection = db.collection(querySpec.collection);
           const explain = await collection.find(querySpec.query).explain('executionStats');
-          
+
           this.log(`\n--- Query Analysis: ${querySpec.description} ---`);
           this.log(`Collection: ${querySpec.collection}`);
           this.log(`Execution time: ${explain.executionStats.executionTimeMillis}ms`);
           this.log(`Documents examined: ${explain.executionStats.totalDocsExamined}`);
           this.log(`Documents returned: ${explain.executionStats.totalDocsReturned}`);
           this.log(`Index used: ${explain.executionStats.executionStages.indexName || 'COLLSCAN'}`);
-          
+
           if (explain.executionStats.executionStages.stage === 'COLLSCAN') {
-            this.log(`⚠️  WARNING: Full collection scan detected!`, 'error');
+            this.log('⚠️  WARNING: Full collection scan detected!', 'error');
           }
-          
+
         } catch (error) {
           this.log(`Failed to analyze query for ${querySpec.collection}: ${error.message}`, 'error');
         }
       }
-      
+
     } catch (error) {
       this.log(`Query analysis failed: ${error.message}`, 'error');
     }
@@ -250,31 +250,31 @@ class TenantIndexManager {
    */
   async getIndexStats() {
     this.log('Gathering index usage statistics...');
-    
+
     try {
       const db = mongoose.connection.db;
       const collections = ['tenants', 'users', 'customers', 'products', 'promotions'];
-      
+
       for (const collectionName of collections) {
         try {
           const collection = db.collection(collectionName);
           const stats = await collection.aggregate([
             { $indexStats: {} }
           ]).toArray();
-          
+
           this.log(`\n--- Index Statistics: ${collectionName} ---`);
-          
+
           for (const indexStat of stats) {
             this.log(`Index: ${indexStat.name}`);
             this.log(`  Accesses: ${indexStat.accesses.ops}`);
             this.log(`  Since: ${indexStat.accesses.since}`);
           }
-          
+
         } catch (error) {
           this.log(`Failed to get stats for ${collectionName}: ${error.message}`, 'error');
         }
       }
-      
+
     } catch (error) {
       this.log(`Index statistics failed: ${error.message}`, 'error');
     }
@@ -285,32 +285,32 @@ class TenantIndexManager {
    */
   async run() {
     const startTime = Date.now();
-    
+
     this.log(`Starting database index optimization${this.dryRun ? ' (DRY RUN)' : ''}...`);
-    
+
     try {
       await this.connectDatabase();
-      
+
       await this.createAllIndexes();
-      
+
       if (!this.dryRun) {
         await this.analyzeQueryPerformance();
         await this.getIndexStats();
       }
-      
+
       const duration = (Date.now() - startTime) / 1000;
-      
+
       this.log('\n=== INDEX OPTIMIZATION COMPLETED ===');
       this.log(`Duration: ${duration}s`);
       this.log(`Indexes created: ${this.stats.indexesCreated}`);
       this.log(`Indexes skipped: ${this.stats.indexesSkipped}`);
       this.log(`Errors: ${this.stats.errors.length}`);
-      
+
       if (this.stats.errors.length > 0) {
         this.log('\n=== ERRORS ===');
-        this.stats.errors.forEach(error => this.log(error, 'error'));
+        this.stats.errors.forEach((error) => this.log(error, 'error'));
       }
-      
+
     } catch (error) {
       this.log(`Index optimization failed: ${error.message}`, 'error');
       throw error;
@@ -323,7 +323,7 @@ class TenantIndexManager {
 // Run optimization if called directly
 if (require.main === module) {
   const indexManager = new TenantIndexManager();
-  
+
   indexManager.run()
     .then(() => {
       console.log('Index optimization completed successfully');

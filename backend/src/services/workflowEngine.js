@@ -15,23 +15,23 @@ class WorkflowEngine extends EventEmitter {
     this.tasks = new Map();
     this.approvers = new Map();
     this.isInitialized = false;
-    
+
     this.initializeEngine();
   }
 
   async initializeEngine() {
     try {
       console.log('Initializing Workflow Engine...');
-      
+
       // Load default workflows
       await this.loadDefaultWorkflows();
-      
+
       // Load business rules
       await this.loadBusinessRules();
-      
+
       // Start task monitoring
       this.startTaskMonitoring();
-      
+
       this.isInitialized = true;
       console.log('Workflow Engine initialized successfully');
     } catch (error) {
@@ -428,7 +428,7 @@ class WorkflowEngine extends EventEmitter {
   async executeStartStep(instance, step) {
     // Execute actions
     await this.executeActions(instance, step.actions);
-    
+
     // Move to next step
     await this.moveToNextStep(instance, step);
   }
@@ -541,7 +541,7 @@ class WorkflowEngine extends EventEmitter {
   async executeSystemStep(instance, step) {
     // Execute automated actions
     await this.executeActions(instance, step.actions);
-    
+
     // Move to next step automatically
     await this.moveToNextStep(instance, step);
 
@@ -558,7 +558,7 @@ class WorkflowEngine extends EventEmitter {
     // Mark workflow as complete
     instance.status = 'completed';
     instance.completedAt = new Date();
-    
+
     // Execute final actions
     if (step.actions) {
       await this.executeActions(instance, step.actions);
@@ -601,7 +601,7 @@ class WorkflowEngine extends EventEmitter {
     task.completedAt = new Date();
 
     // Find the step
-    const step = instance.workflow.steps.find(s => s.id === task.stepId);
+    const step = instance.workflow.steps.find((s) => s.id === task.stepId);
     if (!step) {
       throw new Error('Step not found');
     }
@@ -656,7 +656,7 @@ class WorkflowEngine extends EventEmitter {
     instance.completedSteps.push(currentStep.id);
 
     // Find next step
-    const currentIndex = instance.workflow.steps.findIndex(s => s.id === currentStep.id);
+    const currentIndex = instance.workflow.steps.findIndex((s) => s.id === currentStep.id);
     const nextStep = instance.workflow.steps[currentIndex + 1];
 
     if (nextStep) {
@@ -675,7 +675,7 @@ class WorkflowEngine extends EventEmitter {
    */
   async skipStep(instanceId, step) {
     const instance = this.activeInstances.get(instanceId);
-    
+
     this.addToHistory(instance, 'step_skipped', {
       stepId: step.id,
       reason: 'Conditions not met'
@@ -753,7 +753,7 @@ class WorkflowEngine extends EventEmitter {
    */
   async applyBusinessRules(instance) {
     const ruleSet = this.getRulesForWorkflow(instance.workflowId);
-    
+
     for (const rule of ruleSet) {
       if (this.evaluateRule(rule, instance.data)) {
         await this.executeRuleAction(instance, rule);
@@ -765,9 +765,9 @@ class WorkflowEngine extends EventEmitter {
    * Evaluate conditions
    */
   evaluateConditions(conditions, data) {
-    return conditions.every(condition => {
+    return conditions.every((condition) => {
       const value = this.getNestedValue(data, condition.field);
-      
+
       switch (condition.operator) {
         case '>':
           return value > condition.value;
@@ -796,16 +796,16 @@ class WorkflowEngine extends EventEmitter {
    */
   getWorkflowInstances(tenantId, options = {}) {
     const { status, workflowId, limit = 50, offset = 0 } = options;
-    
+
     let instances = Array.from(this.activeInstances.values())
-      .filter(instance => instance.tenantId === tenantId);
+      .filter((instance) => instance.tenantId === tenantId);
 
     if (status) {
-      instances = instances.filter(instance => instance.status === status);
+      instances = instances.filter((instance) => instance.status === status);
     }
 
     if (workflowId) {
-      instances = instances.filter(instance => instance.workflowId === workflowId);
+      instances = instances.filter((instance) => instance.workflowId === workflowId);
     }
 
     // Sort by creation date (newest first)
@@ -816,7 +816,7 @@ class WorkflowEngine extends EventEmitter {
     instances = instances.slice(offset, offset + limit);
 
     return {
-      instances: instances.map(instance => ({
+      instances: instances.map((instance) => ({
         id: instance.id,
         workflowId: instance.workflowId,
         workflowName: instance.workflow.name,
@@ -840,19 +840,19 @@ class WorkflowEngine extends EventEmitter {
    */
   getTasksForUser(tenantId, assignee, options = {}) {
     const { status = 'pending', limit = 20 } = options;
-    
+
     const tasks = Array.from(this.tasks.values())
-      .filter(task => {
+      .filter((task) => {
         const instance = this.activeInstances.get(task.instanceId);
-        return instance && 
-               instance.tenantId === tenantId && 
-               task.assignee === assignee && 
+        return instance &&
+               instance.tenantId === tenantId &&
+               task.assignee === assignee &&
                task.status === status;
       })
       .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, limit);
 
-    return tasks.map(task => ({
+    return tasks.map((task) => ({
       id: task.id,
       type: task.type,
       title: task.title,
@@ -903,7 +903,7 @@ class WorkflowEngine extends EventEmitter {
     // Simple rule evaluation - would be more sophisticated in production
     try {
       // This would use a proper rule engine in production
-      return eval(rule.condition.replace(/\w+/g, match => `data.${match}`));
+      return eval(rule.condition.replace(/\w+/g, (match) => `data.${match}`));
     } catch (error) {
       console.error('Rule evaluation error:', error);
       return false;
@@ -940,7 +940,7 @@ class WorkflowEngine extends EventEmitter {
     const task = this.tasks.get(taskId);
     if (task && task.status === 'pending') {
       console.log(`Task ${taskId} timed out, escalating to ${escalation}`);
-      
+
       // Update task assignee to escalation target
       task.assignee = escalation;
       task.escalated = true;
@@ -957,15 +957,15 @@ class WorkflowEngine extends EventEmitter {
 
   checkOverdueTasks() {
     const now = new Date();
-    
-    this.tasks.forEach(task => {
+
+    this.tasks.forEach((task) => {
       if (task.status === 'pending' && task.dueDate && now > task.dueDate) {
         console.log(`Task ${task.id} is overdue`);
-        
+
         // Mark as overdue
         task.status = 'overdue';
         task.overdueAt = now;
-        
+
         // Notify about overdue task
         this.emit('task_overdue', {
           taskId: task.id,

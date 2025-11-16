@@ -10,7 +10,7 @@ class WebSocketService {
   }
 
   initialize(server) {
-    this.wss = new WebSocket.Server({ 
+    this.wss = new WebSocket.Server({
       server,
       path: '/ws',
       verifyClient: this.verifyClient.bind(this)
@@ -18,7 +18,7 @@ class WebSocketService {
 
     this.wss.on('connection', this.handleConnection.bind(this));
     this.setupMonitoringEventHandlers();
-    
+
     console.log('WebSocket service initialized');
   }
 
@@ -108,8 +108,8 @@ class WebSocketService {
 
   handleSubscription(userId, data) {
     const { channels } = data;
-    
-    channels.forEach(channel => {
+
+    channels.forEach((channel) => {
       this.joinRoom(userId, channel);
     });
 
@@ -118,8 +118,8 @@ class WebSocketService {
 
   handleUnsubscription(userId, data) {
     const { channels } = data;
-    
-    channels.forEach(channel => {
+
+    channels.forEach((channel) => {
       this.leaveRoom(userId, channel);
     });
 
@@ -147,7 +147,7 @@ class WebSocketService {
       this.clients.get(userId).delete(ws);
       if (this.clients.get(userId).size === 0) {
         this.clients.delete(userId);
-        
+
         // Remove user from all rooms
         this.rooms.forEach((users, roomId) => {
           users.delete(userId);
@@ -167,7 +167,7 @@ class WebSocketService {
 
   sendToUser(userId, message) {
     if (this.clients.has(userId)) {
-      this.clients.get(userId).forEach(ws => {
+      this.clients.get(userId).forEach((ws) => {
         this.sendToClient(ws, message);
       });
     }
@@ -175,7 +175,7 @@ class WebSocketService {
 
   sendToRoom(roomId, message) {
     if (this.rooms.has(roomId)) {
-      this.rooms.get(roomId).forEach(userId => {
+      this.rooms.get(roomId).forEach((userId) => {
         this.sendToUser(userId, message);
       });
     }
@@ -259,7 +259,7 @@ class WebSocketService {
   startHealthCheck() {
     setInterval(() => {
       this.clients.forEach((connections, userId) => {
-        connections.forEach(ws => {
+        connections.forEach((ws) => {
           if (ws.readyState === WebSocket.OPEN) {
             this.sendToClient(ws, {
               type: 'heartbeat',
@@ -289,7 +289,7 @@ class WebSocketService {
 
   // Send notification to specific users
   sendNotification(userIds, notification) {
-    userIds.forEach(userId => {
+    userIds.forEach((userId) => {
       this.sendToUser(userId, {
         type: 'notification',
         data: notification,
@@ -312,7 +312,7 @@ class WebSocketService {
 
     // Send to all connected clients
     this.clients.forEach((connections, userId) => {
-      connections.forEach(ws => {
+      connections.forEach((ws) => {
         this.sendToClient(ws, maintenanceMessage);
       });
     });

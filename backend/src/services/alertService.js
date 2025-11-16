@@ -107,7 +107,7 @@ class AlertService {
 
   removeAlertRule(ruleId) {
     this.alertRules.delete(ruleId);
-    
+
     // Cancel any scheduled jobs for this rule
     if (this.scheduledJobs.has(ruleId)) {
       this.scheduledJobs.get(ruleId).destroy();
@@ -131,11 +131,11 @@ class AlertService {
     if (!rule || !rule.enabled) return;
 
     const shouldTrigger = this.evaluateCondition(rule.condition, currentValue);
-    
+
     if (shouldTrigger) {
       const alertKey = `${ruleId}_${companyId}`;
       const existingAlert = this.activeAlerts.get(alertKey);
-      
+
       // Check cooldown period
       if (existingAlert && rule.lastTriggered) {
         const timeSinceLastTrigger = Date.now() - rule.lastTriggered.getTime();
@@ -201,7 +201,7 @@ class AlertService {
 
   generateAlertMessage(rule, currentValue) {
     const { condition } = rule;
-    
+
     switch (rule.type) {
       case 'budget_threshold':
         return `Budget utilization has reached ${currentValue.toFixed(1)}%, exceeding the ${condition.threshold}% threshold`;
@@ -242,7 +242,7 @@ class AlertService {
   async sendEmailAlert(alert) {
     // Get company admin emails (mock implementation)
     const adminEmails = ['admin@company.com', 'manager@company.com'];
-    
+
     const subject = `Trade AI Alert: ${alert.priority.toUpperCase()} - ${alert.type}`;
     const body = `
       <h2>Trade AI Monitoring Alert</h2>
@@ -281,7 +281,7 @@ class AlertService {
 
   resolveAlert(alertId, resolvedBy, resolution) {
     // Find and resolve alert
-    const alert = this.alertHistory.find(a => a.id === alertId);
+    const alert = this.alertHistory.find((a) => a.id === alertId);
     if (alert) {
       alert.status = 'resolved';
       alert.resolvedAt = new Date();
@@ -318,7 +318,7 @@ class AlertService {
     try {
       // Mock data - in production, this would fetch real metrics
       const companies = ['company1', 'company2', 'company3'];
-      
+
       for (const companyId of companies) {
         // Check budget utilization
         const budgetUtilization = Math.random() * 100;
@@ -340,8 +340,8 @@ class AlertService {
 
   cleanupOldAlerts() {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
-    this.alertHistory = this.alertHistory.filter(alert => 
+
+    this.alertHistory = this.alertHistory.filter((alert) =>
       alert.createdAt > thirtyDaysAgo
     );
 
@@ -353,8 +353,8 @@ class AlertService {
     const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const recentAlerts = this.alertHistory.filter(alert => alert.createdAt > last24Hours);
-    const weeklyAlerts = this.alertHistory.filter(alert => alert.createdAt > last7Days);
+    const recentAlerts = this.alertHistory.filter((alert) => alert.createdAt > last24Hours);
+    const weeklyAlerts = this.alertHistory.filter((alert) => alert.createdAt > last7Days);
 
     return {
       totalRules: this.alertRules.size,
@@ -363,9 +363,9 @@ class AlertService {
       alertsLast24Hours: recentAlerts.length,
       alertsLast7Days: weeklyAlerts.length,
       alertsByPriority: {
-        critical: this.alertHistory.filter(a => a.priority === 'critical').length,
-        warning: this.alertHistory.filter(a => a.priority === 'warning').length,
-        info: this.alertHistory.filter(a => a.priority === 'info').length
+        critical: this.alertHistory.filter((a) => a.priority === 'critical').length,
+        warning: this.alertHistory.filter((a) => a.priority === 'warning').length,
+        info: this.alertHistory.filter((a) => a.priority === 'info').length
       },
       alertsByType: this.getAlertsByType(),
       resolutionRate: this.calculateResolutionRate()
@@ -374,15 +374,15 @@ class AlertService {
 
   getAlertsByType() {
     const typeCount = {};
-    this.alertHistory.forEach(alert => {
+    this.alertHistory.forEach((alert) => {
       typeCount[alert.type] = (typeCount[alert.type] || 0) + 1;
     });
     return typeCount;
   }
 
   calculateResolutionRate() {
-    const resolvedAlerts = this.alertHistory.filter(a => a.status === 'resolved').length;
-    return this.alertHistory.length > 0 ? 
+    const resolvedAlerts = this.alertHistory.filter((a) => a.status === 'resolved').length;
+    return this.alertHistory.length > 0 ?
       (resolvedAlerts / this.alertHistory.length) * 100 : 0;
   }
 

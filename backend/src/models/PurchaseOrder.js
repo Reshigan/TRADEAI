@@ -171,22 +171,22 @@ purchaseOrderSchema.index({ status: 1, poDate: -1 });
 purchaseOrderSchema.index({ createdAt: -1 });
 
 // Virtual for outstanding amount
-purchaseOrderSchema.virtual('outstandingAmount').get(function() {
+purchaseOrderSchema.virtual('outstandingAmount').get(function () {
   const totalInvoiced = this.lines.reduce((sum, line) => sum + line.amountInvoiced, 0);
   return this.total - totalInvoiced;
 });
 
 // Virtual for completion percentage
-purchaseOrderSchema.virtual('completionPercent').get(function() {
+purchaseOrderSchema.virtual('completionPercent').get(function () {
   if (this.total === 0) return 0;
   const totalInvoiced = this.lines.reduce((sum, line) => sum + line.amountInvoiced, 0);
   return Math.round((totalInvoiced / this.total) * 100);
 });
 
 // Pre-save middleware to calculate totals
-purchaseOrderSchema.pre('save', function(next) {
+purchaseOrderSchema.pre('save', function (next) {
   // Calculate line amounts
-  this.lines.forEach(line => {
+  this.lines.forEach((line) => {
     line.amount = line.quantity * line.unitPrice;
     line.netAmount = line.amount - line.discountAmount + line.taxAmount;
   });
@@ -198,8 +198,8 @@ purchaseOrderSchema.pre('save', function(next) {
   this.total = this.subtotal - this.discountTotal + this.taxTotal;
 
   // Update status based on line statuses
-  const allReceived = this.lines.every(line => line.status === 'received' || line.status === 'closed');
-  const someReceived = this.lines.some(line => line.quantityReceived > 0);
+  const allReceived = this.lines.every((line) => line.status === 'received' || line.status === 'closed');
+  const someReceived = this.lines.some((line) => line.quantityReceived > 0);
 
   if (allReceived && this.status !== 'closed' && this.status !== 'cancelled') {
     this.status = 'received';
@@ -211,12 +211,12 @@ purchaseOrderSchema.pre('save', function(next) {
 });
 
 // Methods
-purchaseOrderSchema.methods.updateLineReceived = function(lineNumber, quantityReceived) {
-  const line = this.lines.find(l => l.lineNumber === lineNumber);
+purchaseOrderSchema.methods.updateLineReceived = function (lineNumber, quantityReceived) {
+  const line = this.lines.find((l) => l.lineNumber === lineNumber);
   if (!line) throw new Error('Line not found');
 
   line.quantityReceived += quantityReceived;
-  
+
   if (line.quantityReceived >= line.quantity) {
     line.status = 'received';
   } else if (line.quantityReceived > 0) {
@@ -226,8 +226,8 @@ purchaseOrderSchema.methods.updateLineReceived = function(lineNumber, quantityRe
   return this.save();
 };
 
-purchaseOrderSchema.methods.updateLineInvoiced = function(lineNumber, quantityInvoiced, amountInvoiced) {
-  const line = this.lines.find(l => l.lineNumber === lineNumber);
+purchaseOrderSchema.methods.updateLineInvoiced = function (lineNumber, quantityInvoiced, amountInvoiced) {
+  const line = this.lines.find((l) => l.lineNumber === lineNumber);
   if (!line) throw new Error('Line not found');
 
   line.quantityInvoiced += quantityInvoiced;
@@ -236,13 +236,13 @@ purchaseOrderSchema.methods.updateLineInvoiced = function(lineNumber, quantityIn
   return this.save();
 };
 
-purchaseOrderSchema.methods.canBeClosed = function() {
-  return this.lines.every(line => 
+purchaseOrderSchema.methods.canBeClosed = function () {
+  return this.lines.every((line) =>
     line.status === 'received' || line.status === 'closed' || line.status === 'cancelled'
   );
 };
 
-purchaseOrderSchema.methods.close = function() {
+purchaseOrderSchema.methods.close = function () {
   if (!this.canBeClosed()) {
     throw new Error('Cannot close PO with open lines');
   }

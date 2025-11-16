@@ -125,10 +125,10 @@ exports.confirmImport = asyncHandler(async (req, res, next) => {
     try {
       // Parse file
       const data = await posImportService.parseFile(job.filePath, job.fileType);
-      
+
       // Validate
       const validation = await posImportService.validateData(data, job.tenantId);
-      
+
       if (!validation.isValid && validation.validRows.length === 0) {
         importJobs.set(jobId, {
           ...job,
@@ -158,7 +158,7 @@ exports.confirmImport = asyncHandler(async (req, res, next) => {
       const now = new Date();
       const thirtyDaysAgo = new Date(now);
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
+
       await posImportService.aggregateToSalesHistory(
         thirtyDaysAgo,
         now,
@@ -259,8 +259,8 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
   // Convert to CSV
   const csvContent = [
     template.headers.join(','),
-    ...template.sampleData.map(row => 
-      template.headers.map(header => row[header] || '').join(',')
+    ...template.sampleData.map((row) =>
+      template.headers.map((header) => row[header] || '').join(',')
     )
   ].join('\n');
 

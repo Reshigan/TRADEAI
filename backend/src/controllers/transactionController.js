@@ -65,7 +65,7 @@ exports.getTransactions = asyncHandler(async (req, res, next) => {
   if (status) filters.status = status;
   if (transactionType) filters.transactionType = transactionType;
   if (customerId) filters.customerId = customerId;
-  
+
   if (dateFrom || dateTo) {
     filters.transactionDate = {};
     if (dateFrom) filters.transactionDate.$gte = new Date(dateFrom);
@@ -104,9 +104,9 @@ exports.getTransactionById = asyncHandler(async (req, res, next) => {
 // Update transaction
 exports.updateTransaction = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  
+
   const transaction = await Transaction.findById(id);
-  
+
   if (!transaction) {
     throw new AppError('Transaction not found', 404);
   }
@@ -131,7 +131,7 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
 // Delete transaction
 exports.deleteTransaction = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  
+
   const result = await crudService.softDelete(id, {
     auditLog: true,
     userId: req.user._id
@@ -149,7 +149,7 @@ exports.approveTransaction = asyncHandler(async (req, res, next) => {
   const { comments } = req.body;
 
   const transaction = await Transaction.findById(id);
-  
+
   if (!transaction) {
     throw new AppError('Transaction not found', 404);
   }
@@ -169,7 +169,7 @@ exports.rejectTransaction = asyncHandler(async (req, res, next) => {
   const { comments } = req.body;
 
   const transaction = await Transaction.findById(id);
-  
+
   if (!transaction) {
     throw new AppError('Transaction not found', 404);
   }
@@ -189,7 +189,7 @@ exports.settleTransaction = asyncHandler(async (req, res, next) => {
   const { settlementData } = req.body;
 
   const transaction = await Transaction.findById(id);
-  
+
   if (!transaction) {
     throw new AppError('Transaction not found', 404);
   }
@@ -253,27 +253,27 @@ exports.bulkApprove = asyncHandler(async (req, res, next) => {
 // Validate bulk upload data
 const validateTransactionData = (row, index) => {
   const errors = [];
-  
+
   if (!row.transactionType) {
     errors.push(`Row ${index + 1}: Transaction type is required`);
   } else if (!['order', 'trade_deal', 'settlement', 'payment', 'accrual', 'deduction'].includes(row.transactionType)) {
     errors.push(`Row ${index + 1}: Invalid transaction type`);
   }
-  
+
   if (!row.customerId) {
     errors.push(`Row ${index + 1}: Customer ID is required`);
   }
-  
+
   if (!row.amount || isNaN(parseFloat(row.amount))) {
     errors.push(`Row ${index + 1}: Valid amount is required`);
   }
-  
+
   if (!row.transactionDate) {
     errors.push(`Row ${index + 1}: Transaction date is required`);
   } else if (isNaN(Date.parse(row.transactionDate))) {
     errors.push(`Row ${index + 1}: Invalid date format`);
   }
-  
+
   return errors;
 };
 
@@ -282,7 +282,7 @@ const parseCSV = (buffer) => {
   return new Promise((resolve, reject) => {
     const results = [];
     const stream = Readable.from(buffer.toString());
-    
+
     stream
       .pipe(csvParser())
       .on('data', (data) => results.push(data))
@@ -355,7 +355,7 @@ exports.bulkUpload = asyncHandler(async (req, res, next) => {
   for (let i = 0; i < transactions.length; i++) {
     try {
       const row = transactions[i];
-      
+
       const transactionData = {
         transactionType: row.transactionType,
         customerId: row.customerId,
@@ -385,7 +385,7 @@ exports.bulkUpload = asyncHandler(async (req, res, next) => {
 
       const transaction = new Transaction(transactionData);
       transaction.calculateTotals();
-      
+
       // Initialize approval workflow if needed
       if (transaction.amount.net >= 1000) {
         transaction.workflow = await workflowEngine.initializeWorkflow(
@@ -395,7 +395,7 @@ exports.bulkUpload = asyncHandler(async (req, res, next) => {
         );
         transaction.status = 'pending_approval';
       }
-      
+
       await transaction.save();
       results.success.push({
         row: i + 1,
@@ -420,7 +420,7 @@ exports.bulkUpload = asyncHandler(async (req, res, next) => {
 // Download template
 exports.downloadTemplate = asyncHandler(async (req, res, next) => {
   const { format } = req.query;
-  
+
   const templateData = [
     {
       transactionType: 'order',
@@ -444,7 +444,7 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
       Object.keys(templateData[0]).join(','),
       Object.values(templateData[0]).join(',')
     ].join('\n');
-    
+
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=transaction_template.csv');
     res.send(csv);
@@ -452,9 +452,9 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
     const worksheet = XLSX.utils.json_to_sheet(templateData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
-    
+
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-    
+
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=transaction_template.xlsx');
     res.send(buffer);
@@ -464,21 +464,21 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
 // Export transactions
 exports.exportTransactions = asyncHandler(async (req, res, next) => {
   const { format, ...filters } = req.query;
-  
+
   const transactions = await Transaction.find({
     tenantId: req.user.tenantId,
     isDeleted: false,
     ...filters
   })
-  .populate('customerId', 'name code')
-  .populate('vendorId', 'name')
-  .lean();
+    .populate('customerId', 'name code')
+    .populate('vendorId', 'name')
+    .lean();
 
   if (transactions.length === 0) {
     throw new AppError('No transactions found to export', 404);
   }
 
-  const exportData = transactions.map(t => ({
+  const exportData = transactions.map((t) => ({
     transactionNumber: t.transactionNumber,
     type: t.transactionType,
     status: t.status,
@@ -497,9 +497,9 @@ exports.exportTransactions = asyncHandler(async (req, res, next) => {
 
   if (format === 'csv') {
     const headers = Object.keys(exportData[0]).join(',');
-    const rows = exportData.map(row => Object.values(row).join(',')).join('\n');
+    const rows = exportData.map((row) => Object.values(row).join(',')).join('\n');
     const csv = `${headers}\n${rows}`;
-    
+
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=transactions_export.csv');
     res.send(csv);
@@ -507,9 +507,9 @@ exports.exportTransactions = asyncHandler(async (req, res, next) => {
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
-    
+
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-    
+
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=transactions_export.xlsx');
     res.send(buffer);

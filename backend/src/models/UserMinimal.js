@@ -41,9 +41,9 @@ const userMinimalSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userMinimalSchema.pre('save', async function(next) {
+userMinimalSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -54,15 +54,15 @@ userMinimalSchema.pre('save', async function(next) {
 });
 
 // Instance methods
-userMinimalSchema.methods.comparePassword = async function(candidatePassword) {
+userMinimalSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-userMinimalSchema.methods.generateAuthToken = function() {
+userMinimalSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
-    { 
-      _id: this._id, 
-      email: this.email, 
+    {
+      _id: this._id,
+      email: this.email,
       role: this.role
     },
     process.env.JWT_SECRET,
@@ -72,19 +72,19 @@ userMinimalSchema.methods.generateAuthToken = function() {
 };
 
 // Static methods
-userMinimalSchema.statics.findByCredentials = async function(email, password) {
+userMinimalSchema.statics.findByCredentials = async function (email, password) {
   const query = { email, isActive: true };
-  
+
   const user = await this.findOne(query);
   if (!user) {
     throw new Error('Invalid login credentials');
   }
-  
+
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     throw new Error('Invalid login credentials');
   }
-  
+
   return user;
 };
 

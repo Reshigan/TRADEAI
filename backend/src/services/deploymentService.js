@@ -16,32 +16,32 @@ class DeploymentService extends EventEmitter {
     this.releases = new Map();
     this.rollbacks = new Map();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing Deployment Service...');
-      
+
       // Initialize CI/CD pipelines
       this.initializePipelines();
-      
+
       // Setup deployment environments
       this.setupEnvironments();
-      
+
       // Initialize container management
       this.initializeContainerManagement();
-      
+
       // Setup infrastructure management
       this.setupInfrastructureManagement();
-      
+
       // Initialize release management
       this.initializeReleaseManagement();
-      
+
       // Setup monitoring and alerting
       this.setupMonitoringAndAlerting();
-      
+
       this.isInitialized = true;
       console.log('Deployment Service initialized successfully');
     } catch (error) {
@@ -216,7 +216,7 @@ class DeploymentService extends EventEmitter {
       }
     ];
 
-    pipelines.forEach(pipeline => {
+    pipelines.forEach((pipeline) => {
       this.pipelines.set(pipeline.id, {
         ...pipeline,
         status: 'active',
@@ -316,7 +316,7 @@ class DeploymentService extends EventEmitter {
       }
     ];
 
-    environments.forEach(env => {
+    environments.forEach((env) => {
       this.environments.set(env.id, {
         ...env,
         status: 'ready',
@@ -423,7 +423,7 @@ class DeploymentService extends EventEmitter {
       }
     ];
 
-    containerConfigs.forEach(config => {
+    containerConfigs.forEach((config) => {
       this.containers.set(config.id, {
         ...config,
         status: 'ready',
@@ -549,7 +549,7 @@ class DeploymentService extends EventEmitter {
       }
     ];
 
-    infrastructure.forEach(infra => {
+    infrastructure.forEach((infra) => {
       this.infrastructure.set(infra.id, {
         ...infra,
         health: 'healthy',
@@ -826,11 +826,11 @@ class DeploymentService extends EventEmitter {
     try {
       // Simulate step execution time
       const executionTime = Math.random() * 30000 + 5000; // 5-35 seconds
-      await new Promise(resolve => setTimeout(resolve, executionTime));
+      await new Promise((resolve) => setTimeout(resolve, executionTime));
 
       // Execute step based on name
       const result = await this.performStep(stepName, stage, pipelineRun, options);
-      
+
       stepResult.output = result.output;
       stepResult.artifacts = result.artifacts || [];
       stepResult.status = result.success ? 'success' : 'failed';
@@ -937,9 +937,9 @@ class DeploymentService extends EventEmitter {
     ];
 
     let output = 'Blue-Green Deployment:\n';
-    
+
     for (const step of steps) {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay per step
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay per step
       output += `✓ ${step}\n`;
     }
 
@@ -977,7 +977,7 @@ class DeploymentService extends EventEmitter {
 
     try {
       // Perform deployment based on strategy
-      const strategy = this.releaseStrategies.find(s => s.id === deployment.strategy);
+      const strategy = this.releaseStrategies.find((s) => s.id === deployment.strategy);
       if (strategy) {
         await this.executeDeploymentStrategy(strategy, deployment, environment);
       } else {
@@ -1027,10 +1027,10 @@ class DeploymentService extends EventEmitter {
 
     for (const step of strategy.steps) {
       console.log(`Executing step: ${step}`);
-      
+
       // Simulate step execution
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 5000 + 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 5000 + 2000));
+
       // Simulate step failure (5% chance)
       if (Math.random() < 0.05) {
         throw new Error(`Deployment step failed: ${step}`);
@@ -1053,7 +1053,7 @@ class DeploymentService extends EventEmitter {
 
     for (const step of steps) {
       console.log(`Rolling deployment: ${step}`);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   }
 
@@ -1128,13 +1128,13 @@ class DeploymentService extends EventEmitter {
    */
   async performRollback(rollback, deployment) {
     // Get rollback strategy
-    const strategy = this.releaseStrategies.find(s => s.id === deployment.strategy);
+    const strategy = this.releaseStrategies.find((s) => s.id === deployment.strategy);
     const rollbackStrategy = strategy?.rollback_strategy || 'rollback_deployment';
 
     console.log(`Executing rollback strategy: ${rollbackStrategy}`);
 
     // Simulate rollback execution
-    await new Promise(resolve => setTimeout(resolve, 10000)); // 10 seconds
+    await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 seconds
 
     // Simulate rollback failure (2% chance)
     if (Math.random() < 0.02) {
@@ -1223,14 +1223,14 @@ class DeploymentService extends EventEmitter {
 
     for (const step of buildSteps) {
       console.log(`Build step: ${step}`);
-      
+
       // Simulate step duration
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 10000 + 5000));
-      
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 10000 + 5000));
+
       // Simulate layer creation
       const layerSize = Math.random() * 100 + 50; // 50-150 MB
       currentSize += layerSize;
-      
+
       build.layers.push({
         step,
         size: layerSize,
@@ -1280,15 +1280,15 @@ class DeploymentService extends EventEmitter {
    */
   async checkComponentHealth(component) {
     // Simulate health check
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const statuses = ['healthy', 'degraded', 'unhealthy'];
     const weights = [0.85, 0.12, 0.03]; // 85% healthy, 12% degraded, 3% unhealthy
-    
+
     const random = Math.random();
     let cumulativeWeight = 0;
     let status = 'healthy';
-    
+
     for (let i = 0; i < statuses.length; i++) {
       cumulativeWeight += weights[i];
       if (random <= cumulativeWeight) {
@@ -1324,7 +1324,7 @@ class DeploymentService extends EventEmitter {
           queries_per_second: Math.floor(Math.random() * 1000) + 100,
           replication_lag: Math.random() * 5
         };
-      
+
       case 'cache':
         return {
           ...baseMetrics,
@@ -1332,7 +1332,7 @@ class DeploymentService extends EventEmitter {
           evictions_per_second: Math.floor(Math.random() * 10),
           memory_fragmentation: Math.random() * 10 + 5
         };
-      
+
       default:
         return baseMetrics;
     }
@@ -1381,11 +1381,11 @@ class DeploymentService extends EventEmitter {
     let deployments = Array.from(this.deployments.values());
 
     if (filters.environmentId) {
-      deployments = deployments.filter(d => d.environmentId === filters.environmentId);
+      deployments = deployments.filter((d) => d.environmentId === filters.environmentId);
     }
 
     if (filters.status) {
-      deployments = deployments.filter(d => d.status === filters.status);
+      deployments = deployments.filter((d) => d.status === filters.status);
     }
 
     return deployments.sort((a, b) => b.startTime - a.startTime);
@@ -1411,7 +1411,7 @@ class DeploymentService extends EventEmitter {
     let releases = Array.from(this.releases.values());
 
     if (filters.environment) {
-      releases = releases.filter(r => r.environment === filters.environment);
+      releases = releases.filter((r) => r.environment === filters.environment);
     }
 
     return releases.sort((a, b) => b.createdAt - a.createdAt);
@@ -1421,7 +1421,7 @@ class DeploymentService extends EventEmitter {
     let rollbacks = Array.from(this.rollbacks.values());
 
     if (filters.environmentId) {
-      rollbacks = rollbacks.filter(r => r.environmentId === filters.environmentId);
+      rollbacks = rollbacks.filter((r) => r.environmentId === filters.environmentId);
     }
 
     return rollbacks.sort((a, b) => b.startTime - a.startTime);
@@ -1460,26 +1460,26 @@ class DeploymentService extends EventEmitter {
     const totalPipelines = this.pipelines.size;
     const totalDeployments = this.deployments.size;
     const successfulDeployments = Array.from(this.deployments.values())
-      .filter(d => d.status === 'success').length;
+      .filter((d) => d.status === 'success').length;
     const totalRollbacks = this.rollbacks.size;
 
     const recentDeployments = Array.from(this.deployments.values())
-      .filter(d => d.startTime > new Date(Date.now() - 24 * 60 * 60 * 1000));
+      .filter((d) => d.startTime > new Date(Date.now() - 24 * 60 * 60 * 1000));
 
     return {
       totalPipelines,
       totalDeployments,
       successfulDeployments,
-      deploymentSuccessRate: totalDeployments > 0 ? 
+      deploymentSuccessRate: totalDeployments > 0 ?
         (successfulDeployments / totalDeployments * 100).toFixed(2) : 0,
       totalRollbacks,
-      rollbackRate: totalDeployments > 0 ? 
+      rollbackRate: totalDeployments > 0 ?
         (totalRollbacks / totalDeployments * 100).toFixed(2) : 0,
       recentDeployments: recentDeployments.length,
       averageDeploymentTime: recentDeployments.length > 0 ?
         recentDeployments.reduce((sum, d) => sum + (d.duration || 0), 0) / recentDeployments.length : 0,
       activeEnvironments: Array.from(this.environments.values())
-        .filter(env => env.status === 'ready').length
+        .filter((env) => env.status === 'ready').length
     };
   }
 }
