@@ -49,7 +49,7 @@ const SmartPromotionAssistant = ({
   const [comparison, setComparison] = useState(null);
   const [insights, setInsights] = useState([]);
   const [expanded, setExpanded] = useState(true);
-  const [setError] = useState(null);
+  const [error, setError] = useState(null);
 
   // Auto-calculate when form data changes
   useEffect(() => {
@@ -72,9 +72,9 @@ const SmartPromotionAssistant = ({
         budget: formData.budget || 150000
       };
 
-      // Get ML prediction
-        promotionId: 'temp-' + Date.now()
-      });
+      // Get ML prediction (placeholder for now)
+      //   promotionId: 'temp-' + Date.now()
+      // });
 
       // Generate comparisons
       const mlOptimized = {
