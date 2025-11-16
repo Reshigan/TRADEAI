@@ -32,7 +32,6 @@ import {
   ArrowForward
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
 
 const AIInsightsFeed = ({ userId }) => {
   const [loading, setLoading] = useState(true);

@@ -37,7 +37,6 @@ import {
   AttachMoney as MoneyIcon,
   Assessment as AssessmentIcon
 } from '@mui/icons-material';
-import { formatCurrency } from '../../utils/formatters';
 // Removed TreeView import due to compatibility issues
 import { budgetService } from '../../services/api';
 

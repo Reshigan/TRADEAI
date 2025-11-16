@@ -33,7 +33,6 @@ import {
   Assessment as AssessmentIcon,
   ShoppingCart as ShoppingCartIcon
 } from '@mui/icons-material';
-import { format } from 'date-fns';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { promotionService, customerService } from '../../services/api';
 import { formatCurrency, formatDate } from '../../utils/formatters';

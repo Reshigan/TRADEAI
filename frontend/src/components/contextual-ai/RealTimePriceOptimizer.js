@@ -30,7 +30,6 @@ import {
   CheckCircle
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
 
 const RealTimePriceOptimizer = ({ 
   currentPrice,

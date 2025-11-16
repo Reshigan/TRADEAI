@@ -14,7 +14,7 @@ import {
   Chip,
   IconButton
 } from '@mui/material';
-import { Add, Edit, Delete, PlayArrow, Stop } from '@mui/icons-material';
+import {Add, Edit, Delete} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 

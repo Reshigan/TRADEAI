@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { authService } from '../services/api';
-import { validateEmail, validatePassword, validateForm } from '../utils/validation';
 import newLogo from '../assets/new_logo.svg';
 
 const Login = ({ onLogin }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Grid,
@@ -47,7 +47,6 @@ import {
   AreaChart
 } from 'recharts';
 import enterpriseApi from '../../../services/enterpriseApi';
-import { formatCurrency } from '../../../utils/formatters';
 
 const promotionTypes = [
   { value: 'discount', label: 'Discount Promotion' },

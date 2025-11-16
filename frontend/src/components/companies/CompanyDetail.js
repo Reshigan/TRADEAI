@@ -47,7 +47,6 @@ import {
   ArrowBack as ArrowBackIcon,
   History as HistoryIcon
 } from '@mui/icons-material';
-import { formatCurrency } from '../../utils/formatters';
 
 import { PageHeader } from '../common';
 

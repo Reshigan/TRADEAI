@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Grid,
@@ -39,8 +39,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import simulationService from '../../services/simulation/simulationService';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
-import customerService from '../../services/customer/customerService';
-import productService from '../../services/product/productService';
 
 const SimulationStudio = () => {
   const navigate = useNavigate();

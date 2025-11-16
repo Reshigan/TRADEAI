@@ -31,11 +31,9 @@ import {
   ShowChart
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
 import budgetService from '../../services/budget/budgetService';
-import { DashboardSkeleton, ChartSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 

@@ -14,8 +14,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
-import { DashboardSkeleton } from '../../components/common/SkeletonLoader';
-import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 
 const ManagerDashboard = () => {

@@ -13,7 +13,7 @@ import {
   TextField,
   IconButton
 } from '@mui/material';
-import { Add, Edit, Settings } from '@mui/icons-material';
+import {Settings} from '@mui/icons-material';
 
 const RebateConfiguration = () => {
   const [rebateTypes, setRebateTypes] = useState([
