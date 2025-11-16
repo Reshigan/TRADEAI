@@ -147,4 +147,85 @@ router.get('/:id/hierarchy', authenticateToken, asyncHandler(async (req, res) =>
   });
 }));
 
+router.get('/:id/promotions', authenticateToken, asyncHandler(async (req, res) => {
+  const Promotion = require('../models/Promotion');
+  const promotions = await Promotion.find({ 'scope.customers.customer': req.params.id })
+    .populate('products.product', 'name sku')
+    .sort({ 'period.startDate': -1 });
+  
+  res.json({
+    success: true,
+    data: promotions
+  });
+}));
+
+router.get('/:id/trade-spends', authenticateToken, asyncHandler(async (req, res) => {
+  const TradeSpend = require('../models/TradeSpend');
+  const tradeSpends = await TradeSpend.find({ customer: req.params.id })
+    .populate('vendor', 'name')
+    .sort({ createdAt: -1 });
+  
+  res.json({
+    success: true,
+    data: tradeSpends
+  });
+}));
+
+router.get('/:id/trading-terms', authenticateToken, asyncHandler(async (req, res) => {
+  const TradingTerm = require('../models/TradingTerm');
+  const tradingTerms = await TradingTerm.find({ 'applicability.customers': req.params.id })
+    .sort({ createdAt: -1 });
+  
+  res.json({
+    success: true,
+    data: tradingTerms
+  });
+}));
+
+router.get('/:id/budgets', authenticateToken, asyncHandler(async (req, res) => {
+  const Budget = require('../models/Budget');
+  const budgets = await Budget.find({ 'scope.customers': req.params.id })
+    .sort({ year: -1 });
+  
+  res.json({
+    success: true,
+    data: budgets
+  });
+}));
+
+router.get('/:id/claims', authenticateToken, asyncHandler(async (req, res) => {
+  const Claim = require('../models/Claim');
+  const claims = await Claim.find({ customer: req.params.id })
+    .sort({ createdAt: -1 });
+  
+  res.json({
+    success: true,
+    data: claims
+  });
+}));
+
+router.get('/:id/deductions', authenticateToken, asyncHandler(async (req, res) => {
+  const Deduction = require('../models/Deduction');
+  const deductions = await Deduction.find({ customer: req.params.id })
+    .sort({ createdAt: -1 });
+  
+  res.json({
+    success: true,
+    data: deductions
+  });
+}));
+
+router.get('/:id/sales-history', authenticateToken, asyncHandler(async (req, res) => {
+  const SalesHistory = require('../models/SalesHistory');
+  const salesHistory = await SalesHistory.find({ customer: req.params.id })
+    .populate('product', 'name sku')
+    .sort({ date: -1 })
+    .limit(100);
+  
+  res.json({
+    success: true,
+    data: salesHistory
+  });
+}));
+
 module.exports = router;

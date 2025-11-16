@@ -151,4 +151,54 @@ router.get('/category/:category', authenticateToken, asyncHandler(async (req, re
   });
 }));
 
+router.get('/:id/promotions', authenticateToken, asyncHandler(async (req, res) => {
+  const Promotion = require('../models/Promotion');
+  const promotions = await Promotion.find({ 'products.product': req.params.id })
+    .populate('scope.customers.customer', 'name code')
+    .sort({ 'period.startDate': -1 });
+  
+  res.json({
+    success: true,
+    data: promotions
+  });
+}));
+
+router.get('/:id/campaigns', authenticateToken, asyncHandler(async (req, res) => {
+  const Campaign = require('../models/Campaign');
+  const Promotion = require('../models/Promotion');
+  
+  const promotions = await Promotion.find({ 'products.product': req.params.id }).select('campaign');
+  const campaignIds = [...new Set(promotions.map(p => p.campaign).filter(Boolean))];
+  const campaigns = await Campaign.find({ _id: { $in: campaignIds } });
+  
+  res.json({
+    success: true,
+    data: campaigns
+  });
+}));
+
+router.get('/:id/trading-terms', authenticateToken, asyncHandler(async (req, res) => {
+  const TradingTerm = require('../models/TradingTerm');
+  const tradingTerms = await TradingTerm.find({ 'applicability.products': req.params.id })
+    .sort({ createdAt: -1 });
+  
+  res.json({
+    success: true,
+    data: tradingTerms
+  });
+}));
+
+router.get('/:id/sales-history', authenticateToken, asyncHandler(async (req, res) => {
+  const SalesHistory = require('../models/SalesHistory');
+  const salesHistory = await SalesHistory.find({ product: req.params.id })
+    .populate('customer', 'name code')
+    .sort({ date: -1 })
+    .limit(100);
+  
+  res.json({
+    success: true,
+    data: salesHistory
+  });
+}));
+
 module.exports = router;
