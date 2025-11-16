@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+
+if (typeof window !== 'undefined') {
+  window.__TABS_V2_IMPORTED__ = true;
+  console.info('PromotionDetailWithTabs module loaded');
+}
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
