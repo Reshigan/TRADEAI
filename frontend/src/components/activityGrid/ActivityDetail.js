@@ -23,7 +23,7 @@ import {
   Category as CategoryIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { useAuth } from '../../contexts/AuthContext';
+
 import activityGridService from '../../services/api/activityGridService';
 import ActivityForm from './ActivityForm';
 
