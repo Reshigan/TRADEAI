@@ -1206,7 +1206,19 @@ function App() {
           } 
         />
         <Route 
-          path="/rebates" 
+          path="/activities/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ActivityFormPage />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/rebates"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
