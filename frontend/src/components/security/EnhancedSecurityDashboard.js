@@ -86,7 +86,7 @@ const EnhancedSecurityDashboard = () => {
   // Security data
   const [securityOverview, setSecurityOverview] = useState(null);
   const [securityEvents, setSecurityEvents] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
+  const [, setAuditLogs] = useState([]);
   const [userSessions, setUserSessions] = useState([]);
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);

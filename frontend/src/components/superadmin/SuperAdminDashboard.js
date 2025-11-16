@@ -50,8 +50,8 @@ export default function SuperAdminDashboard() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalTenants, setTotalTenants] = useState(0);
   const [createDialog, setCreateDialog] = useState(false);
-  const [licenseDialog, setLicenseDialog] = useState(false);
-  const [selectedTenant, setSelectedTenant] = useState(null);
+  const [, setLicenseDialog] = useState(false);
+  const [, setSelectedTenant] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
   useEffect(() => {

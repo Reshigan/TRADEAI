@@ -59,7 +59,7 @@ import {
   Approval,
   History
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts';
+import {PieChart, Pie, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line} from 'recharts';
 import axios from 'axios';
 
 const WorkflowDashboard = () => {
@@ -67,7 +67,7 @@ const WorkflowDashboard = () => {
   const [workflows, setWorkflows] = useState([]);
   const [workflowInstances, setWorkflowInstances] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [selectedWorkflow, setSelectedWorkflow] = useState(null);
+  null;
   const [selectedInstance, setSelectedInstance] = useState(null);
   const [createDialog, setCreateDialog] = useState({ open: false, type: 'workflow' });
   const [detailsDialog, setDetailsDialog] = useState({ open: false, data: null });

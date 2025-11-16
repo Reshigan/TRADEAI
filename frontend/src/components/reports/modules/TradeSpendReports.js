@@ -161,7 +161,7 @@ const TradeSpendReports = () => {
   // Calculate aggregate metrics
   const totalBudget = tradeSpends.reduce((sum, ts) => sum + (ts.budgetAllocated || 0), 0);
   const totalActualSpend = tradeSpends.reduce((sum, ts) => sum + (ts.actualSpend || 0), 0);
-  const totalSalesImpact = tradeSpends.reduce((sum, ts) => sum + (ts.salesImpact || 0), 0);
+  tradeSpends.reduce((sum, ts) => sum + (ts.salesImpact || 0), 0);
   const averageROI = tradeSpends.length > 0 
     ? tradeSpends.reduce((sum, ts) => sum + (ts.roi || 0), 0) / tradeSpends.length 
     : 0;

@@ -151,7 +151,7 @@ const PromotionReports = () => {
 
   // Calculate aggregate metrics
   const totalSpend = promotions.reduce((sum, promo) => sum + (promo.totalSpend || 0), 0);
-  const totalRevenue = promotions.reduce((sum, promo) => sum + (promo.totalRevenue || 0), 0);
+  promotions.reduce((sum, promo) => sum + (promo.totalRevenue || 0), 0);
   const averageROI = promotions.length > 0 
     ? promotions.reduce((sum, promo) => sum + (promo.roi || 0), 0) / promotions.length 
     : 0;

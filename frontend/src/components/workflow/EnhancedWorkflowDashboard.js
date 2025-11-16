@@ -95,7 +95,7 @@ const EnhancedWorkflowDashboard = () => {
   const [workflowOverview, setWorkflowOverview] = useState(null);
   const [activeWorkflows, setActiveWorkflows] = useState([]);
   const [pendingApprovals, setPendingApprovals] = useState([]);
-  const [workflowTemplates, setWorkflowTemplates] = useState([]);
+  const [, setWorkflowTemplates] = useState([]);
   const [workflowAnalytics, setWorkflowAnalytics] = useState(null);
   
   // Dialogs

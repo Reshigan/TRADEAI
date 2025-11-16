@@ -73,7 +73,6 @@ const SmartPromotionAssistant = ({
       };
 
       // Get ML prediction
-      const prediction = await mlService.analyzePromotionLift({
         promotionId: 'temp-' + Date.now()
       });
 

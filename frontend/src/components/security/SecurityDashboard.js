@@ -62,16 +62,15 @@ import {
   Policy as PolicyIcon,
   ReportProblem
 } from '@mui/icons-material';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell} from 'recharts';
 import { format, subDays, subHours } from 'date-fns';
 import api from '../../services/api';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const SecurityDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
