@@ -223,7 +223,7 @@ const TradeSpendReports = () => {
     </div>
   );
 
-  const formatNumber = (number) => {
+  const _formatNumber = (number) => {
     return new Intl.NumberFormat('en-US').format(number || 0);
   };
 

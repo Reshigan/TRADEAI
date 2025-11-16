@@ -118,7 +118,7 @@ const PromotionDetail = () => {
   };
 
   // Handle form submit
-  const handleFormSubmit = async (promotionData) => {
+  const handleFormSubmit = async (_promotionData) => {
     try {
       // In a real app, we would call the API
       // await promotionService.update(id, promotionData);

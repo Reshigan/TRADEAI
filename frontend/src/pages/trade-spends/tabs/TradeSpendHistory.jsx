@@ -3,7 +3,7 @@ import { Box, Paper, Typography, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import apiClient from '../../../services/api/apiClient';
 
-const TradeSpendHistory = ({ tradeSpendId, tradeSpend }) => {
+const TradeSpendHistory = ({ tradeSpendId, _tradeSpend }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 

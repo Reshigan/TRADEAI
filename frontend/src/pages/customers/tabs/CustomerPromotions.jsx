@@ -3,7 +3,7 @@ import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, 
 import { toast } from 'react-toastify';
 import apiClient from '../../../services/api/apiClient';
 
-const CustomerPromotions = ({ customerId, customer }) => {
+const CustomerPromotions = ({ customerId, _customer }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 

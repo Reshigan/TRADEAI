@@ -37,7 +37,7 @@ import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';
 import simulationService from '../../services/simulation/simulationService';
 
-const getAuthHeaders = () => {
+const _getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
