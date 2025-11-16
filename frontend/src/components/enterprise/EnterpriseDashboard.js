@@ -101,6 +101,7 @@ export default function EnterpriseDashboard() {
     setActiveTab(newValue);
   };
 
+  const showSnackbar = (message, severity = 'info') => {
     setSnackbar({ open: true, message, severity });
   };
 

@@ -239,6 +239,10 @@ const TradeSpendReports = () => {
     return `${(value || 0).toFixed(1)}%`;
   };
 
+  const TabPanel = ({ children, value, index }) => (
+    <div hidden={value !== index}>{value === index && children}</div>
+  );
+
   if (loading) {
     return (
       <Box sx={{ p: 3 }}>
