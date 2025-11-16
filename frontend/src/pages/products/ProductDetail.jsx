@@ -81,6 +81,9 @@ const ProductDetail = () => {
           <button onClick={() => navigate('/products')} className="btn-secondary">
             Back to List
           </button>
+          <button onClick={() => navigate(`/promotions?productId=${id}`)} className="btn-secondary">
+            View Promotions
+          </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit
           </button>

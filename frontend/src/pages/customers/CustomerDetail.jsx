@@ -82,6 +82,12 @@ const CustomerDetail = () => {
           <button onClick={() => navigate('/customers')} className="btn-secondary">
             Back to List
           </button>
+          <button onClick={() => navigate(`/promotions?customerId=${id}`)} className="btn-secondary">
+            View Promotions
+          </button>
+          <button onClick={() => navigate(`/trade-spends?customerId=${id}`)} className="btn-secondary">
+            View Trade Spends
+          </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit
           </button>

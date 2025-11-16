@@ -63,6 +63,9 @@ const VendorDetail = () => {
           <button onClick={() => navigate('/vendors')} className="btn-secondary">
             Back to List
           </button>
+          <button onClick={() => navigate(`/trade-spends?vendorId=${id}`)} className="btn-secondary">
+            View Trade Spends
+          </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit
           </button>
