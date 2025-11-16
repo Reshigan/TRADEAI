@@ -58,7 +58,7 @@ const CommandCenter = () => {
       const [budgets, promotions, tradeSpends] = await Promise.all([
         apiClient.get('/budgets'),
         apiClient.get('/promotions'),
-        apiClient.get('/tradespends')
+        apiClient.get('/trade-spends')
       ]);
 
       // Process data for dashboard
