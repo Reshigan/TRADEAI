@@ -73,6 +73,7 @@ const conflictsRoutes = require('./routes/conflicts');
 const approvalsRoutes = require('./routes/approvals');
 const claimsRoutes = require('./routes/claims');
 const deductionsRoutes = require('./routes/deductions');
+const hierarchyRoutes = require('./routes/hierarchy');
 
 // Create Express app
 const app = express();
@@ -333,6 +334,7 @@ app.use('/api/promotions/conflicts', authenticateToken, conflictsRoutes);
 app.use('/api/approvals', authenticateToken, approvalsRoutes);
 app.use('/api/claims', authenticateToken, claimsRoutes);
 app.use('/api/deductions', authenticateToken, deductionsRoutes);
+app.use('/api/hierarchy', authenticateToken, hierarchyRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
