@@ -63,6 +63,9 @@ const CampaignDetail = () => {
           <button onClick={() => navigate('/campaigns')} className="btn-secondary">
             Back to List
           </button>
+          <button onClick={() => navigate(`/promotions?campaignId=${id}`)} className="btn-secondary">
+            View Promotions
+          </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit
           </button>

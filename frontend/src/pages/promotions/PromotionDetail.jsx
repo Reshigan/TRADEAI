@@ -79,6 +79,9 @@ const PromotionDetail = () => {
           <button onClick={() => navigate('/promotions')} className="btn-secondary">
             Back to List
           </button>
+          <button onClick={() => navigate(`/trade-spends?promotionId=${id}`)} className="btn-secondary">
+            View Trade Spends
+          </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit
           </button>
