@@ -110,4 +110,53 @@ router.delete('/:id',
   tradeSpendController.deleteTradeSpend
 );
 
+router.get('/:id/accruals',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendAccruals
+);
+
+router.post('/:id/accruals',
+  checkPermission('trade_spend', 'update'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.addTradeSpendAccrual
+);
+
+router.get('/:id/documents',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendDocuments
+);
+
+router.post('/:id/documents',
+  checkPermission('trade_spend', 'update'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.addTradeSpendDocument
+);
+
+router.get('/:id/approvals',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendApprovals
+);
+
+router.get('/:id/performance',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendPerformance
+);
+
+router.get('/:id/history',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendHistory
+);
+
 module.exports = router;

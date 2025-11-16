@@ -111,4 +111,73 @@ router.delete('/:id',
   budgetController.deleteBudget
 );
 
+router.get('/:id/allocations',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.getBudgetAllocations
+);
+
+router.get('/:id/allocations/:month',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  param('month').isInt({ min: 1, max: 12 }),
+  validate,
+  budgetController.getBudgetAllocationByMonth
+);
+
+router.put('/:id/allocations/:month',
+  checkPermission('budget', 'update'),
+  ...budgetIdValidation,
+  param('month').isInt({ min: 1, max: 12 }),
+  validate,
+  budgetController.updateBudgetAllocationByMonth
+);
+
+router.get('/:id/spending',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.getBudgetSpending
+);
+
+router.post('/:id/transfers',
+  checkPermission('budget', 'update'),
+  ...budgetIdValidation,
+  body('fromMonth').isInt({ min: 1, max: 12 }),
+  body('toMonth').isInt({ min: 1, max: 12 }),
+  body('amount').isFloat({ min: 0 }),
+  body('category').isIn(['marketing', 'cashCoop', 'tradingTerms', 'promotions']),
+  validate,
+  budgetController.transferBudget
+);
+
+router.get('/:id/approvals',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.getBudgetApprovals
+);
+
+router.get('/:id/scenarios',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.getBudgetScenarios
+);
+
+router.get('/:id/forecast',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.getBudgetForecast
+);
+
+router.get('/:id/history',
+  checkPermission('budget', 'read'),
+  ...budgetIdValidation,
+  validate,
+  budgetController.getBudgetHistory
+);
+
 module.exports = router;
