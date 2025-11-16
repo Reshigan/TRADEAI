@@ -48,6 +48,7 @@ import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions'
 import AIDashboard from './pages/ai/AIDashboard';
 
 import JAMDashboard from './pages/dashboards/JAMDashboard';
+import HierarchyManager from './pages/hierarchy/HierarchyManager';
 import ManagerDashboard from './pages/dashboards/ManagerDashboard';
 
 // World-Class Redesign Components
@@ -1397,6 +1398,7 @@ function App() {
           <Route path="companies/new" element={<CompanyForm />} />
           <Route path="companies/:id" element={<CompanyDetail />} />
           <Route path="companies/:id/edit" element={<CompanyForm />} />
+          <Route path="hierarchy" element={<HierarchyManager />} />
           <Route path="security" element={<SettingsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
