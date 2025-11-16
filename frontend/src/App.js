@@ -95,6 +95,14 @@ import CampaignList from './pages/campaigns/CampaignList';
 import CampaignForm from './pages/campaigns/CampaignForm';
 import CampaignDetail from './pages/campaigns/CampaignDetail';
 
+// Level 3 Tabbed Detail Components
+import PromotionDetailWithTabs from './pages/promotions/PromotionDetailWithTabs';
+import BudgetDetailWithTabs from './pages/budgets/BudgetDetailWithTabs';
+import TradeSpendDetailWithTabs from './pages/trade-spends/TradeSpendDetailWithTabs';
+import CustomerDetailWithTabs from './pages/customers/CustomerDetailWithTabs';
+import ProductDetailWithTabs from './pages/products/ProductDetailWithTabs';
+import CampaignDetailWithTabs from './pages/campaigns/CampaignDetailWithTabs';
+
 // Activities Components
 import ActivityList from './pages/activities/ActivityList';
 import ActivityDetail from './components/activityGrid/ActivityDetail';
@@ -348,11 +356,23 @@ function App() {
           } 
         />
         <Route 
+          path="/budgets/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/budgets/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <BudgetDetail />
+                <BudgetDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -406,11 +426,23 @@ function App() {
           } 
         />
         <Route 
+          path="/trade-spends/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeSpendDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/trade-spends/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendDetail />
+                <TradeSpendDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -466,11 +498,23 @@ function App() {
           } 
         />
         <Route 
+          path="/promotions/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/promotions/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <PromotionDetail />
+                <PromotionDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -512,11 +556,23 @@ function App() {
           } 
         />
         <Route 
+          path="/customers/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CustomerDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/customers/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <Customer360New />
+                <CustomerDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -558,11 +614,23 @@ function App() {
           } 
         />
         <Route 
+          path="/products/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ProductDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/products/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <ProductDetail />
+                <ProductDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -822,11 +890,23 @@ function App() {
           } 
         />
         <Route 
+          path="/campaigns/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/campaigns/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <CampaignDetail />
+                <CampaignDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
