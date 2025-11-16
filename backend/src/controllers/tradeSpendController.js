@@ -77,7 +77,11 @@ exports.getTradeSpends = asyncHandler(async (req, res, next) => {
     spendType,
     status,
     customer,
+    customerId,
     vendor,
+    vendorId,
+    product,
+    productId,
     startDate,
     endDate,
     page = 1,
@@ -89,8 +93,9 @@ exports.getTradeSpends = asyncHandler(async (req, res, next) => {
   
   if (spendType) query.spendType = spendType;
   if (status) query.status = status;
-  if (customer) query.customer = customer;
-  if (vendor) query.vendor = vendor;
+  if (customer || customerId) query.customer = customer || customerId;
+  if (vendor || vendorId) query.vendor = vendor || vendorId;
+  if (product || productId) query.products = product || productId;
   
   if (startDate || endDate) {
     query['period.startDate'] = {};

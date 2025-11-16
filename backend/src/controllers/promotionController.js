@@ -91,7 +91,9 @@ exports.getPromotions = asyncHandler(async (req, res, next) => {
     startDate,
     endDate,
     customer,
+    customerId,
     product,
+    productId,
     page = 1,
     limit = 20,
     sort = '-createdAt'
@@ -108,8 +110,8 @@ exports.getPromotions = asyncHandler(async (req, res, next) => {
     if (endDate) query['period.startDate'].$lte = new Date(endDate);
   }
   
-  if (customer) query['scope.customers.customer'] = customer;
-  if (product) query['products.product'] = product;
+  if (customer || customerId) query['scope.customers.customer'] = customer || customerId;
+  if (product || productId) query['products.product'] = product || productId;
   
   // Apply user-based filtering
   if (req.user.role === 'kam' || req.user.role === 'sales_rep') {
