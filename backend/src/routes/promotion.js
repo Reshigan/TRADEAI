@@ -107,4 +107,135 @@ router.delete('/:id',
   promotionController.deletePromotion
 );
 
+
+router.get('/:id/products',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionProducts
+);
+
+router.post('/:id/products',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  body('products').isArray({ min: 1 }),
+  validate,
+  promotionController.addPromotionProducts
+);
+
+router.put('/:id/products/:productId',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  param('productId').isMongoId(),
+  validate,
+  promotionController.updatePromotionProduct
+);
+
+router.delete('/:id/products/:productId',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  param('productId').isMongoId(),
+  validate,
+  promotionController.removePromotionProduct
+);
+
+router.get('/:id/customers',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionCustomers
+);
+
+router.post('/:id/customers',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  body('customers').isArray({ min: 1 }),
+  validate,
+  promotionController.addPromotionCustomers
+);
+
+router.delete('/:id/customers/:customerId',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  param('customerId').isMongoId(),
+  validate,
+  promotionController.removePromotionCustomer
+);
+
+router.get('/:id/budget',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionBudget
+);
+
+router.put('/:id/budget',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.updatePromotionBudget
+);
+
+// Approvals
+router.get('/:id/approvals',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionApprovals
+);
+
+router.post('/:id/approvals/:approvalId/action',
+  authorize('kam', 'manager', 'director', 'finance', 'admin'),
+  param('id').isMongoId(),
+  param('approvalId').isMongoId(),
+  body('action').isIn(['approve', 'reject', 'reassign']),
+  body('comments').optional().isString(),
+  validate,
+  promotionController.processApproval
+);
+
+router.get('/:id/documents',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionDocuments
+);
+
+router.post('/:id/documents',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.addPromotionDocument
+);
+
+router.delete('/:id/documents/:documentId',
+  checkPermission('promotion', 'update'),
+  param('id').isMongoId(),
+  param('documentId').isMongoId(),
+  validate,
+  promotionController.removePromotionDocument
+);
+
+router.get('/:id/conflicts',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionConflicts
+);
+
+// Performance
+router.get('/:id/performance',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionPerformance
+);
+
+router.get('/:id/history',
+  checkPermission('promotion', 'read'),
+  param('id').isMongoId(),
+  validate,
+  promotionController.getPromotionHistory
+);
+
 module.exports = router;
