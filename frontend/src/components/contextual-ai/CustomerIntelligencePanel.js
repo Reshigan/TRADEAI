@@ -123,7 +123,6 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
     }
 
     // Action 2: Contact window
-    const bestContactHour = 10; // 10 AM
     const currentHour = new Date().getHours();
     const isOptimalTime = currentHour >= 10 && currentHour <= 12;
 

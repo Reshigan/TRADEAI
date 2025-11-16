@@ -16,7 +16,6 @@ import { ollamaService } from '../../services/ollama/ollamaService';
 const CustomerDetailEnhanced = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
   const [customer, setCustomer] = useState(null);
   const [relatedData, setRelatedData] = useState({ budgets: [], promotions: [], tradeSpends: [] });
   const [loading, setLoading] = useState(true);

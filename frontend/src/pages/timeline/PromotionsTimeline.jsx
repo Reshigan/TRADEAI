@@ -41,9 +41,7 @@ import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';
 import simulationService from '../../services/simulation/simulationService';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
-const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
@@ -238,7 +236,6 @@ const PromotionsTimeline = () => {
     }
   };
 
-  const getConflictSeverityColor = (severity) => {
     const colors = {
       low: 'info',
       medium: 'warning',
