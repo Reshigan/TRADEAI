@@ -40,7 +40,7 @@ const RealTimePriceOptimizer = ({
   const [price, setPrice] = useState(currentPrice || 15.99);
   const [impact, setImpact] = useState(null);
   const [strategies, setStrategies] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [setLoading] = useState(false);
 
   // Price range (±30% of current)
   const minPrice = Math.max(cost || 10, currentPrice * 0.7);

@@ -34,7 +34,7 @@ import {
 
 
 const AIInsightsFeed = ({ userId }) => {
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
   const [actions, setActions] = useState([]);
   const [performance, setPerformance] = useState(null);
   const [insights, setInsights] = useState([]);

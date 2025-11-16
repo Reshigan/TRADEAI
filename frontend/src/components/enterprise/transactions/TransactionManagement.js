@@ -51,7 +51,7 @@ export default function TransactionManagement() {
   });
   const [openDialog, setOpenDialog] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState(null);
-  const [actionMenu, setActionMenu] = useState(null);
+
 
   useEffect(() => {
     loadTransactions();

@@ -49,7 +49,7 @@ const SmartPromotionAssistant = ({
   const [comparison, setComparison] = useState(null);
   const [insights, setInsights] = useState([]);
   const [expanded, setExpanded] = useState(true);
-  const [error, setError] = useState(null);
+  const [setError] = useState(null);
 
   // Auto-calculate when form data changes
   useEffect(() => {

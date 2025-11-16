@@ -52,7 +52,7 @@ const CustomerEntryFlow = () => {
   });
   
   // AI state
-  const [aiProfile, setAiProfile] = useState(null);
+  const [setAiProfile] = useState(null);
   const [riskAssessment, setRiskAssessment] = useState(null);
   const [ltvPrediction, setLtvPrediction] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);

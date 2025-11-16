@@ -57,7 +57,7 @@ const SimulationStudio = () => {
     }
   ]);
   const [activeScenario, setActiveScenario] = useState('baseline');
-  const [compareMode, setCompareMode] = useState(false);
+  const [setCompareMode] = useState(false);
   const [globalConstraints, setGlobalConstraints] = useState({
     totalBudget: 100000,
     minROI: 1.5,

@@ -21,7 +21,7 @@ import api from '../../services/api';
 const RebatesList = () => {
   const navigate = useNavigate();
   const [rebates, setRebates] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
 
   useEffect(() => {
     loadRebates();

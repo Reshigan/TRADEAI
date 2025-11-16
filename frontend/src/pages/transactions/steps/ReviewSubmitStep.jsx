@@ -56,7 +56,7 @@ const PAYMENT_TERMS_LABELS = {
 };
 
 export default function ReviewSubmitStep({ data, customers, products }) {
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting] = useState(false);
 
   const customer = customers?.find(c => c._id === data.customerId);
   const amount = data.amount || {};

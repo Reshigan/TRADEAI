@@ -153,8 +153,8 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
-  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
-  const [walkthroughFeature, setWalkthroughFeature] = useState('');
+  const [setWalkthroughOpen] = useState(false);
+  const [setWalkthroughFeature] = useState('');
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,

@@ -31,7 +31,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const { user } = useAuth();
+
 
   useEffect(() => {
     if (open && activityId) {

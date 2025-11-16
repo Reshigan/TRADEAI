@@ -41,8 +41,8 @@ export default function BulkUploadTransactions() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadResult, setUploadResult] = useState(null);
-  const [previewData, setPreviewData] = useState([]);
-  const [showPreview, setShowPreview] = useState(false);
+
+
   const [errors, setErrors] = useState([]);
 
   const handleFileSelect = (event) => {

@@ -41,10 +41,10 @@ const BudgetConsole = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [loading, setLoading] = useState(true);
-  const [budgets, setBudgets] = useState([]);
+  const [setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
-  const [lockRatios, setLockRatios] = useState(false);
+
+
   const [reallocationSuggestions, setReallocationSuggestions] = useState([]);
   const [roiCurve, setRoiCurve] = useState(null);
   const [period, setPeriod] = useState('2025-Q4');

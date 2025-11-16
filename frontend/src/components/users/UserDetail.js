@@ -69,8 +69,8 @@ const UserDetail = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
-  const [loginHistory, setLoginHistory] = useState([]);
-  const [activityHistory, setActivityHistory] = useState([]);
+  const [loginHistory] = useState([]);
+  const [activityHistory] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',

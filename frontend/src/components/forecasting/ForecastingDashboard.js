@@ -64,7 +64,7 @@ const ForecastingDashboard = () => {
   const [salesForecast, setSalesForecast] = useState(null);
   const [demandForecast, setDemandForecast] = useState(null);
   const [budgetForecast, setBudgetForecast] = useState(null);
-  const [scenarioAnalysis, setScenarioAnalysis] = useState(null);
+
   
   // Filters
   const [filters, setFilters] = useState({
