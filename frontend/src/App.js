@@ -111,6 +111,12 @@ import VendorForm from './pages/vendors/VendorForm';
 
 // Admin Users Components
 import AdminUserList from './pages/admin/users/UserList';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+
+// Activity Page Wrappers
+import ActivityDetailPage from './pages/activities/ActivityDetailPage';
+import ActivityFormPage from './pages/activities/ActivityFormPage';
 
 // Auth Components
 import Register from './pages/auth/Register';
@@ -1180,7 +1186,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <ActivityForm />
+                <ActivityFormPage />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -1192,7 +1198,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <ActivityDetail />
+                <ActivityDetailPage />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -1359,54 +1365,29 @@ function App() {
             )
           } 
         />
+        {/* Admin Routes with AdminLayout */}
         <Route 
-          path="/admin/users"
+          path="/admin/*"
           element={
             isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <AdminUserList />
-              </Layout>
+              <AdminLayout user={user} onLogout={handleLogout} />
             ) : (
               <Navigate to="/" replace />
             )
-          } 
-        />
-        <Route 
-          path="/admin/users/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/admin/users/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/admin/users/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="users" element={<AdminUserList />} />
+          <Route path="users/new" element={<UserForm />} />
+          <Route path="users/:id" element={<UserDetail />} />
+          <Route path="users/:id/edit" element={<UserForm />} />
+          <Route path="companies" element={<CompanyList />} />
+          <Route path="companies/new" element={<CompanyForm />} />
+          <Route path="companies/:id" element={<CompanyDetail />} />
+          <Route path="companies/:id/edit" element={<CompanyForm />} />
+          <Route path="security" element={<SettingsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
         </Router>
