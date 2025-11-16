@@ -230,18 +230,13 @@ const TradeSpendReports = () => {
     </div>
   );
 
-
-
+  const formatNumber = (number) => {
     return new Intl.NumberFormat('en-US').format(number || 0);
   };
 
   const formatPercentage = (value) => {
     return `${(value || 0).toFixed(1)}%`;
   };
-
-  const TabPanel = ({ children, value, index }) => (
-    <div hidden={value !== index}>{value === index && children}</div>
-  );
 
   if (loading) {
     return (
