@@ -8,7 +8,7 @@ const AIInsightCard = ({ insight }) => {
     description,
     confidence = 0,
     impact = 'medium',
-    category = 'general',
+    _category = 'general',
     actionable = true,
     recommended_action,
     timestamp

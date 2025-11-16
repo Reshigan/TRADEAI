@@ -134,7 +134,7 @@ const CompanyDetail = () => {
       }
 
       setLoading(false);
-    } catch (error) {
+    } catch (_error) {
       console.error('Error fetching company data:', error);
       setSnackbar({
         open: true,

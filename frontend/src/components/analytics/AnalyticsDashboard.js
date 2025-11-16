@@ -114,7 +114,7 @@ const AnalyticsDashboard = () => {
   };
 
   // Handle filter change
-  const handleFilterChange = (name, value) => {
+  const _handleFilterChange = (name, value) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value

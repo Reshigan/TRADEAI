@@ -70,7 +70,7 @@ const HierarchicalBudgetManager = () => {
     { value: 'custom', label: 'Custom Period' }
   ];
 
-  const allocationTypes = [
+  const _allocationTypes = [
     { value: 'percentage', label: 'Percentage Based' },
     { value: 'fixed', label: 'Fixed Amount' },
     { value: 'performance', label: 'Performance Based' },
