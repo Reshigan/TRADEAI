@@ -1,9 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
-if (typeof window !== 'undefined') {
-  window.__TABS_V2_IMPORTED__ = true;
-  console.info('PromotionDetailWithTabs module loaded');
-}
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -34,6 +29,11 @@ import PromotionDocuments from './tabs/PromotionDocuments';
 import PromotionConflicts from './tabs/PromotionConflicts';
 import PromotionPerformance from './tabs/PromotionPerformance';
 import PromotionHistory from './tabs/PromotionHistory';
+
+if (typeof window !== 'undefined') {
+  window.__TABS_V2_IMPORTED__ = true;
+  console.info('PromotionDetailWithTabs module loaded');
+}
 
 const PromotionDetailWithTabs = () => {
   const { id, tab = 'overview' } = useParams();
