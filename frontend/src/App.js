@@ -13,7 +13,7 @@ import Layout from './components/Layout';
 import NotFound from './components/NotFound';
 import { BudgetList, BudgetDetail, BudgetPage } from './components/budgets';
 import { TradeSpendList, TradeSpendDetail } from './components/tradeSpends';
-import { PromotionList, PromotionDetail } from './components/promotions';
+import { PromotionList } from './components/promotions';
 import { CustomerList, CustomerDetail } from './components/customers';
 import { ProductList, ProductDetail } from './components/products';
 import { AnalyticsDashboard } from './components/analytics';
