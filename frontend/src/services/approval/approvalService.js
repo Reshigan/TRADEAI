@@ -82,4 +82,5 @@ class ApprovalService {
   }
 }
 
-export default new ApprovalService();
+const approvalService = new ApprovalService();
+export default approvalService;

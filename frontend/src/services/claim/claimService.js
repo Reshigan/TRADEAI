@@ -108,4 +108,5 @@ class ClaimService {
   }
 }
 
-export default new ClaimService();
+const claimService = new ClaimService();
+export default claimService;

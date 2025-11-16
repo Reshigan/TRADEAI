@@ -154,4 +154,5 @@ class ActivityGridService {
   }
 }
 
-export default new ActivityGridService();
+const activityGridService = new ActivityGridService();
+export default activityGridService;

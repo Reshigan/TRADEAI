@@ -415,7 +415,7 @@ function generateMockRecommendations(params) {
 }
 
 // Export all functions
-export default {
+const mlService = {
   checkMLHealth,
   forecastDemand,
   optimizePrice,
@@ -423,3 +423,4 @@ export default {
   getProductRecommendations,
   batchPredict
 };
+export default mlService;

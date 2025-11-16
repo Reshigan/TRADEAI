@@ -372,7 +372,7 @@ export const dashboardsApi = {
   }
 };
 
-export default {
+const enterpriseApi = {
   enterpriseBudget: enterpriseBudgetApi,
   tradeSpend: tradeSpendApi,
   promotionSimulation: promotionSimulationApi,
@@ -381,3 +381,4 @@ export default {
   simulations: simulationsApi,
   dashboards: dashboardsApi
 };
+export default enterpriseApi;
