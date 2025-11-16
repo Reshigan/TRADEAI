@@ -539,3 +539,129 @@ exports.deleteTradeSpend = asyncHandler(async (req, res, next) => {
     message: 'Trade spend deleted successfully'
   });
 });
+
+exports.getTradeSpendAccruals = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id);
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: tradeSpend.accruals || []
+  });
+});
+
+exports.addTradeSpendAccrual = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id);
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  if (!tradeSpend.accruals) {
+    tradeSpend.accruals = [];
+  }
+  
+  tradeSpend.accruals.push({
+    ...req.body,
+    createdBy: req.user._id,
+    createdAt: new Date()
+  });
+  
+  await tradeSpend.save();
+  
+  res.json({
+    success: true,
+    data: tradeSpend.accruals
+  });
+});
+
+exports.getTradeSpendDocuments = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id);
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: tradeSpend.documents || []
+  });
+});
+
+exports.addTradeSpendDocument = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id);
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  if (!tradeSpend.documents) {
+    tradeSpend.documents = [];
+  }
+  
+  tradeSpend.documents.push({
+    ...req.body,
+    uploadedBy: req.user._id,
+    uploadedAt: new Date()
+  });
+  
+  await tradeSpend.save();
+  
+  res.json({
+    success: true,
+    data: tradeSpend.documents
+  });
+});
+
+exports.getTradeSpendApprovals = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id)
+    .populate('approvals.approver', 'firstName lastName email role');
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: tradeSpend.approvals || []
+  });
+});
+
+exports.getTradeSpendPerformance = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id);
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  const performance = {
+    requested: tradeSpend.amount.requested,
+    approved: tradeSpend.amount.approved,
+    spent: tradeSpend.amount.spent,
+    remaining: tradeSpend.amount.approved - tradeSpend.amount.spent,
+    utilizationRate: tradeSpend.amount.approved > 0 ? 
+      (tradeSpend.amount.spent / tradeSpend.amount.approved) * 100 : 0
+  };
+  
+  res.json({
+    success: true,
+    data: performance
+  });
+});
+
+exports.getTradeSpendHistory = asyncHandler(async (req, res, next) => {
+  const tradeSpend = await TradeSpend.findById(req.params.id)
+    .populate('history.performedBy', 'firstName lastName email');
+  
+  if (!tradeSpend) {
+    throw new AppError('Trade spend not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: tradeSpend.history || []
+  });
+});

@@ -457,3 +457,187 @@ exports.deleteBudget = asyncHandler(async (req, res, next) => {
     message: 'Budget deleted successfully'
   });
 });
+
+exports.getBudgetAllocations = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: budget.budgetLines || []
+  });
+});
+
+exports.getBudgetAllocationByMonth = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  const month = parseInt(req.params.month);
+  const allocation = budget.budgetLines.find(line => line.month === month);
+  
+  if (!allocation) {
+    throw new AppError('Allocation not found for this month', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: allocation
+  });
+});
+
+exports.updateBudgetAllocationByMonth = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  if (budget.status === 'locked' || budget.status === 'approved') {
+    throw new AppError('Cannot update locked or approved budget', 400);
+  }
+  
+  const month = parseInt(req.params.month);
+  const lineIndex = budget.budgetLines.findIndex(line => line.month === month);
+  
+  if (lineIndex === -1) {
+    budget.budgetLines.push({ month, ...req.body });
+  } else {
+    Object.assign(budget.budgetLines[lineIndex], req.body);
+  }
+  
+  await budget.save();
+  
+  res.json({
+    success: true,
+    data: budget.budgetLines[lineIndex === -1 ? budget.budgetLines.length - 1 : lineIndex]
+  });
+});
+
+exports.getBudgetSpending = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  const spending = budget.budgetLines.map(line => ({
+    month: line.month,
+    marketing: line.tradeSpend.marketing,
+    cashCoop: line.tradeSpend.cashCoop,
+    tradingTerms: line.tradeSpend.tradingTerms,
+    promotions: line.tradeSpend.promotions
+  }));
+  
+  res.json({
+    success: true,
+    data: spending
+  });
+});
+
+exports.transferBudget = asyncHandler(async (req, res, next) => {
+  const { fromMonth, toMonth, amount, category } = req.body;
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  if (budget.status === 'locked') {
+    throw new AppError('Cannot transfer from locked budget', 400);
+  }
+  
+  const fromLine = budget.budgetLines.find(line => line.month === fromMonth);
+  const toLine = budget.budgetLines.find(line => line.month === toMonth);
+  
+  if (!fromLine || !toLine) {
+    throw new AppError('Invalid month specified', 400);
+  }
+  
+  if (fromLine.tradeSpend[category].budget < amount) {
+    throw new AppError('Insufficient budget to transfer', 400);
+  }
+  
+  fromLine.tradeSpend[category].budget -= amount;
+  toLine.tradeSpend[category].budget += amount;
+  
+  budget.history.push({
+    action: 'budget_transfer',
+    performedBy: req.user._id,
+    performedDate: new Date(),
+    comment: `Transferred ${amount} from month ${fromMonth} to ${toMonth} in ${category}`
+  });
+  
+  await budget.save();
+  
+  res.json({
+    success: true,
+    message: 'Budget transferred successfully',
+    data: { fromLine, toLine }
+  });
+});
+
+exports.getBudgetApprovals = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id)
+    .populate('approvals.approver', 'firstName lastName email role');
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: budget.approvals || []
+  });
+});
+
+exports.getBudgetScenarios = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  const scenarios = await Budget.find({
+    year: budget.year,
+    budgetType: 'scenario',
+    'comparisons.budgetId': budget._id
+  });
+  
+  res.json({
+    success: true,
+    data: scenarios
+  });
+});
+
+exports.getBudgetForecast = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id);
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: budget.mlForecast || {}
+  });
+});
+
+exports.getBudgetHistory = asyncHandler(async (req, res, next) => {
+  const budget = await Budget.findById(req.params.id)
+    .populate('history.performedBy', 'firstName lastName email');
+  
+  if (!budget) {
+    throw new AppError('Budget not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: budget.history || []
+  });
+});
