@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import BudgetAIInsights from '../../components/ai/budgets/BudgetAIInsights';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
 const BudgetOverview = () => {
   const navigate = useNavigate();
@@ -77,6 +78,29 @@ const BudgetOverview = () => {
           <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Remaining</div>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(summary.remaining)}</div>
         </div>
+      </div>
+
+      <div style={{ marginBottom: '30px' }}>
+        <BudgetAIInsights 
+          budget={{
+            _id: 'overview',
+            name: 'Overall Budget Portfolio',
+            totalAmount: summary.total,
+            allocation: summary.allocated,
+            spendRate: summary.allocated > 0 ? (summary.spent / summary.allocated) * 100 : 0,
+            remainingAmount: summary.remaining,
+            performance: budgets.map(b => ({ id: b._id, name: b.budgetName, roi: b.roi || 0 }))
+          }}
+          onApplyReallocation={(reallocationData) => {
+            console.log('Apply reallocation:', reallocationData);
+          }}
+          onApplyOptimization={(optimizationData) => {
+            console.log('Apply optimization:', optimizationData);
+          }}
+          onApplyForecasting={(forecastData) => {
+            console.log('Apply forecasting:', forecastData);
+          }}
+        />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>

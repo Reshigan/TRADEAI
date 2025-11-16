@@ -51,6 +51,8 @@ const mlRoutes = require('./routes/ml');
 const aiRoutes = require('./routes/ai');
 const aiPromotionRoutes = require('./routes/aiPromotion');
 const aiChatbotRoutes = require('./routes/aiChatbot');
+const aiOrchestratorRoutes = require('./routes/aiOrchestrator');
+const ollamaRoutes = require('./routes/ollama');
 const salesRoutes = require('./routes/sales');
 const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
@@ -64,6 +66,14 @@ const forwardBuyRoutes = require('./routes/forwardBuy');
 const currencyRoutes = require('./routes/currency');
 const rebateRoutes = require('./routes/rebate');
 const tradeSpendAnalyticsRoutes = require('./routes/tradeSpendAnalytics');
+const simulationsRoutes = require('./routes/simulations');
+const recommendationsRoutes = require('./routes/recommendations');
+const optimizerRoutes = require('./routes/optimizer');
+const conflictsRoutes = require('./routes/conflicts');
+const approvalsRoutes = require('./routes/approvals');
+const claimsRoutes = require('./routes/claims');
+const deductionsRoutes = require('./routes/deductions');
+const hierarchyRoutes = require('./routes/hierarchy');
 
 // Create Express app
 const app = express();
@@ -294,6 +304,8 @@ app.use('/api/ml', authenticateToken, mlRoutes);
 app.use('/api/ai', aiRoutes); // AI routes have their own auth middleware
 app.use('/api/ai-promotion', authenticateToken, aiPromotionRoutes);
 app.use('/api/ai-chatbot', authenticateToken, aiChatbotRoutes);
+app.use('/api/ai-orchestrator', aiOrchestratorRoutes); // AI orchestrator with Ollama
+app.use('/api/ollama', ollamaRoutes); // Ollama LLM endpoints
 
 // Currency conversion routes
 app.use('/api', authenticateToken, currencyRoutes);
@@ -312,6 +324,17 @@ app.use('/api/transactions', authenticateToken, transactionRoutes);
 app.use('/api/baseline', authenticateToken, baselineRoutes);
 app.use('/api/cannibalization', authenticateToken, cannibalizationRoutes);
 app.use('/api/forward-buy', authenticateToken, forwardBuyRoutes);
+
+// Simulation and optimization routes
+app.use('/api/simulations', authenticateToken, simulationsRoutes);
+app.use('/api/recommendations', authenticateToken, recommendationsRoutes);
+app.use('/api/optimizer', authenticateToken, optimizerRoutes);
+app.use('/api/promotions/conflicts', authenticateToken, conflictsRoutes);
+
+app.use('/api/approvals', authenticateToken, approvalsRoutes);
+app.use('/api/claims', authenticateToken, claimsRoutes);
+app.use('/api/deductions', authenticateToken, deductionsRoutes);
+app.use('/api/hierarchy', authenticateToken, hierarchyRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);

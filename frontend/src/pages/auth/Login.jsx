@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import newLogo from '../../assets/new_logo.svg';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -53,8 +54,13 @@ const Login = () => {
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <img 
+            src={newLogo} 
+            alt="Trade AI Logo"
+            style={{ height: '50px', marginBottom: '15px' }}
+          />
           <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
-            🚀 TRADEAI
+            TRADEAI
           </h1>
           <p style={{ color: '#666', fontSize: '14px' }}>
             Sign in to your account

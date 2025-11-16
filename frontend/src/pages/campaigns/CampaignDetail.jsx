@@ -19,7 +19,7 @@ const CampaignDetail = () => {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/campaigns/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/campaigns/${id}`);
       setCampaign(response.data.data || response.data);
       setError(null);
     } catch (err) {
@@ -36,7 +36,7 @@ const CampaignDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this campaign?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/campaigns/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/campaigns/${id}`);
         navigate('/campaigns');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete campaign');
@@ -62,6 +62,9 @@ const CampaignDetail = () => {
         <div className="header-actions">
           <button onClick={() => navigate('/campaigns')} className="btn-secondary">
             Back to List
+          </button>
+          <button onClick={() => navigate(`/promotions?campaignId=${id}`)} className="btn-secondary">
+            View Promotions
           </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit

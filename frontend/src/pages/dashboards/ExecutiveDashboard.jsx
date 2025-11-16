@@ -26,7 +26,7 @@ ChartJS.register(
   Filler
 );
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
 const ExecutiveDashboard = () => {
   const [loading, setLoading] = useState(true);

@@ -13,7 +13,7 @@ const CSVExport = ({ entityType, filters = {} }) => {
 
       const params = new URLSearchParams(filters);
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/${entityType}s/export?${params}`,
+        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/${entityType}s/export?${params}`,
         {
           responseType: 'blob'
         }

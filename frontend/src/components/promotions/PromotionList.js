@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -22,38 +22,49 @@ import {
 import { format } from 'date-fns';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
-import { promotionService, customerService } from '../../services/api';
+import { promotionService, customerService, productService } from '../../services/api';
 import PromotionForm from './PromotionForm';
-
-// No more mock data - using real API calls
 
 const PromotionList = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [openForm, setOpenForm] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [filters, setFilters] = useState({
-    customer: '',
+    customerId: searchParams.get('customerId') || '',
+    productId: searchParams.get('productId') || '',
     status: '',
     search: ''
   });
   const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
 
-  // Fetch promotions on component mount
+  // Fetch promotions when filters change
   useEffect(() => {
     fetchPromotions();
+  }, [filters.customerId, filters.productId, filters.status]);
+
+  // Fetch customers and products on mount
+  useEffect(() => {
     fetchCustomers();
+    fetchProducts();
   }, []);
 
-  // Fetch promotions from API
+  // Fetch promotions from API with filters
   const fetchPromotions = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const response = await promotionService.getAll();
+      const params = {};
+      if (filters.customerId) params.customerId = filters.customerId;
+      if (filters.productId) params.productId = filters.productId;
+      if (filters.status) params.status = filters.status;
+      
+      const response = await promotionService.getAll(params);
       setPromotions(response.data || response);
       setLoading(false);
     } catch (err) {
@@ -70,8 +81,18 @@ const PromotionList = () => {
       setCustomers(response.data || response);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
-      // Set empty array if API fails
       setCustomers([]);
+    }
+  };
+
+  // Fetch products from API
+  const fetchProducts = async () => {
+    try {
+      const response = await productService.getAll();
+      setProducts(response.data || response);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+      setProducts([]);
     }
   };
 
@@ -121,26 +142,16 @@ const PromotionList = () => {
     }
   };
 
-  // Apply filters to promotions
+  // Apply client-side search filter (backend handles customer/product/status filtering)
   const filteredPromotions = promotions.filter((promotion) => {
-    // Apply customer filter
-    if (filters.customer && promotion.customer.id !== filters.customer) {
-      return false;
-    }
-    
-    // Apply status filter
-    if (filters.status && promotion.status !== filters.status) {
-      return false;
-    }
-    
     // Apply search filter
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       return (
-        promotion.name.toLowerCase().includes(searchTerm) ||
-        promotion.customer.name.toLowerCase().includes(searchTerm) ||
-        promotion.description.toLowerCase().includes(searchTerm) ||
-        promotion.status.toLowerCase().includes(searchTerm)
+        promotion.name?.toLowerCase().includes(searchTerm) ||
+        promotion.customer?.name?.toLowerCase().includes(searchTerm) ||
+        promotion.description?.toLowerCase().includes(searchTerm) ||
+        promotion.status?.toLowerCase().includes(searchTerm)
       );
     }
     
@@ -219,26 +230,45 @@ const PromotionList = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 select
                 label="Customer"
-                name="customer"
-                value={filters.customer}
+                name="customerId"
+                value={filters.customerId}
                 onChange={handleFilterChange}
                 variant="outlined"
                 size="small"
               >
                 <MenuItem value="">All Customers</MenuItem>
                 {customers.map((customer) => (
-                  <MenuItem key={customer.id} value={customer.id}>
+                  <MenuItem key={customer._id || customer.id} value={customer._id || customer.id}>
                     {customer.name}
                   </MenuItem>
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                select
+                label="Product"
+                name="productId"
+                value={filters.productId}
+                onChange={handleFilterChange}
+                variant="outlined"
+                size="small"
+              >
+                <MenuItem value="">All Products</MenuItem>
+                {products.map((product) => (
+                  <MenuItem key={product._id || product.id} value={product._id || product.id}>
+                    {product.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 select
@@ -257,7 +287,7 @@ const PromotionList = () => {
                 <MenuItem value="cancelled">Cancelled</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Search"

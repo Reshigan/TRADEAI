@@ -31,7 +31,7 @@ const VendorForm = () => {
   const fetchVendor = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
       const vendor = response.data.data || response.data;
       setFormData({
         name: vendor.name || '',
@@ -62,7 +62,7 @@ const VendorForm = () => {
 
     try {
       setSaving(true);
-      const url = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/vendors${isEditMode ? `/${id}` : ''}`;
+      const url = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors${isEditMode ? `/${id}` : ''}`;
       await axios[isEditMode ? 'put' : 'post'](url, formData);
       navigate('/vendors');
     } catch (err) {

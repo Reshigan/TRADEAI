@@ -35,12 +35,15 @@ import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { tradeSpendService, budgetService } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
-
+import { DetailPageSkeleton } from '../common/SkeletonLoader';
+import { useToast } from '../common/ToastNotification';
+import analytics from '../../utils/analytics';
 
 
 const TradeSpendDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [tradeSpend, setTradeSpend] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -87,32 +90,29 @@ const TradeSpendDetail = () => {
     setTabValue(newValue);
   };
 
-  // Handle edit trade spend
   const handleEditTradeSpend = () => {
+    analytics.trackEvent('trade_spend_edit_clicked', { tradeSpendId: id });
     navigate(`/trade-spends/${id}/edit`);
   };
 
-  // Handle delete trade spend
   const handleDeleteTradeSpend = () => {
     setOpenDeleteDialog(true);
   };
 
-  // Handle confirm delete
   const handleConfirmDelete = async () => {
     setDeleteLoading(true);
     
     try {
-      // In a real app, we would call the API
-      // await tradeSpendService.delete(id);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setDeleteLoading(false);
-        setOpenDeleteDialog(false);
-        navigate('/trade-spends');
-      }, 1000);
+      await tradeSpendService.delete(id);
+      analytics.trackEvent('trade_spend_deleted', { tradeSpendId: id });
+      toast.success('Trade spend deleted successfully!');
+      setDeleteLoading(false);
+      setOpenDeleteDialog(false);
+      navigate('/trade-spends');
     } catch (err) {
       console.error('Failed to delete trade spend:', err);
+      const errorMsg = err.message || 'Failed to delete trade spend';
+      toast.error(errorMsg);
       setDeleteLoading(false);
     }
   };

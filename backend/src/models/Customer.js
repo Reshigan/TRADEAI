@@ -290,6 +290,100 @@ const customerSchema = new mongoose.Schema({
     date: Date
   }],
   
+  aiInsights: {
+    ltv: {
+      predicted: Number,
+      confidence: Number,
+      range: {
+        min: Number,
+        max: Number
+      },
+      modelVersion: String,
+      calculatedAt: Date,
+      featureAttribution: [{
+        feature: String,
+        impact: Number
+      }]
+    },
+    
+    churnRisk: {
+      score: Number,
+      risk: {
+        type: String,
+        enum: ['low', 'medium', 'high', 'critical']
+      },
+      factors: [{
+        factor: String,
+        impact: Number,
+        description: String
+      }],
+      calculatedAt: Date,
+      modelVersion: String
+    },
+    
+    // Customer Segmentation
+    segment: {
+      current: {
+        type: String,
+        enum: ['Champions', 'Loyal', 'Potential Loyalists', 'At Risk', 'Need Attention', 'Lost', 'New']
+      },
+      rfm: {
+        recency: Number,
+        frequency: Number,
+        monetary: Number,
+        score: Number
+      },
+      updatedAt: Date,
+      previousSegment: String,
+      segmentChangedAt: Date
+    },
+    
+    nextBestAction: {
+      action: String,
+      actionType: {
+        type: String,
+        enum: ['promotion', 'discount', 'engagement', 'retention', 'cross_sell', 'upsell']
+      },
+      description: String,
+      expectedRevenue: Number,
+      confidence: Number,
+      priority: {
+        type: Number,
+        min: 1,
+        max: 10
+      },
+      validUntil: Date,
+      createdAt: Date,
+      executed: Boolean,
+      executedAt: Date,
+      executedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      outcome: {
+        success: Boolean,
+        actualRevenue: Number,
+        notes: String
+      }
+    },
+    
+    priceSensitivity: {
+      elasticity: Number,
+      optimalDiscountRange: {
+        min: Number,
+        max: Number
+      },
+      calculatedAt: Date
+    },
+    
+    promotionResponsiveness: {
+      score: Number,
+      preferredMechanics: [String],
+      avgUplift: Number,
+      calculatedAt: Date
+    }
+  },
+  
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
   

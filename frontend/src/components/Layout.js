@@ -50,12 +50,16 @@ import {
   Lightbulb as LightbulbIcon,
   Rocket as RocketIcon,
   TrendingUp as MonitorIcon,
-  Storage as DataIcon
+  Storage as DataIcon,
+  Assignment as AssignmentIcon,
+  Receipt as ReceiptIcon,
+  Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import QuickActions from './common/QuickActions';
 import SearchBar from './common/SearchBar';
 import Breadcrumbs from './common/Breadcrumbs';
 import AIAssistant from './AIAssistant/AIAssistant';
+import newLogo from '../assets/new_logo.svg';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
 // import { Walkthrough } from './common';
@@ -66,35 +70,60 @@ const getMenuItems = (user) => {
   const baseItems = [
     { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'NEW' },
     {
-      text: '📊 Plan & Budget',
-      icon: <BudgetIcon />,
+      text: '📋 Plan',
+      icon: <LightbulbIcon />,
       subItems: [
-        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow', badge: 'AI' },
-        { text: 'Budget Management', icon: <BudgetIcon />, path: '/budgets' },
-        { text: 'Budget Monitoring', icon: <MonitorIcon />, path: '/budgets?view=monitor' },
+        { text: 'Promotion Planner', icon: <PromotionIcon />, path: '/promotion-planner', badge: 'AI' },
+        { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
+        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
+        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
+        { text: 'All Budgets', icon: <BudgetIcon />, path: '/budgets' },
       ]
     },
     {
-      text: '✨ Create & Execute',
+      text: '🚀 Execute',
       icon: <RocketIcon />,
       subItems: [
-        { text: 'Promotion Wizard', icon: <PromotionIcon />, path: '/promotions/new-flow', badge: 'AI' },
-        { text: 'Trade Spend Request', icon: <TradeSpendIcon />, path: '/trade-spends/new' },
-        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-        { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
-        { text: 'All Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Promotions Timeline', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'NEW' },
         { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
+        { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
+        { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
       ]
     },
     {
-      text: '📈 Monitor & Optimize',
-      icon: <MonitorIcon />,
+      text: '📊 Analyze',
+      icon: <AnalyticsIcon />,
       subItems: [
         { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
         { text: 'AI Insights', icon: <AIIcon />, path: '/analytics' },
         { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
         { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
-        { text: 'Simulations', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
+    {
+      text: '🎯 Optimize',
+      icon: <MonitorIcon />,
+      subItems: [
+        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
+        { text: 'Budget Reallocation', icon: <BudgetIcon />, path: '/budget-console' },
+        { text: 'Scenario Planning', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
+    {
+      text: '✅ Approvals',
+      icon: <AssignmentIcon />,
+      subItems: [
+        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'NEW' },
+      ]
+    },
+    {
+      text: '💰 Claims & Deductions',
+      icon: <ReceiptIcon />,
+      subItems: [
+        { text: 'Claims', icon: <ReceiptIcon />, path: '/claims', badge: 'NEW' },
+        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions', badge: 'NEW' },
+        { text: 'Reconciliation', icon: <AssessmentIcon />, path: '/deductions/reconciliation', badge: 'NEW' },
       ]
     },
     {
@@ -198,7 +227,7 @@ const Layout = ({ children, user, onLogout }) => {
     <div>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/images/modern-logo-bold-new.svg" alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
+          <img src={newLogo} alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
           <Typography 
             variant="h6" 
             noWrap 

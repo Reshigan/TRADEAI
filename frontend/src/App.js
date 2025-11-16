@@ -4,13 +4,16 @@ import './styles/App.css';
 
 // Import components
 import ErrorBoundary from './components/common/ErrorBoundary';
+import { ToastProvider } from './components/common/ToastNotification';
+import analytics from './utils/analytics';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
 import NotFound from './components/NotFound';
 import { BudgetList, BudgetDetail, BudgetPage } from './components/budgets';
 import { TradeSpendList, TradeSpendDetail } from './components/tradeSpends';
-import { PromotionList, PromotionDetail } from './components/promotions';
+import { PromotionList } from './components/promotions';
 import { CustomerList, CustomerDetail } from './components/customers';
 import { ProductList, ProductDetail } from './components/products';
 import { AnalyticsDashboard } from './components/analytics';
@@ -44,6 +47,14 @@ import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions'
 // AI Dashboard (Feature 7.2)
 import AIDashboard from './pages/ai/AIDashboard';
 
+import JAMDashboard from './pages/dashboards/JAMDashboard';
+import HierarchyManager from './pages/hierarchy/HierarchyManager';
+import ManagerDashboard from './pages/dashboards/ManagerDashboard';
+
+// World-Class Redesign Components
+import CommandBar from './components/command/CommandBar';
+import CopilotPanel from './components/copilot/CopilotPanel';
+
 // AI Assistant Component
 import AIAssistant from './components/AIAssistant/AIAssistant';
 
@@ -59,6 +70,69 @@ import TradeSpendEdit from './components/tradeSpends/TradeSpendEdit';
 import CustomerEdit from './components/customers/CustomerEdit';
 import ProductEdit from './components/products/ProductEdit';
 
+import TradeSpendListNew from './pages/tradespend/TradeSpendList';
+import TradingTermsListNew from './pages/tradingterms/TradingTermsList';
+import ActivityGridCalendar from './pages/activitygrid/ActivityGridCalendar';
+import SimulationStudioNew from './pages/simulation/SimulationStudio';
+import PromotionsTimelineNew from './pages/timeline/PromotionsTimeline';
+import Customer360New from './pages/customer360/Customer360';
+import BudgetConsoleNew from './pages/budgetconsole/BudgetConsole';
+import PromotionPlannerNew from './pages/promotions/PromotionPlanner';
+
+// Approvals, Claims, and Deductions Components
+import ApprovalsList from './pages/approvals/ApprovalsList';
+import ApprovalDetail from './pages/approvals/ApprovalDetail';
+import ClaimsList from './pages/claims/ClaimsList';
+import ClaimDetail from './pages/claims/ClaimDetail';
+import CreateClaim from './pages/claims/CreateClaim';
+import DeductionsList from './pages/deductions/DeductionsList';
+import DeductionDetail from './pages/deductions/DeductionDetail';
+import CreateDeduction from './pages/deductions/CreateDeduction';
+import ReconciliationDashboard from './pages/deductions/ReconciliationDashboard';
+
+// Campaign Components
+import CampaignList from './pages/campaigns/CampaignList';
+import CampaignForm from './pages/campaigns/CampaignForm';
+import CampaignDetail from './pages/campaigns/CampaignDetail';
+
+// Level 3 Tabbed Detail Components
+import PromotionDetailWithTabs from './pages/promotions/PromotionDetailWithTabs';
+import BudgetDetailWithTabs from './pages/budgets/BudgetDetailWithTabs';
+import TradeSpendDetailWithTabs from './pages/trade-spends/TradeSpendDetailWithTabs';
+import CustomerDetailWithTabs from './pages/customers/CustomerDetailWithTabs';
+import ProductDetailWithTabs from './pages/products/ProductDetailWithTabs';
+import CampaignDetailWithTabs from './pages/campaigns/CampaignDetailWithTabs';
+
+// Activities Components
+import ActivityList from './pages/activities/ActivityList';
+import ActivityDetail from './components/activityGrid/ActivityDetail';
+import ActivityForm from './components/activityGrid/ActivityForm';
+
+// Rebates Components
+import RebatesList from './pages/rebates/RebatesList';
+import RebateDetail from './pages/rebates/RebateDetail';
+import RebateForm from './pages/rebates/RebateForm';
+
+// Vendors Components
+import VendorList from './pages/vendors/VendorList';
+import VendorDetail from './pages/vendors/VendorDetail';
+import VendorForm from './pages/vendors/VendorForm';
+
+// Admin Users Components
+import AdminUserList from './pages/admin/users/UserList';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+
+// Activity Page Wrappers
+import ActivityDetailPage from './pages/activities/ActivityDetailPage';
+import ActivityFormPage from './pages/activities/ActivityFormPage';
+
+// Auth Components
+import Register from './pages/auth/Register';
+
+// Enterprise Components
+import EnterpriseDashboard from './components/enterprise/EnterpriseDashboard';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -67,6 +141,10 @@ function App() {
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
   });
+  const [isCommandBarOpen, setIsCommandBarOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [copilotContext, setCopilotContext] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Effect to check for authentication changes
   useEffect(() => {
@@ -77,6 +155,15 @@ function App() {
       console.log('App.js useEffect - checking auth:', { authStatus, userData });
       setIsAuthenticated(authStatus);
       setUser(userData);
+      
+      if (userData && userData._id && userData.tenantId) {
+        analytics.setUser(userData._id, userData.tenantId);
+        
+        const onboardingCompleted = localStorage.getItem('onboarding_completed');
+        if (!onboardingCompleted && authStatus) {
+          setShowOnboarding(true);
+        }
+      }
     };
 
     // Check on mount
@@ -89,6 +176,36 @@ function App() {
       window.removeEventListener('storage', checkAuth);
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandBarOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleCommandExecute = (result) => {
+    if (result.type === 'navigate') {
+      window.location.href = result.path;
+    } else if (result.type === 'api') {
+      setCopilotContext({
+        explanation: `Command "${result.command}" executed successfully`,
+        data: result.data
+      });
+      setIsCopilotOpen(true);
+    } else if (result.type === 'error') {
+      setCopilotContext({
+        explanation: `Error: ${result.error}`,
+        risks: [{ level: 'high', message: result.error }]
+      });
+      setIsCopilotOpen(true);
+    }
+  };
 
   const handleLogin = (userData) => {
     console.log('handleLogin called with userData:', userData);
@@ -114,7 +231,29 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router>
+      <ToastProvider>
+        <Router>
+        {/* Global Command Bar */}
+        {isAuthenticated && (
+          <>
+            <CommandBar
+              isOpen={isCommandBarOpen}
+              onClose={() => setIsCommandBarOpen(false)}
+              onExecute={handleCommandExecute}
+            />
+            <CopilotPanel
+              isOpen={isCopilotOpen}
+              onClose={() => setIsCopilotOpen(false)}
+              context={copilotContext}
+              recommendations={copilotContext?.recommendations}
+            />
+            <OnboardingWizard
+              open={showOnboarding}
+              onClose={() => setShowOnboarding(false)}
+              userRole={user?.role}
+            />
+          </>
+        )}
         <Routes>
         <Route 
           path="/" 
@@ -131,7 +270,37 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <CommandCenter user={user} />
+                {user?.role === 'jam' || user?.role === 'key_account_manager' ? (
+                  <JAMDashboard />
+                ) : user?.role === 'manager' || user?.role === 'admin' ? (
+                  <ManagerDashboard />
+                ) : (
+                  <CommandCenter user={user} />
+                )}
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/jam" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <JAMDashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/manager" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ManagerDashboard />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -187,11 +356,23 @@ function App() {
           } 
         />
         <Route 
+          path="/budgets/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/budgets/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <BudgetDetail />
+                <BudgetDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -203,7 +384,19 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendList />
+                <TradeSpendListNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trade-spends/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeSpendEntryFlow />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -221,7 +414,7 @@ function App() {
           } 
         />
         <Route 
-          path="/trade-spends/:id/edit" 
+          path="/trade-spends/:id/edit"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
@@ -233,11 +426,23 @@ function App() {
           } 
         />
         <Route 
+          path="/trade-spends/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeSpendDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/trade-spends/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendDetail />
+                <TradeSpendDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -293,11 +498,23 @@ function App() {
           } 
         />
         <Route 
+          path="/promotions/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/promotions/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <PromotionDetail />
+                <PromotionDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -339,11 +556,23 @@ function App() {
           } 
         />
         <Route 
+          path="/customers/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CustomerDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/customers/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <CustomerDetail />
+                <CustomerDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -385,11 +614,23 @@ function App() {
           } 
         />
         <Route 
+          path="/products/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ProductDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/products/:id" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <ProductDetail />
+                <ProductDetailWithTabs />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -624,12 +865,72 @@ function App() {
             )
           } 
         />
+        <Route 
+          path="/campaigns" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/:id/:tab" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignDetailWithTabs />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/campaigns/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CampaignForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
         <Route
           path="/activity-grid"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <ActivityGrid />
+                <ActivityGridCalendar />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -641,7 +942,7 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <TradingTermsList />
+                <TradingTermsListNew />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -690,6 +991,66 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <SimulationStudio />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/simulation-studio" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <SimulationStudioNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/promotions-timeline" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionsTimelineNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/promotion-planner" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionPlannerNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/budget-console" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetConsoleNew />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/customer-360/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <Customer360New />
               </Layout>
             ) : (
               <Navigate to="/" replace />
@@ -781,9 +1142,350 @@ function App() {
             )
           } 
         />
+        <Route 
+          path="/approvals" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ApprovalsList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/approvals/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ApprovalDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/claims"
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ClaimsList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/claims/create" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CreateClaim />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/claims/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ClaimDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deductions" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DeductionsList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deductions/create" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CreateDeduction />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deductions/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DeductionDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deductions/reconciliation"
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ReconciliationDashboard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/activities" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ActivityList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/activities/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ActivityFormPage />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/activities/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ActivityDetailPage />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/activities/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ActivityFormPage />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/rebates"
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <RebatesList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/rebates/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <RebateForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/rebates/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <RebateDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/rebates/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <RebateForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/vendors" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <VendorList />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/vendors/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <VendorForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/vendors/:id" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <VendorDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/vendors/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <VendorForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={<Register />} 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <UserDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/enterprise/budget" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <EnterpriseDashboard view="budget" />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/enterprise/promotions" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <EnterpriseDashboard view="promotions" />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/enterprise/trade-spend" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <EnterpriseDashboard view="trade-spend" />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/schedule" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ReportBuilder />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        {/* Admin Routes with AdminLayout */}
+        <Route 
+          path="/admin/*"
+          element={
+            isAuthenticated ? (
+              <AdminLayout user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="users" element={<AdminUserList />} />
+          <Route path="users/new" element={<UserForm />} />
+          <Route path="users/:id" element={<UserDetail />} />
+          <Route path="users/:id/edit" element={<UserForm />} />
+          <Route path="companies" element={<CompanyList />} />
+          <Route path="companies/new" element={<CompanyForm />} />
+          <Route path="companies/:id" element={<CompanyDetail />} />
+          <Route path="companies/:id/edit" element={<CompanyForm />} />
+          <Route path="hierarchy" element={<HierarchyManager />} />
+          <Route path="security" element={<SettingsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
+        </Router>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

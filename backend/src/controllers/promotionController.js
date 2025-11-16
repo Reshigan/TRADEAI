@@ -91,7 +91,9 @@ exports.getPromotions = asyncHandler(async (req, res, next) => {
     startDate,
     endDate,
     customer,
+    customerId,
     product,
+    productId,
     page = 1,
     limit = 20,
     sort = '-createdAt'
@@ -108,8 +110,8 @@ exports.getPromotions = asyncHandler(async (req, res, next) => {
     if (endDate) query['period.startDate'].$lte = new Date(endDate);
   }
   
-  if (customer) query['scope.customers.customer'] = customer;
-  if (product) query['products.product'] = product;
+  if (customer || customerId) query['scope.customers.customer'] = customer || customerId;
+  if (product || productId) query['products.product'] = product || productId;
   
   // Apply user-based filtering
   if (req.user.role === 'kam' || req.user.role === 'sales_rep') {
@@ -509,5 +511,348 @@ exports.deletePromotion = asyncHandler(async (req, res, next) => {
   res.json({
     success: true,
     message: 'Promotion deleted successfully'
+  });
+});
+
+exports.getPromotionProducts = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id)
+    .populate('products.product');
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: promotion.products
+  });
+});
+
+// Level 3: Add products to promotion
+exports.addPromotionProducts = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  if (promotion.status !== 'draft') {
+    throw new AppError('Cannot modify products in non-draft promotion', 400);
+  }
+  
+  promotion.products.push(...req.body.products);
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    data: promotion.products
+  });
+});
+
+exports.updatePromotionProduct = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  const productIndex = promotion.products.findIndex(
+    p => p.product.toString() === req.params.productId
+  );
+  
+  if (productIndex === -1) {
+    throw new AppError('Product not found in promotion', 404);
+  }
+  
+  Object.assign(promotion.products[productIndex], req.body);
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    data: promotion.products[productIndex]
+  });
+});
+
+// Level 4: Remove product from promotion
+exports.removePromotionProduct = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  promotion.products = promotion.products.filter(
+    p => p.product.toString() !== req.params.productId
+  );
+  
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    message: 'Product removed from promotion'
+  });
+});
+
+exports.getPromotionCustomers = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id)
+    .populate('scope.customers.customer');
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: promotion.scope.customers
+  });
+});
+
+// Level 3: Add customers to promotion
+exports.addPromotionCustomers = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  if (promotion.status !== 'draft') {
+    throw new AppError('Cannot modify customers in non-draft promotion', 400);
+  }
+  
+  promotion.scope.customers.push(...req.body.customers);
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    data: promotion.scope.customers
+  });
+});
+
+// Level 4: Remove customer from promotion
+exports.removePromotionCustomer = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  promotion.scope.customers = promotion.scope.customers.filter(
+    c => c.customer.toString() !== req.params.customerId
+  );
+  
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    message: 'Customer removed from promotion'
+  });
+});
+
+exports.getPromotionBudget = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id)
+    .populate('budgetAllocation');
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: {
+      budgetAllocation: promotion.budgetAllocation,
+      financial: promotion.financial
+    }
+  });
+});
+
+exports.updatePromotionBudget = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  if (req.body.budgetAllocation) {
+    promotion.budgetAllocation = req.body.budgetAllocation;
+  }
+  
+  if (req.body.financial) {
+    Object.assign(promotion.financial, req.body.financial);
+  }
+  
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    data: {
+      budgetAllocation: promotion.budgetAllocation,
+      financial: promotion.financial
+    }
+  });
+});
+
+exports.getPromotionApprovals = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id)
+    .populate('approvals.approver', 'firstName lastName email role');
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: promotion.approvals
+  });
+});
+
+exports.processApproval = asyncHandler(async (req, res, next) => {
+  const { action, comments } = req.body;
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  const approvalIndex = promotion.approvals.findIndex(
+    a => a._id.toString() === req.params.approvalId
+  );
+  
+  if (approvalIndex === -1) {
+    throw new AppError('Approval not found', 404);
+  }
+  
+  const approval = promotion.approvals[approvalIndex];
+  
+  if (action === 'approve') {
+    approval.status = 'approved';
+    approval.approvedDate = new Date();
+    approval.approver = req.user._id;
+    approval.comments = comments;
+  } else if (action === 'reject') {
+    approval.status = 'rejected';
+    approval.approvedDate = new Date();
+    approval.approver = req.user._id;
+    approval.comments = comments;
+    promotion.status = 'draft';
+  } else if (action === 'reassign') {
+    approval.approver = req.body.newApproverId;
+  }
+  
+  promotion.history.push({
+    action: `approval_${action}`,
+    performedBy: req.user._id,
+    performedDate: new Date(),
+    comment: comments
+  });
+  
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    data: approval
+  });
+});
+
+exports.getPromotionDocuments = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: promotion.documents || []
+  });
+});
+
+exports.addPromotionDocument = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  if (!promotion.documents) {
+    promotion.documents = [];
+  }
+  
+  promotion.documents.push({
+    ...req.body,
+    uploadedBy: req.user._id,
+    uploadedDate: new Date()
+  });
+  
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    data: promotion.documents
+  });
+});
+
+exports.removePromotionDocument = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  promotion.documents = promotion.documents.filter(
+    d => d._id.toString() !== req.params.documentId
+  );
+  
+  await promotion.save();
+  
+  res.json({
+    success: true,
+    message: 'Document removed'
+  });
+});
+
+exports.getPromotionConflicts = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id)
+    .populate('conflicts.promotion', 'promotionId name period');
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: promotion.conflicts || []
+  });
+});
+
+// Level 3: Get promotion performance
+exports.getPromotionPerformance = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id);
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: {
+      performance: promotion.performance,
+      financial: promotion.financial,
+      aiPredictions: promotion.aiPredictions,
+      postEventAnalysis: promotion.postEventAnalysis
+    }
+  });
+});
+
+exports.getPromotionHistory = asyncHandler(async (req, res, next) => {
+  const promotion = await Promotion.findById(req.params.id)
+    .populate('history.performedBy', 'firstName lastName email');
+  
+  if (!promotion) {
+    throw new AppError('Promotion not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: promotion.history || []
   });
 });

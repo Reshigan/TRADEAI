@@ -185,7 +185,7 @@ const promotionSchema = new mongoose.Schema({
     }
   },
   
-  // AI Analysis and Recommendations
+  // AI Analysis and Recommendations (Legacy - kept for backward compatibility)
   aiAnalysis: {
     recommendedPrice: Number,
     recommendedVolumeLift: Number,
@@ -200,6 +200,143 @@ const promotionSchema = new mongoose.Schema({
     seasonalityIndex: Number,
     competitiveIndex: Number
   },
+  
+  aiPredictions: {
+    // Pre-promotion predictions
+    predictedUplift: {
+      volume: Number,
+      revenue: Number,
+      confidence: Number,
+      modelVersion: String,
+      predictedAt: Date,
+      featureAttribution: [{
+        feature: String,
+        impact: Number
+      }]
+    },
+    predictedCannibalization: {
+      affectedProducts: [{
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product'
+        },
+        estimatedImpact: Number,
+        impactPercentage: Number
+      }],
+      totalImpact: Number,
+      confidence: Number
+    },
+    predictedROI: {
+      value: Number,
+      confidence: Number,
+      range: {
+        min: Number,
+        max: Number
+      }
+    },
+    
+    // Post-promotion actuals
+    actualUplift: {
+      volume: Number,
+      revenue: Number,
+      calculatedAt: Date
+    },
+    actualCannibalization: {
+      affectedProducts: [{
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product'
+        },
+        measuredImpact: Number,
+        impactPercentage: Number
+      }],
+      totalImpact: Number
+    },
+    actualROI: Number,
+    
+    predictionAccuracy: {
+      upliftError: Number,
+      upliftErrorPercentage: Number,
+      roiError: Number,
+      roiErrorPercentage: Number,
+      overallScore: Number,
+      evaluatedAt: Date
+    }
+  },
+  
+  postEventAnalysis: {
+    status: {
+      type: String,
+      enum: ['pending', 'in_progress', 'completed', 'failed'],
+      default: 'pending'
+    },
+    generatedAt: Date,
+    baseline: {
+      avgWeeklyVolume: Number,
+      avgWeeklyRevenue: Number,
+      volatility: Number,
+      dataPoints: Number
+    },
+    incrementalLift: {
+      volume: Number,
+      revenue: Number,
+      statisticalSignificance: Number,
+      pValue: Number
+    },
+    effectiveness: {
+      score: Number,
+      rank: {
+        type: String,
+        enum: ['Excellent', 'Good', 'Average', 'Below Average', 'Poor']
+      },
+      benchmark: Number,
+      percentile: Number
+    },
+    learnings: [{
+      insight: String,
+      category: {
+        type: String,
+        enum: ['pricing', 'timing', 'mechanics', 'targeting', 'execution']
+      },
+      actionable: Boolean,
+      priority: {
+        type: String,
+        enum: ['high', 'medium', 'low']
+      }
+    }],
+    recommendations: [{
+      recommendation: String,
+      expectedImpact: String,
+      priority: {
+        type: String,
+        enum: ['high', 'medium', 'low']
+      },
+      category: String
+    }]
+  },
+  
+  // Promotion Conflicts
+  conflicts: [{
+    conflictType: {
+      type: String,
+      enum: ['product', 'customer', 'timing', 'budget', 'channel']
+    },
+    conflictingPromotion: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Promotion'
+    },
+    severity: {
+      type: String,
+      enum: ['high', 'medium', 'low']
+    },
+    description: String,
+    resolution: String,
+    resolvedAt: Date,
+    resolvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  }],
   
   // Performance Metrics
   performance: {

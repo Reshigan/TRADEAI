@@ -3,48 +3,66 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
+import { useToast } from '../../components/common/ToastNotification';
+import analytics from '../../utils/analytics';
 import './PromotionDetail.css';
 
 const PromotionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [promotion, setPromotion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchPromotion();
+    analytics.trackPageView('promotion_detail', { promotionId: id });
   }, [id]);
 
   const fetchPromotion = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+      const startTime = Date.now();
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
       setPromotion(response.data.data || response.data);
       setError(null);
+      
+      analytics.trackEvent('promotion_detail_loaded', {
+        promotionId: id,
+        loadTime: Date.now() - startTime
+      });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load promotion details');
+      const errorMsg = err.response?.data?.message || 'Failed to load promotion details';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = () => {
+    analytics.trackEvent('promotion_edit_clicked', { promotionId: id });
     navigate(`/promotions/${id}/edit`);
   };
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this promotion?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+        analytics.trackEvent('promotion_deleted', { promotionId: id });
+        toast.success('Promotion deleted successfully!');
         navigate('/promotions');
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete promotion');
+        const errorMsg = err.response?.data?.message || 'Failed to delete promotion';
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DetailPageSkeleton />;
   if (error) return <ErrorMessage message={error} />;
   if (!promotion) return <ErrorMessage message="Promotion not found" />;
 
@@ -60,6 +78,9 @@ const PromotionDetail = () => {
         <div className="header-actions">
           <button onClick={() => navigate('/promotions')} className="btn-secondary">
             Back to List
+          </button>
+          <button onClick={() => navigate(`/trade-spends?promotionId=${id}`)} className="btn-secondary">
+            View Trade Spends
           </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit

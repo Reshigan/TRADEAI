@@ -13,8 +13,8 @@ const authService = {
       const response = await apiClient.post('/auth/login', credentials);
       
       // Extract tokens from response
-      const token = response.data.token || response.data.data?.tokens?.accessToken;
-      const refreshToken = response.data.data?.tokens?.refreshToken;
+      const token = response.data.token || response.data.tokens?.accessToken || response.data.data?.tokens?.accessToken;
+      const refreshToken = response.data.tokens?.refreshToken || response.data.data?.tokens?.refreshToken;
       const user = response.data.user || response.data.data?.user;
       
       if (!token) {

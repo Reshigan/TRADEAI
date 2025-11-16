@@ -13,13 +13,9 @@ const accrualManagementService = require('../services/accrualManagementService')
 const disputeManagementService = require('../services/disputeManagementService');
 const settlementService = require('../services/settlementService');
 const auditTrailService = require('../services/auditTrailService');
+const { authenticateToken } = require('../middleware/auth');
 
-// Middleware (placeholder - implement authentication middleware)
-const authenticate = (req, res, next) => {
-  // TODO: Implement actual authentication
-  req.user = { _id: 'user123', name: 'System User', email: 'system@tradeai.com', role: 'admin' };
-  next();
-};
+const authenticate = authenticateToken;
 
 // ================== PURCHASE ORDERS ==================
 

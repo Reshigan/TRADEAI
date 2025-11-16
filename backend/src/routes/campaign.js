@@ -129,4 +129,53 @@ router.delete('/:id/promotions/:promotionId', authenticateToken, authorize('admi
   });
 }));
 
+router.get('/:id/budget', authenticateToken, asyncHandler(async (req, res) => {
+  const campaign = await Campaign.findById(req.params.id);
+  
+  if (!campaign) {
+    throw new AppError('Campaign not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: campaign.budget || {}
+  });
+}));
+
+router.get('/:id/performance', authenticateToken, asyncHandler(async (req, res) => {
+  const campaign = await Campaign.findById(req.params.id).populate('promotions');
+  
+  if (!campaign) {
+    throw new AppError('Campaign not found', 404);
+  }
+  
+  const Promotion = require('../models/Promotion');
+  const promotions = await Promotion.find({ campaign: req.params.id });
+  
+  const performance = {
+    totalPromotions: promotions.length,
+    totalCost: promotions.reduce((sum, p) => sum + (p.financial?.costs?.totalCost || 0), 0),
+    totalRevenue: promotions.reduce((sum, p) => sum + (p.financial?.actual?.incrementalRevenue || 0), 0),
+    avgROI: promotions.length > 0 ? promotions.reduce((sum, p) => sum + (p.financial?.profitability?.roi || 0), 0) / promotions.length : 0
+  };
+  
+  res.json({
+    success: true,
+    data: performance
+  });
+}));
+
+router.get('/:id/history', authenticateToken, asyncHandler(async (req, res) => {
+  const campaign = await Campaign.findById(req.params.id);
+  
+  if (!campaign) {
+    throw new AppError('Campaign not found', 404);
+  }
+  
+  res.json({
+    success: true,
+    data: campaign.history || []
+  });
+}));
+
 module.exports = router;
