@@ -112,6 +112,12 @@ import VendorForm from './pages/vendors/VendorForm';
 // Admin Users Components
 import AdminUserList from './pages/admin/users/UserList';
 
+// Auth Components
+import Register from './pages/auth/Register';
+
+// Enterprise Components
+import EnterpriseDashboard from './components/enterprise/EnterpriseDashboard';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -1278,7 +1284,83 @@ function App() {
           } 
         />
         <Route 
-          path="/admin/users" 
+          path="/vendors/:id/edit" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <VendorForm />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={<Register />} 
+        />
+        <Route 
+          path="/profile" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <UserDetail />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/enterprise/budget" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <EnterpriseDashboard view="budget" />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/enterprise/promotions" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <EnterpriseDashboard view="promotions" />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/enterprise/trade-spend" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <EnterpriseDashboard view="trade-spend" />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/reports/schedule" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ReportBuilder />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/admin/users"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
