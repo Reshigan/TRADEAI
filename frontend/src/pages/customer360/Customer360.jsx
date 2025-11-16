@@ -15,21 +15,15 @@ import {
   Alert,
   CircularProgress,
   Tabs,
-  Tab,
-  IconButton,
-  Tooltip
+  Tab
 } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
   Warning,
-  CheckCircle,
   Star,
   AttachMoney,
-  ShoppingCart,
-  Timeline as TimelineIcon,
   Lightbulb,
-  PlayArrow,
   Add,
   Refresh
 } from '@mui/icons-material';

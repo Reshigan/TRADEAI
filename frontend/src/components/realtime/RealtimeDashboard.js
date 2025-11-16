@@ -7,11 +7,9 @@ import {
   Typography,
   Switch,
   FormControlLabel,
-  Alert,
   Chip,
   LinearProgress,
   IconButton,
-  Tooltip,
   Paper,
   List,
   ListItem,
@@ -22,9 +20,7 @@ import {
 import {
   TrendingUp,
   TrendingDown,
-  Refresh,
   Settings,
-  Notifications,
   Speed,
   Memory,
   Storage,
@@ -34,7 +30,7 @@ import {
   Error,
   Info
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import io from 'socket.io-client';
 
 const RealtimeDashboard = () => {

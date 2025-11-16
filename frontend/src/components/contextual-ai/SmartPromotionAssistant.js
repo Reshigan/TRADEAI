@@ -22,22 +22,14 @@ import {
   Divider,
   Stack,
   IconButton,
-  Tooltip,
   Collapse
 } from '@mui/material';
 import {
-  TrendingUp,
   CheckCircle,
-  Warning,
-  Info,
-  Refresh,
-  CompareArrows,
-  AutoFixHigh,
   ExpandMore,
   ExpandLess
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
 
 const SmartPromotionAssistant = ({ 
   formData, 

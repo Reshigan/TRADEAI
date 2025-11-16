@@ -14,8 +14,6 @@ import {
   Grid
 } from '@mui/material';
 import {
-  TrendingUp as TrendingUpIcon,
-  Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   PersonAdd as PersonAddIcon,
   Psychology as PsychologyIcon

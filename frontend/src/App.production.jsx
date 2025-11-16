@@ -52,7 +52,6 @@ import PerformanceMetrics from './pages/admin-tools/PerformanceMetrics';
 
 // Common Components
 import LoadingSpinner from './components/common/LoadingSpinner';
-import ErrorMessage from './components/common/ErrorMessage';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 

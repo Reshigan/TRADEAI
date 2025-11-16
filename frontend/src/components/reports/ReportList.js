@@ -21,7 +21,6 @@ import {
 } from '@mui/material';
 import {
   Assessment as AssessmentIcon,
-  TrendingUp as TrendingUpIcon,
   AccountBalance as BudgetIcon,
   ShoppingCart as TradeSpendIcon,
   People as CustomersIcon,

@@ -5,16 +5,12 @@ import {
   Button,
   Chip,
   Typography,
-  alpha,
   useTheme,
   Alert
 } from '@mui/material';
 import {
   Add as AddIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  Star as StarIcon,
-  Warning as WarningIcon
+  Star as StarIcon
 } from '@mui/icons-material';
 
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';

@@ -15,16 +15,13 @@ import {
   Divider,
   Alert,
   CircularProgress,
-  Chip,
   Slider
 } from '@mui/material';
 import {
   ArrowBack,
   ArrowForward,
-  Save,
   PlayArrow,
-  CheckCircle,
-  Warning
+  CheckCircle
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';

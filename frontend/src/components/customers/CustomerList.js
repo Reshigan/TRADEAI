@@ -10,14 +10,11 @@ import {
   TextField,
   MenuItem,
   InputAdornment,
-  CircularProgress,
   Alert,
-  Chip,
   Avatar
 } from '@mui/material';
 import {
   Add as AddIcon,
-  FilterList as FilterListIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
 

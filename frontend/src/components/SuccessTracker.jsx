@@ -7,15 +7,11 @@ import {
   Chip,
   Avatar,
   Button,
-  Divider,
-  Confetti
+  Divider
 } from '@mui/material';
 import {
-  EmojiEvents as TrophyIcon,
-  TrendingUp as TrendingUpIcon,
   Star as StarIcon,
   LocalFireDepartment as FireIcon,
-  EmojiEventsOutlined as TrophyOutlineIcon,
   Share as ShareIcon
 } from '@mui/icons-material';
 

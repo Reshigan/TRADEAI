@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Grid, Typography, Card, CardContent } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import AIInsightPanel from '../AIInsightPanel';
 
 const CustomerAIInsights = ({ 

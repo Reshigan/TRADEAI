@@ -21,10 +21,6 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Alert,
   LinearProgress,
   Snackbar
@@ -36,9 +32,7 @@ import {
   Business,
   People,
   Assessment,
-  CheckCircle,
-  Warning,
-  Error as ErrorIcon
+  CheckCircle
 } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 

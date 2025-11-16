@@ -9,8 +9,7 @@ import {
   Box, 
   Alert,
   InputAdornment,
-  IconButton,
-  Divider
+  IconButton
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { authService } from '../services/api';

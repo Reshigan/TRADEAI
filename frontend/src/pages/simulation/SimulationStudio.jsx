@@ -8,7 +8,6 @@ import {
   CardContent,
   IconButton,
   TextField,
-  MenuItem,
   Chip,
   Divider,
   Paper,
@@ -16,11 +15,7 @@ import {
   Tab,
   Alert,
   CircularProgress,
-  Tooltip,
-  Select,
-  FormControl,
-  InputLabel,
-  Slider
+  Tooltip
 } from '@mui/material';
 import {
   Add,
@@ -28,13 +23,8 @@ import {
   ContentCopy,
   PlayArrow,
   Compare,
-  Save,
-  Share,
   TrendingUp,
-  TrendingDown,
-  AttachMoney,
-  ShowChart,
-  Timeline as TimelineIcon
+  TrendingDown
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import simulationService from '../../services/simulation/simulationService';

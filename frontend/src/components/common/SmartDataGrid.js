@@ -12,12 +12,10 @@ import {
   TableSortLabel,
   TextField,
   InputAdornment,
-  Chip,
   IconButton,
   Tooltip,
   Menu,
   MenuItem,
-  ListItemIcon,
   ListItemText,
   Checkbox,
   Typography,
@@ -30,10 +28,7 @@ import {
   ViewColumn as ColumnsIcon,
   Download as ExportIcon,
   MoreVert as MoreIcon,
-  Psychology as AIIcon,
-  Star as StarIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon
+  Psychology as AIIcon
 } from '@mui/icons-material';
 
 /**

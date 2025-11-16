@@ -21,8 +21,7 @@ import {
   LocalOffer,
   People,
   Inventory,
-  Description,
-  TrendingUp
+  Description
 } from '@mui/icons-material';
 
 /**

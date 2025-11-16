@@ -16,8 +16,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
-  Tooltip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -48,9 +46,7 @@ import {
   Security as SecurityIcon,
   Refresh as RefreshIcon,
   ArrowBack as ArrowBackIcon,
-  History as HistoryIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  History as HistoryIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';

@@ -11,7 +11,6 @@ import {
   MenuItem,
   Chip,
   Paper,
-  Tooltip,
   Alert,
   CircularProgress,
   Drawer,
@@ -29,13 +28,10 @@ import {
   CalendarMonth,
   ViewWeek,
   ViewDay,
-  Warning,
-  CheckCircle,
   Edit,
   Delete,
   DragIndicator,
-  AutoFixHigh,
-  FilterList
+  AutoFixHigh
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';

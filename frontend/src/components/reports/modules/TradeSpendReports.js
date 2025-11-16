@@ -20,29 +20,22 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Divider,
   Alert
 } from '@mui/material';
 import {
   AccountBalance as TradeSpendIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  Assessment as ReportIcon,
   GetApp as DownloadIcon,
   MoreVert as MoreIcon,
-  DateRange as DateRangeIcon,
   FilterList as FilterIcon,
   AttachMoney as SpendIcon,
   Timeline as PerformanceIcon,
-  Store as ChannelIcon,
   Speed as OptimizationIcon,
   CompareArrows as VarianceIcon
 } from '@mui/icons-material';
 import {
-  LineChart,
   Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart,

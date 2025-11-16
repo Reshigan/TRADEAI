@@ -22,26 +22,16 @@ import {
   IconButton
 } from '@mui/material';
 import {
-  TrendingUp,
-  TrendingDown,
-  AttachMoney,
-  ShowChart,
   Psychology,
   PlayArrow,
   Save,
-  Refresh,
   Info
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  Legend,
   ResponsiveContainer,
   Area,
   AreaChart

@@ -19,14 +19,9 @@ import {
   Alert,
   Stack,
   Grid,
-  IconButton,
-  Divider
+  IconButton
 } from '@mui/material';
 import {
-  Warning,
-  TrendingUp,
-  LocalOffer,
-  AttachMoney,
   Lightbulb,
   Refresh,
   ArrowForward

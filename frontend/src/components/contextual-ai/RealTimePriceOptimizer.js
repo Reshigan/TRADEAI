@@ -17,7 +17,6 @@ import {
   Typography,
   Button,
   Slider,
-  Chip,
   Alert,
   Stack,
   Divider,
@@ -25,8 +24,6 @@ import {
 } from '@mui/material';
 import {
   AttachMoney,
-  TrendingUp,
-  TrendingDown,
   CheckCircle
 } from '@mui/icons-material';
 

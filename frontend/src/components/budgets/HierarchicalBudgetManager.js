@@ -10,7 +10,6 @@ import {
   MenuItem,
   Chip,
   IconButton,
-  Collapse,
   LinearProgress,
   Dialog,
   DialogTitle,
@@ -20,22 +19,15 @@ import {
   InputLabel,
   Select,
   InputAdornment,
-  Alert,
   Divider,
   Tooltip,
   Paper
 } from '@mui/material';
 import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
   AccountTree as HierarchyIcon,
-  TrendingUp as TrendingUpIcon,
-  Schedule as ScheduleIcon,
-  AttachMoney as MoneyIcon,
-  Assessment as AssessmentIcon
+  AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 // Removed TreeView import due to compatibility issues
 import { budgetService } from '../../services/api';

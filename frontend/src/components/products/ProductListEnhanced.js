@@ -11,8 +11,7 @@ import {
 import {
   Add as AddIcon,
   TrendingUp as TrendingUpIcon,
-  Inventory as InventoryIcon,
-  AttachMoney as MoneyIcon
+  Inventory as InventoryIcon
 } from '@mui/icons-material';
 
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';

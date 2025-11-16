@@ -7,19 +7,16 @@ import {
   Card,
   CardContent,
   Button,
-  Tab,
-  Tabs,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Chip,
   Alert
 } from '@mui/material';
-import { PlayArrow, CompareArrows, TrendingUp, Assessment } from '@mui/icons-material';
+import { PlayArrow, CompareArrows, TrendingUp } from '@mui/icons-material';
 import api from '../../services/api';
 
 const SimulationDashboard = () => {

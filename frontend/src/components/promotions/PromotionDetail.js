@@ -15,10 +15,8 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  IconButton,
   Alert,
   CircularProgress,
-  Chip,
   LinearProgress
 } from '@mui/material';
 import {
@@ -30,8 +28,7 @@ import {
   Category as CategoryIcon,
   Description as DescriptionIcon,
   Flag as FlagIcon,
-  Assessment as AssessmentIcon,
-  ShoppingCart as ShoppingCartIcon
+  Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { promotionService, customerService } from '../../services/api';

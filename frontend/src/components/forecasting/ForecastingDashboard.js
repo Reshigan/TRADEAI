@@ -17,12 +17,6 @@ import {
   Tabs,
   Tab,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   IconButton,
   Tooltip
 } from '@mui/material';
@@ -33,12 +27,9 @@ import {
   Timeline,
   Assessment,
   Download,
-  Refresh,
-  Settings,
-  Info
+  Refresh
 } from '@mui/icons-material';
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -46,10 +37,7 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
   ResponsiveContainer,
-  AreaChart,
   Area,
-  BarChart,
-  Bar,
   ComposedChart
 } from 'recharts';
 import { forecastingService } from '../../services/api';

@@ -20,8 +20,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -29,19 +27,14 @@ import {
   TextField,
   Switch,
   FormControlLabel,
-  Slider,
   Alert
 } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
-  Analytics as AnalyticsIcon,
   FilterList,
   Download,
-  Share,
   Refresh,
-  ZoomIn,
-  Settings,
   PieChart,
   BarChart,
   ShowChart,
@@ -53,7 +46,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
   LineChart,
   Line,
-  AreaChart,
   Area,
   BarChart as RechartsBarChart,
   Bar,

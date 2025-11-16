@@ -18,7 +18,6 @@ import {
   IconButton,
   Alert,
   CircularProgress,
-  Chip,
   Avatar
 } from '@mui/material';
 import {
@@ -30,8 +29,7 @@ import {
   LocationOn as LocationIcon,
   Add as AddIcon,
   Business as BusinessIcon,
-  Notes as NotesIcon,
-  AttachMoney as MoneyIcon
+  Notes as NotesIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Box, Button, Card, CardContent, Grid, Typography, Divider,
-  Tabs, Tab, Chip, Avatar, LinearProgress, useTheme, Alert
+  Box, Button, Card, CardContent, Grid, Typography,
+  Tabs, Tab, Chip, LinearProgress, Alert
 } from '@mui/material';
 import {
   Edit as EditIcon, ArrowBack as ArrowBackIcon,

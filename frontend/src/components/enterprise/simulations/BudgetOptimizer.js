@@ -6,7 +6,6 @@ import {
   Button,
   Grid,
   TextField,
-  Slider,
   Alert,
   CircularProgress
 } from '@mui/material';

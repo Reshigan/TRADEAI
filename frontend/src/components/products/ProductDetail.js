@@ -18,7 +18,6 @@ import {
   IconButton,
   Alert,
   CircularProgress,
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -32,10 +31,8 @@ import {
   ArrowBack as ArrowBackIcon,
   Inventory as InventoryIcon,
   Category as CategoryIcon,
-  Description as DescriptionIcon,
   AttachMoney as MoneyIcon,
-  LocalOffer as TagIcon,
-  Timeline as TimelineIcon
+  LocalOffer as TagIcon
 } from '@mui/icons-material';
 import { formatCurrency } from '../../utils/formatters';
 

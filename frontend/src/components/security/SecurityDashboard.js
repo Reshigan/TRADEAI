@@ -7,7 +7,6 @@ import {
   Typography,
   Button,
   Chip,
-  Alert,
   Table,
   TableBody,
   TableCell,
@@ -28,16 +27,8 @@ import {
   InputLabel,
   Tabs,
   Tab,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemSecondaryAction,
   Badge,
-  LinearProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails
+  LinearProgress
 } from '@mui/material';
 import {
   Security,
@@ -53,14 +44,9 @@ import {
   Timeline,
   Refresh,
   Settings,
-  ExpandMore,
-  Block,
   Lock,
-  Unlock,
-  AdminPanelSettings,
   ManageAccounts,
-  Policy as PolicyIcon,
-  ReportProblem
+  Policy as PolicyIcon
 } from '@mui/icons-material';
 import {AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell} from 'recharts';
 import { format, subDays, subHours } from 'date-fns';

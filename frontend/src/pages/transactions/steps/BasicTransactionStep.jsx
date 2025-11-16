@@ -10,7 +10,6 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-  InputAdornment,
   Autocomplete
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';

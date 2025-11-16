@@ -19,7 +19,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Select,
   MenuItem,
   FormControl,
@@ -27,9 +26,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-  Divider,
-  Alert,
   LinearProgress,
   Tabs,
   Tab,
@@ -38,14 +34,10 @@ import {
   FormControlLabel,
   Accordion,
   AccordionSummary,
-  AccordionDetails,
-  Tooltip
+  AccordionDetails
 } from '@mui/material';
 import {
-  Dashboard,
-  Notifications,
   Timeline,
-  BugReport,
   Speed,
   Memory,
   Storage,
@@ -58,14 +50,10 @@ import {
   Settings,
   Download,
   Visibility,
-  NotificationsActive,
   ExpandMore,
   Search,
-  FilterList,
   TrendingUp,
-  TrendingDown,
-  Assessment,
-  MonitorHeart
+  TrendingDown
 } from '@mui/icons-material';
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area} from 'recharts';
 import axios from 'axios';

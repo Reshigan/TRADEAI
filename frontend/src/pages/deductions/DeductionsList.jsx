@@ -24,7 +24,6 @@ import {
   Add as AddIcon,
   Visibility as ViewIcon,
   Warning as DisputeIcon,
-  CheckCircle as ValidateIcon,
   PlayArrow as AutoMatchIcon,
   Assessment as ReconcileIcon
 } from '@mui/icons-material';

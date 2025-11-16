@@ -13,15 +13,9 @@ import {
   TableHead,
   TableRow,
   Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   List,
   ListItem,
   ListItemText,
-  Divider,
   Grid,
   Card,
   CardContent
@@ -30,9 +24,7 @@ import {
   CloudUpload as UploadIcon,
   Download as DownloadIcon,
   CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
-  Info as InfoIcon,
-  Close as CloseIcon
+  Error as ErrorIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
 

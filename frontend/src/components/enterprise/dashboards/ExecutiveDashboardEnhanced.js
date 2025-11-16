@@ -27,14 +27,9 @@ import {
   AttachMoney,
   ShowChart,
   Inventory,
-  Group,
-  ShoppingCart,
-  Assessment,
   Warning
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   AreaChart,

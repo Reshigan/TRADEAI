@@ -24,7 +24,6 @@ import {
   Gavel as DisputeIcon,
   CheckCircleOutline as ResolveIcon,
   ArrowBack as BackIcon,
-  AttachMoney as MoneyIcon,
   Link as LinkIcon
 } from '@mui/icons-material';
 import deductionService from '../../services/deduction/deductionService';
