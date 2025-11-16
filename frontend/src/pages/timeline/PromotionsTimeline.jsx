@@ -236,14 +236,6 @@ const PromotionsTimeline = () => {
     }
   };
 
-    const colors = {
-      low: 'info',
-      medium: 'warning',
-      high: 'error'
-    };
-    return colors[severity] || 'default';
-  };
-
   const getPromotionColor = (promotion) => {
     const hasConflict = conflicts.some(c => 
       c.activities.some(a => a.id === promotion.id)
