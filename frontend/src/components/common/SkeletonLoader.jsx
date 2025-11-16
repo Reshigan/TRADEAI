@@ -191,7 +191,7 @@ export const SkeletonLoader = ({ type, ...props }) => {
   }
 };
 
-export default {
+const skeletonLoaders = {
   TableSkeleton,
   CardSkeleton,
   DashboardSkeleton,
@@ -201,3 +201,5 @@ export default {
   TimelineSkeleton,
   SkeletonLoader
 };
+
+export default skeletonLoaders;
