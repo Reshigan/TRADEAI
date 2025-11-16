@@ -47,7 +47,10 @@ const VendorForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+    };
+    
+    fetchVendor();
+  }, [id, isEditMode]);
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
