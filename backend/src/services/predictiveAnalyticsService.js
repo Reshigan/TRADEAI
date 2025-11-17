@@ -42,7 +42,7 @@ class PredictiveAnalyticsService {
     
     // Forecast base amount
     const lastAmount = historicalAccruals[historicalAccruals.length - 1]?.amount || 0;
-    const baseFor cast = lastAmount * (1 + trend);
+    const baseForecast = lastAmount * (1 + trend);
     
     // Apply seasonality
     const forecast = baseForecast * seasonality;

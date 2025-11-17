@@ -663,7 +663,7 @@ class PromotionSimulationService {
   calculateBreakeven(params) {
     const unitContribution = params.productPrice * (1 - (params.discount || 15) / 100) - 
                             params.productCost;
-    const breakeven Volume = params.investment / unitContribution;
+    const breakevenVolume = params.investment / unitContribution;
 
     return {
       volume: breakevenVolume,
