@@ -1990,6 +1990,259 @@ async function getSpendTrend(year) {
   }));
 }
 
+// Additional helper functions for trade spend dashboard
+async function getTopSpendAreas(matchCriteria, limit = 10) {
+  return TradeSpend.aggregate([
+    { $match: matchCriteria },
+    { $group: { _id: '$category', total: { $sum: '$amount.spent' } } },
+    { $sort: { total: -1 } },
+    { $limit: limit }
+  ]);
+}
+
+async function getBudgetVsActualSpend(year) {
+  const startDate = new Date(year, 0, 1);
+  const endDate = new Date(year, 11, 31, 23, 59, 59);
+  
+  const result = await TradeSpend.aggregate([
+    { $match: { startDate: { $gte: startDate, $lte: endDate } } },
+    { $group: {
+      _id: null,
+      totalBudget: { $sum: '$amount.budgeted' },
+      totalSpent: { $sum: '$amount.spent' },
+      totalCommitted: { $sum: '$amount.committed' }
+    }}
+  ]);
+  
+  return result[0] || { totalBudget: 0, totalSpent: 0, totalCommitted: 0 };
+}
+
+async function getUpcomingCommitments(days = 30) {
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + days);
+  
+  return TradeSpend.find({
+    startDate: { $gte: startDate, $lte: endDate },
+    status: { $in: ['approved', 'active'] }
+  }).limit(10);
+}
+
+function generateSpendAlerts(budgetVsActual, utilizationRate) {
+  const alerts = [];
+  if (utilizationRate > 90) {
+    alerts.push({ type: 'warning', message: 'Budget utilization exceeds 90%' });
+  }
+  if (budgetVsActual.totalSpent > budgetVsActual.totalBudget) {
+    alerts.push({ type: 'critical', message: 'Budget exceeded' });
+  }
+  return alerts;
+}
+
+async function getPromotionPerformanceMetrics(dateFilter) {
+  const result = await Promotion.aggregate([
+    { $match: dateFilter },
+    { $group: {
+      _id: null,
+      totalRevenue: { $sum: '$actualResults.revenue' },
+      totalROI: { $avg: '$actualResults.roi' },
+      avgLift: { $avg: '$actualResults.lift' }
+    }}
+  ]);
+  return result[0] || { totalRevenue: 0, totalROI: 0, avgLift: 0 };
+}
+
+async function getTopPerformingPromotions(dateFilter, limit = 10) {
+  return Promotion.find(dateFilter)
+    .sort({ 'actualResults.roi': -1 })
+    .limit(limit);
+}
+
+async function getPromotionTrends(dateFilter) {
+  return Promotion.aggregate([
+    { $match: dateFilter },
+    { $group: {
+      _id: { $month: '$period.startDate' },
+      count: { $sum: 1 },
+      revenue: { $sum: '$actualResults.revenue' }
+    }},
+    { $sort: { _id: 1 } }
+  ]);
+}
+
+async function getPromotionChannelPerformance(dateFilter) {
+  return Promotion.aggregate([
+    { $match: dateFilter },
+    { $group: {
+      _id: '$channel',
+      count: { $sum: 1 },
+      revenue: { $sum: '$actualResults.revenue' },
+      roi: { $avg: '$actualResults.roi' }
+    }},
+    { $sort: { revenue: -1 } }
+  ]);
+}
+
+async function getPromotionROIAnalysis(dateFilter) {
+  return Promotion.aggregate([
+    { $match: dateFilter },
+    { $group: {
+      _id: '$type',
+      avgROI: { $avg: '$actualResults.roi' },
+      totalSpend: { $sum: '$budget.allocated' },
+      totalRevenue: { $sum: '$actualResults.revenue' }
+    }},
+    { $sort: { avgROI: -1 } }
+  ]);
+}
+
+async function getCustomerMetrics() {
+  const result = await Customer.aggregate([
+    { $group: {
+      _id: null,
+      totalCustomers: { $sum: 1 },
+      activeCustomers: { $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] } },
+      avgRevenue: { $avg: '$metrics.totalRevenue' }
+    }}
+  ]);
+  return result[0] || { totalCustomers: 0, activeCustomers: 0, avgRevenue: 0 };
+}
+
+async function getCustomerSegmentAnalysis() {
+  return Customer.aggregate([
+    { $group: {
+      _id: '$segment',
+      count: { $sum: 1 },
+      totalRevenue: { $sum: '$metrics.totalRevenue' }
+    }},
+    { $sort: { totalRevenue: -1 } }
+  ]);
+}
+
+async function getCustomerLifetimeValue() {
+  return Customer.aggregate([
+    { $group: {
+      _id: '$segment',
+      avgLTV: { $avg: '$metrics.lifetimeValue' }
+    }},
+    { $sort: { avgLTV: -1 } }
+  ]);
+}
+
+async function getChurnAnalysis() {
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  
+  const result = await Customer.aggregate([
+    { $group: {
+      _id: null,
+      totalCustomers: { $sum: 1 },
+      inactiveCustomers: { $sum: { $cond: [{ $lt: ['$lastOrderDate', sixMonthsAgo] }, 1, 0] } }
+    }}
+  ]);
+  
+  const data = result[0] || { totalCustomers: 0, inactiveCustomers: 0 };
+  return {
+    churnRate: data.totalCustomers > 0 ? (data.inactiveCustomers / data.totalCustomers) * 100 : 0,
+    inactiveCount: data.inactiveCustomers
+  };
+}
+
+async function getTopCustomersByRevenue(limit = 10) {
+  return Customer.find().sort({ 'metrics.totalRevenue': -1 }).limit(limit);
+}
+
+async function getCustomerGrowthTrend() {
+  return Customer.aggregate([
+    { $group: {
+      _id: { $month: '$createdAt' },
+      count: { $sum: 1 }
+    }},
+    { $sort: { _id: 1 } }
+  ]);
+}
+
+async function getCustomerEngagementMetrics() {
+  const result = await Customer.aggregate([
+    { $group: {
+      _id: null,
+      avgOrderFrequency: { $avg: '$metrics.orderFrequency' },
+      avgOrderValue: { $avg: '$metrics.averageOrderValue' }
+    }}
+  ]);
+  return result[0] || { avgOrderFrequency: 0, avgOrderValue: 0 };
+}
+
+async function getProductMetrics() {
+  const result = await Product.aggregate([
+    { $group: {
+      _id: null,
+      totalProducts: { $sum: 1 },
+      activeProducts: { $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] } },
+      avgPrice: { $avg: '$pricing.basePrice' }
+    }}
+  ]);
+  return result[0] || { totalProducts: 0, activeProducts: 0, avgPrice: 0 };
+}
+
+async function getProductPerformance(limit = 10) {
+  return SalesHistory.aggregate([
+    { $group: {
+      _id: '$product',
+      totalRevenue: { $sum: '$revenue' },
+      totalVolume: { $sum: '$quantity' }
+    }},
+    { $sort: { totalRevenue: -1 } },
+    { $limit: limit },
+    { $lookup: { from: 'products', localField: '_id', foreignField: '_id', as: 'productData' } },
+    { $unwind: '$productData' }
+  ]);
+}
+
+async function getProductMix() {
+  return Product.aggregate([
+    { $group: {
+      _id: '$category',
+      count: { $sum: 1 }
+    }},
+    { $sort: { count: -1 } }
+  ]);
+}
+
+async function getInventoryStatus() {
+  return Product.aggregate([
+    { $group: {
+      _id: null,
+      totalStock: { $sum: '$inventory.quantity' },
+      lowStock: { $sum: { $cond: [{ $lt: ['$inventory.quantity', '$inventory.reorderPoint'] }, 1, 0] } }
+    }}
+  ]);
+}
+
+async function getPricingAnalysis() {
+  return Product.aggregate([
+    { $group: {
+      _id: '$category',
+      avgPrice: { $avg: '$pricing.basePrice' },
+      minPrice: { $min: '$pricing.basePrice' },
+      maxPrice: { $max: '$pricing.basePrice' }
+    }},
+    { $sort: { avgPrice: -1 } }
+  ]);
+}
+
+async function getProfitabilityAnalysis() {
+  return SalesHistory.aggregate([
+    { $group: {
+      _id: '$product',
+      totalRevenue: { $sum: '$revenue' },
+      avgMargin: { $avg: '$margin' }
+    }},
+    { $sort: { totalRevenue: -1 } },
+    { $limit: 20 }
+  ]);
+}
+
 // Export additional helper functions for use in other controllers
 module.exports.calculateDateRange = calculateDateRange;
 module.exports.calculateGrowth = calculateGrowth;
