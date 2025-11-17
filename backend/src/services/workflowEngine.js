@@ -899,7 +899,7 @@ class WorkflowEngine extends EventEmitter {
     }
   }
 
-  evaluateRule(rule, _data) {
+  evaluateRule(_rule, _data) {
     // Simple rule evaluation - would be more sophisticated in production
     try {
       return true;
