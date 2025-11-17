@@ -490,7 +490,7 @@ class SimulationEngine {
     }
   }
 
-  calculateBaselineMetrics(products, duration) {
+  calculateBaselineMetrics(_products, duration) {
     // Calculate baseline metrics from historical data
     return {
       revenue: 100000,
@@ -723,7 +723,7 @@ class SimulationEngine {
     return [];
   }
 
-  getCurrentMarketPosition(products) {
+  getCurrentMarketPosition(_products) {
     return {
       marketShare: 15,
       rank: 3,

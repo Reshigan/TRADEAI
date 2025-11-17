@@ -897,7 +897,7 @@ class ReportingEngine {
     ];
   }
 
-  getSpendAllocationData(tenantId, parameters) {
+  getSpendAllocationData(tenantId, _parameters) {
     // Mock allocation data
     return [
       { segment: 'Premium Customers', allocation: 40, performance: 'Excellent' },

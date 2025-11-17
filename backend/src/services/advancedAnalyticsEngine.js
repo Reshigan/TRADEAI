@@ -489,7 +489,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculateProductMetrics(tenantId, options) {
+  calculateProductMetrics(_tenantId, options) {
     // Implementation for product-specific metrics
     return {
       totalProducts: 0,
@@ -499,7 +499,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculatePromotionMetrics(_tenantId, options) {
+  calculatePromotionMetrics(_tenantId, _options) {
     // Implementation for promotion-specific metrics
     return {
       totalPromotions: 0,

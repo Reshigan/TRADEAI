@@ -508,11 +508,11 @@ class PredictiveAnalyticsService {
     return [];
   }
 
-  getHistoricalPaymentTiming(customerId) {
+  getHistoricalPaymentTiming(_customerId) {
     return { averageDays: 30, variance: 5 };
   }
 
-  getMetricData(_customerId, metric, period) {
+  getMetricData(_customerId, metric, _period) {
     return [];
   }
 

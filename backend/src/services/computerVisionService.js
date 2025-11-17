@@ -517,7 +517,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Run model inference
    */
-  async runModelInference(model, imageData, options) {
+  async runModelInference(model, imageData, _options) {
     const startTime = Date.now();
 
     // Simulate model inference time

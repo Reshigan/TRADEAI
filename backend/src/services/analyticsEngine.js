@@ -289,7 +289,7 @@ class AnalyticsEngine {
     };
   }
 
-  getBaselineSales(tenantId, productIds, customerIds, period) {
+  getBaselineSales(_tenantId, productIds, customerIds, period) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -579,7 +579,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getProductPerformance(tenantId, dateRange) {
+  getProductPerformance(_tenantId, dateRange) {
     return [
       { category: 'Electronics', roi: 20, lift: 25 },
       { category: 'Clothing', roi: 18, lift: 22 },

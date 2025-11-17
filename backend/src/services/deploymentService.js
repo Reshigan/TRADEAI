@@ -924,7 +924,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform blue-green deployment
    */
-  async performBlueGreenDeployment(pipelineRun, options) {
+  async performBlueGreenDeployment(pipelineRun, _options) {
     console.log('Performing blue-green deployment...');
 
     // Simulate blue-green deployment steps

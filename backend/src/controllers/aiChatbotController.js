@@ -594,7 +594,7 @@ class AIChatbotController {
   /**
    * Generate budget report sections
    */
-  async generateBudgetReportSections(companyId, parameters) {
+  async generateBudgetReportSections(companyId, _parameters) {
     const budgets = await Budget.find({ companyId }).limit(20);
 
     return [

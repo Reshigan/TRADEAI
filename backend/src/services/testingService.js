@@ -813,7 +813,7 @@ class TestingService extends EventEmitter {
   /**
    * Execute individual test
    */
-  async executeTest(test, suiteType, options) {
+  async executeTest(test, suiteType, _options) {
     console.log(`Executing test: ${test.name}`);
 
     // Simulate test execution time

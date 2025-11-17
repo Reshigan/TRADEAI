@@ -165,7 +165,7 @@ class AccrualManagementService {
   /**
    * Calculate accrual amount based on method
    */
-  _calculateAccrualAmount(tradeSpend, period) {
+  _calculateAccrualAmount(tradeSpend, _period) {
     switch (tradeSpend.calculationMethod) {
       case 'percentage':
         return (tradeSpend.amount || 0) * ((tradeSpend.percentage || 0) / 100);
