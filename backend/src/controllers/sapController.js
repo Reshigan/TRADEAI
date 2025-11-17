@@ -2,6 +2,7 @@ const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Vendor = require('../models/Vendor');
 const SalesHistory = require('../models/SalesHistory');
+const TradeSpend = require('../models/TradeSpend');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const sapService = require('../services/sapService');
 const logger = require('../utils/logger');

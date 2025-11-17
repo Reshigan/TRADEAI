@@ -3,7 +3,8 @@ const router = express.Router();
 const tenantController = require('../controllers/tenantController');
 const { authenticate } = require('../middleware/auth');
 const { tenantIsolation } = require('../middleware/tenantIsolation');
-const { applyTenantQueryFilter, validateTenantConsistency } = require('../middleware/tenantQueryFilter');
+const { applyTenantQueryFilter, validateTenantConsistency, withoutTenantFilter } = require('../middleware/tenantQueryFilter');
+const Tenant = require('../models/Tenant');
 const logger = require('../utils/logger');
 
 /**
