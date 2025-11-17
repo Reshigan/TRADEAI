@@ -11,7 +11,7 @@
 
 const Promotion = require('../models/Promotion');
 const SalesTransaction = require('../models/SalesTransaction');
-const Customer = require('../models/Customer');
+// const Customer = require('../models/Customer');
 const logger = require('../../utils/logger');
 const { safeNumber, calculatePercentage } = require('../../utils/safeNumbers');
 

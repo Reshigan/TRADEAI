@@ -3,7 +3,7 @@ const mlService = require('./mlService');
 const Budget = require('../models/Budget');
 const Promotion = require('../models/Promotion');
 const SalesHistory = require('../models/SalesHistory');
-const Product = require('../models/Product');
+// const Product = require('../models/Product');
 
 /**
  * TRADING SIMULATION ENGINE

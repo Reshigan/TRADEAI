@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const EventEmitter = require('events');
 
 /**

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const SalesTransaction = require('../../models/SalesTransaction');
-const Customer = require('../models/Customer');
-const Product = require('../models/Product');
+// const Customer = require('../models/Customer');
+// const Product = require('../models/Product');
 const { authenticateToken: auth } = require('../middleware/auth');
 const logger = require('../utils/logger');
 

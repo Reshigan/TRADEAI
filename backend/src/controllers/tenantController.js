@@ -1,7 +1,7 @@
 const Tenant = require('../models/Tenant');
 const User = require('../models/User');
 const { withoutTenantFilter, withTenantContext } = require('../middleware/tenantQueryFilter');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
 /**

@@ -4,7 +4,7 @@ const { body, query, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const revenueImpactService = require('../services/revenueImpactService');
 const Customer = require('../models/Customer');
-const Product = require('../models/Product');
+// const Product = require('../models/Product');
 const Promotion = require('../models/Promotion');
 const logger = require('../utils/logger');
 

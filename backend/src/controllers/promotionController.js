@@ -1,7 +1,7 @@
 const Promotion = require('../models/Promotion');
 const SalesHistory = require('../models/SalesHistory');
 const Product = require('../models/Product');
-const Customer = require('../models/Customer');
+// const Customer = require('../models/Customer');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const mlService = require('../services/mlService');
 const logger = require('../utils/logger');

@@ -2,8 +2,8 @@ const TradeSpend = require('../models/TradeSpend');
 const Campaign = require('../models/Campaign');
 const Rebate = require('../models/Rebate');
 const RebateAccrual = require('../models/RebateAccrual');
-const Customer = require('../models/Customer');
-const Product = require('../models/Product');
+// const Customer = require('../models/Customer');
+// const Product = require('../models/Product');
 const { asyncHandler, AppError } = require('../middleware/errorHandler');
 
 exports.getDashboardMetrics = asyncHandler(async (req, res) => {

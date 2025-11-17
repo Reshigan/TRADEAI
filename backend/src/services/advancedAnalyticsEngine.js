@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const TradeSpend = require('../models/TradeSpend');
 const Promotion = require('../models/Promotion');
 const SalesHistory = require('../models/SalesHistory');
-const Customer = require('../models/Customer');
-const Product = require('../models/Product');
+// const Customer = require('../models/Customer');
+// const Product = require('../models/Product');
 const logger = require('../utils/logger');
 
 /**

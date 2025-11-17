@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
 /**
  * Workflow Engine
