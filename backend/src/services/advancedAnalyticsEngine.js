@@ -82,7 +82,7 @@ class AdvancedAnalyticsEngine {
           totalSales: salesData.totalSales,
           baselineSales: baselineSales.averageSales,
           averagePrice: salesData.averagePrice,
-          salesLift: this.calculateLift(salesData.totalSales, baselineSales.averageSales)
+          salesLift: this.calculateLiftPercentage(salesData.totalSales, baselineSales.averageSales)
         }
       };
 
@@ -125,9 +125,9 @@ class AdvancedAnalyticsEngine {
       );
 
       // Calculate different types of lift
-      const volumeLift = this.calculateLift(promotionSales.totalVolume, baselineSales.averageVolume);
-      const revenueLift = this.calculateLift(promotionSales.totalRevenue, baselineSales.averageRevenue);
-      const unitLift = this.calculateLift(promotionSales.totalUnits, baselineSales.averageUnits);
+      const volumeLift = this.calculateLiftPercentage(promotionSales.totalVolume, baselineSales.averageVolume);
+      const revenueLift = this.calculateLiftPercentage(promotionSales.totalRevenue, baselineSales.averageRevenue);
+      const unitLift = this.calculateLiftPercentage(promotionSales.totalUnits, baselineSales.averageUnits);
 
       const result = {
         promotionId,
@@ -457,7 +457,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculateLift(current, baseline) {
+  calculateLiftPercentage(current, baseline) {
     if (baseline === 0) return 0;
     return ((current - baseline) / baseline) * 100;
   }
