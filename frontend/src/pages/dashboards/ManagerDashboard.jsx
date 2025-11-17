@@ -142,7 +142,7 @@ const ManagerDashboard = () => {
                       ]}
                       priority={rec.priority}
                       risks={rec.from.currentROI < 50 ? [
-                        { level: 'high', message: `Low ROI (${rec.from.currentROI.toFixed(1)}%) on source promotion` }
+                        { level: 'high', message: `Low ROI (${Number(rec.from.currentROI || 0).toFixed(1)}%) on source promotion` }
                       ] : []}
                       onSimulate={() => handleSimulateReallocation(rec)}
                       onApply={() => handleApplyReallocation(rec)}
@@ -163,7 +163,7 @@ const ManagerDashboard = () => {
                 <Grid item xs={12} md={3}>
                   <Box sx={{ p: 3, bgcolor: 'primary.main', color: 'white', borderRadius: 2 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      ${(dashboardData.portfolioKPIs.totalReallocation / 1000 || 0).toFixed(1)}K
+                      ${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K
                     </Typography>
                     <Typography variant="body2">
                       Total Reallocation Opportunity
@@ -173,7 +173,7 @@ const ManagerDashboard = () => {
                 <Grid item xs={12} md={3}>
                   <Box sx={{ p: 3, bgcolor: 'success.main', color: 'white', borderRadius: 2 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      ${(dashboardData.portfolioKPIs.expectedRevenueGain / 1000 || 0).toFixed(1)}K
+                      ${(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K
                     </Typography>
                     <Typography variant="body2">
                       Expected Revenue Gain
