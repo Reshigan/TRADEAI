@@ -365,7 +365,7 @@ class NLPService extends EventEmitter {
   /**
    * Detect emotions in text
    */
-  async detectEmotions(text, options = {}) {
+//   async detectEmotions(text, options = {}) {
     try {
       // Simulate emotion detection
       await new Promise((resolve) => setTimeout(resolve, 300));
@@ -436,7 +436,7 @@ class NLPService extends EventEmitter {
   /**
    * Classify intent of text
    */
-  async classifyIntent(text, options = {}) {
+//   async classifyIntent(text, options = {}) {
     try {
       // Simulate intent classification
       await new Promise((resolve) => setTimeout(resolve, 250));
@@ -733,7 +733,7 @@ class NLPService extends EventEmitter {
   /**
    * Chatbot conversation handling
    */
-  async processConversation(conversationId, message, options = {}) {
+//   async processConversation(conversationId, message, options = {}) {
     let conversation = this.conversations.get(conversationId);
 
     if (!conversation) {

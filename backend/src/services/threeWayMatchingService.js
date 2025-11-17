@@ -21,7 +21,7 @@ class ThreeWayMatchingService {
   /**
    * Match Invoice to Purchase Order (2-way match)
    */
-  async matchInvoiceToPO(invoiceId, purchaseOrderId, options = {}) {
+//   async matchInvoiceToPO(invoiceId, purchaseOrderId, options = {}) {
     const invoice = await Invoice.findById(invoiceId).populate('lines.productId');
     const po = await PurchaseOrder.findById(purchaseOrderId).populate('lines.productId');
 
@@ -316,7 +316,7 @@ class ThreeWayMatchingService {
   /**
    * Batch match invoices to POs
    */
-  async batchMatchInvoices(customerId, options = {}) {
+//   async batchMatchInvoices(customerId, options = {}) {
     const unmatchedInvoices = await Invoice.find({
       customerId,
       matchStatus: 'unmatched',

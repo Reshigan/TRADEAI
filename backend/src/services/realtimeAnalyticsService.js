@@ -427,7 +427,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get ROI trends
    */
-  getROITrends(tenantId, timeRange = '30d', filters = {}) {
+//   getROITrends(tenantId, timeRange = '30d', filters = {}) {
     // Mock implementation - would integrate with actual analytics
     return {
       trends: [
@@ -443,7 +443,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get performance metrics
    */
-  getPerformanceMetrics(tenantId, timeRange = '24h', filters = {}) {
+//   getPerformanceMetrics(tenantId, timeRange = '24h', filters = {}) {
     return {
       activePromotions: 12,
       totalROI: 18.5,
@@ -459,7 +459,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get active alerts
    */
-  getActiveAlerts(tenantId, filters = {}) {
+//   getActiveAlerts(tenantId, filters = {}) {
     // Mock implementation - would check actual alert conditions
     return [
       {

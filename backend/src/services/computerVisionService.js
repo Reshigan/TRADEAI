@@ -1083,7 +1083,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Assess image quality
    */
-  async assessImageQuality(imageData, options = {}) {
+//   async assessImageQuality(imageData, options = {}) {
     const assessmentId = this.generateQualityAssessmentId();
 
     try {

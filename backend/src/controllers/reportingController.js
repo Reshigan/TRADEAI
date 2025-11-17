@@ -326,7 +326,7 @@ class ReportingController {
    * GET /api/reports/history
    */
   getReportHistory = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
+//     const tenantId = req.tenant.id;
     const { page = 1, limit = 20, reportType, status } = req.query;
 
     // This would typically query a database for report history
@@ -384,7 +384,7 @@ class ReportingController {
    * GET /api/reports/metrics
    */
   getReportMetrics = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
+//     const tenantId = req.tenant.id;
 
     // Mock report metrics
     const metrics = {

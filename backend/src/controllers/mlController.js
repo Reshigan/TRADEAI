@@ -40,7 +40,7 @@ class MLController {
   async forecastDemand(req, res) {
     try {
       const { productId, timeHorizon = 30, historicalData } = req.body;
-      const tenantId = req.tenant?.id;
+//       const tenantId = req.tenant?.id;
 
       if (!productId) {
         return res.status(400).json({
@@ -172,7 +172,7 @@ class MLController {
   // Batch Predictions
   async batchPredict(req, res) {
     try {
-      const { predictionType, dataArray, options = {} } = req.body;
+//       const { predictionType, dataArray, options = {} } = req.body;
       const tenantId = req.tenant?.id;
 
       if (!predictionType || !dataArray || !Array.isArray(dataArray)) {
@@ -224,7 +224,7 @@ class MLController {
     try {
       const { userId } = req.params;
       const { limit = 10, category, priceRange, includeReasons = true, diversityFactor = 0.3 } = req.query;
-      const tenantId = req.tenant?.id;
+//       const tenantId = req.tenant?.id;
 
       if (!userId) {
         return res.status(400).json({
@@ -297,7 +297,7 @@ class MLController {
     try {
       const { userId } = req.params;
       const { limit = 5, budget, channel, timeframe = 30 } = req.query;
-      const tenantId = req.tenant?.id;
+//       const tenantId = req.tenant?.id;
 
       if (!userId) {
         return res.status(400).json({
@@ -340,7 +340,7 @@ class MLController {
         weights = { collaborative: 0.4, content: 0.3, popularity: 0.2, personal: 0.1 },
         diversityFactor = 0.3
       } = req.query;
-      const tenantId = req.tenant?.id;
+//       const tenantId = req.tenant?.id;
 
       if (!userId) {
         return res.status(400).json({
@@ -588,7 +588,7 @@ class MLController {
   retrainModels(req, res) {
     try {
       const { models = [], force = false } = req.body;
-      const tenantId = req.tenant?.id;
+//       const tenantId = req.tenant?.id;
 
       // Mock retraining process
       const retrainingJobs = [];
@@ -674,7 +674,7 @@ class MLController {
   getABTestResults(req, res) {
     try {
       const { testId } = req.params;
-      const tenantId = req.tenant?.id;
+//       const tenantId = req.tenant?.id;
 
       if (!testId) {
         return res.status(400).json({

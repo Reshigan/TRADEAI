@@ -389,7 +389,7 @@ class BulkOperationsController {
    * GET /api/bulk/history
    */
   getOperationHistory = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
+//     const tenantId = req.tenant.id;
     const { page = 1, limit = 20, operation, modelType } = req.query;
 
     // This would typically query a database for operation history
