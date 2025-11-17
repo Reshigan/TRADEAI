@@ -60,6 +60,15 @@ const ManagerDashboard = () => {
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      setDashboardData({
+        budgetRecommendations: [],
+        portfolioKPIs: {
+          totalReallocation: 0,
+          expectedRevenueGain: 0,
+          underperformingCount: 0,
+          highPerformingCount: 0
+        }
+      });
     } finally {
       setLoading(false);
     }
