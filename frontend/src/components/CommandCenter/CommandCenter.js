@@ -94,6 +94,12 @@ const CommandCenter = () => {
   };
 
   const processDashboardData = (budgets, promotions, tradeSpends) => {
+    console.log('processDashboardData - Input types:', {
+      budgets: Array.isArray(budgets) ? `array[${budgets.length}]` : typeof budgets,
+      promotions: Array.isArray(promotions) ? `array[${promotions.length}]` : typeof promotions,
+      tradeSpends: Array.isArray(tradeSpends) ? `array[${tradeSpends.length}]` : typeof tradeSpends
+    });
+    
     const budgetsArray = Array.isArray(budgets) ? budgets : [];
     const promotionsArray = Array.isArray(promotions) ? promotions : [];
     const tradeSpendsArray = Array.isArray(tradeSpends) ? tradeSpends : [];
