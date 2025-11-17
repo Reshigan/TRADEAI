@@ -625,7 +625,7 @@ class EnterpriseBudgetService {
     return 'stable';
   }
 
-  identifyVarianceReasons(category, variance, actualData) {
+  identifyVarianceReasons(category, variance, _actualData) {
     const reasons = [];
 
     if (variance.variancePercent > 10) {
@@ -683,7 +683,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  generateQuarterlyBudget(baseData, year, quarter, growthFactor, marketFactors) {
+  generateQuarterlyBudget(baseData, year, quarter, growthFactor, _marketFactors) {
     const quarterBudget = {
       year,
       quarter,
@@ -805,7 +805,7 @@ class EnterpriseBudgetService {
     return 'Recommended optimization shows significant ROI improvement with manageable tradeoffs';
   }
 
-  getNextApprovers(_budget, level) {
+  getNextApprovers(_budget, _level) {
     // In production, query user roles and approval hierarchy
     return ['manager@example.com'];
   }
@@ -954,7 +954,7 @@ class EnterpriseBudgetService {
     return alerts;
   }
 
-  generateBudgetRecommendations(_kpis, trends) {
+  generateBudgetRecommendations(_kpis, _trends) {
     return [
       {
         type: 'optimization',

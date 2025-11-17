@@ -6,7 +6,7 @@ const RefreshToken = require('../../models/RefreshToken');
 const ActiveSession = require('../../models/ActiveSession');
 
 describe('Auth Enhanced API Integration Tests', () => {
-  let server;
+  let _server;
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {

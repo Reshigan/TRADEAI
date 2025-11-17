@@ -645,7 +645,7 @@ class MLIntegrationService {
     return { loss: 0.08, mae: 0.15, epochs };
   }
 
-  trainChurnModel(tenantId, epochs, batchSize) {
+  trainChurnModel(tenantId, epochs, _batchSize) {
     console.log(`Training churn prediction model for tenant ${tenantId}...`);
     return { loss: 0.12, accuracy: 0.88, precision: 0.85, recall: 0.82, epochs };
   }
@@ -702,12 +702,12 @@ class MLIntegrationService {
   }
 
   // Additional helper methods would be implemented here...
-  prepareAnomalyFeatures(_data, dataType) {
+  prepareAnomalyFeatures(_data, _dataType) {
     // Mock feature preparation
     return Array(20).fill(0).map(() => Math.random());
   }
 
-  analyzeAnomalyDetails(_original, reconstructed) {
+  analyzeAnomalyDetails(_original, _reconstructed) {
     return {
       mostAnomalousFeatures: [0, 5, 12], // Indices of most anomalous features
       severity: 'medium'
@@ -743,7 +743,7 @@ class MLIntegrationService {
     return strategies;
   }
 
-  prepareRecommendationFeatures(_customer, category) {
+  prepareRecommendationFeatures(_customer, _category) {
     // Mock recommendation features
     return Array(100).fill(0).map(() => Math.random());
   }
@@ -754,7 +754,7 @@ class MLIntegrationService {
     return maxScore / (avgScore + 0.1); // Avoid division by zero
   }
 
-  preparePriceOptimizationFeatures(product, _constraints) {
+  preparePriceOptimizationFeatures(_product, _constraints) {
     // Mock price optimization features
     return Array(10).fill(0).map(() => Math.random());
   }
@@ -770,7 +770,7 @@ class MLIntegrationService {
     return (priceChange + demandChange + priceChange * demandChange) * 100;
   }
 
-  generatePricingRecommendations(optimalPrice, currentPrice, elasticity) {
+  generatePricingRecommendations(optimalPrice, currentPrice, _elasticity) {
     const recommendations = [];
 
     if (optimalPrice > currentPrice) {

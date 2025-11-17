@@ -830,7 +830,7 @@ plt.show()`
   /**
    * Simulate code execution
    */
-  async simulateCodeExecution(code, kernel) {
+  async simulateCodeExecution(code, _kernel) {
     const startTime = Date.now();
 
     // Simulate execution time

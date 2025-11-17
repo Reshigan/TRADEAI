@@ -530,7 +530,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  getProductData(tenantId, filters) {
+  getProductData(tenantId, _filters) {
     return Product.find({ tenantId, isActive: true })
       .lean();
   }
@@ -749,7 +749,7 @@ class AdvancedReportingEngine {
     // This is a placeholder for chart functionality
   }
 
-  addPDFCharts(_doc, charts, data) {
+  addPDFCharts(_doc, _charts, data) {
     // PDF chart implementation would go here
     // This is a placeholder for chart functionality
   }

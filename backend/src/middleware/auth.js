@@ -557,7 +557,7 @@ const blacklistToken = (token) => {
  * @param {Object} req - Express request object
  * @returns {Promise<boolean>} - Whether activity is suspicious
  */
-const checkForSuspiciousActivity = (user, req) => {
+const checkForSuspiciousActivity = (_user, req) => {
   // In a real implementation, this would check for suspicious activity patterns:
   // 1. Access from unusual locations
   // 2. Access at unusual times

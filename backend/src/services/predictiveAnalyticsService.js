@@ -449,7 +449,7 @@ class PredictiveAnalyticsService {
     return [];
   }
 
-  detectPatternAnomalies(transactions) {
+  detectPatternAnomalies(_transactions) {
     // Detect unusual patterns (e.g., round numbers, duplicates)
     return [];
   }
@@ -484,7 +484,7 @@ class PredictiveAnalyticsService {
 
   // Data retrieval methods (would connect to database in production)
 
-  getHistoricalAccruals(_customerId, months) {
+  getHistoricalAccruals(_customerId, _months) {
     return [];
   }
 
@@ -512,7 +512,7 @@ class PredictiveAnalyticsService {
     return { averageDays: 30, variance: 5 };
   }
 
-  getMetricData(_customerId, metric, _period) {
+  getMetricData(_customerId, _metric, _period) {
     return [];
   }
 
@@ -531,11 +531,11 @@ class PredictiveAnalyticsService {
     return [1, 15]; // 1st and 15th of month
   }
 
-  calculateExpectedSavings(settlements, newFrequency) {
+  calculateExpectedSavings(settlements, _newFrequency) {
     return 5000; // $5K savings
   }
 
-  generateSettlementRecommendations(_patterns, optimalFrequency) {
+  generateSettlementRecommendations(_patterns, _optimalFrequency) {
     return ['Switch to bi-weekly settlements for optimal cash flow'];
   }
 
@@ -543,11 +543,11 @@ class PredictiveAnalyticsService {
     return 0;
   }
 
-  predictOutflows(payments, date) {
+  predictOutflows(_payments, _date) {
     return 0;
   }
 
-  calculateForecastConfidence(daysAhead, timing) {
+  calculateForecastConfidence(daysAhead, _timing) {
     return Math.max(0.5, 1 - (daysAhead / 100));
   }
 }

@@ -107,7 +107,7 @@ exports.checkCapacity = (resourceType) => {
 /**
  * Track usage (increment counters)
  */
-exports.trackUsage = (resourceType) => {
+exports.trackUsage = (_resourceType) => {
   return async (req, res, next) => {
     try {
       // Skip for super admin

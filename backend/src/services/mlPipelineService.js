@@ -504,7 +504,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Simulate training process
    */
-  async simulateTraining(trainingJob, trainingData) {
+  async simulateTraining(trainingJob, _trainingData) {
     const modelInfo = this.modelRegistry.get(trainingJob.modelId);
     const steps = 100;
 
@@ -907,7 +907,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Execute pipeline stage
    */
-  async executeStage(stage, pipelineRun) {
+  async executeStage(stage, _pipelineRun) {
     const stageRun = {
       id: stage.id,
       name: stage.name,

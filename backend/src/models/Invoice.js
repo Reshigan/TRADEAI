@@ -262,7 +262,7 @@ invoiceSchema.pre('save', function (next) {
 });
 
 // Methods
-invoiceSchema.methods.recordPayment = function (amount, paymentId) {
+invoiceSchema.methods.recordPayment = function (amount, _paymentId) {
   this.amountPaid += amount;
   if (this.amountPaid >= this.total) {
     this.status = 'paid';

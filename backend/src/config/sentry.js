@@ -39,7 +39,7 @@ function initSentry(app) {
       ],
 
       // Filter sensitive data
-      beforeSend(event, hint) {
+      beforeSend(event, _hint) {
         // Don't send errors from health checks
         if (event.request && event.request.url) {
           if (event.request.url.includes('/health') ||

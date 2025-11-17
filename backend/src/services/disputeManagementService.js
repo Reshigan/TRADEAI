@@ -89,7 +89,7 @@ class DisputeManagementService {
   /**
    * Assign dispute to user
    */
-  async assignDispute(disputeId, assignedToUserId, assignedByUserId) {
+  async assignDispute(disputeId, assignedToUserId, _assignedByUserId) {
     const dispute = await Dispute.findById(disputeId);
     if (!dispute) throw new Error('Dispute not found');
 

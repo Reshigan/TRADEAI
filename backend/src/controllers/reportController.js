@@ -274,7 +274,7 @@ const reportController = {
   },
 
   // Generate budget utilization report
-  async generateBudgetUtilizationReport({ budgetId, year, quarter }) {
+  async generateBudgetUtilizationReport({ budgetId, year, _quarter }) {
     const query = {};
     if (budgetId) query._id = budgetId;
     if (year) query.year = year;
@@ -476,7 +476,7 @@ const reportController = {
   },
 
   // Export report
-  async exportReport({ reportType, filters, format }) {
+  async exportReport({ reportType, filters, _format }) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Report');
 
@@ -727,7 +727,7 @@ const reportController = {
     return data;
   },
 
-  _generateCustomReportFile(reportConfig, reportData) {
+  _generateCustomReportFile(reportConfig, _reportData) {
     const { format, name } = reportConfig;
     const timestamp = new Date().toISOString().split('T')[0];
     return `${name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.${format}`;

@@ -1041,7 +1041,7 @@ class EnhancedRecommendationService extends EventEmitter {
     ];
   }
 
-  getFriendActivities(userId) {
+  getFriendActivities(_userId) {
     return [
       { friendId: 'friend_1', activity: 'purchased', itemId: 'item_123' },
       { friendId: 'friend_2', activity: 'liked', itemId: 'item_456' }
@@ -1119,7 +1119,7 @@ class EnhancedRecommendationService extends EventEmitter {
     return Math.min(1, confidence);
   }
 
-  generateExplanation(item, userProfile, _context) {
+  generateExplanation(item, _userProfile, _context) {
     const explanations = [
       `Recommended because you frequently browse ${item.category}`,
       'Popular among users with similar preferences',

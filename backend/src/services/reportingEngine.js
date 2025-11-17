@@ -394,7 +394,7 @@ class ReportingEngine {
     return sheets;
   }
 
-  createSheetData(reportData, sheetName, reportType) {
+  createSheetData(reportData, sheetName, _reportType) {
     // This would contain the logic to transform report data into sheet-specific format
     // For brevity, returning mock data structure
 
@@ -563,7 +563,7 @@ class ReportingEngine {
     ];
   }
 
-  getSheetFormatting(sheetName, reportType) {
+  getSheetFormatting(_sheetName, reportType) {
     return {
       headerStyle: {
         font: { bold: true, color: { rgb: 'FFFFFF' } },
@@ -861,7 +861,7 @@ class ReportingEngine {
     return roiData;
   }
 
-  async getPromotionLiftData(tenantId, parameters) {
+  async getPromotionLiftData(tenantId, _parameters) {
     const promotions = await Promotion.find({ tenantId }).lean();
 
     // Calculate lift for each promotion

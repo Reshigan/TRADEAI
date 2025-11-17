@@ -1494,7 +1494,7 @@ async function getCohortAnalysis(dateRange, filters = {}) {
   };
 }
 
-function generateSalesInsights(metrics, trend) {
+function generateSalesInsights(metrics, _trend) {
   return [
     {
       type: 'info',
@@ -1516,7 +1516,7 @@ function generatePromotionInsights(_metrics) {
   ];
 }
 
-function generateCustomerInsights(_metrics, churnAnalysis) {
+function generateCustomerInsights(_metrics, _churnAnalysis) {
   return [
     {
       type: 'info',
@@ -1527,7 +1527,7 @@ function generateCustomerInsights(_metrics, churnAnalysis) {
   ];
 }
 
-function generateProductInsights(_performance, profitability) {
+function generateProductInsights(_performance, _profitability) {
   return [
     {
       type: 'info',

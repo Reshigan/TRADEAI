@@ -798,7 +798,7 @@ class MLPredictionService {
     }));
   }
 
-  generateRetentionStrategies(riskLevel, customerData) {
+  generateRetentionStrategies(riskLevel, _customerData) {
     const strategies = [];
 
     switch (riskLevel) {

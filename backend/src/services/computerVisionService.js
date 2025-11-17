@@ -649,7 +649,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Generate segmentation result
    */
-  generateSegmentationResult(model, imageData) {
+  generateSegmentationResult(model, _imageData) {
     const segments = model.classes.map((className) => ({
       class: className,
       pixelCount: Math.floor(Math.random() * 10000),
@@ -957,7 +957,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Extract specific field from text
    */
-  extractField(text, fieldName, documentType) {
+  extractField(text, fieldName, _documentType) {
     // Simplified field extraction logic
     const patterns = {
       invoice_number: /(?:invoice|inv)[\s#:]*([A-Z0-9-]+)/i,

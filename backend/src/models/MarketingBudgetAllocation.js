@@ -745,7 +745,7 @@ marketingBudgetAllocationSchema.methods.getHistoricalData = function () {
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.shouldApplyFactor = function (_factor, item) {
+marketingBudgetAllocationSchema.methods.shouldApplyFactor = function (_factor, _item) {
   // Implementation would evaluate factor conditions
   return true;
 };

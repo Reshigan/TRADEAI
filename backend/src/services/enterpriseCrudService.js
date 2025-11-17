@@ -240,7 +240,7 @@ class EnterpriseCrudService {
   }
 
   // Get saved views
-  getSavedView(viewId, userId) {
+  getSavedView(_viewId, userId) {
     // Implementation for saved views/filters
     // This would query a separate SavedViews collection
     return {};

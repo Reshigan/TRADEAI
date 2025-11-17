@@ -424,7 +424,7 @@ const MockUser = {
         }
       },
 
-      catch(reject) {
+      catch(_reject) {
         return this;
       }
     };
@@ -549,7 +549,7 @@ const MockUser = {
         }
       },
 
-      catch(reject) {
+      catch(_reject) {
         return this;
       }
     };

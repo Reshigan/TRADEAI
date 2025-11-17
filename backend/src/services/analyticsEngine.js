@@ -301,7 +301,7 @@ class AnalyticsEngine {
     };
   }
 
-  getPromotionalSales(_tenantId, productIds, customerIds, startDate, endDate) {
+  getPromotionalSales(_tenantId, _productIds, _customerIds, startDate, endDate) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -408,7 +408,7 @@ class AnalyticsEngine {
   // Additional helper methods would be implemented here...
   // For brevity, showing structure with mock implementations
 
-  getDetailedSalesData(_tenantId, productIds, customerIds, startDate, endDate) {
+  getDetailedSalesData(_tenantId, _productIds, _customerIds, _startDate, _endDate) {
     // Mock implementation
     return {
       transactions: [],
@@ -459,7 +459,7 @@ class AnalyticsEngine {
     };
   }
 
-  calculateStatisticalSignificance(_baseline, promotional) {
+  calculateStatisticalSignificance(_baseline, _promotional) {
     // Simplified statistical significance calculation
     // In practice, would use proper statistical tests
     return {
@@ -511,7 +511,7 @@ class AnalyticsEngine {
     return 'low';
   }
 
-  generateRecommendations(prediction, historicalPerformance) {
+  generateRecommendations(prediction, _historicalPerformance) {
     const recommendations = [];
 
     if (prediction.expectedROI < 10) {
@@ -563,7 +563,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getLiftAnalysis(_tenantId, dateRange) {
+  getLiftAnalysis(_tenantId, _dateRange) {
     return {
       averageVolumeLift: 22,
       averageValueLift: 18,

@@ -654,7 +654,7 @@ class BulkOperationsService {
     };
   }
 
-  validateGenericRecord(record, tenantId, rowNumber) {
+  validateGenericRecord(record, tenantId, _rowNumber) {
     return {
       isValid: true,
       record: { ...record, tenantId },
@@ -705,7 +705,7 @@ class BulkOperationsService {
     };
   }
 
-  transformGenericRecord(record, options) {
+  transformGenericRecord(record, _options) {
     return record;
   }
 

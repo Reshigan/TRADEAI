@@ -856,7 +856,7 @@ class AdvancedTradeSpendService {
     return groups;
   }
 
-  calculatePlannedSpend(_budgets, groupBy, groupKey) {
+  calculatePlannedSpend(_budgets, _groupBy, _groupKey) {
     // Simplified calculation
     return 50000;
   }
@@ -867,7 +867,7 @@ class AdvancedTradeSpendService {
     return 'stable';
   }
 
-  identifyVarianceDrivers(transactions, variance) {
+  identifyVarianceDrivers(_transactions, variance) {
     return [
       {
         driver: 'Increased promotional activity',
@@ -940,7 +940,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateOptimalAllocation(totalBudget, performance, _constraints, objectives) {
+  calculateOptimalAllocation(totalBudget, _performance, _constraints, _objectives) {
     // Simplified optimization - in production use actual optimization algorithm
     return {
       marketing: totalBudget * 0.35,
@@ -950,7 +950,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateImprovements(_current, optimized, _performance) {
+  calculateImprovements(_current, _optimized, _performance) {
     return {
       projectedROIIncrease: 18,
       projectedRevenueIncrease: 250000,
@@ -1086,7 +1086,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  identifySpendRisks(predictions, _patterns) {
+  identifySpendRisks(_predictions, _patterns) {
     return [
       {
         risk: 'Budget overrun in Q4',

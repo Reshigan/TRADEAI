@@ -673,7 +673,7 @@ class PromotionSimulationService {
     };
   }
 
-  async performSensitivityAnalysis(params, baseline) {
+  async performSensitivityAnalysis(params, _baseline) {
     const sensitivities = {
       discount: [],
       investment: [],
@@ -763,7 +763,7 @@ class PromotionSimulationService {
     };
   }
 
-  generateEffectivenessInsights(overall, dimensional) {
+  generateEffectivenessInsights(overall, _dimensional) {
     const insights = [];
 
     if (overall.effectivenessScore > 75) {
@@ -802,7 +802,7 @@ class PromotionSimulationService {
     };
   }
 
-  generateOptimalMix(totalBudget, _constraints, objectives, _companyId) {
+  generateOptimalMix(totalBudget, _constraints, _objectives, _companyId) {
     // Simplified - in production use optimization algorithm
     return [
       {
@@ -840,7 +840,7 @@ class PromotionSimulationService {
     };
   }
 
-  analyzeCannibalizationImpact(_promotion, relatedProduct) {
+  analyzeCannibalizationImpact(_promotion, _relatedProduct) {
     // Simplified cannibalization analysis
     return {
       cannibalized: false,

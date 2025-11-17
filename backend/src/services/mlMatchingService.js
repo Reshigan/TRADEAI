@@ -333,7 +333,7 @@ class MLMatchingService {
   /**
    * Generate explanation
    */
-  generateExplanation(features, score) {
+  generateExplanation(features, _score) {
     const reasons = [];
 
     if (features.amountSimilarity >= 90) {

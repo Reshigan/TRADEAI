@@ -53,7 +53,7 @@ const handleJWTExpiredError = () =>
   new AppError('Your token has expired. Please log in again.', 401, 'TOKEN_EXPIRED');
 
 // Main error handler middleware
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   let error = { ...err };
   error.message = err.message;
 

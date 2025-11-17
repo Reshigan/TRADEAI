@@ -852,7 +852,7 @@ class TestingService extends EventEmitter {
   /**
    * Execute test case
    */
-  async executeTestCase(testCase, suiteType) {
+  async executeTestCase(testCase, _suiteType) {
     // Simulate test case execution
     await new Promise((resolve) => setTimeout(resolve, Math.random() * 100 + 50));
 

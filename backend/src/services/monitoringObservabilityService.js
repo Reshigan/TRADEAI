@@ -961,7 +961,7 @@ class MonitoringObservabilityService extends EventEmitter {
     });
   }
 
-  evaluateAlertCondition(rule, metricName, value, tags) {
+  evaluateAlertCondition(rule, metricName, value, _tags) {
     // Simplified condition evaluation
     switch (rule.id) {
       case 'high_cpu_usage':

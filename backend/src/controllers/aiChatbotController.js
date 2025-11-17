@@ -466,7 +466,7 @@ class AIChatbotController {
   /**
    * Generate suggested questions
    */
-  generateSuggestedQuestions(context, user) {
+  generateSuggestedQuestions(context, _user) {
     const baseQuestions = [
       'What are my top performing promotions?',
       "Show me this month's budget utilization",

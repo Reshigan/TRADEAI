@@ -473,7 +473,7 @@ class AdvancedAnalyticsService extends EventEmitter {
   /**
    * Calculate cohort metrics
    */
-  calculateCohortMetrics(cohorts, metric) {
+  calculateCohortMetrics(cohorts, _metric) {
     const metrics = {
       overallRetention: 0,
       periodRetention: [],
@@ -1036,7 +1036,7 @@ class AdvancedAnalyticsService extends EventEmitter {
     return date.toISOString();
   }
 
-  calculateDataDrivenWeights(touchpoints, conversionData) {
+  calculateDataDrivenWeights(touchpoints, _conversionData) {
     // Simplified data-driven attribution
     // In reality, this would use machine learning models
     const weights = touchpoints.map((touchpoint, index) => {

@@ -5,7 +5,7 @@ const app = require('../src/app');
 describe('TRADEAI Backend API - Complete Integration Tests', () => {
   let authToken;
   let testUser;
-  let testCompany;
+  let _testCompany;
 
   beforeAll(async () => {
     // Setup test database connection

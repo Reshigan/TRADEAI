@@ -924,7 +924,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform blue-green deployment
    */
-  async performBlueGreenDeployment(pipelineRun, _options) {
+  async performBlueGreenDeployment(_pipelineRun, _options) {
     console.log('Performing blue-green deployment...');
 
     // Simulate blue-green deployment steps
@@ -1042,7 +1042,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform rolling deployment
    */
-  async performRollingDeployment(_deployment, environment) {
+  async performRollingDeployment(_deployment, _environment) {
     console.log('Performing rolling deployment...');
 
     const steps = [
@@ -1210,7 +1210,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Simulate container build
    */
-  async simulateBuild(build, container) {
+  async simulateBuild(build, _container) {
     const buildSteps = [
       'Pulling base image',
       'Copying source code',
@@ -1340,7 +1340,7 @@ class DeploymentService extends EventEmitter {
   }
 
   // Utility methods
-  calculateAverageDuration(pipeline) {
+  calculateAverageDuration(_pipeline) {
     // This would calculate based on historical data
     return Math.random() * 1800 + 600; // 10-40 minutes
   }

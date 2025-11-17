@@ -282,7 +282,7 @@ const monitoringController = {
     };
   },
 
-  async _getWeeklyBudgetUtilization(companyId, weekStart) {
+  async _getWeeklyBudgetUtilization(companyId, _weekStart) {
     const budgets = await Budget.aggregate([
       {
         $match: {
@@ -342,7 +342,7 @@ const monitoringController = {
     };
   },
 
-  _getActiveAlerts(companyId) {
+  _getActiveAlerts(_companyId) {
     // Mock alert data - in production, this would query an Alerts collection
     const mockAlerts = [
       {
@@ -435,7 +435,7 @@ const monitoringController = {
     });
   },
 
-  _getPerformanceMetrics(companyId, timeframe) {
+  _getPerformanceMetrics(companyId, _timeframe) {
     // Mock performance metrics
     const metrics = {
       responseTime: {

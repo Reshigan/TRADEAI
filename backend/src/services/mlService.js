@@ -242,7 +242,7 @@ class MLService {
 
     const anomalies = [];
 
-    data.forEach((item, index) => {
+    data.forEach((item, _index) => {
       const zScore = Math.abs((item.value - mean) / stdDev);
 
       if (zScore > threshold) {

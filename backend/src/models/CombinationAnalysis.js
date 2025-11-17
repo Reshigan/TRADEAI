@@ -733,7 +733,7 @@ combinationAnalysisSchema.methods.analyzeSuccessfulPatterns = function (successf
 };
 
 // Method to analyze unsuccessful patterns
-combinationAnalysisSchema.methods.analyzeUnsuccessfulPatterns = function (unsuccessfulCombinations) {
+combinationAnalysisSchema.methods.analyzeUnsuccessfulPatterns = function (_unsuccessfulCombinations) {
   // Similar to successful patterns but focusing on failure indicators
   const patterns = [];
 

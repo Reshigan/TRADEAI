@@ -686,7 +686,7 @@ const createSalesHistory = async (products, customers) => {
 // BUDGETS - Annual budget
 // ============================================================================
 
-const createBudgets = async (products, customers) => {
+const createBudgets = async (_products, _customers) => {
   console.log('\n💰 Creating Annual Budget...');
 
   const currentYear = new Date().getFullYear();

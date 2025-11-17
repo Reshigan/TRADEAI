@@ -560,7 +560,7 @@ class MasterDataManagementService {
     return Model.findById(entityId).lean();
   }
 
-  fetchEnrichmentData(source, originalData) {
+  fetchEnrichmentData(_source, _originalData) {
     // In production, fetch from external sources
     return {
       enrichedField1: 'enriched value',

@@ -718,7 +718,7 @@ class IntegrationHubService extends EventEmitter {
     }
   }
 
-  fetchExternalData(_connector, config, capability) {
+  fetchExternalData(_connector, _config, capability) {
     // Mock implementation - would fetch actual data from external systems
     return [
       { id: '1', name: 'Sample Record 1' },
@@ -775,7 +775,7 @@ class IntegrationHubService extends EventEmitter {
     };
   }
 
-  getAccessToken(_connector, config) {
+  getAccessToken(_connector, _config) {
     // Mock implementation - would get actual access tokens
     return 'mock_access_token';
   }

@@ -490,7 +490,7 @@ class SimulationEngine {
     }
   }
 
-  calculateBaselineMetrics(_products, duration) {
+  calculateBaselineMetrics(_products, _duration) {
     // Calculate baseline metrics from historical data
     return {
       revenue: 100000,
@@ -599,7 +599,7 @@ class SimulationEngine {
     return outcomes;
   }
 
-  generateAllocationScenarios(totalBudget, categories) {
+  generateAllocationScenarios(_totalBudget, _categories) {
     // Generate different allocation scenarios
     return [
       { name: 'Equal Distribution', allocation: {} },
@@ -614,7 +614,7 @@ class SimulationEngine {
     return {};
   }
 
-  generateBudgetRecommendations(_allocation, outcomes) {
+  generateBudgetRecommendations(_allocation, _outcomes) {
     return [];
   }
 
@@ -667,18 +667,18 @@ class SimulationEngine {
     };
   }
 
-  generatePricingRecommendations(revenueImpact, marginImpact) {
+  generatePricingRecommendations(_revenueImpact, _marginImpact) {
     return [];
   }
 
-  assessPricingRisk(_scenario, demandResponse) {
+  assessPricingRisk(_scenario, _demandResponse) {
     return {
       level: 'moderate',
       factors: []
     };
   }
 
-  getHistoricalVolume(_products, months) {
+  getHistoricalVolume(_products, _months) {
     // Get historical volume data
     return [];
   }
@@ -697,7 +697,7 @@ class SimulationEngine {
     return forecast;
   }
 
-  calculateConfidenceIntervals(_forecast, historical) {
+  calculateConfidenceIntervals(_forecast, _historical) {
     // Calculate confidence intervals
     return {
       lower95: [],
@@ -707,7 +707,7 @@ class SimulationEngine {
     };
   }
 
-  generateVolumeScenarios(forecast, intervals) {
+  generateVolumeScenarios(forecast, _intervals) {
     return {
       optimistic: [],
       base: forecast,
@@ -719,7 +719,7 @@ class SimulationEngine {
     return {};
   }
 
-  generateVolumeRecommendations(scenarios) {
+  generateVolumeRecommendations(_scenarios) {
     return [];
   }
 
@@ -731,25 +731,25 @@ class SimulationEngine {
     };
   }
 
-  modelCompetitiveDynamics(_ourActions, competitorActions) {
+  modelCompetitiveDynamics(_ourActions, _competitorActions) {
     return {};
   }
 
-  calculateMarketShareChange(currentPosition, dynamics, marketSize) {
+  calculateMarketShareChange(currentPosition, _dynamics, marketSize) {
     return {
       current: currentPosition.marketShare,
       projected: currentPosition.marketShare + 2
     };
   }
 
-  calculateRevenueFromMarketShare(share, marketSize) {
+  calculateRevenueFromMarketShare(share, _marketSize) {
     return {
       current: 0,
       projected: 0
     };
   }
 
-  generateMarketShareRecommendations(share) {
+  generateMarketShareRecommendations(_share) {
     return [];
   }
 
@@ -797,11 +797,11 @@ class SimulationEngine {
     return 0.75; // 75% probability
   }
 
-  generateROIRecommendations(_expected, target) {
+  generateROIRecommendations(_expected, _target) {
     return [];
   }
 
-  calculateDelta(_base, variation) {
+  calculateDelta(_base, _variation) {
     return {};
   }
 

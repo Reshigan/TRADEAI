@@ -601,7 +601,7 @@ class ForecastingService {
     return ensemble;
   }
 
-  calculateConfidenceIntervals(forecast, timeSeries, horizon) {
+  calculateConfidenceIntervals(forecast, timeSeries, _horizon) {
     const values = timeSeries.map((d) => d.units);
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
 

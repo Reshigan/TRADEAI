@@ -315,7 +315,7 @@ class NLPService extends EventEmitter {
   /**
    * Perform sentiment analysis
    */
-  performSentimentAnalysis(text, options) {
+  performSentimentAnalysis(text, _options) {
     // Simulate sentiment analysis logic
     const words = text.toLowerCase().split(/\s+/);
 
@@ -477,7 +477,7 @@ class NLPService extends EventEmitter {
     });
 
     // Calculate intent scores
-    words.forEach((word) => {
+    words.forEach((_word) => {
       Object.entries(intentKeywords).forEach(([intent, keywords]) => {
         keywords.forEach((keyword) => {
           if (text.toLowerCase().includes(keyword)) {

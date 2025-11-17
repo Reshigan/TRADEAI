@@ -685,7 +685,7 @@ const seedEnhancedAnalyticsData = async () => {
           budgetDistribution: {
             totalBudget: budget.totalBudget * 0.8, // 80% of parent budget
             currency: 'AUD',
-            calculatedAllocations: customers.slice(0, 15).map((customer, index) => ({
+            calculatedAllocations: customers.slice(0, 15).map((customer, _index) => ({
               targetId: customer._id.toString(),
               targetType: 'customer',
               targetName: customer.name,
