@@ -62,12 +62,27 @@ const CommandCenter = () => {
       ]);
 
       console.log('CommandCenter - Raw API responses:', { budgets, promotions, tradeSpends });
+      console.log('CommandCenter - budgets type:', typeof budgets, 'isArray:', Array.isArray(budgets));
+      console.log('CommandCenter - budgets.data type:', typeof budgets?.data, 'isArray:', Array.isArray(budgets?.data));
+      console.log('CommandCenter - budgets.data.data type:', typeof budgets?.data?.data, 'isArray:', Array.isArray(budgets?.data?.data));
       
-      const budgetsArray = budgets?.data || budgets || [];
-      const promotionsArray = promotions?.data || promotions || [];
-      const tradeSpendsArray = tradeSpends?.data || tradeSpends || [];
+      const toArray = (response) => {
+        if (Array.isArray(response)) return response;
+        if (Array.isArray(response?.data?.data)) return response.data.data;
+        if (Array.isArray(response?.data)) return response.data;
+        if (Array.isArray(response?.items)) return response.items;
+        return [];
+      };
       
-      console.log('CommandCenter - Extracted arrays:', { budgetsArray, promotionsArray, tradeSpendsArray });
+      const budgetsArray = toArray(budgets);
+      const promotionsArray = toArray(promotions);
+      const tradeSpendsArray = toArray(tradeSpends);
+      
+      console.log('CommandCenter - Extracted arrays:', { 
+        budgetsArray: budgetsArray.length + ' items', 
+        promotionsArray: promotionsArray.length + ' items', 
+        tradeSpendsArray: tradeSpendsArray.length + ' items' 
+      });
       
       const data = processDashboardData(budgetsArray, promotionsArray, tradeSpendsArray);
       setDashboardData(data);
