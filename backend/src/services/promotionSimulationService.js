@@ -459,7 +459,7 @@ class PromotionSimulationService {
   // Helper methods
 
   async getHistoricalPromotions(criteria) {
-    return await Promotion.find({
+    return Promotion.find({
       productCategory: criteria.productCategory,
       status: 'completed'
     }).limit(100).lean();

@@ -208,7 +208,7 @@ class TenantController {
       if (req.user.role === 'super_admin') {
         // Super admin can update any tenant
         tenant = await withoutTenantFilter(async () => {
-          return await Tenant.findByIdAndUpdate(
+          return Tenant.findByIdAndUpdate(
             id,
             updates,
             { new: true, runValidators: true }
@@ -224,7 +224,7 @@ class TenantController {
         }
 
         tenant = await withoutTenantFilter(async () => {
-          return await Tenant.findByIdAndUpdate(
+          return Tenant.findByIdAndUpdate(
             id,
             updates,
             { new: true, runValidators: true }
@@ -285,7 +285,7 @@ class TenantController {
           return Tenant.findByIdAndDelete(id);
         } else {
           // Soft delete (deactivate)
-          return await Tenant.findByIdAndUpdate(
+          return Tenant.findByIdAndUpdate(
             id,
             {
               status: 'suspended',
@@ -471,7 +471,7 @@ class TenantController {
       const subscriptionUpdates = req.body;
 
       const tenant = await withoutTenantFilter(async () => {
-        return await Tenant.findByIdAndUpdate(
+        return Tenant.findByIdAndUpdate(
           id,
           {
             subscription: subscriptionUpdates,

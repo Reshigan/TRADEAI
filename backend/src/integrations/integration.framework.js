@@ -296,7 +296,7 @@ class SlackIntegration extends BaseIntegration {
   }
 
   async notifyCampaignLaunch(campaign) {
-    return await this.sendNotification({
+    return this.sendNotification({
       text: `🚀 Campaign Launched: ${campaign.name}`,
       blocks: [
         {

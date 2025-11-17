@@ -162,7 +162,7 @@ router.put('/:id/features', async (req, res) => {
     const features = req.body;
 
     const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findByIdAndUpdate(
+      return Tenant.findByIdAndUpdate(
         id,
         {
           features,
@@ -272,7 +272,7 @@ router.put('/:id/limits', async (req, res) => {
     const limits = req.body;
 
     const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findByIdAndUpdate(
+      return Tenant.findByIdAndUpdate(
         id,
         {
           limits,

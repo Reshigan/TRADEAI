@@ -819,7 +819,7 @@ class ReportingEngine {
   }
 
   async getCustomerHierarchyData(tenantId, parameters) {
-    return await Customer.find({
+    return Customer.find({
       tenantId,
       level: { $exists: true }
     }).sort({ level: 1, path: 1 }).lean();
@@ -830,14 +830,14 @@ class ReportingEngine {
   }
 
   async getProductCategoryData(tenantId, parameters) {
-    return await Product.aggregate([
+    return Product.aggregate([
       { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
       { $group: { _id: '$category.primary', count: { $sum: 1 } } }
     ]);
   }
 
   async getProductPromotionData(tenantId, parameters) {
-    return await Promotion.find({
+    return Promotion.find({
       tenantId,
       'products.productId': { $exists: true }
     }).populate('products.productId').lean();
