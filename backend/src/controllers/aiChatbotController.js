@@ -341,7 +341,7 @@ class AIChatbotController {
   /**
    * Query promotions data
    */
-  async queryPromotions(filters, companyId) {
+  queryPromotions(filters, companyId) {
     const query = { companyId, ...filters };
     return Promotion.find(query)
       .populate('customer', 'name')
@@ -352,7 +352,7 @@ class AIChatbotController {
   /**
    * Query customers data
    */
-  async queryCustomers(filters, companyId) {
+  queryCustomers(filters, companyId) {
     const query = { companyId, ...filters };
     return Customer.find(query)
       .sort({ name: 1 })
@@ -362,7 +362,7 @@ class AIChatbotController {
   /**
    * Query products data
    */
-  async queryProducts(filters, companyId) {
+  queryProducts(filters, companyId) {
     const query = { companyId, ...filters };
     return Product.find(query)
       .sort({ name: 1 })
@@ -372,7 +372,7 @@ class AIChatbotController {
   /**
    * Query budgets data
    */
-  async queryBudgets(filters, companyId) {
+  queryBudgets(filters, companyId) {
     const query = { companyId, ...filters };
     return Budget.find(query)
       .sort({ created_at: -1 })
@@ -439,7 +439,7 @@ class AIChatbotController {
   /**
    * Generate recommendations
    */
-  async generateRecommendations(insights, type) {
+  generateRecommendations(insights, type) {
     const recommendations = [];
 
     if (type === 'performance') {
@@ -466,7 +466,7 @@ class AIChatbotController {
   /**
    * Generate suggested questions
    */
-  async generateSuggestedQuestions(context, user) {
+  generateSuggestedQuestions(context, user) {
     const baseQuestions = [
       'What are my top performing promotions?',
       "Show me this month's budget utilization",
@@ -527,7 +527,7 @@ class AIChatbotController {
   /**
    * Handle general queries
    */
-  async handleGeneralQuery(message, companyId, user) {
+  handleGeneralQuery(message, companyId, user) {
     // Simple response generation based on keywords
     const lowerMessage = message.toLowerCase();
 
@@ -612,7 +612,7 @@ class AIChatbotController {
   /**
    * Generate general report sections
    */
-  async generateGeneralReportSections(companyId, parameters) {
+  generateGeneralReportSections(companyId, parameters) {
     return [
       {
         title: 'Overview',

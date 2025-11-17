@@ -517,7 +517,7 @@ const reportController = {
   },
 
   // Schedule report
-  async scheduleReport({ reportType, filters, schedule, recipients, createdBy }) {
+  scheduleReport({ reportType, filters, schedule, recipients, createdBy }) {
     // Implementation would save scheduled report configuration
     return {
       id: `schedule-${Date.now()}`,
@@ -610,7 +610,7 @@ const reportController = {
   },
 
   // Get report templates
-  async getReportTemplates(req, res) {
+  getReportTemplates(req, res) {
     try {
       const templates = [
         {
@@ -654,7 +654,7 @@ const reportController = {
   },
 
   // Get report analytics
-  async getReportAnalytics(req, res) {
+  getReportAnalytics(req, res) {
     try {
       const { period = '30days' } = req.query;
 
@@ -727,7 +727,7 @@ const reportController = {
     return data;
   },
 
-  async _generateCustomReportFile(reportConfig, reportData) {
+  _generateCustomReportFile(reportConfig, reportData) {
     const { format, name } = reportConfig;
     const timestamp = new Date().toISOString().split('T')[0];
     return `${name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.${format}`;

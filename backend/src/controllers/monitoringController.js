@@ -157,7 +157,7 @@ const monitoringController = {
   },
 
   // Real-time event streaming
-  async streamEvents(req, res) {
+  streamEvents(req, res) {
     try {
       const { companyId } = req.user;
 
@@ -342,7 +342,7 @@ const monitoringController = {
     };
   },
 
-  async _getActiveAlerts(companyId) {
+  _getActiveAlerts(companyId) {
     // Mock alert data - in production, this would query an Alerts collection
     const mockAlerts = [
       {
@@ -366,7 +366,7 @@ const monitoringController = {
     return mockAlerts;
   },
 
-  async _getSystemHealth() {
+  _getSystemHealth() {
     // Mock system health data
     return {
       status: 'healthy',
@@ -386,7 +386,7 @@ const monitoringController = {
     };
   },
 
-  async _createAlert(alertConfig) {
+  _createAlert(alertConfig) {
     // In production, this would save to an Alerts collection
     return {
       id: new mongoose.Types.ObjectId(),
@@ -395,7 +395,7 @@ const monitoringController = {
     };
   },
 
-  async _getAlerts(filter) {
+  _getAlerts(filter) {
     // Mock alerts data - in production, query from database
     const mockAlerts = [
       {
@@ -435,7 +435,7 @@ const monitoringController = {
     });
   },
 
-  async _getPerformanceMetrics(companyId, timeframe) {
+  _getPerformanceMetrics(companyId, timeframe) {
     // Mock performance metrics
     const metrics = {
       responseTime: {
@@ -533,7 +533,7 @@ const monitoringController = {
     return alerts;
   },
 
-  async _checkPerformanceThresholds(companyId) {
+  _checkPerformanceThresholds(companyId) {
     const alerts = [];
 
     // Mock performance threshold checks
@@ -563,7 +563,7 @@ const monitoringController = {
     return alerts;
   },
 
-  async _checkSystemHealth() {
+  _checkSystemHealth() {
     const alerts = [];
 
     // Mock system health checks

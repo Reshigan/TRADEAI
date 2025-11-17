@@ -536,7 +536,7 @@ class MLController {
   }
 
   // Model Training Status
-  async getTrainingStatus(req, res) {
+  getTrainingStatus(req, res) {
     try {
       // Mock training status - in real implementation, track actual training jobs
       const trainingStatus = {
@@ -585,7 +585,7 @@ class MLController {
   }
 
   // Retrain Models
-  async retrainModels(req, res) {
+  retrainModels(req, res) {
     try {
       const { models = [], force = false } = req.body;
       const tenantId = req.tenant?.id;
@@ -627,7 +627,7 @@ class MLController {
   }
 
   // A/B Test Recommendations
-  async createABTest(req, res) {
+  createABTest(req, res) {
     try {
       const { testName, variants, trafficSplit, duration, metrics } = req.body;
       const tenantId = req.tenant?.id;
@@ -671,7 +671,7 @@ class MLController {
   }
 
   // Get A/B Test Results
-  async getABTestResults(req, res) {
+  getABTestResults(req, res) {
     try {
       const { testId } = req.params;
       const tenantId = req.tenant?.id;

@@ -15,7 +15,7 @@ class ForecastingService {
    * @param {Array} historicalData - Historical sales data
    * @returns {Promise<Object>} Forecast results
    */
-  async forecastSales(productId, days = 30, historicalData = []) {
+  forecastSales(productId, days = 30, historicalData = []) {
     try {
       // Simple moving average forecasting (can be replaced with ML model)
       const recentSales = historicalData.slice(-30);
@@ -55,7 +55,7 @@ class ForecastingService {
    * @param {Object} promotionData - Promotion details
    * @returns {Promise<Object>} Performance prediction
    */
-  async predictPromotionPerformance(promotionData) {
+  predictPromotionPerformance(promotionData) {
     try {
       const { discount, duration, targetAudience, historicalROI = [] } = promotionData;
 
@@ -90,7 +90,7 @@ class ForecastingService {
    * @param {Object} customerData - Customer activity data
    * @returns {Promise<Object>} Churn prediction
    */
-  async predictChurnRisk(customerId, customerData) {
+  predictChurnRisk(customerId, customerData) {
     try {
       const {
         daysSinceLastPurchase = 0,
@@ -139,7 +139,7 @@ class ForecastingService {
    * @param {Array} purchaseHistory - Customer's purchase history
    * @returns {Promise<Array>} Recommended products
    */
-  async recommendProducts(customerId, purchaseHistory = []) {
+  recommendProducts(customerId, purchaseHistory = []) {
     try {
       // Simple collaborative filtering simulation
       const productCategories = purchaseHistory.map((p) => p.category);
@@ -173,7 +173,7 @@ class ForecastingService {
    * @param {Object} campaignData - Campaign metrics
    * @returns {Promise<Object>} Campaign analysis
    */
-  async analyzeCampaignEffectiveness(campaignId, campaignData) {
+  analyzeCampaignEffectiveness(campaignId, campaignData) {
     try {
       const {
         budget = 0,
@@ -216,7 +216,7 @@ class ForecastingService {
    * @param {Object} params - Forecasting parameters
    * @returns {Promise<Object>} Demand forecast
    */
-  async forecastDemand(params) {
+  forecastDemand(params) {
     const { productId, timeframe = 30, seasonality = true } = params;
 
     // Mock demand forecast

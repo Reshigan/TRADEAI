@@ -26,7 +26,7 @@ class BaseIntegration extends EventEmitter {
    * Test connection to the external service
    * @returns {Promise<boolean>}
    */
-  async testConnection() {
+  testConnection() {
     throw new Error('testConnection() must be implemented by subclass');
   }
 
@@ -34,7 +34,7 @@ class BaseIntegration extends EventEmitter {
    * Authenticate with the external service
    * @returns {Promise<boolean>}
    */
-  async authenticate() {
+  authenticate() {
     throw new Error('authenticate() must be implemented by subclass');
   }
 
@@ -280,7 +280,7 @@ class SlackIntegration extends BaseIntegration {
     }
   }
 
-  async authenticate() {
+  authenticate() {
     // Slack uses static tokens, so just verify
     return this.testConnection();
   }
@@ -295,7 +295,7 @@ class SlackIntegration extends BaseIntegration {
     return response.data;
   }
 
-  async notifyCampaignLaunch(campaign) {
+  notifyCampaignLaunch(campaign) {
     return this.sendNotification({
       text: `🚀 Campaign Launched: ${campaign.name}`,
       blocks: [

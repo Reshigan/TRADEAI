@@ -147,7 +147,7 @@ const tenantUtils = {
   /**
    * Increment tenant usage
    */
-  async incrementUsage(tenantId, usageType, amount = 1) {
+  incrementUsage(tenantId, usageType, amount = 1) {
     const Tenant = require('../models/Tenant');
     const { withoutTenantFilter } = require('../middleware/tenantQueryFilter');
 
