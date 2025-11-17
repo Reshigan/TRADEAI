@@ -1844,7 +1844,7 @@ async function drillDownByProduct(metric, range, filters) {
     date: { $gte: range.start, $lte: range.end },
     ...filters
   };
-  
+
   const results = await SalesHistory.aggregate([
     { $match: matchCriteria },
     { $lookup: { from: 'products', localField: 'product', foreignField: '_id', as: 'productData' } },
@@ -1855,10 +1855,10 @@ async function drillDownByProduct(metric, range, filters) {
       revenue: { $sum: '$revenue' },
       volume: { $sum: '$quantity' },
       margin: { $avg: '$margin' }
-    }},
+    } },
     { $sort: { revenue: -1 } }
   ]);
-  
+
   return results;
 }
 
@@ -1867,7 +1867,7 @@ async function drillDownByCustomer(metric, range, filters) {
     date: { $gte: range.start, $lte: range.end },
     ...filters
   };
-  
+
   const results = await SalesHistory.aggregate([
     { $match: matchCriteria },
     { $lookup: { from: 'customers', localField: 'customer', foreignField: '_id', as: 'customerData' } },
@@ -1878,10 +1878,10 @@ async function drillDownByCustomer(metric, range, filters) {
       revenue: { $sum: '$revenue' },
       volume: { $sum: '$quantity' },
       margin: { $avg: '$margin' }
-    }},
+    } },
     { $sort: { revenue: -1 } }
   ]);
-  
+
   return results;
 }
 
@@ -1890,7 +1890,7 @@ async function drillDownByRegion(metric, range, filters) {
     date: { $gte: range.start, $lte: range.end },
     ...filters
   };
-  
+
   const results = await SalesHistory.aggregate([
     { $match: matchCriteria },
     { $lookup: { from: 'customers', localField: 'customer', foreignField: '_id', as: 'customerData' } },
@@ -1901,10 +1901,10 @@ async function drillDownByRegion(metric, range, filters) {
       revenue: { $sum: '$revenue' },
       volume: { $sum: '$quantity' },
       margin: { $avg: '$margin' }
-    }},
+    } },
     { $sort: { revenue: -1 } }
   ]);
-  
+
   return results;
 }
 
@@ -1913,7 +1913,7 @@ async function drillDownByChannel(metric, range, filters) {
     date: { $gte: range.start, $lte: range.end },
     ...filters
   };
-  
+
   const results = await SalesHistory.aggregate([
     { $match: matchCriteria },
     { $group: {
@@ -1922,10 +1922,10 @@ async function drillDownByChannel(metric, range, filters) {
       revenue: { $sum: '$revenue' },
       volume: { $sum: '$quantity' },
       margin: { $avg: '$margin' }
-    }},
+    } },
     { $sort: { revenue: -1 } }
   ]);
-  
+
   return results;
 }
 
@@ -1934,7 +1934,7 @@ async function drillDownByTime(metric, range, filters) {
     date: { $gte: range.start, $lte: range.end },
     ...filters
   };
-  
+
   const results = await SalesHistory.aggregate([
     { $match: matchCriteria },
     { $group: {
@@ -1943,10 +1943,10 @@ async function drillDownByTime(metric, range, filters) {
       revenue: { $sum: '$revenue' },
       volume: { $sum: '$quantity' },
       margin: { $avg: '$margin' }
-    }},
+    } },
     { $sort: { _id: 1 } }
   ]);
-  
+
   return results;
 }
 
@@ -1960,8 +1960,8 @@ function calculateAggregations(data) {
       count: 0
     };
   }
-  
-  const values = data.map(d => d.revenue || 0);
+
+  const values = data.map((d) => d.revenue || 0);
   return {
     total: values.reduce((sum, val) => sum + val, 0),
     average: values.reduce((sum, val) => sum + val, 0) / values.length,
@@ -1974,17 +1974,17 @@ function calculateAggregations(data) {
 async function getSpendTrend(year) {
   const startDate = new Date(year, 0, 1);
   const endDate = new Date(year, 11, 31, 23, 59, 59);
-  
+
   const trend = await TradeSpend.aggregate([
     { $match: { startDate: { $gte: startDate, $lte: endDate } } },
     { $group: {
       _id: { $month: '$startDate' },
       amount: { $sum: '$amount' }
-    }},
+    } },
     { $sort: { _id: 1 } }
   ]);
-  
-  return trend.map(t => ({
+
+  return trend.map((t) => ({
     month: t._id,
     amount: t.amount
   }));
@@ -2003,7 +2003,7 @@ async function getTopSpendAreas(matchCriteria, limit = 10) {
 async function getBudgetVsActualSpend(year) {
   const startDate = new Date(year, 0, 1);
   const endDate = new Date(year, 11, 31, 23, 59, 59);
-  
+
   const result = await TradeSpend.aggregate([
     { $match: { startDate: { $gte: startDate, $lte: endDate } } },
     { $group: {
@@ -2011,9 +2011,9 @@ async function getBudgetVsActualSpend(year) {
       totalBudget: { $sum: '$amount.budgeted' },
       totalSpent: { $sum: '$amount.spent' },
       totalCommitted: { $sum: '$amount.committed' }
-    }}
+    } }
   ]);
-  
+
   return result[0] || { totalBudget: 0, totalSpent: 0, totalCommitted: 0 };
 }
 
@@ -2021,7 +2021,7 @@ async function getUpcomingCommitments(days = 30) {
   const startDate = new Date();
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + days);
-  
+
   return TradeSpend.find({
     startDate: { $gte: startDate, $lte: endDate },
     status: { $in: ['approved', 'active'] }
@@ -2047,7 +2047,7 @@ async function getPromotionPerformanceMetrics(dateFilter) {
       totalRevenue: { $sum: '$actualResults.revenue' },
       totalROI: { $avg: '$actualResults.roi' },
       avgLift: { $avg: '$actualResults.lift' }
-    }}
+    } }
   ]);
   return result[0] || { totalRevenue: 0, totalROI: 0, avgLift: 0 };
 }
@@ -2065,7 +2065,7 @@ async function getPromotionTrends(dateFilter) {
       _id: { $month: '$period.startDate' },
       count: { $sum: 1 },
       revenue: { $sum: '$actualResults.revenue' }
-    }},
+    } },
     { $sort: { _id: 1 } }
   ]);
 }
@@ -2078,7 +2078,7 @@ async function getPromotionChannelPerformance(dateFilter) {
       count: { $sum: 1 },
       revenue: { $sum: '$actualResults.revenue' },
       roi: { $avg: '$actualResults.roi' }
-    }},
+    } },
     { $sort: { revenue: -1 } }
   ]);
 }
@@ -2091,7 +2091,7 @@ async function getPromotionROIAnalysis(dateFilter) {
       avgROI: { $avg: '$actualResults.roi' },
       totalSpend: { $sum: '$budget.allocated' },
       totalRevenue: { $sum: '$actualResults.revenue' }
-    }},
+    } },
     { $sort: { avgROI: -1 } }
   ]);
 }
@@ -2103,7 +2103,7 @@ async function getCustomerMetrics() {
       totalCustomers: { $sum: 1 },
       activeCustomers: { $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] } },
       avgRevenue: { $avg: '$metrics.totalRevenue' }
-    }}
+    } }
   ]);
   return result[0] || { totalCustomers: 0, activeCustomers: 0, avgRevenue: 0 };
 }
@@ -2114,7 +2114,7 @@ async function getCustomerSegmentAnalysis() {
       _id: '$segment',
       count: { $sum: 1 },
       totalRevenue: { $sum: '$metrics.totalRevenue' }
-    }},
+    } },
     { $sort: { totalRevenue: -1 } }
   ]);
 }
@@ -2124,7 +2124,7 @@ async function getCustomerLifetimeValue() {
     { $group: {
       _id: '$segment',
       avgLTV: { $avg: '$metrics.lifetimeValue' }
-    }},
+    } },
     { $sort: { avgLTV: -1 } }
   ]);
 }
@@ -2132,15 +2132,15 @@ async function getCustomerLifetimeValue() {
 async function getChurnAnalysis() {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-  
+
   const result = await Customer.aggregate([
     { $group: {
       _id: null,
       totalCustomers: { $sum: 1 },
       inactiveCustomers: { $sum: { $cond: [{ $lt: ['$lastOrderDate', sixMonthsAgo] }, 1, 0] } }
-    }}
+    } }
   ]);
-  
+
   const data = result[0] || { totalCustomers: 0, inactiveCustomers: 0 };
   return {
     churnRate: data.totalCustomers > 0 ? (data.inactiveCustomers / data.totalCustomers) * 100 : 0,
@@ -2157,7 +2157,7 @@ async function getCustomerGrowthTrend() {
     { $group: {
       _id: { $month: '$createdAt' },
       count: { $sum: 1 }
-    }},
+    } },
     { $sort: { _id: 1 } }
   ]);
 }
@@ -2168,7 +2168,7 @@ async function getCustomerEngagementMetrics() {
       _id: null,
       avgOrderFrequency: { $avg: '$metrics.orderFrequency' },
       avgOrderValue: { $avg: '$metrics.averageOrderValue' }
-    }}
+    } }
   ]);
   return result[0] || { avgOrderFrequency: 0, avgOrderValue: 0 };
 }
@@ -2180,7 +2180,7 @@ async function getProductMetrics() {
       totalProducts: { $sum: 1 },
       activeProducts: { $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] } },
       avgPrice: { $avg: '$pricing.basePrice' }
-    }}
+    } }
   ]);
   return result[0] || { totalProducts: 0, activeProducts: 0, avgPrice: 0 };
 }
@@ -2191,7 +2191,7 @@ async function getProductPerformance(limit = 10) {
       _id: '$product',
       totalRevenue: { $sum: '$revenue' },
       totalVolume: { $sum: '$quantity' }
-    }},
+    } },
     { $sort: { totalRevenue: -1 } },
     { $limit: limit },
     { $lookup: { from: 'products', localField: '_id', foreignField: '_id', as: 'productData' } },
@@ -2204,7 +2204,7 @@ async function getProductMix() {
     { $group: {
       _id: '$category',
       count: { $sum: 1 }
-    }},
+    } },
     { $sort: { count: -1 } }
   ]);
 }
@@ -2215,7 +2215,7 @@ async function getInventoryStatus() {
       _id: null,
       totalStock: { $sum: '$inventory.quantity' },
       lowStock: { $sum: { $cond: [{ $lt: ['$inventory.quantity', '$inventory.reorderPoint'] }, 1, 0] } }
-    }}
+    } }
   ]);
 }
 
@@ -2226,7 +2226,7 @@ async function getPricingAnalysis() {
       avgPrice: { $avg: '$pricing.basePrice' },
       minPrice: { $min: '$pricing.basePrice' },
       maxPrice: { $max: '$pricing.basePrice' }
-    }},
+    } },
     { $sort: { avgPrice: -1 } }
   ]);
 }
@@ -2237,7 +2237,7 @@ async function getProfitabilityAnalysis() {
       _id: '$product',
       totalRevenue: { $sum: '$revenue' },
       avgMargin: { $avg: '$margin' }
-    }},
+    } },
     { $sort: { totalRevenue: -1 } },
     { $limit: 20 }
   ]);
