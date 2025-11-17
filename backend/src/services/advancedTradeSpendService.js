@@ -930,7 +930,7 @@ class AdvancedTradeSpendService {
     return formatted;
   }
 
-  analyzeHistoricalPerformance(companyId, historicalData) {
+  analyzeHistoricalPerformance(_companyId, historicalData) {
     // Analyze historical ROI and effectiveness
     return {
       marketing: { roi: 250, effectiveness: 0.85 },
@@ -967,7 +967,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  assessOptimizationRisks(_optimized, constraints) {
+  assessOptimizationRisks(_optimized, _constraints) {
     return [
       {
         risk: 'Market volatility',

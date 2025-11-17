@@ -612,7 +612,7 @@ class AIChatbotController {
   /**
    * Generate general report sections
    */
-  generateGeneralReportSections(companyId, _parameters) {
+  generateGeneralReportSections(_companyId, _parameters) {
     return [
       {
         title: 'Overview',

@@ -533,7 +533,7 @@ const monitoringController = {
     return alerts;
   },
 
-  _checkPerformanceThresholds(companyId) {
+  _checkPerformanceThresholds(_companyId) {
     const alerts = [];
 
     // Mock performance threshold checks

@@ -802,7 +802,7 @@ class PromotionSimulationService {
     };
   }
 
-  generateOptimalMix(totalBudget, constraints, objectives, companyId) {
+  generateOptimalMix(totalBudget, _constraints, objectives, _companyId) {
     // Simplified - in production use optimization algorithm
     return [
       {

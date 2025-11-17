@@ -754,7 +754,7 @@ class MLIntegrationService {
     return maxScore / (avgScore + 0.1); // Avoid division by zero
   }
 
-  preparePriceOptimizationFeatures(product, constraints) {
+  preparePriceOptimizationFeatures(product, _constraints) {
     // Mock price optimization features
     return Array(10).fill(0).map(() => Math.random());
   }

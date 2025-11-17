@@ -530,7 +530,7 @@ class AnalyticsEngine {
     return [];
   }
 
-  applyOptimizationAlgorithm(budget, historicalData, constraints) {
+  applyOptimizationAlgorithm(budget, historicalData, _constraints) {
     // Simplified optimization algorithm
     return {
       allocation: {
