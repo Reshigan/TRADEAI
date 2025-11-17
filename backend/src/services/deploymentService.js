@@ -706,7 +706,7 @@ class DeploymentService extends EventEmitter {
     try {
       // Execute pipeline stages
       for (const stage of pipeline.stages) {
-        const stageResult = await this.executeStage(stage, pipelineRun, options);
+        const stageResult = await this.executeStage(stage, pipelineRun, _options);
         pipelineRun.stages.push(stageResult);
 
         if (stageResult.status === 'failed') {
@@ -766,7 +766,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Execute pipeline stage
    */
-  async executeStage(stage, pipelineRun, options) {
+  async executeStage(stage, pipelineRun, _options) {
     console.log(`Executing stage: ${stage.name}`);
 
     const stageResult = {
@@ -782,7 +782,7 @@ class DeploymentService extends EventEmitter {
     try {
       // Execute stage steps
       for (const stepName of stage.steps) {
-        const stepResult = await this.executeStep(stepName, stage, pipelineRun, options);
+        const stepResult = await this.executeStep(stepName, stage, pipelineRun, _options);
         stageResult.steps.push(stepResult);
 
         if (stepResult.status === 'failed') {
@@ -811,7 +811,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Execute pipeline step
    */
-  async executeStep(stepName, stage, pipelineRun, options) {
+  async executeStep(stepName, stage, pipelineRun, _options) {
     console.log(`Executing step: ${stepName}`);
 
     const stepResult = {
@@ -829,7 +829,7 @@ class DeploymentService extends EventEmitter {
       await new Promise((resolve) => setTimeout(resolve, executionTime));
 
       // Execute step based on name
-      const result = await this.performStep(stepName, stage, pipelineRun, options);
+      const result = await this.performStep(stepName, stage, pipelineRun, _options);
 
       stepResult.output = result.output;
       stepResult.artifacts = result.artifacts || [];
@@ -850,7 +850,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform specific step
    */
-  performStep(stepName, stage, pipelineRun, options) {
+  performStep(stepName, stage, pipelineRun, _options) {
     switch (stepName) {
       case 'checkout_code':
         return {
@@ -905,7 +905,7 @@ class DeploymentService extends EventEmitter {
         };
 
       case 'blue_green_deployment':
-        return this.performBlueGreenDeployment(pipelineRun, options);
+        return this.performBlueGreenDeployment(pipelineRun, _options);
 
       case 'health_check':
         return {
@@ -924,7 +924,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform blue-green deployment
    */
-  async performBlueGreenDeployment(pipelineRun, options) {
+  async performBlueGreenDeployment(pipelineRun, _options) {
     console.log('Performing blue-green deployment...');
 
     // Simulate blue-green deployment steps

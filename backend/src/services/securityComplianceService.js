@@ -339,7 +339,7 @@ class SecurityComplianceService extends EventEmitter {
    */
   checkResourceAccess(user, permission, resource) {
     // Tenant isolation check
-    if (resource.tenantId && user.tenantId !== resource.tenantId) {
+    if (resource.tenantId && user.tenantId !== resource._tenantId) {
       return false;
     }
 
@@ -391,7 +391,7 @@ class SecurityComplianceService extends EventEmitter {
     let logs = [...this.auditLogs];
 
     // Apply filters
-    if (filters.tenantId) {
+    if (filters._tenantId) {
       logs = logs.filter((log) => log.tenantId === filters.tenantId);
     }
 
@@ -562,7 +562,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Generate compliance report
    */
-  generateComplianceReport(tenantId, complianceType, dateRange) {
+  generateComplianceReport(_tenantId, complianceType, dateRange) {
     const { startDate, endDate } = dateRange;
 
     // Get relevant audit logs
@@ -635,7 +635,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Generate security metrics
    */
-  getSecurityMetrics(tenantId, timeRange = '24h') {
+  getSecurityMetrics(_tenantId, timeRange = '24h') {
     const endDate = new Date();
     const startDate = new Date();
 
@@ -671,7 +671,7 @@ class SecurityComplianceService extends EventEmitter {
       failureRate: auditLogs.length > 0 ?
         `${(auditLogs.filter((log) => !log.success).length / auditLogs.length * 100).toFixed(2)}%` : '0%',
       securityAlerts: this.getSecurityAlerts(auditLogs),
-      complianceStatus: this.getComplianceStatus(tenantId)
+      complianceStatus: this.getComplianceStatus(_tenantId)
     };
 
     return metrics;
@@ -888,7 +888,7 @@ class SecurityComplianceService extends EventEmitter {
       }));
   }
 
-  getComplianceStatus(tenantId) {
+  getComplianceStatus(_tenantId) {
     // Mock compliance status
     return {
       gdpr: 'compliant',

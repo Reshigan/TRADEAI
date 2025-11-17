@@ -19,7 +19,7 @@ class ForecastingService {
   /**
    * Generate sales forecast using multiple algorithms
    */
-  async generateSalesForecast(tenantId, options = {}) {
+  async generateSalesForecast(_tenantId, options = {}) {
     try {
       const {
         productId,
@@ -35,7 +35,7 @@ class ForecastingService {
       if (cached && !options.forceRefresh) return cached;
 
       // Get historical data
-      let historicalData = await this.getHistoricalSalesData(tenantId, {
+      let historicalData = await this.getHistoricalSalesData(_tenantId, {
         productId,
         customerId,
         months: 24 // Use 2 years of history
@@ -44,7 +44,7 @@ class ForecastingService {
       // If insufficient historical data, generate synthetic data for demo purposes
       if (historicalData.length < 12) {
         console.log(`Insufficient historical data (${historicalData.length} months), generating synthetic data for demo`);
-        historicalData = this.generateSyntheticHistoricalData(tenantId, productId, customerId, 24);
+        historicalData = this.generateSyntheticHistoricalData(_tenantId, productId, customerId, 24);
       }
 
       // Prepare time series data
@@ -106,7 +106,7 @@ class ForecastingService {
   /**
    * Generate demand forecast with multiple scenarios
    */
-  async generateDemandForecast(tenantId, options = {}) {
+  async generateDemandForecast(_tenantId, options = {}) {
     try {
       const {
         productIds = [],
@@ -131,7 +131,7 @@ class ForecastingService {
               scenario
             };
 
-            const forecast = await this.generateSalesForecast(tenantId, forecastOptions);
+            const forecast = await this.generateSalesForecast(_tenantId, forecastOptions);
 
             const key = `${productId}_${customerId}`;
             scenarioForecasts[key] = forecast;
@@ -165,7 +165,7 @@ class ForecastingService {
   /**
    * Generate budget forecast based on historical spend and planned activities
    */
-  async generateBudgetForecast(tenantId, options = {}) {
+  async generateBudgetForecast(_tenantId, options = {}) {
     try {
       const {
         horizon = 12,
@@ -240,7 +240,7 @@ class ForecastingService {
   /**
    * Scenario planning and what-if analysis
    */
-  async performScenarioPlanning(tenantId, scenarios = []) {
+  async performScenarioPlanning(_tenantId, scenarios = []) {
     try {
       const results = {};
 
@@ -261,7 +261,7 @@ class ForecastingService {
         );
 
         // Calculate impact vs baseline
-        const baselineForecast = await this.generateSalesForecast(tenantId, {
+        const baselineForecast = await this.generateSalesForecast(_tenantId, {
           horizon: 12,
           algorithm: 'ensemble'
         });
@@ -298,7 +298,7 @@ class ForecastingService {
   /**
    * Promotion performance prediction
    */
-  async predictPromotionPerformance(tenantId, promotionData) {
+  async predictPromotionPerformance(_tenantId, promotionData) {
     try {
       const {
         products,
@@ -360,7 +360,7 @@ class ForecastingService {
 
   // Helper Methods
 
-  getHistoricalSalesData(tenantId, options = {}) {
+  getHistoricalSalesData(_tenantId, options = {}) {
     const { productId, customerId, months = 24 } = options;
 
     const startDate = new Date();
@@ -623,7 +623,7 @@ class ForecastingService {
     });
   }
 
-  async adjustForExternalFactors(forecast, tenantId, options = {}) {
+  async adjustForExternalFactors(forecast, _tenantId, options = {}) {
     // Adjust for planned promotions, market conditions, etc.
     const adjustedForecast = [...forecast];
 
@@ -816,7 +816,7 @@ class ForecastingService {
   /**
    * Generate synthetic historical data for demo purposes
    */
-  generateSyntheticHistoricalData(tenantId, productId, customerId, months = 24) {
+  generateSyntheticHistoricalData(_tenantId, productId, customerId, months = 24) {
     const syntheticData = [];
     const baseValue = 50000 + Math.random() * 100000; // Base sales value
     const now = new Date();
@@ -907,7 +907,7 @@ class ForecastingService {
     }));
   }
 
-  addPlannedPromotionsImpact(forecast, plannedPromotions, tenantId) {
+  addPlannedPromotionsImpact(forecast, plannedPromotions, _tenantId) {
     // Add estimated impact of planned promotions
     const adjustedForecast = [...forecast];
 

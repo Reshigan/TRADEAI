@@ -479,12 +479,12 @@ class MLIntegrationService {
   /**
    * Detect anomalies in data
    */
-  async detectAnomalies(tenantId, dataType, data, options = {}) {
+  async detectAnomalies(tenantId, dataType, _data, options = {}) {
     try {
       const { threshold = 0.1 } = options;
 
       // Prepare data for anomaly detection
-      const features = this.prepareAnomalyFeatures(data, dataType);
+      const features = this.prepareAnomalyFeatures(_data, dataType);
       const inputTensor = tf.tensor2d([features]);
 
       // Make prediction (reconstruction)
@@ -694,7 +694,7 @@ class MLIntegrationService {
     return null;
   }
 
-  setCache(key, data) {
+  setCache(key, _data) {
     this.predictionCache.set(key, {
       data,
       timestamp: Date.now()
@@ -702,7 +702,7 @@ class MLIntegrationService {
   }
 
   // Additional helper methods would be implemented here...
-  prepareAnomalyFeatures(data, dataType) {
+  prepareAnomalyFeatures(_data, dataType) {
     // Mock feature preparation
     return Array(20).fill(0).map(() => Math.random());
   }
@@ -788,7 +788,7 @@ class MLIntegrationService {
     return Math.max(0.1, Math.min(0.95, 1 - variance / 1000));
   }
 
-  calculateVariance(data) {
+  calculateVariance(_data) {
     const mean = data.reduce((a, b) => a + b, 0) / data.length;
     return data.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / data.length;
   }

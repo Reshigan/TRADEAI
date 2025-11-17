@@ -17,7 +17,7 @@ class AnalyticsEngine {
   /**
    * Calculate Return on Investment (ROI) for promotions
    */
-  async calculateROI(tenantId, promotionId, options = {}) {
+  async calculateROI(_tenantId, promotionId, options = {}) {
     try {
       const cacheKey = `roi_${tenantId}_${promotionId}`;
       const cached = this.getFromCache(cacheKey);
@@ -97,7 +97,7 @@ class AnalyticsEngine {
   /**
    * Calculate Lift (incremental performance) metrics
    */
-  async calculateLift(tenantId, promotionId, options = {}) {
+  async calculateLift(_tenantId, promotionId, options = {}) {
     try {
       const cacheKey = `lift_${tenantId}_${promotionId}`;
       const cached = this.getFromCache(cacheKey);
@@ -167,10 +167,10 @@ class AnalyticsEngine {
   /**
    * Predict promotion performance using historical data
    */
-  async predictPerformance(tenantId, promotionData, options = {}) {
+  async predictPerformance(_tenantId, promotionData, options = {}) {
     try {
       // Find similar historical promotions
-      const similarPromotions = await this.findSimilarPromotions(tenantId, promotionData);
+      const similarPromotions = await this.findSimilarPromotions(_tenantId, promotionData);
 
       if (similarPromotions.length === 0) {
         return this.getDefaultPrediction(promotionData);
@@ -179,8 +179,8 @@ class AnalyticsEngine {
       // Calculate performance metrics for similar promotions
       const historicalPerformance = await Promise.all(
         similarPromotions.map(async (promo) => {
-          const roi = await this.calculateROI(tenantId, promo._id, { useCache: true });
-          const lift = await this.calculateLift(tenantId, promo._id, { useCache: true });
+          const roi = await this.calculateROI(_tenantId, promo._id, { useCache: true });
+          const lift = await this.calculateLift(_tenantId, promo._id, { useCache: true });
           return { promotion: promo, roi, lift };
         })
       );
@@ -207,10 +207,10 @@ class AnalyticsEngine {
   /**
    * Optimize trade spend allocation
    */
-  async optimizeSpendAllocation(tenantId, budget, constraints = {}) {
+  async optimizeSpendAllocation(_tenantId, budget, constraints = {}) {
     try {
       // Get historical performance data
-      const historicalData = await this.getHistoricalPerformanceData(tenantId, constraints);
+      const historicalData = await this.getHistoricalPerformanceData(_tenantId, constraints);
 
       // Apply optimization algorithm (simplified linear programming approach)
       const optimization = this.applyOptimizationAlgorithm(budget, historicalData, constraints);
@@ -233,7 +233,7 @@ class AnalyticsEngine {
   /**
    * Generate comprehensive performance dashboard data
    */
-  async generatePerformanceDashboard(tenantId, dateRange, options = {}) {
+  async generatePerformanceDashboard(_tenantId, dateRange, options = {}) {
     try {
       const [
         promotionSummary,
@@ -243,12 +243,12 @@ class AnalyticsEngine {
         productPerformance,
         channelPerformance
       ] = await Promise.all([
-        this.getPromotionSummary(tenantId, dateRange),
-        this.getROITrends(tenantId, dateRange),
-        this.getLiftAnalysis(tenantId, dateRange),
-        this.getCustomerSegmentPerformance(tenantId, dateRange),
-        this.getProductPerformance(tenantId, dateRange),
-        this.getChannelPerformance(tenantId, dateRange)
+        this.getPromotionSummary(_tenantId, dateRange),
+        this.getROITrends(_tenantId, dateRange),
+        this.getLiftAnalysis(_tenantId, dateRange),
+        this.getCustomerSegmentPerformance(_tenantId, dateRange),
+        this.getProductPerformance(_tenantId, dateRange),
+        this.getChannelPerformance(_tenantId, dateRange)
       ]);
 
       return {
@@ -289,7 +289,7 @@ class AnalyticsEngine {
     };
   }
 
-  getBaselineSales(tenantId, productIds, customerIds, period) {
+  getBaselineSales(_tenantId, productIds, customerIds, period) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -301,7 +301,7 @@ class AnalyticsEngine {
     };
   }
 
-  getPromotionalSales(tenantId, productIds, customerIds, startDate, endDate) {
+  getPromotionalSales(_tenantId, productIds, customerIds, startDate, endDate) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -408,7 +408,7 @@ class AnalyticsEngine {
   // Additional helper methods would be implemented here...
   // For brevity, showing structure with mock implementations
 
-  getDetailedSalesData(tenantId, productIds, customerIds, startDate, endDate) {
+  getDetailedSalesData(_tenantId, productIds, customerIds, startDate, endDate) {
     // Mock implementation
     return {
       transactions: [],
@@ -469,7 +469,7 @@ class AnalyticsEngine {
     };
   }
 
-  findSimilarPromotions(tenantId, promotionData) {
+  findSimilarPromotions(_tenantId, promotionData) {
     // Find promotions with similar characteristics
     return Promotion.find({
       tenantId,
@@ -525,7 +525,7 @@ class AnalyticsEngine {
     return recommendations;
   }
 
-  getHistoricalPerformanceData(tenantId, constraints) {
+  getHistoricalPerformanceData(_tenantId, constraints) {
     // Mock implementation
     return [];
   }
@@ -545,7 +545,7 @@ class AnalyticsEngine {
   }
 
   // Dashboard helper methods (mock implementations)
-  getPromotionSummary(tenantId, dateRange) {
+  getPromotionSummary(_tenantId, dateRange) {
     return {
       totalPromotions: 25,
       activePromotions: 5,
@@ -555,7 +555,7 @@ class AnalyticsEngine {
     };
   }
 
-  getROITrends(tenantId, dateRange) {
+  getROITrends(_tenantId, dateRange) {
     return [
       { month: 'Jan', roi: 12 },
       { month: 'Feb', roi: 15 },
@@ -563,7 +563,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getLiftAnalysis(tenantId, dateRange) {
+  getLiftAnalysis(_tenantId, dateRange) {
     return {
       averageVolumeLift: 22,
       averageValueLift: 18,
@@ -571,7 +571,7 @@ class AnalyticsEngine {
     };
   }
 
-  getCustomerSegmentPerformance(tenantId, dateRange) {
+  getCustomerSegmentPerformance(_tenantId, dateRange) {
     return [
       { segment: 'Premium', roi: 25, lift: 30 },
       { segment: 'Standard', roi: 15, lift: 20 },
@@ -579,7 +579,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getProductPerformance(tenantId, dateRange) {
+  getProductPerformance(_tenantId, dateRange) {
     return [
       { category: 'Electronics', roi: 20, lift: 25 },
       { category: 'Clothing', roi: 18, lift: 22 },
@@ -587,7 +587,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getChannelPerformance(tenantId, dateRange) {
+  getChannelPerformance(_tenantId, dateRange) {
     return [
       { channel: 'Online', roi: 22, lift: 28 },
       { channel: 'Retail', roi: 16, lift: 20 },

@@ -583,7 +583,7 @@ class PromotionSimulationService {
     };
   }
 
-  calculateExpectedOutcomes(parameters, performance) {
+  calculateExpectedOutcomes(_parameters, performance) {
     return {
       expectedVolume: 10000,
       expectedRevenue: 500000,
@@ -607,7 +607,7 @@ class PromotionSimulationService {
     return tradeoffs;
   }
 
-  calculateConfidenceScore(performance, parameters) {
+  calculateConfidenceScore(performance, _parameters) {
     // Base confidence on historical data availability
     const dataConfidence = Math.min(performance.count / 20, 1);
     const performanceConfidence = performance.successRate / 100;

@@ -267,16 +267,16 @@ class PredictiveAnalyticsService {
     const data = await this.getMetricData(customerId, metric, period);
 
     // Calculate trend line (linear regression)
-    const trend = this.calculateLinearRegression(data);
+    const trend = this.calculateLinearRegression(_data);
 
     // Identify patterns
-    const patterns = this.identifyPatterns(data);
+    const patterns = this.identifyPatterns(_data);
 
     // Calculate momentum
-    const momentum = this.calculateMomentum(data);
+    const momentum = this.calculateMomentum(_data);
 
     // Forecast next period
-    const forecast = this.forecastNextPeriod(data, trend);
+    const forecast = this.forecastNextPeriod(_data, trend);
 
     return {
       metric,
@@ -294,7 +294,7 @@ class PredictiveAnalyticsService {
         interpretation: momentum > 0.5 ? 'accelerating' : momentum > -0.5 ? 'steady' : 'decelerating'
       },
       forecast,
-      insights: this.generateTrendInsights(data, trend, patterns)
+      insights: this.generateTrendInsights(_data, trend, patterns)
     };
   }
 
@@ -310,7 +310,7 @@ class PredictiveAnalyticsService {
     return regression.slope / this.average(values);
   }
 
-  calculateSeasonality(data, period) {
+  calculateSeasonality(_data, period) {
     // Simple seasonality: compare same period in previous years
     const samePeriods = data.filter((d) => d.period === period);
     if (samePeriods.length === 0) return 1;
@@ -335,7 +335,7 @@ class PredictiveAnalyticsService {
     return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
   }
 
-  calculateLinearRegression(data) {
+  calculateLinearRegression(_data) {
     const n = data.length;
     const sumX = data.reduce((sum, d) => sum + d.x, 0);
     const sumY = data.reduce((sum, d) => sum + d.y, 0);
@@ -386,7 +386,7 @@ class PredictiveAnalyticsService {
     return recommendations;
   }
 
-  calculateMomentum(data) {
+  calculateMomentum(_data) {
     if (data.length < 3) return 0;
 
     const recent = data.slice(-3).map((d) => d.y);
@@ -398,7 +398,7 @@ class PredictiveAnalyticsService {
     return (recentAvg - previousAvg) / previousAvg;
   }
 
-  forecastNextPeriod(data, trend) {
+  forecastNextPeriod(_data, trend) {
     const nextX = data.length;
     const predicted = trend.slope * nextX + trend.intercept;
     const stdDev = Math.sqrt(this.calculateVariance(data.map((d) => d.y)));
@@ -412,26 +412,26 @@ class PredictiveAnalyticsService {
     };
   }
 
-  identifyPatterns(data) {
+  identifyPatterns(_data) {
     // Simple pattern identification
     return {
-      cyclical: this.detectCyclicalPattern(data),
-      seasonal: this.detectSeasonalPattern(data),
-      stepChange: this.detectStepChange(data)
+      cyclical: this.detectCyclicalPattern(_data),
+      seasonal: this.detectSeasonalPattern(_data),
+      stepChange: this.detectStepChange(_data)
     };
   }
 
-  detectCyclicalPattern(data) {
+  detectCyclicalPattern(_data) {
     // Simplified - check for regular ups and downs
     return false;
   }
 
-  detectSeasonalPattern(data) {
+  detectSeasonalPattern(_data) {
     // Simplified - would need more sophisticated analysis
     return false;
   }
 
-  detectStepChange(data) {
+  detectStepChange(_data) {
     // Detect sudden shifts in level
     if (data.length < 6) return false;
 
@@ -454,7 +454,7 @@ class PredictiveAnalyticsService {
     return [];
   }
 
-  generateTrendInsights(data, trend, patterns) {
+  generateTrendInsights(_data, trend, patterns) {
     const insights = [];
 
     if (Math.abs(trend.slope) > 0.1) {

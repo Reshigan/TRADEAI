@@ -720,7 +720,7 @@ class TestingService extends EventEmitter {
       await this.generateTestData(suiteId);
 
       // Run tests
-      const results = await this.executeTestSuite(suite, options);
+      const results = await this.executeTestSuite(suite, _options);
 
       // Update test run results
       testRun.results = results;
@@ -771,7 +771,7 @@ class TestingService extends EventEmitter {
   /**
    * Execute test suite
    */
-  async executeTestSuite(suite, options) {
+  async executeTestSuite(suite, _options) {
     console.log(`Executing test suite: ${suite.name}`);
 
     const results = {
@@ -786,7 +786,7 @@ class TestingService extends EventEmitter {
     // Execute each test in the suite
     for (const test of suite.tests) {
       try {
-        const testResult = await this.executeTest(test, suite.type, options);
+        const testResult = await this.executeTest(test, suite.type, _options);
         results.testResults.push(testResult);
 
         // Update counters
@@ -813,7 +813,7 @@ class TestingService extends EventEmitter {
   /**
    * Execute individual test
    */
-  async executeTest(test, suiteType, options) {
+  async executeTest(test, suiteType, _options) {
     console.log(`Executing test: ${test.name}`);
 
     // Simulate test execution time
@@ -1468,7 +1468,7 @@ class TestingService extends EventEmitter {
 
     for (const [suiteId] of this.testSuites) {
       try {
-        const runId = await this.runTestSuite(suiteId, options);
+        const runId = await this.runTestSuite(suiteId, _options);
         results.push({ suiteId, runId, status: 'completed' });
       } catch (error) {
         results.push({ suiteId, status: 'failed', error: error.message });

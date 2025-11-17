@@ -25,15 +25,15 @@ class ReportingEngine {
   /**
    * Generate comprehensive Excel report
    */
-  async generateExcelReport(tenantId, reportType, parameters = {}) {
+  async generateExcelReport(_tenantId, reportType, parameters = {}) {
     try {
-      const reportData = await this.getReportData(tenantId, reportType, parameters);
+      const reportData = await this.getReportData(_tenantId, reportType, _parameters);
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'TRADEAI';
       workbook.created = new Date();
 
       // Add multiple sheets based on report type
-      const sheets = await this.createExcelSheets(reportData, reportType, parameters);
+      const sheets = await this.createExcelSheets(reportData, reportType, _parameters);
 
       for (const sheet of sheets) {
         const worksheet = workbook.addWorksheet(sheet.name);
@@ -82,9 +82,9 @@ class ReportingEngine {
   /**
    * Generate PDF report
    */
-  async generatePDFReport(tenantId, reportType, parameters = {}) {
+  async generatePDFReport(_tenantId, reportType, parameters = {}) {
     try {
-      const reportData = await this.getReportData(tenantId, reportType, parameters);
+      const reportData = await this.getReportData(_tenantId, reportType, _parameters);
 
       const fileName = this.generateFileName(reportType, 'pdf');
       const filePath = path.join(process.cwd(), 'temp', 'reports', fileName);
@@ -99,7 +99,7 @@ class ReportingEngine {
       doc.pipe(fs.createWriteStream(filePath));
 
       // Add report content
-      await this.addPDFContent(doc, reportData, reportType, parameters);
+      await this.addPDFContent(doc, reportData, reportType, _parameters);
 
       doc.end();
 
@@ -119,7 +119,7 @@ class ReportingEngine {
   /**
    * Create custom report based on user-defined metrics and dimensions
    */
-  async createCustomReport(tenantId, reportConfig) {
+  async createCustomReport(_tenantId, reportConfig) {
     try {
       const {
         name,
@@ -135,7 +135,7 @@ class ReportingEngine {
       this.validateReportConfig(reportConfig);
 
       // Build dynamic query based on configuration
-      const query = this.buildDynamicQuery(tenantId, metrics, dimensions, filters);
+      const query = this.buildDynamicQuery(_tenantId, metrics, dimensions, filters);
 
       // Execute query and get data
       const data = await this.executeDynamicQuery(query);
@@ -168,7 +168,7 @@ class ReportingEngine {
   /**
    * Schedule recurring reports
    */
-  scheduleReport(tenantId, scheduleConfig) {
+  scheduleReport(_tenantId, scheduleConfig) {
     try {
       const {
         reportType,
@@ -328,7 +328,7 @@ class ReportingEngine {
     });
   }
 
-  async getReportData(tenantId, reportType, parameters) {
+  async getReportData(_tenantId, reportType, _parameters) {
     const template = this.reportTemplates.get(reportType);
     if (!template) {
       throw new Error(`Unknown report type: ${reportType}`);
@@ -338,34 +338,34 @@ class ReportingEngine {
 
     switch (reportType) {
       case 'customer_performance':
-        data.customers = await this.getCustomerPerformanceData(tenantId, parameters);
-        data.summary = await this.getCustomerSummaryData(tenantId, parameters);
+        data.customers = await this.getCustomerPerformanceData(_tenantId, _parameters);
+        data.summary = await this.getCustomerSummaryData(_tenantId, _parameters);
         if (parameters.includeHierarchy) {
-          data.hierarchy = await this.getCustomerHierarchyData(tenantId, parameters);
+          data.hierarchy = await this.getCustomerHierarchyData(_tenantId, _parameters);
         }
         break;
 
       case 'product_performance':
-        data.products = await this.getProductPerformanceData(tenantId, parameters);
-        data.categories = await this.getProductCategoryData(tenantId, parameters);
+        data.products = await this.getProductPerformanceData(_tenantId, _parameters);
+        data.categories = await this.getProductCategoryData(_tenantId, _parameters);
         if (parameters.includePromotions) {
-          data.promotions = await this.getProductPromotionData(tenantId, parameters);
+          data.promotions = await this.getProductPromotionData(_tenantId, _parameters);
         }
         break;
 
       case 'promotion_roi':
-        data.promotions = await this.getPromotionROIData(tenantId, parameters);
-        data.lift = await this.getPromotionLiftData(tenantId, parameters);
+        data.promotions = await this.getPromotionROIData(_tenantId, _parameters);
+        data.lift = await this.getPromotionLiftData(_tenantId, _parameters);
         if (parameters.includeForecasting) {
-          data.forecasting = await this.getPromotionForecastingData(tenantId, parameters);
+          data.forecasting = await this.getPromotionForecastingData(_tenantId, _parameters);
         }
         break;
 
       case 'trade_spend':
-        data.spend = await this.getTradeSpendData(tenantId, parameters);
-        data.allocation = await this.getSpendAllocationData(tenantId, parameters);
+        data.spend = await this.getTradeSpendData(_tenantId, _parameters);
+        data.allocation = await this.getSpendAllocationData(_tenantId, _parameters);
         if (parameters.includeOptimization) {
-          data.optimization = await this.getSpendOptimizationData(tenantId, parameters);
+          data.optimization = await this.getSpendOptimizationData(_tenantId, _parameters);
         }
         break;
 
@@ -376,7 +376,7 @@ class ReportingEngine {
     return data;
   }
 
-  async createExcelSheets(reportData, reportType, parameters) {
+  async createExcelSheets(reportData, reportType, _parameters) {
     const template = this.reportTemplates.get(reportType);
     const sheets = [];
 
@@ -580,7 +580,7 @@ class ReportingEngine {
     };
   }
 
-  addPDFContent(doc, reportData, reportType, parameters) {
+  addPDFContent(doc, reportData, reportType, _parameters) {
     // Add header
     doc.fontSize(20).text(`${this.reportTemplates.get(reportType).name}`, 50, 50);
     doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, 50, 80);
@@ -656,7 +656,7 @@ class ReportingEngine {
     }
   }
 
-  buildDynamicQuery(tenantId, metrics, dimensions, filters) {
+  buildDynamicQuery(_tenantId, metrics, dimensions, filters) {
     // This would build a dynamic aggregation pipeline based on the configuration
     // For brevity, returning a mock query structure
     return {
@@ -665,7 +665,7 @@ class ReportingEngine {
       dimensions,
       filters,
       pipeline: [
-        { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } }
+        { $match: { tenantId: new mongoose.Types.ObjectId(_tenantId) } }
         // Additional pipeline stages would be built dynamically
       ]
     };
@@ -805,11 +805,11 @@ class ReportingEngine {
   }
 
   // Mock data methods (in a real implementation, these would query actual data)
-  getCustomerPerformanceData(tenantId, parameters) {
+  getCustomerPerformanceData(_tenantId, _parameters) {
     return Customer.find({ tenantId }).limit(100).lean();
   }
 
-  getCustomerSummaryData(tenantId, parameters) {
+  getCustomerSummaryData(_tenantId, _parameters) {
     return {
       totalCustomers: 500,
       activeCustomers: 450,
@@ -818,39 +818,39 @@ class ReportingEngine {
     };
   }
 
-  getCustomerHierarchyData(tenantId, parameters) {
+  getCustomerHierarchyData(_tenantId, _parameters) {
     return Customer.find({
       tenantId,
       level: { $exists: true }
     }).sort({ level: 1, path: 1 }).lean();
   }
 
-  getProductPerformanceData(tenantId, parameters) {
+  getProductPerformanceData(_tenantId, _parameters) {
     return Product.find({ tenantId }).limit(100).lean();
   }
 
-  getProductCategoryData(tenantId, parameters) {
+  getProductCategoryData(_tenantId, _parameters) {
     return Product.aggregate([
-      { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
+      { $match: { tenantId: new mongoose.Types.ObjectId(_tenantId) } },
       { $group: { _id: '$category.primary', count: { $sum: 1 } } }
     ]);
   }
 
-  getProductPromotionData(tenantId, parameters) {
+  getProductPromotionData(_tenantId, _parameters) {
     return Promotion.find({
       tenantId,
       'products.productId': { $exists: true }
     }).populate('products.productId').lean();
   }
 
-  async getPromotionROIData(tenantId, parameters) {
+  async getPromotionROIData(_tenantId, _parameters) {
     const promotions = await Promotion.find({ tenantId }).lean();
 
     // Calculate ROI for each promotion using analytics engine
     const roiData = await Promise.all(
       promotions.map(async (promo) => {
         try {
-          const roi = await this.analyticsEngine.calculateROI(tenantId, promo._id);
+          const roi = await this.analyticsEngine.calculateROI(_tenantId, promo._id);
           return { ...promo, roi };
         } catch (error) {
           return { ...promo, roi: null, error: error.message };
@@ -861,14 +861,14 @@ class ReportingEngine {
     return roiData;
   }
 
-  async getPromotionLiftData(tenantId, parameters) {
+  async getPromotionLiftData(_tenantId, _parameters) {
     const promotions = await Promotion.find({ tenantId }).lean();
 
     // Calculate lift for each promotion
     const liftData = await Promise.all(
       promotions.map(async (promo) => {
         try {
-          const lift = await this.analyticsEngine.calculateLift(tenantId, promo._id);
+          const lift = await this.analyticsEngine.calculateLift(_tenantId, promo._id);
           return { ...promo, lift };
         } catch (error) {
           return { ...promo, lift: null, error: error.message };
@@ -879,7 +879,7 @@ class ReportingEngine {
     return liftData;
   }
 
-  getPromotionForecastingData(tenantId, parameters) {
+  getPromotionForecastingData(_tenantId, _parameters) {
     // Mock forecasting data
     return [
       { month: 'Next Month', predictedROI: 18, confidence: 'High' },
@@ -888,7 +888,7 @@ class ReportingEngine {
     ];
   }
 
-  getTradeSpendData(tenantId, parameters) {
+  getTradeSpendData(_tenantId, _parameters) {
     // Mock trade spend data
     return [
       { category: 'Discounts', amount: 150000, percentage: 60 },
@@ -897,7 +897,7 @@ class ReportingEngine {
     ];
   }
 
-  getSpendAllocationData(tenantId, parameters) {
+  getSpendAllocationData(_tenantId, _parameters) {
     // Mock allocation data
     return [
       { segment: 'Premium Customers', allocation: 40, performance: 'Excellent' },
@@ -906,9 +906,9 @@ class ReportingEngine {
     ];
   }
 
-  getSpendOptimizationData(tenantId, parameters) {
+  getSpendOptimizationData(_tenantId, _parameters) {
     // Mock optimization recommendations
-    return this.analyticsEngine.optimizeSpendAllocation(tenantId, 250000);
+    return this.analyticsEngine.optimizeSpendAllocation(_tenantId, 250000);
   }
 }
 

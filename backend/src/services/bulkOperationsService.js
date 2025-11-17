@@ -77,7 +77,7 @@ class BulkOperationsService {
       const data = await this.getData(tenantId, modelType, filters, includeHierarchy);
 
       // Transform data for export
-      const exportData = await this.transformForExport(data, modelType, options);
+      const exportData = await this.transformForExport(data, modelType, _options);
 
       // Generate file
       const filePath = await this.generateFile(exportData, format, modelType);
@@ -367,7 +367,7 @@ class BulkOperationsService {
     return { validRecords, errors };
   }
 
-  async processImport(tenantId, records, modelType, options) {
+  async processImport(tenantId, records, modelType, _options) {
     const Model = this.getModel(modelType);
     const results = {
       imported: 0,
@@ -429,9 +429,9 @@ class BulkOperationsService {
     return query.lean();
   }
 
-  transformForExport(data, modelType, options) {
+  transformForExport(data, modelType, _options) {
     const transformer = this.getTransformer(modelType);
-    return data.map((record) => transformer(record, options));
+    return data.map((record) => transformer(record, _options));
   }
 
   async generateFile(data, format, filename) {
@@ -662,7 +662,7 @@ class BulkOperationsService {
     };
   }
 
-  transformCustomerRecord(record, options) {
+  transformCustomerRecord(record, _options) {
     return {
       'Customer Code': record.code,
       'Customer Name': record.name,
@@ -678,7 +678,7 @@ class BulkOperationsService {
     };
   }
 
-  transformProductRecord(record, options) {
+  transformProductRecord(record, _options) {
     return {
       'Product SKU': record.sku,
       'Product Name': record.name,
@@ -692,7 +692,7 @@ class BulkOperationsService {
     };
   }
 
-  transformPromotionRecord(record, options) {
+  transformPromotionRecord(record, _options) {
     return {
       'Promotion Name': record.name,
       'Type': record.type,
@@ -705,7 +705,7 @@ class BulkOperationsService {
     };
   }
 
-  transformGenericRecord(record, options) {
+  transformGenericRecord(record, _options) {
     return record;
   }
 
@@ -767,7 +767,7 @@ class BulkOperationsService {
     return examples[field.type] || 'Example';
   }
 
-  async processSyncBatch(tenantId, Model, batch, syncKey, options) {
+  async processSyncBatch(tenantId, Model, batch, syncKey, _options) {
     const results = {
       created: 0,
       updated: 0,

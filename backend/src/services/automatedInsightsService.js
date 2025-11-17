@@ -150,7 +150,7 @@ class AutomatedInsightsService {
   }
 
   // Main Insight Generation
-  async generateInsights(tenantId, options = {}) {
+  async generateInsights(_tenantId, options = {}) {
     await this.initialize();
 
     const {
@@ -174,7 +174,7 @@ class AutomatedInsightsService {
       // Generate insights for each template
       for (const template of filteredTemplates) {
         try {
-          const insight = await template.generator(tenantId, timeRange);
+          const insight = await template.generator(_tenantId, timeRange);
           if (insight) {
             insight.template = template.name;
             insight.priority = template.priority;
@@ -200,7 +200,7 @@ class AutomatedInsightsService {
       });
 
       // Store insights
-      this.insights.set(tenantId, insights);
+      this.insights.set(_tenantId, insights);
 
       return {
         tenantId,
@@ -221,7 +221,7 @@ class AutomatedInsightsService {
   }
 
   // Specific Insight Generators
-  async generateRevenueTrendInsight(tenantId, timeRange) {
+  async generateRevenueTrendInsight(_tenantId, timeRange) {
     try {
       // Mock data - in real implementation, fetch from database
       const revenueData = this.generateMockRevenueData(timeRange);
@@ -269,7 +269,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateCustomerBehaviorInsight(tenantId, timeRange) {
+  async generateCustomerBehaviorInsight(_tenantId, timeRange) {
     try {
       // Mock customer behavior data
       const behaviorData = this.generateMockCustomerBehaviorData(timeRange);
@@ -302,7 +302,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generatePromotionPerformanceInsight(tenantId, timeRange) {
+  async generatePromotionPerformanceInsight(_tenantId, timeRange) {
     try {
       // Mock promotion data
       const promotionData = this.generateMockPromotionData(timeRange);
@@ -333,7 +333,7 @@ class AutomatedInsightsService {
     }
   }
 
-  generateProductPerformanceInsight(tenantId, timeRange) {
+  generateProductPerformanceInsight(_tenantId, timeRange) {
     try {
       // Mock product data
       const productData = this.generateMockProductData(timeRange);
@@ -364,7 +364,7 @@ class AutomatedInsightsService {
     }
   }
 
-  generateMarketOpportunityInsight(tenantId, timeRange) {
+  generateMarketOpportunityInsight(_tenantId, timeRange) {
     try {
       // Mock market data
       const marketData = this.generateMockMarketData(timeRange);
@@ -395,7 +395,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateChurnRiskInsight(tenantId, timeRange) {
+  async generateChurnRiskInsight(_tenantId, timeRange) {
     try {
       // Mock customer data for churn analysis
       const customerData = this.generateMockCustomerChurnData(timeRange);
@@ -427,7 +427,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generatePricingOptimizationInsight(tenantId, timeRange) {
+  async generatePricingOptimizationInsight(_tenantId, timeRange) {
     try {
       // Mock pricing data
       const pricingData = this.generateMockPricingData(timeRange);
@@ -458,7 +458,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateInventoryOptimizationInsight(tenantId, timeRange) {
+  async generateInventoryOptimizationInsight(_tenantId, timeRange) {
     try {
       // Mock inventory data
       const inventoryData = this.generateMockInventoryData(timeRange);
@@ -491,7 +491,7 @@ class AutomatedInsightsService {
   }
 
   // Alert System
-  async checkAlerts(tenantId, data) {
+  async checkAlerts(_tenantId, data) {
     await this.initialize();
 
     const triggeredAlerts = [];
@@ -577,7 +577,7 @@ class AutomatedInsightsService {
       try {
         const tenants = await this.getActiveTenants();
         for (const tenantId of tenants) {
-          await this.generateScheduledInsights(tenantId, 'daily');
+          await this.generateScheduledInsights(_tenantId, 'daily');
         }
       } catch (error) {
         console.error('Error generating daily insights:', error);
@@ -589,7 +589,7 @@ class AutomatedInsightsService {
       try {
         const tenants = await this.getActiveTenants();
         for (const tenantId of tenants) {
-          await this.generateScheduledInsights(tenantId, 'weekly');
+          await this.generateScheduledInsights(_tenantId, 'weekly');
         }
       } catch (error) {
         console.error('Error generating weekly insights:', error);
@@ -601,7 +601,7 @@ class AutomatedInsightsService {
       try {
         const tenants = await this.getActiveTenants();
         for (const tenantId of tenants) {
-          await this.performRealTimeMonitoring(tenantId);
+          await this.performRealTimeMonitoring(_tenantId);
         }
       } catch (error) {
         console.error('Error in real-time monitoring:', error);
@@ -609,16 +609,16 @@ class AutomatedInsightsService {
     }, 5 * 60 * 1000); // 5 minutes
   }
 
-  async generateScheduledInsights(tenantId, frequency) {
+  async generateScheduledInsights(_tenantId, frequency) {
     const templates = Array.from(this.insightTemplates.values())
       .filter((template) => template.frequency === frequency);
 
     for (const template of templates) {
       try {
-        const insight = await template.generator(tenantId, frequency === 'daily' ? 1 : 7);
+        const insight = await template.generator(_tenantId, frequency === 'daily' ? 1 : 7);
         if (insight) {
-          await this.storeInsight(tenantId, insight);
-          await this.notifyInsight(tenantId, insight);
+          await this.storeInsight(_tenantId, insight);
+          await this.notifyInsight(_tenantId, insight);
         }
       } catch (error) {
         console.error(`Error generating scheduled insight ${template.name}:`, error);
@@ -626,18 +626,18 @@ class AutomatedInsightsService {
     }
   }
 
-  async performRealTimeMonitoring(tenantId) {
+  async performRealTimeMonitoring(_tenantId) {
     // Get real-time data
-    const realtimeData = await this.getRealTimeData(tenantId);
+    const realtimeData = await this.getRealTimeData(_tenantId);
 
     // Check for alerts
-    const alerts = await this.checkAlerts(tenantId, realtimeData);
+    const alerts = await this.checkAlerts(_tenantId, realtimeData);
 
     // Generate immediate insights if needed
     if (alerts.length > 0) {
-      const urgentInsights = await this.generateUrgentInsights(tenantId, alerts);
+      const urgentInsights = await this.generateUrgentInsights(_tenantId, alerts);
       for (const insight of urgentInsights) {
-        await this.notifyUrgentInsight(tenantId, insight);
+        await this.notifyUrgentInsight(_tenantId, insight);
       }
     }
   }
@@ -744,7 +744,7 @@ class AutomatedInsightsService {
     return ['tenant1', 'tenant2', 'tenant3'];
   }
 
-  getRealTimeData(tenantId) {
+  getRealTimeData(_tenantId) {
     // Mock real-time data
     return {
       revenueChange: (Math.random() - 0.5) * 20,

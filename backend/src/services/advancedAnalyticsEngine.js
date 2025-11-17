@@ -19,7 +19,7 @@ class AdvancedAnalyticsEngine {
   /**
    * Calculate ROI (Return on Investment) for promotions
    */
-  async calculateROI(tenantId, promotionId, options = {}) {
+  async calculateROI(_tenantId, promotionId, options = {}) {
     try {
       const cacheKey = `roi_${tenantId}_${promotionId}`;
       const cached = this.getFromCache(cacheKey);
@@ -47,7 +47,7 @@ class AdvancedAnalyticsEngine {
       }, 0);
 
       // Get sales data for promotion period
-      const salesData = await this.getPromotionSalesData(tenantId, promotion);
+      const salesData = await this.getPromotionSalesData(_tenantId, promotion);
 
       // Calculate baseline sales (pre-promotion average)
       const baselineSales = await this.calculateBaselineSales(
@@ -98,7 +98,7 @@ class AdvancedAnalyticsEngine {
   /**
    * Calculate Sales Lift for promotions
    */
-  async calculateLift(tenantId, promotionId, options = {}) {
+  async calculateLift(_tenantId, promotionId, options = {}) {
     try {
       const cacheKey = `lift_${tenantId}_${promotionId}`;
       const cached = this.getFromCache(cacheKey);
@@ -114,7 +114,7 @@ class AdvancedAnalyticsEngine {
       }
 
       // Get promotion sales data
-      const promotionSales = await this.getPromotionSalesData(tenantId, promotion);
+      const promotionSales = await this.getPromotionSalesData(_tenantId, promotion);
 
       // Get baseline sales data
       const baselineSales = await this.calculateBaselineSales(
@@ -169,7 +169,7 @@ class AdvancedAnalyticsEngine {
   /**
    * Calculate comprehensive performance metrics
    */
-  async calculatePerformanceMetrics(tenantId, options = {}) {
+  async calculatePerformanceMetrics(_tenantId, options = {}) {
     try {
       const {
         startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), // 90 days ago
@@ -187,7 +187,7 @@ class AdvancedAnalyticsEngine {
       const pipeline = [
         {
           $match: {
-            tenantId: new mongoose.Types.ObjectId(tenantId),
+            tenantId: new mongoose.Types.ObjectId(_tenantId),
             date: { $gte: startDate, $lte: endDate },
             ...(customerIds.length && { customerId: { $in: customerIds.map((id) => new mongoose.Types.ObjectId(id)) } }),
             ...(productIds.length && { productId: { $in: productIds.map((id) => new mongoose.Types.ObjectId(id)) } })
@@ -234,9 +234,9 @@ class AdvancedAnalyticsEngine {
       }
 
       // Calculate additional metrics
-      const customerMetrics = await this.calculateCustomerMetrics(tenantId, { startDate, endDate });
-      const productMetrics = await this.calculateProductMetrics(tenantId, { startDate, endDate });
-      const promotionMetrics = await this.calculatePromotionMetrics(tenantId, { startDate, endDate, promotionIds });
+      const customerMetrics = await this.calculateCustomerMetrics(_tenantId, { startDate, endDate });
+      const productMetrics = await this.calculateProductMetrics(_tenantId, { startDate, endDate });
+      const promotionMetrics = await this.calculatePromotionMetrics(_tenantId, { startDate, endDate, promotionIds });
 
       const result = {
         ...metrics,
@@ -269,7 +269,7 @@ class AdvancedAnalyticsEngine {
   /**
    * Predictive analytics for sales forecasting
    */
-  async predictSalesPerformance(tenantId, options = {}) {
+  async predictSalesPerformance(_tenantId, options = {}) {
     try {
       const {
         productIds = [],
@@ -279,7 +279,7 @@ class AdvancedAnalyticsEngine {
       } = options;
 
       // Get historical sales data
-      const historicalData = await this.getHistoricalSalesData(tenantId, {
+      const historicalData = await this.getHistoricalSalesData(_tenantId, {
         productIds,
         customerIds,
         days: 90 // Use 90 days of history for prediction
@@ -329,13 +329,13 @@ class AdvancedAnalyticsEngine {
   /**
    * Optimization recommendations
    */
-  async generateOptimizationRecommendations(tenantId, options = {}) {
+  async generateOptimizationRecommendations(_tenantId, options = {}) {
     try {
-      const performanceMetrics = await this.calculatePerformanceMetrics(tenantId, options);
+      const performanceMetrics = await this.calculatePerformanceMetrics(_tenantId, _options);
       const recommendations = [];
 
       // ROI-based recommendations
-      const lowROIPromotions = await this.findLowROIPromotions(tenantId);
+      const lowROIPromotions = await this.findLowROIPromotions(_tenantId);
       if (lowROIPromotions.length > 0) {
         recommendations.push({
           type: 'roi_optimization',
@@ -362,7 +362,7 @@ class AdvancedAnalyticsEngine {
       }
 
       // Product performance recommendations
-      const underperformingProducts = await this.findUnderperformingProducts(tenantId);
+      const underperformingProducts = await this.findUnderperformingProducts(_tenantId);
       if (underperformingProducts.length > 0) {
         recommendations.push({
           type: 'product_optimization',
@@ -394,11 +394,11 @@ class AdvancedAnalyticsEngine {
 
   // Helper methods
 
-  async getPromotionSalesData(tenantId, promotion) {
+  async getPromotionSalesData(_tenantId, promotion) {
     const salesData = await SalesHistory.aggregate([
       {
         $match: {
-          tenantId: new mongoose.Types.ObjectId(tenantId),
+          tenantId: new mongoose.Types.ObjectId(_tenantId),
           productId: { $in: promotion.products.map((p) => p._id) },
           customerId: { $in: promotion.customers.map((c) => c._id) },
           date: { $gte: promotion.startDate, $lte: promotion.endDate }
@@ -425,14 +425,14 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  async calculateBaselineSales(tenantId, productIds, customerIds, promotionStartDate) {
+  async calculateBaselineSales(_tenantId, productIds, customerIds, promotionStartDate) {
     const baselineEndDate = new Date(promotionStartDate);
     const baselineStartDate = new Date(baselineEndDate.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days before
 
     const baselineData = await SalesHistory.aggregate([
       {
         $match: {
-          tenantId: new mongoose.Types.ObjectId(tenantId),
+          tenantId: new mongoose.Types.ObjectId(_tenantId),
           productId: { $in: productIds },
           customerId: { $in: customerIds },
           date: { $gte: baselineStartDate, $lt: baselineEndDate }
@@ -478,7 +478,7 @@ class AdvancedAnalyticsEngine {
     return 'negative';
   }
 
-  calculateCustomerMetrics(tenantId, options) {
+  calculateCustomerMetrics(_tenantId, _options) {
     // Implementation for customer-specific metrics
     return {
       totalCustomers: 0,
@@ -489,7 +489,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculateProductMetrics(tenantId, options) {
+  calculateProductMetrics(_tenantId, _options) {
     // Implementation for product-specific metrics
     return {
       totalProducts: 0,
@@ -499,7 +499,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculatePromotionMetrics(tenantId, options) {
+  calculatePromotionMetrics(_tenantId, _options) {
     // Implementation for promotion-specific metrics
     return {
       totalPromotions: 0,
