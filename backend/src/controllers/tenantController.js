@@ -1,7 +1,7 @@
 const Tenant = require('../models/Tenant');
 const User = require('../models/User');
 const { withoutTenantFilter, withTenantContext } = require('../middleware/tenantQueryFilter');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
 /**
@@ -35,7 +35,7 @@ class TenantController {
 
       // Build filter
       const filter = {};
-      
+
       if (search) {
         filter.$or = [
           { name: { $regex: search, $options: 'i' } },
@@ -43,11 +43,11 @@ class TenantController {
           { 'contactInfo.email': { $regex: search, $options: 'i' } }
         ];
       }
-      
+
       if (status) {
         filter.status = status;
       }
-      
+
       if (subscriptionTier) {
         filter['subscription.tier'] = subscriptionTier;
       }
@@ -101,8 +101,8 @@ class TenantController {
         });
       }
 
-      const tenant = await withoutTenantFilter(async () => {
-        return await Tenant.findById(req.tenant.id)
+      const tenant = await withoutTenantFilter(() => {
+        return Tenant.findById(req.tenant.id)
           .populate('createdBy', 'firstName lastName email')
           .populate('updatedBy', 'firstName lastName email');
       });
@@ -148,8 +148,8 @@ class TenantController {
       };
 
       // Create tenant without tenant filtering
-      const tenant = await withoutTenantFilter(async () => {
-        return await Tenant.create(tenantData);
+      const tenant = await withoutTenantFilter(() => {
+        return Tenant.create(tenantData);
       });
 
       // Populate references
@@ -163,7 +163,7 @@ class TenantController {
 
     } catch (error) {
       logger.error('Create tenant error', { error: error.message, stack: error.stack });
-      
+
       if (error.code === 11000) {
         const field = Object.keys(error.keyPattern)[0];
         return res.status(400).json({
@@ -171,7 +171,7 @@ class TenantController {
           message: `${field} already exists`
         });
       }
-      
+
       if (error.name === 'ValidationError') {
         return res.status(400).json({
           error: 'Validation error',
@@ -194,12 +194,12 @@ class TenantController {
     try {
       const { id } = req.params;
       const updates = { ...req.body };
-      
+
       // Remove fields that shouldn't be updated directly
       delete updates._id;
       delete updates.createdAt;
       delete updates.createdBy;
-      
+
       // Set updatedBy
       updates.updatedBy = req.user._id;
 
@@ -207,8 +207,8 @@ class TenantController {
 
       if (req.user.role === 'super_admin') {
         // Super admin can update any tenant
-        tenant = await withoutTenantFilter(async () => {
-          return await Tenant.findByIdAndUpdate(
+        tenant = await withoutTenantFilter(() => {
+          return Tenant.findByIdAndUpdate(
             id,
             updates,
             { new: true, runValidators: true }
@@ -223,8 +223,8 @@ class TenantController {
           });
         }
 
-        tenant = await withoutTenantFilter(async () => {
-          return await Tenant.findByIdAndUpdate(
+        tenant = await withoutTenantFilter(() => {
+          return Tenant.findByIdAndUpdate(
             id,
             updates,
             { new: true, runValidators: true }
@@ -247,7 +247,7 @@ class TenantController {
 
     } catch (error) {
       console.error('Update tenant error:', error);
-      
+
       if (error.name === 'ValidationError') {
         return res.status(400).json({
           error: 'Validation error',
@@ -279,13 +279,13 @@ class TenantController {
       const { id } = req.params;
       const { permanent = false } = req.query;
 
-      const tenant = await withoutTenantFilter(async () => {
+      const tenant = await withoutTenantFilter(() => {
         if (permanent === 'true') {
           // Permanent deletion (use with caution)
-          return await Tenant.findByIdAndDelete(id);
+          return Tenant.findByIdAndDelete(id);
         } else {
           // Soft delete (deactivate)
-          return await Tenant.findByIdAndUpdate(
+          return Tenant.findByIdAndUpdate(
             id,
             {
               status: 'suspended',
@@ -402,7 +402,7 @@ class TenantController {
 
       // Build filter
       const filter = { tenantId: id };
-      
+
       if (search) {
         filter.$or = [
           { firstName: { $regex: search, $options: 'i' } },
@@ -410,11 +410,11 @@ class TenantController {
           { email: { $regex: search, $options: 'i' } }
         ];
       }
-      
+
       if (role) {
         filter.role = role;
       }
-      
+
       if (status) {
         filter.isActive = status === 'active';
       }
@@ -470,8 +470,8 @@ class TenantController {
       const { id } = req.params;
       const subscriptionUpdates = req.body;
 
-      const tenant = await withoutTenantFilter(async () => {
-        return await Tenant.findByIdAndUpdate(
+      const tenant = await withoutTenantFilter(() => {
+        return Tenant.findByIdAndUpdate(
           id,
           {
             subscription: subscriptionUpdates,

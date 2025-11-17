@@ -200,24 +200,24 @@ accrualSchema.index({ accrualType: 1, status: 1 });
 accrualSchema.index({ createdAt: -1 });
 
 // Virtuals
-accrualSchema.virtual('accuracyPercent').get(function() {
+accrualSchema.virtual('accuracyPercent').get(function () {
   if (this.totalAccrual === 0) return 100;
   return Math.round((1 - Math.abs(this.totalVariance) / this.totalAccrual) * 100);
 });
 
-accrualSchema.virtual('needsAdjustment').get(function() {
+accrualSchema.virtual('needsAdjustment').get(function () {
   return Math.abs(this.variancePercent) > 10; // 10% threshold
 });
 
 // Pre-save middleware
-accrualSchema.pre('save', function(next) {
+accrualSchema.pre('save', function (next) {
   // Calculate quarter
   if (this.period && this.period.month) {
     this.period.quarter = Math.ceil(this.period.month / 3);
   }
 
   // Calculate line variances
-  this.lines.forEach(line => {
+  this.lines.forEach((line) => {
     line.variance = line.actualAmount - line.accrualAmount;
     if (line.accrualAmount !== 0) {
       line.variancePercent = (line.variance / line.accrualAmount) * 100;
@@ -228,7 +228,7 @@ accrualSchema.pre('save', function(next) {
   this.totalAccrual = this.lines.reduce((sum, line) => sum + line.accrualAmount, 0);
   this.totalActual = this.lines.reduce((sum, line) => sum + line.actualAmount, 0);
   this.totalVariance = this.totalActual - this.totalAccrual;
-  
+
   if (this.totalAccrual !== 0) {
     this.variancePercent = (this.totalVariance / this.totalAccrual) * 100;
   }
@@ -247,7 +247,7 @@ accrualSchema.pre('save', function(next) {
 });
 
 // Methods
-accrualSchema.methods.post = function() {
+accrualSchema.methods.post = function () {
   if (this.status !== 'draft') {
     throw new Error('Only draft accruals can be posted');
   }
@@ -255,7 +255,7 @@ accrualSchema.methods.post = function() {
   return this.save();
 };
 
-accrualSchema.methods.reconcile = function(userId) {
+accrualSchema.methods.reconcile = function (userId) {
   if (this.status !== 'posted' && this.status !== 'adjusted') {
     throw new Error('Only posted or adjusted accruals can be reconciled');
   }
@@ -266,18 +266,18 @@ accrualSchema.methods.reconcile = function(userId) {
   return this.save();
 };
 
-accrualSchema.methods.adjust = function(amount, reason, userId) {
+accrualSchema.methods.adjust = function (amount, reason, userId) {
   this.adjustments.push({
     date: new Date(),
-    amount: amount,
-    reason: reason,
+    amount,
+    reason,
     adjustedBy: userId
   });
   this.status = 'adjusted';
   return this.save();
 };
 
-accrualSchema.methods.reverse = function(reason, userId) {
+accrualSchema.methods.reverse = function (reason, userId) {
   if (this.reversed) {
     throw new Error('Accrual already reversed');
   }
@@ -293,7 +293,7 @@ accrualSchema.methods.reverse = function(reason, userId) {
   return this.save();
 };
 
-accrualSchema.methods.close = function() {
+accrualSchema.methods.close = function () {
   if (!this.reconciled) {
     throw new Error('Cannot close unreconciled accrual');
   }
@@ -301,15 +301,15 @@ accrualSchema.methods.close = function() {
   return this.save();
 };
 
-accrualSchema.methods.updateActuals = function(lineNumber, actualAmount) {
-  const line = this.lines.find(l => l.lineNumber === lineNumber);
+accrualSchema.methods.updateActuals = function (lineNumber, actualAmount) {
+  const line = this.lines.find((l) => l.lineNumber === lineNumber);
   if (!line) throw new Error('Line not found');
 
   line.actualAmount = actualAmount;
   return this.save();
 };
 
-accrualSchema.methods.postToGL = function(glDocument) {
+accrualSchema.methods.postToGL = function (glDocument) {
   if (this.status !== 'posted') {
     throw new Error('Accrual must be posted first');
   }
@@ -324,7 +324,7 @@ accrualSchema.methods.postToGL = function(glDocument) {
 };
 
 // Statics
-accrualSchema.statics.getPeriodAccruals = function(year, month) {
+accrualSchema.statics.getPeriodAccruals = function (year, month) {
   return this.find({
     'period.year': year,
     'period.month': month,
@@ -332,7 +332,7 @@ accrualSchema.statics.getPeriodAccruals = function(year, month) {
   });
 };
 
-accrualSchema.statics.getUnreconciledAccruals = function(options = {}) {
+accrualSchema.statics.getUnreconciledAccruals = function (options = {}) {
   const query = {
     status: { $in: ['posted', 'adjusted'] },
     reconciled: false

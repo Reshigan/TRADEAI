@@ -8,7 +8,6 @@ import {
   Drawer,
   IconButton,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -34,7 +33,6 @@ import {
   BarChart as AnalyticsIcon,
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,
-  AccountCircle,
   Logout,
   ChevronLeft,
   Business as BusinessIcon,
@@ -45,7 +43,6 @@ import {
   Timeline as ForecastingIcon,
   ExpandLess,
   ExpandMore,
-  AccountCircle as AccountCircleIcon,
   Psychology as AIIcon,
   Lightbulb as LightbulbIcon,
   Rocket as RocketIcon,
@@ -153,8 +150,8 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
-  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
-  const [walkthroughFeature, setWalkthroughFeature] = useState('');
+  const [setWalkthroughOpen] = useState(false);
+  const [setWalkthroughFeature] = useState('');
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,

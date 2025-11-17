@@ -8,13 +8,13 @@ const { bulkOperationsLimiter } = require('../middleware/security');
 // Get all analytics overview
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { period = '30days', currency = 'USD' } = req.query;
-  
+
   const analytics = await analyticsController.getDashboardAnalytics({
     userId: req.user._id,
     period,
     currency
   });
-  
+
   res.json({
     success: true,
     data: analytics
@@ -24,13 +24,13 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 // Get dashboard analytics
 router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
   const { period = '30days', currency = 'USD' } = req.query;
-  
+
   const analytics = await analyticsController.getDashboardAnalytics({
     userId: req.user._id,
     period,
     currency
   });
-  
+
   res.json({
     success: true,
     data: analytics
@@ -38,7 +38,7 @@ router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get available currencies
-router.get('/currencies', asyncHandler(async (req, res) => {
+router.get('/currencies', asyncHandler((req, res) => {
   const currencies = [
     { code: 'USD', name: 'US Dollar', symbol: '$' },
     { code: 'EUR', name: 'Euro', symbol: '€' },
@@ -47,7 +47,7 @@ router.get('/currencies', asyncHandler(async (req, res) => {
     { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
     { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' }
   ];
-  
+
   res.json({
     success: true,
     data: currencies
@@ -57,7 +57,7 @@ router.get('/currencies', asyncHandler(async (req, res) => {
 // Get sales analytics
 router.get('/sales', authenticateToken, asyncHandler(async (req, res) => {
   const { startDate, endDate, groupBy = 'month', customerId, productId } = req.query;
-  
+
   const analytics = await analyticsController.getSalesAnalytics({
     startDate,
     endDate,
@@ -65,7 +65,7 @@ router.get('/sales', authenticateToken, asyncHandler(async (req, res) => {
     customerId,
     productId
   });
-  
+
   res.json({
     success: true,
     data: analytics
@@ -73,9 +73,9 @@ router.get('/sales', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get promotion analytics
-router.get('/promotions', authenticateToken, asyncHandler(async (req, res) => {
-  const { year = new Date().getFullYear() } = req.query;
-  
+router.get('/promotions', authenticateToken, asyncHandler((req, res) => {
+  const { _year = new Date().getFullYear() } = req.query;
+
   // Return promotion analytics mock data
   res.json({
     success: true,
@@ -96,9 +96,9 @@ router.get('/promotions', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get budget analytics
-router.get('/budgets', authenticateToken, asyncHandler(async (req, res) => {
-  const { year = new Date().getFullYear(), customerId } = req.query;
-  
+router.get('/budgets', authenticateToken, asyncHandler((req, res) => {
+  const { _year = new Date().getFullYear(), _customerId } = req.query;
+
   // Return budget analytics mock data
   res.json({
     success: true,
@@ -122,9 +122,9 @@ router.get('/budgets', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get trade spend analytics
-router.get('/trade-spend', authenticateToken, asyncHandler(async (req, res) => {
-  const { startDate, endDate, customerId, vendorId } = req.query;
-  
+router.get('/trade-spend', authenticateToken, asyncHandler((req, res) => {
+  const { _startDate, _endDate, _customerId, _vendorId } = req.query;
+
   // Return trade spend analytics mock data
   res.json({
     success: true,
@@ -154,11 +154,11 @@ router.get('/trade-spend', authenticateToken, asyncHandler(async (req, res) => {
 // Get customer analytics
 router.get('/customers', authenticateToken, asyncHandler(async (req, res) => {
   const { period = '12months' } = req.query;
-  
+
   const analytics = await analyticsController.getCustomerAnalytics({
     period
   });
-  
+
   res.json({
     success: true,
     data: analytics
@@ -168,12 +168,12 @@ router.get('/customers', authenticateToken, asyncHandler(async (req, res) => {
 // Get product analytics
 router.get('/products', authenticateToken, asyncHandler(async (req, res) => {
   const { period = '12months', category } = req.query;
-  
+
   const analytics = await analyticsController.getProductAnalytics({
     period,
     category
   });
-  
+
   res.json({
     success: true,
     data: analytics
@@ -183,17 +183,17 @@ router.get('/products', authenticateToken, asyncHandler(async (req, res) => {
 // Get predictive analytics
 router.get('/predictions', authenticateToken, asyncHandler(async (req, res) => {
   const { type, targetId, horizon = 3 } = req.query;
-  
+
   if (!type || !targetId) {
     throw new AppError('Type and target ID are required', 400);
   }
-  
+
   const predictions = await analyticsController.getPredictiveAnalytics({
     type,
     targetId,
     horizon: parseInt(horizon)
   });
-  
+
   res.json({
     success: true,
     data: predictions
@@ -234,7 +234,7 @@ router.post('/advanced/bulk-roi', bulkOperationsLimiter, authenticateToken, anal
 router.post('/advanced/bulk-lift', bulkOperationsLimiter, authenticateToken, analyticsController.bulkCalculateLift);
 
 // Alias routes for common analytics endpoints (for backward compatibility)
-router.get('/spend-trends', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/spend-trends', authenticateToken, asyncHandler((req, res) => {
   // Return trade-spend analytics mock data
   res.json({
     success: true,
@@ -257,7 +257,7 @@ router.get('/spend-trends', authenticateToken, asyncHandler(async (req, res) => 
   });
 }));
 
-router.get('/roi', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/roi', authenticateToken, asyncHandler((req, res) => {
   // Return basic ROI metrics
   res.json({
     success: true,
@@ -270,7 +270,7 @@ router.get('/roi', authenticateToken, asyncHandler(async (req, res) => {
   });
 }));
 
-router.get('/vendor-performance', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/vendor-performance', authenticateToken, asyncHandler((req, res) => {
   // Return vendor performance metrics
   res.json({
     success: true,

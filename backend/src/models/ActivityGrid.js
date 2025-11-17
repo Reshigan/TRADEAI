@@ -15,7 +15,7 @@ const activityGridSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  
+
   // View Configuration
   viewType: {
     type: String,
@@ -33,7 +33,7 @@ const activityGridSchema = new mongoose.Schema({
     startDate: Date,
     endDate: Date
   },
-  
+
   // Scope
   scope: {
     level: {
@@ -64,7 +64,7 @@ const activityGridSchema = new mongoose.Schema({
       regions: [String]
     }
   },
-  
+
   // Grid Data
   activities: [{
     // Activity Details
@@ -74,14 +74,14 @@ const activityGridSchema = new mongoose.Schema({
     },
     dayOfWeek: Number,
     weekNumber: Number,
-    
+
     // Activity Type
     activityType: {
       type: String,
       enum: ['promotion', 'campaign', 'trade_spend', 'event', 'training', 'other'],
       required: true
     },
-    
+
     // References
     promotion: {
       type: mongoose.Schema.Types.ObjectId,
@@ -95,7 +95,7 @@ const activityGridSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'TradeSpend'
     },
-    
+
     // Activity Info
     name: String,
     description: String,
@@ -103,7 +103,7 @@ const activityGridSchema = new mongoose.Schema({
       type: String,
       enum: ['planned', 'confirmed', 'active', 'completed', 'cancelled']
     },
-    
+
     // Financial
     spend: {
       marketing: {
@@ -123,7 +123,7 @@ const activityGridSchema = new mongoose.Schema({
         actual: { type: Number, default: 0 }
       }
     },
-    
+
     // Participants
     customers: [{
       customer: {
@@ -139,7 +139,7 @@ const activityGridSchema = new mongoose.Schema({
       },
       quantity: Number
     }],
-    
+
     // Performance
     performance: {
       targetMetric: String,
@@ -147,7 +147,7 @@ const activityGridSchema = new mongoose.Schema({
       actualValue: Number,
       achievement: Number
     },
-    
+
     // Visual Indicators
     indicators: {
       color: String,
@@ -163,7 +163,7 @@ const activityGridSchema = new mongoose.Schema({
       }]
     }
   }],
-  
+
   // Summary Statistics
   summary: {
     totalActivities: {
@@ -212,7 +212,7 @@ const activityGridSchema = new mongoose.Schema({
       regions: { type: Number, default: 0 }
     }
   },
-  
+
   // Heatmap Data (for visual representation)
   heatmap: [{
     date: Date,
@@ -223,7 +223,7 @@ const activityGridSchema = new mongoose.Schema({
     },
     activityCount: Number
   }],
-  
+
   // Conflicts and Overlaps
   conflicts: [{
     date: Date,
@@ -246,7 +246,7 @@ const activityGridSchema = new mongoose.Schema({
     description: String,
     resolution: String
   }],
-  
+
   // AI Insights
   insights: [{
     type: {
@@ -260,7 +260,7 @@ const activityGridSchema = new mongoose.Schema({
     confidence: Number,
     date: Date
   }],
-  
+
   // User Preferences
   preferences: {
     defaultView: String,
@@ -271,14 +271,14 @@ const activityGridSchema = new mongoose.Schema({
     sortBy: String,
     filters: mongoose.Schema.Types.Mixed
   },
-  
+
   // Cache Information
   cache: {
     generated: Date,
     expires: Date,
     version: Number
   },
-  
+
   // Created By
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -299,15 +299,15 @@ activityGridSchema.index({ 'activities.date': 1 });
 activityGridSchema.index({ 'cache.expires': 1 });
 
 // Compound indexes
-activityGridSchema.index({ 
-  'period.year': 1, 
-  'period.month': 1, 
-  'scope.level': 1, 
-  'scope.entityId': 1 
+activityGridSchema.index({
+  'period.year': 1,
+  'period.month': 1,
+  'scope.level': 1,
+  'scope.entityId': 1
 });
 
 // Pre-save middleware to calculate summaries
-activityGridSchema.pre('save', function(next) {
+activityGridSchema.pre('save', function (next) {
   // Reset summary
   this.summary = {
     totalActivities: 0,
@@ -337,13 +337,13 @@ activityGridSchema.pre('save', function(next) {
       regions: new Set()
     }
   };
-  
+
   // Calculate summaries from activities
-  this.activities.forEach(activity => {
+  this.activities.forEach((activity) => {
     this.summary.totalActivities++;
-    
+
     // Count by type
-    switch(activity.activityType) {
+    switch (activity.activityType) {
       case 'promotion':
         this.summary.byType.promotions++;
         break;
@@ -360,72 +360,72 @@ activityGridSchema.pre('save', function(next) {
       default:
         this.summary.byType.other++;
     }
-    
+
     // Count by status
     if (activity.status && this.summary.byStatus[activity.status] !== undefined) {
       this.summary.byStatus[activity.status]++;
     }
-    
+
     // Sum spend
-    ['marketing', 'cashCoop', 'tradingTerms'].forEach(type => {
+    ['marketing', 'cashCoop', 'tradingTerms'].forEach((type) => {
       if (activity.spend[type]) {
         this.summary.spend[type].planned += activity.spend[type].planned || 0;
         this.summary.spend[type].actual += activity.spend[type].actual || 0;
       }
     });
-    
+
     // Calculate total spend for activity
-    activity.spend.total.planned = 
+    activity.spend.total.planned =
       (activity.spend.marketing.planned || 0) +
       (activity.spend.cashCoop.planned || 0) +
       (activity.spend.tradingTerms.planned || 0);
-    
-    activity.spend.total.actual = 
+
+    activity.spend.total.actual =
       (activity.spend.marketing.actual || 0) +
       (activity.spend.cashCoop.actual || 0) +
       (activity.spend.tradingTerms.actual || 0);
-    
+
     // Add to total
     this.summary.spend.total.planned += activity.spend.total.planned;
     this.summary.spend.total.actual += activity.spend.total.actual;
-    
+
     // Track coverage
-    activity.customers.forEach(c => {
+    activity.customers.forEach((c) => {
       if (c.customer) this.summary.coverage.customers.add(c.customer.toString());
     });
-    activity.products.forEach(p => {
+    activity.products.forEach((p) => {
       if (p.product) this.summary.coverage.products.add(p.product.toString());
     });
   });
-  
+
   // Calculate variances
-  ['marketing', 'cashCoop', 'tradingTerms', 'total'].forEach(type => {
-    this.summary.spend[type].variance = 
+  ['marketing', 'cashCoop', 'tradingTerms', 'total'].forEach((type) => {
+    this.summary.spend[type].variance =
       this.summary.spend[type].actual - this.summary.spend[type].planned;
   });
-  
+
   // Convert sets to counts
   this.summary.coverage.customers = this.summary.coverage.customers.size;
   this.summary.coverage.products = this.summary.coverage.products.size;
-  
+
   // Generate heatmap data
   this.generateHeatmap();
-  
+
   // Set cache expiry
   this.cache.generated = new Date();
   this.cache.expires = new Date(Date.now() + 3600000); // 1 hour
-  
+
   next();
 });
 
 // Methods
-activityGridSchema.methods.generateHeatmap = function() {
+activityGridSchema.methods.generateHeatmap = function () {
   const heatmapData = {};
-  
+
   // Group activities by date
-  this.activities.forEach(activity => {
+  this.activities.forEach((activity) => {
     const dateKey = activity.date.toISOString().split('T')[0];
-    
+
     if (!heatmapData[dateKey]) {
       heatmapData[dateKey] = {
         date: activity.date,
@@ -433,22 +433,22 @@ activityGridSchema.methods.generateHeatmap = function() {
         totalSpend: 0
       };
     }
-    
+
     heatmapData[dateKey].activityCount++;
     heatmapData[dateKey].totalSpend += activity.spend.total.planned || 0;
   });
-  
+
   // Convert to heatmap array
-  this.heatmap = Object.values(heatmapData).map(data => {
+  this.heatmap = Object.values(heatmapData).map((data) => {
     // Calculate intensity (0-100)
     const intensity = Math.min(100, (data.activityCount * 20) + (data.totalSpend / 1000));
-    
+
     // Determine spend level
     let spendLevel = 'low';
     if (data.totalSpend > 100000) spendLevel = 'very_high';
     else if (data.totalSpend > 50000) spendLevel = 'high';
     else if (data.totalSpend > 10000) spendLevel = 'medium';
-    
+
     return {
       date: data.date,
       intensity,
@@ -458,26 +458,26 @@ activityGridSchema.methods.generateHeatmap = function() {
   });
 };
 
-activityGridSchema.methods.detectConflicts = async function() {
+activityGridSchema.methods.detectConflicts = async function () {
   const conflicts = [];
-  
+
   // Group activities by date
   const activitiesByDate = {};
-  this.activities.forEach(activity => {
+  this.activities.forEach((activity) => {
     const dateKey = activity.date.toISOString().split('T')[0];
     if (!activitiesByDate[dateKey]) {
       activitiesByDate[dateKey] = [];
     }
     activitiesByDate[dateKey].push(activity);
   });
-  
+
   // Check for conflicts
   Object.entries(activitiesByDate).forEach(([date, activities]) => {
     if (activities.length > 1) {
       // Check customer overlaps
       const customerMap = {};
-      activities.forEach(activity => {
-        activity.customers.forEach(c => {
+      activities.forEach((activity) => {
+        activity.customers.forEach((c) => {
           const customerId = c.customer.toString();
           if (customerMap[customerId]) {
             conflicts.push({
@@ -491,13 +491,13 @@ activityGridSchema.methods.detectConflicts = async function() {
           customerMap[customerId] = activity;
         });
       });
-      
+
       // Check budget limits
       const totalSpend = activities.reduce((sum, a) => sum + a.spend.total.planned, 0);
       if (totalSpend > 100000) { // Example threshold
         conflicts.push({
           date: new Date(date),
-          activities: activities.map(a => a._id),
+          activities: activities.map((a) => a._id),
           conflictType: 'budget_exceeded',
           severity: 'high',
           description: `Daily spend limit exceeded on ${date}`
@@ -505,21 +505,21 @@ activityGridSchema.methods.detectConflicts = async function() {
       }
     }
   });
-  
+
   this.conflicts = conflicts;
   await this.save();
 };
 
 // Statics
-activityGridSchema.statics.generateGrid = async function(viewType, period, scope) {
+activityGridSchema.statics.generateGrid = async function (viewType, period, scope) {
   const gridId = `${viewType}_${period.year}_${period.month || 'all'}_${scope.level}_${scope.entityId}`;
-  
+
   // Check cache
   let grid = await this.findOne({
     gridId,
     'cache.expires': { $gt: new Date() }
   });
-  
+
   if (!grid) {
     // Generate new grid
     grid = new this({
@@ -528,13 +528,13 @@ activityGridSchema.statics.generateGrid = async function(viewType, period, scope
       period,
       scope
     });
-    
+
     // Populate activities based on scope and period
     // This would fetch from Promotion, Campaign, TradeSpend models
-    
+
     await grid.save();
   }
-  
+
   return grid;
 };
 

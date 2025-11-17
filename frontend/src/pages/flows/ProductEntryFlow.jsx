@@ -209,7 +209,7 @@ const ProductEntryFlow = () => {
   const handleSubmit = async () => {
     if (!validate()) return;
     
-    const { canSubmit, warnings } = await preFlightCheck();
+    const {canSubmit} = await preFlightCheck();
     if (!canSubmit) {
       alert('Cannot submit: API is unavailable');
       return;

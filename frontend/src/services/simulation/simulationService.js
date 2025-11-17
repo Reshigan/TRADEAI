@@ -156,4 +156,5 @@ class SimulationService {
   }
 }
 
-export default new SimulationService();
+const simulationService = new SimulationService();
+export default simulationService;

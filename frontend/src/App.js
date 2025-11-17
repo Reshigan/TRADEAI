@@ -11,18 +11,16 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
 import NotFound from './components/NotFound';
-import { BudgetList, BudgetDetail, BudgetPage } from './components/budgets';
-import { TradeSpendList, TradeSpendDetail } from './components/tradeSpends';
+import {BudgetPage} from './components/budgets';
 import { PromotionList } from './components/promotions';
-import { CustomerList, CustomerDetail } from './components/customers';
-import { ProductList, ProductDetail } from './components/products';
+import {CustomerList} from './components/customers';
+import {ProductList} from './components/products';
 import { AnalyticsDashboard } from './components/analytics';
 import { SettingsPage } from './components/settings';
 import { UserList, UserDetail, UserForm } from './components/users';
 import { ReportList, ReportBuilder, BudgetReports, TradingTermsReports, CustomerReports, ProductReports, PromotionReports, TradeSpendReports } from './components/reports';
 import { CompanyList, CompanyDetail, CompanyForm } from './components/companies';
-import { TradingTermsList, TradingTermDetail, TradingTermForm } from './components/tradingTerms';
-import ActivityGrid from './components/activityGrid';
+import {TradingTermDetail, TradingTermForm} from './components/tradingTerms';
 import SimulationStudio from './components/enterprise/simulations/SimulationStudio';
 import ExecutiveDashboardEnhanced from './components/enterprise/dashboards/ExecutiveDashboardEnhanced';
 import TransactionManagement from './components/enterprise/transactions/TransactionManagement';
@@ -33,12 +31,9 @@ import RealTimeDashboard from './pages/RealTimeDashboard';
 import PromotionFlow from './pages/flows/PromotionFlow';
 
 // AI-Powered Flow Components (Refactored UX)
-import PromotionEntryFlow from './pages/flows/PromotionEntryFlow';
 import CustomerEntryFlow from './pages/flows/CustomerEntryFlow';
 import ProductEntryFlow from './pages/flows/ProductEntryFlow';
 import TradeSpendEntryFlow from './pages/flows/TradeSpendEntryFlow';
-import BudgetPlanningFlow from './pages/flows/BudgetPlanningFlow';
-import AdminDashboard from './pages/admin/AdminDashboard';
 
 // Transaction Components (Feature 2)
 import TransactionEntryFlow from './pages/transactions/TransactionEntryFlow';
@@ -56,7 +51,6 @@ import CommandBar from './components/command/CommandBar';
 import CopilotPanel from './components/copilot/CopilotPanel';
 
 // AI Assistant Component
-import AIAssistant from './components/AIAssistant/AIAssistant';
 
 // Command Center (New Home Dashboard)
 import CommandCenter from './components/CommandCenter/CommandCenter';
@@ -93,7 +87,6 @@ import ReconciliationDashboard from './pages/deductions/ReconciliationDashboard'
 // Campaign Components
 import CampaignList from './pages/campaigns/CampaignList';
 import CampaignForm from './pages/campaigns/CampaignForm';
-import CampaignDetail from './pages/campaigns/CampaignDetail';
 
 // Level 3 Tabbed Detail Components
 import PromotionDetailWithTabs from './pages/promotions/PromotionDetailWithTabs';
@@ -105,8 +98,6 @@ import CampaignDetailWithTabs from './pages/campaigns/CampaignDetailWithTabs';
 
 // Activities Components
 import ActivityList from './pages/activities/ActivityList';
-import ActivityDetail from './components/activityGrid/ActivityDetail';
-import ActivityForm from './components/activityGrid/ActivityForm';
 
 // Rebates Components
 import RebatesList from './pages/rebates/RebatesList';

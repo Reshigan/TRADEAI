@@ -32,7 +32,7 @@ const masterDataSchema = new mongoose.Schema({
     ],
     required: true
   },
-  
+
   // Basic Information
   code: {
     type: String,
@@ -44,11 +44,11 @@ const masterDataSchema = new mongoose.Schema({
     required: true
   },
   description: String,
-  
+
   // Category-specific fields
   category: String,
   parentCode: String,
-  
+
   // Hierarchical Data
   hierarchy: {
     level: Number,
@@ -62,7 +62,7 @@ const masterDataSchema = new mongoose.Schema({
     }],
     path: String
   },
-  
+
   // Attributes (flexible for different data types)
   attributes: {
     // For cash co-op reasons
@@ -70,32 +70,32 @@ const masterDataSchema = new mongoose.Schema({
     approvalThreshold: Number,
     requiredDocuments: [String],
     validityPeriod: Number,
-    
+
     // For channels/regions
     priority: Number,
     targetPercentage: Number,
-    
+
     // For GL accounts
     accountType: String,
     costElement: String,
     profitCenter: String,
-    
+
     // For currencies
     symbol: String,
     exchangeRate: Number,
     decimalPlaces: Number,
-    
+
     // For units of measure
     baseUnit: String,
     conversionFactor: Number,
-    
+
     // Generic attributes
     sortOrder: Number,
     color: String,
     icon: String,
     isDefault: Boolean
   },
-  
+
   // Validation Rules
   validationRules: [{
     field: String,
@@ -103,7 +103,7 @@ const masterDataSchema = new mongoose.Schema({
     value: mongoose.Schema.Types.Mixed,
     errorMessage: String
   }],
-  
+
   // Mappings (for integration)
   mappings: {
     sap: {
@@ -118,14 +118,14 @@ const masterDataSchema = new mongoose.Schema({
       description: String
     }]
   },
-  
+
   // Localization
   translations: [{
     language: String,
     name: String,
     description: String
   }],
-  
+
   // Status and Validity
   status: {
     type: String,
@@ -137,7 +137,7 @@ const masterDataSchema = new mongoose.Schema({
     default: Date.now
   },
   validTo: Date,
-  
+
   // Usage Statistics
   usage: {
     count: {
@@ -151,7 +151,7 @@ const masterDataSchema = new mongoose.Schema({
       date: Date
     }]
   },
-  
+
   // Audit
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -167,7 +167,7 @@ const masterDataSchema = new mongoose.Schema({
     ref: 'User'
   },
   approvalDate: Date,
-  
+
   // Change History
   changeHistory: [{
     action: String,
@@ -192,37 +192,37 @@ masterDataSchema.index({ 'hierarchy.parent': 1 });
 masterDataSchema.index({ 'mappings.sap.code': 1 });
 
 // Virtual for full path
-masterDataSchema.virtual('fullPath').get(function() {
+masterDataSchema.virtual('fullPath').get(function () {
   if (this.hierarchy && this.hierarchy.path) {
-    return this.hierarchy.path.split('/').filter(p => p).join(' > ');
+    return this.hierarchy.path.split('/').filter((p) => p).join(' > ');
   }
   return this.name;
 });
 
 // Pre-save middleware
-masterDataSchema.pre('save', async function(next) {
+masterDataSchema.pre('save', async function (next) {
   // Build hierarchy path
   if (this.hierarchy && this.hierarchy.parent) {
     const parent = await this.constructor.findById(this.hierarchy.parent);
     if (parent) {
-      this.hierarchy.path = parent.hierarchy.path + '/' + this.code;
+      this.hierarchy.path = `${parent.hierarchy.path}/${this.code}`;
       this.hierarchy.level = parent.hierarchy.level + 1;
     }
   } else {
-    this.hierarchy.path = '/' + this.code;
+    this.hierarchy.path = `/${this.code}`;
     this.hierarchy.level = 1;
   }
-  
+
   // Track changes
   if (!this.isNew && this.isModified()) {
     const changes = {};
-    this.modifiedPaths().forEach(path => {
+    this.modifiedPaths().forEach((path) => {
       changes[path] = {
         old: this._original[path],
         new: this[path]
       };
     });
-    
+
     this.changeHistory.push({
       action: 'updated',
       changes,
@@ -230,12 +230,12 @@ masterDataSchema.pre('save', async function(next) {
       changedDate: new Date()
     });
   }
-  
+
   next();
 });
 
 // Post-save middleware to update parent's children
-masterDataSchema.post('save', async function(doc) {
+masterDataSchema.post('save', async (doc) => {
   if (doc.hierarchy && doc.hierarchy.parent) {
     await doc.constructor.findByIdAndUpdate(
       doc.hierarchy.parent,
@@ -245,7 +245,7 @@ masterDataSchema.post('save', async function(doc) {
 });
 
 // Methods
-masterDataSchema.methods.activate = async function(userId) {
+masterDataSchema.methods.activate = async function (userId) {
   this.status = 'active';
   this.lastModifiedBy = userId;
   this.changeHistory.push({
@@ -256,7 +256,7 @@ masterDataSchema.methods.activate = async function(userId) {
   await this.save();
 };
 
-masterDataSchema.methods.deactivate = async function(userId, reason) {
+masterDataSchema.methods.deactivate = async function (userId, reason) {
   this.status = 'inactive';
   this.lastModifiedBy = userId;
   this.changeHistory.push({
@@ -268,7 +268,7 @@ masterDataSchema.methods.deactivate = async function(userId, reason) {
   await this.save();
 };
 
-masterDataSchema.methods.incrementUsage = async function(entityType, entityId) {
+masterDataSchema.methods.incrementUsage = async function (entityType, entityId) {
   this.usage.count++;
   this.usage.lastUsed = new Date();
   this.usage.usedBy.push({
@@ -276,17 +276,17 @@ masterDataSchema.methods.incrementUsage = async function(entityType, entityId) {
     entityId,
     date: new Date()
   });
-  
+
   // Keep only last 100 usage records
   if (this.usage.usedBy.length > 100) {
     this.usage.usedBy = this.usage.usedBy.slice(-100);
   }
-  
+
   await this.save();
 };
 
 // Statics
-masterDataSchema.statics.findByType = function(dataType, activeOnly = true) {
+masterDataSchema.statics.findByType = function (dataType, activeOnly = true) {
   const query = { dataType };
   if (activeOnly) {
     query.status = 'active';
@@ -298,13 +298,13 @@ masterDataSchema.statics.findByType = function(dataType, activeOnly = true) {
   return this.find(query).sort('attributes.sortOrder name');
 };
 
-masterDataSchema.statics.findByTypeAndCode = function(dataType, code) {
+masterDataSchema.statics.findByTypeAndCode = function (dataType, code) {
   return this.findOne({ dataType, code, status: 'active' });
 };
 
-masterDataSchema.statics.getHierarchy = async function(dataType, parentCode = null) {
+masterDataSchema.statics.getHierarchy = async function (dataType, parentCode = null) {
   const query = { dataType, status: 'active' };
-  
+
   if (parentCode) {
     const parent = await this.findOne({ dataType, code: parentCode });
     if (parent) {
@@ -313,24 +313,24 @@ masterDataSchema.statics.getHierarchy = async function(dataType, parentCode = nu
   } else {
     query['hierarchy.parent'] = { $exists: false };
   }
-  
+
   return this.find(query).sort('attributes.sortOrder name');
 };
 
-masterDataSchema.statics.importFromSAP = async function(dataType, sapData, userId) {
+masterDataSchema.statics.importFromSAP = async function (dataType, sapData, userId) {
   const results = {
     created: 0,
     updated: 0,
     errors: []
   };
-  
+
   for (const item of sapData) {
     try {
       const existing = await this.findOne({
         dataType,
         'mappings.sap.code': item.sapCode
       });
-      
+
       if (existing) {
         // Update existing
         existing.name = item.name || existing.name;
@@ -362,12 +362,12 @@ masterDataSchema.statics.importFromSAP = async function(dataType, sapData, userI
       });
     }
   }
-  
+
   return results;
 };
 
 // Default master data seeder
-masterDataSchema.statics.seedDefaults = async function(userId) {
+masterDataSchema.statics.seedDefaults = async function (userId) {
   const defaults = [
     // Cash Co-op Reasons
     {
@@ -403,7 +403,7 @@ masterDataSchema.statics.seedDefaults = async function(userId) {
       ]
     }
   ];
-  
+
   for (const group of defaults) {
     for (const item of group.items) {
       await this.findOneAndUpdate(

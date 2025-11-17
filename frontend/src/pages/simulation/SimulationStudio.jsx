@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Grid,
@@ -8,7 +8,6 @@ import {
   CardContent,
   IconButton,
   TextField,
-  MenuItem,
   Chip,
   Divider,
   Paper,
@@ -16,11 +15,7 @@ import {
   Tab,
   Alert,
   CircularProgress,
-  Tooltip,
-  Select,
-  FormControl,
-  InputLabel,
-  Slider
+  Tooltip
 } from '@mui/material';
 import {
   Add,
@@ -28,19 +23,12 @@ import {
   ContentCopy,
   PlayArrow,
   Compare,
-  Save,
-  Share,
   TrendingUp,
-  TrendingDown,
-  AttachMoney,
-  ShowChart,
-  Timeline as TimelineIcon
+  TrendingDown
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import simulationService from '../../services/simulation/simulationService';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
-import customerService from '../../services/customer/customerService';
-import productService from '../../services/product/productService';
 
 const SimulationStudio = () => {
   const navigate = useNavigate();
@@ -59,7 +47,7 @@ const SimulationStudio = () => {
     }
   ]);
   const [activeScenario, setActiveScenario] = useState('baseline');
-  const [compareMode, setCompareMode] = useState(false);
+  const [setCompareMode] = useState(false);
   const [globalConstraints, setGlobalConstraints] = useState({
     totalBudget: 100000,
     minROI: 1.5,

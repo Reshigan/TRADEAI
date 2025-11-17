@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import { X, Sparkles, TrendingUp, AlertCircle, Info, ChevronDown, ChevronUp } from 'lucide-react';
 
 const CopilotPanel = ({ isOpen, onClose, context, recommendations }) => {

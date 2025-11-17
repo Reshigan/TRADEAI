@@ -16,8 +16,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
-  Tooltip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -48,9 +46,7 @@ import {
   Security as SecurityIcon,
   Refresh as RefreshIcon,
   ArrowBack as ArrowBackIcon,
-  History as HistoryIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  History as HistoryIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
@@ -69,8 +65,8 @@ const UserDetail = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
-  const [loginHistory, setLoginHistory] = useState([]);
-  const [activityHistory, setActivityHistory] = useState([]);
+  const [loginHistory] = useState([]);
+  const [activityHistory] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',

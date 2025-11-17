@@ -19,7 +19,6 @@ import {
   TrendingUp,
   Timeline,
   Assessment,
-  Settings,
   Lightbulb,
   CheckCircle
 } from '@mui/icons-material';

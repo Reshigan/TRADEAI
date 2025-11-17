@@ -3,7 +3,7 @@ import { Box, Paper, Typography, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import apiClient from '../../../services/api/apiClient';
 
-const BudgetHistory = ({ budgetId, budget }) => {
+const BudgetHistory = ({ budgetId, _budget }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 

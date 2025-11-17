@@ -32,7 +32,6 @@ import { formatCurrency } from '../../utils/formatters';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { budgetService, tradeSpendService } from '../../services/api';
 import BudgetForm from './BudgetForm';
-import { DetailPageSkeleton } from '../common/SkeletonLoader';
 import { useToast } from '../common/ToastNotification';
 import analytics from '../../utils/analytics';
 

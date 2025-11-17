@@ -26,7 +26,6 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
 import { enZA } from 'date-fns/locale';
-import { formatCurrency } from '../../utils/formatters';
 
 const ActivityGridList = ({ activities, onActivityClick }) => {
   const [order, setOrder] = useState('asc');

@@ -20,8 +20,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -29,19 +27,14 @@ import {
   TextField,
   Switch,
   FormControlLabel,
-  Slider,
   Alert
 } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
-  Analytics as AnalyticsIcon,
   FilterList,
   Download,
-  Share,
   Refresh,
-  ZoomIn,
-  Settings,
   PieChart,
   BarChart,
   ShowChart,
@@ -53,7 +46,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
   LineChart,
   Line,
-  AreaChart,
   Area,
   BarChart as RechartsBarChart,
   Bar,
@@ -69,9 +61,8 @@ import {
   Scatter,
   ComposedChart
 } from 'recharts';
-import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import {format, subDays} from 'date-fns';
 import api from '../../services/api';
-import { formatCurrency } from '../../utils/formatters';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -87,9 +78,9 @@ const AdvancedAnalytics = () => {
     promotion: 'all',
     region: 'all'
   });
-  const [chartType, setChartType] = useState('line');
+  'line';
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 

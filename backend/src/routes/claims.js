@@ -8,7 +8,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const tenantId = req.user.company;
     const userId = req.user._id;
     const claim = await claimService.createClaim(tenantId, req.body, userId);
-    
+
     res.status(201).json({
       success: true,
       data: claim
@@ -27,7 +27,7 @@ router.post('/:id/submit', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
     const claim = await claimService.submitClaim(id, userId);
-    
+
     res.json({
       success: true,
       data: claim
@@ -47,7 +47,7 @@ router.post('/:id/approve', authenticateToken, async (req, res) => {
     const { approvedAmount } = req.body;
     const userId = req.user._id;
     const claim = await claimService.approveClaim(id, userId, approvedAmount);
-    
+
     res.json({
       success: true,
       data: claim
@@ -67,7 +67,7 @@ router.post('/:id/reject', authenticateToken, async (req, res) => {
     const { reason } = req.body;
     const userId = req.user._id;
     const claim = await claimService.rejectClaim(id, userId, reason);
-    
+
     res.json({
       success: true,
       data: claim
@@ -86,7 +86,7 @@ router.post('/:id/match-invoice', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { invoiceId, invoiceNumber, matchedAmount } = req.body;
     const claim = await claimService.matchClaimToInvoice(id, invoiceId, invoiceNumber, matchedAmount);
-    
+
     res.json({
       success: true,
       data: claim
@@ -104,7 +104,7 @@ router.post('/auto-match', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const results = await claimService.autoMatchClaims(tenantId);
-    
+
     res.json({
       success: true,
       data: results
@@ -122,7 +122,7 @@ router.get('/unmatched', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const claims = await claimService.getUnmatchedClaims(tenantId);
-    
+
     res.json({
       success: true,
       data: claims
@@ -140,7 +140,7 @@ router.get('/pending-approval', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const claims = await claimService.getPendingApprovalClaims(tenantId);
-    
+
     res.json({
       success: true,
       data: claims
@@ -160,7 +160,7 @@ router.get('/customer/:customerId', authenticateToken, async (req, res) => {
     const { customerId } = req.params;
     const { startDate, endDate } = req.query;
     const claims = await claimService.getClaimsByCustomer(tenantId, customerId, startDate, endDate);
-    
+
     res.json({
       success: true,
       data: claims
@@ -179,7 +179,7 @@ router.get('/statistics', authenticateToken, async (req, res) => {
     const tenantId = req.user.company;
     const { startDate, endDate } = req.query;
     const stats = await claimService.getClaimStatistics(tenantId, startDate, endDate);
-    
+
     res.json({
       success: true,
       data: stats

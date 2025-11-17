@@ -19,23 +19,17 @@ import {
   Alert,
   Stack,
   Grid,
-  IconButton,
-  Divider
+  IconButton
 } from '@mui/material';
 import {
-  Warning,
-  TrendingUp,
-  LocalOffer,
-  AttachMoney,
   Lightbulb,
   Refresh,
   ArrowForward
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
 
 const AIInsightsFeed = ({ userId }) => {
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
   const [actions, setActions] = useState([]);
   const [performance, setPerformance] = useState(null);
   const [insights, setInsights] = useState([]);

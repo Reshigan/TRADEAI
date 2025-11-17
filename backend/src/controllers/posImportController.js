@@ -101,7 +101,7 @@ exports.validateImport = asyncHandler(async (req, res, next) => {
 /**
  * Confirm and execute import
  */
-exports.confirmImport = asyncHandler(async (req, res, next) => {
+exports.confirmImport = asyncHandler((req, res, next) => {
   const { jobId } = req.body;
 
   const job = importJobs.get(jobId);
@@ -125,10 +125,10 @@ exports.confirmImport = asyncHandler(async (req, res, next) => {
     try {
       // Parse file
       const data = await posImportService.parseFile(job.filePath, job.fileType);
-      
+
       // Validate
       const validation = await posImportService.validateData(data, job.tenantId);
-      
+
       if (!validation.isValid && validation.validRows.length === 0) {
         importJobs.set(jobId, {
           ...job,
@@ -158,7 +158,7 @@ exports.confirmImport = asyncHandler(async (req, res, next) => {
       const now = new Date();
       const thirtyDaysAgo = new Date(now);
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
+
       await posImportService.aggregateToSalesHistory(
         thirtyDaysAgo,
         now,
@@ -202,7 +202,7 @@ exports.confirmImport = asyncHandler(async (req, res, next) => {
 /**
  * Get import job status
  */
-exports.getImportStatus = asyncHandler(async (req, res, next) => {
+exports.getImportStatus = asyncHandler((req, res, next) => {
   const { jobId } = req.params;
 
   const job = importJobs.get(jobId);
@@ -229,7 +229,7 @@ exports.getImportStatus = asyncHandler(async (req, res, next) => {
 /**
  * Get import history
  */
-exports.getImportHistory = asyncHandler(async (req, res, next) => {
+exports.getImportHistory = asyncHandler((req, res, _next) => {
   const tenantId = req.user.tenantId;
 
   const history = Array.from(importJobs.entries())
@@ -253,14 +253,14 @@ exports.getImportHistory = asyncHandler(async (req, res, next) => {
 /**
  * Download import template
  */
-exports.downloadTemplate = asyncHandler(async (req, res, next) => {
+exports.downloadTemplate = asyncHandler((req, res, _next) => {
   const template = posImportService.generateTemplate();
 
   // Convert to CSV
   const csvContent = [
     template.headers.join(','),
-    ...template.sampleData.map(row => 
-      template.headers.map(header => row[header] || '').join(',')
+    ...template.sampleData.map((row) =>
+      template.headers.map((header) => row[header] || '').join(',')
     )
   ].join('\n');
 
@@ -272,7 +272,7 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
 /**
  * Cancel import job
  */
-exports.cancelImport = asyncHandler(async (req, res, next) => {
+exports.cancelImport = asyncHandler((req, res, next) => {
   const { jobId } = req.params;
 
   const job = importJobs.get(jobId);

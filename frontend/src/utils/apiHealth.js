@@ -190,7 +190,7 @@ export const monitorAPIHealth = (onHealthChange, interval = 30000) => {
   return () => clearInterval(intervalId);
 };
 
-export default {
+const apiHealth = {
   checkAPIHealth,
   testMLEndpoint,
   detectEnvironment,
@@ -199,3 +199,4 @@ export default {
   retryWithBackoff,
   monitorAPIHealth
 };
+export default apiHealth;

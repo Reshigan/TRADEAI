@@ -1,5 +1,5 @@
 const simulationEngine = require('../services/simulationEngine');
-const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const { _AppError, asyncHandler } = require('../middleware/errorHandler');
 
 /**
  * SIMULATION CONTROLLER
@@ -7,7 +7,7 @@ const { AppError, asyncHandler } = require('../middleware/errorHandler');
  */
 
 // Simulate promotion impact
-exports.simulatePromotionImpact = asyncHandler(async (req, res, next) => {
+exports.simulatePromotionImpact = asyncHandler(async (req, res, _next) => {
   console.log('[SimulationController] simulatePromotionImpact called');
   const scenario = {
     type: 'promotion_impact',
@@ -29,7 +29,7 @@ exports.simulatePromotionImpact = asyncHandler(async (req, res, next) => {
 });
 
 // Simulate budget allocation
-exports.simulateBudgetAllocation = asyncHandler(async (req, res, next) => {
+exports.simulateBudgetAllocation = asyncHandler(async (req, res, _next) => {
   const scenario = {
     type: 'budget_allocation',
     ...req.body,
@@ -46,7 +46,7 @@ exports.simulateBudgetAllocation = asyncHandler(async (req, res, next) => {
 });
 
 // Simulate pricing strategy
-exports.simulatePricingStrategy = asyncHandler(async (req, res, next) => {
+exports.simulatePricingStrategy = asyncHandler(async (req, res, _next) => {
   const scenario = {
     type: 'pricing_strategy',
     ...req.body,
@@ -63,7 +63,7 @@ exports.simulatePricingStrategy = asyncHandler(async (req, res, next) => {
 });
 
 // Simulate volume projection
-exports.simulateVolumeProjection = asyncHandler(async (req, res, next) => {
+exports.simulateVolumeProjection = asyncHandler(async (req, res, _next) => {
   const scenario = {
     type: 'volume_projection',
     ...req.body,
@@ -80,7 +80,7 @@ exports.simulateVolumeProjection = asyncHandler(async (req, res, next) => {
 });
 
 // Simulate market share
-exports.simulateMarketShare = asyncHandler(async (req, res, next) => {
+exports.simulateMarketShare = asyncHandler(async (req, res, _next) => {
   const scenario = {
     type: 'market_share',
     ...req.body,
@@ -97,7 +97,7 @@ exports.simulateMarketShare = asyncHandler(async (req, res, next) => {
 });
 
 // Simulate ROI optimization
-exports.simulateROIOptimization = asyncHandler(async (req, res, next) => {
+exports.simulateROIOptimization = asyncHandler(async (req, res, _next) => {
   const scenario = {
     type: 'roi_optimization',
     ...req.body,
@@ -114,7 +114,7 @@ exports.simulateROIOptimization = asyncHandler(async (req, res, next) => {
 });
 
 // What-if analysis
-exports.whatIfAnalysis = asyncHandler(async (req, res, next) => {
+exports.whatIfAnalysis = asyncHandler(async (req, res, _next) => {
   const { baseScenario, variations } = req.body;
 
   baseScenario.tenantId = req.tenant._id;
@@ -129,11 +129,11 @@ exports.whatIfAnalysis = asyncHandler(async (req, res, next) => {
 });
 
 // Compare scenarios
-exports.compareScenarios = asyncHandler(async (req, res, next) => {
+exports.compareScenarios = asyncHandler(async (req, res, _next) => {
   const { scenarios } = req.body;
 
   // Add tenant and user info to all scenarios
-  scenarios.forEach(scenario => {
+  scenarios.forEach((scenario) => {
     scenario.tenantId = req.tenant._id;
     scenario.userId = req.user._id;
   });
@@ -147,7 +147,7 @@ exports.compareScenarios = asyncHandler(async (req, res, next) => {
 });
 
 // Get saved simulations (placeholder)
-exports.getSavedSimulations = asyncHandler(async (req, res, next) => {
+exports.getSavedSimulations = asyncHandler((req, res, _next) => {
   // Implementation would fetch saved simulations from database
   res.json({
     success: true,
@@ -157,15 +157,15 @@ exports.getSavedSimulations = asyncHandler(async (req, res, next) => {
 });
 
 // Save simulation (placeholder)
-exports.saveSimulation = asyncHandler(async (req, res, next) => {
-  const { scenario, results, name } = req.body;
+exports.saveSimulation = asyncHandler((req, res, _next) => {
+  const { _scenario, _results, name } = req.body;
 
   // Implementation would save simulation to database
   res.json({
     success: true,
     message: 'Simulation saved successfully',
     data: {
-      id: 'sim_' + Date.now(),
+      id: `sim_${Date.now()}`,
       name,
       savedAt: new Date()
     }

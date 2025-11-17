@@ -176,18 +176,18 @@ paymentSchema.index({ createdAt: -1 });
 paymentSchema.index({ settled: 1, status: 1 });
 
 // Virtual for application percentage
-paymentSchema.virtual('applicationPercent').get(function() {
+paymentSchema.virtual('applicationPercent').get(function () {
   if (this.amount === 0) return 0;
   return Math.round((this.appliedAmount / this.amount) * 100);
 });
 
 // Virtual for net amount (after deductions)
-paymentSchema.virtual('netAmount').get(function() {
+paymentSchema.virtual('netAmount').get(function () {
   return this.amount - this.deductionAmount;
 });
 
 // Pre-save middleware
-paymentSchema.pre('save', function(next) {
+paymentSchema.pre('save', function (next) {
   // Calculate base amount if exchange rate provided
   if (this.exchangeRate && this.exchangeRate !== 1) {
     this.baseAmount = this.amount * this.exchangeRate;
@@ -212,7 +212,7 @@ paymentSchema.pre('save', function(next) {
 });
 
 // Methods
-paymentSchema.methods.applyToInvoice = function(invoiceId, invoiceNumber, amount) {
+paymentSchema.methods.applyToInvoice = function (invoiceId, invoiceNumber, amount) {
   if (amount > this.unappliedAmount) {
     throw new Error('Applied amount exceeds unapplied balance');
   }
@@ -227,8 +227,8 @@ paymentSchema.methods.applyToInvoice = function(invoiceId, invoiceNumber, amount
   return this.save();
 };
 
-paymentSchema.methods.removeApplication = function(invoiceId) {
-  const index = this.applications.findIndex(app => app.invoiceId.toString() === invoiceId.toString());
+paymentSchema.methods.removeApplication = function (invoiceId) {
+  const index = this.applications.findIndex((app) => app.invoiceId.toString() === invoiceId.toString());
   if (index === -1) {
     throw new Error('Application not found');
   }
@@ -237,7 +237,7 @@ paymentSchema.methods.removeApplication = function(invoiceId) {
   return this.save();
 };
 
-paymentSchema.methods.addDeduction = function(deductionId, amount, reason) {
+paymentSchema.methods.addDeduction = function (deductionId, amount, reason) {
   this.deductions.push({
     deductionId,
     amount,
@@ -247,33 +247,33 @@ paymentSchema.methods.addDeduction = function(deductionId, amount, reason) {
   return this.save();
 };
 
-paymentSchema.methods.clear = function() {
+paymentSchema.methods.clear = function () {
   this.status = 'cleared';
   this.clearedDate = new Date();
   return this.save();
 };
 
-paymentSchema.methods.settle = function(settlementId) {
+paymentSchema.methods.settle = function (settlementId) {
   this.settled = true;
   this.settlementId = settlementId;
   this.settlementDate = new Date();
   return this.save();
 };
 
-paymentSchema.methods.reconcile = function(bankStatementId) {
+paymentSchema.methods.reconcile = function (bankStatementId) {
   this.reconciled = true;
   this.reconciledAt = new Date();
   this.bankStatementId = bankStatementId;
   return this.save();
 };
 
-paymentSchema.methods.canBePostedToGL = function() {
-  return this.status === 'cleared' && 
+paymentSchema.methods.canBePostedToGL = function () {
+  return this.status === 'cleared' &&
          !this.glPosted &&
          this.applications.length > 0;
 };
 
-paymentSchema.methods.postToGL = function(glDocument, glAccount) {
+paymentSchema.methods.postToGL = function (glDocument, glAccount) {
   if (!this.canBePostedToGL()) {
     throw new Error('Payment cannot be posted to GL');
   }
@@ -284,19 +284,19 @@ paymentSchema.methods.postToGL = function(glDocument, glAccount) {
   return this.save();
 };
 
-paymentSchema.methods.reverse = function(reason) {
+paymentSchema.methods.reverse = function (reason) {
   if (this.status === 'reversed') {
     throw new Error('Payment already reversed');
   }
-  
+
   this.status = 'reversed';
-  this.internalNotes = (this.internalNotes || '') + `\nReversed: ${reason}`;
+  this.internalNotes = `${this.internalNotes || ''}\nReversed: ${reason}`;
   return this.save();
 };
 
-paymentSchema.methods.bounce = function(reason) {
+paymentSchema.methods.bounce = function (reason) {
   this.status = 'bounced';
-  this.internalNotes = (this.internalNotes || '') + `\nBounced: ${reason}`;
+  this.internalNotes = `${this.internalNotes || ''}\nBounced: ${reason}`;
   return this.save();
 };
 

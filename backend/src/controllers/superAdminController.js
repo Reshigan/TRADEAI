@@ -1,5 +1,6 @@
 const { asyncHandler, AppError } = require('../middleware/errorHandler');
 const superAdminService = require('../services/superAdminService');
+const Tenant = require('../models/Tenant');
 const logger = require('../utils/logger');
 
 /**
@@ -166,7 +167,7 @@ exports.getSystemStatistics = asyncHandler(async (req, res) => {
 });
 
 // Get license plans
-exports.getLicensePlans = asyncHandler(async (req, res) => {
+exports.getLicensePlans = asyncHandler((req, res) => {
   const License = require('../models/License');
   const plans = License.getLicensePlans();
 
@@ -236,7 +237,7 @@ exports.bulkTenantOperation = asyncHandler(async (req, res) => {
 });
 
 // System health check
-exports.getSystemHealth = asyncHandler(async (req, res) => {
+exports.getSystemHealth = asyncHandler((req, res) => {
   const health = {
     status: 'healthy',
     timestamp: new Date(),

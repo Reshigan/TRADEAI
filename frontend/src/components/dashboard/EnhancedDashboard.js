@@ -9,9 +9,6 @@ import {
   IconButton,
   Chip,
   LinearProgress,
-  Avatar,
-  AvatarGroup,
-  Tooltip,
   Paper,
   alpha,
 } from '@mui/material';
@@ -24,7 +21,6 @@ import {
   Assessment,
   ArrowForward,
   MoreVert,
-  Notifications,
   CheckCircle,
   Warning,
   Info,
@@ -32,8 +28,6 @@ import {
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,

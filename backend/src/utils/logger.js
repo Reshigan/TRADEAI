@@ -54,7 +54,7 @@ if (config.logging.transports.includes('file')) {
       maxFiles: config.logging.file.maxFiles
     })
   );
-  
+
   transports.push(
     new winston.transports.File({
       filename: path.join(logsDir, 'combined.log'),
@@ -110,7 +110,7 @@ logger.logError = (error, req = null, additionalInfo = {}) => {
     code: error.code,
     ...additionalInfo
   };
-  
+
   if (req) {
     errorInfo.request = {
       method: req.method,
@@ -119,7 +119,7 @@ logger.logError = (error, req = null, additionalInfo = {}) => {
       userId: req.user?._id
     };
   }
-  
+
   logger.error('Application Error', errorInfo);
 };
 

@@ -1,6 +1,6 @@
 /**
  * Business Simulation Engine
- * 
+ *
  * Simulates business scenarios over 30-day periods with:
  * - Revenue modeling
  * - Cost dynamics
@@ -9,7 +9,7 @@
  * - Market conditions
  */
 
-const rebateCalculationService = require('../services/rebateCalculationService');
+const _rebateCalculationService = require('../services/_rebateCalculationService');
 
 class SimulationEngine {
   constructor() {
@@ -63,7 +63,7 @@ class SimulationEngine {
    * @param {Number} days - Number of days to simulate (default 30)
    * @returns {Object} - Simulation results
    */
-  async runSimulation(scenarioType, baseData, days = 30) {
+  runSimulation(scenarioType, baseData, days = 30) {
     const scenario = this.scenarios[scenarioType];
     if (!scenario) {
       throw new Error(`Invalid scenario type: ${scenarioType}`);
@@ -83,7 +83,7 @@ class SimulationEngine {
     // Initialize starting values
     let currentRevenue = baseData.dailyRevenue || 100000;
     let currentVolume = baseData.dailyVolume || 5000;
-    let currentMargin = baseData.marginPercent || 35;
+    const currentMargin = baseData.marginPercent || 35;
     let cumulativeRevenue = 0;
     let cumulativeProfit = 0;
     let cumulativeRebates = 0;

@@ -14,7 +14,6 @@ import {
   Typography,
   TextField,
   InputAdornment,
-  Chip,
   CircularProgress,
   Alert
 } from '@mui/material';
@@ -28,7 +27,7 @@ import { Search as SearchIcon } from '@mui/icons-material';
  * @param {Array} props.data - Array of data objects to display
  * @param {string} props.title - Table title
  * @param {boolean} props.loading - Loading state
- * @param {string} props.error - Error message
+ * @param {string} props._error - Error message
  * @param {function} props.onRowClick - Function to call when a row is clicked
  */
 const DataTable = ({ 

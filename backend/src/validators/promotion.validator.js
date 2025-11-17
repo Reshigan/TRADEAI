@@ -21,7 +21,7 @@ const promotionSchemas = {
     name: Joi.string()
       .min(3)
       .max(200)
-      .pattern(/^[a-zA-Z0-9\s\-&',\.]+$/)
+      .pattern(/^[a-zA-Z0-9\s\-&',.]+$/)
       .required()
       .messages({
         'string.empty': 'Promotion name is required',
@@ -154,7 +154,7 @@ const promotionSchemas = {
     name: Joi.string()
       .min(3)
       .max(200)
-      .pattern(/^[a-zA-Z0-9\s\-&',\.]+$/),
+      .pattern(/^[a-zA-Z0-9\s\-&',.]+$/),
 
     description: Joi.string()
       .max(1000)

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Container, Paper } from '@mui/material';
+import { Grid, Container, Paper } from '@mui/material';
 import ProcessWizard from './ProcessWizard';
 import FlowAIPanel from './FlowAIPanel';
 import { useNavigate } from 'react-router-dom';

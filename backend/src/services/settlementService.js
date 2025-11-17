@@ -38,7 +38,7 @@ class SettlementService {
     const items = [];
 
     // Add invoices
-    invoices.forEach(invoice => {
+    invoices.forEach((invoice) => {
       items.push({
         itemType: 'invoice',
         referenceId: invoice._id,
@@ -49,7 +49,7 @@ class SettlementService {
     });
 
     // Add payments
-    payments.forEach(payment => {
+    payments.forEach((payment) => {
       items.push({
         itemType: 'payment',
         referenceId: payment._id,
@@ -60,7 +60,7 @@ class SettlementService {
     });
 
     // Add deductions
-    deductions.forEach(deduction => {
+    deductions.forEach((deduction) => {
       items.push({
         itemType: 'deduction',
         referenceId: deduction._id,
@@ -115,13 +115,13 @@ class SettlementService {
         results.created++;
         results.settlements.push({
           settlementNumber: settlement.settlementNumber,
-          customerId: customerId,
+          customerId,
           netAmount: settlement.netSettlement,
           itemCount: settlement.items.length
         });
       } catch (error) {
         results.failed.push({
-          customerId: customerId,
+          customerId,
           error: error.message
         });
       }
@@ -149,8 +149,8 @@ class SettlementService {
       .populate('customerId')
       .populate({
         path: 'items.referenceId',
-        model: function(doc) {
-          return doc.items.map(item => item.referenceModel);
+        model(doc) {
+          return doc.items.map((item) => item.referenceModel);
         }
       });
 
@@ -199,14 +199,15 @@ class SettlementService {
    */
   async _processSettlementItem(item) {
     switch (item.itemType) {
-      case 'payment':
+      case 'payment': {
         const payment = await Payment.findById(item.referenceId);
         if (payment) {
           await payment.settle(item._id);
         }
         break;
+      }
 
-      case 'invoice':
+      case 'invoice': {
         const invoice = await Invoice.findById(item.referenceId);
         if (invoice && invoice.status === 'paid') {
           // Mark as settled in GL
@@ -216,8 +217,9 @@ class SettlementService {
           await invoice.save();
         }
         break;
+      }
 
-      case 'deduction':
+      case 'deduction': {
         const deduction = await Deduction.findById(item.referenceId);
         if (deduction) {
           deduction.settled = true;
@@ -225,6 +227,7 @@ class SettlementService {
           await deduction.save();
         }
         break;
+      }
 
       default:
         throw new Error(`Unknown item type: ${item.itemType}`);
@@ -442,7 +445,7 @@ class SettlementService {
       glEntries,
       totalDebit: glEntries.reduce((sum, e) => sum + e.debit, 0),
       totalCredit: glEntries.reduce((sum, e) => sum + e.credit, 0),
-      balanced: glEntries.reduce((sum, e) => sum + e.debit, 0) === 
+      balanced: glEntries.reduce((sum, e) => sum + e.debit, 0) ===
                 glEntries.reduce((sum, e) => sum + e.credit, 0)
     };
   }
@@ -454,7 +457,7 @@ class SettlementService {
     const date = new Date();
     const year = date.getFullYear().toString().substr(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    
+
     const count = await Settlement.countDocuments({
       createdAt: {
         $gte: new Date(date.getFullYear(), date.getMonth(), 1),
@@ -468,7 +471,7 @@ class SettlementService {
   /**
    * Generate GL document number
    */
-  async _generateGLDocumentNumber() {
+  _generateGLDocumentNumber() {
     const date = new Date();
     const year = date.getFullYear().toString().substr(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');

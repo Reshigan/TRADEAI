@@ -144,4 +144,5 @@ class TradingTermsService {
   }
 }
 
-export default new TradingTermsService();
+const tradingTermsService = new TradingTermsService();
+export default tradingTermsService;

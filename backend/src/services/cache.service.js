@@ -11,7 +11,7 @@ class CacheService {
     this.redis = null;
     this.inMemoryCache = new Map();
     this.useRedis = process.env.REDIS_URL && process.env.NODE_ENV === 'production';
-    
+
     if (this.useRedis) {
       this.initRedis();
     } else {
@@ -96,7 +96,7 @@ class CacheService {
           value,
           expiry: Date.now() + (ttl * 1000)
         });
-        
+
         // Cleanup expired entries periodically
         this.cleanupInMemoryCache();
         return true;
@@ -144,7 +144,7 @@ class CacheService {
       } else {
         let count = 0;
         const regex = new RegExp(pattern.replace('*', '.*'));
-        
+
         for (const key of this.inMemoryCache.keys()) {
           if (regex.test(key)) {
             this.inMemoryCache.delete(key);
@@ -210,12 +210,12 @@ class CacheService {
         return {
           type: 'redis',
           size: dbSize,
-          info: info
+          info
         };
       } else {
         // Cleanup expired entries before reporting
         this.cleanupInMemoryCache();
-        
+
         return {
           type: 'memory',
           size: this.inMemoryCache.size,
@@ -267,7 +267,7 @@ class CacheService {
     } catch (error) {
       logger.error('Cache wrap error:', { key, error: error.message });
       // Execute function without caching on error
-      return await fn();
+      return fn();
     }
   }
 
@@ -278,7 +278,7 @@ class CacheService {
    * @returns {string} Cache key
    */
   generateKey(prefix, ...parts) {
-    return `${prefix}:${parts.filter(p => p !== undefined && p !== null).join(':')}`;
+    return `${prefix}:${parts.filter((p) => p !== undefined && p !== null).join(':')}`;
   }
 
   /**

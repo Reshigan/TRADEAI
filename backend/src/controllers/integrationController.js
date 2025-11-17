@@ -7,7 +7,7 @@ class IntegrationController {
   async getIntegrations(req, res) {
     try {
       const integrations = await externalIntegrationsService.getAllIntegrations();
-      
+
       res.json({
         success: true,
         data: integrations,
@@ -27,7 +27,7 @@ class IntegrationController {
     try {
       const { integrationId } = req.params;
       const integration = await externalIntegrationsService.getIntegrationStatus(integrationId);
-      
+
       res.json({
         success: true,
         data: integration,
@@ -47,9 +47,9 @@ class IntegrationController {
     try {
       const { integrationId } = req.params;
       const { credentials } = req.body;
-      
+
       const result = await externalIntegrationsService.connectIntegration(integrationId, credentials);
-      
+
       res.json({
         success: true,
         data: result,
@@ -68,9 +68,9 @@ class IntegrationController {
   async disconnectIntegration(req, res) {
     try {
       const { integrationId } = req.params;
-      
+
       const result = await externalIntegrationsService.disconnectIntegration(integrationId);
-      
+
       res.json({
         success: true,
         data: result,
@@ -90,12 +90,12 @@ class IntegrationController {
     try {
       const { integrationId } = req.params;
       const { entities, fullSync = false } = req.body;
-      
+
       const result = await externalIntegrationsService.syncIntegration(integrationId, {
         entities,
         fullSync
       });
-      
+
       res.json({
         success: true,
         data: result,
@@ -114,7 +114,7 @@ class IntegrationController {
   async getIntegrationMetrics(req, res) {
     try {
       const metrics = await externalIntegrationsService.getIntegrationMetrics();
-      
+
       res.json({
         success: true,
         data: metrics,
@@ -135,9 +135,9 @@ class IntegrationController {
     try {
       const tenantId = req.tenant?.id;
       const webhookConfig = req.body;
-      
+
       const webhook = await webhookService.registerWebhook(tenantId, webhookConfig);
-      
+
       res.status(201).json({
         success: true,
         data: webhook,
@@ -157,7 +157,7 @@ class IntegrationController {
     try {
       const tenantId = req.tenant?.id;
       const webhooks = await webhookService.getWebhooksByTenant(tenantId);
-      
+
       res.json({
         success: true,
         data: webhooks,
@@ -177,7 +177,7 @@ class IntegrationController {
     try {
       const { webhookId } = req.params;
       const webhook = await webhookService.getWebhook(webhookId);
-      
+
       res.json({
         success: true,
         data: webhook,
@@ -197,9 +197,9 @@ class IntegrationController {
     try {
       const { webhookId } = req.params;
       const updates = req.body;
-      
+
       const webhook = await webhookService.updateWebhook(webhookId, updates);
-      
+
       res.json({
         success: true,
         data: webhook,
@@ -218,9 +218,9 @@ class IntegrationController {
   async deleteWebhook(req, res) {
     try {
       const { webhookId } = req.params;
-      
+
       const result = await webhookService.deleteWebhook(webhookId);
-      
+
       res.json({
         success: true,
         data: result,
@@ -239,9 +239,9 @@ class IntegrationController {
   async testWebhook(req, res) {
     try {
       const { webhookId } = req.params;
-      
+
       const result = await webhookService.testWebhook(webhookId);
-      
+
       res.json({
         success: true,
         data: result,
@@ -261,16 +261,16 @@ class IntegrationController {
     try {
       const tenantId = req.tenant?.id;
       const { eventType, eventData, options } = req.body;
-      
+
       if (!eventType || !eventData) {
         return res.status(400).json({
           success: false,
           message: 'Event type and data are required'
         });
       }
-      
+
       const result = await webhookService.publishEvent(tenantId, eventType, eventData, options);
-      
+
       res.json({
         success: true,
         data: result,
@@ -289,9 +289,9 @@ class IntegrationController {
   async getWebhookStats(req, res) {
     try {
       const { webhookId } = req.params;
-      
+
       const stats = await webhookService.getWebhookStats(webhookId);
-      
+
       res.json({
         success: true,
         data: stats,
@@ -310,7 +310,7 @@ class IntegrationController {
   async getWebhookSystemStats(req, res) {
     try {
       const stats = await webhookService.getSystemStats();
-      
+
       res.json({
         success: true,
         data: stats,
@@ -332,9 +332,9 @@ class IntegrationController {
       const { integrationId } = req.params;
       const signature = req.get('X-Webhook-Signature') || req.get('X-Hub-Signature-256');
       const webhookData = req.body;
-      
+
       const result = await externalIntegrationsService.handleWebhook(integrationId, webhookData, signature);
-      
+
       res.json({
         success: true,
         data: result,
@@ -355,9 +355,9 @@ class IntegrationController {
     try {
       const tenantId = req.tenant?.id;
       const { tier = 'free' } = req.body;
-      
+
       const result = await apiManagementService.generateAPIKeyForTenant(tenantId, tier);
-      
+
       res.status(201).json({
         success: true,
         data: result,
@@ -376,9 +376,9 @@ class IntegrationController {
   async revokeAPIKey(req, res) {
     try {
       const { apiKey } = req.params;
-      
+
       const result = await apiManagementService.revokeAPIKey(apiKey);
-      
+
       res.json({
         success: true,
         data: result,
@@ -397,9 +397,9 @@ class IntegrationController {
   async getAPIAnalytics(req, res) {
     try {
       const { timeRange = '24h' } = req.query;
-      
+
       const analytics = await apiManagementService.getAPIAnalytics(timeRange);
-      
+
       res.json({
         success: true,
         data: analytics,
@@ -419,9 +419,9 @@ class IntegrationController {
     try {
       const tenantId = req.tenant?.id;
       const { days = 7 } = req.query;
-      
+
       const usage = await apiManagementService.getTenantUsage(tenantId, parseInt(days));
-      
+
       res.json({
         success: true,
         data: usage,
@@ -440,7 +440,7 @@ class IntegrationController {
   async getAPIHealth(req, res) {
     try {
       const health = await apiManagementService.healthCheck();
-      
+
       res.json({
         success: true,
         data: health,
@@ -460,7 +460,7 @@ class IntegrationController {
   async getDashboardData(req, res) {
     try {
       const tenantId = req.tenant?.id;
-      
+
       // Get data from all services
       const [
         integrations,
@@ -477,17 +477,17 @@ class IntegrationController {
         apiManagementService.getAPIAnalytics('24h'),
         apiManagementService.getTenantUsage(tenantId, 7)
       ]);
-      
+
       const dashboardData = {
         integrations: {
           total: integrations.length,
-          active: integrations.filter(i => i.status === 'active').length,
-          error: integrations.filter(i => i.status === 'error').length,
+          active: integrations.filter((i) => i.status === 'active').length,
+          error: integrations.filter((i) => i.status === 'error').length,
           list: integrations
         },
         webhooks: {
           total: webhooks.length,
-          active: webhooks.filter(w => w.active).length,
+          active: webhooks.filter((w) => w.active).length,
           stats: webhookStats,
           list: webhooks.slice(0, 5) // Latest 5
         },
@@ -498,12 +498,12 @@ class IntegrationController {
         metrics: integrationMetrics,
         summary: {
           totalIntegrations: integrations.length,
-          activeWebhooks: webhooks.filter(w => w.active).length,
+          activeWebhooks: webhooks.filter((w) => w.active).length,
           dailyAPIRequests: tenantUsage[tenantUsage.length - 1]?.requests || 0,
           systemHealth: 'healthy'
         }
       };
-      
+
       res.json({
         success: true,
         data: dashboardData,
@@ -523,16 +523,16 @@ class IntegrationController {
   async bulkSyncIntegrations(req, res) {
     try {
       const { integrationIds, options = {} } = req.body;
-      
+
       if (!integrationIds || !Array.isArray(integrationIds)) {
         return res.status(400).json({
           success: false,
           message: 'Integration IDs array is required'
         });
       }
-      
+
       const results = [];
-      
+
       for (const integrationId of integrationIds) {
         try {
           const result = await externalIntegrationsService.syncIntegration(integrationId, options);
@@ -541,10 +541,10 @@ class IntegrationController {
           results.push({ integrationId, success: false, error: error.message });
         }
       }
-      
-      const successCount = results.filter(r => r.success).length;
-      const errorCount = results.filter(r => !r.success).length;
-      
+
+      const successCount = results.filter((r) => r.success).length;
+      const errorCount = results.filter((r) => !r.success).length;
+
       res.json({
         success: true,
         data: {
@@ -571,16 +571,16 @@ class IntegrationController {
   async bulkUpdateWebhooks(req, res) {
     try {
       const { webhookIds, updates } = req.body;
-      
+
       if (!webhookIds || !Array.isArray(webhookIds)) {
         return res.status(400).json({
           success: false,
           message: 'Webhook IDs array is required'
         });
       }
-      
+
       const results = [];
-      
+
       for (const webhookId of webhookIds) {
         try {
           const result = await webhookService.updateWebhook(webhookId, updates);
@@ -589,9 +589,9 @@ class IntegrationController {
           results.push({ webhookId, success: false, error: error.message });
         }
       }
-      
-      const successCount = results.filter(r => r.success).length;
-      
+
+      const successCount = results.filter((r) => r.success).length;
+
       res.json({
         success: true,
         data: {

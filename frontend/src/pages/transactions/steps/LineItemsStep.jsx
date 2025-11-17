@@ -16,8 +16,7 @@ import {
   Autocomplete,
   InputAdornment,
   Alert,
-  Divider,
-  Chip
+  Divider
 } from '@mui/material';
 import {
   Add as AddIcon,

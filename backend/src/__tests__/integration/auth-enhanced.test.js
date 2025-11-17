@@ -6,7 +6,7 @@ const RefreshToken = require('../../models/RefreshToken');
 const ActiveSession = require('../../models/ActiveSession');
 
 describe('Auth Enhanced API Integration Tests', () => {
-  let server;
+  let _server;
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
@@ -103,7 +103,7 @@ describe('Auth Enhanced API Integration Tests', () => {
   });
 
   describe('POST /api/auth-enhanced/login', () => {
-    let testUser;
+    let _testUser;
 
     beforeEach(async () => {
       const registerData = {
@@ -117,7 +117,7 @@ describe('Auth Enhanced API Integration Tests', () => {
         .post('/api/auth-enhanced/register')
         .send(registerData);
 
-      testUser = response.body.user;
+      _testUser = response.body.user;
     });
 
     it('should login successfully with correct credentials', async () => {

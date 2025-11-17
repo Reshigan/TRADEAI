@@ -5,7 +5,7 @@ const Permission = require('../models/Permission');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const SecurityEvent = require('../models/SecurityEvent');
-const logger = require('../utils/logger');
+const _logger = require('../utils/_logger');
 
 /**
  * Security Controller
@@ -154,7 +154,7 @@ class SecurityController {
       success: true,
       data: {
         userId,
-        roles: user.roles.map(role => ({
+        roles: user.roles.map((role) => ({
           id: role._id,
           name: role.name,
           displayName: role.displayName,
@@ -364,12 +364,12 @@ class SecurityController {
    */
   getPermissions = asyncHandler(async (req, res) => {
     const tenantId = req.tenant.id;
-    const { 
-      resource, 
-      category, 
-      riskLevel, 
-      isActive = true, 
-      includeSystem = false 
+    const {
+      resource,
+      category,
+      riskLevel,
+      isActive = true,
+      includeSystem = false
     } = req.query;
 
     const query = { tenantId, isActive };
@@ -777,7 +777,7 @@ class SecurityController {
    * Validate password strength
    * POST /api/security/password/validate
    */
-  validatePassword = asyncHandler(async (req, res) => {
+  validatePassword = asyncHandler((req, res) => {
     const { password } = req.body;
 
     if (!password) {
@@ -799,7 +799,7 @@ class SecurityController {
    * Get security policies
    * GET /api/security/policies
    */
-  getSecurityPolicies = asyncHandler(async (req, res) => {
+  getSecurityPolicies = asyncHandler((req, res) => {
     const policies = this.securityService.securityPolicies;
 
     res.json({

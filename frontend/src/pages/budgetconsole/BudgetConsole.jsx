@@ -11,8 +11,6 @@ import {
   Alert,
   CircularProgress,
   Chip,
-  IconButton,
-  Tooltip,
   TextField,
   MenuItem
 } from '@mui/material';
@@ -20,22 +18,14 @@ import {
   Add,
   Refresh,
   TrendingUp,
-  TrendingDown,
   AttachMoney,
-  Warning,
   CheckCircle,
-  Edit,
-  Lock,
-  LockOpen,
-  Timeline as TimelineIcon,
   ShowChart
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
 import budgetService from '../../services/budget/budgetService';
-import { DashboardSkeleton, ChartSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 
@@ -43,10 +33,10 @@ const BudgetConsole = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [loading, setLoading] = useState(true);
-  const [budgets, setBudgets] = useState([]);
+  const [setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
-  const [lockRatios, setLockRatios] = useState(false);
+
+
   const [reallocationSuggestions, setReallocationSuggestions] = useState([]);
   const [roiCurve, setRoiCurve] = useState(null);
   const [period, setPeriod] = useState('2025-Q4');

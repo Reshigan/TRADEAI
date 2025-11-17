@@ -16,29 +16,29 @@ class AnomalyDetectionService extends EventEmitter {
     this.thresholds = new Map();
     this.patterns = new Map();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Anomaly Detection Service...');
-      
+
       // Initialize detection models
       this.initializeDetectionModels();
-      
+
       // Setup real-time monitoring
       this.setupRealTimeMonitoring();
-      
+
       // Initialize alert system
       this.initializeAlertSystem();
-      
+
       // Setup pattern recognition
       this.setupPatternRecognition();
-      
+
       // Start monitoring loops
       this.startMonitoring();
-      
+
       this.isInitialized = true;
       console.log('Anomaly Detection Service initialized successfully');
     } catch (error) {
@@ -164,7 +164,7 @@ class AnomalyDetectionService extends EventEmitter {
       }
     ];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       this.models.set(model.id, {
         ...model,
         status: 'loaded',
@@ -250,7 +250,7 @@ class AnomalyDetectionService extends EventEmitter {
       }
     ];
 
-    monitoringTargets.forEach(target => {
+    monitoringTargets.forEach((target) => {
       this.detectors.set(target.id, {
         ...target,
         status: 'active',
@@ -376,7 +376,7 @@ class AnomalyDetectionService extends EventEmitter {
       }
     ];
 
-    patternTypes.forEach(pattern => {
+    patternTypes.forEach((pattern) => {
       this.patterns.set(pattern.id, {
         ...pattern,
         detections: [],
@@ -425,16 +425,16 @@ class AnomalyDetectionService extends EventEmitter {
       try {
         // Simulate real-time data ingestion
         const newData = await this.ingestRealTimeData(detectorId);
-        
+
         if (newData.length > 0) {
           // Run anomaly detection
           const anomalies = await this.detectAnomalies(detectorId, newData);
-          
+
           // Process detected anomalies
           if (anomalies.length > 0) {
             await this.processAnomalies(detectorId, anomalies);
           }
-          
+
           // Update detector status
           detector.lastCheck = new Date();
           detector.anomaliesDetected += anomalies.length;
@@ -448,7 +448,7 @@ class AnomalyDetectionService extends EventEmitter {
   /**
    * Ingest real-time data
    */
-  async ingestRealTimeData(detectorId) {
+  ingestRealTimeData(detectorId) {
     const detector = this.detectors.get(detectorId);
     if (!detector) return [];
 
@@ -463,7 +463,7 @@ class AnomalyDetectionService extends EventEmitter {
 
     // Add to current data buffer
     detector.currentData.push(...dataPoints);
-    
+
     // Keep only recent data (sliding window)
     const maxBufferSize = 1000;
     if (detector.currentData.length > maxBufferSize) {
@@ -480,7 +480,7 @@ class AnomalyDetectionService extends EventEmitter {
     const timestamp = new Date();
     const dataPoint = { timestamp };
 
-    detector.features.forEach(feature => {
+    detector.features.forEach((feature) => {
       switch (feature) {
         case 'amount':
           dataPoint[feature] = this.generateTransactionAmount();
@@ -534,7 +534,7 @@ class AnomalyDetectionService extends EventEmitter {
       try {
         const modelAnomalies = await this.runModelDetection(model, data, detector);
         anomalies.push(...modelAnomalies);
-        
+
         // Update model usage
         model.lastUsed = new Date();
         model.detections += modelAnomalies.length;
@@ -545,7 +545,7 @@ class AnomalyDetectionService extends EventEmitter {
 
     // Ensemble voting - combine results from multiple models
     const consensusAnomalies = this.ensembleVoting(anomalies, detector.models.length);
-    
+
     return consensusAnomalies;
   }
 
@@ -554,13 +554,13 @@ class AnomalyDetectionService extends EventEmitter {
    */
   async runModelDetection(model, data, detector) {
     // Simulate model inference
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const anomalies = [];
 
-    data.forEach(dataPoint => {
+    data.forEach((dataPoint) => {
       const anomalyScore = this.calculateAnomalyScore(model, dataPoint, detector);
-      
+
       if (anomalyScore > detector.alertThreshold) {
         anomalies.push({
           id: this.generateAnomalyId(),
@@ -624,9 +624,9 @@ class AnomalyDetectionService extends EventEmitter {
    */
   isolationForestScore(dataPoint, detector) {
     // Simplified isolation forest scoring
-    const features = detector.features.map(f => dataPoint[f] || 0);
+    const features = detector.features.map((f) => dataPoint[f] || 0);
     const avgFeature = features.reduce((sum, val) => sum + val, 0) / features.length;
-    
+
     // Higher scores for values far from average
     const deviation = Math.abs(avgFeature - 0.5);
     return Math.min(1, deviation * 2);
@@ -637,9 +637,9 @@ class AnomalyDetectionService extends EventEmitter {
    */
   oneClassSVMScore(dataPoint, detector) {
     // Simplified SVM scoring based on distance from decision boundary
-    const features = detector.features.map(f => dataPoint[f] || 0);
+    const features = detector.features.map((f) => dataPoint[f] || 0);
     const distance = Math.sqrt(features.reduce((sum, val) => sum + Math.pow(val - 0.5, 2), 0));
-    
+
     return Math.min(1, distance);
   }
 
@@ -648,9 +648,9 @@ class AnomalyDetectionService extends EventEmitter {
    */
   localOutlierFactorScore(dataPoint, detector) {
     // Simplified LOF scoring based on local density
-    const features = detector.features.map(f => dataPoint[f] || 0);
+    const features = detector.features.map((f) => dataPoint[f] || 0);
     const localDensity = 1 / (1 + Math.sqrt(features.reduce((sum, val) => sum + val * val, 0)));
-    
+
     return 1 - localDensity;
   }
 
@@ -659,9 +659,9 @@ class AnomalyDetectionService extends EventEmitter {
    */
   autoencoderScore(dataPoint, detector) {
     // Simplified autoencoder reconstruction error
-    const features = detector.features.map(f => dataPoint[f] || 0);
+    const features = detector.features.map((f) => dataPoint[f] || 0);
     const reconstructionError = features.reduce((sum, val) => sum + Math.pow(val - 0.5, 2), 0) / features.length;
-    
+
     return Math.min(1, reconstructionError * 4);
   }
 
@@ -670,11 +670,11 @@ class AnomalyDetectionService extends EventEmitter {
    */
   statisticalScore(dataPoint, detector) {
     // Modified Z-score approach
-    const features = detector.features.map(f => dataPoint[f] || 0);
+    const features = detector.features.map((f) => dataPoint[f] || 0);
     const mean = 0.5; // Assumed mean
     const std = 0.2; // Assumed standard deviation
-    
-    const maxZScore = Math.max(...features.map(val => Math.abs(val - mean) / std));
+
+    const maxZScore = Math.max(...features.map((val) => Math.abs(val - mean) / std));
     return Math.min(1, maxZScore / 3.5); // Normalize by threshold
   }
 
@@ -683,12 +683,12 @@ class AnomalyDetectionService extends EventEmitter {
    */
   lstmAutoencoderScore(dataPoint, detector) {
     // Simplified LSTM autoencoder scoring for sequence data
-    const features = detector.features.map(f => dataPoint[f] || 0);
+    const features = detector.features.map((f) => dataPoint[f] || 0);
     const sequenceError = features.reduce((sum, val, idx) => {
       const expected = Math.sin(idx * 0.1) * 0.5 + 0.5; // Simple pattern
       return sum + Math.pow(val - expected, 2);
     }, 0) / features.length;
-    
+
     return Math.min(1, sequenceError * 2);
   }
 
@@ -699,7 +699,7 @@ class AnomalyDetectionService extends EventEmitter {
     const anomalyMap = new Map();
 
     // Group anomalies by data point
-    anomalies.forEach(anomaly => {
+    anomalies.forEach((anomaly) => {
       const key = `${anomaly.timestamp.getTime()}_${JSON.stringify(anomaly.dataPoint)}`;
       if (!anomalyMap.has(key)) {
         anomalyMap.set(key, []);
@@ -710,20 +710,20 @@ class AnomalyDetectionService extends EventEmitter {
     const consensusAnomalies = [];
 
     // Apply voting logic
-    anomalyMap.forEach((groupedAnomalies, key) => {
+    anomalyMap.forEach((groupedAnomalies, _key) => {
       const voteCount = groupedAnomalies.length;
       const avgScore = groupedAnomalies.reduce((sum, a) => sum + a.score, 0) / voteCount;
-      
+
       // Require majority vote or high confidence from single model
       if (voteCount >= Math.ceil(numModels / 2) || avgScore > 0.9) {
         const consensusAnomaly = {
           ...groupedAnomalies[0], // Use first anomaly as base
           score: avgScore,
           voteCount,
-          models: groupedAnomalies.map(a => a.modelId),
+          models: groupedAnomalies.map((a) => a.modelId),
           confidence: Math.min(1, avgScore * (voteCount / numModels))
         };
-        
+
         consensusAnomalies.push(consensusAnomaly);
       }
     });
@@ -741,7 +741,7 @@ class AnomalyDetectionService extends EventEmitter {
 
       // Determine alert level
       const alertLevel = this.determineAlertLevel(anomaly);
-      
+
       // Create alert if necessary
       if (alertLevel) {
         await this.createAlert(anomaly, alertLevel);
@@ -771,7 +771,7 @@ class AnomalyDetectionService extends EventEmitter {
     } else if (anomaly.score >= 0.65) {
       return 'low_anomaly';
     }
-    
+
     return null; // No alert needed
   }
 
@@ -780,8 +780,8 @@ class AnomalyDetectionService extends EventEmitter {
    */
   async createAlert(anomaly, alertLevel) {
     const alertId = this.generateAlertId();
-    const alertType = this.alertTypes.find(type => type.id === alertLevel);
-    
+    const alertType = this.alertTypes.find((type) => type.id === alertLevel);
+
     const alert = {
       id: alertId,
       anomalyId: anomaly.id,
@@ -828,7 +828,7 @@ class AnomalyDetectionService extends EventEmitter {
   generateAlertDescription(anomaly) {
     const detector = this.detectors.get(anomaly.detectorId);
     const topFeatures = Object.entries(anomaly.features || {})
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 3)
       .map(([feature, value]) => `${feature}: ${value.toFixed(3)}`)
       .join(', ');
@@ -857,10 +857,10 @@ class AnomalyDetectionService extends EventEmitter {
    */
   async sendAlertToChannel(alert, channel) {
     // Simulate channel-specific alert sending
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     console.log(`Alert ${alert.id} sent to ${channel}: ${alert.title}`);
-    
+
     // In a real implementation, this would integrate with:
     // - Email services (SendGrid, AWS SES)
     // - SMS services (Twilio, AWS SNS)
@@ -887,7 +887,7 @@ class AnomalyDetectionService extends EventEmitter {
    */
   async escalateAlert(alert, level, levelIndex) {
     console.log(`Escalating alert ${alert.id} to level ${levelIndex + 1}`);
-    
+
     // Send escalation notification
     const escalationAlert = {
       ...alert,
@@ -917,7 +917,7 @@ class AnomalyDetectionService extends EventEmitter {
       try {
         // Run batch analysis
         const batchAnomalies = await this.runBatchAnalysis(detectorId);
-        
+
         if (batchAnomalies.length > 0) {
           await this.processAnomalies(detectorId, batchAnomalies);
         }
@@ -930,15 +930,15 @@ class AnomalyDetectionService extends EventEmitter {
   /**
    * Run batch analysis
    */
-  async runBatchAnalysis(detectorId) {
+  runBatchAnalysis(detectorId) {
     const detector = this.detectors.get(detectorId);
     const data = detector.currentData.slice(-100); // Analyze last 100 points
-    
+
     // Look for patterns that might not be visible in real-time
     const patternAnomalies = this.detectPatternAnomalies(data, detector);
     const correlationAnomalies = this.detectCorrelationAnomalies(data, detector);
     const trendAnomalies = this.detectTrendAnomalies(data, detector);
-    
+
     return [...patternAnomalies, ...correlationAnomalies, ...trendAnomalies];
   }
 
@@ -950,7 +950,7 @@ class AnomalyDetectionService extends EventEmitter {
       try {
         const analysis = await this.analyzePattern(patternId);
         pattern.lastAnalysis = new Date();
-        
+
         if (analysis.anomalies.length > 0) {
           pattern.detections.push(...analysis.anomalies);
         }
@@ -965,12 +965,12 @@ class AnomalyDetectionService extends EventEmitter {
    */
   async analyzePattern(patternId) {
     const pattern = this.patterns.get(patternId);
-    
+
     // Simulate pattern analysis
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
     const anomalies = [];
-    
+
     // Generate pattern-specific anomalies
     if (Math.random() < 0.1) { // 10% chance of pattern anomaly
       anomalies.push({
@@ -983,7 +983,7 @@ class AnomalyDetectionService extends EventEmitter {
         confidence: 0.8 + Math.random() * 0.2
       });
     }
-    
+
     return { anomalies };
   }
 
@@ -994,10 +994,10 @@ class AnomalyDetectionService extends EventEmitter {
     for (const [modelId, model] of this.models) {
       // Check if model needs retraining based on performance degradation
       const falsePositiveRate = model.falsePositives / Math.max(1, model.detections);
-      
+
       if (falsePositiveRate > 0.2 || // High false positive rate
           Date.now() - model.lastTrained.getTime() > 7 * 24 * 60 * 60 * 1000) { // Week old
-        
+
         console.log(`Scheduling retraining for model ${modelId}`);
         await this.retrainModel(modelId);
       }
@@ -1012,17 +1012,17 @@ class AnomalyDetectionService extends EventEmitter {
     if (!model) return;
 
     model.status = 'retraining';
-    
+
     try {
       // Simulate model retraining
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
       // Update model performance
       model.performance.precision = Math.min(0.95, model.performance.precision + 0.02);
       model.performance.recall = Math.min(0.95, model.performance.recall + 0.02);
-      model.performance.f1_score = 2 * (model.performance.precision * model.performance.recall) / 
+      model.performance.f1_score = 2 * (model.performance.precision * model.performance.recall) /
                                    (model.performance.precision + model.performance.recall);
-      
+
       model.status = 'loaded';
       model.lastTrained = new Date();
       model.detections = 0;
@@ -1108,7 +1108,7 @@ class AnomalyDetectionService extends EventEmitter {
   injectAnomaly(dataPoint, detector) {
     // Randomly modify features to create anomalies
     const feature = detector.features[Math.floor(Math.random() * detector.features.length)];
-    
+
     switch (feature) {
       case 'amount':
         dataPoint[feature] = Math.random() * 10000 + 5000;
@@ -1126,15 +1126,15 @@ class AnomalyDetectionService extends EventEmitter {
 
   extractAnomalousFeatures(dataPoint, features) {
     const anomalousFeatures = {};
-    
-    features.forEach(feature => {
+
+    features.forEach((feature) => {
       if (dataPoint[feature] !== undefined) {
         // Calculate feature contribution to anomaly (simplified)
         const normalizedValue = Math.abs(dataPoint[feature] - 0.5) * 2;
         anomalousFeatures[feature] = normalizedValue;
       }
     });
-    
+
     return anomalousFeatures;
   }
 
@@ -1154,17 +1154,17 @@ class AnomalyDetectionService extends EventEmitter {
   detectPatternAnomalies(data, detector) {
     // Simplified pattern anomaly detection
     const anomalies = [];
-    
+
     if (data.length < 20) return anomalies;
-    
+
     // Check for sudden spikes
     const recent = data.slice(-10);
     const previous = data.slice(-20, -10);
-    
-    detector.features.forEach(feature => {
+
+    detector.features.forEach((feature) => {
       const recentAvg = recent.reduce((sum, d) => sum + (d[feature] || 0), 0) / recent.length;
       const previousAvg = previous.reduce((sum, d) => sum + (d[feature] || 0), 0) / previous.length;
-      
+
       if (Math.abs(recentAvg - previousAvg) > 0.5) {
         anomalies.push({
           id: this.generateAnomalyId(),
@@ -1177,25 +1177,25 @@ class AnomalyDetectionService extends EventEmitter {
         });
       }
     });
-    
+
     return anomalies;
   }
 
   detectCorrelationAnomalies(data, detector) {
     // Simplified correlation anomaly detection
     const anomalies = [];
-    
+
     if (data.length < 30 || detector.features.length < 2) return anomalies;
-    
+
     // Check correlation between first two features
     const feature1 = detector.features[0];
     const feature2 = detector.features[1];
-    
-    const values1 = data.map(d => d[feature1] || 0);
-    const values2 = data.map(d => d[feature2] || 0);
-    
+
+    const values1 = data.map((d) => d[feature1] || 0);
+    const values2 = data.map((d) => d[feature2] || 0);
+
     const correlation = this.calculateCorrelation(values1, values2);
-    
+
     // If correlation breaks significantly from expected
     if (Math.abs(correlation) < 0.3 && Math.random() < 0.1) {
       anomalies.push({
@@ -1207,20 +1207,20 @@ class AnomalyDetectionService extends EventEmitter {
         description: `Correlation break between ${feature1} and ${feature2}`
       });
     }
-    
+
     return anomalies;
   }
 
   detectTrendAnomalies(data, detector) {
     // Simplified trend anomaly detection
     const anomalies = [];
-    
+
     if (data.length < 50) return anomalies;
-    
-    detector.features.forEach(feature => {
-      const values = data.map(d => d[feature] || 0);
+
+    detector.features.forEach((feature) => {
+      const values = data.map((d) => d[feature] || 0);
       const trend = this.calculateTrend(values);
-      
+
       // Detect sudden trend changes
       if (Math.abs(trend) > 0.02) { // Significant trend
         anomalies.push({
@@ -1234,7 +1234,7 @@ class AnomalyDetectionService extends EventEmitter {
         });
       }
     });
-    
+
     return anomalies;
   }
 
@@ -1245,10 +1245,10 @@ class AnomalyDetectionService extends EventEmitter {
     const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
     const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
     const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
-    
+
     const numerator = n * sumXY - sumX * sumY;
     const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
-    
+
     return denominator === 0 ? 0 : numerator / denominator;
   }
 
@@ -1259,7 +1259,7 @@ class AnomalyDetectionService extends EventEmitter {
     const sumY = values.reduce((a, b) => a + b, 0);
     const sumXY = x.reduce((sum, xi, i) => sum + xi * values[i], 0);
     const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
-    
+
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
     return slope;
   }
@@ -1293,19 +1293,19 @@ class AnomalyDetectionService extends EventEmitter {
     let anomalies = Array.from(this.anomalies.values());
 
     if (filters.detectorId) {
-      anomalies = anomalies.filter(a => a.detectorId === filters.detectorId);
+      anomalies = anomalies.filter((a) => a.detectorId === filters.detectorId);
     }
 
     if (filters.severity) {
-      anomalies = anomalies.filter(a => a.severity === filters.severity);
+      anomalies = anomalies.filter((a) => a.severity === filters.severity);
     }
 
     if (filters.startDate) {
-      anomalies = anomalies.filter(a => a.timestamp >= new Date(filters.startDate));
+      anomalies = anomalies.filter((a) => a.timestamp >= new Date(filters.startDate));
     }
 
     if (filters.endDate) {
-      anomalies = anomalies.filter(a => a.timestamp <= new Date(filters.endDate));
+      anomalies = anomalies.filter((a) => a.timestamp <= new Date(filters.endDate));
     }
 
     return anomalies.sort((a, b) => b.timestamp - a.timestamp);
@@ -1315,17 +1315,17 @@ class AnomalyDetectionService extends EventEmitter {
     let alerts = Array.from(this.alerts.values());
 
     if (filters.status) {
-      alerts = alerts.filter(a => a.status === filters.status);
+      alerts = alerts.filter((a) => a.status === filters.status);
     }
 
     if (filters.severity) {
-      alerts = alerts.filter(a => a.severity === filters.severity);
+      alerts = alerts.filter((a) => a.severity === filters.severity);
     }
 
     return alerts.sort((a, b) => b.timestamp - a.timestamp);
   }
 
-  async acknowledgeAlert(alertId, userId) {
+  acknowledgeAlert(alertId, userId) {
     const alert = this.alerts.get(alertId);
     if (!alert) {
       throw new Error(`Alert ${alertId} not found`);
@@ -1344,7 +1344,7 @@ class AnomalyDetectionService extends EventEmitter {
     return alert;
   }
 
-  async resolveAlert(alertId, userId, resolution) {
+  resolveAlert(alertId, userId, resolution) {
     const alert = this.alerts.get(alertId);
     if (!alert) {
       throw new Error(`Alert ${alertId} not found`);
@@ -1366,9 +1366,9 @@ class AnomalyDetectionService extends EventEmitter {
   }
 
   getStats() {
-    const activeDetectors = Array.from(this.detectors.values()).filter(d => d.status === 'active').length;
+    const activeDetectors = Array.from(this.detectors.values()).filter((d) => d.status === 'active').length;
     const totalAnomalies = this.anomalies.size;
-    const activeAlerts = Array.from(this.alerts.values()).filter(a => a.status === 'active').length;
+    const activeAlerts = Array.from(this.alerts.values()).filter((a) => a.status === 'active').length;
     const modelAccuracy = Array.from(this.models.values())
       .reduce((sum, m) => sum + m.performance.f1_score, 0) / this.models.size;
 
@@ -1388,7 +1388,7 @@ class AnomalyDetectionService extends EventEmitter {
       .reduce((sum, m) => sum + m.detections, 0);
     const totalFalsePositives = Array.from(this.models.values())
       .reduce((sum, m) => sum + m.falsePositives, 0);
-    
+
     return totalDetections > 0 ? totalFalsePositives / totalDetections : 0;
   }
 }

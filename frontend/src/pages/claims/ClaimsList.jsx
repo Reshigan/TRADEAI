@@ -23,9 +23,6 @@ import {
 import {
   Add as AddIcon,
   Visibility as ViewIcon,
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
-  Link as LinkIcon,
   PlayArrow as AutoMatchIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';

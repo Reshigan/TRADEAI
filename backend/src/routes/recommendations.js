@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { body, query, validationResult } = require('express-validator');
+const { body, _query, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const revenueImpactService = require('../services/revenueImpactService');
 const Customer = require('../models/Customer');
-const Product = require('../models/Product');
-const Promotion = require('../models/Promotion');
+// const Product = require('../models/Product');
+const _Promotion = require('../models/_Promotion');
 const logger = require('../utils/logger');
 
 router.use(authenticate);
@@ -54,12 +54,12 @@ router.post('/next-best-promotion', [
       targetCustomers = [customer];
     } else {
       const segmentation = await revenueImpactService.segmentCustomers(tenantId, 'rfm');
-      
-      const highValueSegments = segmentation.segments.filter(seg =>
+
+      const highValueSegments = segmentation.segments.filter((seg) =>
         ['Champions', 'Loyal', 'Potential Loyalists', 'At Risk'].includes(seg.segment)
       );
 
-      targetCustomers = highValueSegments.flatMap(seg => seg.customers).slice(0, 10);
+      targetCustomers = highValueSegments.flatMap((seg) => seg.customers).slice(0, 10);
     }
 
     const recommendations = [];
@@ -73,7 +73,7 @@ router.post('/next-best-promotion', [
 
       for (const productRec of productRecs.recommendations.slice(0, 2)) {
         const discountLevels = [10, 15, 20];
-        
+
         const impacts = await Promise.all(
           discountLevels.map(async (discount) => {
             try {
@@ -97,7 +97,7 @@ router.post('/next-best-promotion', [
           })
         );
 
-        const validImpacts = impacts.filter(i => i !== null);
+        const validImpacts = impacts.filter((i) => i !== null);
         if (validImpacts.length === 0) continue;
 
         const bestDiscount = validImpacts.reduce((best, current) =>

@@ -120,4 +120,5 @@ class DeductionService {
   }
 }
 
-export default new DeductionService();
+const deductionService = new DeductionService();
+export default deductionService;

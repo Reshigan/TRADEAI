@@ -12,19 +12,19 @@ class MasterDataManagementService {
    * Product Hierarchy Management
    * Manage multi-level product hierarchies
    */
-  async manageProductHierarchy(action, data) {
+  manageProductHierarchy(action, data) {
     try {
       switch (action) {
         case 'create':
-          return await this.createProductHierarchy(data);
+          return this.createProductHierarchy(data);
         case 'update':
-          return await this.updateProductHierarchy(data);
+          return this.updateProductHierarchy(data);
         case 'getTree':
-          return await this.getProductHierarchyTree(data.companyId);
+          return this.getProductHierarchyTree(data.companyId);
         case 'addNode':
-          return await this.addHierarchyNode(data);
+          return this.addHierarchyNode(data);
         case 'moveNode':
-          return await this.moveHierarchyNode(data);
+          return this.moveHierarchyNode(data);
         default:
           throw new AppError('Invalid hierarchy action', 400);
       }
@@ -38,17 +38,17 @@ class MasterDataManagementService {
    * Customer Hierarchy Management
    * Manage customer relationships and hierarchies
    */
-  async manageCustomerHierarchy(action, data) {
+  manageCustomerHierarchy(action, data) {
     try {
       switch (action) {
         case 'create':
-          return await this.createCustomerHierarchy(data);
+          return this.createCustomerHierarchy(data);
         case 'update':
-          return await this.updateCustomerHierarchy(data);
+          return this.updateCustomerHierarchy(data);
         case 'getTree':
-          return await this.getCustomerHierarchyTree(data.companyId);
+          return this.getCustomerHierarchyTree(data.companyId);
         case 'addNode':
-          return await this.addCustomerNode(data);
+          return this.addCustomerNode(data);
         default:
           throw new AppError('Invalid hierarchy action', 400);
       }
@@ -101,7 +101,7 @@ class MasterDataManagementService {
       }
 
       // Calculate quality score
-      report.qualityScore = ((report.totalRecords - report.issues.length) / 
+      report.qualityScore = ((report.totalRecords - report.issues.length) /
                             report.totalRecords) * 100;
 
       // Generate recommendations
@@ -118,7 +118,7 @@ class MasterDataManagementService {
    * Data Versioning
    * Track and manage data changes over time
    */
-  async manageDataVersions(entityType, entityId, action) {
+  async manageDataVersions(entityType, entityId, action, data = {}) {
     try {
       const versions = {
         entityType,
@@ -139,9 +139,9 @@ class MasterDataManagementService {
         case 'list':
           return versions;
         case 'restore':
-          return await this.restoreVersion(entityType, entityId, data.versionId);
+          return this.restoreVersion(entityType, entityId, data.versionId);
         case 'compare':
-          return await this.compareVersions(entityType, data.version1, data.version2);
+          return this.compareVersions(entityType, data.version1, data.version2);
         default:
           return versions;
       }
@@ -169,7 +169,7 @@ class MasterDataManagementService {
 
       for (const rule of rules) {
         const result = await this.executeRule(rule, data);
-        
+
         if (!result.passed) {
           validation.isValid = false;
           validation.errors.push({
@@ -214,7 +214,7 @@ class MasterDataManagementService {
           enrichment.original
         );
 
-        Object.keys(additionalData).forEach(key => {
+        Object.keys(additionalData).forEach((key) => {
           if (!enrichment.enriched[key]) {
             enrichment.enriched[key] = additionalData[key];
             enrichment.fieldsAdded.push(key);
@@ -293,9 +293,9 @@ class MasterDataManagementService {
 
   // Helper methods
 
-  async createProductHierarchy(data) {
+  createProductHierarchy(data) {
     const { companyId, name, levels } = data;
-    
+
     const hierarchy = {
       companyId,
       name,
@@ -313,14 +313,14 @@ class MasterDataManagementService {
     return hierarchy;
   }
 
-  async updateProductHierarchy(data) {
+  updateProductHierarchy(data) {
     logger.info('Product hierarchy updated', { hierarchyId: data.hierarchyId });
     return { ...data, updatedAt: new Date() };
   }
 
   async getProductHierarchyTree(companyId) {
     const products = await Product.find({ companyId }).lean();
-    
+
     const tree = {
       companyId,
       levels: [
@@ -343,29 +343,29 @@ class MasterDataManagementService {
   }
 
   buildHierarchyLevel(products, field) {
-    const uniqueValues = [...new Set(products.map(p => p[field]).filter(Boolean))];
-    
-    return uniqueValues.map(value => ({
+    const uniqueValues = [...new Set(products.map((p) => p[field]).filter(Boolean))];
+
+    return uniqueValues.map((value) => ({
       id: value,
       name: value,
-      count: products.filter(p => p[field] === value).length,
+      count: products.filter((p) => p[field] === value).length,
       children: []
     }));
   }
 
-  async addHierarchyNode(data) {
+  addHierarchyNode(data) {
     logger.info('Hierarchy node added', { hierarchyId: data.hierarchyId });
     return { ...data, nodeId: Date.now().toString() };
   }
 
-  async moveHierarchyNode(data) {
+  moveHierarchyNode(data) {
     logger.info('Hierarchy node moved', { nodeId: data.nodeId });
     return { success: true };
   }
 
-  async createCustomerHierarchy(data) {
+  createCustomerHierarchy(data) {
     const { companyId, name, levels } = data;
-    
+
     const hierarchy = {
       companyId,
       name,
@@ -381,13 +381,13 @@ class MasterDataManagementService {
     return hierarchy;
   }
 
-  async updateCustomerHierarchy(data) {
+  updateCustomerHierarchy(data) {
     return { ...data, updatedAt: new Date() };
   }
 
   async getCustomerHierarchyTree(companyId) {
     const customers = await Customer.find({ companyId }).lean();
-    
+
     const tree = {
       companyId,
       levels: [
@@ -405,11 +405,11 @@ class MasterDataManagementService {
     return tree;
   }
 
-  async addCustomerNode(data) {
+  addCustomerNode(data) {
     return { ...data, nodeId: Date.now().toString() };
   }
 
-  async validateDataQuality(entityType, record) {
+  validateDataQuality(entityType, record) {
     const validation = {
       isValid: true,
       issues: []
@@ -452,9 +452,9 @@ class MasterDataManagementService {
 
   generateQualityRecommendations(issues) {
     const recommendations = [];
-    
-    const missingFields = issues.flatMap(i => 
-      i.issues.filter(iss => iss.type === 'missing_required')
+
+    const missingFields = issues.flatMap((i) =>
+      i.issues.filter((iss) => iss.type === 'missing_required')
     );
 
     if (missingFields.length > 0) {
@@ -469,7 +469,7 @@ class MasterDataManagementService {
     return recommendations;
   }
 
-  async getVersionHistory(entityType, entityId) {
+  getVersionHistory(_entityType, _entityId) {
     // In production, retrieve from version history collection
     return [
       {
@@ -487,16 +487,16 @@ class MasterDataManagementService {
     ];
   }
 
-  async getCurrentVersion(entityType, entityId) {
-    return await this.getEntity(entityType, entityId);
+  getCurrentVersion(entityType, entityId) {
+    return this.getEntity(entityType, entityId);
   }
 
-  async restoreVersion(entityType, entityId, versionId) {
+  restoreVersion(entityType, entityId, versionId) {
     logger.info('Version restored', { entityType, entityId, versionId });
     return { success: true };
   }
 
-  async compareVersions(entityType, version1, version2) {
+  compareVersions(_entityType, _version1, _version2) {
     return {
       differences: [
         { field: 'price', version1: 10.99, version2: 12.99 },
@@ -505,7 +505,7 @@ class MasterDataManagementService {
     };
   }
 
-  async getValidationRules(entityType) {
+  getValidationRules(_entityType) {
     // In production, retrieve from rules configuration
     return [
       {
@@ -524,26 +524,27 @@ class MasterDataManagementService {
     ];
   }
 
-  async executeRule(rule, data) {
+  executeRule(rule, data) {
     switch (rule.type) {
       case 'required':
         return {
           passed: !!data[rule.field],
           message: data[rule.field] ? '' : `${rule.field} is required`
         };
-      case 'range':
+      case 'range': {
         const value = data[rule.field];
         const passed = value >= rule.min && (!rule.max || value <= rule.max);
         return {
           passed,
           message: passed ? '' : `${rule.field} must be between ${rule.min} and ${rule.max}`
         };
+      }
       default:
         return { passed: true, message: '' };
     }
   }
 
-  async getEntity(entityType, entityId) {
+  getEntity(entityType, entityId) {
     let Model;
     switch (entityType) {
       case 'product':
@@ -556,10 +557,10 @@ class MasterDataManagementService {
         throw new AppError('Invalid entity type', 400);
     }
 
-    return await Model.findById(entityId).lean();
+    return Model.findById(entityId).lean();
   }
 
-  async fetchEnrichmentData(source, originalData) {
+  fetchEnrichmentData(_source, _originalData) {
     // In production, fetch from external sources
     return {
       enrichedField1: 'enriched value',
@@ -583,7 +584,7 @@ class MasterDataManagementService {
     await Model.findByIdAndUpdate(entityId, data);
   }
 
-  async findDuplicates(records, entityType) {
+  findDuplicates(records, entityType) {
     const duplicateGroups = [];
     const processed = new Set();
 
@@ -627,14 +628,14 @@ class MasterDataManagementService {
     let matches = 0;
     let totalFields = 0;
 
-    const compareFields = entityType === 'product' ? 
-      ['name', 'sku', 'category'] : 
+    const compareFields = entityType === 'product' ?
+      ['name', 'sku', 'category'] :
       ['name', 'email', 'phone'];
 
     for (const field of compareFields) {
       totalFields++;
-      if (record1[field] && record2[field] && 
-          record1[field].toString().toLowerCase() === 
+      if (record1[field] && record2[field] &&
+          record1[field].toString().toLowerCase() ===
           record2[field].toString().toLowerCase()) {
         matches++;
         matchFields.push(field);
@@ -647,14 +648,14 @@ class MasterDataManagementService {
     };
   }
 
-  async mergeRecords(entityType, records) {
+  mergeRecords(entityType, records) {
     // In production, implement smart merge logic
     const master = records[0];
     const merged = { ...master };
 
     // Merge additional data from other records
     for (let i = 1; i < records.length; i++) {
-      Object.keys(records[i]).forEach(key => {
+      Object.keys(records[i]).forEach((key) => {
         if (!merged[key] && records[i][key]) {
           merged[key] = records[i][key];
         }

@@ -31,7 +31,7 @@ function initRedis() {
 
   try {
     const config = {
-      host: host,
+      host,
       port: parseInt(process.env.REDIS_PORT) || 6379,
       password: process.env.REDIS_PASSWORD || undefined,
       db: parseInt(process.env.REDIS_DB) || 0,
@@ -46,7 +46,7 @@ function initRedis() {
       // Connection timeouts
       connectTimeout: 10000,
       // Key prefix for multi-tenant isolation
-      keyPrefix: process.env.REDIS_KEY_PREFIX || 'tradeai:',
+      keyPrefix: process.env.REDIS_KEY_PREFIX || 'tradeai:'
     };
 
     redisClient = new Redis(config);
@@ -131,10 +131,10 @@ function cacheMiddleware(options = {}) {
       const originalJson = res.json.bind(res);
 
       // Override json method to cache the response
-      res.json = function(data) {
+      res.json = function (data) {
         // Cache the response
         redisClient.setex(cacheKey, ttl, JSON.stringify(data))
-          .catch(err => logger.error('Cache set error:', err));
+          .catch((err) => logger.error('Cache set error:', err));
 
         logger.debug(`Cache set: ${cacheKey} (TTL: ${ttl}s)`);
 
@@ -273,7 +273,7 @@ async function getStats() {
       port: redisClient.options.port,
       db: redisClient.options.db,
       keys: dbsize,
-      info: info
+      info
     };
   } catch (error) {
     logger.error('Redis stats error:', error);

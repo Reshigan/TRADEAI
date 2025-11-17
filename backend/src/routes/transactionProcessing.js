@@ -4,9 +4,9 @@ const router = express.Router();
 const PurchaseOrder = require('../models/PurchaseOrder');
 const Invoice = require('../models/Invoice');
 const Payment = require('../models/Payment');
-const Settlement = require('../models/Settlement');
-const Dispute = require('../models/Dispute');
-const Accrual = require('../models/Accrual');
+const _Settlement = require('../models/_Settlement');
+const _Dispute = require('../models/_Dispute');
+const _Accrual = require('../models/_Accrual');
 
 const threeWayMatchingService = require('../services/threeWayMatchingService');
 const accrualManagementService = require('../services/accrualManagementService');
@@ -95,10 +95,10 @@ router.post('/invoices/:id/approve', authenticate, async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id);
     if (!invoice) return res.status(404).json({ success: false, error: 'Invoice not found' });
-    
+
     await invoice.approve(req.user._id);
     await auditTrailService.logApproval('Invoice', invoice, req.user._id, req.user, true, req);
-    
+
     res.json({ success: true, data: invoice });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -142,12 +142,12 @@ router.post('/matching/invoice-to-po', authenticate, async (req, res) => {
   try {
     const { invoiceId, purchaseOrderId } = req.body;
     const result = await threeWayMatchingService.matchInvoiceToPO(invoiceId, purchaseOrderId);
-    
+
     if (result.matched) {
       const invoice = await Invoice.findById(invoiceId);
       await auditTrailService.logMatching('Invoice', invoice, 'PurchaseOrder', purchaseOrderId, result.confidence, req.user._id, req.user, req);
     }
-    
+
     res.json({ success: true, data: result });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });

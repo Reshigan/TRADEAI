@@ -20,29 +20,20 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Divider,
   Alert
 } from '@mui/material';
 import {
   Campaign as PromotionIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  Assessment as ReportIcon,
   GetApp as DownloadIcon,
   MoreVert as MoreIcon,
-  DateRange as DateRangeIcon,
   FilterList as FilterIcon,
   AttachMoney as ROIIcon,
-  Visibility as ReachIcon,
   ShoppingCart as ConversionIcon,
-  Speed as EffectivenessIcon,
   Timeline as UpliftIcon
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart,
@@ -151,7 +142,7 @@ const PromotionReports = () => {
 
   // Calculate aggregate metrics
   const totalSpend = promotions.reduce((sum, promo) => sum + (promo.totalSpend || 0), 0);
-  const totalRevenue = promotions.reduce((sum, promo) => sum + (promo.totalRevenue || 0), 0);
+  promotions.reduce((sum, promo) => sum + (promo.totalRevenue || 0), 0);
   const averageROI = promotions.length > 0 
     ? promotions.reduce((sum, promo) => sum + (promo.roi || 0), 0) / promotions.length 
     : 0;

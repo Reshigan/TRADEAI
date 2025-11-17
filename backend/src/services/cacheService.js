@@ -1,5 +1,5 @@
 const redis = require('redis');
-const { promisify } = require('util');
+const { _promisify } = require('util');
 const config = require('../config');
 const logger = require('../utils/logger');
 
@@ -8,7 +8,7 @@ class CacheService {
     this.client = null;
     this.isConnected = false;
   }
-  
+
   async initialize() {
     try {
       const enabled = process.env.REDIS_ENABLED !== 'false';
@@ -38,27 +38,27 @@ class CacheService {
         password: config.redis.password,
         database: config.redis.db || 0
       });
-      
+
       // Event handlers
       this.client.on('connect', () => {
         logger.info('Redis connecting...');
       });
-      
+
       this.client.on('ready', () => {
         this.isConnected = true;
         logger.info('Redis connected successfully');
       });
-      
+
       this.client.on('error', (err) => {
         this.isConnected = false;
         logger.error('Redis error:', err);
       });
-      
+
       this.client.on('end', () => {
         this.isConnected = false;
         logger.info('Redis connection closed');
       });
-      
+
       // Connect to Redis with timeout to avoid blocking server startup
       await Promise.race([
         this.client.connect(),
@@ -67,23 +67,23 @@ class CacheService {
           resolve();
         }, 3000))
       ]);
-      
+
     } catch (error) {
       logger.error('Failed to initialize Redis:', error);
       this.isConnected = false;
     }
   }
-  
+
   // Generate cache key with prefix
   generateKey(type, id, ...args) {
     const parts = [config.redis.keyPrefix, type, id, ...args].filter(Boolean);
     return parts.join(':');
   }
-  
+
   // Get cached data
   async get(key) {
     if (!this.isConnected) return null;
-    
+
     try {
       const data = await this.client.get(key);
       return data ? JSON.parse(data) : null;
@@ -92,15 +92,15 @@ class CacheService {
       return null;
     }
   }
-  
+
   // Set cache data
   async set(key, value, ttl = null) {
     if (!this.isConnected) return false;
-    
+
     try {
       const serialized = JSON.stringify(value);
       const expiry = ttl || config.redis.ttl.default;
-      
+
       await this.client.setEx(key, expiry, serialized);
       return true;
     } catch (error) {
@@ -108,11 +108,11 @@ class CacheService {
       return false;
     }
   }
-  
+
   // Delete cache entry
   async delete(key) {
     if (!this.isConnected) return false;
-    
+
     try {
       await this.client.del(key);
       return true;
@@ -121,11 +121,11 @@ class CacheService {
       return false;
     }
   }
-  
+
   // Delete multiple keys by pattern
   async deletePattern(pattern) {
     if (!this.isConnected) return false;
-    
+
     try {
       const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
@@ -137,11 +137,11 @@ class CacheService {
       return false;
     }
   }
-  
+
   // Check if key exists
   async exists(key) {
     if (!this.isConnected) return false;
-    
+
     try {
       const exists = await this.client.exists(key);
       return exists === 1;
@@ -150,19 +150,19 @@ class CacheService {
       return false;
     }
   }
-  
+
   // Get remaining TTL
-  async getTTL(key) {
+  getTTL(key) {
     if (!this.isConnected) return -1;
-    
+
     try {
-      return await this.client.ttl(key);
+      return this.client.ttl(key);
     } catch (error) {
       logger.error('Cache TTL error:', error);
       return -1;
     }
   }
-  
+
   // Cache wrapper for functions
   async wrap(key, fn, ttl = null) {
     // Try to get from cache
@@ -170,13 +170,13 @@ class CacheService {
     if (cached !== null) {
       return cached;
     }
-    
+
     // Execute function and cache result
     const result = await fn();
     await this.set(key, result, ttl);
     return result;
   }
-  
+
   // Invalidate related caches
   async invalidateRelated(type, id) {
     const patterns = {
@@ -202,86 +202,86 @@ class CacheService {
         `${config.redis.keyPrefix}product:*:vendor:${id}`
       ]
     };
-    
+
     const patternsToInvalidate = patterns[type] || [];
-    
+
     for (const pattern of patternsToInvalidate) {
       await this.deletePattern(pattern);
     }
   }
-  
+
   // Specific cache methods
-  async cacheUser(userId, userData) {
+  cacheUser(userId, userData) {
     const key = this.generateKey('user', userId);
-    return await this.set(key, userData, config.cache.ttl.user);
+    return this.set(key, userData, config.cache.ttl.user);
   }
-  
-  async getCachedUser(userId) {
+
+  getCachedUser(userId) {
     const key = this.generateKey('user', userId);
-    return await this.get(key);
+    return this.get(key);
   }
-  
-  async cacheDashboard(type, userId, data) {
+
+  cacheDashboard(type, userId, data) {
     const key = this.generateKey('dashboard', type, 'user', userId);
-    return await this.set(key, data, config.cache.ttl.dashboard);
+    return this.set(key, data, config.cache.ttl.dashboard);
   }
-  
-  async getCachedDashboard(type, userId) {
+
+  getCachedDashboard(type, userId) {
     const key = this.generateKey('dashboard', type, 'user', userId);
-    return await this.get(key);
+    return this.get(key);
   }
-  
-  async cacheReport(reportId, data) {
+
+  cacheReport(reportId, data) {
     const key = this.generateKey('report', reportId);
-    return await this.set(key, data, config.cache.ttl.report);
+    return this.set(key, data, config.cache.ttl.report);
   }
-  
-  async getCachedReport(reportId) {
+
+  getCachedReport(reportId) {
     const key = this.generateKey('report', reportId);
-    return await this.get(key);
+    return this.get(key);
   }
-  
-  async cacheActivityGrid(gridId, data) {
+
+  cacheActivityGrid(gridId, data) {
     const key = this.generateKey('grid', gridId);
-    return await this.set(key, data, config.cache.ttl.grid);
+    return this.set(key, data, config.cache.ttl.grid);
   }
-  
-  async getCachedActivityGrid(gridId) {
+
+  getCachedActivityGrid(gridId) {
     const key = this.generateKey('grid', gridId);
-    return await this.get(key);
+    return this.get(key);
   }
-  
+
   // Session management
-  async setSession(sessionId, userData, ttl = 86400) {
+  setSession(sessionId, userData, ttl = 86400) {
     const key = this.generateKey('session', sessionId);
-    return await this.set(key, userData, ttl);
+    return this.set(key, userData, ttl);
   }
-  
-  async getSession(sessionId) {
+
+  getSession(sessionId) {
     const key = this.generateKey('session', sessionId);
-    return await this.get(key);
+    return this.get(key);
   }
-  
-  async deleteSession(sessionId) {
+
+  deleteSession(sessionId) {
     const key = this.generateKey('session', sessionId);
-    return await this.delete(key);
+    return this.delete(key);
   }
-  
+
   // Rate limiting
   async incrementRateLimit(identifier, window = 60) {
     if (!this.isConnected) return { count: 0, remaining: window };
-    
+
     const key = this.generateKey('ratelimit', identifier);
-    
+
     try {
       const count = await this.incrAsync(key);
-      
+
       if (count === 1) {
         await this.expireAsync(key, window);
       }
-      
+
       const ttl = await this.ttlAsync(key);
-      
+
       return {
         count,
         remaining: ttl > 0 ? ttl : window
@@ -291,7 +291,7 @@ class CacheService {
       return { count: 0, remaining: window };
     }
   }
-  
+
   // Close connection
   close() {
     if (this.client) {
@@ -308,11 +308,11 @@ class MockCacheService {
     this.isConnected = true;
   }
 
-  async get(key) {
+  get(key) {
     return this.cache.get(key) || null;
   }
 
-  async set(key, value, ttl) {
+  set(key, value, ttl) {
     this.cache.set(key, value);
     if (ttl) {
       setTimeout(() => this.cache.delete(key), ttl * 1000);
@@ -320,27 +320,27 @@ class MockCacheService {
     return 'OK';
   }
 
-  async del(key) {
+  del(key) {
     return this.cache.delete(key) ? 1 : 0;
   }
 
-  async exists(key) {
+  exists(key) {
     return this.cache.has(key) ? 1 : 0;
   }
 
-  async keys(pattern) {
+  keys(pattern) {
     const allKeys = Array.from(this.cache.keys());
     if (pattern === '*') return allKeys;
     const regex = new RegExp(pattern.replace('*', '.*'));
-    return allKeys.filter(key => regex.test(key));
+    return allKeys.filter((key) => regex.test(key));
   }
 
-  async flushAll() {
+  flushAll() {
     this.cache.clear();
     return 'OK';
   }
 
-  async cacheUser(userId, userData) {
+  cacheUser(userId, userData) {
     return this.set(`user:${userId}`, JSON.stringify(userData), 3600);
   }
 
@@ -349,11 +349,11 @@ class MockCacheService {
     return data ? JSON.parse(data) : null;
   }
 
-  async invalidateUser(userId) {
+  invalidateUser(userId) {
     return this.del(`user:${userId}`);
   }
 
-  async cacheSession(sessionId, sessionData) {
+  cacheSession(sessionId, sessionData) {
     return this.set(`session:${sessionId}`, JSON.stringify(sessionData), 86400);
   }
 
@@ -362,11 +362,11 @@ class MockCacheService {
     return data ? JSON.parse(data) : null;
   }
 
-  async invalidateSession(sessionId) {
+  invalidateSession(sessionId) {
     return this.del(`session:${sessionId}`);
   }
 
-  async cacheData(key, data, ttl = 3600) {
+  cacheData(key, data, ttl = 3600) {
     return this.set(key, JSON.stringify(data), ttl);
   }
 
@@ -383,7 +383,7 @@ class MockCacheService {
     return keys.length;
   }
 
-  async initialize() {
+  initialize() {
     logger.info('Mock cache service initialized');
   }
 }

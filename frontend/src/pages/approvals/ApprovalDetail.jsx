@@ -15,7 +15,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Alert,
   Dialog,
   DialogTitle,
@@ -27,9 +26,7 @@ import {
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
   ArrowBack as BackIcon,
-  AccessTime as ClockIcon,
-  Person as PersonIcon,
-  AttachMoney as MoneyIcon
+  AccessTime as ClockIcon
 } from '@mui/icons-material';
 import approvalService from '../../services/approval/approvalService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';

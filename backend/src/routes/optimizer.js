@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
-const revenueImpactService = require('../services/revenueImpactService');
-const Budget = require('../models/Budget');
+const _revenueImpactService = require('../services/_revenueImpactService');
+const _Budget = require('../models/_Budget');
 const Promotion = require('../models/Promotion');
 const logger = require('../utils/logger');
 
@@ -37,7 +37,7 @@ router.post('/budget/reallocate', [
   handleValidationErrors
 ], async (req, res) => {
   try {
-    const { budgetId, minROI = 100 } = req.body;
+    const { _budgetId, minROI = 100 } = req.body;
     const tenantId = req.user.tenantId;
 
     const promotions = await Promotion.find({
@@ -90,7 +90,7 @@ router.post('/budget/reallocate', [
 
       if (highPerforming.length > 0) {
         const high = highPerforming[i % highPerforming.length];
-        
+
         recommendations.push({
           type: 'reallocate',
           from: {
@@ -140,10 +140,10 @@ router.post('/budget/reallocate', [
 
     const summary = {
       totalReallocation,
-      expectedRevenueGain: recommendations.reduce((sum, rec) => 
+      expectedRevenueGain: recommendations.reduce((sum, rec) =>
         sum + (rec.expectedImpact.revenueGain || 0), 0
       ),
-      expectedSavings: recommendations.reduce((sum, rec) => 
+      expectedSavings: recommendations.reduce((sum, rec) =>
         sum + (rec.expectedImpact.savingsRealized || 0), 0
       ),
       underperformingCount: underperforming.length,

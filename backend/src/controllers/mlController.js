@@ -40,7 +40,7 @@ class MLController {
   async forecastDemand(req, res) {
     try {
       const { productId, timeHorizon = 30, historicalData } = req.body;
-      const tenantId = req.tenant?.id;
+      const _tenantId = req.tenant?.id;
 
       if (!productId) {
         return res.status(400).json({
@@ -172,7 +172,7 @@ class MLController {
   // Batch Predictions
   async batchPredict(req, res) {
     try {
-      const { predictionType, dataArray, options = {} } = req.body;
+      const { predictionType, dataArray, _options = {} } = req.body;
       const tenantId = req.tenant?.id;
 
       if (!predictionType || !dataArray || !Array.isArray(dataArray)) {
@@ -183,7 +183,7 @@ class MLController {
       }
 
       // Add tenant ID to each data item
-      const enrichedDataArray = dataArray.map(data => ({
+      const enrichedDataArray = dataArray.map((data) => ({
         ...data,
         tenantId
       }));
@@ -193,8 +193,8 @@ class MLController {
         enrichedDataArray
       );
 
-      const successCount = batchResults.filter(r => r.success).length;
-      const errorCount = batchResults.filter(r => !r.success).length;
+      const successCount = batchResults.filter((r) => r.success).length;
+      const errorCount = batchResults.filter((r) => !r.success).length;
 
       res.json({
         success: true,
@@ -224,7 +224,7 @@ class MLController {
     try {
       const { userId } = req.params;
       const { limit = 10, category, priceRange, includeReasons = true, diversityFactor = 0.3 } = req.query;
-      const tenantId = req.tenant?.id;
+      const _tenantId = req.tenant?.id;
 
       if (!userId) {
         return res.status(400).json({
@@ -297,7 +297,7 @@ class MLController {
     try {
       const { userId } = req.params;
       const { limit = 5, budget, channel, timeframe = 30 } = req.query;
-      const tenantId = req.tenant?.id;
+      const _tenantId = req.tenant?.id;
 
       if (!userId) {
         return res.status(400).json({
@@ -335,12 +335,12 @@ class MLController {
   async getHybridRecommendations(req, res) {
     try {
       const { userId } = req.params;
-      const { 
-        limit = 10, 
+      const {
+        limit = 10,
         weights = { collaborative: 0.4, content: 0.3, popularity: 0.2, personal: 0.1 },
-        diversityFactor = 0.3 
+        diversityFactor = 0.3
       } = req.query;
-      const tenantId = req.tenant?.id;
+      const _tenantId = req.tenant?.id;
 
       if (!userId) {
         return res.status(400).json({
@@ -536,7 +536,7 @@ class MLController {
   }
 
   // Model Training Status
-  async getTrainingStatus(req, res) {
+  getTrainingStatus(req, res) {
     try {
       // Mock training status - in real implementation, track actual training jobs
       const trainingStatus = {
@@ -585,10 +585,10 @@ class MLController {
   }
 
   // Retrain Models
-  async retrainModels(req, res) {
+  retrainModels(req, res) {
     try {
-      const { models = [], force = false } = req.body;
-      const tenantId = req.tenant?.id;
+      const { models = [], _force = false } = req.body;
+      const _tenantId = req.tenant?.id;
 
       // Mock retraining process
       const retrainingJobs = [];
@@ -627,7 +627,7 @@ class MLController {
   }
 
   // A/B Test Recommendations
-  async createABTest(req, res) {
+  createABTest(req, res) {
     try {
       const { testName, variants, trafficSplit, duration, metrics } = req.body;
       const tenantId = req.tenant?.id;
@@ -671,10 +671,10 @@ class MLController {
   }
 
   // Get A/B Test Results
-  async getABTestResults(req, res) {
+  getABTestResults(req, res) {
     try {
       const { testId } = req.params;
-      const tenantId = req.tenant?.id;
+      const _tenantId = req.tenant?.id;
 
       if (!testId) {
         return res.status(400).json({

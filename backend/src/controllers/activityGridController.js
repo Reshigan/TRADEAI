@@ -1,14 +1,14 @@
 const ActivityGrid = require('../models/ActivityGrid');
 const Promotion = require('../models/Promotion');
 const TradeSpend = require('../models/TradeSpend');
-const Campaign = require('../models/Campaign');
+const _Campaign = require('../models/_Campaign');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
 // ✅ PRODUCTION: All mock data removed - using real MongoDB only
 
 // Get all activity grids (list view)
-exports.getActivityGrids = asyncHandler(async (req, res, next) => {
+exports.getActivityGrids = asyncHandler(async (req, res, _next) => {
   const {
     page = 1,
     limit = 10,
@@ -25,11 +25,11 @@ exports.getActivityGrids = asyncHandler(async (req, res, next) => {
   } = req.query;
 
   // Build query with tenant isolation
-  const query = { 
+  const query = {
     tenantId: req.user.tenantId,
-    company: req.user.company 
+    company: req.user.company
   };
-  
+
   if (search) {
     query.$or = [
       { title: { $regex: search, $options: 'i' } },
@@ -37,33 +37,33 @@ exports.getActivityGrids = asyncHandler(async (req, res, next) => {
       { activityType: { $regex: search, $options: 'i' } }
     ];
   }
-  
+
   if (status) {
     query.status = status;
   }
-  
+
   if (activityType) {
     query.activityType = activityType;
   }
-  
+
   if (customer) {
     query.customer = customer;
   }
-  
+
   if (product) {
     query.product = product;
   }
-  
+
   if (vendor) {
     query.vendor = vendor;
   }
-  
+
   if (startDate || endDate) {
     query.date = {};
     if (startDate) query.date.$gte = new Date(startDate);
     if (endDate) query.date.$lte = new Date(endDate);
   }
-  
+
   // Apply additional filters
   Object.assign(query, filters);
 
@@ -90,7 +90,7 @@ exports.getActivityGrids = asyncHandler(async (req, res, next) => {
 });
 
 // Get activity grid (calendar/heatmap view)
-exports.getActivityGrid = asyncHandler(async (req, res, next) => {
+exports.getActivityGrid = asyncHandler(async (req, res, _next) => {
   const {
     startDate,
     endDate,
@@ -102,14 +102,14 @@ exports.getActivityGrid = asyncHandler(async (req, res, next) => {
     page = 1,
     limit = 100
   } = req.query;
-  
+
   // ✅ PRODUCTION: Always use real MongoDB - no mock data fallback
   // Build query with tenant isolation
-  const query = { 
+  const query = {
     tenantId: req.user.tenantId,
     company: req.user.company
   };
-  
+
   // Filter by date range
   if (startDate && endDate) {
     query.date = {
@@ -117,28 +117,28 @@ exports.getActivityGrid = asyncHandler(async (req, res, next) => {
       $lte: new Date(endDate)
     };
   }
-  
+
   if (customers) {
     query.customer = { $in: Array.isArray(customers) ? customers : [customers] };
   }
-  
+
   if (products) {
     query.products = { $in: Array.isArray(products) ? products : [products] };
   }
-  
+
   if (vendors) {
     query.vendor = { $in: Array.isArray(vendors) ? vendors : [vendors] };
   }
-  
+
   if (activityTypes) {
     query.activityType = { $in: Array.isArray(activityTypes) ? activityTypes : [activityTypes] };
   }
-  
+
   // Apply user-based filtering
   if (req.user.role === 'kam' || req.user.role === 'sales_rep') {
     query.customer = { $in: req.user.assignedCustomers };
   }
-  
+
   const activities = await ActivityGrid.find(query)
     .populate('customer', 'name code')
     .populate('products', 'name sku')
@@ -149,12 +149,12 @@ exports.getActivityGrid = asyncHandler(async (req, res, next) => {
     .sort('date')
     .limit(limit * 1)
     .skip((page - 1) * limit);
-  
+
   const count = await ActivityGrid.countDocuments(query);
-  
+
   // Format for grid view
   const gridData = formatGridData(activities, view);
-  
+
   res.json({
     success: true,
     data: {
@@ -170,12 +170,12 @@ exports.getActivityGrid = asyncHandler(async (req, res, next) => {
 });
 
 // Create activity
-exports.createActivity = asyncHandler(async (req, res, next) => {
+exports.createActivity = asyncHandler(async (req, res, _next) => {
   const activityData = {
     ...req.body,
     createdBy: req.user._id
   };
-  
+
   // Check for conflicts
   const conflicts = await ActivityGrid.checkConflicts(
     activityData.customer,
@@ -183,25 +183,25 @@ exports.createActivity = asyncHandler(async (req, res, next) => {
     activityData.date,
     activityData.date
   );
-  
+
   if (conflicts.length > 0) {
-    activityData.conflicts = conflicts.map(c => ({
+    activityData.conflicts = conflicts.map((c) => ({
       activity: c._id,
       type: 'overlap',
       severity: c.priority === 'high' ? 'high' : 'medium'
     }));
   }
-  
+
   const activity = await ActivityGrid.create(activityData);
-  
+
   // Update heat map
   await activity.updateHeatMap();
-  
+
   logger.logAudit('activity_created', req.user._id, {
     activityId: activity._id,
     type: activity.activityType
   });
-  
+
   res.status(201).json({
     success: true,
     data: activity
@@ -209,20 +209,20 @@ exports.createActivity = asyncHandler(async (req, res, next) => {
 });
 
 // Update activity
-exports.updateActivity = asyncHandler(async (req, res, next) => {
+exports.updateActivity = asyncHandler(async (req, res, _next) => {
   const activity = await ActivityGrid.findById(req.params.id);
-  
+
   if (!activity) {
     throw new AppError('Activity not found', 404);
   }
-  
+
   if (activity.status === 'completed') {
     throw new AppError('Cannot update completed activities', 400);
   }
-  
+
   Object.assign(activity, req.body);
   activity.lastModifiedBy = req.user._id;
-  
+
   // Re-check conflicts if date changed
   if (req.body.date) {
     const conflicts = await ActivityGrid.checkConflicts(
@@ -232,17 +232,17 @@ exports.updateActivity = asyncHandler(async (req, res, next) => {
       activity.date,
       activity._id
     );
-    
-    activity.conflicts = conflicts.map(c => ({
+
+    activity.conflicts = conflicts.map((c) => ({
       activity: c._id,
       type: 'overlap',
       severity: c.priority === 'high' ? 'high' : 'medium'
     }));
   }
-  
+
   await activity.save();
   await activity.updateHeatMap();
-  
+
   res.json({
     success: true,
     data: activity
@@ -250,19 +250,19 @@ exports.updateActivity = asyncHandler(async (req, res, next) => {
 });
 
 // Delete activity
-exports.deleteActivity = asyncHandler(async (req, res, next) => {
+exports.deleteActivity = asyncHandler(async (req, res, _next) => {
   const activity = await ActivityGrid.findById(req.params.id);
-  
+
   if (!activity) {
     throw new AppError('Activity not found', 404);
   }
-  
+
   if (activity.status === 'completed') {
     throw new AppError('Cannot delete completed activities', 400);
   }
-  
+
   await activity.remove();
-  
+
   res.json({
     success: true,
     message: 'Activity deleted successfully'
@@ -270,12 +270,12 @@ exports.deleteActivity = asyncHandler(async (req, res, next) => {
 });
 
 // Get heat map
-exports.getHeatMap = asyncHandler(async (req, res, next) => {
+exports.getHeatMap = asyncHandler(async (req, res, _next) => {
   const { year, month, groupBy = 'customer' } = req.query;
-  
+
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0);
-  
+
   const pipeline = [
     {
       $match: {
@@ -307,7 +307,7 @@ exports.getHeatMap = asyncHandler(async (req, res, next) => {
       }
     }
   ];
-  
+
   if (groupBy === 'customer') {
     pipeline.push({
       $lookup: {
@@ -327,30 +327,30 @@ exports.getHeatMap = asyncHandler(async (req, res, next) => {
       }
     });
   }
-  
+
   pipeline.push({
     $unwind: '$entity'
   });
-  
+
   const heatMapData = await ActivityGrid.aggregate(pipeline);
-  
+
   // Calculate intensity scores
-  const processedData = heatMapData.map(item => {
-    const maxCount = Math.max(...item.days.map(d => d.count));
-    
+  const processedData = heatMapData.map((item) => {
+    const maxCount = Math.max(...item.days.map((d) => d.count));
+
     return {
       entity: {
         id: item.entity._id,
         name: item.entity.name,
         code: item.entity.code || item.entity.sku
       },
-      days: item.days.map(day => ({
+      days: item.days.map((day) => ({
         ...day,
         intensity: (day.count / maxCount) * 100
       }))
     };
   });
-  
+
   res.json({
     success: true,
     data: {
@@ -362,47 +362,47 @@ exports.getHeatMap = asyncHandler(async (req, res, next) => {
 });
 
 // Get conflicts
-exports.getConflicts = asyncHandler(async (req, res, next) => {
+exports.getConflicts = asyncHandler(async (req, res, _next) => {
   const { startDate, endDate, severity } = req.query;
-  
+
   // ✅ PRODUCTION: Always use real MongoDB queries
   const query = {
     tenantId: req.user.tenantId,
     company: req.user.company,
     'conflicts.0': { $exists: true }
   };
-  
+
   if (startDate && endDate) {
     query.date = {
       $gte: new Date(startDate),
       $lte: new Date(endDate)
     };
   }
-  
+
   if (severity) {
     query['conflicts.severity'] = severity;
   }
-  
+
   const activities = await ActivityGrid.find(query)
     .populate('customer', 'name')
     .populate('products', 'name')
     .populate('conflicts.activity');
-  
-  const conflicts = activities.map(activity => ({
+
+  const conflicts = activities.map((activity) => ({
     activity: {
       id: activity._id,
       type: activity.activityType,
       date: activity.date,
       customer: activity.customer.name,
-      products: activity.products.map(p => p.name)
+      products: activity.products.map((p) => p.name)
     },
-    conflicts: activity.conflicts.map(c => ({
+    conflicts: activity.conflicts.map((c) => ({
       conflictingActivity: c.activity,
       type: c.type,
       severity: c.severity
     }))
   }));
-  
+
   res.json({
     success: true,
     data: conflicts
@@ -410,28 +410,28 @@ exports.getConflicts = asyncHandler(async (req, res, next) => {
 });
 
 // Sync activities from other modules
-exports.syncActivities = asyncHandler(async (req, res, next) => {
+exports.syncActivities = asyncHandler(async (req, res, _next) => {
   const { source, startDate, endDate } = req.body;
-  
-  let activities = [];
-  
+
+  const activities = [];
+
   if (source === 'promotions' || source === 'all') {
     const promotions = await Promotion.find({
       'period.startDate': { $gte: new Date(startDate), $lte: new Date(endDate) },
       status: { $in: ['approved', 'active', 'completed'] }
     });
-    
+
     for (const promotion of promotions) {
       const existingActivity = await ActivityGrid.findOne({
         linkedPromotion: promotion._id
       });
-      
+
       if (!existingActivity) {
         const activity = await ActivityGrid.create({
           date: promotion.period.startDate,
           activityType: 'promotion',
           customer: promotion.scope.customers[0].customer,
-          products: promotion.products.map(p => p.product),
+          products: promotion.products.map((p) => p.product),
           vendor: promotion.vendor,
           title: promotion.name,
           description: `Promotion: ${promotion.promotionType}`,
@@ -440,23 +440,23 @@ exports.syncActivities = asyncHandler(async (req, res, next) => {
           priority: 'high',
           linkedPromotion: promotion._id
         });
-        
+
         activities.push(activity);
       }
     }
   }
-  
+
   if (source === 'tradespends' || source === 'all') {
     const tradeSpends = await TradeSpend.find({
       'period.startDate': { $gte: new Date(startDate), $lte: new Date(endDate) },
       status: { $in: ['approved', 'active', 'completed'] }
     });
-    
+
     for (const tradeSpend of tradeSpends) {
       const existingActivity = await ActivityGrid.findOne({
         linkedTradeSpend: tradeSpend._id
       });
-      
+
       if (!existingActivity) {
         const activity = await ActivityGrid.create({
           date: tradeSpend.period.startDate,
@@ -471,17 +471,17 @@ exports.syncActivities = asyncHandler(async (req, res, next) => {
           priority: 'medium',
           linkedTradeSpend: tradeSpend._id
         });
-        
+
         activities.push(activity);
       }
     }
   }
-  
+
   logger.logAudit('activities_synced', req.user._id, {
     source,
     count: activities.length
   });
-  
+
   res.json({
     success: true,
     data: {
@@ -496,16 +496,16 @@ function formatGridData(activities, view) {
   if (view === 'list') {
     return activities;
   }
-  
+
   const gridData = {};
-  
-  activities.forEach(activity => {
+
+  activities.forEach((activity) => {
     const dateKey = activity.date.toISOString().split('T')[0];
-    
+
     if (!gridData[dateKey]) {
       gridData[dateKey] = [];
     }
-    
+
     gridData[dateKey].push({
       id: activity._id,
       type: activity.activityType,
@@ -517,6 +517,6 @@ function formatGridData(activities, view) {
       conflicts: activity.conflicts.length
     });
   });
-  
+
   return gridData;
 }

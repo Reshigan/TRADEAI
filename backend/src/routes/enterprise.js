@@ -439,17 +439,17 @@ router.post(
     try {
       const { entity } = req.params;
       const { records } = req.body;
-      
+
       const Model = require(`../models/${entity.charAt(0).toUpperCase() + entity.slice(1)}`);
       const EnterpriseCrudService = require('../services/enterpriseCrudService');
       const crudService = new EnterpriseCrudService(Model);
-      
+
       const result = await crudService.bulkCreate(records, {
         validate: true,
         auditLog: true,
         userId: req.user._id
       });
-      
+
       res.json({
         success: true,
         data: result
@@ -469,7 +469,7 @@ router.post(
   '/data/:entity/import',
   auth,
   authorize(['superadmin', 'admin']),
-  async (req, res, next) => {
+  (req, res, _next) => {
     // Generic import endpoint
     // Implementation would handle file upload and processing
     res.json({
@@ -491,14 +491,14 @@ router.post(
     try {
       const { entity } = req.params;
       const { format = 'csv', filters = {}, fields = [] } = req.body;
-      
+
       const Model = require(`../models/${entity.charAt(0).toUpperCase() + entity.slice(1)}`);
       const EnterpriseCrudService = require('../services/enterpriseCrudService');
       const crudService = new EnterpriseCrudService(Model);
-      
+
       let exportData;
-      
-      switch(format) {
+
+      switch (format) {
         case 'csv':
           exportData = await crudService.exportToCSV(filters, fields);
           res.setHeader('Content-Type', 'text/csv');
@@ -517,7 +517,7 @@ router.post(
         default:
           throw new Error('Unsupported export format');
       }
-      
+
       res.send(exportData);
     } catch (error) {
       next(error);
@@ -537,13 +537,13 @@ router.post(
     try {
       const { entity } = req.params;
       const { filters = {}, facets = [] } = req.body;
-      
+
       const Model = require(`../models/${entity.charAt(0).toUpperCase() + entity.slice(1)}`);
       const EnterpriseCrudService = require('../services/enterpriseCrudService');
       const crudService = new EnterpriseCrudService(Model);
-      
+
       const result = await crudService.facetedSearch(filters, facets);
-      
+
       res.json({
         success: true,
         data: result
@@ -567,13 +567,13 @@ router.get(
     try {
       const { entity } = req.params;
       const { fields } = req.query;
-      
+
       const Model = require(`../models/${entity.charAt(0).toUpperCase() + entity.slice(1)}`);
       const EnterpriseCrudService = require('../services/enterpriseCrudService');
       const crudService = new EnterpriseCrudService(Model);
-      
+
       const duplicates = await crudService.findDuplicates(fields.split(','));
-      
+
       res.json({
         success: true,
         data: duplicates

@@ -13,13 +13,13 @@ router.get('/status', async (req, res) => {
   try {
     const isAvailable = await ollamaService.isAvailable();
     const models = isAvailable ? await ollamaService.listModels() : [];
-    
+
     res.json({
       status: isAvailable ? 'operational' : 'unavailable',
       service: 'Ollama',
       model: ollamaService.model,
       available: isAvailable,
-      models: models.map(m => m.name),
+      models: models.map((m) => m.name),
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -41,7 +41,7 @@ router.use(authenticate);
 router.post('/query', async (req, res) => {
   try {
     const { query, context } = req.body;
-    
+
     if (!query) {
       return res.status(400).json({ error: 'Query is required' });
     }
@@ -63,7 +63,7 @@ router.post('/query', async (req, res) => {
 router.post('/optimize-budget', async (req, res) => {
   try {
     const { budget } = req.body;
-    
+
     if (!budget || !budget.totalAmount) {
       return res.status(400).json({ error: 'Budget data with totalAmount is required' });
     }
@@ -85,7 +85,7 @@ router.post('/optimize-budget', async (req, res) => {
 router.post('/analyze-promotion', async (req, res) => {
   try {
     const { promotion } = req.body;
-    
+
     if (!promotion) {
       return res.status(400).json({ error: 'Promotion data is required' });
     }
@@ -107,7 +107,7 @@ router.post('/analyze-promotion', async (req, res) => {
 router.post('/generate-insights', async (req, res) => {
   try {
     const { entity, data } = req.body;
-    
+
     if (!entity || !data) {
       return res.status(400).json({ error: 'Entity and data are required' });
     }
@@ -129,7 +129,7 @@ router.post('/generate-insights', async (req, res) => {
 router.post('/forecast-demand', async (req, res) => {
   try {
     const params = req.body;
-    
+
     if (!params.productId) {
       return res.status(400).json({ error: 'productId is required' });
     }
@@ -151,7 +151,7 @@ router.post('/forecast-demand', async (req, res) => {
 router.post('/chat', async (req, res) => {
   try {
     const { message, history } = req.body;
-    
+
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
@@ -161,13 +161,13 @@ router.post('/chat', async (req, res) => {
     if (history && history.length > 0) {
       const contextMessages = history.slice(-5); // Last 5 messages
       const contextStr = contextMessages
-        .map(msg => `${msg.role}: ${msg.content}`)
+        .map((msg) => `${msg.role}: ${msg.content}`)
         .join('\n');
       prompt = `Previous conversation:\n${contextStr}\n\nUser: ${message}`;
     }
 
     const response = await ollamaService.generate(prompt);
-    
+
     res.json({
       response,
       timestamp: new Date().toISOString()

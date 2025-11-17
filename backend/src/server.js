@@ -5,7 +5,7 @@ const { server } = require('./app');
 const { initializeJobs } = require('./jobs');
 const { initializeCache } = require('./services/cacheService');
 const { validateOrExit } = require('./utils/validateEnv');
-const { initRedis, closeRedis } = require('./config/redis');
+const { initRedis, _closeRedis } = require('./config/redis');
 
 // Validate environment variables before starting
 console.log('🔍 Validating environment configuration...\n');
@@ -29,22 +29,22 @@ const startServer = async () => {
     // Initialize database
     logger.info('Initializing database...');
     await initializeDatabase();
-    
+
     // Initialize Redis
     logger.info('Initializing Redis...');
     initRedis();
-    
+
     // Initialize cache
     const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true';
     if (!USE_MOCK_DB) {
       logger.info('Initializing cache...');
       await initializeCache();
-      
+
       // Initialize background jobs (requires Redis)
       logger.info('Initializing background jobs...');
       try {
         // Add a timeout to prevent indefinite hanging
-        const timeout = new Promise((_, reject) => 
+        const timeout = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Jobs initialization timeout')), 10000)
         );
         await Promise.race([initializeJobs(), timeout]);
@@ -55,7 +55,7 @@ const startServer = async () => {
     } else {
       logger.info('Skipping cache and background jobs in mock mode');
     }
-    
+
     // Start listening
     server.listen(config.port, () => {
       logger.info(`Server running on port ${config.port} in ${config.env} mode`);

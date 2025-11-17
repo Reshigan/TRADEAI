@@ -3,7 +3,8 @@ const router = express.Router();
 const tenantController = require('../controllers/tenantController');
 const { authenticate } = require('../middleware/auth');
 const { tenantIsolation } = require('../middleware/tenantIsolation');
-const { applyTenantQueryFilter, validateTenantConsistency } = require('../middleware/tenantQueryFilter');
+const { applyTenantQueryFilter, validateTenantConsistency, withoutTenantFilter } = require('../middleware/tenantQueryFilter');
+const Tenant = require('../models/Tenant');
 const logger = require('../utils/logger');
 
 /**
@@ -62,7 +63,7 @@ router.post('/', tenantController.createTenant);
  * @desc    Get specific tenant details
  * @access  Super Admin, Tenant Admin (own tenant only)
  */
-router.get('/:id', (req, res, next) => {
+router.get('/:id', (req, res, _next) => {
   // Reuse getCurrentTenant for specific tenant access
   req.params.tenantId = req.params.id;
   tenantController.getCurrentTenant(req, res);
@@ -108,7 +109,7 @@ router.put('/:id/subscription', tenantController.updateSubscription);
 router.get('/:id/features', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Check permissions
     if (req.user.role !== 'super_admin' && (!req.tenant || req.tenant.id !== id)) {
       return res.status(403).json({
@@ -117,8 +118,8 @@ router.get('/:id/features', async (req, res) => {
       });
     }
 
-    const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findById(id).select('features');
+    const tenant = await withoutTenantFilter(() => {
+      return Tenant.findById(id).select('features');
     });
 
     if (!tenant) {
@@ -160,8 +161,8 @@ router.put('/:id/features', async (req, res) => {
     const { id } = req.params;
     const features = req.body;
 
-    const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findByIdAndUpdate(
+    const tenant = await withoutTenantFilter(() => {
+      return Tenant.findByIdAndUpdate(
         id,
         {
           features,
@@ -205,7 +206,7 @@ router.put('/:id/features', async (req, res) => {
 router.get('/:id/usage', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Check permissions
     if (req.user.role !== 'super_admin' && (!req.tenant || req.tenant.id !== id)) {
       return res.status(403).json({
@@ -214,8 +215,8 @@ router.get('/:id/usage', async (req, res) => {
       });
     }
 
-    const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findById(id).select('usage limits');
+    const tenant = await withoutTenantFilter(() => {
+      return Tenant.findById(id).select('usage limits');
     });
 
     if (!tenant) {
@@ -270,8 +271,8 @@ router.put('/:id/limits', async (req, res) => {
     const { id } = req.params;
     const limits = req.body;
 
-    const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findByIdAndUpdate(
+    const tenant = await withoutTenantFilter(() => {
+      return Tenant.findByIdAndUpdate(
         id,
         {
           limits,

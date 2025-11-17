@@ -2,9 +2,9 @@ const TradeSpend = require('../models/TradeSpend');
 const Campaign = require('../models/Campaign');
 const Rebate = require('../models/Rebate');
 const RebateAccrual = require('../models/RebateAccrual');
-const Customer = require('../models/Customer');
-const Product = require('../models/Product');
-const { asyncHandler, AppError } = require('../middleware/errorHandler');
+// const Customer = require('../models/Customer');
+// const Product = require('../models/Product');
+const { asyncHandler, _AppError } = require('../middleware/errorHandler');
 
 exports.getDashboardMetrics = asyncHandler(async (req, res) => {
   const { startDate, endDate, customerId, productId } = req.query;
@@ -432,7 +432,7 @@ exports.getForecastData = asyncHandler(async (req, res) => {
 
   const amounts = historicalData.map((d) => d.amount);
   const avgAmount = amounts.length > 0 ? amounts.reduce((a, b) => a + b, 0) / amounts.length : 0;
-  
+
   const trend =
     amounts.length > 1
       ? (amounts[amounts.length - 1] - amounts[0]) / amounts.length
@@ -442,7 +442,7 @@ exports.getForecastData = asyncHandler(async (req, res) => {
   for (let i = 1; i <= parseInt(months); i++) {
     const forecastDate = new Date();
     forecastDate.setMonth(forecastDate.getMonth() + i);
-    
+
     forecast.push({
       period: {
         year: forecastDate.getFullYear(),

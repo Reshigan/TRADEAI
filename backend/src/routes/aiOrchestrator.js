@@ -54,7 +54,7 @@ router.post('/orchestrate', [
   try {
     const { intent, userIntent, context } = req.body;
     const intentValue = userIntent || intent;
-    
+
     if (!intentValue) {
       return res.status(400).json({
         success: false,
@@ -70,7 +70,7 @@ router.post('/orchestrate', [
     };
 
     const result = await aiOrchestratorService.orchestrate(intentValue, fullContext);
-    
+
     logger.logAudit({
       action: 'ai_orchestration',
       userId: req.user._id,
@@ -88,7 +88,7 @@ router.post('/orchestrate', [
       error: error.message,
       userId: req.user._id
     });
-    
+
     res.status(500).json({
       success: false,
       error: 'AI orchestration failed',
@@ -149,7 +149,7 @@ router.post('/explain', [
       error: error.message,
       userId: req.user._id
     });
-    
+
     res.status(500).json({
       success: false,
       error: 'Explanation generation failed',
@@ -162,10 +162,10 @@ router.post('/explain', [
  * GET /api/ai-orchestrator/tools
  * List available AI tools
  */
-router.get('/tools', async (req, res) => {
+router.get('/tools', (req, res) => {
   try {
     const tools = aiOrchestratorService.tools;
-    
+
     res.json({
       success: true,
       tools,
@@ -187,7 +187,7 @@ router.get('/tools', async (req, res) => {
 router.get('/health', async (req, res) => {
   try {
     const ollamaAvailable = await aiOrchestratorService.isOllamaAvailable();
-    
+
     let mlServiceAvailable = false;
     try {
       const mlServiceURL = process.env.ML_SERVICE_URL || 'http://localhost:8001';
@@ -232,7 +232,7 @@ router.get('/health', async (req, res) => {
  * POST /api/ai-orchestrator/cache/clear
  * Clear AI orchestrator cache (admin only)
  */
-router.post('/cache/clear', async (req, res) => {
+router.post('/cache/clear', (req, res) => {
   try {
     if (req.user.role !== 'admin' && req.user.role !== 'super_admin') {
       return res.status(403).json({
@@ -242,7 +242,7 @@ router.post('/cache/clear', async (req, res) => {
     }
 
     aiOrchestratorService.cache.clear();
-    
+
     logger.logAudit({
       action: 'ai_cache_cleared',
       userId: req.user._id,

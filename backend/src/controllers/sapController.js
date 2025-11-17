@@ -1,23 +1,24 @@
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
-const Vendor = require('../models/Vendor');
+const _Vendor = require('../models/_Vendor');
 const SalesHistory = require('../models/SalesHistory');
+const TradeSpend = require('../models/TradeSpend');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const sapService = require('../services/sapService');
 const logger = require('../utils/logger');
-const { addJob } = require('../jobs');
+const { addJob, getJob } = require('../jobs');
 
 // Sync master data from SAP
-exports.syncMasterData = asyncHandler(async (req, res, next) => {
+exports.syncMasterData = asyncHandler(async (req, res, _next) => {
   const { dataType, fullSync = false } = req.body;
-  
+
   // Queue the sync job
   const job = await addJob('sapSync', 'sync-master-data', {
     dataType,
     fullSync,
     initiatedBy: req.user._id
   });
-  
+
   res.json({
     success: true,
     message: 'Master data sync initiated',
@@ -26,16 +27,16 @@ exports.syncMasterData = asyncHandler(async (req, res, next) => {
 });
 
 // Get sync status
-exports.getSyncStatus = asyncHandler(async (req, res, next) => {
+exports.getSyncStatus = asyncHandler(async (req, res, _next) => {
   const { jobId } = req.params;
-  
+
   // Get job status from queue
   const job = await getJob(jobId);
-  
+
   if (!job) {
     throw new AppError('Job not found', 404);
   }
-  
+
   res.json({
     success: true,
     data: {
@@ -49,23 +50,23 @@ exports.getSyncStatus = asyncHandler(async (req, res, next) => {
 });
 
 // Manual customer sync
-exports.syncCustomers = asyncHandler(async (req, res, next) => {
+exports.syncCustomers = asyncHandler(async (req, res, _next) => {
   const { customerCodes } = req.body;
-  
+
   try {
     const customers = await sapService.getCustomers(customerCodes);
-    
+
     const results = {
       created: 0,
       updated: 0,
       failed: 0,
       errors: []
     };
-    
+
     for (const sapCustomer of customers) {
       try {
         const existingCustomer = await Customer.findOne({ code: sapCustomer.KUNNR });
-        
+
         const customerData = {
           code: sapCustomer.KUNNR,
           name: sapCustomer.NAME1,
@@ -97,7 +98,7 @@ exports.syncCustomers = asyncHandler(async (req, res, next) => {
           },
           status: sapCustomer.LOEVM ? 'inactive' : 'active'
         };
-        
+
         // Map hierarchy
         if (sapCustomer.HKUNNR) {
           const parentCustomer = await Customer.findOne({ code: sapCustomer.HKUNNR });
@@ -111,7 +112,7 @@ exports.syncCustomers = asyncHandler(async (req, res, next) => {
             };
           }
         }
-        
+
         if (existingCustomer) {
           await Customer.findByIdAndUpdate(existingCustomer._id, customerData);
           results.updated++;
@@ -127,9 +128,9 @@ exports.syncCustomers = asyncHandler(async (req, res, next) => {
         });
       }
     }
-    
+
     logger.logAudit('sap_customer_sync', req.user._id, results);
-    
+
     res.json({
       success: true,
       data: results
@@ -141,23 +142,23 @@ exports.syncCustomers = asyncHandler(async (req, res, next) => {
 });
 
 // Manual product sync
-exports.syncProducts = asyncHandler(async (req, res, next) => {
+exports.syncProducts = asyncHandler(async (req, res, _next) => {
   const { materialNumbers } = req.body;
-  
+
   try {
     const products = await sapService.getProducts(materialNumbers);
-    
+
     const results = {
       created: 0,
       updated: 0,
       failed: 0,
       errors: []
     };
-    
+
     for (const sapProduct of products) {
       try {
         const existingProduct = await Product.findOne({ sku: sapProduct.MATNR });
-        
+
         const productData = {
           sku: sapProduct.MATNR,
           name: sapProduct.MAKTX,
@@ -195,7 +196,7 @@ exports.syncProducts = asyncHandler(async (req, res, next) => {
             salesOrg: sapProduct.VKORG
           }
         };
-        
+
         // Map hierarchy
         if (sapProduct.PRDHA) {
           // Parse SAP product hierarchy
@@ -208,7 +209,7 @@ exports.syncProducts = asyncHandler(async (req, res, next) => {
             level5: hierarchyLevels[4]
           };
         }
-        
+
         if (existingProduct) {
           await Product.findByIdAndUpdate(existingProduct._id, productData);
           results.updated++;
@@ -224,9 +225,9 @@ exports.syncProducts = asyncHandler(async (req, res, next) => {
         });
       }
     }
-    
+
     logger.logAudit('sap_product_sync', req.user._id, results);
-    
+
     res.json({
       success: true,
       data: results
@@ -238,35 +239,35 @@ exports.syncProducts = asyncHandler(async (req, res, next) => {
 });
 
 // Sync sales data
-exports.syncSalesData = asyncHandler(async (req, res, next) => {
+exports.syncSalesData = asyncHandler(async (req, res, _next) => {
   const { startDate, endDate, customerCode } = req.body;
-  
+
   try {
     const salesData = await sapService.getSalesData({
       startDate,
       endDate,
       customerCode
     });
-    
+
     const results = {
       created: 0,
       updated: 0,
       failed: 0,
       errors: []
     };
-    
+
     for (const sapSale of salesData) {
       try {
         // Find customer and product
         const customer = await Customer.findOne({ code: sapSale.KUNNR });
         const product = await Product.findOne({ sku: sapSale.MATNR });
-        
+
         if (!customer || !product) {
           throw new Error('Customer or product not found');
         }
-        
+
         const salesDate = new Date(sapSale.FKDAT);
-        
+
         const salesHistoryData = {
           date: salesDate,
           year: salesDate.getFullYear(),
@@ -304,13 +305,13 @@ exports.syncSalesData = asyncHandler(async (req, res, next) => {
             billingType: sapSale.FKTYP
           }
         };
-        
+
         // Check if record exists
         const existingSale = await SalesHistory.findOne({
           invoiceNumber: sapSale.VBELN,
           product: product._id
         });
-        
+
         if (existingSale) {
           await SalesHistory.findByIdAndUpdate(existingSale._id, salesHistoryData);
           results.updated++;
@@ -326,9 +327,9 @@ exports.syncSalesData = asyncHandler(async (req, res, next) => {
         });
       }
     }
-    
+
     logger.logAudit('sap_sales_sync', req.user._id, results);
-    
+
     res.json({
       success: true,
       data: results
@@ -340,21 +341,21 @@ exports.syncSalesData = asyncHandler(async (req, res, next) => {
 });
 
 // Post trade spend to SAP
-exports.postTradeSpend = asyncHandler(async (req, res, next) => {
+exports.postTradeSpend = asyncHandler(async (req, res, _next) => {
   const { tradeSpendId } = req.body;
-  
+
   const tradeSpend = await TradeSpend.findById(tradeSpendId)
     .populate('customer')
     .populate('vendor');
-  
+
   if (!tradeSpend) {
     throw new AppError('Trade spend not found', 404);
   }
-  
+
   if (tradeSpend.status !== 'approved') {
     throw new AppError('Only approved trade spends can be posted to SAP', 400);
   }
-  
+
   try {
     // Prepare SAP document
     const sapDocument = {
@@ -381,9 +382,9 @@ exports.postTradeSpend = asyncHandler(async (req, res, next) => {
         }
       ]
     };
-    
+
     const result = await sapService.postDocument(sapDocument);
-    
+
     // Update trade spend with SAP document number
     tradeSpend.sapIntegration = {
       posted: true,
@@ -391,14 +392,14 @@ exports.postTradeSpend = asyncHandler(async (req, res, next) => {
       postingDate: new Date(),
       fiscalYear: result.fiscalYear
     };
-    
+
     await tradeSpend.save();
-    
+
     logger.logAudit('sap_trade_spend_posted', req.user._id, {
       tradeSpendId: tradeSpend._id,
       sapDocument: result.documentNumber
     });
-    
+
     res.json({
       success: true,
       data: {
@@ -413,10 +414,10 @@ exports.postTradeSpend = asyncHandler(async (req, res, next) => {
 });
 
 // Get SAP connection status
-exports.getConnectionStatus = asyncHandler(async (req, res, next) => {
+exports.getConnectionStatus = asyncHandler(async (req, res, _next) => {
   try {
     const status = await sapService.testConnection();
-    
+
     res.json({
       success: true,
       data: {
@@ -456,6 +457,6 @@ function getGLAccount(spendType) {
     rebate: '5400000',
     promotion: '5500000'
   };
-  
+
   return glMapping[spendType] || '5000000';
 }

@@ -28,9 +28,7 @@ import {
   ArrowForward as ArrowIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import apiClient from '../../services/api/apiClient';
 
 const CommandCenter = () => {
   const navigate = useNavigate();
@@ -58,9 +56,9 @@ const CommandCenter = () => {
       
       // Fetch various data points in parallel
       const [budgets, promotions, tradeSpends] = await Promise.all([
-        axios.get(`${API_URL}/api/budgets`),
-        axios.get(`${API_URL}/api/promotions`),
-        axios.get(`${API_URL}/api/tradespends`)
+        apiClient.get('/budgets'),
+        apiClient.get('/promotions'),
+        apiClient.get('/trade-spends')
       ]);
 
       // Process data for dashboard

@@ -8,7 +8,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const tenantId = req.user.company;
     const userId = req.user._id;
     const deduction = await deductionService.createDeduction(tenantId, req.body, userId);
-    
+
     res.status(201).json({
       success: true,
       data: deduction
@@ -28,7 +28,7 @@ router.post('/:id/validate', authenticateToken, async (req, res) => {
     const { validatedAmount } = req.body;
     const userId = req.user._id;
     const deduction = await deductionService.validateDeduction(id, userId, validatedAmount);
-    
+
     res.json({
       success: true,
       data: deduction
@@ -48,7 +48,7 @@ router.post('/:id/dispute', authenticateToken, async (req, res) => {
     const { reason } = req.body;
     const userId = req.user._id;
     const deduction = await deductionService.disputeDeduction(id, userId, reason);
-    
+
     res.json({
       success: true,
       data: deduction
@@ -68,7 +68,7 @@ router.post('/:id/resolve', authenticateToken, async (req, res) => {
     const { resolutionType, finalAmount, notes } = req.body;
     const userId = req.user._id;
     const deduction = await deductionService.resolveDeduction(id, userId, resolutionType, finalAmount, notes);
-    
+
     res.json({
       success: true,
       data: deduction
@@ -87,7 +87,7 @@ router.post('/:id/match-claim', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { claimId, matchedAmount } = req.body;
     const deduction = await deductionService.matchDeductionToClaim(id, claimId, matchedAmount);
-    
+
     res.json({
       success: true,
       data: deduction
@@ -105,7 +105,7 @@ router.post('/auto-match', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const results = await deductionService.autoMatchDeductions(tenantId);
-    
+
     res.json({
       success: true,
       data: results
@@ -123,7 +123,7 @@ router.get('/unmatched', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const deductions = await deductionService.getUnmatchedDeductions(tenantId);
-    
+
     res.json({
       success: true,
       data: deductions
@@ -141,7 +141,7 @@ router.get('/disputed', authenticateToken, async (req, res) => {
   try {
     const tenantId = req.user.company;
     const deductions = await deductionService.getDisputedDeductions(tenantId);
-    
+
     res.json({
       success: true,
       data: deductions
@@ -161,7 +161,7 @@ router.get('/customer/:customerId', authenticateToken, async (req, res) => {
     const { customerId } = req.params;
     const { startDate, endDate } = req.query;
     const deductions = await deductionService.getDeductionsByCustomer(tenantId, customerId, startDate, endDate);
-    
+
     res.json({
       success: true,
       data: deductions
@@ -180,7 +180,7 @@ router.get('/statistics', authenticateToken, async (req, res) => {
     const tenantId = req.user.company;
     const { startDate, endDate } = req.query;
     const stats = await deductionService.getDeductionStatistics(tenantId, startDate, endDate);
-    
+
     res.json({
       success: true,
       data: stats
@@ -200,7 +200,7 @@ router.get('/reconcile/:customerId', authenticateToken, async (req, res) => {
     const { customerId } = req.params;
     const { startDate, endDate } = req.query;
     const reconciliation = await deductionService.reconcileDeductionsWithClaims(tenantId, customerId, startDate, endDate);
-    
+
     res.json({
       success: true,
       data: reconciliation

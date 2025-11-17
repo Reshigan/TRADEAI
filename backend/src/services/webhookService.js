@@ -15,20 +15,20 @@ class WebhookService extends EventEmitter {
     this.retryDelays = [1000, 5000, 15000]; // 1s, 5s, 15s
   }
 
-  async initialize() {
+  initialize() {
     if (this.initialized) return;
-    
+
     console.log('Initializing Webhook Service...');
-    
+
     // Start delivery processor
     this.startDeliveryProcessor();
-    
+
     // Start retry processor
     this.startRetryProcessor();
-    
+
     // Initialize event listeners
     this.initializeEventListeners();
-    
+
     this.initialized = true;
     console.log('Webhook Service initialized successfully');
   }
@@ -36,7 +36,7 @@ class WebhookService extends EventEmitter {
   // Webhook Registration and Management
   async registerWebhook(tenantId, webhookConfig) {
     const webhookId = this.generateWebhookId();
-    
+
     const webhook = {
       id: webhookId,
       tenantId,
@@ -56,7 +56,7 @@ class WebhookService extends EventEmitter {
     };
 
     this.webhooks.set(webhookId, webhook);
-    
+
     // Test webhook if requested
     if (webhookConfig.testOnCreate) {
       await this.testWebhook(webhookId);
@@ -72,7 +72,7 @@ class WebhookService extends EventEmitter {
     };
   }
 
-  async updateWebhook(webhookId, updates) {
+  updateWebhook(webhookId, updates) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -87,18 +87,18 @@ class WebhookService extends EventEmitter {
     }
 
     webhook.updatedAt = new Date();
-    
+
     return this.sanitizeWebhook(webhook);
   }
 
-  async deleteWebhook(webhookId) {
+  deleteWebhook(webhookId) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
     }
 
     this.webhooks.delete(webhookId);
-    
+
     // Remove from subscriptions
     for (const [event, webhookIds] of this.subscriptions) {
       const index = webhookIds.indexOf(webhookId);
@@ -113,7 +113,7 @@ class WebhookService extends EventEmitter {
     return { success: true, message: 'Webhook deleted successfully' };
   }
 
-  async getWebhook(webhookId) {
+  getWebhook(webhookId) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -122,7 +122,7 @@ class WebhookService extends EventEmitter {
     return this.sanitizeWebhook(webhook);
   }
 
-  async getWebhooksByTenant(tenantId) {
+  getWebhooksByTenant(tenantId) {
     const webhooks = [];
     for (const webhook of this.webhooks.values()) {
       if (webhook.tenantId === tenantId) {
@@ -143,7 +143,7 @@ class WebhookService extends EventEmitter {
       data: {
         message: 'This is a test webhook delivery',
         timestamp: new Date().toISOString(),
-        webhookId: webhookId
+        webhookId
       },
       timestamp: new Date().toISOString()
     };
@@ -173,12 +173,12 @@ class WebhookService extends EventEmitter {
     }
 
     const eventList = Array.isArray(events) ? events : [events];
-    
+
     for (const event of eventList) {
       if (!this.subscriptions.has(event)) {
         this.subscriptions.set(event, []);
       }
-      
+
       const subscribers = this.subscriptions.get(event);
       if (!subscribers.includes(webhookId)) {
         subscribers.push(webhookId);
@@ -192,7 +192,7 @@ class WebhookService extends EventEmitter {
 
   unsubscribeFromEvent(webhookId, events) {
     const eventList = Array.isArray(events) ? events : [events];
-    
+
     for (const event of eventList) {
       if (this.subscriptions.has(event)) {
         const subscribers = this.subscriptions.get(event);
@@ -209,12 +209,12 @@ class WebhookService extends EventEmitter {
     // Update webhook events
     const webhook = this.webhooks.get(webhookId);
     if (webhook) {
-      webhook.events = webhook.events.filter(e => !eventList.includes(e));
+      webhook.events = webhook.events.filter((e) => !eventList.includes(e));
       webhook.updatedAt = new Date();
     }
   }
 
-  async publishEvent(tenantId, eventType, eventData, options = {}) {
+  publishEvent(tenantId, eventType, eventData, options = {}) {
     const event = {
       id: this.generateEventId(),
       tenantId,
@@ -227,13 +227,13 @@ class WebhookService extends EventEmitter {
 
     // Find subscribers
     const subscribers = this.getEventSubscribers(eventType, tenantId);
-    
+
     if (subscribers.length === 0) {
       console.log(`No subscribers for event ${eventType} in tenant ${tenantId}`);
       return { delivered: 0, queued: 0 };
     }
 
-    let delivered = 0;
+    const delivered = 0;
     let queued = 0;
 
     // Queue deliveries
@@ -253,17 +253,17 @@ class WebhookService extends EventEmitter {
 
   getEventSubscribers(eventType, tenantId) {
     const subscribers = [];
-    
+
     // Check exact event match
     if (this.subscriptions.has(eventType)) {
       subscribers.push(...this.subscriptions.get(eventType));
     }
-    
+
     // Check wildcard subscriptions
     if (this.subscriptions.has('*')) {
       subscribers.push(...this.subscriptions.get('*'));
     }
-    
+
     // Check pattern matches (e.g., 'user.*' matches 'user.created')
     for (const [pattern, webhookIds] of this.subscriptions) {
       if (pattern.includes('*') && this.matchesPattern(eventType, pattern)) {
@@ -273,7 +273,7 @@ class WebhookService extends EventEmitter {
 
     // Filter by tenant and remove duplicates
     const uniqueSubscribers = [...new Set(subscribers)];
-    return uniqueSubscribers.filter(webhookId => {
+    return uniqueSubscribers.filter((webhookId) => {
       const webhook = this.webhooks.get(webhookId);
       return webhook && webhook.tenantId === tenantId;
     });
@@ -289,8 +289,8 @@ class WebhookService extends EventEmitter {
     const delivery = {
       id: this.generateDeliveryId(),
       webhookId: webhook.id,
-      webhook: webhook,
-      event: event,
+      webhook,
+      event,
       attempts: 0,
       queuedAt: new Date(),
       nextAttempt: new Date()
@@ -309,15 +309,15 @@ class WebhookService extends EventEmitter {
     if (this.deliveryQueue.length === 0) return;
 
     const now = new Date();
-    const readyDeliveries = this.deliveryQueue.filter(d => d.nextAttempt <= now);
-    
+    const readyDeliveries = this.deliveryQueue.filter((d) => d.nextAttempt <= now);
+
     // Process up to 10 deliveries at once
     const deliveriesToProcess = readyDeliveries.slice(0, 10);
-    
+
     for (const delivery of deliveriesToProcess) {
       try {
         await this.attemptDelivery(delivery);
-        
+
         // Remove from queue on success
         const index = this.deliveryQueue.indexOf(delivery);
         if (index > -1) {
@@ -332,7 +332,7 @@ class WebhookService extends EventEmitter {
 
   async attemptDelivery(delivery) {
     const { webhook, event } = delivery;
-    
+
     delivery.attempts++;
     delivery.lastAttempt = new Date();
 
@@ -340,11 +340,11 @@ class WebhookService extends EventEmitter {
 
     try {
       const result = await this.deliverWebhook(webhook, event);
-      
+
       // Update webhook stats
       webhook.deliveryCount++;
       webhook.lastDelivery = new Date();
-      
+
       // Store delivery attempt
       this.recordDeliveryAttempt(delivery.id, {
         success: true,
@@ -355,13 +355,13 @@ class WebhookService extends EventEmitter {
       });
 
       this.emit('webhook.delivered', { delivery, result });
-      
+
       return result;
     } catch (error) {
       // Update webhook stats
       webhook.failureCount++;
       webhook.lastFailure = new Date();
-      
+
       // Store delivery attempt
       this.recordDeliveryAttempt(delivery.id, {
         success: false,
@@ -372,7 +372,7 @@ class WebhookService extends EventEmitter {
       });
 
       this.emit('webhook.failed', { delivery, error });
-      
+
       throw error;
     }
   }
@@ -387,7 +387,7 @@ class WebhookService extends EventEmitter {
     };
 
     const signature = this.generateSignature(payload, webhook.secret);
-    
+
     const headers = {
       'Content-Type': 'application/json',
       'User-Agent': 'TRADEAI-Webhook/1.0',
@@ -399,7 +399,7 @@ class WebhookService extends EventEmitter {
     };
 
     const startTime = Date.now();
-    
+
     try {
       const response = await axios.post(webhook.url, payload, {
         headers,
@@ -408,7 +408,7 @@ class WebhookService extends EventEmitter {
       });
 
       const responseTime = Date.now() - startTime;
-      
+
       return {
         statusCode: response.status,
         responseTime,
@@ -416,7 +416,7 @@ class WebhookService extends EventEmitter {
       };
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      
+
       if (error.response) {
         // HTTP error response
         throw new Error(`HTTP ${error.response.status}: ${error.response.statusText}`);
@@ -430,19 +430,19 @@ class WebhookService extends EventEmitter {
     }
   }
 
-  async handleDeliveryFailure(delivery, error) {
+  handleDeliveryFailure(delivery, error) {
     const { webhook } = delivery;
-    
+
     if (delivery.attempts >= this.maxRetries) {
       // Max retries reached, move to failed deliveries
       console.error(`Webhook delivery ${delivery.id} failed after ${delivery.attempts} attempts`);
-      
+
       // Remove from queue
       const index = this.deliveryQueue.indexOf(delivery);
       if (index > -1) {
         this.deliveryQueue.splice(index, 1);
       }
-      
+
       this.emit('webhook.exhausted', { delivery, error });
       return;
     }
@@ -450,7 +450,7 @@ class WebhookService extends EventEmitter {
     // Schedule retry
     const retryDelay = this.calculateRetryDelay(delivery.attempts, webhook.retryPolicy);
     delivery.nextAttempt = new Date(Date.now() + retryDelay);
-    
+
     console.log(`Webhook delivery ${delivery.id} will retry in ${retryDelay}ms`);
   }
 
@@ -458,13 +458,13 @@ class WebhookService extends EventEmitter {
     switch (retryPolicy) {
       case 'linear':
         return attempt * 5000; // 5s, 10s, 15s
-      
+
       case 'exponential':
         return Math.min(Math.pow(2, attempt - 1) * 1000, 60000); // 1s, 2s, 4s, max 60s
-      
+
       case 'fixed':
         return 10000; // Always 10s
-      
+
       default:
         return this.retryDelays[attempt - 1] || 15000;
     }
@@ -541,10 +541,10 @@ class WebhookService extends EventEmitter {
     if (!this.deliveryAttempts.has(deliveryId)) {
       this.deliveryAttempts.set(deliveryId, []);
     }
-    
+
     const attempts = this.deliveryAttempts.get(deliveryId);
     attempts.push(attempt);
-    
+
     // Keep only last 10 attempts
     if (attempts.length > 10) {
       attempts.splice(0, attempts.length - 10);
@@ -557,17 +557,17 @@ class WebhookService extends EventEmitter {
 
   sanitizeWebhook(webhook) {
     const sanitized = { ...webhook };
-    
+
     // Remove sensitive information
     if (sanitized.secret) {
       sanitized.secret = `${sanitized.secret.substr(0, 8)}...`;
     }
-    
+
     return sanitized;
   }
 
   // Analytics and Monitoring
-  async getWebhookStats(webhookId) {
+  getWebhookStats(webhookId) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -577,7 +577,7 @@ class WebhookService extends EventEmitter {
       id: webhook.id,
       deliveryCount: webhook.deliveryCount,
       failureCount: webhook.failureCount,
-      successRate: webhook.deliveryCount > 0 ? 
+      successRate: webhook.deliveryCount > 0 ?
         ((webhook.deliveryCount - webhook.failureCount) / webhook.deliveryCount * 100).toFixed(2) : 0,
       lastDelivery: webhook.lastDelivery,
       lastFailure: webhook.lastFailure,
@@ -585,7 +585,7 @@ class WebhookService extends EventEmitter {
     };
   }
 
-  async getSystemStats() {
+  getSystemStats() {
     const stats = {
       totalWebhooks: this.webhooks.size,
       activeWebhooks: 0,
@@ -603,7 +603,7 @@ class WebhookService extends EventEmitter {
       stats.totalFailures += webhook.failureCount;
     }
 
-    stats.successRate = stats.totalDeliveries > 0 ? 
+    stats.successRate = stats.totalDeliveries > 0 ?
       ((stats.totalDeliveries - stats.totalFailures) / stats.totalDeliveries * 100).toFixed(2) : 0;
 
     return stats;

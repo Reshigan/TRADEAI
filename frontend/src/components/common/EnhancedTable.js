@@ -17,12 +17,10 @@ import {
   TextField,
   InputAdornment,
   Box,
-  Chip,
-  Button
+  Chip
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
-  FilterList as FilterListIcon,
   FileDownload as FileDownloadIcon,
   Search as SearchIcon,
   Clear as ClearIcon

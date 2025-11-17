@@ -10,13 +10,7 @@ import {
   Tabs,
   Paper,
   Chip,
-  IconButton,
-  Menu,
   MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Select,
   FormControl,
@@ -31,7 +25,6 @@ import {
   TrendingDown,
   Assessment,
   Refresh,
-  MoreVert,
   AccountBalance,
   AttachMoney,
   ShowChart,
@@ -101,7 +94,7 @@ export default function EnterpriseDashboard() {
     setActiveTab(newValue);
   };
 
-  const showSnackbar = (message, severity = 'info') => {
+  const _showSnackbar = (message, severity = 'info') => {
     setSnackbar({ open: true, message, severity });
   };
 

@@ -12,7 +12,7 @@ const BaseTenantSchema = {
     required: true,
     index: true
   },
-  
+
   // Audit fields
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +22,7 @@ const BaseTenantSchema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Soft delete
   isDeleted: {
     type: Boolean,
@@ -36,7 +36,7 @@ const BaseTenantSchema = {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Status
   isActive: {
     type: Boolean,
@@ -51,33 +51,33 @@ const BaseTenantSchema = {
 function addTenantSupport(schema) {
   // Add base fields
   schema.add(BaseTenantSchema);
-  
+
   // Add compound indexes for tenant isolation
   schema.index({ tenantId: 1, isDeleted: 1 });
   schema.index({ tenantId: 1, isActive: 1 });
   schema.index({ tenantId: 1, createdAt: -1 });
-  
+
   // Pre-find middleware to automatically filter by tenant and exclude deleted
-  schema.pre(/^find/, function() {
+  schema.pre(/^find/, function () {
     // Skip if explicitly disabled
     if (this.getOptions().skipTenantFilter) return;
-    
+
     // Get tenant ID from options or query
     const tenantId = this.getOptions().tenantId;
     if (tenantId) {
       this.where({ tenantId });
     }
-    
+
     // Exclude soft-deleted records unless explicitly included
     if (!this.getOptions().includeDeleted) {
       this.where({ isDeleted: { $ne: true } });
     }
   });
-  
+
   // Pre-aggregate middleware
-  schema.pre('aggregate', function() {
+  schema.pre('aggregate', function () {
     if (this.options.skipTenantFilter) return;
-    
+
     const tenantId = this.options.tenantId;
     if (tenantId) {
       this.pipeline().unshift({
@@ -88,46 +88,46 @@ function addTenantSupport(schema) {
       });
     }
   });
-  
+
   // Instance methods
-  schema.methods.softDelete = function(userId) {
+  schema.methods.softDelete = function (userId) {
     this.isDeleted = true;
     this.deletedAt = new Date();
     this.deletedBy = userId;
     this.isActive = false;
     return this.save();
   };
-  
-  schema.methods.restore = function() {
+
+  schema.methods.restore = function () {
     this.isDeleted = false;
     this.deletedAt = undefined;
     this.deletedBy = undefined;
     this.isActive = true;
     return this.save();
   };
-  
-  schema.methods.belongsToTenant = function(tenantId) {
+
+  schema.methods.belongsToTenant = function (tenantId) {
     return this.tenantId.toString() === tenantId.toString();
   };
-  
+
   // Static methods
-  schema.statics.findByTenant = function(tenantId, conditions = {}) {
+  schema.statics.findByTenant = function (tenantId, conditions = {}) {
     return this.find({ tenantId, ...conditions });
   };
-  
-  schema.statics.findOneByTenant = function(tenantId, conditions = {}) {
+
+  schema.statics.findOneByTenant = function (tenantId, conditions = {}) {
     return this.findOne({ tenantId, ...conditions });
   };
-  
-  schema.statics.countByTenant = function(tenantId, conditions = {}) {
+
+  schema.statics.countByTenant = function (tenantId, conditions = {}) {
     return this.countDocuments({ tenantId, ...conditions });
   };
-  
-  schema.statics.findDeleted = function(tenantId, conditions = {}) {
+
+  schema.statics.findDeleted = function (tenantId, conditions = {}) {
     return this.find({ tenantId, isDeleted: true, ...conditions });
   };
-  
-  schema.statics.createForTenant = function(tenantId, data, userId) {
+
+  schema.statics.createForTenant = function (tenantId, data, userId) {
     return this.create({
       ...data,
       tenantId,
@@ -135,15 +135,15 @@ function addTenantSupport(schema) {
       updatedBy: userId
     });
   };
-  
-  schema.statics.updateByTenant = function(tenantId, conditions, update, userId) {
+
+  schema.statics.updateByTenant = function (tenantId, conditions, update, userId) {
     return this.updateMany(
       { tenantId, ...conditions },
       { ...update, updatedBy: userId, updatedAt: new Date() }
     );
   };
-  
-  schema.statics.deleteByTenant = function(tenantId, conditions, userId) {
+
+  schema.statics.deleteByTenant = function (tenantId, conditions, userId) {
     return this.updateMany(
       { tenantId, ...conditions },
       {
@@ -154,25 +154,25 @@ function addTenantSupport(schema) {
       }
     );
   };
-  
+
   // Virtual for checking if record is deleted
-  schema.virtual('deleted').get(function() {
+  schema.virtual('deleted').get(function () {
     return this.isDeleted === true;
   });
-  
+
   // Transform function to exclude sensitive fields
-  schema.methods.toJSON = function() {
+  schema.methods.toJSON = function () {
     const obj = this.toObject();
-    
+
     // Remove internal fields from JSON output
     delete obj.__v;
-    
+
     // Convert ObjectIds to strings for frontend
     if (obj._id) obj.id = obj._id.toString();
     if (obj.tenantId) obj.tenantId = obj.tenantId.toString();
     if (obj.createdBy) obj.createdBy = obj.createdBy.toString();
     if (obj.updatedBy) obj.updatedBy = obj.updatedBy.toString();
-    
+
     return obj;
   };
 }
@@ -182,7 +182,7 @@ function addTenantSupport(schema) {
  */
 function withTenant(tenantId) {
   return {
-    setOptions: function(options = {}) {
+    setOptions(options = {}) {
       return { ...options, tenantId };
     }
   };
@@ -201,7 +201,7 @@ function tenantQueryMiddleware(req, res, next) {
     const originalUpdateMany = mongoose.Query.prototype.updateMany;
     const originalDeleteOne = mongoose.Query.prototype.deleteOne;
     const originalDeleteMany = mongoose.Query.prototype.deleteMany;
-    
+
     // Store original request for cleanup
     req._originalQueryMethods = {
       find: originalFind,
@@ -212,22 +212,22 @@ function tenantQueryMiddleware(req, res, next) {
       deleteOne: originalDeleteOne,
       deleteMany: originalDeleteMany
     };
-    
+
     // Override methods to include tenant context
-    mongoose.Query.prototype.find = function(filter) {
+    mongoose.Query.prototype.find = function (filter) {
       if (!this.getOptions().skipTenantFilter) {
         this.setOptions({ tenantId: req.tenant.id });
       }
       return originalFind.call(this, filter);
     };
-    
-    mongoose.Query.prototype.findOne = function(filter) {
+
+    mongoose.Query.prototype.findOne = function (filter) {
       if (!this.getOptions().skipTenantFilter) {
         this.setOptions({ tenantId: req.tenant.id });
       }
       return originalFindOne.call(this, filter);
     };
-    
+
     // Add cleanup on response finish
     res.on('finish', () => {
       if (req._originalQueryMethods) {
@@ -236,7 +236,7 @@ function tenantQueryMiddleware(req, res, next) {
       }
     });
   }
-  
+
   next();
 }
 

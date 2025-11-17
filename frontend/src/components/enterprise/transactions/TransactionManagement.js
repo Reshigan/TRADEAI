@@ -17,10 +17,7 @@ import {
   DialogContent,
   DialogActions,
   Alert,
-  Tooltip,
-  Menu,
-  Checkbox,
-  FormControlLabel
+  Tooltip
 } from '@mui/material';
 import {
   Add,
@@ -28,7 +25,6 @@ import {
   FilterList,
   Download,
   Upload,
-  MoreVert,
   Edit,
   Delete,
   CheckCircle,
@@ -51,7 +47,7 @@ export default function TransactionManagement() {
   });
   const [openDialog, setOpenDialog] = useState(false);
   const [currentTransaction, setCurrentTransaction] = useState(null);
-  const [actionMenu, setActionMenu] = useState(null);
+
 
   useEffect(() => {
     loadTransactions();

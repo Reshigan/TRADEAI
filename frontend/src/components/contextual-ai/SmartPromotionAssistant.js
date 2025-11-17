@@ -22,22 +22,14 @@ import {
   Divider,
   Stack,
   IconButton,
-  Tooltip,
   Collapse
 } from '@mui/material';
 import {
-  TrendingUp,
   CheckCircle,
-  Warning,
-  Info,
-  Refresh,
-  CompareArrows,
-  AutoFixHigh,
   ExpandMore,
   ExpandLess
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
 
 const SmartPromotionAssistant = ({ 
   formData, 
@@ -72,10 +64,9 @@ const SmartPromotionAssistant = ({
         budget: formData.budget || 150000
       };
 
-      // Get ML prediction
-      const prediction = await mlService.analyzePromotionLift({
-        promotionId: 'temp-' + Date.now()
-      });
+      // Get ML prediction (placeholder for now)
+      //   promotionId: 'temp-' + Date.now()
+      // });
 
       // Generate comparisons
       const mlOptimized = {

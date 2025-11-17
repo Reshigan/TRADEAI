@@ -14,12 +14,11 @@ import {
   Chip,
   Autocomplete,
   InputAdornment,
-  Divider,
   Alert,
   Card,
   CardContent
 } from '@mui/material';
-import { Save, Cancel, Calculate } from '@mui/icons-material';
+import {Save, Cancel} from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import rebateService from '../../services/rebateService';
 import api from '../../services/api';

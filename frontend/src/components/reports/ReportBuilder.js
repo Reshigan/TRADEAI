@@ -28,7 +28,6 @@ import {
   ListItemButton,
   Chip,
   IconButton,
-  Tooltip,
   CircularProgress,
   Snackbar,
   Alert
@@ -43,11 +42,7 @@ import {
   PieChart as PieChartIcon,
   TableChart as TableChartIcon,
   Timeline as TimelineIcon,
-  BubbleChart as BubbleChartIcon,
-  FilterList as FilterListIcon,
-  Sort as SortIcon,
-  ViewColumn as ViewColumnIcon,
-  Schedule as ScheduleIcon
+  BubbleChart as BubbleChartIcon
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';

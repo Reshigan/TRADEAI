@@ -14,18 +14,14 @@ import {
   Chip,
   IconButton
 } from '@mui/material';
-import { Add, Edit, Delete, PlayArrow, Stop } from '@mui/icons-material';
+import {Add, Edit, Delete} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
 const RebatesList = () => {
   const navigate = useNavigate();
   const [rebates, setRebates] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadRebates();
-  }, []);
+  const [setLoading] = useState(true);
 
   const loadRebates = async () => {
     try {
@@ -39,6 +35,10 @@ const RebatesList = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadRebates();
+  }, []);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this rebate?')) {

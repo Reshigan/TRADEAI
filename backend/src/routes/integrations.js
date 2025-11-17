@@ -9,44 +9,44 @@ const apiManagementService = require('../services/apiManagementService');
 router.use(apiManagementService.trackAPIUsage.bind(apiManagementService));
 
 // External Integrations Routes
-router.get('/external', 
+router.get('/external',
   authenticateToken,
   requirePermission('integrations:view'),
   integrationController.getIntegrations
 );
 
-router.get('/external/:integrationId', 
+router.get('/external/:integrationId',
   authenticateToken,
   requirePermission('integrations:view'),
   integrationController.getIntegration
 );
 
-router.post('/external/:integrationId/connect', 
+router.post('/external/:integrationId/connect',
   authenticateToken,
   requirePermission('integrations:manage'),
   integrationController.connectIntegration
 );
 
-router.post('/external/:integrationId/disconnect', 
+router.post('/external/:integrationId/disconnect',
   authenticateToken,
   requirePermission('integrations:manage'),
   integrationController.disconnectIntegration
 );
 
-router.post('/external/:integrationId/sync', 
+router.post('/external/:integrationId/sync',
   authenticateToken,
   requirePermission('integrations:sync'),
   apiManagementService.getRateLimiter('integrations'),
   integrationController.syncIntegration
 );
 
-router.get('/external/metrics/overview', 
+router.get('/external/metrics/overview',
   authenticateToken,
   requirePermission('integrations:view'),
   integrationController.getIntegrationMetrics
 );
 
-router.post('/external/bulk/sync', 
+router.post('/external/bulk/sync',
   authenticateToken,
   requirePermission('integrations:sync'),
   apiManagementService.getRateLimiter('integrations'),
@@ -54,107 +54,107 @@ router.post('/external/bulk/sync',
 );
 
 // Webhook Management Routes
-router.post('/webhooks', 
+router.post('/webhooks',
   authenticateToken,
   requirePermission('webhooks:create'),
   integrationController.createWebhook
 );
 
-router.get('/webhooks', 
+router.get('/webhooks',
   authenticateToken,
   requirePermission('webhooks:view'),
   integrationController.getWebhooks
 );
 
-router.get('/webhooks/:webhookId', 
+router.get('/webhooks/:webhookId',
   authenticateToken,
   requirePermission('webhooks:view'),
   integrationController.getWebhook
 );
 
-router.put('/webhooks/:webhookId', 
+router.put('/webhooks/:webhookId',
   authenticateToken,
   requirePermission('webhooks:manage'),
   integrationController.updateWebhook
 );
 
-router.delete('/webhooks/:webhookId', 
+router.delete('/webhooks/:webhookId',
   authenticateToken,
   requirePermission('webhooks:manage'),
   integrationController.deleteWebhook
 );
 
-router.post('/webhooks/:webhookId/test', 
+router.post('/webhooks/:webhookId/test',
   authenticateToken,
   requirePermission('webhooks:manage'),
   apiManagementService.getRateLimiter('webhooks'),
   integrationController.testWebhook
 );
 
-router.get('/webhooks/:webhookId/stats', 
+router.get('/webhooks/:webhookId/stats',
   authenticateToken,
   requirePermission('webhooks:view'),
   integrationController.getWebhookStats
 );
 
-router.get('/webhooks/system/stats', 
+router.get('/webhooks/system/stats',
   authenticateToken,
   requirePermission('webhooks:view'),
   integrationController.getWebhookSystemStats
 );
 
-router.post('/webhooks/events/publish', 
+router.post('/webhooks/events/publish',
   authenticateToken,
   requirePermission('webhooks:publish'),
   apiManagementService.getRateLimiter('webhooks'),
   integrationController.publishEvent
 );
 
-router.post('/webhooks/bulk/update', 
+router.post('/webhooks/bulk/update',
   authenticateToken,
   requirePermission('webhooks:manage'),
   integrationController.bulkUpdateWebhooks
 );
 
 // Webhook Receiver Routes (for external systems)
-router.post('/webhooks/receive/:integrationId', 
+router.post('/webhooks/receive/:integrationId',
   apiManagementService.getRateLimiter('webhooks'),
   integrationController.receiveWebhook
 );
 
 // API Management Routes
-router.post('/api/keys/generate', 
+router.post('/api/keys/generate',
   authenticateToken,
   requirePermission('api:manage'),
   integrationController.generateAPIKey
 );
 
-router.delete('/api/keys/:apiKey', 
+router.delete('/api/keys/:apiKey',
   authenticateToken,
   requirePermission('api:manage'),
   integrationController.revokeAPIKey
 );
 
-router.get('/api/analytics', 
+router.get('/api/analytics',
   authenticateToken,
   requirePermission('api:view'),
   integrationController.getAPIAnalytics
 );
 
-router.get('/api/usage', 
+router.get('/api/usage',
   authenticateToken,
   requirePermission('api:view'),
   integrationController.getTenantUsage
 );
 
-router.get('/api/health', 
+router.get('/api/health',
   authenticateToken,
   requirePermission('api:view'),
   integrationController.getAPIHealth
 );
 
 // Dashboard Routes
-router.get('/dashboard', 
+router.get('/dashboard',
   authenticateToken,
   requirePermission('integrations:view'),
   integrationController.getDashboardData

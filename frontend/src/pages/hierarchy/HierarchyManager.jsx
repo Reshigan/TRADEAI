@@ -44,7 +44,7 @@ const HierarchyManager = () => {
   const [dialogMode, setDialogMode] = useState('create'); // 'create' or 'edit'
   const [dialogType, setDialogType] = useState('region'); // 'region', 'district', 'store'
   const [formData, setFormData] = useState({});
-  const [selectedRegion, setSelectedRegion] = useState(null);
+
 
   useEffect(() => {
     loadData();

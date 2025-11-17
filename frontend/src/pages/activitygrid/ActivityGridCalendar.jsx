@@ -8,11 +8,8 @@ import {
   CardContent,
   Chip,
   IconButton,
-  TextField,
-  MenuItem,
   CircularProgress,
   Alert,
-  Tooltip,
   Paper
 } from '@mui/material';
 import {
@@ -36,7 +33,7 @@ const ActivityGridCalendar = () => {
   const [view, setView] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [activities, setActivities] = useState([]);
-  const [heatMap, setHeatMap] = useState([]);
+  const [setHeatMap] = useState([]);
   const [conflicts, setConflicts] = useState([]);
   const [summary, setSummary] = useState(null);
 

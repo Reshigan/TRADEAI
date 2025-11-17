@@ -20,29 +20,22 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Divider,
   Alert
 } from '@mui/material';
 import {
   AccountBalance as TradeSpendIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  Assessment as ReportIcon,
   GetApp as DownloadIcon,
   MoreVert as MoreIcon,
-  DateRange as DateRangeIcon,
   FilterList as FilterIcon,
   AttachMoney as SpendIcon,
   Timeline as PerformanceIcon,
-  Store as ChannelIcon,
   Speed as OptimizationIcon,
   CompareArrows as VarianceIcon
 } from '@mui/icons-material';
 import {
-  LineChart,
   Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart,
@@ -161,7 +154,7 @@ const TradeSpendReports = () => {
   // Calculate aggregate metrics
   const totalBudget = tradeSpends.reduce((sum, ts) => sum + (ts.budgetAllocated || 0), 0);
   const totalActualSpend = tradeSpends.reduce((sum, ts) => sum + (ts.actualSpend || 0), 0);
-  const totalSalesImpact = tradeSpends.reduce((sum, ts) => sum + (ts.salesImpact || 0), 0);
+  tradeSpends.reduce((sum, ts) => sum + (ts.salesImpact || 0), 0);
   const averageROI = tradeSpends.length > 0 
     ? tradeSpends.reduce((sum, ts) => sum + (ts.roi || 0), 0) / tradeSpends.length 
     : 0;
@@ -230,9 +223,7 @@ const TradeSpendReports = () => {
     </div>
   );
 
-
-
-  const formatNumber = (number) => {
+  const _formatNumber = (number) => {
     return new Intl.NumberFormat('en-US').format(number || 0);
   };
 

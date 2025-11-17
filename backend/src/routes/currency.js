@@ -43,9 +43,9 @@ function getCurrencySymbol(code) {
 }
 
 // GET /api/analytics/currencies - Get all supported currencies
-router.get('/analytics/currencies', async (req, res) => {
+router.get('/analytics/currencies', (req, res) => {
   try {
-    const currencies = Object.keys(exchangeRates).map(code => ({
+    const currencies = Object.keys(exchangeRates).map((code) => ({
       code,
       name: getCurrencyName(code),
       symbol: getCurrencySymbol(code),
@@ -67,7 +67,7 @@ router.get('/analytics/currencies', async (req, res) => {
 });
 
 // GET /api/currencies/convert - Convert currency
-router.get('/currencies/convert', async (req, res) => {
+router.get('/currencies/convert', (req, res) => {
   try {
     const { amount, from, to } = req.query;
 
@@ -110,9 +110,9 @@ router.get('/currencies/convert', async (req, res) => {
 });
 
 // GET /api/currencies - Get all currencies (alternative endpoint)
-router.get('/currencies', async (req, res) => {
+router.get('/currencies', (req, res) => {
   try {
-    const currencies = Object.keys(exchangeRates).map(code => ({
+    const currencies = Object.keys(exchangeRates).map((code) => ({
       code,
       name: getCurrencyName(code),
       symbol: getCurrencySymbol(code),

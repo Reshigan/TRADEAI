@@ -13,10 +13,10 @@ class EnhancedAuthService {
   async login(email, password, options = {}) {
     try {
       logger.info(`Login attempt for email: ${email}`);
-      
+
       // Find user by email
       const user = await User.findOne({ email }).select('+password');
-      
+
       if (!user) {
         logger.warn(`Login failed: User not found - ${email}`);
         throw new Error('Invalid credentials');
@@ -30,7 +30,7 @@ class EnhancedAuthService {
 
       // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      
+
       if (!isPasswordValid) {
         logger.warn(`Login failed: Invalid password - ${email}`);
         throw new Error('Invalid credentials');
@@ -164,7 +164,7 @@ class EnhancedAuthService {
     }
   }
 
-  async logout(userId, token) {
+  logout(userId, token) {
     try {
       // Blacklist the token
       this.tokenBlacklist.add(token);

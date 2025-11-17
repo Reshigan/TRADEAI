@@ -1,7 +1,7 @@
 /**
  * REAL-TIME EVENT PROCESSING SERVICE
  * Event-driven architecture for transaction processing
- * 
+ *
  * Features:
  * - WebSocket connections for real-time updates
  * - Event streaming and pub/sub
@@ -21,7 +21,7 @@ class RealtimeEventService extends EventEmitter {
     this.maxEventStoreSize = 10000;
     this.subscriptions = new Map(); // userId -> Set of event types
     this.eventHandlers = new Map();
-    
+
     this.initializeEventHandlers();
   }
 
@@ -31,7 +31,7 @@ class RealtimeEventService extends EventEmitter {
   initializeWebSocket(server) {
     this.wss = new WebSocket.Server({ server, path: '/ws' });
 
-    this.wss.on('connection', (ws, req) => {
+    this.wss.on('connection', (ws, _req) => {
       console.log('New WebSocket connection');
 
       ws.on('message', (message) => {
@@ -78,19 +78,19 @@ class RealtimeEventService extends EventEmitter {
       case 'authenticate':
         this.authenticateClient(ws, data.userId, data.token);
         break;
-      
+
       case 'subscribe':
         this.subscribeClient(data.userId, data.events);
         break;
-      
+
       case 'unsubscribe':
         this.unsubscribeClient(data.userId, data.events);
         break;
-      
+
       case 'ping':
         ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
         break;
-      
+
       default:
         ws.send(JSON.stringify({ error: 'Unknown message type' }));
     }
@@ -105,11 +105,11 @@ class RealtimeEventService extends EventEmitter {
       const jwt = require('jsonwebtoken');
       const config = require('../config');
       const User = require('../models/User');
-      
+
       const decoded = jwt.verify(token, config.jwt.secret, {
         algorithms: ['HS256']
       });
-      
+
       const user = await User.findById(decoded.userId || decoded._id);
       if (!user || !user.isActive) {
         ws.send(JSON.stringify({
@@ -120,10 +120,10 @@ class RealtimeEventService extends EventEmitter {
         ws.close();
         return;
       }
-      
+
       this.clients.set(userId, ws);
       this.subscriptions.set(userId, new Set());
-      
+
       ws.send(JSON.stringify({
         type: 'authenticated',
         userId,
@@ -147,13 +147,13 @@ class RealtimeEventService extends EventEmitter {
    */
   subscribeClient(userId, eventTypes) {
     const userSubs = this.subscriptions.get(userId) || new Set();
-    
-    eventTypes.forEach(eventType => {
+
+    eventTypes.forEach((eventType) => {
       userSubs.add(eventType);
     });
-    
+
     this.subscriptions.set(userId, userSubs);
-    
+
     const ws = this.clients.get(userId);
     if (ws) {
       ws.send(JSON.stringify({
@@ -170,11 +170,11 @@ class RealtimeEventService extends EventEmitter {
   unsubscribeClient(userId, eventTypes) {
     const userSubs = this.subscriptions.get(userId);
     if (!userSubs) return;
-    
-    eventTypes.forEach(eventType => {
+
+    eventTypes.forEach((eventType) => {
       userSubs.delete(eventType);
     });
-    
+
     const ws = this.clients.get(userId);
     if (ws) {
       ws.send(JSON.stringify({
@@ -193,30 +193,30 @@ class RealtimeEventService extends EventEmitter {
     this.registerEventHandler('transaction.po.created', this.handlePOCreated.bind(this));
     this.registerEventHandler('transaction.po.updated', this.handlePOUpdated.bind(this));
     this.registerEventHandler('transaction.po.approved', this.handlePOApproved.bind(this));
-    
+
     this.registerEventHandler('transaction.invoice.created', this.handleInvoiceCreated.bind(this));
     this.registerEventHandler('transaction.invoice.matched', this.handleInvoiceMatched.bind(this));
     this.registerEventHandler('transaction.invoice.approved', this.handleInvoiceApproved.bind(this));
-    
+
     this.registerEventHandler('transaction.payment.created', this.handlePaymentCreated.bind(this));
     this.registerEventHandler('transaction.payment.applied', this.handlePaymentApplied.bind(this));
-    
+
     // Matching events
     this.registerEventHandler('matching.completed', this.handleMatchingCompleted.bind(this));
     this.registerEventHandler('matching.failed', this.handleMatchingFailed.bind(this));
     this.registerEventHandler('matching.exception', this.handleMatchingException.bind(this));
-    
+
     // Dispute events
     this.registerEventHandler('dispute.created', this.handleDisputeCreated.bind(this));
     this.registerEventHandler('dispute.assigned', this.handleDisputeAssigned.bind(this));
     this.registerEventHandler('dispute.escalated', this.handleDisputeEscalated.bind(this));
     this.registerEventHandler('dispute.resolved', this.handleDisputeResolved.bind(this));
-    
+
     // Accrual events
     this.registerEventHandler('accrual.calculated', this.handleAccrualCalculated.bind(this));
     this.registerEventHandler('accrual.variance', this.handleAccrualVariance.bind(this));
     this.registerEventHandler('accrual.reconciled', this.handleAccrualReconciled.bind(this));
-    
+
     // Settlement events
     this.registerEventHandler('settlement.created', this.handleSettlementCreated.bind(this));
     this.registerEventHandler('settlement.approved', this.handleSettlementApproved.bind(this));
@@ -279,7 +279,7 @@ class RealtimeEventService extends EventEmitter {
    */
   storeEvent(event) {
     this.eventStore.push(event);
-    
+
     // Trim event store if too large
     if (this.eventStore.length > this.maxEventStoreSize) {
       this.eventStore.shift();
@@ -293,16 +293,16 @@ class RealtimeEventService extends EventEmitter {
     let events = [...this.eventStore];
 
     if (filters.type) {
-      events = events.filter(e => e.type === filters.type);
+      events = events.filter((e) => e.type === filters.type);
     }
 
     if (filters.since) {
       const since = new Date(filters.since);
-      events = events.filter(e => new Date(e.timestamp) >= since);
+      events = events.filter((e) => new Date(e.timestamp) >= since);
     }
 
     if (filters.entityId) {
-      events = events.filter(e => e.data.entityId === filters.entityId);
+      events = events.filter((e) => e.data.entityId === filters.entityId);
     }
 
     return events;
@@ -312,8 +312,8 @@ class RealtimeEventService extends EventEmitter {
    * Replay events
    */
   async replayEvents(eventIds, handler) {
-    const events = this.eventStore.filter(e => eventIds.includes(e.id));
-    
+    const events = this.eventStore.filter((e) => eventIds.includes(e.id));
+
     for (const event of events) {
       await handler(event);
     }
@@ -328,16 +328,16 @@ class RealtimeEventService extends EventEmitter {
 
   // Event Handlers
 
-  async handlePOCreated(event) {
+  handlePOCreated(event) {
     console.log('PO Created:', event.data);
     // Send notification, trigger workflows, etc.
   }
 
-  async handlePOUpdated(event) {
+  handlePOUpdated(event) {
     console.log('PO Updated:', event.data);
   }
 
-  async handlePOApproved(event) {
+  handlePOApproved(event) {
     console.log('PO Approved:', event.data);
     // Trigger accrual calculation
     this.publishEvent('accrual.trigger', {
@@ -346,7 +346,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleInvoiceCreated(event) {
+  handleInvoiceCreated(event) {
     console.log('Invoice Created:', event.data);
     // Trigger auto-matching
     this.publishEvent('matching.trigger', {
@@ -355,11 +355,11 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleInvoiceMatched(event) {
+  handleInvoiceMatched(event) {
     console.log('Invoice Matched:', event.data);
   }
 
-  async handleInvoiceApproved(event) {
+  handleInvoiceApproved(event) {
     console.log('Invoice Approved:', event.data);
     // Update accruals
     this.publishEvent('accrual.update', {
@@ -368,7 +368,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handlePaymentCreated(event) {
+  handlePaymentCreated(event) {
     console.log('Payment Created:', event.data);
     // Trigger auto-application
     this.publishEvent('payment.auto_apply', {
@@ -376,7 +376,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handlePaymentApplied(event) {
+  handlePaymentApplied(event) {
     console.log('Payment Applied:', event.data);
     // Check if settlement needed
     this.publishEvent('settlement.check', {
@@ -384,12 +384,12 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleMatchingCompleted(event) {
+  handleMatchingCompleted(event) {
     console.log('Matching Completed:', event.data);
     // Send notification
   }
 
-  async handleMatchingFailed(event) {
+  handleMatchingFailed(event) {
     console.log('Matching Failed:', event.data);
     // Create dispute or alert
     if (event.data.autoCreateDispute) {
@@ -400,12 +400,12 @@ class RealtimeEventService extends EventEmitter {
     }
   }
 
-  async handleMatchingException(event) {
+  handleMatchingException(event) {
     console.log('Matching Exception:', event.data);
     // Alert user
   }
 
-  async handleDisputeCreated(event) {
+  handleDisputeCreated(event) {
     console.log('Dispute Created:', event.data);
     // Assign to analyst
     this.publishEvent('dispute.assign', {
@@ -413,26 +413,26 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleDisputeAssigned(event) {
+  handleDisputeAssigned(event) {
     console.log('Dispute Assigned:', event.data);
     // Notify assignee
   }
 
-  async handleDisputeEscalated(event) {
+  handleDisputeEscalated(event) {
     console.log('Dispute Escalated:', event.data);
     // Notify manager
   }
 
-  async handleDisputeResolved(event) {
+  handleDisputeResolved(event) {
     console.log('Dispute Resolved:', event.data);
     // Update related transactions
   }
 
-  async handleAccrualCalculated(event) {
+  handleAccrualCalculated(event) {
     console.log('Accrual Calculated:', event.data);
   }
 
-  async handleAccrualVariance(event) {
+  handleAccrualVariance(event) {
     console.log('Accrual Variance Detected:', event.data);
     // Alert if variance > threshold
     if (Math.abs(event.data.variance) > 0.1) { // 10%
@@ -440,15 +440,15 @@ class RealtimeEventService extends EventEmitter {
     }
   }
 
-  async handleAccrualReconciled(event) {
+  handleAccrualReconciled(event) {
     console.log('Accrual Reconciled:', event.data);
   }
 
-  async handleSettlementCreated(event) {
+  handleSettlementCreated(event) {
     console.log('Settlement Created:', event.data);
   }
 
-  async handleSettlementApproved(event) {
+  handleSettlementApproved(event) {
     console.log('Settlement Approved:', event.data);
     // Trigger bank reconciliation
     this.publishEvent('reconciliation.trigger', {
@@ -456,7 +456,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleSettlementReconciled(event) {
+  handleSettlementReconciled(event) {
     console.log('Settlement Reconciled:', event.data);
   }
 
@@ -508,7 +508,7 @@ class RealtimeEventService extends EventEmitter {
       recentEvents: this.eventStore.slice(-10)
     };
 
-    this.eventStore.forEach(event => {
+    this.eventStore.forEach((event) => {
       stats.eventsByType[event.type] = (stats.eventsByType[event.type] || 0) + 1;
     });
 

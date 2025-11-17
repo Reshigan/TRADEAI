@@ -6,10 +6,10 @@ try {
   console.warn('[MLPredictionService] Failed to load @tensorflow/tfjs-node, falling back to @tensorflow/tfjs (CPU). Error:', err.message);
   tf = require('@tensorflow/tfjs');
 }
-const { SimpleLinearRegression, PolynomialRegression } = require('ml-regression');
-const ss = require('simple-statistics');
-const math = require('mathjs');
-const cloneDeep = require('lodash.clonedeep');
+const { _SimpleLinearRegression, _PolynomialRegression } = require('ml-regression');
+const _ss = require('simple-statistics');
+const _math = require('mathjs');
+const _cloneDeep = require('lodash.clonedeep');
 
 class MLPredictionService {
   constructor() {
@@ -21,12 +21,12 @@ class MLPredictionService {
 
   async initialize() {
     if (this.initialized) return;
-    
+
     console.log('Initializing ML Prediction Service...');
-    
+
     // Initialize pre-trained models
     await this.initializeModels();
-    
+
     this.initialized = true;
     console.log('ML Prediction Service initialized successfully');
   }
@@ -34,16 +34,16 @@ class MLPredictionService {
   async initializeModels() {
     // Initialize customer behavior prediction model
     await this.initializeCustomerBehaviorModel();
-    
+
     // Initialize demand forecasting model
     await this.initializeDemandForecastingModel();
-    
+
     // Initialize promotion optimization model
     await this.initializePromotionOptimizationModel();
-    
+
     // Initialize churn prediction model
     await this.initializeChurnPredictionModel();
-    
+
     // Initialize price optimization model
     await this.initializePriceOptimizationModel();
   }
@@ -69,11 +69,11 @@ class MLPredictionService {
       });
 
       this.models.set('customerBehavior', model);
-      
+
       // Generate synthetic training data
       const trainingData = this.generateCustomerBehaviorTrainingData();
       await this.trainCustomerBehaviorModel(model, trainingData);
-      
+
     } catch (error) {
       console.error('Error initializing customer behavior model:', error);
     }
@@ -84,9 +84,9 @@ class MLPredictionService {
       // Time series forecasting model
       const model = tf.sequential({
         layers: [
-          tf.layers.lstm({ 
-            units: 50, 
-            returnSequences: true, 
+          tf.layers.lstm({
+            units: 50,
+            returnSequences: true,
             inputShape: [30, 5] // 30 time steps, 5 features
           }),
           tf.layers.dropout({ rate: 0.2 }),
@@ -104,11 +104,11 @@ class MLPredictionService {
       });
 
       this.models.set('demandForecasting', model);
-      
+
       // Generate synthetic training data
       const trainingData = this.generateDemandForecastingTrainingData();
       await this.trainDemandForecastingModel(model, trainingData);
-      
+
     } catch (error) {
       console.error('Error initializing demand forecasting model:', error);
     }
@@ -137,11 +137,11 @@ class MLPredictionService {
       });
 
       this.models.set('promotionOptimization', model);
-      
+
       // Generate synthetic training data
       const trainingData = this.generatePromotionOptimizationTrainingData();
       await this.trainPromotionOptimizationModel(model, trainingData);
-      
+
     } catch (error) {
       console.error('Error initializing promotion optimization model:', error);
     }
@@ -168,11 +168,11 @@ class MLPredictionService {
       });
 
       this.models.set('churnPrediction', model);
-      
+
       // Generate synthetic training data
       const trainingData = this.generateChurnPredictionTrainingData();
       await this.trainChurnPredictionModel(model, trainingData);
-      
+
     } catch (error) {
       console.error('Error initializing churn prediction model:', error);
     }
@@ -199,11 +199,11 @@ class MLPredictionService {
       });
 
       this.models.set('priceOptimization', model);
-      
+
       // Generate synthetic training data
       const trainingData = this.generatePriceOptimizationTrainingData();
       await this.trainPriceOptimizationModel(model, trainingData);
-      
+
     } catch (error) {
       console.error('Error initializing price optimization model:', error);
     }
@@ -212,7 +212,7 @@ class MLPredictionService {
   // Customer Behavior Prediction
   async predictCustomerBehavior(customerData) {
     await this.initialize();
-    
+
     const model = this.models.get('customerBehavior');
     if (!model) throw new Error('Customer behavior model not available');
 
@@ -221,7 +221,7 @@ class MLPredictionService {
       const features = this.normalizeCustomerFeatures(customerData);
       const prediction = model.predict(tf.tensor2d([features]));
       const probabilities = await prediction.data();
-      
+
       const behaviors = ['high_value', 'regular', 'at_risk', 'churned'];
       const results = behaviors.map((behavior, index) => ({
         behavior,
@@ -231,7 +231,7 @@ class MLPredictionService {
 
       // Sort by probability
       results.sort((a, b) => b.probability - a.probability);
-      
+
       return {
         predictedBehavior: results[0].behavior,
         probabilities: results,
@@ -247,28 +247,28 @@ class MLPredictionService {
   // Demand Forecasting
   async forecastDemand(productId, timeHorizon = 30, historicalData = null) {
     await this.initialize();
-    
+
     const model = this.models.get('demandForecasting');
     if (!model) throw new Error('Demand forecasting model not available');
 
     try {
       // Use provided historical data or generate synthetic data
       const timeSeriesData = historicalData || this.generateSyntheticTimeSeriesData(productId);
-      
+
       // Prepare input sequence (last 30 days)
       const inputSequence = this.prepareTimeSeriesInput(timeSeriesData);
       const prediction = model.predict(tf.tensor3d([inputSequence]));
       const forecastValue = await prediction.data();
-      
+
       // Generate forecast for the specified time horizon
       const forecast = [];
       let currentValue = forecastValue[0];
-      
+
       for (let i = 0; i < timeHorizon; i++) {
         const trend = this.calculateTrend(timeSeriesData);
         const seasonality = this.calculateSeasonality(i, timeSeriesData);
         const noise = (Math.random() - 0.5) * 0.1; // Add some randomness
-        
+
         currentValue = Math.max(0, currentValue * (1 + trend + seasonality + noise));
         forecast.push({
           date: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000),
@@ -276,7 +276,7 @@ class MLPredictionService {
           confidence: this.calculateForecastConfidence(i, timeHorizon)
         });
       }
-      
+
       return {
         productId,
         forecast,
@@ -294,7 +294,7 @@ class MLPredictionService {
   // Promotion Optimization
   async optimizePromotion(promotionData) {
     await this.initialize();
-    
+
     const model = this.models.get('promotionOptimization');
     if (!model) throw new Error('Promotion optimization model not available');
 
@@ -303,16 +303,16 @@ class MLPredictionService {
       const features = this.normalizePromotionFeatures(promotionData);
       const prediction = model.predict(tf.tensor2d([features]));
       const results = await prediction.data();
-      
+
       const [predictedROI, predictedLift, predictedConversionRate] = results;
-      
+
       // Generate optimization recommendations
       const optimizations = this.generatePromotionOptimizations(promotionData, {
         roi: predictedROI,
         lift: predictedLift,
         conversionRate: predictedConversionRate
       });
-      
+
       return {
         currentPromotion: promotionData,
         predictions: {
@@ -333,7 +333,7 @@ class MLPredictionService {
   // Churn Prediction
   async predictChurn(customerData) {
     await this.initialize();
-    
+
     const model = this.models.get('churnPrediction');
     if (!model) throw new Error('Churn prediction model not available');
 
@@ -342,10 +342,10 @@ class MLPredictionService {
       const features = this.normalizeChurnFeatures(customerData);
       const prediction = model.predict(tf.tensor2d([features]));
       const churnProbability = (await prediction.data())[0];
-      
+
       const riskLevel = this.categorizeChurnRisk(churnProbability);
       const retentionStrategies = this.generateRetentionStrategies(riskLevel, customerData);
-      
+
       return {
         customerId: customerData.customerId,
         churnProbability,
@@ -363,7 +363,7 @@ class MLPredictionService {
   // Price Optimization
   async optimizePrice(productData, marketConditions = {}) {
     await this.initialize();
-    
+
     const model = this.models.get('priceOptimization');
     if (!model) throw new Error('Price optimization model not available');
 
@@ -372,19 +372,19 @@ class MLPredictionService {
       const features = this.normalizePriceFeatures(productData, marketConditions);
       const prediction = model.predict(tf.tensor2d([features]));
       const results = await prediction.data();
-      
+
       const [optimalPrice, expectedDemand] = results;
-      
+
       // Calculate price elasticity
       const priceElasticity = this.calculatePriceElasticity(productData, optimalPrice);
-      
+
       // Generate pricing strategies
       const pricingStrategies = this.generatePricingStrategies(productData, {
         optimalPrice,
         expectedDemand,
         priceElasticity
       });
-      
+
       return {
         productId: productData.productId,
         currentPrice: productData.currentPrice,
@@ -404,7 +404,7 @@ class MLPredictionService {
   // Batch Predictions
   async batchPredict(predictionType, dataArray) {
     const results = [];
-    
+
     for (const data of dataArray) {
       try {
         let prediction;
@@ -432,7 +432,7 @@ class MLPredictionService {
         results.push({ success: false, error: error.message, data });
       }
     }
-    
+
     return results;
   }
 
@@ -441,14 +441,14 @@ class MLPredictionService {
     const { inputs, outputs } = trainingData;
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 50,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -457,14 +457,14 @@ class MLPredictionService {
     const { inputs, outputs } = trainingData;
     const xs = tf.tensor3d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 100,
       batchSize: 16,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -473,14 +473,14 @@ class MLPredictionService {
     const { inputs, outputs } = trainingData;
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 75,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -489,14 +489,14 @@ class MLPredictionService {
     const { inputs, outputs } = trainingData;
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 60,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -505,14 +505,14 @@ class MLPredictionService {
     const { inputs, outputs } = trainingData;
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 80,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -521,7 +521,7 @@ class MLPredictionService {
   generateCustomerBehaviorTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 1000; i++) {
       // Generate synthetic customer features
       const features = [
@@ -534,35 +534,35 @@ class MLPredictionService {
         Math.random(), // email_engagement
         Math.random() // app_usage
       ];
-      
+
       // Generate corresponding behavior (one-hot encoded)
       const behaviorIndex = Math.floor(Math.random() * 4);
       const behavior = [0, 0, 0, 0];
       behavior[behaviorIndex] = 1;
-      
+
       inputs.push(features);
       outputs.push(behavior);
     }
-    
+
     return { inputs, outputs };
   }
 
   generateDemandForecastingTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 500; i++) {
       // Generate time series sequence (30 time steps, 5 features each)
       const sequence = [];
       let baseValue = 100 + Math.random() * 200;
-      
+
       for (let j = 0; j < 30; j++) {
         const trend = (Math.random() - 0.5) * 0.02;
         const seasonality = Math.sin(j / 7 * Math.PI) * 0.1;
         const noise = (Math.random() - 0.5) * 0.1;
-        
+
         baseValue *= (1 + trend + seasonality + noise);
-        
+
         sequence.push([
           baseValue, // demand
           Math.random() * 100, // price
@@ -571,21 +571,21 @@ class MLPredictionService {
           Math.random() * 12 // month
         ]);
       }
-      
+
       // Next day demand as output
       const nextDayDemand = baseValue * (1 + (Math.random() - 0.5) * 0.1);
-      
+
       inputs.push(sequence);
       outputs.push([nextDayDemand]);
     }
-    
+
     return { inputs, outputs };
   }
 
   generatePromotionOptimizationTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 800; i++) {
       // Generate promotion features
       const features = [
@@ -602,27 +602,27 @@ class MLPredictionService {
         Math.random(), // is_holiday
         Math.random() * 5 // product_category
       ];
-      
+
       // Generate corresponding outcomes
       const discountEffect = features[0] / 100;
       const budgetEffect = Math.log(features[2] + 1) / 10;
       const seasonEffect = Math.sin(features[7] / 12 * Math.PI) * 0.2;
-      
+
       const roi = 100 + discountEffect * 50 + budgetEffect * 30 + seasonEffect * 20 + (Math.random() - 0.5) * 20;
       const lift = discountEffect * 30 + budgetEffect * 10 + (Math.random() - 0.5) * 10;
       const conversionRate = 0.02 + discountEffect * 0.03 + (Math.random() - 0.5) * 0.01;
-      
+
       inputs.push(features);
       outputs.push([roi, lift, conversionRate]);
     }
-    
+
     return { inputs, outputs };
   }
 
   generateChurnPredictionTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 1000; i++) {
       // Generate customer features for churn prediction
       const features = [
@@ -637,7 +637,7 @@ class MLPredictionService {
         Math.random() * 10, // referrals_made
         Math.random() // satisfaction_score
       ];
-      
+
       // Calculate churn probability based on features
       const churnScore = (
         features[0] / 365 * 0.3 + // days since last purchase
@@ -646,20 +646,20 @@ class MLPredictionService {
         (1 - features[7]) * 0.15 + // low app usage
         (1 - features[9]) * 0.15 // low satisfaction
       );
-      
+
       const churn = churnScore > 0.5 ? 1 : 0;
-      
+
       inputs.push(features);
       outputs.push([churn]);
     }
-    
+
     return { inputs, outputs };
   }
 
   generatePriceOptimizationTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 600; i++) {
       // Generate product and market features
       const features = [
@@ -673,19 +673,19 @@ class MLPredictionService {
         Math.random(), // is_premium
         Math.random() * 100 // market_share
       ];
-      
+
       // Calculate optimal price and expected demand
       const costMargin = (features[0] - features[1]) / features[0];
       const competitorGap = (features[0] - features[2]) / features[2];
       const elasticity = features[4];
-      
+
       const optimalPrice = features[1] * (1 + costMargin * 0.8 - competitorGap * 0.2);
       const expectedDemand = features[3] * (1 - elasticity * (optimalPrice - features[0]) / features[0]);
-      
+
       inputs.push(features);
       outputs.push([optimalPrice, Math.max(0, expectedDemand)]);
     }
-    
+
     return { inputs, outputs };
   }
 
@@ -761,9 +761,9 @@ class MLPredictionService {
     return Math.max(0, 1 - Math.sqrt(variance));
   }
 
-  generateBehaviorRecommendations(behavior, customerData) {
+  generateBehaviorRecommendations(behavior, _customerData) {
     const recommendations = [];
-    
+
     switch (behavior) {
       case 'high_value':
         recommendations.push('Offer premium products and exclusive deals');
@@ -786,21 +786,21 @@ class MLPredictionService {
         recommendations.push('Survey for feedback and improvement');
         break;
     }
-    
+
     return recommendations;
   }
 
   generatePromotionRecommendations(optimizations) {
-    return optimizations.map(opt => ({
+    return optimizations.map((opt) => ({
       strategy: opt.strategy,
       recommendation: opt.description,
       expectedImpact: opt.expectedImpact
     }));
   }
 
-  generateRetentionStrategies(riskLevel, customerData) {
+  generateRetentionStrategies(riskLevel, _customerData) {
     const strategies = [];
-    
+
     switch (riskLevel) {
       case 'high':
         strategies.push({ strategy: 'immediate_intervention', priority: 'urgent' });
@@ -816,7 +816,7 @@ class MLPredictionService {
         strategies.push({ strategy: 'satisfaction_survey', priority: 'low' });
         break;
     }
-    
+
     return strategies;
   }
 
@@ -829,9 +829,9 @@ class MLPredictionService {
   // Additional utility methods would continue here...
   // (truncated for brevity, but would include all the helper methods referenced above)
 
-  async getModelMetrics() {
+  getModelMetrics() {
     const metrics = {};
-    
+
     for (const [modelName, model] of this.models) {
       metrics[modelName] = {
         trainable_params: model.countParams(),
@@ -839,7 +839,7 @@ class MLPredictionService {
         last_trained: new Date().toISOString()
       };
     }
-    
+
     return metrics;
   }
 
@@ -851,7 +851,7 @@ class MLPredictionService {
 
   async loadModels(directory) {
     const modelNames = ['customerBehavior', 'demandForecasting', 'promotionOptimization', 'churnPrediction', 'priceOptimization'];
-    
+
     for (const modelName of modelNames) {
       try {
         const model = await tf.loadLayersModel(`file://${directory}/${modelName}/model.json`);

@@ -18,7 +18,7 @@ const sanitizeInput = (input) => {
 // Get all customers
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, status, channel } = req.query;
-  
+
   const query = {};
   if (search) {
     query.$or = [
@@ -29,14 +29,14 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   }
   if (status) query.status = status;
   if (channel) query.channel = channel;
-  
+
   const customers = await Customer.find(query)
     .limit(limit * 1)
     .skip((page - 1) * limit)
     .sort({ name: 1 });
-  
+
   const count = await Customer.countDocuments(query);
-  
+
   res.json({
     success: true,
     data: customers,
@@ -49,11 +49,11 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 // Get customer by ID
 router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
   const customer = await Customer.findById(req.params.id);
-  
+
   if (!customer) {
     throw new AppError('Customer not found', 404);
   }
-  
+
   res.json({
     success: true,
     data: customer
@@ -67,7 +67,7 @@ router.post('/', authenticateToken, authorize('super_admin', 'admin', 'manager')
   if (!tenantId) {
     throw new AppError('Tenant context not found', 400);
   }
-  
+
   // Sanitize string fields to prevent XSS
   const sanitizedData = { ...req.body };
   if (sanitizedData.name) sanitizedData.name = sanitizeInput(sanitizedData.name);
@@ -77,13 +77,13 @@ router.post('/', authenticateToken, authorize('super_admin', 'admin', 'manager')
   if (sanitizedData.city) sanitizedData.city = sanitizeInput(sanitizedData.city);
   if (sanitizedData.state) sanitizedData.state = sanitizeInput(sanitizedData.state);
   if (sanitizedData.contactPerson) sanitizedData.contactPerson = sanitizeInput(sanitizedData.contactPerson);
-  
+
   const customer = await Customer.create({
     ...sanitizedData,
     tenantId,
     createdBy: req.user._id
   });
-  
+
   res.status(201).json({
     success: true,
     message: 'Customer created successfully',
@@ -98,11 +98,11 @@ router.put('/:id', authenticateToken, authorize('super_admin', 'admin', 'manager
     req.body,
     { new: true, runValidators: true }
   );
-  
+
   if (!customer) {
     throw new AppError('Customer not found', 404);
   }
-  
+
   res.json({
     success: true,
     data: customer
@@ -112,11 +112,11 @@ router.put('/:id', authenticateToken, authorize('super_admin', 'admin', 'manager
 // Delete customer
 router.delete('/:id', authenticateToken, authorize('super_admin', 'admin'), asyncHandler(async (req, res) => {
   const customer = await Customer.findByIdAndDelete(req.params.id);
-  
+
   if (!customer) {
     throw new AppError('Customer not found', 404);
   }
-  
+
   res.json({
     success: true,
     message: 'Customer deleted successfully'
@@ -126,17 +126,17 @@ router.delete('/:id', authenticateToken, authorize('super_admin', 'admin'), asyn
 // Get customer hierarchy
 router.get('/:id/hierarchy', authenticateToken, asyncHandler(async (req, res) => {
   const customer = await Customer.findById(req.params.id);
-  
+
   if (!customer) {
     throw new AppError('Customer not found', 404);
   }
-  
+
   // Get parent and children
   const [parent, children] = await Promise.all([
     customer.parent ? Customer.findById(customer.parent) : null,
     Customer.find({ parent: customer._id })
   ]);
-  
+
   res.json({
     success: true,
     data: {
@@ -152,7 +152,7 @@ router.get('/:id/promotions', authenticateToken, asyncHandler(async (req, res) =
   const promotions = await Promotion.find({ 'scope.customers.customer': req.params.id })
     .populate('products.product', 'name sku')
     .sort({ 'period.startDate': -1 });
-  
+
   res.json({
     success: true,
     data: promotions
@@ -164,7 +164,7 @@ router.get('/:id/trade-spends', authenticateToken, asyncHandler(async (req, res)
   const tradeSpends = await TradeSpend.find({ customer: req.params.id })
     .populate('vendor', 'name')
     .sort({ createdAt: -1 });
-  
+
   res.json({
     success: true,
     data: tradeSpends
@@ -175,7 +175,7 @@ router.get('/:id/trading-terms', authenticateToken, asyncHandler(async (req, res
   const TradingTerm = require('../models/TradingTerm');
   const tradingTerms = await TradingTerm.find({ 'applicability.customers': req.params.id })
     .sort({ createdAt: -1 });
-  
+
   res.json({
     success: true,
     data: tradingTerms
@@ -186,7 +186,7 @@ router.get('/:id/budgets', authenticateToken, asyncHandler(async (req, res) => {
   const Budget = require('../models/Budget');
   const budgets = await Budget.find({ 'scope.customers': req.params.id })
     .sort({ year: -1 });
-  
+
   res.json({
     success: true,
     data: budgets
@@ -197,7 +197,7 @@ router.get('/:id/claims', authenticateToken, asyncHandler(async (req, res) => {
   const Claim = require('../models/Claim');
   const claims = await Claim.find({ customer: req.params.id })
     .sort({ createdAt: -1 });
-  
+
   res.json({
     success: true,
     data: claims
@@ -208,7 +208,7 @@ router.get('/:id/deductions', authenticateToken, asyncHandler(async (req, res) =
   const Deduction = require('../models/Deduction');
   const deductions = await Deduction.find({ customer: req.params.id })
     .sort({ createdAt: -1 });
-  
+
   res.json({
     success: true,
     data: deductions
@@ -221,7 +221,7 @@ router.get('/:id/sales-history', authenticateToken, asyncHandler(async (req, res
     .populate('product', 'name sku')
     .sort({ date: -1 })
     .limit(100);
-  
+
   res.json({
     success: true,
     data: salesHistory

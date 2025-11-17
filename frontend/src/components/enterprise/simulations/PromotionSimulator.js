@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Grid,
@@ -22,32 +22,21 @@ import {
   IconButton
 } from '@mui/material';
 import {
-  TrendingUp,
-  TrendingDown,
-  AttachMoney,
-  ShowChart,
   Psychology,
   PlayArrow,
   Save,
-  Refresh,
   Info
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  Legend,
   ResponsiveContainer,
   Area,
   AreaChart
 } from 'recharts';
 import enterpriseApi from '../../../services/enterpriseApi';
-import { formatCurrency } from '../../../utils/formatters';
 
 const promotionTypes = [
   { value: 'discount', label: 'Discount Promotion' },

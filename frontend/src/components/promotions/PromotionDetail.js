@@ -15,10 +15,8 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  IconButton,
   Alert,
   CircularProgress,
-  Chip,
   LinearProgress
 } from '@mui/material';
 import {
@@ -30,10 +28,8 @@ import {
   Category as CategoryIcon,
   Description as DescriptionIcon,
   Flag as FlagIcon,
-  Assessment as AssessmentIcon,
-  ShoppingCart as ShoppingCartIcon
+  Assessment as AssessmentIcon
 } from '@mui/icons-material';
-import { format } from 'date-fns';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { promotionService, customerService } from '../../services/api';
 import { formatCurrency, formatDate } from '../../utils/formatters';
@@ -122,7 +118,7 @@ const PromotionDetail = () => {
   };
 
   // Handle form submit
-  const handleFormSubmit = async (promotionData) => {
+  const handleFormSubmit = async (_promotionData) => {
     try {
       // In a real app, we would call the API
       // await promotionService.update(id, promotionData);

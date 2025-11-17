@@ -19,17 +19,12 @@ import {
   Chip,
   Snackbar,
   Alert,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
+  CircularProgress
 } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
   AttachMoney,
-  CalendarToday,
   ShoppingCart,
   LocalOffer,
   Assessment,
@@ -40,8 +35,8 @@ import {
 import { AIChatbotFAB } from './common';
 import { WalkthroughTour } from './training';
 import { AIInsightsFeed } from './contextual-ai';
-import { analyticsService, budgetService, promotionService, customerService, currencyService } from '../services/api';
-import { safeNumber, safeToFixed, formatNumber, formatPercentage } from '../utils/formatters';
+import {analyticsService} from '../services/api';
+import {safeNumber, safeToFixed, formatPercentage} from '../utils/formatters';
 
 const Dashboard = ({ user }) => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);

@@ -7,36 +7,36 @@ const approvalPolicySchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   policyId: {
     type: String,
     required: true,
     unique: true
   },
-  
+
   name: {
     type: String,
     required: true
   },
-  
+
   description: String,
-  
+
   entityType: {
     type: String,
     enum: ['promotion', 'trade_spend', 'budget', 'trading_term', 'claim', 'deduction'],
     required: true
   },
-  
+
   isActive: {
     type: Boolean,
     default: true
   },
-  
+
   priority: {
     type: Number,
     default: 0
   },
-  
+
   rules: [{
     ruleId: String,
     name: String,
@@ -63,7 +63,7 @@ const approvalPolicySchema = new mongoose.Schema({
       }
     }]
   }],
-  
+
   defaultApprovalChain: [{
     level: Number,
     approverRole: String,
@@ -74,7 +74,7 @@ const approvalPolicySchema = new mongoose.Schema({
     slaDays: Number,
     escalationDays: Number
   }],
-  
+
   exceptions: [{
     condition: String,
     action: {
@@ -83,7 +83,7 @@ const approvalPolicySchema = new mongoose.Schema({
     },
     details: mongoose.Schema.Types.Mixed
   }],
-  
+
   notifications: {
     onSubmit: {
       type: Boolean,
@@ -103,7 +103,7 @@ const approvalPolicySchema = new mongoose.Schema({
     },
     reminderDays: [Number]
   },
-  
+
   auditSettings: {
     requireComments: {
       type: Boolean,
@@ -124,9 +124,9 @@ const approvalPolicySchema = new mongoose.Schema({
 
 approvalPolicySchema.index({ company: 1, entityType: 1, isActive: 1 });
 
-approvalPolicySchema.methods.evaluateRules = function(entity) {
+approvalPolicySchema.methods.evaluateRules = function (entity) {
   const matchedRules = [];
-  
+
   for (const rule of this.rules) {
     const fieldValue = this.getFieldValue(entity, rule.condition.field);
     const conditionMet = this.evaluateCondition(
@@ -134,19 +134,19 @@ approvalPolicySchema.methods.evaluateRules = function(entity) {
       rule.condition.operator,
       rule.condition.value
     );
-    
+
     if (conditionMet) {
       matchedRules.push(rule);
     }
   }
-  
+
   return matchedRules.sort((a, b) => (b.approvalLevels?.length || 0) - (a.approvalLevels?.length || 0));
 };
 
-approvalPolicySchema.methods.getFieldValue = function(entity, fieldPath) {
+approvalPolicySchema.methods.getFieldValue = function (entity, fieldPath) {
   const parts = fieldPath.split('.');
   let value = entity;
-  
+
   for (const part of parts) {
     if (value && typeof value === 'object') {
       value = value[part];
@@ -154,11 +154,11 @@ approvalPolicySchema.methods.getFieldValue = function(entity, fieldPath) {
       return undefined;
     }
   }
-  
+
   return value;
 };
 
-approvalPolicySchema.methods.evaluateCondition = function(fieldValue, operator, targetValue) {
+approvalPolicySchema.methods.evaluateCondition = function (fieldValue, operator, targetValue) {
   switch (operator) {
     case 'gt':
       return fieldValue > targetValue;
@@ -183,9 +183,9 @@ approvalPolicySchema.methods.evaluateCondition = function(fieldValue, operator, 
   }
 };
 
-approvalPolicySchema.methods.buildApprovalChain = function(entity) {
+approvalPolicySchema.methods.buildApprovalChain = function (entity) {
   const matchedRules = this.evaluateRules(entity);
-  
+
   if (matchedRules.length > 0) {
     return matchedRules[0].approvalLevels.map((level, index) => ({
       level: index + 1,
@@ -195,7 +195,7 @@ approvalPolicySchema.methods.buildApprovalChain = function(entity) {
       status: 'pending'
     }));
   }
-  
+
   return this.defaultApprovalChain.map((level, index) => ({
     level: index + 1,
     approver: level.approverUserId,
@@ -205,21 +205,21 @@ approvalPolicySchema.methods.buildApprovalChain = function(entity) {
   }));
 };
 
-approvalPolicySchema.statics.findApplicablePolicy = async function(tenantId, entityType, entity) {
+approvalPolicySchema.statics.findApplicablePolicy = async function (tenantId, entityType, entity) {
   const policies = await this.find({
     company: tenantId,
     entityType,
     isActive: true
   }).sort({ priority: -1 });
-  
+
   for (const policy of policies) {
     const matchedRules = policy.evaluateRules(entity);
     if (matchedRules.length > 0) {
       return policy;
     }
   }
-  
-  return policies.find(p => p.defaultApprovalChain.length > 0);
+
+  return policies.find((p) => p.defaultApprovalChain.length > 0);
 };
 
 module.exports = mongoose.model('ApprovalPolicy', approvalPolicySchema);

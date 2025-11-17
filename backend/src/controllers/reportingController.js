@@ -2,7 +2,7 @@ const ReportingEngine = require('../services/reportingEngine');
 const AdvancedReportingEngine = require('../services/advancedReportingEngine');
 const Report = require('../models/Report');
 const { asyncHandler } = require('../middleware/asyncHandler');
-const { validateTenant } = require('../middleware/tenantValidation');
+const { _validateTenant } = require('../middleware/tenantValidation');
 const fs = require('fs');
 const path = require('path');
 
@@ -171,7 +171,7 @@ class ReportingController {
    * Get available report templates
    * GET /api/reports/templates
    */
-  getReportTemplates = asyncHandler(async (req, res) => {
+  getReportTemplates = asyncHandler((req, res) => {
     const templates = this.reportingEngine.getReportTemplates();
 
     res.json({
@@ -199,13 +199,13 @@ class ReportingController {
    * Get scheduled reports
    * GET /api/reports/scheduled
    */
-  getScheduledReports = asyncHandler(async (req, res) => {
+  getScheduledReports = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
 
     // Get all scheduled reports for the tenant
     const scheduledReports = Array.from(this.reportingEngine.scheduledReports.values())
-      .filter(report => report.tenantId === tenantId)
-      .map(report => ({
+      .filter((report) => report.tenantId === tenantId)
+      .map((report) => ({
         id: report.id,
         name: report.name,
         reportType: report.reportType,
@@ -228,12 +228,12 @@ class ReportingController {
    * Update scheduled report
    * PUT /api/reports/scheduled/:scheduleId
    */
-  updateScheduledReport = asyncHandler(async (req, res) => {
+  updateScheduledReport = asyncHandler((req, res) => {
     const { scheduleId } = req.params;
     const updates = req.body;
 
     const scheduledReport = this.reportingEngine.scheduledReports.get(scheduleId);
-    
+
     if (!scheduledReport) {
       return res.status(404).json({
         success: false,
@@ -243,7 +243,7 @@ class ReportingController {
 
     // Update the scheduled report
     Object.assign(scheduledReport, updates);
-    
+
     // Recalculate next run if schedule changed
     if (updates.schedule) {
       scheduledReport.nextRun = this.reportingEngine.calculateNextRun(updates.schedule);
@@ -263,7 +263,7 @@ class ReportingController {
    * Delete scheduled report
    * DELETE /api/reports/scheduled/:scheduleId
    */
-  deleteScheduledReport = asyncHandler(async (req, res) => {
+  deleteScheduledReport = asyncHandler((req, res) => {
     const { scheduleId } = req.params;
 
     const deleted = this.reportingEngine.scheduledReports.delete(scheduleId);
@@ -285,7 +285,7 @@ class ReportingController {
    * Get report generation status
    * GET /api/reports/status/:reportId
    */
-  getReportStatus = asyncHandler(async (req, res) => {
+  getReportStatus = asyncHandler((req, res) => {
     const { reportId } = req.params;
 
     // This would typically check a job queue for report generation status
@@ -310,8 +310,8 @@ class ReportingController {
    * Download generated report
    * GET /api/reports/download/:reportId
    */
-  downloadReport = asyncHandler(async (req, res) => {
-    const { reportId } = req.params;
+  downloadReport = asyncHandler((req, res) => {
+    const { _reportId } = req.params;
 
     // This would typically retrieve the file path from a database or cache
     // For now, returning error as files are cleaned up immediately after generation
@@ -325,9 +325,9 @@ class ReportingController {
    * Get report history
    * GET /api/reports/history
    */
-  getReportHistory = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
-    const { page = 1, limit = 20, reportType, status } = req.query;
+  getReportHistory = asyncHandler((req, res) => {
+    const _tenantId = req.tenant.id;
+    const { page = 1, limit = 20, _reportType, _status } = req.query;
 
     // This would typically query a database for report history
     // For now, returning mock history
@@ -383,8 +383,8 @@ class ReportingController {
    * Get report metrics and analytics
    * GET /api/reports/metrics
    */
-  getReportMetrics = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
+  getReportMetrics = asyncHandler((req, res) => {
+    const _tenantId = req.tenant.id;
 
     // Mock report metrics
     const metrics = {
@@ -429,12 +429,12 @@ class ReportingController {
    * Validate report configuration
    * POST /api/reports/validate
    */
-  validateReportConfig = asyncHandler(async (req, res) => {
+  validateReportConfig = asyncHandler((req, res) => {
     const reportConfig = req.body;
 
     try {
       this.reportingEngine.validateReportConfig(reportConfig);
-      
+
       res.json({
         success: true,
         message: 'Report configuration is valid',
@@ -476,7 +476,7 @@ class ReportingController {
 
     // Return a preview with limited data
     const preview = {};
-    Object.keys(reportData).forEach(key => {
+    Object.keys(reportData).forEach((key) => {
       if (Array.isArray(reportData[key])) {
         preview[key] = reportData[key].slice(0, 10); // First 10 records
       } else {
@@ -550,7 +550,7 @@ class ReportingController {
       configuration: {
         dataSources: [dataSource],
         filters,
-        columns: columns.map(col => ({
+        columns: columns.map((col) => ({
           field: col.key,
           label: col.header,
           type: col.type || 'text'
@@ -640,7 +640,7 @@ class ReportingController {
       configuration: {
         dataSources: [dataSource],
         filters,
-        columns: columns.map(col => ({
+        columns: columns.map((col) => ({
           field: col.key,
           label: col.header,
           type: col.type || 'text'
@@ -718,13 +718,13 @@ class ReportingController {
       name: title || 'Multi-Sheet Report',
       reportType: 'custom',
       configuration: {
-        dataSources: sheets.map(sheet => sheet.dataSource),
+        dataSources: sheets.map((sheet) => sheet.dataSource),
         filters: {},
         multiSheet: true,
-        sheets: sheets.map(sheet => ({
+        sheets: sheets.map((sheet) => ({
           name: sheet.name,
           dataSource: sheet.dataSource,
-          columns: sheet.columns.map(col => ({
+          columns: sheet.columns.map((col) => ({
             field: col.key,
             label: col.header,
             type: col.type || 'text'
@@ -851,7 +851,7 @@ class ReportingController {
 
     try {
       await fs.promises.access(filePath);
-      
+
       // Update download count
       await report.updatePerformance('export');
 

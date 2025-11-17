@@ -35,7 +35,6 @@ import {
   FilterList as FilterListIcon,
   MoreVert as MoreVertIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
   Business as BusinessIcon
 } from '@mui/icons-material';
 

@@ -47,7 +47,6 @@ import {
   ArrowBack as ArrowBackIcon,
   History as HistoryIcon
 } from '@mui/icons-material';
-import { formatCurrency } from '../../utils/formatters';
 
 import { PageHeader } from '../common';
 
@@ -135,8 +134,8 @@ const CompanyDetail = () => {
       }
 
       setLoading(false);
-    } catch (error) {
-      console.error('Error fetching company data:', error);
+    } catch (err) {
+      console.error('Error fetching company data:', err);
       setSnackbar({
         open: true,
         message: 'Failed to load company data',

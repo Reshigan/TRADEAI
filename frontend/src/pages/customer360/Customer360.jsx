@@ -15,21 +15,15 @@ import {
   Alert,
   CircularProgress,
   Tabs,
-  Tab,
-  IconButton,
-  Tooltip
+  Tab
 } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
   Warning,
-  CheckCircle,
   Star,
   AttachMoney,
-  ShoppingCart,
-  Timeline as TimelineIcon,
   Lightbulb,
-  PlayArrow,
   Add,
   Refresh
 } from '@mui/icons-material';
@@ -37,7 +31,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
 import simulationService from '../../services/simulation/simulationService';
 import customerService from '../../services/customer/customerService';
-import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 

@@ -18,7 +18,6 @@ import {
   Alert,
   Switch,
   FormControlLabel,
-  Tooltip,
   CircularProgress
 } from '@mui/material';
 import {

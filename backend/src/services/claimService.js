@@ -1,11 +1,11 @@
 const Claim = require('../models/Claim');
-const Deduction = require('../models/Deduction');
+const _Deduction = require('../models/_Deduction');
 const Invoice = require('../models/Invoice');
 
 class ClaimService {
   async createClaim(tenantId, claimData, userId) {
     const claimId = `CLM-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    
+
     const claim = new Claim({
       company: tenantId,
       claimId,
@@ -26,59 +26,59 @@ class ClaimService {
         details: { amount: claimData.claimAmount }
       }]
     });
-    
+
     await claim.save();
     return claim;
   }
-  
+
   async submitClaim(claimId, userId) {
     const claim = await Claim.findById(claimId);
-    
+
     if (!claim) {
       throw new Error('Claim not found');
     }
-    
+
     await claim.submit(userId);
     return claim;
   }
-  
+
   async approveClaim(claimId, userId, approvedAmount) {
     const claim = await Claim.findById(claimId);
-    
+
     if (!claim) {
       throw new Error('Claim not found');
     }
-    
+
     await claim.approve(userId, approvedAmount);
     return claim;
   }
-  
+
   async rejectClaim(claimId, userId, reason) {
     const claim = await Claim.findById(claimId);
-    
+
     if (!claim) {
       throw new Error('Claim not found');
     }
-    
+
     await claim.reject(userId, reason);
     return claim;
   }
-  
+
   async matchClaimToInvoice(claimId, invoiceId, invoiceNumber, matchedAmount) {
     const claim = await Claim.findById(claimId);
-    
+
     if (!claim) {
       throw new Error('Claim not found');
     }
-    
+
     await claim.matchToInvoice(invoiceId, invoiceNumber, matchedAmount);
     return claim;
   }
-  
+
   async autoMatchClaims(tenantId) {
     const unmatchedClaims = await Claim.findUnmatched(tenantId);
     const matchResults = [];
-    
+
     for (const claim of unmatchedClaims) {
       const invoices = await Invoice.find({
         company: tenantId,
@@ -88,10 +88,10 @@ class ClaimService {
           $lte: claim.claimPeriod?.end || claim.claimDate
         }
       });
-      
+
       for (const invoice of invoices) {
         const matchedAmount = Math.min(claim.claimAmount, invoice.totalAmount);
-        
+
         if (matchedAmount > 0) {
           await claim.matchToInvoice(invoice._id, invoice.invoiceNumber, matchedAmount);
           matchResults.push({
@@ -100,52 +100,52 @@ class ClaimService {
             matchedAmount,
             matchType: 'auto'
           });
-          
+
           if (claim.matching.matchStatus === 'full') {
             break;
           }
         }
       }
     }
-    
+
     return matchResults;
   }
-  
-  async getUnmatchedClaims(tenantId) {
-    return await Claim.findUnmatched(tenantId);
+
+  getUnmatchedClaims(tenantId) {
+    return Claim.findUnmatched(tenantId);
   }
-  
-  async getPendingApprovalClaims(tenantId) {
-    return await Claim.findPendingApproval(tenantId);
+
+  getPendingApprovalClaims(tenantId) {
+    return Claim.findPendingApproval(tenantId);
   }
-  
-  async getClaimsByCustomer(tenantId, customerId, startDate, endDate) {
+
+  getClaimsByCustomer(tenantId, customerId, startDate, endDate) {
     const query = {
       company: tenantId,
       customer: customerId
     };
-    
+
     if (startDate || endDate) {
       query.claimDate = {};
       if (startDate) query.claimDate.$gte = new Date(startDate);
       if (endDate) query.claimDate.$lte = new Date(endDate);
     }
-    
-    return await Claim.find(query)
+
+    return Claim.find(query)
       .populate('customer', 'name code')
       .populate('promotion', 'name code')
       .sort({ claimDate: -1 });
   }
-  
+
   async getClaimStatistics(tenantId, startDate, endDate) {
     const match = { company: tenantId };
-    
+
     if (startDate || endDate) {
       match.claimDate = {};
       if (startDate) match.claimDate.$gte = new Date(startDate);
       if (endDate) match.claimDate.$lte = new Date(endDate);
     }
-    
+
     const stats = await Claim.aggregate([
       { $match: match },
       {
@@ -157,7 +157,7 @@ class ClaimService {
         }
       }
     ]);
-    
+
     const matchingStats = await Claim.aggregate([
       { $match: match },
       {
@@ -167,7 +167,7 @@ class ClaimService {
         }
       }
     ]);
-    
+
     return {
       byStatus: stats,
       byMatchingStatus: matchingStats

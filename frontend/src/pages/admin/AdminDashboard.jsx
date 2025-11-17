@@ -7,19 +7,14 @@ import {
   CardContent,
   Typography,
   Tab,
-  Tabs,
-  Chip,
-  Button
+  Tabs
 } from '@mui/material';
 import {
   Settings,
   People,
   LocalOffer,
   AccountTree,
-  Psychology,
-  Security,
-  Backup,
-  Assessment
+  Security
 } from '@mui/icons-material';
 import SystemSettings from './system/SystemSettings';
 import UserManagement from './users/UserManagement';

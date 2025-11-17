@@ -1,7 +1,7 @@
 const ss = require('simple-statistics');
-const math = require('mathjs');
-const mlPredictionService = require('./mlPredictionService');
-const aiRecommendationEngine = require('./aiRecommendationEngine');
+const _math = require('mathjs');
+const _mlPredictionService = require('./_mlPredictionService');
+const _aiRecommendationEngine = require('./_aiRecommendationEngine');
 
 class AutomatedInsightsService {
   constructor() {
@@ -13,20 +13,20 @@ class AutomatedInsightsService {
     this.initialized = false;
   }
 
-  async initialize() {
+  initialize() {
     if (this.initialized) return;
-    
+
     console.log('Initializing Automated Insights Service...');
-    
+
     // Initialize insight templates
     this.initializeInsightTemplates();
-    
+
     // Initialize alert rules
     this.initializeAlertRules();
-    
+
     // Start scheduled insight generation
     this.startScheduledInsights();
-    
+
     this.initialized = true;
     console.log('Automated Insights Service initialized successfully');
   }
@@ -145,14 +145,14 @@ class AutomatedInsightsService {
       condition: (data) => data.anomalyScore > 0.8,
       severity: 'low',
       message: 'Unusual pattern detected in data',
-      actions: ['investigate_anomaly', 'validate_data']
+      actions: ['investigate_anomaly', 'validatedata']
     });
   }
 
   // Main Insight Generation
   async generateInsights(tenantId, options = {}) {
     await this.initialize();
-    
+
     const {
       types = null, // null means all types
       timeRange = 30, // days
@@ -163,9 +163,9 @@ class AutomatedInsightsService {
     try {
       const insights = [];
       const templates = Array.from(this.insightTemplates.values());
-      
+
       // Filter templates based on options
-      const filteredTemplates = templates.filter(template => {
+      const filteredTemplates = templates.filter((template) => {
         if (types && !types.includes(template.name)) return false;
         if (priority && template.priority !== priority) return false;
         return true;
@@ -179,11 +179,11 @@ class AutomatedInsightsService {
             insight.template = template.name;
             insight.priority = template.priority;
             insight.generatedAt = new Date().toISOString();
-            
+
             if (includeRecommendations) {
               insight.recommendations = await this.generateRecommendations(insight);
             }
-            
+
             insights.push(insight);
           }
         } catch (error) {
@@ -207,9 +207,9 @@ class AutomatedInsightsService {
         insights,
         metadata: {
           totalInsights: insights.length,
-          highPriority: insights.filter(i => i.priority === 'high').length,
-          mediumPriority: insights.filter(i => i.priority === 'medium').length,
-          lowPriority: insights.filter(i => i.priority === 'low').length,
+          highPriority: insights.filter((i) => i.priority === 'high').length,
+          mediumPriority: insights.filter((i) => i.priority === 'medium').length,
+          lowPriority: insights.filter((i) => i.priority === 'low').length,
           averageConfidence: insights.reduce((sum, i) => sum + (i.confidence || 0), 0) / insights.length,
           generatedAt: new Date().toISOString()
         }
@@ -225,18 +225,18 @@ class AutomatedInsightsService {
     try {
       // Mock data - in real implementation, fetch from database
       const revenueData = this.generateMockRevenueData(timeRange);
-      
+
       // Calculate trend
       const trend = this.calculateTrend(revenueData);
       const seasonality = this.detectSeasonality(revenueData);
       const forecast = await this.forecastRevenue(revenueData, 7); // 7 days ahead
-      
+
       // Detect anomalies
       const anomalies = this.detectAnomalies(revenueData);
-      
+
       // Calculate confidence
       const confidence = this.calculateTrendConfidence(revenueData, trend);
-      
+
       return {
         type: 'revenue_trend',
         title: 'Revenue Trend Analysis',
@@ -257,7 +257,7 @@ class AutomatedInsightsService {
             confidence: forecast.confidence
           },
           anomalies: anomalies.length,
-          anomalyDates: anomalies.map(a => a.date)
+          anomalyDates: anomalies.map((a) => a.date)
         },
         confidence,
         impact: this.calculateRevenueImpact(trend, forecast),
@@ -273,15 +273,15 @@ class AutomatedInsightsService {
     try {
       // Mock customer behavior data
       const behaviorData = this.generateMockCustomerBehaviorData(timeRange);
-      
+
       // Analyze behavior patterns
       const patterns = this.analyzeBehaviorPatterns(behaviorData);
       const segments = await this.analyzeCustomerSegments(behaviorData);
       const churnRisk = await this.analyzeChurnRisk(behaviorData);
-      
+
       // Calculate insights
       const keyInsights = this.extractBehaviorInsights(patterns, segments, churnRisk);
-      
+
       return {
         type: 'customer_behavior',
         title: 'Customer Behavior Analysis',
@@ -306,12 +306,12 @@ class AutomatedInsightsService {
     try {
       // Mock promotion data
       const promotionData = this.generateMockPromotionData(timeRange);
-      
+
       // Analyze promotion performance
       const performance = this.analyzePromotionPerformance(promotionData);
       const optimization = await this.optimizePromotions(promotionData);
       const recommendations = this.generatePromotionRecommendations(performance, optimization);
-      
+
       return {
         type: 'promotion_performance',
         title: 'Promotion Performance Analysis',
@@ -333,16 +333,16 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateProductPerformanceInsight(tenantId, timeRange) {
+  generateProductPerformanceInsight(tenantId, timeRange) {
     try {
       // Mock product data
       const productData = this.generateMockProductData(timeRange);
-      
+
       // Analyze product performance
       const performance = this.analyzeProductPerformance(productData);
       const trends = this.analyzeProductTrends(productData);
       const opportunities = this.identifyProductOpportunities(performance, trends);
-      
+
       return {
         type: 'product_performance',
         title: 'Product Performance Analysis',
@@ -364,16 +364,16 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateMarketOpportunityInsight(tenantId, timeRange) {
+  generateMarketOpportunityInsight(tenantId, timeRange) {
     try {
       // Mock market data
       const marketData = this.generateMockMarketData(timeRange);
-      
+
       // Identify opportunities
       const opportunities = this.identifyMarketOpportunities(marketData);
       const trends = this.analyzeMarketTrends(marketData);
       const competitive = this.analyzeCompetitivePosition(marketData);
-      
+
       return {
         type: 'market_opportunity',
         title: 'Market Opportunity Detection',
@@ -399,12 +399,12 @@ class AutomatedInsightsService {
     try {
       // Mock customer data for churn analysis
       const customerData = this.generateMockCustomerChurnData(timeRange);
-      
+
       // Predict churn risk
       const churnPredictions = await this.predictCustomerChurn(customerData);
       const riskSegments = this.segmentChurnRisk(churnPredictions);
       const retentionStrategies = this.generateRetentionStrategies(riskSegments);
-      
+
       return {
         type: 'churn_risk',
         title: 'Customer Churn Risk Analysis',
@@ -431,12 +431,12 @@ class AutomatedInsightsService {
     try {
       // Mock pricing data
       const pricingData = this.generateMockPricingData(timeRange);
-      
+
       // Analyze pricing opportunities
       const optimization = await this.optimizePricing(pricingData);
       const elasticity = this.analyzePriceElasticity(pricingData);
       const competitive = this.analyzeCompetitivePricing(pricingData);
-      
+
       return {
         type: 'pricing_optimization',
         title: 'Pricing Optimization Insights',
@@ -462,12 +462,12 @@ class AutomatedInsightsService {
     try {
       // Mock inventory data
       const inventoryData = this.generateMockInventoryData(timeRange);
-      
+
       // Forecast demand and optimize inventory
       const demandForecast = await this.forecastInventoryDemand(inventoryData);
       const optimization = this.optimizeInventoryLevels(inventoryData, demandForecast);
       const alerts = this.generateInventoryAlerts(inventoryData, optimization);
-      
+
       return {
         type: 'inventory_optimization',
         title: 'Inventory Optimization',
@@ -493,9 +493,9 @@ class AutomatedInsightsService {
   // Alert System
   async checkAlerts(tenantId, data) {
     await this.initialize();
-    
+
     const triggeredAlerts = [];
-    
+
     for (const [ruleId, rule] of this.alertRules) {
       try {
         if (rule.condition(data)) {
@@ -511,10 +511,10 @@ class AutomatedInsightsService {
             actions: rule.actions,
             status: 'active'
           };
-          
+
           triggeredAlerts.push(alert);
           this.alertHistory.push(alert);
-          
+
           // Execute alert actions
           await this.executeAlertActions(alert);
         }
@@ -522,7 +522,7 @@ class AutomatedInsightsService {
         console.error(`Error checking alert rule ${ruleId}:`, error);
       }
     }
-    
+
     return triggeredAlerts;
   }
 
@@ -554,7 +554,7 @@ class AutomatedInsightsService {
           case 'investigate_anomaly':
             await this.investigateAnomaly(alert);
             break;
-          case 'validate_data':
+          case 'validatedata':
             await this.validateData(alert);
             break;
           case 'update_availability':
@@ -611,8 +611,8 @@ class AutomatedInsightsService {
 
   async generateScheduledInsights(tenantId, frequency) {
     const templates = Array.from(this.insightTemplates.values())
-      .filter(template => template.frequency === frequency);
-    
+      .filter((template) => template.frequency === frequency);
+
     for (const template of templates) {
       try {
         const insight = await template.generator(tenantId, frequency === 'daily' ? 1 : 7);
@@ -629,10 +629,10 @@ class AutomatedInsightsService {
   async performRealTimeMonitoring(tenantId) {
     // Get real-time data
     const realtimeData = await this.getRealTimeData(tenantId);
-    
+
     // Check for alerts
     const alerts = await this.checkAlerts(tenantId, realtimeData);
-    
+
     // Generate immediate insights if needed
     if (alerts.length > 0) {
       const urgentInsights = await this.generateUrgentInsights(tenantId, alerts);
@@ -646,27 +646,27 @@ class AutomatedInsightsService {
   generateMockRevenueData(days) {
     const data = [];
     let baseRevenue = 10000;
-    
+
     for (let i = 0; i < days; i++) {
       const trend = 0.02; // 2% daily growth
       const seasonality = Math.sin(i / 7 * Math.PI) * 0.1; // Weekly seasonality
       const noise = (Math.random() - 0.5) * 0.2; // Random noise
-      
+
       baseRevenue *= (1 + trend + seasonality + noise);
-      
+
       data.push({
         date: new Date(Date.now() - (days - 1 - i) * 24 * 60 * 60 * 1000),
         revenue: Math.max(0, baseRevenue)
       });
     }
-    
+
     return data;
   }
 
   calculateTrend(data) {
-    const values = data.map(d => d.revenue);
+    const values = data.map((d) => d.revenue);
     const indices = data.map((_, i) => i);
-    
+
     // Simple linear regression
     const regression = ss.linearRegression(indices.map((x, i) => [x, values[i]]));
     return regression.m; // slope
@@ -674,9 +674,9 @@ class AutomatedInsightsService {
 
   detectSeasonality(data) {
     // Simple seasonality detection using autocorrelation
-    const values = data.map(d => d.revenue);
+    const values = data.map((d) => d.revenue);
     const weeklyCorr = this.calculateAutocorrelation(values, 7);
-    
+
     return {
       detected: weeklyCorr > 0.3,
       pattern: 'weekly',
@@ -686,41 +686,41 @@ class AutomatedInsightsService {
 
   calculateAutocorrelation(series, lag) {
     if (series.length <= lag) return 0;
-    
+
     const n = series.length - lag;
     const mean = ss.mean(series);
-    
+
     let numerator = 0;
     let denominator = 0;
-    
+
     for (let i = 0; i < n; i++) {
       numerator += (series[i] - mean) * (series[i + lag] - mean);
     }
-    
+
     for (let i = 0; i < series.length; i++) {
       denominator += Math.pow(series[i] - mean, 2);
     }
-    
+
     return denominator === 0 ? 0 : numerator / denominator;
   }
 
   detectAnomalies(data) {
-    const values = data.map(d => d.revenue);
+    const values = data.map((d) => d.revenue);
     const mean = ss.mean(values);
     const stdDev = ss.standardDeviation(values);
     const threshold = 2; // 2 standard deviations
-    
-    return data.filter(d => Math.abs(d.revenue - mean) > threshold * stdDev);
+
+    return data.filter((d) => Math.abs(d.revenue - mean) > threshold * stdDev);
   }
 
-  async forecastRevenue(data, days) {
+  forecastRevenue(data, days) {
     // Simple exponential smoothing forecast
-    const values = data.map(d => d.revenue);
-    const alpha = 0.3; // smoothing parameter
-    
-    let forecast = values[values.length - 1];
+    const values = data.map((d) => d.revenue);
+    const _alpha = 0.3; // smoothing parameter
+
+    const forecast = values[values.length - 1];
     const forecasts = [];
-    
+
     for (let i = 0; i < days; i++) {
       forecasts.push({
         date: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000),
@@ -728,7 +728,7 @@ class AutomatedInsightsService {
         confidence: Math.max(0.5, 1 - i * 0.1) // Decreasing confidence
       });
     }
-    
+
     return {
       forecasts,
       confidence: forecasts.reduce((sum, f) => sum + f.confidence, 0) / forecasts.length
@@ -736,15 +736,15 @@ class AutomatedInsightsService {
   }
 
   generateAlertId() {
-    return 'alert_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    return `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  async getActiveTenants() {
+  getActiveTenants() {
     // Mock implementation - return list of active tenant IDs
     return ['tenant1', 'tenant2', 'tenant3'];
   }
 
-  async getRealTimeData(tenantId) {
+  getRealTimeData(_tenantId) {
     // Mock real-time data
     return {
       revenueChange: (Math.random() - 0.5) * 20,
@@ -760,7 +760,7 @@ class AutomatedInsightsService {
   // Additional utility methods would continue here...
   // (truncated for brevity)
 
-  async getInsightMetrics() {
+  getInsightMetrics() {
     return {
       totalInsights: this.insights.size,
       alertRules: this.alertRules.size,

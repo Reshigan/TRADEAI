@@ -21,7 +21,6 @@ import {
   Alert,
   CircularProgress,
   Stack,
-  Divider,
   IconButton,
   Accordion,
   AccordionSummary,
@@ -32,7 +31,6 @@ import {
   ExpandMore,
   TrendingUp,
   Recommend,
-  CalendarToday,
   Phone,
   Warning,
   CheckCircle,
@@ -123,7 +121,6 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
     }
 
     // Action 2: Contact window
-    const bestContactHour = 10; // 10 AM
     const currentHour = new Date().getHours();
     const isOptimalTime = currentHour >= 10 && currentHour <= 12;
 

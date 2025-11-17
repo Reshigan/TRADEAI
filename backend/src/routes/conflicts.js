@@ -53,16 +53,16 @@ router.post('/preview', [
       products
     );
 
-    const conflicts = overlapping.filter(promo => 
+    const conflicts = overlapping.filter((promo) =>
       !excludePromotionId || promo._id.toString() !== excludePromotionId
     );
 
-    const categorizedConflicts = conflicts.map(conflictPromo => {
-      const customerOverlap = customers.some(custId =>
-        conflictPromo.scope.customers.some(c => c.customer.toString() === custId)
+    const categorizedConflicts = conflicts.map((conflictPromo) => {
+      const customerOverlap = customers.some((custId) =>
+        conflictPromo.scope.customers.some((c) => c.customer.toString() === custId)
       );
-      const productOverlap = products.some(prodId =>
-        conflictPromo.scope.products.some(p => p.product.toString() === prodId)
+      const productOverlap = products.some((prodId) =>
+        conflictPromo.scope.products.some((p) => p.product.toString() === prodId)
       );
 
       let conflictType = 'timing';
@@ -97,7 +97,7 @@ router.post('/preview', [
     });
 
     const severityOrder = { high: 0, medium: 1, low: 2 };
-    categorizedConflicts.sort((a, b) => 
+    categorizedConflicts.sort((a, b) =>
       severityOrder[a.severity] - severityOrder[b.severity]
     );
 
@@ -107,7 +107,7 @@ router.post('/preview', [
       tenantId,
       details: {
         conflictCount: categorizedConflicts.length,
-        highSeverity: categorizedConflicts.filter(c => c.severity === 'high').length
+        highSeverity: categorizedConflicts.filter((c) => c.severity === 'high').length
       }
     });
 
@@ -116,11 +116,11 @@ router.post('/preview', [
       conflicts: categorizedConflicts,
       summary: {
         total: categorizedConflicts.length,
-        high: categorizedConflicts.filter(c => c.severity === 'high').length,
-        medium: categorizedConflicts.filter(c => c.severity === 'medium').length,
-        low: categorizedConflicts.filter(c => c.severity === 'low').length
+        high: categorizedConflicts.filter((c) => c.severity === 'high').length,
+        medium: categorizedConflicts.filter((c) => c.severity === 'medium').length,
+        low: categorizedConflicts.filter((c) => c.severity === 'low').length
       },
-      hasBlockingConflicts: categorizedConflicts.some(c => c.severity === 'high'),
+      hasBlockingConflicts: categorizedConflicts.some((c) => c.severity === 'high'),
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -167,7 +167,7 @@ function generateConflictSuggestions(conflictType, proposedStart, proposedEnd, c
 
   const conflictEnd = new Date(conflictPromo.period.endDate);
   const conflictStart = new Date(conflictPromo.period.startDate);
-  
+
   if (proposedStart < conflictEnd) {
     const daysAfter = Math.ceil((conflictEnd - proposedStart) / (1000 * 60 * 60 * 24)) + 1;
     suggestions.push(`Start ${daysAfter} days later (after ${conflictEnd.toISOString().split('T')[0]})`);

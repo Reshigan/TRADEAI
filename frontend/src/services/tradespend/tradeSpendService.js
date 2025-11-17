@@ -170,4 +170,5 @@ class TradeSpendService {
   }
 }
 
-export default new TradeSpendService();
+const tradeSpendService = new TradeSpendService();
+export default tradeSpendService;

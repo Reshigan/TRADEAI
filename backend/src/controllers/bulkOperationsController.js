@@ -1,6 +1,6 @@
 const BulkOperationsService = require('../services/bulkOperationsService');
 const { asyncHandler } = require('../middleware/asyncHandler');
-const { validateTenant } = require('../middleware/tenantValidation');
+const { _validateTenant } = require('../middleware/tenantValidation');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -20,20 +20,20 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
 const upload = multer({
-  storage: storage,
+  storage,
   limits: {
     fileSize: 50 * 1024 * 1024 // 50MB limit
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.xlsx', '.xls', '.csv'];
     const ext = path.extname(file.originalname).toLowerCase();
-    
+
     if (allowedTypes.includes(ext)) {
       cb(null, true);
     } else {
@@ -248,7 +248,7 @@ class BulkOperationsController {
 
     if (result.success) {
       const fileName = `${modelType}_template.${result.format}`;
-      
+
       res.download(result.filePath, fileName, (err) => {
         if (err) {
           console.error('Template download error:', err);
@@ -295,7 +295,7 @@ class BulkOperationsController {
       try {
         // Parse file
         const data = await this.bulkService.parseFile(req.file.path);
-        
+
         // Validate data
         const validation = await this.bulkService.validateData(data, modelType, tenantId);
 
@@ -327,7 +327,7 @@ class BulkOperationsController {
    * Get bulk operation status
    * GET /api/bulk/status/:operationId
    */
-  getOperationStatus = asyncHandler(async (req, res) => {
+  getOperationStatus = asyncHandler((req, res) => {
     const { operationId } = req.params;
 
     // This would typically check a job queue or database for operation status
@@ -356,7 +356,7 @@ class BulkOperationsController {
    * Get supported model types and their fields
    * GET /api/bulk/models
    */
-  getSupportedModels = asyncHandler(async (req, res) => {
+  getSupportedModels = asyncHandler((req, res) => {
     const models = {
       customer: {
         name: 'Customer',
@@ -388,9 +388,9 @@ class BulkOperationsController {
    * Get bulk operation history
    * GET /api/bulk/history
    */
-  getOperationHistory = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
-    const { page = 1, limit = 20, operation, modelType } = req.query;
+  getOperationHistory = asyncHandler((req, res) => {
+    const _tenantId = req.tenant.id;
+    const { page = 1, limit = 20, _operation, _modelType } = req.query;
 
     // This would typically query a database for operation history
     // For now, returning mock history
@@ -439,7 +439,7 @@ class BulkOperationsController {
    * Cancel bulk operation
    * POST /api/bulk/cancel/:operationId
    */
-  cancelOperation = asyncHandler(async (req, res) => {
+  cancelOperation = asyncHandler((req, res) => {
     const { operationId } = req.params;
 
     // This would typically cancel a running job

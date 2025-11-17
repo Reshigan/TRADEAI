@@ -31,7 +31,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { format, addMonths, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
+import {format, addMonths, startOfMonth, endOfMonth, parseISO} from 'date-fns';
 import { enZA } from 'date-fns/locale';
 
 import activityGridService from '../../services/api/activityGridService';

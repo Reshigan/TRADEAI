@@ -15,7 +15,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Alert,
   Dialog,
   DialogTitle,
@@ -27,9 +26,7 @@ import {
   Send as SubmitIcon,
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
-  ArrowBack as BackIcon,
-  AttachMoney as MoneyIcon,
-  Description as DocumentIcon
+  ArrowBack as BackIcon
 } from '@mui/icons-material';
 import claimService from '../../services/claim/claimService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';

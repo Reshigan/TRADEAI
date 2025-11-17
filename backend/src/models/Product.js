@@ -5,21 +5,21 @@ const { addTenantSupport } = require('./BaseTenantModel');
 const productSchema = new mongoose.Schema({
   // Tenant Association - CRITICAL for multi-tenant isolation
   // Note: tenantId will be added by addTenantSupport()
-  
+
   // Legacy company support (will be migrated to tenant)
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
     index: true
   },
-  
+
   // SAP Integration
   sapMaterialId: {
     type: String,
     required: true,
     index: true
   },
-  
+
   // Basic Information
   name: {
     type: String,
@@ -37,7 +37,7 @@ const productSchema = new mongoose.Schema({
     sparse: true
   },
   description: String,
-  
+
   // Enhanced Hierarchical Structure with Materialized Path
   // Traditional 5-Level Product Hierarchy (legacy support)
   hierarchy: {
@@ -72,7 +72,7 @@ const productSchema = new mongoose.Schema({
       description: String
     }
   },
-  
+
   // Modern Tree Structure with Materialized Path
   parentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -97,7 +97,7 @@ const productSchema = new mongoose.Schema({
     default: false,
     index: true
   },
-  
+
   // Tree metadata
   childrenCount: {
     type: Number,
@@ -107,7 +107,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  
+
   // Product Classification
   productType: {
     type: String,
@@ -126,14 +126,14 @@ const productSchema = new mongoose.Schema({
       enum: ['company', 'principal', 'customer']
     }
   },
-  
+
   // Vendor/Principal Information
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor'
   },
   principalId: String,
-  
+
   // Product Attributes
   attributes: {
     size: String,
@@ -148,7 +148,7 @@ const productSchema = new mongoose.Schema({
     unitsPerCase: Number,
     casesPerPallet: Number
   },
-  
+
   // Pricing Information
   pricing: {
     listPrice: {
@@ -171,7 +171,7 @@ const productSchema = new mongoose.Schema({
       }
     }]
   },
-  
+
   // Inventory and Supply
   inventory: {
     minStock: Number,
@@ -181,7 +181,7 @@ const productSchema = new mongoose.Schema({
     leadTimeDays: Number,
     safetyStock: Number
   },
-  
+
   // Performance Metrics
   performance: {
     lastYearSales: {
@@ -199,7 +199,7 @@ const productSchema = new mongoose.Schema({
     averageSellingPrice: { type: Number, default: 0 },
     marginContribution: { type: Number, default: 0 }
   },
-  
+
   // Promotion Eligibility
   promotionSettings: {
     isPromotable: {
@@ -220,7 +220,7 @@ const productSchema = new mongoose.Schema({
       enum: ['price_discount', 'volume_discount', 'bogo', 'bundle', 'gift', 'loyalty']
     }]
   },
-  
+
   // Budget Allocation Rules
   budgetAllocation: {
     marketingPercentage: {
@@ -236,7 +236,7 @@ const productSchema = new mongoose.Schema({
       default: 15
     }
   },
-  
+
   // Status and Lifecycle
   status: {
     type: String,
@@ -251,7 +251,7 @@ const productSchema = new mongoose.Schema({
       end: String
     }
   },
-  
+
   // Compliance and Regulations
   compliance: {
     certifications: [String],
@@ -260,7 +260,7 @@ const productSchema = new mongoose.Schema({
     warnings: [String],
     countryRestrictions: [String]
   },
-  
+
   // Images and Media
   media: {
     primaryImage: String,
@@ -271,7 +271,7 @@ const productSchema = new mongoose.Schema({
       type: String
     }]
   },
-  
+
   // Integration
   lastSyncDate: Date,
   syncStatus: {
@@ -283,7 +283,7 @@ const productSchema = new mongoose.Schema({
     error: String,
     date: Date
   }],
-  
+
   // Analytics Configuration
   analyticsConfig: {
     trackingEnabled: {
@@ -297,10 +297,10 @@ const productSchema = new mongoose.Schema({
     }],
     benchmarkCategory: String
   },
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   // Metadata
   tags: [String],
   notes: [{
@@ -340,22 +340,22 @@ productSchema.index({ vendor: 1 });
 productSchema.index({ status: 1 });
 
 // Compound indexes
-productSchema.index({ 
+productSchema.index({
   company: 1,
-  'hierarchy.level1.id': 1, 
-  'hierarchy.level2.id': 1, 
-  'hierarchy.level3.id': 1 
+  'hierarchy.level1.id': 1,
+  'hierarchy.level2.id': 1,
+  'hierarchy.level3.id': 1
 });
-productSchema.index({ 
-  'hierarchy.level1.id': 1, 
-  'hierarchy.level2.id': 1, 
-  'hierarchy.level3.id': 1 
+productSchema.index({
+  'hierarchy.level1.id': 1,
+  'hierarchy.level2.id': 1,
+  'hierarchy.level3.id': 1
 });
 productSchema.index({ company: 1, productType: 1, status: 1 });
 productSchema.index({ productType: 1, status: 1 });
 
 // Virtual for hierarchy path
-productSchema.virtual('hierarchyPath').get(function() {
+productSchema.virtual('hierarchyPath').get(function () {
   const path = [];
   if (this.hierarchy.level1.name) path.push(this.hierarchy.level1.name);
   if (this.hierarchy.level2.name) path.push(this.hierarchy.level2.name);
@@ -366,7 +366,7 @@ productSchema.virtual('hierarchyPath').get(function() {
 });
 
 // Virtual for margin calculation
-productSchema.virtual('margin').get(function() {
+productSchema.virtual('margin').get(function () {
   if (this.pricing.listPrice && this.pricing.costPrice) {
     return this.pricing.listPrice - this.pricing.costPrice;
   }
@@ -374,117 +374,117 @@ productSchema.virtual('margin').get(function() {
 });
 
 // Methods
-productSchema.methods.calculateTradeSpendLimit = function(salesValue) {
+productSchema.methods.calculateTradeSpendLimit = function (salesValue) {
   const maxPercentage = this.budgetAllocation.maxTradeSpendPercentage || 15;
   return salesValue * (maxPercentage / 100);
 };
 
-productSchema.methods.isPromotableInPeriod = function(startDate, endDate) {
+productSchema.methods.isPromotableInPeriod = function (startDate, endDate) {
   if (!this.promotionSettings.isPromotable) return false;
-  
+
   // Check blackout periods
-  const hasBlackout = this.promotionSettings.blackoutPeriods.some(period => {
+  const hasBlackout = this.promotionSettings.blackoutPeriods.some((period) => {
     return (startDate >= period.startDate && startDate <= period.endDate) ||
            (endDate >= period.startDate && endDate <= period.endDate);
   });
-  
+
   return !hasBlackout;
 };
 
-productSchema.methods.updatePerformance = async function(period, units, value) {
+productSchema.methods.updatePerformance = async function (period, units, value) {
   if (period === 'actual') {
     this.performance.currentYearActual.units += units;
     this.performance.currentYearActual.value += value;
-    
+
     // Update average selling price
     if (this.performance.currentYearActual.units > 0) {
-      this.performance.averageSellingPrice = 
+      this.performance.averageSellingPrice =
         this.performance.currentYearActual.value / this.performance.currentYearActual.units;
     }
   }
-  
+
   await this.save();
 };
 
 // Statics
-productSchema.statics.findByHierarchy = function(level, value) {
+productSchema.statics.findByHierarchy = function (level, value) {
   const query = {};
   query[`hierarchy.${level}.id`] = value;
   return this.find(query);
 };
 
 // Hierarchical Methods
-productSchema.methods.getAncestors = async function() {
+productSchema.methods.getAncestors = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
-  return await hierarchyManager.getAncestors(this.tenantId, this._id);
+  return hierarchyManager.getAncestors(this.tenantId, this._id);
 };
 
-productSchema.methods.getDescendants = async function(maxDepth = null) {
+productSchema.methods.getDescendants = function (maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
-  return await hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
+  return hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
 };
 
-productSchema.methods.getChildren = async function() {
+productSchema.methods.getChildren = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
-  return await hierarchyManager.getDirectChildren(this.tenantId, this._id);
+  return hierarchyManager.getDirectChildren(this.tenantId, this._id);
 };
 
-productSchema.methods.getSiblings = async function(includeSelf = false) {
+productSchema.methods.getSiblings = function (includeSelf = false) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
-  return await hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
+  return hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
 };
 
-productSchema.methods.getPathToRoot = async function() {
+productSchema.methods.getPathToRoot = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
-  return await hierarchyManager.getPathToRoot(this.tenantId, this._id);
+  return hierarchyManager.getPathToRoot(this.tenantId, this._id);
 };
 
-productSchema.methods.moveTo = async function(newParentId) {
+productSchema.methods.moveTo = function (newParentId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
-  return await hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
+  return hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
 };
 
 // Static Methods for Hierarchy Management
-productSchema.statics.createHierarchyNode = async function(tenantId, productData, parentId = null) {
+productSchema.statics.createHierarchyNode = function (tenantId, productData, parentId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
-  return await hierarchyManager.createNode(tenantId, productData, parentId);
+  return hierarchyManager.createNode(tenantId, productData, parentId);
 };
 
-productSchema.statics.getTree = async function(tenantId, rootId = null, maxDepth = null) {
+productSchema.statics.getTree = function (tenantId, rootId = null, maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
-  return await hierarchyManager.getTree(tenantId, rootId, maxDepth);
+  return hierarchyManager.getTree(tenantId, rootId, maxDepth);
 };
 
-productSchema.statics.searchInHierarchy = async function(tenantId, searchTerm, rootId = null) {
+productSchema.statics.searchInHierarchy = function (tenantId, searchTerm, rootId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
-  return await hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
+  return hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
 };
 
-productSchema.statics.validateHierarchy = async function(tenantId) {
+productSchema.statics.validateHierarchy = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
-  return await hierarchyManager.validateHierarchy(tenantId);
+  return hierarchyManager.validateHierarchy(tenantId);
 };
 
-productSchema.statics.repairHierarchy = async function(tenantId) {
+productSchema.statics.repairHierarchy = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
-  return await hierarchyManager.repairHierarchy(tenantId);
+  return hierarchyManager.repairHierarchy(tenantId);
 };
 
-productSchema.statics.getHierarchyStats = async function(tenantId) {
+productSchema.statics.getHierarchyStats = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
-  return await hierarchyManager.getHierarchyStats(tenantId);
+  return hierarchyManager.getHierarchyStats(tenantId);
 };
 
 // Plugins

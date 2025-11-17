@@ -1,17 +1,17 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const Promotion = require('../models/Promotion');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Budget = require('../models/Budget');
-const TradeSpend = require('../models/TradeSpend');
-const mlService = require('../services/mlService');
+const _TradeSpend = require('../models/_TradeSpend');
+const _mlService = require('../services/_mlService');
 
 /**
  * AI Chatbot Controller - Works with MongoDB data and local ML models
  * No external API dependencies (OpenAI, etc.)
  */
 class AIChatbotController {
-  
+
   /**
    * Initialize chatbot with user context
    */
@@ -68,13 +68,13 @@ class AIChatbotController {
    */
   async processMessage(req, res) {
     try {
-      const { message, context, conversationHistory } = req.body;
+      const { message, _context, _conversationHistory } = req.body;
       const { user } = req;
       const companyId = user.companyId;
 
       // Analyze message intent
       const intent = this.analyzeIntent(message);
-      
+
       let response;
       let data = null;
 
@@ -84,19 +84,19 @@ class AIChatbotController {
           data = response.data;
           response = response.message;
           break;
-        
+
         case 'performance_analysis':
           response = await this.handlePerformanceAnalysis(intent, companyId, user);
           break;
-        
+
         case 'recommendation':
           response = await this.handleRecommendation(intent, companyId, user);
           break;
-        
+
         case 'trend_analysis':
           response = await this.handleTrendAnalysis(intent, companyId, user);
           break;
-        
+
         default:
           response = await this.handleGeneralQuery(message, companyId, user);
       }
@@ -136,22 +136,22 @@ class AIChatbotController {
           data = await this.queryPromotions(filters, companyId);
           response = this.generatePromotionResponse(data, question);
           break;
-        
+
         case 'customers':
           data = await this.queryCustomers(filters, companyId);
           response = this.generateCustomerResponse(data, question);
           break;
-        
+
         case 'products':
           data = await this.queryProducts(filters, companyId);
           response = this.generateProductResponse(data, question);
           break;
-        
+
         case 'budgets':
           data = await this.queryBudgets(filters, companyId);
           response = this.generateBudgetResponse(data, question);
           break;
-        
+
         default:
           throw new Error(`Unsupported data type: ${dataType}`);
       }
@@ -189,19 +189,19 @@ class AIChatbotController {
         case 'performance':
           insights = await this.generatePerformanceInsights(companyId, parameters);
           break;
-        
+
         case 'optimization':
           insights = await this.generateOptimizationInsights(companyId, parameters);
           break;
-        
+
         case 'trends':
           insights = await this.generateTrendInsights(companyId, parameters);
           break;
-        
+
         case 'budget':
           insights = await this.generateBudgetInsights(companyId, parameters);
           break;
-        
+
         default:
           insights = await this.generateGeneralInsights(companyId, parameters);
       }
@@ -262,7 +262,7 @@ class AIChatbotController {
     try {
       const { context } = req.body;
       const { user } = req;
-      
+
       const questions = await this.generateSuggestedQuestions(context, user);
 
       res.json({
@@ -314,36 +314,36 @@ class AIChatbotController {
    */
   analyzeIntent(message) {
     const lowerMessage = message.toLowerCase();
-    
+
     // Data query patterns
     if (lowerMessage.includes('show me') || lowerMessage.includes('list') || lowerMessage.includes('get')) {
       return { type: 'data_query', confidence: 0.8 };
     }
-    
+
     // Performance analysis patterns
     if (lowerMessage.includes('performance') || lowerMessage.includes('how is') || lowerMessage.includes('analyze')) {
       return { type: 'performance_analysis', confidence: 0.9 };
     }
-    
+
     // Recommendation patterns
     if (lowerMessage.includes('recommend') || lowerMessage.includes('suggest') || lowerMessage.includes('should i')) {
       return { type: 'recommendation', confidence: 0.8 };
     }
-    
+
     // Trend analysis patterns
     if (lowerMessage.includes('trend') || lowerMessage.includes('over time') || lowerMessage.includes('forecast')) {
       return { type: 'trend_analysis', confidence: 0.7 };
     }
-    
+
     return { type: 'general', confidence: 0.5 };
   }
 
   /**
    * Query promotions data
    */
-  async queryPromotions(filters, companyId) {
+  queryPromotions(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Promotion.find(query)
+    return Promotion.find(query)
       .populate('customer', 'name')
       .sort({ created_at: -1 })
       .limit(50);
@@ -352,9 +352,9 @@ class AIChatbotController {
   /**
    * Query customers data
    */
-  async queryCustomers(filters, companyId) {
+  queryCustomers(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Customer.find(query)
+    return Customer.find(query)
       .sort({ name: 1 })
       .limit(50);
   }
@@ -362,9 +362,9 @@ class AIChatbotController {
   /**
    * Query products data
    */
-  async queryProducts(filters, companyId) {
+  queryProducts(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Product.find(query)
+    return Product.find(query)
       .sort({ name: 1 })
       .limit(50);
   }
@@ -372,9 +372,9 @@ class AIChatbotController {
   /**
    * Query budgets data
    */
-  async queryBudgets(filters, companyId) {
+  queryBudgets(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Budget.find(query)
+    return Budget.find(query)
       .sort({ created_at: -1 })
       .limit(50);
   }
@@ -385,7 +385,7 @@ class AIChatbotController {
   generatePromotionResponse(data, question) {
     const count = data.length;
     const totalBudget = data.reduce((sum, p) => sum + (p.budget || 0), 0);
-    const activeCount = data.filter(p => p.status === 'active').length;
+    const activeCount = data.filter((p) => p.status === 'active').length;
 
     return `I found ${count} promotions. ${activeCount} are currently active with a total budget of $${totalBudget.toLocaleString()}. ${question ? `Regarding "${question}": ` : ''}The data shows your promotion portfolio across different customers and time periods.`;
   }
@@ -418,18 +418,18 @@ class AIChatbotController {
   /**
    * Generate performance insights
    */
-  async generatePerformanceInsights(companyId, parameters) {
+  async generatePerformanceInsights(companyId, _parameters) {
     // Get recent promotions performance
-    const recentPromotions = await Promotion.find({ 
+    const recentPromotions = await Promotion.find({
       companyId,
       created_at: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
     });
 
     const insights = {
       totalPromotions: recentPromotions.length,
-      activePromotions: recentPromotions.filter(p => p.status === 'active').length,
+      activePromotions: recentPromotions.filter((p) => p.status === 'active').length,
       totalBudget: recentPromotions.reduce((sum, p) => sum + (p.budget || 0), 0),
-      averageBudget: recentPromotions.length > 0 ? 
+      averageBudget: recentPromotions.length > 0 ?
         recentPromotions.reduce((sum, p) => sum + (p.budget || 0), 0) / recentPromotions.length : 0
     };
 
@@ -439,7 +439,7 @@ class AIChatbotController {
   /**
    * Generate recommendations
    */
-  async generateRecommendations(insights, type) {
+  generateRecommendations(insights, type) {
     const recommendations = [];
 
     if (type === 'performance') {
@@ -450,7 +450,7 @@ class AIChatbotController {
           message: 'Consider launching more active promotions to increase market presence'
         });
       }
-      
+
       if (insights.averageBudget < 10000) {
         recommendations.push({
           type: 'optimization',
@@ -466,26 +466,26 @@ class AIChatbotController {
   /**
    * Generate suggested questions
    */
-  async generateSuggestedQuestions(context, user) {
+  generateSuggestedQuestions(context, _user) {
     const baseQuestions = [
-      "What are my top performing promotions?",
+      'What are my top performing promotions?',
       "Show me this month's budget utilization",
-      "Which customers need attention?",
-      "What trends should I be aware of?"
+      'Which customers need attention?',
+      'What trends should I be aware of?'
     ];
 
     // Add context-specific questions
     if (context.page === 'promotions') {
       baseQuestions.push(
-        "Which promotions have the highest ROI?",
-        "Show me underperforming promotions"
+        'Which promotions have the highest ROI?',
+        'Show me underperforming promotions'
       );
     }
 
     if (context.page === 'analytics') {
       baseQuestions.push(
-        "What are the key insights for this period?",
-        "Show me performance predictions"
+        'What are the key insights for this period?',
+        'Show me performance predictions'
       );
     }
 
@@ -505,7 +505,7 @@ class AIChatbotController {
 
     // Simple keyword-based search (can be enhanced with ML)
     const keywords = query.toLowerCase().split(' ');
-    
+
     // Search promotions
     results.promotions = await Promotion.find({
       companyId,
@@ -527,18 +527,18 @@ class AIChatbotController {
   /**
    * Handle general queries
    */
-  async handleGeneralQuery(message, companyId, user) {
+  handleGeneralQuery(message, companyId, user) {
     // Simple response generation based on keywords
     const lowerMessage = message.toLowerCase();
-    
+
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
       return `Hello ${user.name}! I'm your AI assistant. I can help you analyze your trade marketing data, generate insights, and answer questions about your promotions, customers, and performance.`;
     }
-    
+
     if (lowerMessage.includes('help')) {
-      return "I can help you with:\n• Analyzing promotion performance\n• Customer insights\n• Budget optimization\n• Trend analysis\n• Data queries\n\nJust ask me questions in natural language!";
+      return 'I can help you with:\n• Analyzing promotion performance\n• Customer insights\n• Budget optimization\n• Trend analysis\n• Data queries\n\nJust ask me questions in natural language!';
     }
-    
+
     return "I understand you're asking about your trade marketing data. Could you be more specific? For example, you could ask about promotions, customers, products, or performance metrics.";
   }
 
@@ -572,9 +572,9 @@ class AIChatbotController {
   /**
    * Generate performance report sections
    */
-  async generatePerformanceReportSections(companyId, parameters) {
+  async generatePerformanceReportSections(companyId, _parameters) {
     const promotions = await Promotion.find({ companyId }).limit(20);
-    
+
     return [
       {
         title: 'Executive Summary',
@@ -594,9 +594,9 @@ class AIChatbotController {
   /**
    * Generate budget report sections
    */
-  async generateBudgetReportSections(companyId, parameters) {
+  async generateBudgetReportSections(companyId, _parameters) {
     const budgets = await Budget.find({ companyId }).limit(20);
-    
+
     return [
       {
         title: 'Budget Overview',
@@ -612,7 +612,7 @@ class AIChatbotController {
   /**
    * Generate general report sections
    */
-  async generateGeneralReportSections(companyId, parameters) {
+  generateGeneralReportSections(_companyId, _parameters) {
     return [
       {
         title: 'Overview',

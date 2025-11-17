@@ -15,10 +15,8 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  IconButton,
   Alert,
-  CircularProgress,
-  Chip
+  CircularProgress
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -35,7 +33,6 @@ import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { tradeSpendService, budgetService } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
-import { DetailPageSkeleton } from '../common/SkeletonLoader';
 import { useToast } from '../common/ToastNotification';
 import analytics from '../../utils/analytics';
 

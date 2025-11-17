@@ -27,7 +27,6 @@ import {
   Edit,
   Delete,
   CheckCircle,
-  Cancel,
   Visibility,
   AttachMoney,
   TrendingUp
@@ -46,11 +45,6 @@ const TradeSpendList = () => {
     page: 1,
     limit: 20
   });
-
-  useEffect(() => {
-    loadTradeSpends();
-    loadSummary();
-  }, [filters]);
 
   const loadTradeSpends = async () => {
     setLoading(true);
@@ -73,6 +67,11 @@ const TradeSpendList = () => {
       console.error('Failed to load summary:', error);
     }
   };
+
+  useEffect(() => {
+    loadTradeSpends();
+    loadSummary();
+  }, [filters]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({

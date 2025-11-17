@@ -48,7 +48,7 @@ exports.checkLicense = async (req, res, next) => {
  * Check if tenant has access to specific feature
  */
 exports.checkFeature = (featureName) => {
-  return async (req, res, next) => {
+  return (req, res, next) => {
     try {
       // Skip for super admin
       if (req.user.role === 'superadmin') {
@@ -78,7 +78,7 @@ exports.checkFeature = (featureName) => {
  * Check resource capacity
  */
 exports.checkCapacity = (resourceType) => {
-  return async (req, res, next) => {
+  return (req, res, next) => {
     try {
       // Skip for super admin
       if (req.user.role === 'superadmin') {
@@ -107,7 +107,7 @@ exports.checkCapacity = (resourceType) => {
 /**
  * Track usage (increment counters)
  */
-exports.trackUsage = (resourceType) => {
+exports.trackUsage = (_resourceType) => {
   return async (req, res, next) => {
     try {
       // Skip for super admin

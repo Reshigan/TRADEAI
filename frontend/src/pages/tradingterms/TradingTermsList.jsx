@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Typography,
   Button,
   Card,
@@ -26,10 +25,7 @@ import {
   Refresh,
   Edit,
   Delete,
-  Visibility,
-  CheckCircle,
-  Schedule,
-  TrendingUp
+  Visibility
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import tradingTermsService from '../../services/tradingterms/tradingTermsService';
@@ -44,10 +40,6 @@ const TradingTermsList = () => {
     isActive: ''
   });
 
-  useEffect(() => {
-    loadTradingTerms();
-  }, [filters]);
-
   const loadTradingTerms = async () => {
     setLoading(true);
     try {
@@ -59,6 +51,10 @@ const TradingTermsList = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadTradingTerms();
+  }, [filters]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({

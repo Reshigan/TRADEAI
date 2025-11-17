@@ -14,40 +14,40 @@ const companyIsolation = async (req, res, next) => {
 
     // Get token from header
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+
     if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Access denied. No token provided.' 
+      return res.status(401).json({
+        success: false,
+        message: 'Access denied. No token provided.'
       });
     }
 
     try {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
+
       // Ensure company is in the token
       if (!decoded.company) {
-        return res.status(401).json({ 
-          success: false, 
-          message: 'Invalid token. Company information missing.' 
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token. Company information missing.'
         });
       }
 
       // Verify company exists and is active
       const company = await Company.findById(decoded.company);
       if (!company || !company.isActive) {
-        return res.status(401).json({ 
-          success: false, 
-          message: 'Company not found or inactive.' 
+        return res.status(401).json({
+          success: false,
+          message: 'Company not found or inactive.'
         });
       }
 
       // Check subscription status
       if (company.subscription.status !== 'active' && company.subscription.status !== 'trial') {
-        return res.status(403).json({ 
-          success: false, 
-          message: 'Company subscription is not active.' 
+        return res.status(403).json({
+          success: false,
+          message: 'Company subscription is not active.'
         });
       }
 
@@ -61,16 +61,16 @@ const companyIsolation = async (req, res, next) => {
 
       next();
     } catch (tokenError) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid token.' 
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token.'
       });
     }
   } catch (error) {
     console.error('Company isolation middleware error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error in company isolation.' 
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error in company isolation.'
     });
   }
 };
@@ -94,11 +94,11 @@ const ensureCompanyOwnership = (req, document) => {
   if (!document) {
     throw new Error('Document not found');
   }
-  
+
   if (!document.company || document.company.toString() !== req.companyId.toString()) {
     throw new Error('Access denied. Document does not belong to your company.');
   }
-  
+
   return true;
 };
 

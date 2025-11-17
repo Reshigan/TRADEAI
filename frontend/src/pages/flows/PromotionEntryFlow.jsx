@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
-  Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Psychology as PsychologyIcon
 } from '@mui/icons-material';

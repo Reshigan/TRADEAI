@@ -24,7 +24,6 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   PlayArrow as RunIcon,
-  Download as DownloadIcon,
   Schedule as ScheduleIcon,
   Email as EmailIcon,
   Public as PublicIcon,

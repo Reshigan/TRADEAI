@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const sapController = require('../controllers/sapController');
-const { authorize, checkPermission } = require('../middleware/auth');
+const { authorize, _checkPermission } = require('../middleware/auth');
 const { body, param } = require('express-validator');
 const { validate } = require('../middleware/validation');
 

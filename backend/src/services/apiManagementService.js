@@ -16,26 +16,26 @@ class APIManagementService {
 
   async initialize() {
     if (this.initialized) return;
-    
+
     console.log('Initializing API Management Service...');
-    
+
     // Initialize Redis connection (guarded by env)
     await this.initializeRedis();
-    
+
     // Initialize default rate limiters
     this.initializeRateLimiters();
-    
+
     // Initialize API key management
     this.initializeAPIKeys();
-    
+
     // Start analytics collection
     this.startAnalyticsCollection();
-    
+
     this.initialized = true;
     console.log('API Management Service initialized successfully');
   }
 
-  async initializeRedis() {
+  initializeRedis() {
     try {
       const redisEnabled = process.env.REDIS_ENABLED !== 'false';
       const host = process.env.REDIS_HOST || (config.jobs && config.jobs.redis && config.jobs.redis.host) || 'localhost';
@@ -59,7 +59,6 @@ class APIManagementService {
   }
 
 
-
   initializeRateLimiters() {
     // Global rate limiter
     this.rateLimiters.set('global', rateLimit({
@@ -72,7 +71,7 @@ class APIManagementService {
       standardHeaders: true,
       legacyHeaders: false,
       store: this.redis ? new (require('rate-limit-redis'))({
-        sendCommand: (...args) => this.redis.call(...args),
+        sendCommand: (...args) => this.redis.call(...args)
       }) : undefined
     }));
 
@@ -92,7 +91,7 @@ class APIManagementService {
         code: 'API_RATE_LIMIT_EXCEEDED'
       },
       store: this.redis ? new (require('rate-limit-redis'))({
-        sendCommand: (...args) => this.redis.call(...args),
+        sendCommand: (...args) => this.redis.call(...args)
       }) : undefined
     }));
 
@@ -112,7 +111,7 @@ class APIManagementService {
         code: 'TENANT_RATE_LIMIT_EXCEEDED'
       },
       store: this.redis ? new (require('rate-limit-redis'))({
-        sendCommand: (...args) => this.redis.call(...args),
+        sendCommand: (...args) => this.redis.call(...args)
       }) : undefined
     }));
 
@@ -123,7 +122,7 @@ class APIManagementService {
       delayMs: 500, // slow down subsequent requests by 500ms per request
       maxDelayMs: 20000, // maximum delay of 20 seconds
       store: this.redis ? new (require('rate-limit-redis'))({
-        sendCommand: (...args) => this.redis.call(...args),
+        sendCommand: (...args) => this.redis.call(...args)
       }) : undefined
     }));
 
@@ -219,7 +218,7 @@ class APIManagementService {
   // API Key Management
   createAPIKey(tier, config) {
     const apiKey = this.generateAPIKey();
-    
+
     const keyData = {
       key: apiKey,
       tier,
@@ -243,7 +242,7 @@ class APIManagementService {
   async generateAPIKeyForTenant(tenantId, tier = 'free') {
     const apiKey = this.generateAPIKey();
     const tierConfig = this.getTierConfig(tier);
-    
+
     const keyData = {
       key: apiKey,
       tenantId,
@@ -262,7 +261,7 @@ class APIManagementService {
     };
 
     this.apiKeys.set(apiKey, keyData);
-    
+
     // Store in Redis if available
     if (this.redis) {
       await this.redis.hset('api_keys', apiKey, JSON.stringify(keyData));
@@ -324,7 +323,7 @@ class APIManagementService {
     return { success: true, message: 'API key revoked successfully' };
   }
 
-  async validateAPIKey(apiKey) {
+  validateAPIKey(apiKey) {
     const keyData = this.apiKeys.get(apiKey);
     if (!keyData || !keyData.active) {
       return { valid: false, reason: 'Invalid or inactive API key' };
@@ -359,13 +358,13 @@ class APIManagementService {
       },
       keyGenerator: options.keyGenerator,
       store: this.redis ? new (require('rate-limit-redis'))({
-        sendCommand: (...args) => this.redis.call(...args),
+        sendCommand: (...args) => this.redis.call(...args)
       }) : undefined
     });
   }
 
   // API Usage Tracking
-  async trackAPIUsage(req, res, next) {
+  trackAPIUsage(req, res, next) {
     const startTime = Date.now();
     const apiKey = this.extractAPIKey(req);
     const tenantId = req.tenant?.id;
@@ -413,7 +412,7 @@ class APIManagementService {
     next();
   }
 
-  async updateAPIKeyUsage(apiKey, requestData) {
+  async updateAPIKeyUsage(apiKey, _requestData) {
     const keyData = this.apiKeys.get(apiKey);
     if (keyData) {
       keyData.usageCount++;
@@ -433,7 +432,7 @@ class APIManagementService {
     if (this.redis) {
       await this.redis.hincrby(usageKey, 'requests', 1);
       await this.redis.hincrby(usageKey, 'response_time', requestData.responseTime);
-      
+
       if (!requestData.success) {
         await this.redis.hincrby(usageKey, 'errors', 1);
       }
@@ -504,7 +503,7 @@ class APIManagementService {
     }
 
     const keyData = validation.keyData;
-    
+
     // Check if feature is allowed
     if (keyData.features.includes('*') || keyData.features.includes(feature)) {
       // Check restrictions
@@ -532,7 +531,7 @@ class APIManagementService {
   }
 
   // Analytics and Reporting
-  async getAPIAnalytics(timeRange = '24h') {
+  getAPIAnalytics(timeRange = '24h') {
     const analytics = {
       totalRequests: 0,
       totalErrors: 0,
@@ -544,31 +543,31 @@ class APIManagementService {
     };
 
     const hours = this.getHoursInRange(timeRange);
-    
+
     for (const hour of hours) {
       const analyticsKey = `analytics:${hour}`;
       const hourData = this.analytics.get(analyticsKey);
-      
+
       if (hourData) {
         analytics.totalRequests += hourData.requests;
         analytics.totalErrors += hourData.errors;
         analytics.totalResponseTime += hourData.totalResponseTime;
-        
+
         // Merge endpoint data
         for (const [endpoint, count] of hourData.endpoints) {
           analytics.topEndpoints[endpoint] = (analytics.topEndpoints[endpoint] || 0) + count;
         }
-        
+
         // Merge status code data
         for (const [code, count] of hourData.statusCodes) {
           analytics.statusCodeDistribution[code] = (analytics.statusCodeDistribution[code] || 0) + count;
         }
-        
+
         // Merge API key data
         for (const [key, count] of hourData.apiKeys) {
           analytics.apiKeyUsage[key] = (analytics.apiKeyUsage[key] || 0) + count;
         }
-        
+
         analytics.hourlyStats.push({
           hour,
           requests: hourData.requests,
@@ -579,12 +578,12 @@ class APIManagementService {
     }
 
     // Calculate average response time
-    analytics.averageResponseTime = analytics.totalRequests > 0 ? 
+    analytics.averageResponseTime = analytics.totalRequests > 0 ?
       analytics.totalResponseTime / analytics.totalRequests : 0;
 
     // Sort top endpoints
     analytics.topEndpoints = Object.entries(analytics.topEndpoints)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 10)
       .map(([endpoint, count]) => ({ endpoint, count }));
 
@@ -593,25 +592,25 @@ class APIManagementService {
 
   async getTenantUsage(tenantId, days = 7) {
     const usage = [];
-    
+
     for (let i = 0; i < days; i++) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
       const usageKey = `tenant_usage:${tenantId}:${dateStr}`;
-      
+
       if (this.redis) {
         const dayUsage = await this.redis.hgetall(usageKey);
         usage.push({
           date: dateStr,
           requests: parseInt(dayUsage.requests || 0),
           errors: parseInt(dayUsage.errors || 0),
-          averageResponseTime: dayUsage.requests > 0 ? 
+          averageResponseTime: dayUsage.requests > 0 ?
             parseInt(dayUsage.response_time || 0) / parseInt(dayUsage.requests) : 0
         });
       }
     }
-    
+
     return usage.reverse();
   }
 
@@ -622,13 +621,13 @@ class APIManagementService {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       return authHeader.substring(7);
     }
-    
+
     // Check X-API-Key header
     const apiKeyHeader = req.get('X-API-Key');
     if (apiKeyHeader) {
       return apiKeyHeader;
     }
-    
+
     // Check query parameter
     return req.query.api_key;
   }
@@ -650,7 +649,7 @@ class APIManagementService {
     const hours = [];
     const now = new Date();
     let hoursBack = 24;
-    
+
     switch (timeRange) {
       case '1h': hoursBack = 1; break;
       case '6h': hoursBack = 6; break;
@@ -658,12 +657,12 @@ class APIManagementService {
       case '24h': hoursBack = 24; break;
       case '7d': hoursBack = 168; break;
     }
-    
+
     for (let i = 0; i < hoursBack; i++) {
       const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
       hours.push(hour.toISOString().slice(0, 13));
     }
-    
+
     return hours.reverse();
   }
 
@@ -677,11 +676,11 @@ class APIManagementService {
   cleanupOldAnalytics() {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 7); // Keep 7 days
-    
+
     for (const [key] of this.analytics) {
       const hourStr = key.replace('analytics:', '');
-      const hourDate = new Date(hourStr + ':00:00.000Z');
-      
+      const hourDate = new Date(`${hourStr}:00:00.000Z`);
+
       if (hourDate < cutoff) {
         this.analytics.delete(key);
       }

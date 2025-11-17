@@ -11,7 +11,7 @@ const rebateAccrualSchema = new mongoose.Schema({
     ref: 'Customer',
     required: true
   },
-  
+
   // Period
   period: {
     type: String,
@@ -19,7 +19,7 @@ const rebateAccrualSchema = new mongoose.Schema({
   },
   periodStart: Date,
   periodEnd: Date,
-  
+
   // Amounts
   baseAmount: {
     type: Number,
@@ -39,14 +39,14 @@ const rebateAccrualSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  
+
   // Status
   status: {
     type: String,
     enum: ['pending', 'approved', 'paid', 'cancelled'],
     default: 'pending'
   },
-  
+
   // Related transactions
   transactions: [{
     transactionId: mongoose.Schema.Types.ObjectId,
@@ -54,26 +54,26 @@ const rebateAccrualSchema = new mongoose.Schema({
     rebateAmount: Number,
     date: Date
   }],
-  
+
   // Settlement
   settlementDate: Date,
   settlementReference: String,
   paymentMethod: String,
-  
+
   // Approval
   approvedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
   approvedAt: Date,
-  
+
   notes: String
 }, {
   timestamps: true
 });
 
 // Pre-save hook to calculate remaining amount
-rebateAccrualSchema.pre('save', function(next) {
+rebateAccrualSchema.pre('save', function (next) {
   this.remainingAmount = this.rebateAmount - this.paidAmount;
   next();
 });

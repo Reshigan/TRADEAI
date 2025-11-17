@@ -46,7 +46,7 @@ router.post('/promotion', [
   handleValidationErrors
 ], async (req, res) => {
   try {
-    const { customers, products, discountPercentage, startDate, endDate, promotionType, budget } = req.body;
+    const { customers, products, discountPercentage, startDate, endDate, promotionType, _budget } = req.body;
     const tenantId = req.user.tenantId;
 
     const impact = await revenueImpactService.calculatePromotionImpact(tenantId, {

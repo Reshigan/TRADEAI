@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const sapService = require('../services/sapService');
+const _sapService = require('../services/_sapService');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Vendor = require('../models/Vendor');
@@ -7,7 +7,7 @@ const SalesHistory = require('../models/SalesHistory');
 
 const process = async (job) => {
   logger.info('Starting SAP sync job', { jobId: job.id });
-  
+
   const results = {
     customers: { created: 0, updated: 0, errors: 0 },
     products: { created: 0, updated: 0, errors: 0 },
@@ -17,33 +17,33 @@ const process = async (job) => {
     endTime: null,
     duration: null
   };
-  
+
   try {
     // Sync Customers
     logger.info('Syncing customers from SAP...');
     const customerResult = await syncCustomers();
     results.customers = customerResult;
-    
+
     // Sync Products
     logger.info('Syncing products from SAP...');
     const productResult = await syncProducts();
     results.products = productResult;
-    
+
     // Sync Vendors
     logger.info('Syncing vendors from SAP...');
     const vendorResult = await syncVendors();
     results.vendors = vendorResult;
-    
+
     // Sync Sales History
     logger.info('Syncing sales history from SAP...');
     const salesResult = await syncSalesHistory();
     results.sales = salesResult;
-    
+
     results.endTime = new Date();
     results.duration = results.endTime - results.startTime;
-    
+
     logger.info('SAP sync completed successfully', results);
-    
+
     return results;
   } catch (error) {
     logger.error('SAP sync job failed', { error: error.message, stack: error.stack });
@@ -53,20 +53,20 @@ const process = async (job) => {
 
 const syncCustomers = async () => {
   const result = { created: 0, updated: 0, errors: 0 };
-  
+
   try {
     // This would call actual SAP API
     // const customers = await sapService.getCustomers();
-    
+
     // Mock implementation
     const customers = []; // Would come from SAP
-    
+
     for (const sapCustomer of customers) {
       try {
-        const existingCustomer = await Customer.findOne({ 
-          sapCustomerId: sapCustomer.customerId 
+        const existingCustomer = await Customer.findOne({
+          sapCustomerId: sapCustomer.customerId
         });
-        
+
         const customerData = {
           sapCustomerId: sapCustomer.customerId,
           name: sapCustomer.name,
@@ -78,7 +78,7 @@ const syncCustomers = async () => {
           lastSyncDate: new Date(),
           syncStatus: 'synced'
         };
-        
+
         if (existingCustomer) {
           await Customer.findByIdAndUpdate(existingCustomer._id, customerData);
           result.updated++;
@@ -87,9 +87,9 @@ const syncCustomers = async () => {
           result.created++;
         }
       } catch (error) {
-        logger.error('Error syncing customer', { 
-          customerId: sapCustomer.customerId, 
-          error: error.message 
+        logger.error('Error syncing customer', {
+          customerId: sapCustomer.customerId,
+          error: error.message
         });
         result.errors++;
       }
@@ -98,26 +98,26 @@ const syncCustomers = async () => {
     logger.error('Error fetching customers from SAP', { error: error.message });
     throw error;
   }
-  
+
   return result;
 };
 
 const syncProducts = async () => {
   const result = { created: 0, updated: 0, errors: 0 };
-  
+
   try {
     // This would call actual SAP API
     // const products = await sapService.getProducts();
-    
+
     // Mock implementation
     const products = []; // Would come from SAP
-    
+
     for (const sapProduct of products) {
       try {
-        const existingProduct = await Product.findOne({ 
-          sapMaterialId: sapProduct.materialId 
+        const existingProduct = await Product.findOne({
+          sapMaterialId: sapProduct.materialId
         });
-        
+
         const productData = {
           sapMaterialId: sapProduct.materialId,
           name: sapProduct.name,
@@ -132,7 +132,7 @@ const syncProducts = async () => {
           lastSyncDate: new Date(),
           syncStatus: 'synced'
         };
-        
+
         if (existingProduct) {
           await Product.findByIdAndUpdate(existingProduct._id, productData);
           result.updated++;
@@ -141,9 +141,9 @@ const syncProducts = async () => {
           result.created++;
         }
       } catch (error) {
-        logger.error('Error syncing product', { 
-          materialId: sapProduct.materialId, 
-          error: error.message 
+        logger.error('Error syncing product', {
+          materialId: sapProduct.materialId,
+          error: error.message
         });
         result.errors++;
       }
@@ -152,26 +152,26 @@ const syncProducts = async () => {
     logger.error('Error fetching products from SAP', { error: error.message });
     throw error;
   }
-  
+
   return result;
 };
 
 const syncVendors = async () => {
   const result = { created: 0, updated: 0, errors: 0 };
-  
+
   try {
     // This would call actual SAP API
     // const vendors = await sapService.getVendors();
-    
+
     // Mock implementation
     const vendors = []; // Would come from SAP
-    
+
     for (const sapVendor of vendors) {
       try {
-        const existingVendor = await Vendor.findOne({ 
-          sapVendorId: sapVendor.vendorId 
+        const existingVendor = await Vendor.findOne({
+          sapVendorId: sapVendor.vendorId
         });
-        
+
         const vendorData = {
           sapVendorId: sapVendor.vendorId,
           name: sapVendor.name,
@@ -181,7 +181,7 @@ const syncVendors = async () => {
           lastSyncDate: new Date(),
           syncStatus: 'synced'
         };
-        
+
         if (existingVendor) {
           await Vendor.findByIdAndUpdate(existingVendor._id, vendorData);
           result.updated++;
@@ -190,9 +190,9 @@ const syncVendors = async () => {
           result.created++;
         }
       } catch (error) {
-        logger.error('Error syncing vendor', { 
-          vendorId: sapVendor.vendorId, 
-          error: error.message 
+        logger.error('Error syncing vendor', {
+          vendorId: sapVendor.vendorId,
+          error: error.message
         });
         result.errors++;
       }
@@ -201,35 +201,35 @@ const syncVendors = async () => {
     logger.error('Error fetching vendors from SAP', { error: error.message });
     throw error;
   }
-  
+
   return result;
 };
 
 const syncSalesHistory = async () => {
   const result = { created: 0, updated: 0, errors: 0 };
-  
+
   try {
     // Get date range for sync (last 7 days)
-    const endDate = new Date();
+    const _endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7);
-    
+
     // This would call actual SAP API
     // const sales = await sapService.getSalesHistory(startDate, endDate);
-    
+
     // Mock implementation
     const sales = []; // Would come from SAP
-    
+
     for (const sapSale of sales) {
       try {
         // Find related customer and product
-        const customer = await Customer.findOne({ 
-          sapCustomerId: sapSale.customerId 
+        const customer = await Customer.findOne({
+          sapCustomerId: sapSale.customerId
         });
-        const product = await Product.findOne({ 
-          sapMaterialId: sapSale.materialId 
+        const product = await Product.findOne({
+          sapMaterialId: sapSale.materialId
         });
-        
+
         if (!customer || !product) {
           logger.warn('Skipping sale - customer or product not found', {
             customerId: sapSale.customerId,
@@ -238,7 +238,7 @@ const syncSalesHistory = async () => {
           result.errors++;
           continue;
         }
-        
+
         const salesData = {
           transactionId: sapSale.documentNumber,
           sapDocumentNumber: sapSale.documentNumber,
@@ -256,11 +256,11 @@ const syncSalesHistory = async () => {
           importDate: new Date(),
           source: 'sap'
         };
-        
-        const existingSale = await SalesHistory.findOne({ 
-          transactionId: sapSale.documentNumber 
+
+        const existingSale = await SalesHistory.findOne({
+          transactionId: sapSale.documentNumber
         });
-        
+
         if (existingSale) {
           await SalesHistory.findByIdAndUpdate(existingSale._id, salesData);
           result.updated++;
@@ -269,9 +269,9 @@ const syncSalesHistory = async () => {
           result.created++;
         }
       } catch (error) {
-        logger.error('Error syncing sale', { 
-          documentNumber: sapSale.documentNumber, 
-          error: error.message 
+        logger.error('Error syncing sale', {
+          documentNumber: sapSale.documentNumber,
+          error: error.message
         });
         result.errors++;
       }
@@ -280,7 +280,7 @@ const syncSalesHistory = async () => {
     logger.error('Error fetching sales from SAP', { error: error.message });
     throw error;
   }
-  
+
   return result;
 };
 

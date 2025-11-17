@@ -38,25 +38,25 @@ const RebateDetail = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchRebateDetail = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await api.get(`/rebates/${id}`);
+        const data = response.data.success ? response.data.data : response.data;
+        setRebate(data);
+        trackEvent('rebate_detail_viewed', { rebateId: id, rebateType: data.type });
+      } catch (err) {
+        console.error('Error fetching rebate detail:', err);
+        setError(err.message || 'Failed to load rebate details');
+        showToast('Failed to load rebate details', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchRebateDetail();
   }, [id]);
-
-  const fetchRebateDetail = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get(`/rebates/${id}`);
-      const data = response.data.success ? response.data.data : response.data;
-      setRebate(data);
-      trackEvent('rebate_detail_viewed', { rebateId: id, rebateType: data.type });
-    } catch (err) {
-      console.error('Error fetching rebate detail:', err);
-      setError(err.message || 'Failed to load rebate details');
-      showToast('Failed to load rebate details', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this rebate?')) {

@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
-const rateLimit = require('express-rate-limit');
+const _rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -58,7 +58,7 @@ const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
 const healthRoutes = require('./routes/health');
 const enterpriseRoutes = require('./routes/enterprise');
-const missingRoutesFixRoutes = require('./routes/missing-routes-fix');
+const _missingRoutesFixRoutes = require('./routes/missing-routes-fix');
 const transactionRoutes = require('./routes/transaction');
 const baselineRoutes = require('./routes/baseline');
 const cannibalizationRoutes = require('./routes/cannibalization');
@@ -114,13 +114,13 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'"],
       fontSrc: ["'self'"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
+      frameSrc: ["'none'"]
+    }
   },
   hsts: {
     maxAge: 31536000,
@@ -139,20 +139,20 @@ app.use(helmet({
 
 // CORS - Production-ready configuration
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin(origin, callback) {
     // Get allowed origins from environment variable
     const allowedOrigins = process.env.CORS_ORIGINS
-      ? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
+      ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
       : ['http://localhost:3000', 'http://localhost:3001'];
-    
+
     // Allow requests with no origin (mobile apps, Postman, curl, etc.)
     if (!origin) return callback(null, true);
-    
+
     // In development, allow all origins
     if (process.env.NODE_ENV === 'development') {
       return callback(null, true);
     }
-    
+
     // In production, check against whitelist
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
@@ -192,12 +192,12 @@ if (process.env.NODE_ENV === 'development' && process.env.DEBUG_REQUESTS === 'tr
 }
 
 // Rate limiting - Production security
-const { 
-  apiLimiter, 
-  authLimiter, 
-  speedLimiter, 
+const {
+  apiLimiter,
+  authLimiter,
+  speedLimiter,
   exportLimiter,
-  passwordResetLimiter,
+  _passwordResetLimiter,
   requestLogger
 } = require('./middleware/rateLimiter');
 
@@ -229,7 +229,7 @@ console.log('[App.js] Tenant middlewares applied');
 // API Documentation
 const swaggerOptions = {
   definition: config.swagger.definition,
-  apis: config.swagger.apis,
+  apis: config.swagger.apis
 };
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -340,13 +340,13 @@ app.use('/api/hierarchy', authenticateToken, hierarchyRoutes);
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
 
 // Socket.IO middleware
-io.use(async (socket, next) => {
+io.use((socket, next) => {
   try {
     const token = socket.handshake.auth.token;
     if (!token) {
       return next(new Error('Authentication error'));
     }
-    
+
     // Verify token
     const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, config.jwt.secret);
@@ -360,34 +360,34 @@ io.use(async (socket, next) => {
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-  logger.info('Socket connected', { 
-    socketId: socket.id, 
-    userId: socket.userId 
+  logger.info('Socket connected', {
+    socketId: socket.id,
+    userId: socket.userId
   });
-  
+
   // Join user-specific room
   socket.join(`user:${socket.userId}`);
-  
+
   // Join role-specific room
   socket.join(`role:${socket.userRole}`);
-  
+
   // Handle custom events
   socket.on('join:customer', (customerId) => {
     socket.join(`customer:${customerId}`);
   });
-  
+
   socket.on('join:vendor', (vendorId) => {
     socket.join(`vendor:${vendorId}`);
   });
-  
+
   socket.on('subscribe:dashboard', (dashboardType) => {
     socket.join(`dashboard:${dashboardType}`);
   });
-  
+
   socket.on('disconnect', () => {
-    logger.info('Socket disconnected', { 
-      socketId: socket.id, 
-      userId: socket.userId 
+    logger.info('Socket disconnected', {
+      socketId: socket.id,
+      userId: socket.userId
     });
   });
 });
@@ -419,10 +419,10 @@ const { closeRedis } = require('./config/redis');
 
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM signal received: closing HTTP server');
-  
+
   // Close Redis connection
   await closeRedis();
-  
+
   // Close HTTP server
   server.close(() => {
     logger.info('HTTP server closed');
@@ -432,10 +432,10 @@ process.on('SIGTERM', async () => {
 
 process.on('SIGINT', async () => {
   logger.info('SIGINT signal received: closing HTTP server');
-  
+
   // Close Redis connection
   await closeRedis();
-  
+
   // Close HTTP server
   server.close(() => {
     logger.info('HTTP server closed');

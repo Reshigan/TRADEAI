@@ -30,7 +30,7 @@ import {
   TrendingUp,
   InfoOutlined
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as ChartTooltip } from 'recharts';
+import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip as ChartTooltip} from 'recharts';
 import axios from 'axios';
 
 const COLORS = {

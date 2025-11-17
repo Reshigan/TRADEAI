@@ -110,67 +110,67 @@ router.use('/trade-spend-analytics', tradeSpendAnalyticsRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {
-    res.json({
-        message: 'TRADEAI API v2.1.3',
-        status: 'operational',
-        features: {
-            core: [
-                'authentication',
-                'dashboard',
-                'analytics',
-                'budgets',
-                'trade-spend',
-                'promotions',
-                'activity-grid',
-                'trading-terms'
-            ],
-            advanced: [
-                'ai-promotion-validation',
-                'ai-suggestion-generation',
-                'ml-predictions',
-                'real-time-analytics'
-            ],
-            enterprise: [
-                'multi-tenant',
-                'super-admin',
-                'advanced-security',
-                'enterprise-reporting'
-            ]
-        },
-        endpoints: {
-            health: '/api/health',
-            auth: '/api/auth',
-            dashboard: '/api/dashboard',
-            analytics: '/api/analytics',
-            aiPromotion: '/api/ai-promotion',
-            ml: '/api/ml',
-            enterprise: '/api/enterprise'
-        },
-        aiCapabilities: {
-            promotionValidation: '/api/ai-promotion/validate-uplift',
-            aiSuggestions: '/api/ai-promotion/generate-suggestions',
-            fullSimulation: '/api/ai-promotion/run-simulation',
-            modelStatus: '/api/ai-promotion/model-status'
-        },
-        timestamp: new Date().toISOString()
-    });
+  res.json({
+    message: 'TRADEAI API v2.1.3',
+    status: 'operational',
+    features: {
+      core: [
+        'authentication',
+        'dashboard',
+        'analytics',
+        'budgets',
+        'trade-spend',
+        'promotions',
+        'activity-grid',
+        'trading-terms'
+      ],
+      advanced: [
+        'ai-promotion-validation',
+        'ai-suggestion-generation',
+        'ml-predictions',
+        'real-time-analytics'
+      ],
+      enterprise: [
+        'multi-tenant',
+        'super-admin',
+        'advanced-security',
+        'enterprise-reporting'
+      ]
+    },
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      dashboard: '/api/dashboard',
+      analytics: '/api/analytics',
+      aiPromotion: '/api/ai-promotion',
+      ml: '/api/ml',
+      enterprise: '/api/enterprise'
+    },
+    aiCapabilities: {
+      promotionValidation: '/api/ai-promotion/validate-uplift',
+      aiSuggestions: '/api/ai-promotion/generate-suggestions',
+      fullSimulation: '/api/ai-promotion/run-simulation',
+      modelStatus: '/api/ai-promotion/model-status'
+    },
+    timestamp: new Date().toISOString()
+  });
 });
 
 // 404 handler for undefined routes
 router.use('*', (req, res) => {
-    res.status(404).json({
-        success: false,
-        error: 'API endpoint not found',
-        availableEndpoints: [
-            '/api/health',
-            '/api/auth',
-            '/api/dashboard',
-            '/api/analytics',
-            '/api/ai-promotion',
-            '/api/ml',
-            '/api/enterprise'
-        ]
-    });
+  res.status(404).json({
+    success: false,
+    error: 'API endpoint not found',
+    availableEndpoints: [
+      '/api/health',
+      '/api/auth',
+      '/api/dashboard',
+      '/api/analytics',
+      '/api/ai-promotion',
+      '/api/ml',
+      '/api/enterprise'
+    ]
+  });
 });
 
 module.exports = router;

@@ -11,7 +11,6 @@ import {
   MenuItem,
   Chip,
   Paper,
-  Tooltip,
   Alert,
   CircularProgress,
   Drawer,
@@ -29,22 +28,16 @@ import {
   CalendarMonth,
   ViewWeek,
   ViewDay,
-  Warning,
-  CheckCircle,
   Edit,
   Delete,
   DragIndicator,
-  AutoFixHigh,
-  FilterList
+  AutoFixHigh
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';
 import simulationService from '../../services/simulation/simulationService';
-import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-
-const getAuthHeaders = () => {
+const _getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
@@ -237,15 +230,6 @@ const PromotionsTimeline = () => {
     } else {
       return start.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
-  };
-
-  const getConflictSeverityColor = (severity) => {
-    const colors = {
-      low: 'info',
-      medium: 'warning',
-      high: 'error'
-    };
-    return colors[severity] || 'default';
   };
 
   const getPromotionColor = (promotion) => {

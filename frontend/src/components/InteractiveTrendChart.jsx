@@ -13,7 +13,6 @@ import {
 import {
   ShowChart as ShowChartIcon,
   Download as DownloadIcon,
-  ZoomIn as ZoomInIcon,
   Info as InfoIcon
 } from '@mui/icons-material';
 import {

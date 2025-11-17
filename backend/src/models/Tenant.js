@@ -24,7 +24,7 @@ const TenantSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
-  
+
   // Company Details
   companyInfo: {
     legalName: String,
@@ -41,7 +41,7 @@ const TenantSchema = new mongoose.Schema({
       default: 'small'
     }
   },
-  
+
   // Contact Information
   contactInfo: {
     primaryContact: {
@@ -62,7 +62,7 @@ const TenantSchema = new mongoose.Schema({
       }
     }
   },
-  
+
   // Subscription Management
   subscription: {
     plan: {
@@ -89,7 +89,7 @@ const TenantSchema = new mongoose.Schema({
       default: true
     }
   },
-  
+
   // Resource Limits
   limits: {
     maxUsers: {
@@ -117,7 +117,7 @@ const TenantSchema = new mongoose.Schema({
       default: 10000
     }
   },
-  
+
   // Current Usage
   usage: {
     users: {
@@ -149,7 +149,7 @@ const TenantSchema = new mongoose.Schema({
       default: Date.now
     }
   },
-  
+
   // Feature Configuration
   features: {
     // Core Features
@@ -173,7 +173,7 @@ const TenantSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    
+
     // Integration Features
     sapIntegration: {
       type: Boolean,
@@ -187,7 +187,7 @@ const TenantSchema = new mongoose.Schema({
       type: Boolean,
       default: true
     },
-    
+
     // Advanced Features
     workflowApprovals: {
       type: Boolean,
@@ -206,7 +206,7 @@ const TenantSchema = new mongoose.Schema({
       default: false
     }
   },
-  
+
   // Configuration Settings
   settings: {
     // Localization
@@ -226,7 +226,7 @@ const TenantSchema = new mongoose.Schema({
       type: String,
       default: 'en'
     },
-    
+
     // Business Settings
     fiscalYearStart: {
       type: String,
@@ -236,7 +236,7 @@ const TenantSchema = new mongoose.Schema({
       type: Number,
       default: 30
     },
-    
+
     // System Settings
     sessionTimeout: {
       type: Number,
@@ -260,7 +260,7 @@ const TenantSchema = new mongoose.Schema({
         default: true
       }
     },
-    
+
     // Notification Settings
     notifications: {
       email: {
@@ -282,7 +282,7 @@ const TenantSchema = new mongoose.Schema({
       }
     }
   },
-  
+
   // Billing Information
   billing: {
     email: String,
@@ -311,7 +311,7 @@ const TenantSchema = new mongoose.Schema({
       lastBillingDate: Date
     }
   },
-  
+
   // Status and Flags
   isActive: {
     type: Boolean,
@@ -326,7 +326,7 @@ const TenantSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  
+
   // Metadata
   metadata: {
     source: {
@@ -340,7 +340,7 @@ const TenantSchema = new mongoose.Schema({
     utmCampaign: String,
     notes: String
   },
-  
+
   // Timestamps
   createdAt: {
     type: Date,
@@ -367,12 +367,12 @@ TenantSchema.index({ isActive: 1, isSuspended: 1 });
 TenantSchema.index({ createdAt: -1 });
 
 // Virtual fields
-TenantSchema.virtual('isTrialExpired').get(function() {
-  return this.subscription.plan === 'trial' && 
+TenantSchema.virtual('isTrialExpired').get(function () {
+  return this.subscription.plan === 'trial' &&
          this.subscription.trialEndDate < new Date();
 });
 
-TenantSchema.virtual('daysUntilTrialExpiry').get(function() {
+TenantSchema.virtual('daysUntilTrialExpiry').get(function () {
   if (this.subscription.plan !== 'trial') return null;
   const now = new Date();
   const trialEnd = this.subscription.trialEndDate;
@@ -380,7 +380,7 @@ TenantSchema.virtual('daysUntilTrialExpiry').get(function() {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 });
 
-TenantSchema.virtual('usagePercentages').get(function() {
+TenantSchema.virtual('usagePercentages').get(function () {
   return {
     users: this.limits.maxUsers > 0 ? (this.usage.users / this.limits.maxUsers) * 100 : 0,
     storage: this.limits.maxStorageGB > 0 ? (this.usage.storageUsedGB / this.limits.maxStorageGB) * 100 : 0,
@@ -392,27 +392,27 @@ TenantSchema.virtual('usagePercentages').get(function() {
 });
 
 // Instance methods
-TenantSchema.methods.canAddUser = function() {
+TenantSchema.methods.canAddUser = function () {
   return this.usage.users < this.limits.maxUsers;
 };
 
-TenantSchema.methods.canAddCustomer = function() {
+TenantSchema.methods.canAddCustomer = function () {
   return this.usage.customers < this.limits.maxCustomers;
 };
 
-TenantSchema.methods.canAddProduct = function() {
+TenantSchema.methods.canAddProduct = function () {
   return this.usage.products < this.limits.maxProducts;
 };
 
-TenantSchema.methods.canAddPromotion = function() {
+TenantSchema.methods.canAddPromotion = function () {
   return this.usage.promotions < this.limits.maxPromotions;
 };
 
-TenantSchema.methods.hasFeature = function(featureName) {
+TenantSchema.methods.hasFeature = function (featureName) {
   return this.features[featureName] === true;
 };
 
-TenantSchema.methods.updateUsage = async function(type, increment = 1) {
+TenantSchema.methods.updateUsage = async function (type, increment = 1) {
   if (this.usage[type] !== undefined) {
     this.usage[type] += increment;
     this.usage.lastUsageUpdate = new Date();
@@ -420,35 +420,35 @@ TenantSchema.methods.updateUsage = async function(type, increment = 1) {
   }
 };
 
-TenantSchema.methods.resetMonthlyUsage = async function() {
+TenantSchema.methods.resetMonthlyUsage = async function () {
   this.usage.apiCallsThisMonth = 0;
   this.usage.lastUsageUpdate = new Date();
   await this.save();
 };
 
-TenantSchema.methods.suspend = async function(reason) {
+TenantSchema.methods.suspend = async function (reason) {
   this.isSuspended = true;
   this.subscription.status = 'suspended';
   this.metadata.notes = `Suspended: ${reason}`;
   await this.save();
 };
 
-TenantSchema.methods.reactivate = async function() {
+TenantSchema.methods.reactivate = async function () {
   this.isSuspended = false;
   this.subscription.status = 'active';
   await this.save();
 };
 
 // Static methods
-TenantSchema.statics.findBySlug = function(slug) {
+TenantSchema.statics.findBySlug = function (slug) {
   return this.findOne({ slug, isActive: true });
 };
 
-TenantSchema.statics.findByDomain = function(domain) {
+TenantSchema.statics.findByDomain = function (domain) {
   return this.findOne({ domain, isActive: true });
 };
 
-TenantSchema.statics.findExpiredTrials = function() {
+TenantSchema.statics.findExpiredTrials = function () {
   return this.find({
     'subscription.plan': 'trial',
     'subscription.trialEndDate': { $lt: new Date() },
@@ -456,7 +456,7 @@ TenantSchema.statics.findExpiredTrials = function() {
   });
 };
 
-TenantSchema.statics.getUsageStats = async function() {
+TenantSchema.statics.getUsageStats = async function () {
   const stats = await this.aggregate([
     {
       $group: {
@@ -470,16 +470,16 @@ TenantSchema.statics.getUsageStats = async function() {
       }
     }
   ]);
-  
+
   return stats;
 };
 
 // Pre-save middleware
-TenantSchema.pre('save', function(next) {
+TenantSchema.pre('save', function (next) {
   if (this.isModified()) {
     this.updatedAt = new Date();
   }
-  
+
   // Generate slug from name if not provided
   if (this.isNew && !this.slug) {
     this.slug = this.name
@@ -488,12 +488,12 @@ TenantSchema.pre('save', function(next) {
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
   }
-  
+
   next();
 });
 
 // Post-save middleware for logging
-TenantSchema.post('save', function(doc) {
+TenantSchema.post('save', (doc) => {
   console.log(`Tenant ${doc.name} (${doc.slug}) saved`);
 });
 

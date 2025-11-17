@@ -1,6 +1,6 @@
 /**
  * SWAGGER API DOCUMENTATION CONFIGURATION
- * 
+ *
  * Auto-generates interactive API documentation at /api-docs
  */
 
@@ -86,8 +86,8 @@ const options = {
             customerId: { type: 'string', description: 'Customer ObjectId' },
             promotionStartDate: { type: 'string', format: 'date', example: '2025-10-01' },
             promotionEndDate: { type: 'string', format: 'date', example: '2025-10-14' },
-            method: { 
-              type: 'string', 
+            method: {
+              type: 'string',
               enum: ['pre_period', 'control_store', 'moving_average', 'exponential_smoothing', 'auto'],
               default: 'pre_period'
             }
