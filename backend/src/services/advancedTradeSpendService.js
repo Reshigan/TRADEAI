@@ -950,7 +950,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateImprovements(current, optimized, performance) {
+  calculateImprovements(current, optimized, _performance) {
     return {
       projectedROIIncrease: 18,
       projectedRevenueIncrease: 250000,
@@ -1076,7 +1076,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  identifySpendOpportunities(predictions, patterns) {
+  identifySpendOpportunities(predictions, _patterns) {
     return [
       {
         opportunity: 'Increase Q3 spending during peak season',

@@ -749,7 +749,7 @@ class AdvancedReportingEngine {
     // This is a placeholder for chart functionality
   }
 
-  addPDFCharts(doc, charts, data) {
+  addPDFCharts(_doc, charts, data) {
     // PDF chart implementation would go here
     // This is a placeholder for chart functionality
   }

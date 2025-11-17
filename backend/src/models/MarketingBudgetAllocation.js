@@ -763,7 +763,7 @@ marketingBudgetAllocationSchema.methods.applyAdjustmentFactor = function (alloca
   }
 };
 
-marketingBudgetAllocationSchema.methods.applyProportionalRules = function (allocation, item) {
+marketingBudgetAllocationSchema.methods.applyProportionalRules = function (allocation, _item) {
   // Apply minimum and maximum constraints
   const rules = this.proportionalRules;
 

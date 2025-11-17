@@ -671,7 +671,7 @@ class SimulationEngine {
     return [];
   }
 
-  assessPricingRisk(scenario, demandResponse) {
+  assessPricingRisk(_scenario, demandResponse) {
     return {
       level: 'moderate',
       factors: []
@@ -715,7 +715,7 @@ class SimulationEngine {
     };
   }
 
-  analyzeFactorContributions(factors, forecast) {
+  analyzeFactorContributions(factors, _forecast) {
     return {};
   }
 

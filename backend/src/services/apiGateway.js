@@ -468,7 +468,7 @@ class APIGateway {
     next();
   }
 
-  errorHandler(error, req, res, next) {
+  errorHandler(error, req, res, _next) {
     console.error(`[${req.requestId}] Error:`, error);
 
     // Update error metrics

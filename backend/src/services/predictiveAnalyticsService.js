@@ -500,7 +500,7 @@ class PredictiveAnalyticsService {
     return [];
   }
 
-  getPendingInvoices(customerId) {
+  getPendingInvoices(_customerId) {
     return [];
   }
 
@@ -527,7 +527,7 @@ class PredictiveAnalyticsService {
     return 15; // Bi-weekly
   }
 
-  predictBestSettlementDays(patterns) {
+  predictBestSettlementDays(_patterns) {
     return [1, 15]; // 1st and 15th of month
   }
 

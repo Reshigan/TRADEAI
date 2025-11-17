@@ -1527,7 +1527,7 @@ async function generateCustomerInsights(_metrics, churnAnalysis) {
   ];
 }
 
-async function generateProductInsights(performance, profitability) {
+async function generateProductInsights(_performance, profitability) {
   return [
     {
       type: 'info',

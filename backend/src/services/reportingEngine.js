@@ -879,7 +879,7 @@ class ReportingEngine {
     return liftData;
   }
 
-  getPromotionForecastingData(tenantId, parameters) {
+  getPromotionForecastingData(tenantId, _parameters) {
     // Mock forecasting data
     return [
       { month: 'Next Month', predictedROI: 18, confidence: 'High' },

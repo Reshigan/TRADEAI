@@ -850,7 +850,7 @@ class PromotionSimulationService {
     };
   }
 
-  generateCannibalizationRecommendations(analysis) {
+  generateCannibalizationRecommendations(_analysis) {
     return [
       {
         priority: 'high',
@@ -909,7 +909,7 @@ class PromotionSimulationService {
     return ((revenue - cost) / cost) * 100;
   }
 
-  assessScenarioRisk(scenario, _historicalData) {
+  assessScenarioRisk(_scenario, _historicalData) {
     // Simplified risk assessment
     return 5.5; // Medium risk score
   }

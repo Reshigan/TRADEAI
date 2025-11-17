@@ -563,7 +563,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getLiftAnalysis(tenantId, dateRange) {
+  getLiftAnalysis(_tenantId, dateRange) {
     return {
       averageVolumeLift: 22,
       averageValueLift: 18,
@@ -571,7 +571,7 @@ class AnalyticsEngine {
     };
   }
 
-  getCustomerSegmentPerformance(_tenantId, dateRange) {
+  getCustomerSegmentPerformance(_tenantId, _dateRange) {
     return [
       { segment: 'Premium', roi: 25, lift: 30 },
       { segment: 'Standard', roi: 15, lift: 20 },
