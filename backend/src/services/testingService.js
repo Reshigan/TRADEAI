@@ -322,13 +322,13 @@ class TestingService extends EventEmitter {
           external_services: 'mocked',
           logging: 'minimal'
         },
-        setup: async () => {
+        setup: () => {
           console.log('Setting up unit test environment...');
           // Initialize in-memory database
           // Setup mock services
           // Configure minimal logging
         },
-        teardown: async () => {
+        teardown: () => {
           console.log('Tearing down unit test environment...');
           // Clean up resources
         }
@@ -343,13 +343,13 @@ class TestingService extends EventEmitter {
           external_services: 'stubbed',
           logging: 'standard'
         },
-        setup: async () => {
+        setup: () => {
           console.log('Setting up integration test environment...');
           // Initialize test database
           // Setup service stubs
           // Configure standard logging
         },
-        teardown: async () => {
+        teardown: () => {
           console.log('Tearing down integration test environment...');
           // Clean up test data
           // Reset services
@@ -366,13 +366,13 @@ class TestingService extends EventEmitter {
           logging: 'full',
           browser: 'headless'
         },
-        setup: async () => {
+        setup: () => {
           console.log('Setting up E2E test environment...');
           // Initialize full test environment
           // Setup browser automation
           // Configure sandbox services
         },
-        teardown: async () => {
+        teardown: () => {
           console.log('Tearing down E2E test environment...');
           // Clean up test environment
           // Close browser instances
@@ -389,13 +389,13 @@ class TestingService extends EventEmitter {
           logging: 'performance',
           monitoring: 'enabled'
         },
-        setup: async () => {
+        setup: () => {
           console.log('Setting up performance test environment...');
           // Initialize performance monitoring
           // Setup production-like services
           // Configure performance logging
         },
-        teardown: async () => {
+        teardown: () => {
           console.log('Tearing down performance test environment...');
           // Generate performance reports
           // Clean up monitoring

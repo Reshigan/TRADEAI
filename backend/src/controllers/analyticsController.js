@@ -106,7 +106,7 @@ class AnalyticsController {
    * Get dashboard analytics data
    * Used by frontend Dashboard component
    */
-  getDashboardAnalytics = async (options = {}) => {
+  getDashboardAnalytics = (options = {}) => {
     const { userId, period = '30days', currency = 'USD' } = options;
 
     try {

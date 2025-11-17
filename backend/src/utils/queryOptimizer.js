@@ -78,7 +78,7 @@ class QueryOptimizer {
       /**
        * Find documents by tenant with optimized projection
        */
-      findByTenant: async (tenantId, filter = {}, options = {}) => {
+      findByTenant: (tenantId, filter = {}, options = {}) => {
         const query = Model.find({ tenantId, ...filter });
 
         // Apply projection if specified
@@ -114,14 +114,14 @@ class QueryOptimizer {
       /**
        * Count documents by tenant with optimized query
        */
-      countByTenant: async (tenantId, filter = {}) => {
+      countByTenant: (tenantId, filter = {}) => {
         return Model.countDocuments({ tenantId, ...filter });
       },
 
       /**
        * Aggregate with tenant filtering
        */
-      aggregateByTenant: async (tenantId, pipeline = []) => {
+      aggregateByTenant: (tenantId, pipeline = []) => {
         // Prepend tenant match stage
         const optimizedPipeline = [
           { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
@@ -134,7 +134,7 @@ class QueryOptimizer {
       /**
        * Bulk operations optimized for tenant
        */
-      bulkWriteByTenant: async (tenantId, operations) => {
+      bulkWriteByTenant: (tenantId, operations) => {
         // Add tenant filter to all operations
         const tenantOperations = operations.map((op) => {
           if (op.insertOne) {
@@ -155,7 +155,7 @@ class QueryOptimizer {
       /**
        * Find with text search optimized for tenant
        */
-      searchByTenant: async (tenantId, searchText, options = {}) => {
+      searchByTenant: (tenantId, searchText, options = {}) => {
         const query = Model.find({
           tenantId,
           $text: { $search: searchText }
@@ -175,7 +175,7 @@ class QueryOptimizer {
       /**
        * Find documents within date range (optimized for time-series data)
        */
-      findByTenantAndDateRange: async (tenantId, startDate, endDate, options = {}) => {
+      findByTenantAndDateRange: (tenantId, startDate, endDate, options = {}) => {
         const query = Model.find({
           tenantId,
           createdAt: {

@@ -628,7 +628,7 @@ class EnhancedSecurityService {
       }),
 
       // JWT validation
-      validateJWT: async (req, res, next) => {
+      validateJWT: (req, res, next) => {
         try {
           const token = req.headers.authorization?.replace('Bearer ', '');
           if (!token) {

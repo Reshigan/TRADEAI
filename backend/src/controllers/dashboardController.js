@@ -553,7 +553,7 @@ exports.subscribeToUpdates = asyncHandler(async (req, res, next) => {
 });
 
 // Helper functions
-exports.generateAlerts = async (dashboardType, year) => {
+exports.generateAlerts = (dashboardType, year) => {
   const alerts = [];
 
   // Budget utilization alerts
@@ -596,7 +596,7 @@ exports.generateAlerts = async (dashboardType, year) => {
   return alerts;
 };
 
-exports.getKAMTasks = async (userId) => {
+exports.getKAMTasks = (userId) => {
   const tasks = [];
 
   // Pending approvals
@@ -662,7 +662,7 @@ exports.getGroupByExpression = (groupBy) => {
   }
 };
 
-exports.generateInsights = async (salesData, channelData, promotionData) => {
+exports.generateInsights = (salesData, channelData, promotionData) => {
   const insights = [];
 
   // Sales trend insight

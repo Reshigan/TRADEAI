@@ -12,7 +12,7 @@ const securityLogger = new SecurityAuditLogger({
 });
 
 // Authenticate JWT token
-const authenticateToken = async (req, res, next) => {
+const authenticateToken = (req, res, next) => {
   console.log('MIDDLEWARE ENTRY POINT');
   try {
     logger.info('=== AUTH MIDDLEWARE CALLED ===');
@@ -407,7 +407,7 @@ const checkForRepeatedPermissionDenials = (user, req, module, action) => {
 };
 
 // Check if user can access specific customer
-const authorizeCustomer = async (req, res, next) => {
+const authorizeCustomer = (req, res, next) => {
   try {
     const customerId = req.params.customerId || req.body.customerId;
 
@@ -443,7 +443,7 @@ const authorizeCustomer = async (req, res, next) => {
 };
 
 // Check if user can access specific vendor
-const authorizeVendor = async (req, res, next) => {
+const authorizeVendor = (req, res, next) => {
   try {
     const vendorId = req.params.vendorId || req.body.vendorId;
 
@@ -530,7 +530,7 @@ const rateLimitByRole = (req, res, next) => {
  * @param {string} token - JWT token
  * @returns {Promise<boolean>} - Whether token is blacklisted
  */
-const isTokenBlacklisted = async (token) => {
+const isTokenBlacklisted = (token) => {
   // In a real implementation, this would check a database or Redis cache
   // for blacklisted tokens
 
@@ -543,7 +543,7 @@ const isTokenBlacklisted = async (token) => {
  * @param {string} token - JWT token
  * @returns {Promise<boolean>} - Whether token was blacklisted
  */
-const blacklistToken = async (token) => {
+const blacklistToken = (token) => {
   // In a real implementation, this would add the token to a database or Redis cache
   // with an expiration time matching the token's expiration
 
@@ -557,7 +557,7 @@ const blacklistToken = async (token) => {
  * @param {Object} req - Express request object
  * @returns {Promise<boolean>} - Whether activity is suspicious
  */
-const checkForSuspiciousActivity = async (user, req) => {
+const checkForSuspiciousActivity = (user, req) => {
   // In a real implementation, this would check for suspicious activity patterns:
   // 1. Access from unusual locations
   // 2. Access at unusual times
@@ -609,7 +609,7 @@ const generateRefreshToken = (userId) => {
  * @param {Object} res - Express response object
  * @param {Function} next - Express next function
  */
-const refreshToken = async (req, res, next) => {
+const refreshToken = (req, res, next) => {
   try {
     // Get refresh token
     const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
@@ -691,7 +691,7 @@ const refreshToken = async (req, res, next) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-const logout = async (req, res) => {
+const logout = (req, res) => {
   try {
     // Get token
     const token = req.token;
