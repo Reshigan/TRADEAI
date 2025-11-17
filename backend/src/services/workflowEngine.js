@@ -901,12 +901,7 @@ class WorkflowEngine extends EventEmitter {
 
   evaluateRule(_rule, _data) {
     // Simple rule evaluation - would be more sophisticated in production
-    try {
-      return true;
-    } catch (error) {
-      console.error('Rule evaluation error:', error);
-      return false;
-    }
+    return true;
   }
 
   async executeRuleAction(instance, rule) {
