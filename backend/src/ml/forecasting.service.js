@@ -221,7 +221,7 @@ class ForecastingService {
 
     // Mock demand forecast
     const forecast = [];
-    const basedemand = 100;
+    const baseDemand = 100;
 
     for (let day = 1; day <= timeframe; day++) {
       const date = new Date();
