@@ -710,6 +710,13 @@ class ReportingEngine {
   }
 
   async generateCustomExcelReport(data, config) {
+    let XLSX;
+    try {
+      XLSX = require('xlsx');
+    } catch (e) {
+      throw new AppError('Excel export unavailable: xlsx module not installed', 500);
+    }
+
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Custom Report');

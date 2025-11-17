@@ -1,5 +1,6 @@
 const { asyncHandler, AppError } = require('../middleware/errorHandler');
 const superAdminService = require('../services/superAdminService');
+const Tenant = require('../models/Tenant');
 const logger = require('../utils/logger');
 
 /**
