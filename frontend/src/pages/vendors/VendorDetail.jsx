@@ -13,21 +13,21 @@ const VendorDetail = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+        setData(response.data.data || response.data);
+        setError(null);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load vendor details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchData();
   }, [id]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
-      setData(response.data.data || response.data);
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load vendor details');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleEdit = () => {
     navigate(`/vendors/${id}/edit`);
