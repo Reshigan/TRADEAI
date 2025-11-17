@@ -81,7 +81,7 @@ class PromotionSimulationService {
       );
 
       // Optimize discount level
-      optimization.optimizedParameters.discount = 
+      optimization.optimizedParameters.discount =
         await this.optimizeDiscount(
           baseParams,
           historicalPerformance,
@@ -89,7 +89,7 @@ class PromotionSimulationService {
         );
 
       // Optimize duration
-      optimization.optimizedParameters.duration = 
+      optimization.optimizedParameters.duration =
         await this.optimizeDuration(
           baseParams,
           historicalPerformance,
@@ -97,7 +97,7 @@ class PromotionSimulationService {
         );
 
       // Optimize investment
-      optimization.optimizedParameters.investment = 
+      optimization.optimizedParameters.investment =
         await this.optimizeInvestment(
           baseParams,
           historicalPerformance,
@@ -158,26 +158,26 @@ class PromotionSimulationService {
       simulation.incremental = {
         volume: simulation.predicted.volume - simulation.baseline.volume,
         revenue: simulation.predicted.revenue - simulation.baseline.revenue,
-        volumeUplift: ((simulation.predicted.volume - simulation.baseline.volume) / 
+        volumeUplift: ((simulation.predicted.volume - simulation.baseline.volume) /
                        simulation.baseline.volume) * 100,
-        revenueUplift: ((simulation.predicted.revenue - simulation.baseline.revenue) / 
+        revenueUplift: ((simulation.predicted.revenue - simulation.baseline.revenue) /
                         simulation.baseline.revenue) * 100
       };
 
       // Calculate ROI
-      const totalCost = promotionParams.investment + 
+      const totalCost = promotionParams.investment +
                        (simulation.incremental.volume * promotionParams.productCost);
-      const grossProfit = simulation.incremental.revenue - 
+      const grossProfit = simulation.incremental.revenue -
                          (simulation.incremental.volume * promotionParams.productCost);
-      
+
       simulation.roi = {
         investment: promotionParams.investment,
         totalCost,
         incrementalRevenue: simulation.incremental.revenue,
         grossProfit,
         roi: (grossProfit / totalCost) * 100,
-        paybackPeriod: this.calculatePaybackPeriod(totalCost, grossProfit, 
-                                                   promotionParams.duration)
+        paybackPeriod: this.calculatePaybackPeriod(totalCost, grossProfit,
+          promotionParams.duration)
       };
 
       // Calculate breakeven point
@@ -223,7 +223,7 @@ class PromotionSimulationService {
         actualROI: promotion.actualROI || 0,
         targetROI: promotion.targetROI || 0,
         roiAchievement: ((promotion.actualROI || 0) / (promotion.targetROI || 1)) * 100,
-        volumeAchievement: ((promotion.actualVolume || 0) / 
+        volumeAchievement: ((promotion.actualVolume || 0) /
                            (promotion.targetVolume || 1)) * 100,
         effectivenessScore: 0
       };
@@ -376,8 +376,8 @@ class PromotionSimulationService {
         grossUplift: promotion.actualVolume || 0,
         cannibalization: analysis.totalCannibalization,
         netUplift: (promotion.actualVolume || 0) - analysis.totalCannibalization,
-        netUpliftPercent: (((promotion.actualVolume || 0) - 
-                           analysis.totalCannibalization) / 
+        netUpliftPercent: (((promotion.actualVolume || 0) -
+                           analysis.totalCannibalization) /
                           (promotion.actualVolume || 1)) * 100
       };
 
@@ -431,10 +431,10 @@ class PromotionSimulationService {
       // Calculate lift
       analysis.lift = {
         volumeLift: analysis.promoted.volume - analysis.baseline.volume,
-        volumeLiftPercent: ((analysis.promoted.volume - analysis.baseline.volume) / 
+        volumeLiftPercent: ((analysis.promoted.volume - analysis.baseline.volume) /
                            analysis.baseline.volume) * 100,
         revenueLift: analysis.promoted.revenue - analysis.baseline.revenue,
-        revenueLiftPercent: ((analysis.promoted.revenue - analysis.baseline.revenue) / 
+        revenueLiftPercent: ((analysis.promoted.revenue - analysis.baseline.revenue) /
                             analysis.baseline.revenue) * 100
       };
 
@@ -467,7 +467,7 @@ class PromotionSimulationService {
 
   async simulateScenario(promotionData, scenario, historicalData) {
     const basePerformance = await this.calculateBaseline(promotionData);
-    
+
     // Apply scenario adjustments
     const adjustedPromotion = {
       ...promotionData,
@@ -485,9 +485,9 @@ class PromotionSimulationService {
       baseline: basePerformance,
       predicted: predictedPerformance,
       uplift: {
-        volume: ((predictedPerformance.volume - basePerformance.volume) / 
+        volume: ((predictedPerformance.volume - basePerformance.volume) /
                  basePerformance.volume) * 100,
-        revenue: ((predictedPerformance.revenue - basePerformance.revenue) / 
+        revenue: ((predictedPerformance.revenue - basePerformance.revenue) /
                   basePerformance.revenue) * 100
       },
       roi: this.calculateScenarioROI(adjustedPromotion, predictedPerformance),
@@ -497,13 +497,13 @@ class PromotionSimulationService {
 
   compareScenarios(scenarios) {
     return {
-      bestROI: scenarios.reduce((best, s) => 
+      bestROI: scenarios.reduce((best, s) =>
         s.roi > best.roi ? s : best
       ),
-      lowestRisk: scenarios.reduce((lowest, s) => 
+      lowestRisk: scenarios.reduce((lowest, s) =>
         s.riskScore < lowest.riskScore ? s : lowest
       ),
-      highestUplift: scenarios.reduce((highest, s) => 
+      highestUplift: scenarios.reduce((highest, s) =>
         s.uplift.volume > highest.uplift.volume ? s : highest
       )
     };
@@ -511,7 +511,7 @@ class PromotionSimulationService {
 
   generateRecommendation(scenarios, comparison) {
     const recommended = comparison.bestROI;
-    
+
     return {
       scenario: recommended.name,
       reason: `Highest ROI of ${recommended.roi.toFixed(2)}% with acceptable risk`,
@@ -534,11 +534,11 @@ class PromotionSimulationService {
     }).limit(50);
 
     return {
-      avgROI: historicalPromotions.reduce((sum, p) => 
+      avgROI: historicalPromotions.reduce((sum, p) =>
         sum + (p.actualROI || 0), 0) / (historicalPromotions.length || 1),
-      avgUplift: historicalPromotions.reduce((sum, p) => 
+      avgUplift: historicalPromotions.reduce((sum, p) =>
         sum + (p.volumeUplift || 0), 0) / (historicalPromotions.length || 1),
-      successRate: (historicalPromotions.filter(p => 
+      successRate: (historicalPromotions.filter((p) =>
         p.actualROI > p.targetROI).length / historicalPromotions.length) * 100,
       count: historicalPromotions.length
     };
@@ -573,7 +573,7 @@ class PromotionSimulationService {
 
   async optimizeInvestment(baseParams, performance, constraints, objectives) {
     const targetROI = objectives.targetROI || 200;
-    const optimalInvestment = (baseParams.estimatedRevenue || 100000) / 
+    const optimalInvestment = (baseParams.estimatedRevenue || 100000) /
                              (targetROI / 100 + 1);
 
     return {
@@ -611,7 +611,7 @@ class PromotionSimulationService {
     // Base confidence on historical data availability
     const dataConfidence = Math.min(performance.count / 20, 1);
     const performanceConfidence = performance.successRate / 100;
-    
+
     return (dataConfidence + performanceConfidence) / 2;
   }
 
@@ -661,13 +661,13 @@ class PromotionSimulationService {
   }
 
   calculateBreakeven(params) {
-    const unitContribution = params.productPrice * (1 - (params.discount || 15) / 100) - 
+    const unitContribution = params.productPrice * (1 - (params.discount || 15) / 100) -
                             params.productCost;
     const breakevenVolume = params.investment / unitContribution;
 
     return {
       volume: breakevenVolume,
-      revenue: breakevenVolume * params.productPrice * 
+      revenue: breakevenVolume * params.productPrice *
                (1 - (params.discount || 15) / 100),
       days: params.duration / 2 // Simplified
     };
@@ -751,7 +751,7 @@ class PromotionSimulationService {
       _id: { $ne: promotion._id }
     }).limit(10);
 
-    const avgROI = similarPromotions.reduce((sum, p) => 
+    const avgROI = similarPromotions.reduce((sum, p) =>
       sum + (p.actualROI || 0), 0) / (similarPromotions.length || 1);
 
     return {
@@ -796,7 +796,7 @@ class PromotionSimulationService {
     return {
       totalInvestment: promotions.reduce((sum, p) => sum + (p.investment || 0), 0),
       totalRevenue: promotions.reduce((sum, p) => sum + (p.actualRevenue || 0), 0),
-      avgROI: promotions.reduce((sum, p) => 
+      avgROI: promotions.reduce((sum, p) =>
         sum + (p.actualROI || 0), 0) / (promotions.length || 1),
       count: promotions.length
     };
