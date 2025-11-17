@@ -46,32 +46,17 @@ const TradeSpendList = () => {
     limit: 20
   });
 
-  useEffect(() => {
-    const loadTradeSpends = async () => {
-      setLoading(true);
-      try {
-        const response = await tradeSpendService.getTradeSpends(filters);
-        setTradeSpends(response.tradeSpends || []);
-      } catch (error) {
-        console.error('Failed to load trade spends:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    const loadSummary = async () => {
-      try {
-        const currentYear = new Date().getFullYear();
-        const response = await tradeSpendService.getTradeSpendSummary(currentYear, 'year');
-        setSummary(response.summary || null);
-      } catch (error) {
-        console.error('Failed to load summary:', error);
-      }
-    };
-    
-    loadTradeSpends();
-    loadSummary();
-  }, [filters]);
+  const loadTradeSpends = async () => {
+    setLoading(true);
+    try {
+      const response = await tradeSpendService.getTradeSpends(filters);
+      setTradeSpends(response.tradeSpends || []);
+    } catch (error) {
+      console.error('Failed to load trade spends:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadSummary = async () => {
     try {
@@ -82,6 +67,11 @@ const TradeSpendList = () => {
       console.error('Failed to load summary:', error);
     }
   };
+
+  useEffect(() => {
+    loadTradeSpends();
+    loadSummary();
+  }, [filters]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({

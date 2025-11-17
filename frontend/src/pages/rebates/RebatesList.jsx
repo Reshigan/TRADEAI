@@ -23,20 +23,20 @@ const RebatesList = () => {
   const [rebates, setRebates] = useState([]);
   const [setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadRebates = async () => {
-      try {
-        const response = await api.get('/rebates');
-        if (response.data.success) {
-          setRebates(response.data.data);
-        }
-      } catch (error) {
-        console.error('Failed to load rebates:', error);
-      } finally {
-        setLoading(false);
+  const loadRebates = async () => {
+    try {
+      const response = await api.get('/rebates');
+      if (response.data.success) {
+        setRebates(response.data.data);
       }
-    };
-    
+    } catch (error) {
+      console.error('Failed to load rebates:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadRebates();
   }, []);
 
