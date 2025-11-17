@@ -489,7 +489,7 @@ class EnterpriseCrudService {
   }
 
   // Import from CSV
-  async importFromCSV(filePath, options = {}) {
+  importFromCSV(filePath, options = {}) {
     const results = {
       success: [],
       failed: [],
@@ -613,7 +613,7 @@ class EnterpriseCrudService {
    * VERSION HISTORY
    */
 
-  async saveVersion(record) {
+  saveVersion(record) {
     // Implementation for version history
     // This would save a snapshot to a separate VersionHistory collection
     const version = {
@@ -643,7 +643,7 @@ class EnterpriseCrudService {
    * AUDIT LOGGING
    */
 
-  async logAudit(action, recordId, changes, userId) {
+  logAudit(action, recordId, changes, userId) {
     // Implementation for audit logging
     // This would save to an AuditLog collection
     const auditEntry = {

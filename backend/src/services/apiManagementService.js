@@ -364,7 +364,7 @@ class APIManagementService {
   }
 
   // API Usage Tracking
-  async trackAPIUsage(req, res, next) {
+  trackAPIUsage(req, res, next) {
     const startTime = Date.now();
     const apiKey = this.extractAPIKey(req);
     const tenantId = req.tenant?.id;

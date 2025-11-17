@@ -53,7 +53,7 @@ testUserSchema.pre('save', async function (next) {
 });
 
 // Instance methods
-testUserSchema.methods.comparePassword = async function (candidatePassword) {
+testUserSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

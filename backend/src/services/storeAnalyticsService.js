@@ -53,7 +53,7 @@ class StoreAnalyticsService {
     ]);
 
     // Rollup to district level
-    const districtPerformance = await Promise.all(districts.map(async (district) => {
+    const districtPerformance = await Promise.all(districts.map((district) => {
       const districtStores = stores.filter((s) => s.district.toString() === district._id.toString());
       const districtStoreIds = districtStores.map((s) => s._id.toString());
 

@@ -469,7 +469,7 @@ router.post(
   '/data/:entity/import',
   auth,
   authorize(['superadmin', 'admin']),
-  async (req, res, _next) => {
+  (req, res, _next) => {
     // Generic import endpoint
     // Implementation would handle file upload and processing
     res.json({

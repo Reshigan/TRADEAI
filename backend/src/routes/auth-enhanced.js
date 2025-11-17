@@ -83,7 +83,7 @@ router.post('/logout', authenticateToken, async (req, res) => {
 });
 
 // Verify token
-router.get('/verify', authenticateToken, async (req, res) => {
+router.get('/verify', authenticateToken, (req, res) => {
   try {
     res.json({
       success: true,
@@ -135,7 +135,7 @@ router.post('/change-password', authenticateToken, async (req, res) => {
 });
 
 // Get current user profile
-router.get('/me', authenticateToken, async (req, res) => {
+router.get('/me', authenticateToken, (req, res) => {
   try {
     res.json({
       success: true,

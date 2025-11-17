@@ -302,7 +302,7 @@ salesHistorySchema.methods.calculateMLFeatures = async function () {
 };
 
 // Statics for aggregation
-salesHistorySchema.statics.aggregateSales = async function (filters, groupBy, metrics) {
+salesHistorySchema.statics.aggregateSales = function (filters, groupBy, metrics) {
   const match = {};
 
   // Build match conditions

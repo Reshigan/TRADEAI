@@ -108,7 +108,7 @@ class SAPService {
   }
 
   // Pricing APIs
-  async getPricing(materialId, customerId, date = new Date()) {
+  getPricing(materialId, customerId, date = new Date()) {
     const params = new URLSearchParams({
       materialId,
       customerId,

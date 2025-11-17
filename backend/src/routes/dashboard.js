@@ -6,7 +6,7 @@ const { query, param } = require('express-validator');
 const { validate } = require('../middleware/validation');
 
 // Default dashboard - routes to appropriate dashboard based on role
-router.get('/', async (req, res, next) => {
+router.get('/', (req, res, next) => {
   try {
     // Return mock dashboard data for UAT testing
     res.json({
@@ -76,7 +76,7 @@ router.get('/stats', async (req, res, next) => {
 });
 
 // Dashboard activity endpoint
-router.get('/activity', async (req, res, next) => {
+router.get('/activity', (req, res, next) => {
   try {
     const { limit = 10 } = req.query;
     // For now, return empty array - can be populated later
@@ -90,7 +90,7 @@ router.get('/activity', async (req, res, next) => {
 });
 
 // Dashboard chart data endpoint
-router.get('/charts/:type', async (req, res, next) => {
+router.get('/charts/:type', (req, res, next) => {
   try {
     const { type } = req.params;
     // For now, return empty array - can be populated later

@@ -456,7 +456,7 @@ class ExternalIntegrationsService {
     return [];
   }
 
-  async processEntityData(integrationId, entity, data) {
+  processEntityData(integrationId, entity, data) {
     // Transform and store data based on entity type
     const transformedData = data.map((item) => this.transformEntityData(integrationId, entity, item));
 

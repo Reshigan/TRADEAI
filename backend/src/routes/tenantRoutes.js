@@ -118,7 +118,7 @@ router.get('/:id/features', async (req, res) => {
       });
     }
 
-    const tenant = await withoutTenantFilter(async () => {
+    const tenant = await withoutTenantFilter(() => {
       return Tenant.findById(id).select('features');
     });
 
@@ -161,7 +161,7 @@ router.put('/:id/features', async (req, res) => {
     const { id } = req.params;
     const features = req.body;
 
-    const tenant = await withoutTenantFilter(async () => {
+    const tenant = await withoutTenantFilter(() => {
       return Tenant.findByIdAndUpdate(
         id,
         {
@@ -215,7 +215,7 @@ router.get('/:id/usage', async (req, res) => {
       });
     }
 
-    const tenant = await withoutTenantFilter(async () => {
+    const tenant = await withoutTenantFilter(() => {
       return Tenant.findById(id).select('usage limits');
     });
 
@@ -271,7 +271,7 @@ router.put('/:id/limits', async (req, res) => {
     const { id } = req.params;
     const limits = req.body;
 
-    const tenant = await withoutTenantFilter(async () => {
+    const tenant = await withoutTenantFilter(() => {
       return Tenant.findByIdAndUpdate(
         id,
         {

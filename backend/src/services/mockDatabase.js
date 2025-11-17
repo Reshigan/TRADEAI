@@ -220,7 +220,7 @@ class MockDatabase {
     const user = { ...userData };
 
     // Add model methods
-    user.comparePassword = async function (candidatePassword) {
+    user.comparePassword = function (candidatePassword) {
       return bcrypt.compare(candidatePassword, this.password);
     };
 
@@ -249,7 +249,7 @@ class MockDatabase {
       );
     };
 
-    user.save = async function () {
+    user.save = function () {
       // In mock mode, just update the user in the array
       const index = mockUsers.findIndex((u) => u._id === this._id);
       if (index !== -1) {

@@ -361,7 +361,7 @@ tradingTermSchema.methods.calculateDiscount = function (volume, value) {
 };
 
 // Method to update performance metrics
-tradingTermSchema.methods.updatePerformance = async function (volume, revenue, cost) {
+tradingTermSchema.methods.updatePerformance = function (volume, revenue, cost) {
   this.performance.actualVolume = (this.performance.actualVolume || 0) + volume;
   this.performance.actualRevenue = (this.performance.actualRevenue || 0) + revenue;
   this.performance.actualCost = (this.performance.actualCost || 0) + cost;

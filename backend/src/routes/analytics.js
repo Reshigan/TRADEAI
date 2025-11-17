@@ -38,7 +38,7 @@ router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get available currencies
-router.get('/currencies', asyncHandler(async (req, res) => {
+router.get('/currencies', asyncHandler((req, res) => {
   const currencies = [
     { code: 'USD', name: 'US Dollar', symbol: '$' },
     { code: 'EUR', name: 'Euro', symbol: '€' },
@@ -73,7 +73,7 @@ router.get('/sales', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get promotion analytics
-router.get('/promotions', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/promotions', authenticateToken, asyncHandler((req, res) => {
   const { year = new Date().getFullYear() } = req.query;
 
   // Return promotion analytics mock data
@@ -96,7 +96,7 @@ router.get('/promotions', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get budget analytics
-router.get('/budgets', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/budgets', authenticateToken, asyncHandler((req, res) => {
   const { year = new Date().getFullYear(), customerId } = req.query;
 
   // Return budget analytics mock data
@@ -122,7 +122,7 @@ router.get('/budgets', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get trade spend analytics
-router.get('/trade-spend', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/trade-spend', authenticateToken, asyncHandler((req, res) => {
   const { startDate, endDate, customerId, vendorId } = req.query;
 
   // Return trade spend analytics mock data
@@ -234,7 +234,7 @@ router.post('/advanced/bulk-roi', bulkOperationsLimiter, authenticateToken, anal
 router.post('/advanced/bulk-lift', bulkOperationsLimiter, authenticateToken, analyticsController.bulkCalculateLift);
 
 // Alias routes for common analytics endpoints (for backward compatibility)
-router.get('/spend-trends', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/spend-trends', authenticateToken, asyncHandler((req, res) => {
   // Return trade-spend analytics mock data
   res.json({
     success: true,
@@ -257,7 +257,7 @@ router.get('/spend-trends', authenticateToken, asyncHandler(async (req, res) => 
   });
 }));
 
-router.get('/roi', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/roi', authenticateToken, asyncHandler((req, res) => {
   // Return basic ROI metrics
   res.json({
     success: true,
@@ -270,7 +270,7 @@ router.get('/roi', authenticateToken, asyncHandler(async (req, res) => {
   });
 }));
 
-router.get('/vendor-performance', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/vendor-performance', authenticateToken, asyncHandler((req, res) => {
   // Return vendor performance metrics
   res.json({
     success: true,

@@ -673,7 +673,7 @@ class MLIntegrationService {
 
   startPeriodicTraining() {
     // Train models weekly
-    setInterval(async () => {
+    setInterval(() => {
       try {
         console.log('Starting periodic model training...');
         // This would train models for all tenants

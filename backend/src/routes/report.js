@@ -12,7 +12,7 @@ router.put('/reports/:id', authenticateToken, reportController.updateReport);
 router.delete('/reports/:id', authenticateToken, reportController.deleteReport);
 
 // Get all available report types
-router.get('/', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/', authenticateToken, asyncHandler((req, res) => {
   res.json({
     success: true,
     data: {

@@ -115,7 +115,7 @@ router.post('/forecasting/generate', async (req, res) => {
   }
 });
 
-router.get('/forecasting/results/:jobId', async (req, res) => {
+router.get('/forecasting/results/:jobId', (req, res) => {
   try {
     const { jobId } = req.params;
     // For now, return a success status since we generate forecasts synchronously
@@ -159,7 +159,7 @@ router.get('/forecasting/by-channel', (req, res) => {
 });
 
 // Demand forecast endpoint
-router.post('/forecasting/demand', async (req, res) => {
+router.post('/forecasting/demand', (req, res) => {
   try {
     // Mock demand forecast for now
     const { productIds = [], customerIds = [], horizon = 12 } = req.body;
@@ -195,7 +195,7 @@ router.post('/forecasting/demand', async (req, res) => {
 });
 
 // Budget forecast endpoint
-router.post('/forecasting/budget', async (req, res) => {
+router.post('/forecasting/budget', (req, res) => {
   try {
     // Mock budget forecast for now
     const { horizon = 12, includeInflation = true } = req.body;
@@ -229,7 +229,7 @@ router.post('/forecasting/budget', async (req, res) => {
 });
 
 // Export forecast endpoint
-router.post('/forecasting/export/:type', async (req, res) => {
+router.post('/forecasting/export/:type', (req, res) => {
   try {
     const { type } = req.params;
 

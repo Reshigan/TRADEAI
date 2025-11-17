@@ -799,7 +799,7 @@ class MonitoringObservabilityService extends EventEmitter {
   }
 
   // Health check methods
-  async checkDatabaseHealth() {
+  checkDatabaseHealth() {
     try {
       // Mock database health check
       const start = Date.now();
@@ -820,7 +820,7 @@ class MonitoringObservabilityService extends EventEmitter {
     }
   }
 
-  async checkRedisHealth() {
+  checkRedisHealth() {
     try {
       // Mock Redis health check
       const start = Date.now();

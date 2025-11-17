@@ -1015,7 +1015,7 @@ class MLPipelineService extends EventEmitter {
 
   monitorModelPerformance() {
     // Monitor deployed models
-    this.deployments.forEach(async (deployment) => {
+    this.deployments.forEach((deployment) => {
       if (deployment.status === 'deployed') {
         // Simulate performance monitoring
         deployment.healthCheck = {

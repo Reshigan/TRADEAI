@@ -89,14 +89,14 @@ class SocketService {
     });
 
     // Notification acknowledgment
-    socket.on('notification:ack', async (data) => {
+    socket.on('notification:ack', (data) => {
       const { notificationId } = data;
       // Mark notification as read in database
       logger.info(`Notification ${notificationId} acknowledged by user ${socket.userId}`);
     });
 
     // Real-time collaboration
-    socket.on('document:lock', async (data) => {
+    socket.on('document:lock', (data) => {
       const { documentType, documentId } = data;
       const room = `document:${documentType}:${documentId}`;
 

@@ -278,7 +278,7 @@ transactionSchema.virtual('customer', {
 });
 
 // Pre-save middleware to generate transaction number
-transactionSchema.pre('save', async function (next) {
+transactionSchema.pre('save', function (next) {
   if (this.isNew && !this.transactionNumber) {
     const prefix = this.transactionType.toUpperCase().substring(0, 3);
     const timestamp = Date.now().toString().slice(-8);

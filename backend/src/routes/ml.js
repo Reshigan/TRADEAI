@@ -126,7 +126,7 @@ router.get('/ab-test/:testId/results',
 );
 
 // Legacy Routes (for backward compatibility)
-router.get('/models', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/models', authenticateToken, asyncHandler((req, res) => {
   const models = [
     {
       id: 'sales-forecast',
@@ -176,7 +176,7 @@ router.get('/models', authenticateToken, asyncHandler(async (req, res) => {
   });
 }));
 
-router.post('/forecast', authenticateToken, asyncHandler(async (req, res) => {
+router.post('/forecast', authenticateToken, asyncHandler((req, res) => {
   const { type, targetId, horizon = 3 } = req.body;
 
   if (!type || !targetId) {
@@ -205,7 +205,7 @@ router.post('/forecast', authenticateToken, asyncHandler(async (req, res) => {
   });
 }));
 
-router.post('/train', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
+router.post('/train', authenticateToken, authorize('admin'), asyncHandler((req, res) => {
   const { modelId, parameters } = req.body;
 
   if (!modelId) {
@@ -222,7 +222,7 @@ router.post('/train', authenticateToken, authorize('admin'), asyncHandler(async 
   });
 }));
 
-router.get('/training/:jobId', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/training/:jobId', authenticateToken, asyncHandler((req, res) => {
   const { jobId } = req.params;
 
   res.json({
@@ -243,7 +243,7 @@ router.get('/training/:jobId', authenticateToken, asyncHandler(async (req, res) 
   });
 }));
 
-router.get('/insights/:modelId', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/insights/:modelId', authenticateToken, asyncHandler((req, res) => {
   const { modelId } = req.params;
 
   const insights = {

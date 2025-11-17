@@ -277,17 +277,17 @@ storeSchema.pre('save', function (next) {
 });
 
 // Methods
-regionSchema.methods.getDistrictCount = async function () {
+regionSchema.methods.getDistrictCount = function () {
   const District = mongoose.model('District');
   return District.countDocuments({ region: this._id, isActive: true });
 };
 
-regionSchema.methods.getStoreCount = async function () {
+regionSchema.methods.getStoreCount = function () {
   const Store = mongoose.model('Store');
   return Store.countDocuments({ region: this._id, isActive: true });
 };
 
-districtSchema.methods.getStoreCount = async function () {
+districtSchema.methods.getStoreCount = function () {
   const Store = mongoose.model('Store');
   return Store.countDocuments({ district: this._id, isActive: true });
 };

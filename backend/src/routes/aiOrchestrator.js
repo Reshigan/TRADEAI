@@ -162,7 +162,7 @@ router.post('/explain', [
  * GET /api/ai-orchestrator/tools
  * List available AI tools
  */
-router.get('/tools', async (req, res) => {
+router.get('/tools', (req, res) => {
   try {
     const tools = aiOrchestratorService.tools;
 
@@ -232,7 +232,7 @@ router.get('/health', async (req, res) => {
  * POST /api/ai-orchestrator/cache/clear
  * Clear AI orchestrator cache (admin only)
  */
-router.post('/cache/clear', async (req, res) => {
+router.post('/cache/clear', (req, res) => {
   try {
     if (req.user.role !== 'admin' && req.user.role !== 'super_admin') {
       return res.status(403).json({

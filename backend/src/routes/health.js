@@ -29,7 +29,7 @@ try {
 }
 
 // Basic health check - fast response
-router.get('/health', async (req, res) => {
+router.get('/health', (req, res) => {
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -203,7 +203,7 @@ router.get('/health/ready', readinessHandler);
 router.get('/health/readiness', readinessHandler);
 
 // Startup probe (for slow-starting applications)
-router.get('/health/startup', async (req, res) => {
+router.get('/health/startup', (req, res) => {
   try {
     // Check if application has fully started
     const isStarted = mongoose.connection.readyState === 1;

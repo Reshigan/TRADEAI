@@ -457,31 +457,31 @@ productSchema.statics.createHierarchyNode = function (tenantId, productData, par
   return hierarchyManager.createNode(tenantId, productData, parentId);
 };
 
-productSchema.statics.getTree = async function (tenantId, rootId = null, maxDepth = null) {
+productSchema.statics.getTree = function (tenantId, rootId = null, maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.getTree(tenantId, rootId, maxDepth);
 };
 
-productSchema.statics.searchInHierarchy = async function (tenantId, searchTerm, rootId = null) {
+productSchema.statics.searchInHierarchy = function (tenantId, searchTerm, rootId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
 };
 
-productSchema.statics.validateHierarchy = async function (tenantId) {
+productSchema.statics.validateHierarchy = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.validateHierarchy(tenantId);
 };
 
-productSchema.statics.repairHierarchy = async function (tenantId) {
+productSchema.statics.repairHierarchy = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.repairHierarchy(tenantId);
 };
 
-productSchema.statics.getHierarchyStats = async function (tenantId) {
+productSchema.statics.getHierarchyStats = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.getHierarchyStats(tenantId);
