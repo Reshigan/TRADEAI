@@ -589,11 +589,13 @@ promotionSchema.methods.approve = async function (level, userId, comments) {
 // Statics
 promotionSchema.statics.findOverlapping = function (customerId, productId, startDate, endDate) {
   return this.find({
-    $or: [
-      { 'scope.customers.customer': customerId },
-      { 'products.product': productId }
-    ],
-    $or: [
+    $and: [
+      {
+        $or: [
+          { 'scope.customers.customer': customerId },
+          { 'products.product': productId }
+        ]
+      },
       {
         'period.startDate': { $lte: endDate },
         'period.endDate': { $gte: startDate }

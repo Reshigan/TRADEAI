@@ -33,7 +33,7 @@ const validatePasswordStrength = (password) => {
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /[0-9]/.test(password),
-    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
   };
 
   const passed = Object.values(checks).filter(Boolean).length;
@@ -407,7 +407,7 @@ const createValidationSchema = (type) => {
           type: 'string',
           required: true,
           minLength: 8,
-          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/,
           patternMessage: 'Password must contain at least one number, one uppercase letter, one lowercase letter, and one special character'
         },
         role: {

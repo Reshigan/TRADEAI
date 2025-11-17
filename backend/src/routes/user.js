@@ -31,7 +31,10 @@ router.get('/', authenticateToken, authorize('admin'), asyncHandler(async (req, 
 
 // Create new user (admin only)
 router.post('/', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
-  let { employeeId, email, password, firstName, lastName, role, department } = req.body;
+  const { employeeId: rawEmployeeId, email, password, firstName: rawFirstName, lastName: rawLastName, role, department } = req.body;
+  let employeeId = rawEmployeeId;
+  let firstName = rawFirstName;
+  let lastName = rawLastName;
 
   // Sanitize string inputs to prevent XSS
   employeeId = sanitizeInput(employeeId);

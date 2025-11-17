@@ -278,10 +278,10 @@ const verifyPassword = (password, hashedPassword) => {
 const detectAttackPatterns = (req, res, next) => {
   // Check for SQL injection patterns
   const sqlPatterns = [
-    /(\%27)|(\')|(\-\-)|(\%23)|(#)/i,
-    /((\%3D)|(=))[^\n]*((\%27)|(\')|(\-\-)|(\%3B)|(;))/i,
-    /\w*((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))/i,
-    /((\%27)|(\'))union/i
+    /(%27)|(')|(--)|(%23)|(#)/i,
+    /((%3D)|(=))[^\n]*((%27)|(')|(--)|(%3B)|(;))/i,
+    /\w*((%27)|(')){((%6F)|o|(%4F))((%72)|r|(%52))/i,
+    /((%27)|(')){union/i
   ];
 
   // Check for NoSQL injection patterns

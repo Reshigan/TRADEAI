@@ -240,9 +240,8 @@ router.get('/template/:type', authenticateToken, asyncHandler(async (req, res) =
   const { type } = req.params;
   logger.info('Generating import template', { type, userId: req.user._id });
 
-  let workbook;
   const ExcelJS = require('exceljs');
-  workbook = new ExcelJS.Workbook();
+  const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
 
   // Define templates

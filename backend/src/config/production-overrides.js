@@ -45,9 +45,7 @@ const getRedisConfig = () => {
     lazyConnect: true,
     connectTimeout: 10000,
     commandTimeout: 5000,
-    retryDelayOnClusterDown: 300,
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3
+    retryDelayOnClusterDown: 300
   };
 };
 
