@@ -10,7 +10,7 @@ const logger = require('../utils/logger');
 
 // Create Budget Scenario
 exports.createScenario = asyncHandler(async (req, res) => {
-  const { basebudgetId, scenarioParams } = req.body;
+  const { baseBudgetId, scenarioParams } = req.body;
 
   let baseData = {};
   if (baseBudgetId) {

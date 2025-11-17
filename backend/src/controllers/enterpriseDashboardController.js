@@ -1835,6 +1835,161 @@ function generateBudgetRecommendations(overview, utilization) {
   return recommendations;
 }
 
+// =====================================================
+// DRILL-DOWN HELPER FUNCTIONS
+// =====================================================
+
+async function drillDownByProduct(metric, range, filters) {
+  const matchCriteria = {
+    date: { $gte: range.start, $lte: range.end },
+    ...filters
+  };
+  
+  const results = await SalesHistory.aggregate([
+    { $match: matchCriteria },
+    { $lookup: { from: 'products', localField: 'product', foreignField: '_id', as: 'productData' } },
+    { $unwind: '$productData' },
+    { $group: {
+      _id: '$product',
+      name: { $first: '$productData.name' },
+      revenue: { $sum: '$revenue' },
+      volume: { $sum: '$quantity' },
+      margin: { $avg: '$margin' }
+    }},
+    { $sort: { revenue: -1 } }
+  ]);
+  
+  return results;
+}
+
+async function drillDownByCustomer(metric, range, filters) {
+  const matchCriteria = {
+    date: { $gte: range.start, $lte: range.end },
+    ...filters
+  };
+  
+  const results = await SalesHistory.aggregate([
+    { $match: matchCriteria },
+    { $lookup: { from: 'customers', localField: 'customer', foreignField: '_id', as: 'customerData' } },
+    { $unwind: '$customerData' },
+    { $group: {
+      _id: '$customer',
+      name: { $first: '$customerData.name' },
+      revenue: { $sum: '$revenue' },
+      volume: { $sum: '$quantity' },
+      margin: { $avg: '$margin' }
+    }},
+    { $sort: { revenue: -1 } }
+  ]);
+  
+  return results;
+}
+
+async function drillDownByRegion(metric, range, filters) {
+  const matchCriteria = {
+    date: { $gte: range.start, $lte: range.end },
+    ...filters
+  };
+  
+  const results = await SalesHistory.aggregate([
+    { $match: matchCriteria },
+    { $lookup: { from: 'customers', localField: 'customer', foreignField: '_id', as: 'customerData' } },
+    { $unwind: '$customerData' },
+    { $group: {
+      _id: '$customerData.region',
+      name: { $first: '$customerData.region' },
+      revenue: { $sum: '$revenue' },
+      volume: { $sum: '$quantity' },
+      margin: { $avg: '$margin' }
+    }},
+    { $sort: { revenue: -1 } }
+  ]);
+  
+  return results;
+}
+
+async function drillDownByChannel(metric, range, filters) {
+  const matchCriteria = {
+    date: { $gte: range.start, $lte: range.end },
+    ...filters
+  };
+  
+  const results = await SalesHistory.aggregate([
+    { $match: matchCriteria },
+    { $group: {
+      _id: '$channel',
+      name: { $first: '$channel' },
+      revenue: { $sum: '$revenue' },
+      volume: { $sum: '$quantity' },
+      margin: { $avg: '$margin' }
+    }},
+    { $sort: { revenue: -1 } }
+  ]);
+  
+  return results;
+}
+
+async function drillDownByTime(metric, range, filters) {
+  const matchCriteria = {
+    date: { $gte: range.start, $lte: range.end },
+    ...filters
+  };
+  
+  const results = await SalesHistory.aggregate([
+    { $match: matchCriteria },
+    { $group: {
+      _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
+      name: { $first: { $dateToString: { format: '%Y-%m', date: '$date' } } },
+      revenue: { $sum: '$revenue' },
+      volume: { $sum: '$quantity' },
+      margin: { $avg: '$margin' }
+    }},
+    { $sort: { _id: 1 } }
+  ]);
+  
+  return results;
+}
+
+function calculateAggregations(data) {
+  if (!data || data.length === 0) {
+    return {
+      total: 0,
+      average: 0,
+      min: 0,
+      max: 0,
+      count: 0
+    };
+  }
+  
+  const values = data.map(d => d.revenue || 0);
+  return {
+    total: values.reduce((sum, val) => sum + val, 0),
+    average: values.reduce((sum, val) => sum + val, 0) / values.length,
+    min: Math.min(...values),
+    max: Math.max(...values),
+    count: data.length
+  };
+}
+
+async function getSpendTrend(year) {
+  const startDate = new Date(year, 0, 1);
+  const endDate = new Date(year, 11, 31, 23, 59, 59);
+  
+  const trend = await TradeSpend.aggregate([
+    { $match: { startDate: { $gte: startDate, $lte: endDate } } },
+    { $group: {
+      _id: { $month: '$startDate' },
+      amount: { $sum: '$amount' }
+    }},
+    { $sort: { _id: 1 } }
+  ]);
+  
+  return trend.map(t => ({
+    month: t._id,
+    amount: t.amount
+  }));
+}
+
 // Export additional helper functions for use in other controllers
 module.exports.calculateDateRange = calculateDateRange;
 module.exports.calculateGrowth = calculateGrowth;

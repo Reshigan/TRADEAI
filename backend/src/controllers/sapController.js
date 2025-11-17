@@ -5,7 +5,7 @@ const SalesHistory = require('../models/SalesHistory');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const sapService = require('../services/sapService');
 const logger = require('../utils/logger');
-const { addJob } = require('../jobs');
+const { addJob, getJob } = require('../jobs');
 
 // Sync master data from SAP
 exports.syncMasterData = asyncHandler(async (req, res, next) => {
