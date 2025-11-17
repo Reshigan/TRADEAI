@@ -239,7 +239,7 @@ class HierarchyManager {
 
     if (ancestorIds.length === 0) return [];
 
-    return await this.model.find({
+    return this.model.find({
       _id: { $in: ancestorIds.map((id) => new mongoose.Types.ObjectId(id)) },
       tenantId
     }).sort({ level: 1 });
@@ -269,7 +269,7 @@ class HierarchyManager {
    * Get direct children of a node
    */
   async getDirectChildren(tenantId, nodeId) {
-    return await this.model.find({
+    return this.model.find({
       tenantId,
       parentId: nodeId
     }).sort({ name: 1 });

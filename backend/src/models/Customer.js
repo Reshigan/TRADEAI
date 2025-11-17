@@ -569,7 +569,7 @@ customerSchema.methods.findNearby = async function (maxDistance = 10000) {
     return [];
   }
 
-  return await this.constructor.find({
+  return this.constructor.find({
     tenantId: this.tenantId,
     _id: { $ne: this._id },
     'address.location': {
@@ -582,7 +582,7 @@ customerSchema.methods.findNearby = async function (maxDistance = 10000) {
 };
 
 customerSchema.statics.findByLocation = async function (tenantId, longitude, latitude, maxDistance = 10000) {
-  return await this.find({
+  return this.find({
     tenantId,
     'address.location': {
       $near: {

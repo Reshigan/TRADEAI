@@ -471,7 +471,7 @@ class AnalyticsEngine {
 
   async findSimilarPromotions(tenantId, promotionData) {
     // Find promotions with similar characteristics
-    return await Promotion.find({
+    return Promotion.find({
       tenantId,
       type: promotionData.type,
       status: 'completed',
