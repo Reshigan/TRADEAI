@@ -63,7 +63,13 @@ const CommandCenter = () => {
 
       console.log('CommandCenter - Raw API responses:', { budgets, promotions, tradeSpends });
       
-      const data = processDashboardData(budgets, promotions, tradeSpends);
+      const budgetsArray = budgets?.data || budgets || [];
+      const promotionsArray = promotions?.data || promotions || [];
+      const tradeSpendsArray = tradeSpends?.data || tradeSpends || [];
+      
+      console.log('CommandCenter - Extracted arrays:', { budgetsArray, promotionsArray, tradeSpendsArray });
+      
+      const data = processDashboardData(budgetsArray, promotionsArray, tradeSpendsArray);
       setDashboardData(data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
