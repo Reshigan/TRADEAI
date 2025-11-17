@@ -417,7 +417,7 @@ class RealtimeAnalyticsService extends EventEmitter {
         break;
     }
 
-    return await this.analyticsEngine.generatePerformanceDashboard(
+    return this.analyticsEngine.generatePerformanceDashboard(
       tenantId,
       { start: startDate, end: endDate },
       filters
