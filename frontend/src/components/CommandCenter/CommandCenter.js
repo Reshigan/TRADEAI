@@ -294,7 +294,10 @@ const CommandCenter = () => {
                         borderRadius: 2
                       }}
                     >
-                      {action.icon}
+                      {action.iconType === 'calendar' ? <CalendarIcon /> :
+                       action.iconType === 'rocket' ? <RocketIcon /> :
+                       action.iconType === 'analytics' ? <AnalyticsIcon /> :
+                       null}
                     </Box>
                     {action.badge && (
                       <Chip 
