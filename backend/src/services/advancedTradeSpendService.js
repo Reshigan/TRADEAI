@@ -557,7 +557,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  async calculateKPIs(tradeSpends, filters) {
+  calculateKPIs(tradeSpends, filters) {
     const totalSpend = tradeSpends.reduce((sum, t) => sum + t.amount, 0);
     const totalRevenue = tradeSpends.reduce((sum, t) => sum + (t.revenue || 0), 0);
 
@@ -597,7 +597,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  async analyzeTrends(tradeSpends, dateRange) {
+  analyzeTrends(tradeSpends, dateRange) {
     const trends = [];
 
     // Group by month
@@ -684,7 +684,7 @@ class AdvancedTradeSpendService {
       .slice(0, 10);
   }
 
-  async calculateROI(tradeSpends) {
+  calculateROI(tradeSpends) {
     const totalSpend = tradeSpends.reduce((sum, t) => sum + t.amount, 0);
     const totalRevenue = tradeSpends.reduce((sum, t) => sum + (t.revenue || 0), 0);
 
@@ -748,7 +748,7 @@ class AdvancedTradeSpendService {
     return alerts;
   }
 
-  async generateRecommendations(dashboard, filters) {
+  generateRecommendations(dashboard, filters) {
     const recommendations = [];
 
     // ROI optimization
@@ -831,12 +831,12 @@ class AdvancedTradeSpendService {
     return { available: true, remaining: 100000 };
   }
 
-  async updateBudgetUtilization(companyId, category, amount) {
+  updateBudgetUtilization(companyId, category, amount) {
     // Update budget utilization tracking
     logger.info('Budget utilization updated', { companyId, category, amount });
   }
 
-  async reconcileTransaction(tradeSpend) {
+  reconcileTransaction(tradeSpend) {
     return {
       status: 'reconciled',
       matchedAt: new Date(),
@@ -867,7 +867,7 @@ class AdvancedTradeSpendService {
     return 'stable';
   }
 
-  async identifyVarianceDrivers(transactions, variance) {
+  identifyVarianceDrivers(transactions, variance) {
     return [
       {
         driver: 'Increased promotional activity',
@@ -930,7 +930,7 @@ class AdvancedTradeSpendService {
     return formatted;
   }
 
-  async analyzeHistoricalPerformance(companyId, historicalData) {
+  analyzeHistoricalPerformance(companyId, historicalData) {
     // Analyze historical ROI and effectiveness
     return {
       marketing: { roi: 250, effectiveness: 0.85 },

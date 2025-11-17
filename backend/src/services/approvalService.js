@@ -61,7 +61,7 @@ class ApprovalService {
     return approval;
   }
 
-  async getEntity(entityType, entityId) {
+  getEntity(entityType, entityId) {
     switch (entityType) {
       case 'promotion':
         return Promotion.findById(entityId);
@@ -139,15 +139,15 @@ class ApprovalService {
     return approval;
   }
 
-  async getPendingApprovalsForUser(userId) {
+  getPendingApprovalsForUser(userId) {
     return Approval.findPendingForApprover(userId);
   }
 
-  async getOverdueApprovals(tenantId) {
+  getOverdueApprovals(tenantId) {
     return Approval.findOverdue(tenantId);
   }
 
-  async getApprovalsByEntity(entityType, entityId) {
+  getApprovalsByEntity(entityType, entityId) {
     return Approval.find({ entityType, entityId })
       .populate('requestedBy', 'name email')
       .populate('approvalChain.approver', 'name email role')

@@ -108,7 +108,7 @@ class NotificationService extends EventEmitter {
   /**
    * Send budget alert notification
    */
-  async sendBudgetAlert(userId, budgetData) {
+  sendBudgetAlert(userId, budgetData) {
     const { budgetName, utilizationPercent, remainingAmount, severity } = budgetData;
 
     let message, icon;
@@ -144,7 +144,7 @@ class NotificationService extends EventEmitter {
   /**
    * Send accrual reminder notification
    */
-  async sendAccrualReminder(userId, accrualData) {
+  sendAccrualReminder(userId, accrualData) {
     const { period, accrualCount, totalAmount, dueDate } = accrualData;
 
     const daysUntilDue = Math.ceil((new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24));
@@ -182,7 +182,7 @@ class NotificationService extends EventEmitter {
   /**
    * Send promotion performance notification
    */
-  async sendPromotionAlert(userId, promotionData) {
+  sendPromotionAlert(userId, promotionData) {
     const { promotionName, roi, effectivenessScore, status } = promotionData;
 
     let message, severity, icon;
@@ -225,7 +225,7 @@ class NotificationService extends EventEmitter {
   /**
    * Send customer churn alert
    */
-  async sendChurnAlert(userId, customerData) {
+  sendChurnAlert(userId, customerData) {
     const { customerName, churnProbability, daysSinceLastPurchase, ltv } = customerData;
 
     let message, severity;
@@ -261,7 +261,7 @@ class NotificationService extends EventEmitter {
   /**
    * Send workflow approval request
    */
-  async sendApprovalRequest(userId, approvalData) {
+  sendApprovalRequest(userId, approvalData) {
     const { type, itemName, amount, requester } = approvalData;
 
     const notification = {
@@ -284,7 +284,7 @@ class NotificationService extends EventEmitter {
   /**
    * Send system notification
    */
-  async sendSystemNotification(userId, message, severity = 'info') {
+  sendSystemNotification(userId, message, severity = 'info') {
     const icons = {
       info: 'ℹ️',
       success: '✅',

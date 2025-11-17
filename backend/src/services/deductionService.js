@@ -122,15 +122,15 @@ class DeductionService {
     return matchResults;
   }
 
-  async getUnmatchedDeductions(tenantId) {
+  getUnmatchedDeductions(tenantId) {
     return Deduction.findUnmatched(tenantId);
   }
 
-  async getDisputedDeductions(tenantId) {
+  getDisputedDeductions(tenantId) {
     return Deduction.findDisputed(tenantId);
   }
 
-  async getDeductionsByCustomer(tenantId, customerId, startDate, endDate) {
+  getDeductionsByCustomer(tenantId, customerId, startDate, endDate) {
     const query = {
       company: tenantId,
       customer: customerId

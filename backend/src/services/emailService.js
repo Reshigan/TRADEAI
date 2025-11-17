@@ -62,7 +62,7 @@ class EmailService {
     }
   }
 
-  async sendWelcomeEmail(user) {
+  sendWelcomeEmail(user) {
     const subject = 'Welcome to FMCG Trade Spend Management';
     const html = `
       <h1>Welcome ${user.firstName}!</h1>
@@ -75,7 +75,7 @@ class EmailService {
     return this.sendEmail(user.email, subject, html);
   }
 
-  async sendPasswordResetEmail(user, resetUrl) {
+  sendPasswordResetEmail(user, resetUrl) {
     const subject = 'Password Reset Request';
     const html = `
       <h1>Password Reset</h1>
@@ -89,7 +89,7 @@ class EmailService {
     return this.sendEmail(user.email, subject, html);
   }
 
-  async sendApprovalRequestEmail(approver, item, type) {
+  sendApprovalRequestEmail(approver, item, type) {
     const subject = `Approval Required: ${type}`;
     const html = `
       <h1>Approval Required</h1>
@@ -107,7 +107,7 @@ class EmailService {
     return this.sendEmail(approver.email, subject, html);
   }
 
-  async sendApprovalNotificationEmail(user, item, type, status) {
+  sendApprovalNotificationEmail(user, item, type, status) {
     const subject = `${type} ${status}`;
     const html = `
       <h1>${type} ${status}</h1>
@@ -124,7 +124,7 @@ class EmailService {
     return this.sendEmail(user.email, subject, html);
   }
 
-  async sendPromotionAlertEmail(users, promotion) {
+  sendPromotionAlertEmail(users, promotion) {
     const subject = `New Promotion: ${promotion.name}`;
     const html = `
       <h1>New Promotion Alert</h1>
@@ -143,7 +143,7 @@ class EmailService {
     return Promise.all(promises);
   }
 
-  async sendBudgetAlertEmail(user, budget, alertType) {
+  sendBudgetAlertEmail(user, budget, alertType) {
     const subject = `Budget Alert: ${alertType}`;
     const html = `
       <h1>Budget Alert</h1>
@@ -162,7 +162,7 @@ class EmailService {
     return this.sendEmail(user.email, subject, html);
   }
 
-  async sendReportEmail(user, report, attachmentPath = null) {
+  sendReportEmail(user, report, attachmentPath = null) {
     const subject = `Report: ${report.name}`;
     const html = `
       <h1>Report Generated</h1>

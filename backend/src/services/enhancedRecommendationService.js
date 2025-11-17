@@ -21,7 +21,7 @@ class EnhancedRecommendationService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Enhanced Recommendation Service...');
 
@@ -486,7 +486,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Get real-time context
    */
-  async getRealtimeContext(userId, sessionId) {
+  getRealtimeContext(userId, sessionId) {
     const context = {
       session: {
         id: sessionId || this.generateSessionId(),
@@ -564,7 +564,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Execute recommendation strategy
    */
-  async executeRecommendationStrategy(strategy, userProfile, context, options) {
+  executeRecommendationStrategy(strategy, userProfile, context, options) {
     const numRecommendations = options.count || 10;
 
     switch (strategy.name) {
@@ -750,7 +750,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Post-process recommendations
    */
-  async postProcessRecommendations(recommendations, userProfile, context, options) {
+  postProcessRecommendations(recommendations, userProfile, context, options) {
     let processed = [...recommendations];
 
     // Apply diversity constraints
@@ -852,7 +852,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Create A/B test
    */
-  async createABTest(config) {
+  createABTest(config) {
     const testId = this.generateTestId();
     const test = {
       id: testId,

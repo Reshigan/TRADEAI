@@ -286,7 +286,7 @@ class ApprovalWorkflowService {
   }
 
   // Check SLA compliance
-  async checkSLACompliance(document) {
+  checkSLACompliance(document) {
     const slaHours = {
       budget: 48,
       promotion: 24,
@@ -404,7 +404,7 @@ class ApprovalWorkflowService {
     }
   }
 
-  async getAutoApprovalRules(document) {
+  getAutoApprovalRules(document) {
     // This would fetch from a rules configuration
     // For now, return sample rules
     return [
@@ -430,7 +430,7 @@ class ApprovalWorkflowService {
     return true;
   }
 
-  async createNotification(userId, notification) {
+  createNotification(userId, notification) {
     // This would integrate with a notification service
     // For now, just log it
     logger.info('Notification created', { userId, notification });

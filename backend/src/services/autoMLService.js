@@ -18,7 +18,7 @@ class AutoMLService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing AutoML Service...');
 
@@ -1004,7 +1004,7 @@ class AutoMLService extends EventEmitter {
     return Array.from(this.optimizers.values());
   }
 
-  async stopExperiment(experimentId) {
+  stopExperiment(experimentId) {
     const experiment = this.experiments.get(experimentId);
     if (!experiment) {
       throw new Error(`Experiment ${experimentId} not found`);
@@ -1020,7 +1020,7 @@ class AutoMLService extends EventEmitter {
     return experiment;
   }
 
-  async deleteExperiment(experimentId) {
+  deleteExperiment(experimentId) {
     const experiment = this.experiments.get(experimentId);
     if (!experiment) {
       throw new Error(`Experiment ${experimentId} not found`);

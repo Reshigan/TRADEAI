@@ -29,7 +29,7 @@ class ExternalIntegrationsService {
     console.log('External Integrations Service initialized successfully');
   }
 
-  async initializeDefaultIntegrations() {
+  initializeDefaultIntegrations() {
     // ERP Integration (SAP, Oracle, etc.)
     this.registerIntegration('erp', {
       name: 'Enterprise Resource Planning',
@@ -601,7 +601,7 @@ class ExternalIntegrationsService {
     }
   }
 
-  async disconnectIntegration(integrationId) {
+  disconnectIntegration(integrationId) {
     const integration = this.integrations.get(integrationId);
     if (!integration) {
       throw new Error(`Integration ${integrationId} not found`);
@@ -626,7 +626,7 @@ class ExternalIntegrationsService {
     };
   }
 
-  async getIntegrationStatus(integrationId) {
+  getIntegrationStatus(integrationId) {
     const integration = this.integrations.get(integrationId);
     if (!integration) {
       throw new Error(`Integration ${integrationId} not found`);
@@ -635,7 +635,7 @@ class ExternalIntegrationsService {
     return this.sanitizeIntegration(integration);
   }
 
-  async getAllIntegrations() {
+  getAllIntegrations() {
     const integrations = [];
     for (const integration of this.integrations.values()) {
       integrations.push(this.sanitizeIntegration(integration));
@@ -659,7 +659,7 @@ class ExternalIntegrationsService {
     return sanitized;
   }
 
-  async delay(ms) {
+  delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
@@ -763,7 +763,7 @@ class ExternalIntegrationsService {
     }
   }
 
-  async getIntegrationMetrics() {
+  getIntegrationMetrics() {
     const metrics = {
       totalIntegrations: this.integrations.size,
       activeIntegrations: 0,

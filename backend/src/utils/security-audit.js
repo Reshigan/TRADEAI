@@ -67,7 +67,7 @@ class SecurityAuditLogger {
   /**
    * Rotate log files
    */
-  async rotateLogFiles() {
+  rotateLogFiles() {
     try {
       // Rotate existing log files
       for (let i = this.maxLogFiles - 1; i > 0; i--) {
@@ -345,7 +345,7 @@ class SecurityVulnerabilityScanner {
   /**
    * Scan dependencies for vulnerabilities
    */
-  async scanDependencies() {
+  scanDependencies() {
     this.logger.info('Scanning dependencies for vulnerabilities');
 
     try {
@@ -382,7 +382,7 @@ class SecurityVulnerabilityScanner {
   /**
    * Scan configuration for security issues
    */
-  async scanConfiguration() {
+  scanConfiguration() {
     this.logger.info('Scanning configuration for security issues');
 
     try {
@@ -418,7 +418,7 @@ class SecurityVulnerabilityScanner {
   /**
    * Scan file permissions for security issues
    */
-  async scanFilePermissions() {
+  scanFilePermissions() {
     this.logger.info('Scanning file permissions for security issues');
 
     try {
@@ -454,7 +454,7 @@ class SecurityVulnerabilityScanner {
   /**
    * Scan for hardcoded secrets
    */
-  async scanSecrets() {
+  scanSecrets() {
     this.logger.info('Scanning for hardcoded secrets');
 
     try {
@@ -954,7 +954,7 @@ class FileIntegrityMonitor {
    * @param {string} filePath - File path
    * @returns {string} - File hash
    */
-  async calculateFileHash(filePath) {
+  calculateFileHash(filePath) {
     return new Promise((resolve, reject) => {
       try {
         const hash = crypto.createHash('sha256');

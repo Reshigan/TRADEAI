@@ -111,15 +111,15 @@ class ClaimService {
     return matchResults;
   }
 
-  async getUnmatchedClaims(tenantId) {
+  getUnmatchedClaims(tenantId) {
     return Claim.findUnmatched(tenantId);
   }
 
-  async getPendingApprovalClaims(tenantId) {
+  getPendingApprovalClaims(tenantId) {
     return Claim.findPendingApproval(tenantId);
   }
 
-  async getClaimsByCustomer(tenantId, customerId, startDate, endDate) {
+  getClaimsByCustomer(tenantId, customerId, startDate, endDate) {
     const query = {
       company: tenantId,
       customer: customerId

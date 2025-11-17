@@ -24,7 +24,7 @@ class POSImportService {
   /**
    * Parse CSV file
    */
-  async parseCSV(filePath) {
+  parseCSV(filePath) {
     return new Promise((resolve, reject) => {
       const results = [];
 
@@ -49,7 +49,7 @@ class POSImportService {
   /**
    * Parse file based on extension
    */
-  async parseFile(filePath, fileType) {
+  parseFile(filePath, fileType) {
     try {
       if (fileType === 'csv') {
         return this.parseCSV(filePath);

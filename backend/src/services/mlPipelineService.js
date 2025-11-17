@@ -51,7 +51,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Initialize model registry with versioning
    */
-  async initializeModelRegistry() {
+  initializeModelRegistry() {
     // Register available model types
     const modelTypes = [
       {
@@ -126,7 +126,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Initialize feature store
    */
-  async initializeFeatureStore() {
+  initializeFeatureStore() {
     // Define feature groups
     const featureGroups = [
       {
@@ -201,7 +201,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Load existing pipelines
    */
-  async loadPipelines() {
+  loadPipelines() {
     // Define ML pipelines
     const pipelines = [
       {
@@ -390,7 +390,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Create new model version
    */
-  async createModelVersion(modelId, config) {
+  createModelVersion(modelId, config) {
     const modelInfo = this.modelRegistry.get(modelId);
     if (!modelInfo) {
       throw new Error(`Model ${modelId} not found in registry`);
@@ -590,7 +590,7 @@ class MLPipelineService extends EventEmitter {
   /**
    * Create A/B test experiment
    */
-  async createABTest(config) {
+  createABTest(config) {
     const experimentId = this.generateExperimentId();
     const experiment = {
       id: experimentId,
@@ -1013,7 +1013,7 @@ class MLPipelineService extends EventEmitter {
     console.log('ML Pipeline monitoring started');
   }
 
-  async monitorModelPerformance() {
+  monitorModelPerformance() {
     // Monitor deployed models
     this.deployments.forEach(async (deployment) => {
       if (deployment.status === 'deployed') {
@@ -1041,7 +1041,7 @@ class MLPipelineService extends EventEmitter {
     });
   }
 
-  async checkRetrainingNeeds() {
+  checkRetrainingNeeds() {
     // Check if models need retraining based on performance drift
     this.modelRegistry.forEach((modelInfo, modelId) => {
       if (modelInfo.activeVersion) {

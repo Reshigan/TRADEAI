@@ -20,7 +20,7 @@ class MLService {
     }
   }
 
-  async loadModels() {
+  loadModels() {
     // Load pre-trained models if they exist
     // For now, we'll create them on demand
   }
@@ -235,7 +235,7 @@ class MLService {
   }
 
   // Anomaly detection in sales data
-  async detectAnomalies(data, threshold = 2.5) {
+  detectAnomalies(data, threshold = 2.5) {
     const values = data.map((d) => d.value);
     const mean = this.calculateAverage(values);
     const stdDev = this.calculateStdDev(values, mean);
@@ -262,7 +262,7 @@ class MLService {
   }
 
   // Promotion effectiveness prediction
-  async predictPromotionEffectiveness(promotionData) {
+  predictPromotionEffectiveness(promotionData) {
     const {
       discountPercentage,
       duration,
@@ -321,7 +321,7 @@ class MLService {
   }
 
   // Price optimization
-  async optimizePrice(productId, targetMargin, constraints) {
+  optimizePrice(productId, targetMargin, constraints) {
     // This would use historical elasticity data
     // For now, return a simple optimization
 
@@ -457,7 +457,7 @@ class MLService {
   /**
    * Predict promotion performance using ML models
    */
-  async predictPromotionPerformance(params) {
+  predictPromotionPerformance(params) {
     // Placeholder implementation - returns basic prediction
     const { discountPercent = 0, duration = 0 } = params;
 
@@ -476,7 +476,7 @@ class MLService {
   /**
    * Forecast volume using time series models
    */
-  async forecastVolume(params) {
+  forecastVolume(params) {
     // Placeholder implementation - returns basic forecast
     const { historicalVolume = 1000, periods = 12 } = params;
 

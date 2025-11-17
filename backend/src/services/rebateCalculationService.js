@@ -54,7 +54,7 @@ class RebateCalculationService {
    * @param {String} period - Period (e.g., "2025-01")
    * @returns {Array} - Array of accruals
    */
-  async accrueRebatesForPeriod(period) {
+  accrueRebatesForPeriod(period) {
     const accruals = [];
 
     // This would typically:

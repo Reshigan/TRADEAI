@@ -115,7 +115,7 @@ class APIGateway {
     this.app.use(this.versioningMiddleware.bind(this));
   }
 
-  async registerServices() {
+  registerServices() {
     // Register microservices
     this.services.set('analytics', {
       name: 'Analytics Service',
@@ -748,7 +748,7 @@ class RedisStore {
     this.client = redisClient;
   }
 
-  async incr(key) {
+  incr(key) {
     try {
       return this.client.incr(key);
     } catch (error) {

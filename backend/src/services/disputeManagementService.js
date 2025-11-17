@@ -261,7 +261,7 @@ class DisputeManagementService {
   /**
    * Get overdue disputes
    */
-  async getOverdueDisputes() {
+  getOverdueDisputes() {
     return Dispute.getOverdueDisputes();
   }
 

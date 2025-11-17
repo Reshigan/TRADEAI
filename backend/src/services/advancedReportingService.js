@@ -351,7 +351,7 @@ class AdvancedReportingService {
   /**
    * Generate CSV export
    */
-  async generateCSVReport(reportData, options = {}) {
+  generateCSVReport(reportData, options = {}) {
     const { filename = 'report.csv' } = options;
 
     try {

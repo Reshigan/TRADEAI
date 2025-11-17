@@ -69,7 +69,7 @@ class ExportService {
   /**
    * Export customers to Excel
    */
-  async exportCustomers(customers, companyName = 'TradeAI') {
+  exportCustomers(customers, companyName = 'TradeAI') {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Customers');
@@ -139,7 +139,7 @@ class ExportService {
   /**
    * Export products to Excel
    */
-  async exportProducts(products, companyName = 'TradeAI') {
+  exportProducts(products, companyName = 'TradeAI') {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Products');
@@ -214,7 +214,7 @@ class ExportService {
   /**
    * Export promotions to Excel
    */
-  async exportPromotions(promotions, companyName = 'TradeAI') {
+  exportPromotions(promotions, companyName = 'TradeAI') {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Promotions');
@@ -281,7 +281,7 @@ class ExportService {
   /**
    * Export budgets to Excel
    */
-  async exportBudgets(budgets, companyName = 'TradeAI') {
+  exportBudgets(budgets, companyName = 'TradeAI') {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Budgets');
@@ -342,7 +342,7 @@ class ExportService {
   /**
    * Export transactions to Excel
    */
-  async exportTransactions(transactions, companyName = 'TradeAI') {
+  exportTransactions(transactions, companyName = 'TradeAI') {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Transactions');
@@ -399,7 +399,7 @@ class ExportService {
   /**
    * Export generic data to Excel
    */
-  async exportGeneric(data, headers, sheetName, companyName = 'TradeAI') {
+  exportGeneric(data, headers, sheetName, companyName = 'TradeAI') {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet(sheetName);

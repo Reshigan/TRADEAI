@@ -395,7 +395,7 @@ class MLMatchingService {
   /**
    * Adjust feature weights based on performance
    */
-  async adjustFeatureWeights() {
+  adjustFeatureWeights() {
     // Analyze which features correlated best with successful matches
     const recentData = this.trainingData.slice(-100);
 
@@ -437,7 +437,7 @@ class MLMatchingService {
   /**
    * Load training data from database
    */
-  async loadTrainingData() {
+  loadTrainingData() {
     // In production, load from database
     // For now, initialize with empty array
     this.trainingData = [];

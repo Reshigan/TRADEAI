@@ -471,7 +471,7 @@ class SettlementService {
   /**
    * Generate GL document number
    */
-  async _generateGLDocumentNumber() {
+  _generateGLDocumentNumber() {
     const date = new Date();
     const year = date.getFullYear().toString().substr(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');

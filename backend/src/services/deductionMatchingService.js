@@ -83,7 +83,7 @@ class DeductionMatchingService {
   /**
    * Calculate match score between deduction and transaction
    */
-  async calculateMatchScore(deduction, transaction) {
+  calculateMatchScore(deduction, transaction) {
     const breakdown = {};
 
     // 1. Amount matching (40 points)

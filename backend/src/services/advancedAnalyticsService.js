@@ -19,7 +19,7 @@ class AdvancedAnalyticsService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Advanced Analytics Service...');
 

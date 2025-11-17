@@ -240,7 +240,7 @@ class EnterpriseCrudService {
   }
 
   // Get saved views
-  async getSavedView(viewId, userId) {
+  getSavedView(viewId, userId) {
     // Implementation for saved views/filters
     // This would query a separate SavedViews collection
     return {};
@@ -516,7 +516,7 @@ class EnterpriseCrudService {
   }
 
   // Import from Excel
-  async importFromExcel(filePath, options = {}) {
+  importFromExcel(filePath, options = {}) {
     let xlsx;
     try {
       xlsx = require('xlsx');
@@ -530,7 +530,7 @@ class EnterpriseCrudService {
   }
 
   // Import from JSON
-  async importFromJSON(data, options = {}) {
+  importFromJSON(data, options = {}) {
     const records = JSON.parse(data);
     return this.bulkCreate(records, options);
   }
@@ -539,13 +539,13 @@ class EnterpriseCrudService {
    * DATA VALIDATION & CLEANSING
    */
 
-  async validateData(data) {
+  validateData(data) {
     // Implement custom validation rules
     // This can be extended based on model schemas
     return true;
   }
 
-  async cleanseData(data) {
+  cleanseData(data) {
     // Implement data cleansing rules
     // - Trim strings
     // - Convert types
@@ -555,7 +555,7 @@ class EnterpriseCrudService {
   }
 
   // Find duplicates
-  async findDuplicates(fields = []) {
+  findDuplicates(fields = []) {
     const pipeline = [
       {
         $group: {
@@ -627,7 +627,7 @@ class EnterpriseCrudService {
     // await VersionHistory.create(version);
   }
 
-  async getVersionHistory(id) {
+  getVersionHistory(id) {
     // Retrieve version history for a record
     // return VersionHistory.find({ modelName: this.modelName, recordId: id });
     return [];
@@ -709,15 +709,15 @@ class EnterpriseCrudService {
    * AGGREGATION HELPERS
    */
 
-  async aggregate(pipeline) {
+  aggregate(pipeline) {
     return this.model.aggregate(pipeline);
   }
 
-  async count(filters = {}) {
+  count(filters = {}) {
     return this.model.countDocuments(filters);
   }
 
-  async distinct(field, filters = {}) {
+  distinct(field, filters = {}) {
     return this.model.distinct(field, filters);
   }
 }

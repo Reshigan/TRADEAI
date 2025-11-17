@@ -50,7 +50,7 @@ class AuditService {
    * @param {Object} filters - Filter parameters
    * @returns {Promise<Array>} Audit logs
    */
-  async getLogs(filters = {}) {
+  getLogs(filters = {}) {
     const query = {};
 
     if (filters.userId) query.userId = filters.userId;
@@ -76,7 +76,7 @@ class AuditService {
    * @param {Object} options - Query options
    * @returns {Promise<Array>} User's audit logs
    */
-  async getUserActivity(userId, options = {}) {
+  getUserActivity(userId, options = {}) {
     return this.getLogs({ userId, ...options });
   }
 
@@ -86,7 +86,7 @@ class AuditService {
    * @param {string} resourceId - Resource ID
    * @returns {Promise<Array>} Resource's audit logs
    */
-  async getResourceHistory(resource, resourceId) {
+  getResourceHistory(resource, resourceId) {
     return this.getLogs({ resource, resourceId });
   }
 

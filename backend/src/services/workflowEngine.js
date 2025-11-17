@@ -42,7 +42,7 @@ class WorkflowEngine extends EventEmitter {
   /**
    * Load default workflows
    */
-  async loadDefaultWorkflows() {
+  loadDefaultWorkflows() {
     // Promotion Approval Workflow
     this.workflows.set('promotion_approval', {
       id: 'promotion_approval',
@@ -247,7 +247,7 @@ class WorkflowEngine extends EventEmitter {
   /**
    * Load business rules
    */
-  async loadBusinessRules() {
+  loadBusinessRules() {
     // Promotion Rules
     this.rules.set('promotion_validation', [
       {
@@ -687,7 +687,7 @@ class WorkflowEngine extends EventEmitter {
   /**
    * Reject workflow
    */
-  async rejectWorkflow(instance, reason, rejectedBy) {
+  rejectWorkflow(instance, reason, rejectedBy) {
     instance.status = 'rejected';
     instance.rejectedAt = new Date();
     instance.rejectedBy = rejectedBy;
@@ -925,7 +925,7 @@ class WorkflowEngine extends EventEmitter {
     }
   }
 
-  async notifyAssignee(task) {
+  notifyAssignee(task) {
     // Mock notification - would integrate with actual notification system
     console.log(`Notification sent to ${task.assignee} for task: ${task.title}`);
   }
@@ -971,23 +971,23 @@ class WorkflowEngine extends EventEmitter {
   }
 
   // Mock action implementations
-  async validateData(instance) {
+  validateData(instance) {
     console.log('Validating data for instance:', instance.id);
   }
 
-  async calculateBudget(instance) {
+  calculateBudget(instance) {
     console.log('Calculating budget for instance:', instance.id);
   }
 
-  async createPromotion(instance) {
+  createPromotion(instance) {
     console.log('Creating promotion for instance:', instance.id);
   }
 
-  async notifyStakeholders(instance) {
+  notifyStakeholders(instance) {
     console.log('Notifying stakeholders for instance:', instance.id);
   }
 
-  async updateSystems(instance) {
+  updateSystems(instance) {
     console.log('Updating systems for instance:', instance.id);
   }
 }

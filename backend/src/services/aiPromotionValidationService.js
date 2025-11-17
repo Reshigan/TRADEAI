@@ -11,7 +11,7 @@ class AIPromotionValidationService {
   /**
      * Validate promotion uplift prediction using ML models
      */
-  async validatePromotionUplift(promotionData) {
+  validatePromotionUplift(promotionData) {
     const {
       productId,
       currentPrice,
@@ -58,7 +58,7 @@ class AIPromotionValidationService {
   /**
      * Generate AI-powered promotion suggestions
      */
-  async generatePromotionSuggestions(promotionData) {
+  generatePromotionSuggestions(promotionData) {
     const {
       productId,
       currentPrice,

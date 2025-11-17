@@ -269,12 +269,12 @@ class AlertService {
     });
   }
 
-  async sendSMSAlert(alert) {
+  sendSMSAlert(alert) {
     // Mock SMS implementation
     console.log(`SMS Alert sent: ${alert.message}`);
   }
 
-  async sendSlackAlert(alert) {
+  sendSlackAlert(alert) {
     // Mock Slack implementation
     console.log(`Slack Alert sent: ${alert.message}`);
   }

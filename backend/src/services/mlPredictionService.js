@@ -829,7 +829,7 @@ class MLPredictionService {
   // Additional utility methods would continue here...
   // (truncated for brevity, but would include all the helper methods referenced above)
 
-  async getModelMetrics() {
+  getModelMetrics() {
     const metrics = {};
 
     for (const [modelName, model] of this.models) {

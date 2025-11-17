@@ -20,7 +20,7 @@ class AnomalyDetectionService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Anomaly Detection Service...');
 
@@ -448,7 +448,7 @@ class AnomalyDetectionService extends EventEmitter {
   /**
    * Ingest real-time data
    */
-  async ingestRealTimeData(detectorId) {
+  ingestRealTimeData(detectorId) {
     const detector = this.detectors.get(detectorId);
     if (!detector) return [];
 
@@ -930,7 +930,7 @@ class AnomalyDetectionService extends EventEmitter {
   /**
    * Run batch analysis
    */
-  async runBatchAnalysis(detectorId) {
+  runBatchAnalysis(detectorId) {
     const detector = this.detectors.get(detectorId);
     const data = detector.currentData.slice(-100); // Analyze last 100 points
 
@@ -1325,7 +1325,7 @@ class AnomalyDetectionService extends EventEmitter {
     return alerts.sort((a, b) => b.timestamp - a.timestamp);
   }
 
-  async acknowledgeAlert(alertId, userId) {
+  acknowledgeAlert(alertId, userId) {
     const alert = this.alerts.get(alertId);
     if (!alert) {
       throw new Error(`Alert ${alertId} not found`);
@@ -1344,7 +1344,7 @@ class AnomalyDetectionService extends EventEmitter {
     return alert;
   }
 
-  async resolveAlert(alertId, userId, resolution) {
+  resolveAlert(alertId, userId, resolution) {
     const alert = this.alerts.get(alertId);
     if (!alert) {
       throw new Error(`Alert ${alertId} not found`);

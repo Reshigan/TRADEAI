@@ -478,7 +478,7 @@ class AdvancedAnalyticsEngine {
     return 'negative';
   }
 
-  async calculateCustomerMetrics(tenantId, options) {
+  calculateCustomerMetrics(tenantId, options) {
     // Implementation for customer-specific metrics
     return {
       totalCustomers: 0,
@@ -489,7 +489,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  async calculateProductMetrics(tenantId, options) {
+  calculateProductMetrics(tenantId, options) {
     // Implementation for product-specific metrics
     return {
       totalProducts: 0,
@@ -499,7 +499,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  async calculatePromotionMetrics(tenantId, options) {
+  calculatePromotionMetrics(tenantId, options) {
     // Implementation for promotion-specific metrics
     return {
       totalPromotions: 0,

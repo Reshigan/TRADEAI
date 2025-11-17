@@ -476,7 +476,7 @@ class AdvancedReportingEngine {
 
   // Helper methods for data retrieval
 
-  async getTradeSpendData(tenantId, filters, dateRange) {
+  getTradeSpendData(tenantId, filters, dateRange) {
     const query = { tenantId };
 
     if (dateRange) {
@@ -493,7 +493,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  async getPromotionData(tenantId, filters, dateRange) {
+  getPromotionData(tenantId, filters, dateRange) {
     const query = { tenantId };
 
     if (dateRange) {
@@ -509,7 +509,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  async getSalesHistoryData(tenantId, filters, dateRange) {
+  getSalesHistoryData(tenantId, filters, dateRange) {
     const query = { tenantId };
 
     if (dateRange) {
@@ -525,17 +525,17 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  async getCustomerData(tenantId, filters) {
+  getCustomerData(tenantId, filters) {
     return Customer.find({ tenantId, isActive: true })
       .lean();
   }
 
-  async getProductData(tenantId, filters) {
+  getProductData(tenantId, filters) {
     return Product.find({ tenantId, isActive: true })
       .lean();
   }
 
-  async getAnalyticsData(tenantId, filters, dateRange) {
+  getAnalyticsData(tenantId, filters, dateRange) {
     // This would integrate with the advanced analytics engine
     // For now, return aggregated data
     const pipeline = [
@@ -744,17 +744,17 @@ class AdvancedReportingEngine {
     });
   }
 
-  async addExcelCharts(workbook, charts, data) {
+  addExcelCharts(workbook, charts, data) {
     // Chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  async addPDFCharts(doc, charts, data) {
+  addPDFCharts(doc, charts, data) {
     // PDF chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  async addSummarySheet(workbook, data, reportType) {
+  addSummarySheet(workbook, data, reportType) {
     const summarySheet = workbook.addWorksheet('Summary');
 
     summarySheet.addRow(['Report Summary']);

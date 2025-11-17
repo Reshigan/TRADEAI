@@ -471,7 +471,7 @@ class SimulationEngine {
    * HELPER FUNCTIONS
    */
 
-  async runScenario(scenario) {
+  runScenario(scenario) {
     switch (scenario.type) {
       case 'promotion_impact':
         return this.simulatePromotionImpact(scenario);
@@ -565,12 +565,12 @@ class SimulationEngine {
     return recommendations;
   }
 
-  async getHistoricalPerformance(categories) {
+  getHistoricalPerformance(categories) {
     // Fetch historical performance data
     return {};
   }
 
-  async optimizeBudgetAllocation(params) {
+  optimizeBudgetAllocation(params) {
     // Optimization algorithm (could use linear programming, genetic algorithm, etc.)
     const { totalBudget, categories, historicalPerformance } = params;
 
@@ -585,7 +585,7 @@ class SimulationEngine {
     return allocation;
   }
 
-  async calculateExpectedOutcomes(allocation) {
+  calculateExpectedOutcomes(allocation) {
     const outcomes = {};
 
     for (const [category, budget] of Object.entries(allocation)) {
@@ -599,7 +599,7 @@ class SimulationEngine {
     return outcomes;
   }
 
-  async generateAllocationScenarios(totalBudget, categories) {
+  generateAllocationScenarios(totalBudget, categories) {
     // Generate different allocation scenarios
     return [
       { name: 'Equal Distribution', allocation: {} },
@@ -618,7 +618,7 @@ class SimulationEngine {
     return [];
   }
 
-  async getCurrentPricingData(products) {
+  getCurrentPricingData(products) {
     // Get current pricing and sales data
     return {
       revenue: 500000,
@@ -640,7 +640,7 @@ class SimulationEngine {
     };
   }
 
-  async estimatePriceElasticity(products) {
+  estimatePriceElasticity(products) {
     // Estimate price elasticity from historical data
     // This would use regression analysis on historical pricing and volume data
     return 1.5; // Default elasticity
@@ -658,7 +658,7 @@ class SimulationEngine {
     };
   }
 
-  async analyzeCompetitivePosition(products, priceChange) {
+  analyzeCompetitivePosition(products, priceChange) {
     // Competitive positioning analysis
     return {
       currentPosition: 'middle',
@@ -678,7 +678,7 @@ class SimulationEngine {
     };
   }
 
-  async getHistoricalVolume(products, months) {
+  getHistoricalVolume(products, months) {
     // Get historical volume data
     return [];
   }
@@ -723,7 +723,7 @@ class SimulationEngine {
     return [];
   }
 
-  async getCurrentMarketPosition(products) {
+  getCurrentMarketPosition(products) {
     return {
       marketShare: 15,
       rank: 3,
@@ -753,11 +753,11 @@ class SimulationEngine {
     return [];
   }
 
-  async getHistoricalROI(activities) {
+  getHistoricalROI(activities) {
     return {};
   }
 
-  async optimizeActivityMix(params) {
+  optimizeActivityMix(params) {
     return {};
   }
 
@@ -768,7 +768,7 @@ class SimulationEngine {
     };
   }
 
-  async runMonteCarloSimulation(mix, iterations) {
+  runMonteCarloSimulation(mix, iterations) {
     // Monte Carlo simulation
     const results = [];
 

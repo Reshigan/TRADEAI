@@ -48,7 +48,7 @@ class IntegrationHubService extends EventEmitter {
   /**
    * Initialize available connectors
    */
-  async initializeConnectors() {
+  initializeConnectors() {
     // Salesforce Connector
     this.connectors.set('salesforce', {
       id: 'salesforce',
@@ -231,7 +231,7 @@ class IntegrationHubService extends EventEmitter {
   /**
    * Load API configurations
    */
-  async loadAPIConfigurations() {
+  loadAPIConfigurations() {
     // Load tenant-specific API configurations
     // In production, this would load from database
     this.apiConfigurations.set('tenant_1', {
@@ -718,7 +718,7 @@ class IntegrationHubService extends EventEmitter {
     }
   }
 
-  async fetchExternalData(connector, config, capability) {
+  fetchExternalData(connector, config, capability) {
     // Mock implementation - would fetch actual data from external systems
     return [
       { id: '1', name: 'Sample Record 1' },
@@ -764,7 +764,7 @@ class IntegrationHubService extends EventEmitter {
     });
   }
 
-  async syncToInternalSystem(tenantId, capability, data) {
+  syncToInternalSystem(tenantId, capability, data) {
     // Mock implementation - would sync to actual internal system
     console.log(`Syncing ${data.length} ${capability} records for tenant ${tenantId}`);
 
@@ -775,12 +775,12 @@ class IntegrationHubService extends EventEmitter {
     };
   }
 
-  async getAccessToken(connector, config) {
+  getAccessToken(connector, config) {
     // Mock implementation - would get actual access tokens
     return 'mock_access_token';
   }
 
-  async makeAPIRequest(connector, config, options) {
+  makeAPIRequest(connector, config, options) {
     // Mock implementation - would make actual API requests
     return {
       data: { id: 'mock_id', status: 'success' }

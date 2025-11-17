@@ -15,7 +15,7 @@ class WebhookService extends EventEmitter {
     this.retryDelays = [1000, 5000, 15000]; // 1s, 5s, 15s
   }
 
-  async initialize() {
+  initialize() {
     if (this.initialized) return;
 
     console.log('Initializing Webhook Service...');
@@ -72,7 +72,7 @@ class WebhookService extends EventEmitter {
     };
   }
 
-  async updateWebhook(webhookId, updates) {
+  updateWebhook(webhookId, updates) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -91,7 +91,7 @@ class WebhookService extends EventEmitter {
     return this.sanitizeWebhook(webhook);
   }
 
-  async deleteWebhook(webhookId) {
+  deleteWebhook(webhookId) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -113,7 +113,7 @@ class WebhookService extends EventEmitter {
     return { success: true, message: 'Webhook deleted successfully' };
   }
 
-  async getWebhook(webhookId) {
+  getWebhook(webhookId) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -122,7 +122,7 @@ class WebhookService extends EventEmitter {
     return this.sanitizeWebhook(webhook);
   }
 
-  async getWebhooksByTenant(tenantId) {
+  getWebhooksByTenant(tenantId) {
     const webhooks = [];
     for (const webhook of this.webhooks.values()) {
       if (webhook.tenantId === tenantId) {
@@ -214,7 +214,7 @@ class WebhookService extends EventEmitter {
     }
   }
 
-  async publishEvent(tenantId, eventType, eventData, options = {}) {
+  publishEvent(tenantId, eventType, eventData, options = {}) {
     const event = {
       id: this.generateEventId(),
       tenantId,
@@ -430,7 +430,7 @@ class WebhookService extends EventEmitter {
     }
   }
 
-  async handleDeliveryFailure(delivery, error) {
+  handleDeliveryFailure(delivery, error) {
     const { webhook } = delivery;
 
     if (delivery.attempts >= this.maxRetries) {
@@ -567,7 +567,7 @@ class WebhookService extends EventEmitter {
   }
 
   // Analytics and Monitoring
-  async getWebhookStats(webhookId) {
+  getWebhookStats(webhookId) {
     const webhook = this.webhooks.get(webhookId);
     if (!webhook) {
       throw new Error(`Webhook ${webhookId} not found`);
@@ -585,7 +585,7 @@ class WebhookService extends EventEmitter {
     };
   }
 
-  async getSystemStats() {
+  getSystemStats() {
     const stats = {
       totalWebhooks: this.webhooks.size,
       activeWebhooks: 0,

@@ -21,7 +21,7 @@ class ComputerVisionService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Computer Vision Service...');
 
@@ -942,7 +942,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Extract structured data from OCR results
    */
-  async extractStructuredData(ocrResults, docTypeConfig) {
+  extractStructuredData(ocrResults, docTypeConfig) {
     const structuredData = {};
     const text = ocrResults.text;
 
@@ -984,7 +984,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Validate document data
    */
-  async validateDocumentData(structuredData, docTypeConfig) {
+  validateDocumentData(structuredData, docTypeConfig) {
     const validation = {
       isValid: true,
       errors: [],
@@ -1236,7 +1236,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Add job to processing queue
    */
-  async addToQueue(queueName, job) {
+  addToQueue(queueName, job) {
     const queue = this.queues.get(queueName);
     if (!queue) {
       throw new Error(`Queue ${queueName} not found`);

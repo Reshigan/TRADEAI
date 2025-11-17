@@ -63,7 +63,7 @@ class SimulationEngine {
    * @param {Number} days - Number of days to simulate (default 30)
    * @returns {Object} - Simulation results
    */
-  async runSimulation(scenarioType, baseData, days = 30) {
+  runSimulation(scenarioType, baseData, days = 30) {
     const scenario = this.scenarios[scenarioType];
     if (!scenario) {
       throw new Error(`Invalid scenario type: ${scenarioType}`);

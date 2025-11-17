@@ -54,7 +54,7 @@ class SimpleCacheService {
     }
   }
 
-  async get(key) {
+  get(key) {
     if (!this.isConnected || !this.client) {
       return null;
     }

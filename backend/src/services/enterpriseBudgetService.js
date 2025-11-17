@@ -549,7 +549,7 @@ class EnterpriseBudgetService {
     return totals;
   }
 
-  async predictScenarioOutcomes(scenario) {
+  predictScenarioOutcomes(scenario) {
     // Simplified prediction - in production, use actual ML model
     const baseROI = 2.5;
     const totalSpend = scenario.totals?.total || 0;
@@ -563,7 +563,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  async calculateROI(scenario) {
+  calculateROI(scenario) {
     const totalSpend = scenario.totals?.total || 0;
     const expectedReturn = totalSpend * 2.5; // Simplified calculation
 
@@ -625,7 +625,7 @@ class EnterpriseBudgetService {
     return 'stable';
   }
 
-  async identifyVarianceReasons(category, variance, actualData) {
+  identifyVarianceReasons(category, variance, actualData) {
     const reasons = [];
 
     if (variance.variancePercent > 10) {
@@ -667,7 +667,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  async identifyVarianceTrends(budgetId, period) {
+  identifyVarianceTrends(budgetId, period) {
     // In production, analyze historical variance data
     return [
       {
@@ -683,7 +683,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  async generateQuarterlyBudget(baseData, year, quarter, growthFactor, marketFactors) {
+  generateQuarterlyBudget(baseData, year, quarter, growthFactor, marketFactors) {
     const quarterBudget = {
       year,
       quarter,
@@ -805,12 +805,12 @@ class EnterpriseBudgetService {
     return 'Recommended optimization shows significant ROI improvement with manageable tradeoffs';
   }
 
-  async getNextApprovers(budget, level) {
+  getNextApprovers(budget, level) {
     // In production, query user roles and approval hierarchy
     return ['manager@example.com'];
   }
 
-  async getNextApprovalLevel(budget) {
+  getNextApprovalLevel(budget) {
     const currentStatus = budget.status;
 
     if (currentStatus === 'pending_approval') return 'director';
@@ -832,7 +832,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  async sendWorkflowNotifications(budget, workflow) {
+  sendWorkflowNotifications(budget, workflow) {
     // Send email/push notifications
     logger.info('Workflow notification sent', {
       budgetId: budget._id,
@@ -891,7 +891,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  async calculateBudgetKPIs(budgets, period) {
+  calculateBudgetKPIs(budgets, period) {
     return [
       {
         name: 'Budget Utilization',
@@ -917,7 +917,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  async identifyBudgetTrends(budgets, period) {
+  identifyBudgetTrends(budgets, period) {
     return [
       {
         metric: 'spending',
@@ -934,7 +934,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  async generateBudgetAlerts(budgets) {
+  generateBudgetAlerts(budgets) {
     const alerts = [];
 
     budgets.forEach((budget) => {
@@ -954,7 +954,7 @@ class EnterpriseBudgetService {
     return alerts;
   }
 
-  async generateBudgetRecommendations(kpis, trends) {
+  generateBudgetRecommendations(kpis, trends) {
     return [
       {
         type: 'optimization',

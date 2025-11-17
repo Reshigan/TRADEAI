@@ -268,7 +268,7 @@ class HierarchyManager {
   /**
    * Get direct children of a node
    */
-  async getDirectChildren(tenantId, nodeId) {
+  getDirectChildren(tenantId, nodeId) {
     return this.model.find({
       tenantId,
       parentId: nodeId

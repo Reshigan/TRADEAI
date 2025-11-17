@@ -381,7 +381,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Collect high-frequency metrics
    */
-  async collectHighFrequencyMetrics() {
+  collectHighFrequencyMetrics() {
     const systemMetrics = {
       activeConnections: Array.from(this.connections.values())
         .reduce((sum, connections) => sum + connections.size, 0),
@@ -398,7 +398,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get dashboard metrics
    */
-  async getDashboardMetrics(tenantId, timeRange = '24h', filters = {}) {
+  getDashboardMetrics(tenantId, timeRange = '24h', filters = {}) {
     const endDate = new Date();
     const startDate = new Date();
 
@@ -427,7 +427,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get ROI trends
    */
-  async getROITrends(tenantId, timeRange = '30d', filters = {}) {
+  getROITrends(tenantId, timeRange = '30d', filters = {}) {
     // Mock implementation - would integrate with actual analytics
     return {
       trends: [
@@ -443,7 +443,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get performance metrics
    */
-  async getPerformanceMetrics(tenantId, timeRange = '24h', filters = {}) {
+  getPerformanceMetrics(tenantId, timeRange = '24h', filters = {}) {
     return {
       activePromotions: 12,
       totalROI: 18.5,
@@ -459,7 +459,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get active alerts
    */
-  async getActiveAlerts(tenantId, filters = {}) {
+  getActiveAlerts(tenantId, filters = {}) {
     // Mock implementation - would check actual alert conditions
     return [
       {

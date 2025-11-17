@@ -289,7 +289,7 @@ class AnalyticsEngine {
     };
   }
 
-  async getBaselineSales(tenantId, productIds, customerIds, period) {
+  getBaselineSales(tenantId, productIds, customerIds, period) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -301,7 +301,7 @@ class AnalyticsEngine {
     };
   }
 
-  async getPromotionalSales(tenantId, productIds, customerIds, startDate, endDate) {
+  getPromotionalSales(tenantId, productIds, customerIds, startDate, endDate) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -408,7 +408,7 @@ class AnalyticsEngine {
   // Additional helper methods would be implemented here...
   // For brevity, showing structure with mock implementations
 
-  async getDetailedSalesData(tenantId, productIds, customerIds, startDate, endDate) {
+  getDetailedSalesData(tenantId, productIds, customerIds, startDate, endDate) {
     // Mock implementation
     return {
       transactions: [],
@@ -469,7 +469,7 @@ class AnalyticsEngine {
     };
   }
 
-  async findSimilarPromotions(tenantId, promotionData) {
+  findSimilarPromotions(tenantId, promotionData) {
     // Find promotions with similar characteristics
     return Promotion.find({
       tenantId,
@@ -525,7 +525,7 @@ class AnalyticsEngine {
     return recommendations;
   }
 
-  async getHistoricalPerformanceData(tenantId, constraints) {
+  getHistoricalPerformanceData(tenantId, constraints) {
     // Mock implementation
     return [];
   }
@@ -545,7 +545,7 @@ class AnalyticsEngine {
   }
 
   // Dashboard helper methods (mock implementations)
-  async getPromotionSummary(tenantId, dateRange) {
+  getPromotionSummary(tenantId, dateRange) {
     return {
       totalPromotions: 25,
       activePromotions: 5,
@@ -555,7 +555,7 @@ class AnalyticsEngine {
     };
   }
 
-  async getROITrends(tenantId, dateRange) {
+  getROITrends(tenantId, dateRange) {
     return [
       { month: 'Jan', roi: 12 },
       { month: 'Feb', roi: 15 },
@@ -563,7 +563,7 @@ class AnalyticsEngine {
     ];
   }
 
-  async getLiftAnalysis(tenantId, dateRange) {
+  getLiftAnalysis(tenantId, dateRange) {
     return {
       averageVolumeLift: 22,
       averageValueLift: 18,
@@ -571,7 +571,7 @@ class AnalyticsEngine {
     };
   }
 
-  async getCustomerSegmentPerformance(tenantId, dateRange) {
+  getCustomerSegmentPerformance(tenantId, dateRange) {
     return [
       { segment: 'Premium', roi: 25, lift: 30 },
       { segment: 'Standard', roi: 15, lift: 20 },
@@ -579,7 +579,7 @@ class AnalyticsEngine {
     ];
   }
 
-  async getProductPerformance(tenantId, dateRange) {
+  getProductPerformance(tenantId, dateRange) {
     return [
       { category: 'Electronics', roi: 20, lift: 25 },
       { category: 'Clothing', roi: 18, lift: 22 },
@@ -587,7 +587,7 @@ class AnalyticsEngine {
     ];
   }
 
-  async getChannelPerformance(tenantId, dateRange) {
+  getChannelPerformance(tenantId, dateRange) {
     return [
       { channel: 'Online', roi: 22, lift: 28 },
       { channel: 'Retail', roi: 16, lift: 20 },

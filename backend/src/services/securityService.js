@@ -468,7 +468,7 @@ class SecurityService {
   /**
    * Session management
    */
-  async validateSession(sessionToken) {
+  validateSession(sessionToken) {
     const session = this.sessionStore.get(sessionToken);
 
     if (!session) {

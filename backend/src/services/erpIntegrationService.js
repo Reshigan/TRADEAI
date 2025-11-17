@@ -608,7 +608,7 @@ class ERPIntegrationService {
   /**
    * Fetch multiple entities from ERP
    */
-  async fetchAllFromERP(connection, entityType, filters = {}) {
+  fetchAllFromERP(connection, entityType, filters = {}) {
     // Implementation would vary by ERP system
     // This is a simplified version
     return [];
@@ -696,7 +696,7 @@ class ERPIntegrationService {
   /**
    * Get customers with specific ERP connection
    */
-  async getCustomersWithERP(erpType) {
+  getCustomersWithERP(erpType) {
     // This would query your Customer model
     // Simplified for this example
     return [];

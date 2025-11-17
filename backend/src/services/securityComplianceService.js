@@ -53,7 +53,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Initialize Role-Based Access Control (RBAC)
    */
-  async initializeRBAC() {
+  initializeRBAC() {
     // Define permissions
     const permissions = [
       // Analytics permissions
@@ -201,7 +201,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Initialize encryption system
    */
-  async initializeEncryption() {
+  initializeEncryption() {
     // Generate master encryption key if not exists
     const masterKey = process.env.MASTER_ENCRYPTION_KEY || this.generateEncryptionKey();
     this.encryptionKeys.set('master', masterKey);
@@ -217,7 +217,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Load compliance rules
    */
-  async loadComplianceRules() {
+  loadComplianceRules() {
     // GDPR compliance rules
     this.complianceRules.set('gdpr', {
       name: 'General Data Protection Regulation',
@@ -485,7 +485,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Hash password
    */
-  async hashPassword(password) {
+  hashPassword(password) {
     const saltRounds = 12;
     return bcrypt.hash(password, saltRounds);
   }
@@ -493,7 +493,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Verify password
    */
-  async verifyPassword(password, hash) {
+  verifyPassword(password, hash) {
     return bcrypt.compare(password, hash);
   }
 

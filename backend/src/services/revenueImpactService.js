@@ -154,7 +154,7 @@ class RevenueImpactService {
   /**
    * Calculate baseline revenue for customer-product combinations
    */
-  async calculateBaselineRevenue(tenantId, customers, products, startDate, endDate) {
+  calculateBaselineRevenue(tenantId, customers, products, startDate, endDate) {
     const baseline = {
       total: 0,
       byCustomer: new Map(),
@@ -468,7 +468,7 @@ class RevenueImpactService {
   /**
    * Perform hierarchy-based segmentation
    */
-  async performHierarchySegmentation(tenantId, customers) {
+  performHierarchySegmentation(tenantId, customers) {
     const segments = new Map();
 
     for (const customer of customers) {

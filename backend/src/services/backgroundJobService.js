@@ -33,7 +33,7 @@ class BackgroundJobService extends EventEmitter {
   /**
    * Add job to queue
    */
-  async addJob(jobData) {
+  addJob(jobData) {
     const job = {
       id: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       ...jobData,
@@ -89,7 +89,7 @@ class BackgroundJobService extends EventEmitter {
   /**
    * Process job queue
    */
-  async processQueue() {
+  processQueue() {
     if (this.isProcessing) return;
 
     this.isProcessing = true;
@@ -325,7 +325,7 @@ class BackgroundJobService extends EventEmitter {
   /**
    * Execute notification batch job
    */
-  async executeNotificationBatch(job) {
+  executeNotificationBatch(job) {
     const notificationService = require('./notificationService');
 
     const { userIds, notification } = job.data;

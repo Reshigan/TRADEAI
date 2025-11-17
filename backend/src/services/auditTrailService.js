@@ -60,7 +60,7 @@ class AuditTrailService {
   /**
    * Log entity creation
    */
-  async logCreate(entityType, entity, userId, userInfo = {}, req = null) {
+  logCreate(entityType, entity, userId, userInfo = {}, req = null) {
     return this.logAction({
       entityType,
       entityId: entity._id,
@@ -82,7 +82,7 @@ class AuditTrailService {
   /**
    * Log entity update with field-level changes
    */
-  async logUpdate(entityType, oldEntity, newEntity, userId, userInfo = {}, req = null) {
+  logUpdate(entityType, oldEntity, newEntity, userId, userInfo = {}, req = null) {
     const changes = this._detectChanges(oldEntity, newEntity);
 
     return this.logAction({
@@ -108,7 +108,7 @@ class AuditTrailService {
   /**
    * Log entity deletion
    */
-  async logDelete(entityType, entity, userId, userInfo = {}, req = null) {
+  logDelete(entityType, entity, userId, userInfo = {}, req = null) {
     return this.logAction({
       entityType,
       entityId: entity._id,
@@ -130,7 +130,7 @@ class AuditTrailService {
   /**
    * Log approval action
    */
-  async logApproval(entityType, entity, userId, userInfo = {}, approved = true, req = null) {
+  logApproval(entityType, entity, userId, userInfo = {}, approved = true, req = null) {
     return this.logAction({
       entityType,
       entityId: entity._id,
@@ -153,7 +153,7 @@ class AuditTrailService {
   /**
    * Log GL posting
    */
-  async logGLPosting(entityType, entity, glDocument, userId, userInfo = {}, req = null) {
+  logGLPosting(entityType, entity, glDocument, userId, userInfo = {}, req = null) {
     return this.logAction({
       entityType,
       entityId: entity._id,
@@ -178,7 +178,7 @@ class AuditTrailService {
   /**
    * Log matching action
    */
-  async logMatching(entityType, entity, matchedToType, matchedToId, confidence, userId, userInfo = {}, req = null) {
+  logMatching(entityType, entity, matchedToType, matchedToId, confidence, userId, userInfo = {}, req = null) {
     return this.logAction({
       entityType,
       entityId: entity._id,
@@ -202,28 +202,28 @@ class AuditTrailService {
   /**
    * Get entity history
    */
-  async getEntityHistory(entityType, entityId, options = {}) {
+  getEntityHistory(entityType, entityId, options = {}) {
     return AuditLog.getEntityHistory(entityType, entityId, options);
   }
 
   /**
    * Get user activity
    */
-  async getUserActivity(userId, options = {}) {
+  getUserActivity(userId, options = {}) {
     return AuditLog.getUserActivity(userId, options);
   }
 
   /**
    * Get compliance report
    */
-  async getComplianceReport(startDate, endDate, flags = ['SOX']) {
+  getComplianceReport(startDate, endDate, flags = ['SOX']) {
     return AuditLog.getComplianceReport(startDate, endDate, flags);
   }
 
   /**
    * Search audit logs
    */
-  async searchLogs(criteria) {
+  searchLogs(criteria) {
     return AuditLog.searchLogs(criteria);
   }
 

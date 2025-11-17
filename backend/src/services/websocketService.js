@@ -234,7 +234,7 @@ class WebSocketService {
   }
 
   // Send dashboard updates
-  async sendDashboardUpdate(companyId) {
+  sendDashboardUpdate(companyId) {
     try {
       // This would typically fetch real-time dashboard data
       const dashboardData = {

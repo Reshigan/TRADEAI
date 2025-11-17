@@ -13,7 +13,7 @@ class AutomatedInsightsService {
     this.initialized = false;
   }
 
-  async initialize() {
+  initialize() {
     if (this.initialized) return;
 
     console.log('Initializing Automated Insights Service...');
@@ -333,7 +333,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateProductPerformanceInsight(tenantId, timeRange) {
+  generateProductPerformanceInsight(tenantId, timeRange) {
     try {
       // Mock product data
       const productData = this.generateMockProductData(timeRange);
@@ -364,7 +364,7 @@ class AutomatedInsightsService {
     }
   }
 
-  async generateMarketOpportunityInsight(tenantId, timeRange) {
+  generateMarketOpportunityInsight(tenantId, timeRange) {
     try {
       // Mock market data
       const marketData = this.generateMockMarketData(timeRange);
@@ -713,7 +713,7 @@ class AutomatedInsightsService {
     return data.filter((d) => Math.abs(d.revenue - mean) > threshold * stdDev);
   }
 
-  async forecastRevenue(data, days) {
+  forecastRevenue(data, days) {
     // Simple exponential smoothing forecast
     const values = data.map((d) => d.revenue);
     const alpha = 0.3; // smoothing parameter
@@ -739,12 +739,12 @@ class AutomatedInsightsService {
     return `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  async getActiveTenants() {
+  getActiveTenants() {
     // Mock implementation - return list of active tenant IDs
     return ['tenant1', 'tenant2', 'tenant3'];
   }
 
-  async getRealTimeData(tenantId) {
+  getRealTimeData(tenantId) {
     // Mock real-time data
     return {
       revenueChange: (Math.random() - 0.5) * 20,
@@ -760,7 +760,7 @@ class AutomatedInsightsService {
   // Additional utility methods would continue here...
   // (truncated for brevity)
 
-  async getInsightMetrics() {
+  getInsightMetrics() {
     return {
       totalInsights: this.insights.size,
       alertRules: this.alertRules.size,

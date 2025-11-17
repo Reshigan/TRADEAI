@@ -828,7 +828,7 @@ class AIRecommendationEngine {
   }
 
   // Utility Methods
-  async getUserProfile(userId) {
+  getUserProfile(userId) {
     // Mock user profile - in real implementation, fetch from database
     return {
       userId,
@@ -845,7 +845,7 @@ class AIRecommendationEngine {
     };
   }
 
-  async getItemFeatures(itemId) {
+  getItemFeatures(itemId) {
     // Mock item features - in real implementation, fetch from database
     return {
       itemId,
@@ -880,7 +880,7 @@ class AIRecommendationEngine {
   // Additional utility methods would continue here...
   // (truncated for brevity)
 
-  async getRecommendationMetrics() {
+  getRecommendationMetrics() {
     return {
       models: Array.from(this.models.keys()),
       userProfiles: this.userProfiles.size,

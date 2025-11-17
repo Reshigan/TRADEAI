@@ -360,7 +360,7 @@ class ForecastingService {
 
   // Helper Methods
 
-  async getHistoricalSalesData(tenantId, options = {}) {
+  getHistoricalSalesData(tenantId, options = {}) {
     const { productId, customerId, months = 24 } = options;
 
     const startDate = new Date();
@@ -397,7 +397,7 @@ class ForecastingService {
     return Object.values(monthlyData).sort((a, b) => a.date.localeCompare(b.date));
   }
 
-  async generateMultipleForecasts(timeSeries, horizon, options = {}) {
+  generateMultipleForecasts(timeSeries, horizon, options = {}) {
     const forecasts = {};
 
     // Simple Moving Average
@@ -907,7 +907,7 @@ class ForecastingService {
     }));
   }
 
-  async addPlannedPromotionsImpact(forecast, plannedPromotions, tenantId) {
+  addPlannedPromotionsImpact(forecast, plannedPromotions, tenantId) {
     // Add estimated impact of planned promotions
     const adjustedForecast = [...forecast];
 

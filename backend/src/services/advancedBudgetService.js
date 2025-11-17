@@ -202,7 +202,7 @@ class AdvancedBudgetService {
   /**
    * Forecast spend to end of period
    */
-  async forecastSpend(budget, actualSpend) {
+  forecastSpend(budget, actualSpend) {
     const today = new Date();
     const periodStart = new Date(budget.year, budget.month - 1, 1);
     const periodEnd = new Date(budget.year, budget.month, 0);

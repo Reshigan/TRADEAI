@@ -20,7 +20,7 @@ class DeploymentService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Deployment Service...');
 
@@ -850,7 +850,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform specific step
    */
-  async performStep(stepName, stage, pipelineRun, options) {
+  performStep(stepName, stage, pipelineRun, options) {
     switch (stepName) {
       case 'checkout_code':
         return {
@@ -1428,7 +1428,7 @@ class DeploymentService extends EventEmitter {
     return rollbacks.sort((a, b) => b.startTime - a.startTime);
   }
 
-  async createRelease(releaseConfig) {
+  createRelease(releaseConfig) {
     const releaseId = this.generateReleaseId();
     const release = {
       id: releaseId,

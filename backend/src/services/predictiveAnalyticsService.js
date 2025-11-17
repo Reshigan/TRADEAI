@@ -217,7 +217,7 @@ class PredictiveAnalyticsService {
   /**
    * Detect anomalies in transactions
    */
-  async detectAnomalies(transactions, type = 'all') {
+  detectAnomalies(transactions, type = 'all') {
     const anomalies = [];
 
     // Calculate baseline statistics
@@ -484,35 +484,35 @@ class PredictiveAnalyticsService {
 
   // Data retrieval methods (would connect to database in production)
 
-  async getHistoricalAccruals(customerId, months) {
+  getHistoricalAccruals(customerId, months) {
     return [];
   }
 
-  async getHistoricalDisputeRate(customerId) {
+  getHistoricalDisputeRate(customerId) {
     return 0.1; // 10% default
   }
 
-  async getVendorRiskScore(customerId) {
+  getVendorRiskScore(customerId) {
     return 0.5; // Medium risk default
   }
 
-  async getHistoricalSettlements(customerId) {
+  getHistoricalSettlements(customerId) {
     return [];
   }
 
-  async getPendingInvoices(customerId) {
+  getPendingInvoices(customerId) {
     return [];
   }
 
-  async getPendingPayments(customerId) {
+  getPendingPayments(customerId) {
     return [];
   }
 
-  async getHistoricalPaymentTiming(customerId) {
+  getHistoricalPaymentTiming(customerId) {
     return { averageDays: 30, variance: 5 };
   }
 
-  async getMetricData(customerId, metric, period) {
+  getMetricData(customerId, metric, period) {
     return [];
   }
 

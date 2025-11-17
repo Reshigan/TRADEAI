@@ -564,7 +564,7 @@ class EnhancedSecurityService {
   /**
    * Generate secure tokens
    */
-  async generateTokens(user) {
+  generateTokens(user) {
     const payload = {
       userId: user._id,
       email: user.email,
@@ -794,7 +794,7 @@ class EnhancedSecurityService {
     return { allowed: true };
   }
 
-  async getActiveSessionCount(userId) {
+  getActiveSessionCount(userId) {
     let count = 0;
     for (const [token, info] of this.activeTokens) {
       if (info.userId.toString() === userId.toString()) {
@@ -818,7 +818,7 @@ class EnhancedSecurityService {
     return severityMap[eventType] || 'medium';
   }
 
-  async triggerSecurityAlert(securityEvent) {
+  triggerSecurityAlert(securityEvent) {
     // Implementation for security alerts (email, Slack, etc.)
     console.log(`SECURITY ALERT: ${securityEvent.eventType}`, securityEvent.details);
 

@@ -276,7 +276,7 @@ class BulkOperationsService {
 
   // Helper Methods
 
-  async validateFile(filePath) {
+  validateFile(filePath) {
     if (!fs.existsSync(filePath)) {
       throw new Error('File not found');
     }
@@ -292,7 +292,7 @@ class BulkOperationsService {
     }
   }
 
-  async parseFile(filePath) {
+  parseFile(filePath) {
     const ext = path.extname(filePath).toLowerCase().substring(1);
 
     if (ext === 'csv') {
@@ -304,7 +304,7 @@ class BulkOperationsService {
     throw new Error('Unsupported file format');
   }
 
-  async parseCSV(filePath) {
+  parseCSV(filePath) {
     return new Promise((resolve, reject) => {
       const results = [];
 
@@ -418,7 +418,7 @@ class BulkOperationsService {
     return results;
   }
 
-  async getData(tenantId, modelType, filters, includeHierarchy) {
+  getData(tenantId, modelType, filters, includeHierarchy) {
     const Model = this.getModel(modelType);
     let query = Model.find({ tenantId, ...filters });
 
@@ -429,7 +429,7 @@ class BulkOperationsService {
     return query.lean();
   }
 
-  async transformForExport(data, modelType, options) {
+  transformForExport(data, modelType, options) {
     const transformer = this.getTransformer(modelType);
     return data.map((record) => transformer(record, options));
   }
@@ -453,7 +453,7 @@ class BulkOperationsService {
     return filePath;
   }
 
-  async generateCSV(data, filePath) {
+  generateCSV(data, filePath) {
     if (data.length === 0) return;
 
     const headers = Object.keys(data[0]);
@@ -620,7 +620,7 @@ class BulkOperationsService {
     };
   }
 
-  async validatePromotionRecord(record, tenantId, rowNumber) {
+  validatePromotionRecord(record, tenantId, rowNumber) {
     const errors = [];
     const validRecord = { ...record, tenantId };
 
@@ -654,7 +654,7 @@ class BulkOperationsService {
     };
   }
 
-  async validateGenericRecord(record, tenantId, rowNumber) {
+  validateGenericRecord(record, tenantId, rowNumber) {
     return {
       isValid: true,
       record: { ...record, tenantId },

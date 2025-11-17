@@ -22,7 +22,7 @@ class DataScienceWorkbenchService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Data Science Workbench Service...');
 
@@ -713,7 +713,7 @@ plt.show()`
   /**
    * Create new notebook
    */
-  async createNotebook(config) {
+  createNotebook(config) {
     const notebookId = this.generateNotebookId();
     const notebook = {
       id: notebookId,
@@ -1109,7 +1109,7 @@ plt.show()`
   /**
    * Create experiment
    */
-  async createExperiment(config) {
+  createExperiment(config) {
     const experimentId = this.generateExperimentId();
     const experiment = {
       id: experimentId,
@@ -1387,7 +1387,7 @@ plt.show()`
     return this.collaborationFeatures;
   }
 
-  async shareNotebook(notebookId, shareConfig) {
+  shareNotebook(notebookId, shareConfig) {
     const notebook = this.notebooks.get(notebookId);
     if (!notebook) {
       throw new Error(`Notebook ${notebookId} not found`);
@@ -1411,7 +1411,7 @@ plt.show()`
     return true;
   }
 
-  async saveNotebook(notebookId) {
+  saveNotebook(notebookId) {
     const notebook = this.notebooks.get(notebookId);
     if (!notebook) {
       throw new Error(`Notebook ${notebookId} not found`);

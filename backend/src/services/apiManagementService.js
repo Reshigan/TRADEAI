@@ -35,7 +35,7 @@ class APIManagementService {
     console.log('API Management Service initialized successfully');
   }
 
-  async initializeRedis() {
+  initializeRedis() {
     try {
       const redisEnabled = process.env.REDIS_ENABLED !== 'false';
       const host = process.env.REDIS_HOST || (config.jobs && config.jobs.redis && config.jobs.redis.host) || 'localhost';
@@ -323,7 +323,7 @@ class APIManagementService {
     return { success: true, message: 'API key revoked successfully' };
   }
 
-  async validateAPIKey(apiKey) {
+  validateAPIKey(apiKey) {
     const keyData = this.apiKeys.get(apiKey);
     if (!keyData || !keyData.active) {
       return { valid: false, reason: 'Invalid or inactive API key' };
@@ -531,7 +531,7 @@ class APIManagementService {
   }
 
   // Analytics and Reporting
-  async getAPIAnalytics(timeRange = '24h') {
+  getAPIAnalytics(timeRange = '24h') {
     const analytics = {
       totalRequests: 0,
       totalErrors: 0,

@@ -164,7 +164,7 @@ class EnhancedAuthService {
     }
   }
 
-  async logout(userId, token) {
+  logout(userId, token) {
     try {
       // Blacklist the token
       this.tokenBlacklist.add(token);

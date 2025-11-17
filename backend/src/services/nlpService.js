@@ -19,7 +19,7 @@ class NLPService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing NLP Service...');
 
@@ -825,7 +825,7 @@ class NLPService extends EventEmitter {
   /**
    * Generate chatbot response
    */
-  async generateResponse(analysis, context) {
+  generateResponse(analysis, context) {
     // Find matching intent
     const matchingIntent = this.chatbotIntents.find((intent) =>
       intent.intent === analysis.intent);

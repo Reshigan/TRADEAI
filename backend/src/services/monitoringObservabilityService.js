@@ -25,7 +25,7 @@ class MonitoringObservabilityService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Monitoring and Observability Service...');
 
@@ -841,7 +841,7 @@ class MonitoringObservabilityService extends EventEmitter {
     }
   }
 
-  async checkExternalAPIsHealth() {
+  checkExternalAPIsHealth() {
     const results = [];
     const apis = [
       { name: 'Salesforce', url: 'https://api.salesforce.com/health' },
@@ -879,7 +879,7 @@ class MonitoringObservabilityService extends EventEmitter {
     };
   }
 
-  async checkFileSystemHealth() {
+  checkFileSystemHealth() {
     try {
       const testFile = path.join(os.tmpdir(), 'health_check_test.txt');
       const start = Date.now();
