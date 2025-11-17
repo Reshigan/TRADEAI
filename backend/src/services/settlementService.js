@@ -199,14 +199,15 @@ class SettlementService {
    */
   async _processSettlementItem(item) {
     switch (item.itemType) {
-      case 'payment':
+      case 'payment': {
         const payment = await Payment.findById(item.referenceId);
         if (payment) {
           await payment.settle(item._id);
         }
         break;
+      }
 
-      case 'invoice':
+      case 'invoice': {
         const invoice = await Invoice.findById(item.referenceId);
         if (invoice && invoice.status === 'paid') {
           // Mark as settled in GL
@@ -216,8 +217,9 @@ class SettlementService {
           await invoice.save();
         }
         break;
+      }
 
-      case 'deduction':
+      case 'deduction': {
         const deduction = await Deduction.findById(item.referenceId);
         if (deduction) {
           deduction.settled = true;
@@ -225,6 +227,7 @@ class SettlementService {
           await deduction.save();
         }
         break;
+      }
 
       default:
         throw new Error(`Unknown item type: ${item.itemType}`);

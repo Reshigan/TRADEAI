@@ -475,7 +475,7 @@ customerSchema.methods.calculateTradingTermsValue = function (salesAmount, termT
         value = salesAmount * (this.tradingTerms.retroActive.percentage / 100);
       }
       break;
-    case 'volumeRebate':
+    case 'volumeRebate': {
       const applicableRebate = this.tradingTerms.volumeRebate.find(
         (rebate) => salesAmount >= rebate.minVolume && salesAmount <= rebate.maxVolume
       );
@@ -483,6 +483,7 @@ customerSchema.methods.calculateTradingTermsValue = function (salesAmount, termT
         value = salesAmount * (applicableRebate.percentage / 100);
       }
       break;
+    }
   }
 
   return value;

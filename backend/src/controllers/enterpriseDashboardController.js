@@ -583,31 +583,34 @@ function calculateDateRange(params) {
           start: new Date(now.setHours(0, 0, 0, 0)),
           end: new Date()
         };
-      case 'yesterday':
+      case 'yesterday': {
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
         return {
           start: new Date(yesterday.setHours(0, 0, 0, 0)),
           end: new Date(yesterday.setHours(23, 59, 59, 999))
         };
-      case 'wtd': // Week to date
+      }
+      case 'wtd': { // Week to date
         const weekStart = new Date(now);
         weekStart.setDate(now.getDate() - now.getDay());
         return {
           start: new Date(weekStart.setHours(0, 0, 0, 0)),
           end: new Date()
         };
+      }
       case 'mtd': // Month to date
         return {
           start: new Date(now.getFullYear(), now.getMonth(), 1),
           end: new Date()
         };
-      case 'qtd': // Quarter to date
+      case 'qtd': { // Quarter to date
         const quarterStartMonth = Math.floor(now.getMonth() / 3) * 3;
         return {
           start: new Date(now.getFullYear(), quarterStartMonth, 1),
           end: new Date()
         };
+      }
       case 'ytd': // Year to date
         return {
           start: new Date(now.getFullYear(), 0, 1),
@@ -668,20 +671,22 @@ function calculateComparisonRange(dateRange, compareWith) {
         start: new Date(start.getFullYear() - 1, start.getMonth(), start.getDate()),
         end: new Date(end.getFullYear() - 1, end.getMonth(), end.getDate())
       };
-    case 'previous_quarter':
+    case 'previous_quarter': {
       const prevQuarterStart = new Date(start);
       prevQuarterStart.setMonth(start.getMonth() - 3);
       return {
         start: prevQuarterStart,
         end: new Date(prevQuarterStart.getTime() + duration)
       };
-    case 'previous_month':
+    }
+    case 'previous_month': {
       const prevMonthStart = new Date(start);
       prevMonthStart.setMonth(start.getMonth() - 1);
       return {
         start: prevMonthStart,
         end: new Date(prevMonthStart.getTime() + duration)
       };
+    }
     case 'previous_period':
       return {
         start: new Date(start.getTime() - duration),

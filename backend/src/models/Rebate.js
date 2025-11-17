@@ -120,7 +120,7 @@ rebateSchema.methods.calculateRebate = function (transaction) {
     case 'fixed-amount':
       return this.amount || 0;
 
-    case 'tiered':
+    case 'tiered': {
       if (!this.tiers || this.tiers.length === 0) return 0;
 
       // Find applicable tier
@@ -137,6 +137,7 @@ rebateSchema.methods.calculateRebate = function (transaction) {
       }
 
       return rebateAmount;
+    }
 
     default:
       return 0;

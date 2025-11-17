@@ -361,10 +361,11 @@ reportSchema.methods.calculateNextRun = function () {
     case 'daily':
       nextRun.setDate(now.getDate() + 1);
       break;
-    case 'weekly':
+    case 'weekly': {
       const daysUntilNext = (this.schedule.dayOfWeek - now.getDay() + 7) % 7;
       nextRun.setDate(now.getDate() + (daysUntilNext || 7));
       break;
+    }
     case 'monthly':
       nextRun.setMonth(now.getMonth() + 1);
       nextRun.setDate(this.schedule.dayOfMonth);
