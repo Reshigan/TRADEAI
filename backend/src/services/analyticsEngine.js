@@ -459,7 +459,7 @@ class AnalyticsEngine {
     };
   }
 
-  calculateStatisticalSignificance(baseline, promotional) {
+  calculateStatisticalSignificance(_baseline, promotional) {
     // Simplified statistical significance calculation
     // In practice, would use proper statistical tests
     return {

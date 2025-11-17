@@ -1042,7 +1042,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Perform rolling deployment
    */
-  async performRollingDeployment(deployment, environment) {
+  async performRollingDeployment(_deployment, environment) {
     console.log('Performing rolling deployment...');
 
     const steps = [

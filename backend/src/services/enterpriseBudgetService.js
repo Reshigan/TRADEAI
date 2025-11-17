@@ -801,11 +801,11 @@ class EnterpriseBudgetService {
     ];
   }
 
-  generateOptimizationRecommendation(improvements, tradeoffs) {
+  generateOptimizationRecommendation(_improvements, tradeoffs) {
     return 'Recommended optimization shows significant ROI improvement with manageable tradeoffs';
   }
 
-  getNextApprovers(budget, level) {
+  getNextApprovers(_budget, level) {
     // In production, query user roles and approval hierarchy
     return ['manager@example.com'];
   }
@@ -954,7 +954,7 @@ class EnterpriseBudgetService {
     return alerts;
   }
 
-  generateBudgetRecommendations(kpis, trends) {
+  generateBudgetRecommendations(_kpis, trends) {
     return [
       {
         type: 'optimization',

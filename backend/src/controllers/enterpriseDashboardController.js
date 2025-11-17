@@ -1505,7 +1505,7 @@ function generateSalesInsights(metrics, trend) {
   ];
 }
 
-function generatePromotionInsights(metrics) {
+function generatePromotionInsights(_metrics) {
   return [
     {
       type: 'info',

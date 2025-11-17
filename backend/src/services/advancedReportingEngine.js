@@ -716,7 +716,7 @@ class AdvancedReportingEngine {
     return config;
   }
 
-  calculateNextRun(cronExpression) {
+  calculateNextRun(_cronExpression) {
     // Simple next run calculation - in production, use a proper cron library
     const now = new Date();
     return new Date(now.getTime() + 24 * 60 * 60 * 1000); // Next day for demo

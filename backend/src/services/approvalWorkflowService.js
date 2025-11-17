@@ -404,7 +404,7 @@ class ApprovalWorkflowService {
     }
   }
 
-  getAutoApprovalRules(document) {
+  getAutoApprovalRules(_document) {
     // This would fetch from a rules configuration
     // For now, return sample rules
     return [

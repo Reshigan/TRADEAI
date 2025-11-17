@@ -798,7 +798,7 @@ class ReportingEngine {
     return `schedule_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  calculateNextRun(cronExpression) {
+  calculateNextRun(_cronExpression) {
     // This would use a cron parser to calculate the next run time
     // For simplicity, returning a date 24 hours from now
     return new Date(Date.now() + 24 * 60 * 60 * 1000);

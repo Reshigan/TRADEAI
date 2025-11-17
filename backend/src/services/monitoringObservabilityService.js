@@ -1012,7 +1012,7 @@ class MonitoringObservabilityService extends EventEmitter {
     // Mock PagerDuty notification
   }
 
-  analyzeErrorPatterns(logEntry) {
+  analyzeErrorPatterns(_logEntry) {
     // Simple error pattern analysis
     const recentErrors = this.logs
       .filter((log) =>

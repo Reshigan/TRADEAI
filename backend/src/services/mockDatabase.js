@@ -224,12 +224,12 @@ class MockDatabase {
       return bcrypt.compare(candidatePassword, this.password);
     };
 
-    user.select = function (fields) {
+    user.select = function (_fields) {
       // Mock select method - just return the user
       return this;
     };
 
-    user.changedPasswordAfter = function (JWTTimestamp) {
+    user.changedPasswordAfter = function (_JWTTimestamp) {
       // Mock method - always return false (password not changed)
       return false;
     };

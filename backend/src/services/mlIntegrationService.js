@@ -718,7 +718,7 @@ class MLIntegrationService {
     return Math.min(0.99, error / threshold);
   }
 
-  prepareChurnFeatures(customer) {
+  prepareChurnFeatures(_customer) {
     // Mock churn features
     return Array(12).fill(0).map(() => Math.random());
   }
@@ -743,7 +743,7 @@ class MLIntegrationService {
     return strategies;
   }
 
-  prepareRecommendationFeatures(customer, category) {
+  prepareRecommendationFeatures(_customer, category) {
     // Mock recommendation features
     return Array(100).fill(0).map(() => Math.random());
   }

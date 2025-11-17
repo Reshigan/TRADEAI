@@ -539,7 +539,7 @@ class PredictiveAnalyticsService {
     return ['Switch to bi-weekly settlements for optimal cash flow'];
   }
 
-  predictInflows(invoices, timing, date) {
+  predictInflows(_invoices, timing, date) {
     return 0;
   }
 

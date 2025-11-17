@@ -696,7 +696,7 @@ class ERPIntegrationService {
   /**
    * Get customers with specific ERP connection
    */
-  getCustomersWithERP(erpType) {
+  getCustomersWithERP(_erpType) {
     // This would query your Customer model
     // Simplified for this example
     return [];

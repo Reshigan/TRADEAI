@@ -627,13 +627,13 @@ class EnterpriseCrudService {
     // await VersionHistory.create(version);
   }
 
-  getVersionHistory(id) {
+  getVersionHistory(_id) {
     // Retrieve version history for a record
     // return VersionHistory.find({ modelName: this.modelName, recordId: id });
     return [];
   }
 
-  async rollback(id, versionId) {
+  async rollback(_id, versionId) {
     // Rollback to a specific version
     // const version = await VersionHistory.findById(versionId);
     // return this.update(id, version.data);

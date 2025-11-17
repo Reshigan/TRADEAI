@@ -565,7 +565,7 @@ class SimulationEngine {
     return recommendations;
   }
 
-  getHistoricalPerformance(categories) {
+  getHistoricalPerformance(_categories) {
     // Fetch historical performance data
     return {};
   }
@@ -614,7 +614,7 @@ class SimulationEngine {
     return {};
   }
 
-  generateBudgetRecommendations(allocation, outcomes) {
+  generateBudgetRecommendations(_allocation, outcomes) {
     return [];
   }
 
@@ -697,7 +697,7 @@ class SimulationEngine {
     return forecast;
   }
 
-  calculateConfidenceIntervals(forecast, historical) {
+  calculateConfidenceIntervals(_forecast, historical) {
     // Calculate confidence intervals
     return {
       lower95: [],
@@ -715,7 +715,7 @@ class SimulationEngine {
     };
   }
 
-  analyzeFactorContributions(factors, _forecast) {
+  analyzeFactorContributions(_factors, _forecast) {
     return {};
   }
 
@@ -731,7 +731,7 @@ class SimulationEngine {
     };
   }
 
-  modelCompetitiveDynamics(ourActions, competitorActions) {
+  modelCompetitiveDynamics(_ourActions, competitorActions) {
     return {};
   }
 
@@ -753,7 +753,7 @@ class SimulationEngine {
     return [];
   }
 
-  getHistoricalROI(activities) {
+  getHistoricalROI(_activities) {
     return {};
   }
 
@@ -761,7 +761,7 @@ class SimulationEngine {
     return {};
   }
 
-  calculateExpectedROI(mix) {
+  calculateExpectedROI(_mix) {
     return {
       expected: 150,
       range: [100, 200]
@@ -793,15 +793,15 @@ class SimulationEngine {
     };
   }
 
-  calculateProbabilityOfTarget(monteCarlo, target) {
+  calculateProbabilityOfTarget(_monteCarlo, target) {
     return 0.75; // 75% probability
   }
 
-  generateROIRecommendations(expected, target) {
+  generateROIRecommendations(_expected, target) {
     return [];
   }
 
-  calculateDelta(base, variation) {
+  calculateDelta(_base, variation) {
     return {};
   }
 

@@ -909,7 +909,7 @@ class AutoMLService extends EventEmitter {
   /**
    * Generate learning curves
    */
-  generateLearningCurves(experiment) {
+  generateLearningCurves(_experiment) {
     const trainSizes = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
     const trainScores = [];
     const valScores = [];
