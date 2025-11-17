@@ -9,7 +9,7 @@ const { asyncHandler, AppError } = require('../middleware/errorHandler');
 /**
  * Calculate baseline using specified method
  */
-exports.calculateBaseline = asyncHandler(async (req, res, _next) => {
+exports.calculateBaseline = asyncHandler(async (req, res, next) => {
   const {
     method = 'auto',
     productId,
@@ -62,7 +62,7 @@ exports.calculateBaseline = asyncHandler(async (req, res, _next) => {
 /**
  * Calculate incremental volume
  */
-exports.calculateIncremental = asyncHandler(async (req, res, _next) => {
+exports.calculateIncremental = asyncHandler(async (req, res, next) => {
   const {
     productId,
     customerId,
@@ -93,7 +93,7 @@ exports.calculateIncremental = asyncHandler(async (req, res, _next) => {
 /**
  * Get available baseline methods
  */
-exports.getMethods = asyncHandler(async (req, res, _next) => {
+exports.getMethods = asyncHandler(async (req, res, next) => {
   res.json({
     success: true,
     data: {

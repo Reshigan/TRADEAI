@@ -434,7 +434,7 @@ router.post(
   '/data/:entity/bulk-create',
   auth,
   authorize(['superadmin', 'admin']),
-  async (req, res, _next) => {
+  async (req, res, next) => {
     // Generic bulk create endpoint
     try {
       const { entity } = req.params;
@@ -469,7 +469,7 @@ router.post(
   '/data/:entity/import',
   auth,
   authorize(['superadmin', 'admin']),
-  async (req, res, _next) => {
+  async (req, res, next) => {
     // Generic import endpoint
     // Implementation would handle file upload and processing
     res.json({
@@ -487,7 +487,7 @@ router.post(
 router.post(
   '/data/:entity/export',
   auth,
-  async (req, res, _next) => {
+  async (req, res, next) => {
     try {
       const { entity } = req.params;
       const { format = 'csv', filters = {}, fields = [] } = req.body;
@@ -533,7 +533,7 @@ router.post(
 router.post(
   '/data/:entity/search',
   auth,
-  async (req, res, _next) => {
+  async (req, res, next) => {
     try {
       const { entity } = req.params;
       const { filters = {}, facets = [] } = req.body;
@@ -563,7 +563,7 @@ router.get(
   '/data/:entity/duplicates',
   auth,
   authorize(['superadmin', 'admin']),
-  async (req, res, _next) => {
+  async (req, res, next) => {
     try {
       const { entity } = req.params;
       const { fields } = req.query;

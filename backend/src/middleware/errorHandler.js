@@ -110,12 +110,12 @@ const errorHandler = (err, req, res, next) => {
 };
 
 // Async error wrapper
-const asyncHandler = (fn) => (req, res, _next) => {
-  Promise.resolve(fn(req, res, _next)).catch(next);
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 // Not found handler
-const notFound = (req, res, _next) => {
+const notFound = (req, res, next) => {
   const error = new AppError(`Not found - ${req.originalUrl}`, 404, 'NOT_FOUND');
   next(error);
 };

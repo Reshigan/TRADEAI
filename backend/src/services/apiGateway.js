@@ -360,7 +360,7 @@ class APIGateway {
   }
 
   // Middleware functions
-  requestLogger(req, res, _next) {
+  requestLogger(req, res, next) {
     req.requestId = this.generateRequestId();
     req.startTime = Date.now();
 
@@ -375,7 +375,7 @@ class APIGateway {
     next();
   }
 
-  metricsCollector(req, res, _next) {
+  metricsCollector(req, res, next) {
     // Collect request metrics
     const service = this.extractServiceFromPath(req.path);
     if (service) {
@@ -400,7 +400,7 @@ class APIGateway {
     next();
   }
 
-  authenticationMiddleware(req, res, _next) {
+  authenticationMiddleware(req, res, next) {
     // Skip authentication for health checks and public endpoints
     if (req.path === '/health' || req.path.startsWith('/gateway/')) {
       return next();
@@ -427,7 +427,7 @@ class APIGateway {
     }
   }
 
-  tenantValidationMiddleware(req, res, _next) {
+  tenantValidationMiddleware(req, res, next) {
     // Skip for public endpoints
     if (req.path === '/health' || req.path.startsWith('/gateway/')) {
       return next();
@@ -452,7 +452,7 @@ class APIGateway {
     next();
   }
 
-  versioningMiddleware(req, res, _next) {
+  versioningMiddleware(req, res, next) {
     const apiVersion = req.headers['x-api-version'] || '1.0';
     req.apiVersion = apiVersion;
 

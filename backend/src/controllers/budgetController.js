@@ -6,7 +6,7 @@ const mlService = require('../services/mlService');
 const logger = require('../utils/logger');
 
 // Create new budget
-exports.createBudget = asyncHandler(async (req, res, _next) => {
+exports.createBudget = asyncHandler(async (req, res, next) => {
   const budgetData = {
     ...req.body,
     createdBy: req.user._id,
@@ -60,7 +60,7 @@ exports.createBudget = asyncHandler(async (req, res, _next) => {
 });
 
 // Get all budgets with filtering
-exports.getBudgets = asyncHandler(async (req, res, _next) => {
+exports.getBudgets = asyncHandler(async (req, res, next) => {
   const {
     year,
     budgetType,
@@ -109,7 +109,7 @@ exports.getBudgets = asyncHandler(async (req, res, _next) => {
 });
 
 // Get single budget
-exports.getBudget = asyncHandler(async (req, res, _next) => {
+exports.getBudget = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id)
     .populate('createdBy', 'firstName lastName')
     .populate('scope.customers', 'name code')
@@ -128,7 +128,7 @@ exports.getBudget = asyncHandler(async (req, res, _next) => {
 });
 
 // Update budget
-exports.updateBudget = asyncHandler(async (req, res, _next) => {
+exports.updateBudget = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -159,7 +159,7 @@ exports.updateBudget = asyncHandler(async (req, res, _next) => {
 });
 
 // Submit budget for approval
-exports.submitForApproval = asyncHandler(async (req, res, _next) => {
+exports.submitForApproval = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -188,7 +188,7 @@ exports.submitForApproval = asyncHandler(async (req, res, _next) => {
 });
 
 // Approve budget
-exports.approveBudget = asyncHandler(async (req, res, _next) => {
+exports.approveBudget = asyncHandler(async (req, res, next) => {
   const { comments } = req.body;
   const budget = await Budget.findById(req.params.id);
 
@@ -225,7 +225,7 @@ exports.approveBudget = asyncHandler(async (req, res, _next) => {
 });
 
 // Generate forecast
-exports.generateForecast = asyncHandler(async (req, res, _next) => {
+exports.generateForecast = asyncHandler(async (req, res, next) => {
   const { year, scope, historicalMonths = 24 } = req.body;
 
   const forecast = await mlService.generateBudgetForecast({
@@ -241,7 +241,7 @@ exports.generateForecast = asyncHandler(async (req, res, _next) => {
 });
 
 // Compare budgets
-exports.compareBudgets = asyncHandler(async (req, res, _next) => {
+exports.compareBudgets = asyncHandler(async (req, res, next) => {
   const { budgetIds } = req.body;
 
   if (!budgetIds || budgetIds.length < 2) {
@@ -298,7 +298,7 @@ exports.compareBudgets = asyncHandler(async (req, res, _next) => {
 });
 
 // Get budget performance
-exports.getBudgetPerformance = asyncHandler(async (req, res, _next) => {
+exports.getBudgetPerformance = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -404,7 +404,7 @@ exports.getBudgetPerformance = asyncHandler(async (req, res, _next) => {
 });
 
 // Create new version
-exports.createNewVersion = asyncHandler(async (req, res, _next) => {
+exports.createNewVersion = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -421,7 +421,7 @@ exports.createNewVersion = asyncHandler(async (req, res, _next) => {
 });
 
 // Lock budget
-exports.lockBudget = asyncHandler(async (req, res, _next) => {
+exports.lockBudget = asyncHandler(async (req, res, next) => {
   const { reason } = req.body;
   const budget = await Budget.findById(req.params.id);
 
@@ -438,7 +438,7 @@ exports.lockBudget = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.deleteBudget = asyncHandler(async (req, res, _next) => {
+exports.deleteBudget = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -458,7 +458,7 @@ exports.deleteBudget = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getBudgetAllocations = asyncHandler(async (req, res, _next) => {
+exports.getBudgetAllocations = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -471,7 +471,7 @@ exports.getBudgetAllocations = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getBudgetAllocationByMonth = asyncHandler(async (req, res, _next) => {
+exports.getBudgetAllocationByMonth = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -491,7 +491,7 @@ exports.getBudgetAllocationByMonth = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.updateBudgetAllocationByMonth = asyncHandler(async (req, res, _next) => {
+exports.updateBudgetAllocationByMonth = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -519,7 +519,7 @@ exports.updateBudgetAllocationByMonth = asyncHandler(async (req, res, _next) => 
   });
 });
 
-exports.getBudgetSpending = asyncHandler(async (req, res, _next) => {
+exports.getBudgetSpending = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -540,7 +540,7 @@ exports.getBudgetSpending = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.transferBudget = asyncHandler(async (req, res, _next) => {
+exports.transferBudget = asyncHandler(async (req, res, next) => {
   const { fromMonth, toMonth, amount, category } = req.body;
   const budget = await Budget.findById(req.params.id);
 
@@ -582,7 +582,7 @@ exports.transferBudget = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getBudgetApprovals = asyncHandler(async (req, res, _next) => {
+exports.getBudgetApprovals = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id)
     .populate('approvals.approver', 'firstName lastName email role');
 
@@ -596,7 +596,7 @@ exports.getBudgetApprovals = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getBudgetScenarios = asyncHandler(async (req, res, _next) => {
+exports.getBudgetScenarios = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -615,7 +615,7 @@ exports.getBudgetScenarios = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getBudgetForecast = asyncHandler(async (req, res, _next) => {
+exports.getBudgetForecast = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -628,7 +628,7 @@ exports.getBudgetForecast = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getBudgetHistory = asyncHandler(async (req, res, _next) => {
+exports.getBudgetHistory = asyncHandler(async (req, res, next) => {
   const budget = await Budget.findById(req.params.id)
     .populate('history.performedBy', 'firstName lastName email');
 

@@ -16,12 +16,12 @@ const logger = require('../utils/logger');
 router.use(authenticate);
 
 // Apply tenant isolation (but allow super admins to bypass)
-router.use((req, res, _next) => {
+router.use((req, res, next) => {
   if (req.user.role === 'super_admin') {
     // Super admins can access all tenant operations
     return next();
   }
-  return tenantIsolation(req, res, _next);
+  return tenantIsolation(req, res, next);
 });
 
 // Apply tenant query filtering
@@ -63,7 +63,7 @@ router.post('/', tenantController.createTenant);
  * @desc    Get specific tenant details
  * @access  Super Admin, Tenant Admin (own tenant only)
  */
-router.get('/:id', (req, res, _next) => {
+router.get('/:id', (req, res, next) => {
   // Reuse getCurrentTenant for specific tenant access
   req.params.tenantId = req.params.id;
   tenantController.getCurrentTenant(req, res);

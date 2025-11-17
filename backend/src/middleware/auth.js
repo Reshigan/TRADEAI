@@ -12,7 +12,7 @@ const securityLogger = new SecurityAuditLogger({
 });
 
 // Authenticate JWT token
-const authenticateToken = async (req, res, _next) => {
+const authenticateToken = async (req, res, next) => {
   console.log('MIDDLEWARE ENTRY POINT');
   try {
     logger.info('=== AUTH MIDDLEWARE CALLED ===');
@@ -218,7 +218,7 @@ const authenticateToken = async (req, res, _next) => {
 
 // Check if user has required role
 const authorize = (...roles) => {
-  return (req, res, _next) => {
+  return (req, res, next) => {
     if (!req.user) {
       securityLogger.logAccess({ id: 'unknown' }, req.originalUrl, req.method, false, {
         ip: req.ip,
@@ -306,7 +306,7 @@ const checkForRepeatedUnauthorizedAccess = (user, req) => {
 
 // Check if user has specific permission
 const checkPermission = (module, action) => {
-  return (req, res, _next) => {
+  return (req, res, next) => {
     if (!req.user) {
       securityLogger.logAccess({ id: 'unknown' }, req.originalUrl, req.method, false, {
         ip: req.ip,
@@ -407,7 +407,7 @@ const checkForRepeatedPermissionDenials = (user, req, module, action) => {
 };
 
 // Check if user can access specific customer
-const authorizeCustomer = (req, res, _next) => {
+const authorizeCustomer = (req, res, next) => {
   try {
     const customerId = req.params.customerId || req.body.customerId;
 
@@ -443,7 +443,7 @@ const authorizeCustomer = (req, res, _next) => {
 };
 
 // Check if user can access specific vendor
-const authorizeVendor = (req, res, _next) => {
+const authorizeVendor = (req, res, next) => {
   try {
     const vendorId = req.params.vendorId || req.body.vendorId;
 
@@ -480,7 +480,7 @@ const authorizeVendor = (req, res, _next) => {
 
 // Check approval limits
 const checkApprovalLimit = (type) => {
-  return async (req, res, _next) => {
+  return async (req, res, next) => {
     try {
       const amount = req.body.amount || req.body.totalAmount;
 
@@ -507,7 +507,7 @@ const checkApprovalLimit = (type) => {
 };
 
 // Rate limit by user role
-const rateLimitByRole = (req, res, _next) => {
+const rateLimitByRole = (req, res, next) => {
   // Different rate limits for different roles
   const roleLimits = {
     admin: 1000,
@@ -609,7 +609,7 @@ const generateRefreshToken = (userId) => {
  * @param {Object} res - Express response object
  * @param {Function} next - Express next function
  */
-const refreshToken = async (req, res, _next) => {
+const refreshToken = async (req, res, next) => {
   try {
     // Get refresh token
     const refreshToken = req.cookies.refreshToken || req.body.refreshToken;

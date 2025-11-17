@@ -7,7 +7,7 @@ const logger = require('../utils/logger');
 const emailService = require('../services/emailService');
 
 // Create trade spend request
-exports.createTradeSpend = asyncHandler(async (req, res, _next) => {
+exports.createTradeSpend = asyncHandler(async (req, res, next) => {
   // Generate spend ID
   const spendCount = await TradeSpend.countDocuments();
   const spendId = `TS-${new Date().getFullYear()}-${String(spendCount + 1).padStart(6, '0')}`;
@@ -72,7 +72,7 @@ exports.createTradeSpend = asyncHandler(async (req, res, _next) => {
 });
 
 // Get all trade spends
-exports.getTradeSpends = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpends = asyncHandler(async (req, res, next) => {
   const {
     spendType,
     status,
@@ -134,7 +134,7 @@ exports.getTradeSpends = asyncHandler(async (req, res, _next) => {
 });
 
 // Get single trade spend
-exports.getTradeSpend = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpend = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id)
     .populate('customer')
     .populate('vendor')
@@ -156,7 +156,7 @@ exports.getTradeSpend = asyncHandler(async (req, res, _next) => {
 });
 
 // Update trade spend
-exports.updateTradeSpend = asyncHandler(async (req, res, _next) => {
+exports.updateTradeSpend = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -179,7 +179,7 @@ exports.updateTradeSpend = asyncHandler(async (req, res, _next) => {
 });
 
 // Submit for approval
-exports.submitForApproval = asyncHandler(async (req, res, _next) => {
+exports.submitForApproval = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -223,7 +223,7 @@ exports.submitForApproval = asyncHandler(async (req, res, _next) => {
 });
 
 // Approve trade spend
-exports.approveTradeSpend = asyncHandler(async (req, res, _next) => {
+exports.approveTradeSpend = asyncHandler(async (req, res, next) => {
   const { approvedAmount, comments } = req.body;
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
@@ -265,7 +265,7 @@ exports.approveTradeSpend = asyncHandler(async (req, res, _next) => {
 });
 
 // Reject trade spend
-exports.rejectTradeSpend = asyncHandler(async (req, res, _next) => {
+exports.rejectTradeSpend = asyncHandler(async (req, res, next) => {
   const { reason } = req.body;
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
@@ -293,7 +293,7 @@ exports.rejectTradeSpend = asyncHandler(async (req, res, _next) => {
 });
 
 // Record actual spend
-exports.recordSpend = asyncHandler(async (req, res, _next) => {
+exports.recordSpend = asyncHandler(async (req, res, next) => {
   const { amount, documents } = req.body;
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
@@ -327,7 +327,7 @@ exports.recordSpend = asyncHandler(async (req, res, _next) => {
 });
 
 // Get wallet balance
-exports.getWalletBalance = asyncHandler(async (req, res, _next) => {
+exports.getWalletBalance = asyncHandler(async (req, res, next) => {
   const { customerId } = req.params;
 
   const user = await User.findById(req.user._id);
@@ -370,7 +370,7 @@ exports.getWalletBalance = asyncHandler(async (req, res, _next) => {
 });
 
 // Get trade spend summary
-exports.getTradeSpendSummary = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpendSummary = asyncHandler(async (req, res, next) => {
   const { year = new Date().getFullYear(), groupBy = 'month' } = req.query;
 
   const startDate = new Date(year, 0, 1);
@@ -520,7 +520,7 @@ exports.processWalletDeduction = async (tradeSpend) => {
 
   await tradeSpend.save();
 };
-exports.deleteTradeSpend = asyncHandler(async (req, res, _next) => {
+exports.deleteTradeSpend = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -540,7 +540,7 @@ exports.deleteTradeSpend = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getTradeSpendAccruals = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpendAccruals = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -553,7 +553,7 @@ exports.getTradeSpendAccruals = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.addTradeSpendAccrual = asyncHandler(async (req, res, _next) => {
+exports.addTradeSpendAccrual = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -578,7 +578,7 @@ exports.addTradeSpendAccrual = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getTradeSpendDocuments = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpendDocuments = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -591,7 +591,7 @@ exports.getTradeSpendDocuments = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.addTradeSpendDocument = asyncHandler(async (req, res, _next) => {
+exports.addTradeSpendDocument = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -616,7 +616,7 @@ exports.addTradeSpendDocument = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getTradeSpendApprovals = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpendApprovals = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id)
     .populate('approvals.approver', 'firstName lastName email role');
 
@@ -630,7 +630,7 @@ exports.getTradeSpendApprovals = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getTradeSpendPerformance = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpendPerformance = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id);
 
   if (!tradeSpend) {
@@ -652,7 +652,7 @@ exports.getTradeSpendPerformance = asyncHandler(async (req, res, _next) => {
   });
 });
 
-exports.getTradeSpendHistory = asyncHandler(async (req, res, _next) => {
+exports.getTradeSpendHistory = asyncHandler(async (req, res, next) => {
   const tradeSpend = await TradeSpend.findById(req.params.id)
     .populate('history.performedBy', 'firstName lastName email');
 
