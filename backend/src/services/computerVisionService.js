@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
-const fs = require('fs').promises;
-const path = require('path');
+const _fs = require('_fs').promises;
+const _path = require('_path');
 
 /**
  * Computer Vision Service
@@ -1083,7 +1083,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Assess image quality
    */
-  async assessImageQuality(imageData, options = {}) {
+  async assessImageQuality(imageData, _options = {}) {
     const assessmentId = this.generateQualityAssessmentId();
 
     try {

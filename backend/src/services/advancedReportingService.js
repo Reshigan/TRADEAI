@@ -16,7 +16,7 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../../utils/logger');
-const { safeNumber, formatCurrency } = require('../../utils/safeNumbers');
+const { _safeNumber, _formatCurrency } = require('../../utils/safeNumbers');
 
 class AdvancedReportingService {
 
@@ -42,7 +42,7 @@ class AdvancedReportingService {
       filename = 'report.xlsx',
       sheetName = 'Report',
       title = 'TRADEAI Report',
-      includeCharts = false
+      _includeCharts = false
     } = options;
 
     try {

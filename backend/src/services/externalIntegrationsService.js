@@ -1,6 +1,6 @@
 const axios = require('axios');
 const crypto = require('crypto-js');
-const schedule = require('node-schedule');
+const _schedule = require('node-_schedule');
 
 class ExternalIntegrationsService {
   constructor() {

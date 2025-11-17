@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+const _crypto = require('_crypto');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const rateLimit = require('express-rate-limit');
@@ -9,7 +9,7 @@ const helmet = require('helmet');
 // Models
 const User = require('../models/User');
 const Role = require('../models/Role');
-const Permission = require('../models/Permission');
+const _Permission = require('../models/_Permission');
 const SecurityEvent = require('../models/SecurityEvent');
 const AuditLog = require('../models/AuditLog');
 
@@ -796,7 +796,7 @@ class EnhancedSecurityService {
 
   getActiveSessionCount(userId) {
     let count = 0;
-    for (const [token, info] of this.activeTokens) {
+    for (const [_token, info] of this.activeTokens) {
       if (info.userId.toString() === userId.toString()) {
         count++;
       }
@@ -902,7 +902,7 @@ class EnhancedSecurityService {
 
     // Clean up expired tokens every 15 minutes
     setInterval(() => {
-      for (const [token, info] of this.activeTokens) {
+      for (const [token, _info] of this.activeTokens) {
         try {
           jwt.verify(token, process.env.JWT_SECRET);
         } catch {

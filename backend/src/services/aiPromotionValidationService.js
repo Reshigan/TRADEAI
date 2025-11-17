@@ -60,7 +60,7 @@ class AIPromotionValidationService {
      */
   generatePromotionSuggestions(promotionData) {
     const {
-      productId,
+      _productId,
       currentPrice,
       proposedPrice,
       category,

@@ -4,7 +4,7 @@ const Rebate = require('../models/Rebate');
 const RebateAccrual = require('../models/RebateAccrual');
 // const Customer = require('../models/Customer');
 // const Product = require('../models/Product');
-const { asyncHandler, AppError } = require('../middleware/errorHandler');
+const { asyncHandler, _AppError } = require('../middleware/errorHandler');
 
 exports.getDashboardMetrics = asyncHandler(async (req, res) => {
   const { startDate, endDate, customerId, productId } = req.query;

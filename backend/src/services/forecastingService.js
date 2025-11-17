@@ -303,8 +303,8 @@ class ForecastingService {
       const {
         products,
         customers,
-        period,
-        budget,
+        _period,
+        _budget,
         type,
         mechanics
       } = promotionData;
@@ -623,7 +623,7 @@ class ForecastingService {
     });
   }
 
-  async adjustForExternalFactors(forecast, tenantId, options = {}) {
+  async adjustForExternalFactors(forecast, tenantId, _options = {}) {
     // Adjust for planned promotions, market conditions, etc.
     const adjustedForecast = [...forecast];
 

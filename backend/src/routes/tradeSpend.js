@@ -3,7 +3,7 @@ const router = express.Router();
 const tradeSpendController = require('../controllers/tradeSpendController');
 const { authorize, checkPermission, checkApprovalLimit } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
-const { validate, commonValidations } = require('../middleware/validation');
+const { validate, _commonValidations } = require('../middleware/validation');
 
 // Validation rules
 const createTradeSpendValidation = [

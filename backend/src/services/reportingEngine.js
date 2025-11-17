@@ -122,13 +122,13 @@ class ReportingEngine {
   async createCustomReport(tenantId, reportConfig) {
     try {
       const {
-        name,
-        description,
+        _name,
+        _description,
         metrics,
         dimensions,
         filters,
         format,
-        visualization
+        _visualization
       } = reportConfig;
 
       // Validate report configuration

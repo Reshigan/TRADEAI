@@ -341,7 +341,7 @@ class PredictiveAnalyticsService {
     const sumY = data.reduce((sum, d) => sum + d.y, 0);
     const sumXY = data.reduce((sum, d) => sum + d.x * d.y, 0);
     const sumX2 = data.reduce((sum, d) => sum + d.x * d.x, 0);
-    const sumY2 = data.reduce((sum, d) => sum + d.y * d.y, 0);
+    const _sumY2 = data.reduce((sum, d) => sum + d.y * d.y, 0);
 
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
     const intercept = (sumY - slope * sumX) / n;

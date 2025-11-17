@@ -1,7 +1,7 @@
 const AnalyticsEngine = require('../services/analyticsEngine');
 const AdvancedAnalyticsEngine = require('../services/advancedAnalyticsEngine');
 const asyncHandler = require('../middleware/asyncHandler');
-const { validateTenant } = require('../middleware/tenantValidation');
+const { _validateTenant } = require('../middleware/tenantValidation');
 
 /**
  * Analytics Controller
@@ -107,7 +107,7 @@ class AnalyticsController {
    * Used by frontend Dashboard component
    */
   getDashboardAnalytics = async (options = {}) => {
-    const { userId, period = '30days', currency = 'USD' } = options;
+    const { _userId, _period = '30days', currency = 'USD' } = options;
 
     try {
       // Get currency info
@@ -121,7 +121,7 @@ class AnalyticsController {
       const Customer = require('../models/Customer');
       const Promotion = require('../models/Promotion');
       const Budget = require('../models/Budget');
-      const TradeSpend = require('../models/TradeSpend');
+      const _TradeSpend = require('../models/_TradeSpend');
 
       // Query real data from database
       // Check for both 'active' and 'completed' promotions for stats
@@ -380,7 +380,7 @@ class AnalyticsController {
    */
   getInsights = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
-    const { dateRange, category } = req.query;
+    const { dateRange, _category } = req.query;
 
     // This would implement intelligent insights generation
     // For now, returning mock insights

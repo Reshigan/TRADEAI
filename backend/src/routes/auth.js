@@ -4,7 +4,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const { validate } = require('../middleware/validation');
 const { authenticateToken } = require('../middleware/auth');
-const { rateLimitByRole } = require('../middleware/auth');
+const { _rateLimitByRole } = require('../middleware/auth');
 
 // Simplified validation rules for login - support both email and username
 const loginValidation = [

@@ -3,7 +3,7 @@ const router = express.Router();
 const promotionController = require('../controllers/promotionController');
 const { authorize, checkPermission } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
-const { validate, commonValidations } = require('../middleware/validation');
+const { validate, _commonValidations } = require('../middleware/validation');
 
 // Validation rules
 const createPromotionValidation = [

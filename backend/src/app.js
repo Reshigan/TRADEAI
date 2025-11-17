@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
-const rateLimit = require('express-rate-limit');
+const _rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -58,7 +58,7 @@ const inventoryRoutes = require('./routes/inventory');
 const tenantRoutes = require('./routes/tenantRoutes');
 const healthRoutes = require('./routes/health');
 const enterpriseRoutes = require('./routes/enterprise');
-const missingRoutesFixRoutes = require('./routes/missing-routes-fix');
+const _missingRoutesFixRoutes = require('./routes/missing-routes-fix');
 const transactionRoutes = require('./routes/transaction');
 const baselineRoutes = require('./routes/baseline');
 const cannibalizationRoutes = require('./routes/cannibalization');
@@ -197,7 +197,7 @@ const {
   authLimiter,
   speedLimiter,
   exportLimiter,
-  passwordResetLimiter,
+  _passwordResetLimiter,
   requestLogger
 } = require('./middleware/rateLimiter');
 

@@ -1,7 +1,7 @@
 const { AppError } = require('../middleware/errorHandler');
 const csvParser = require('csv-parser');
 const fs = require('fs');
-const { pipeline } = require('stream/promises');
+const { _pipeline } = require('stream/promises');
 
 /**
  * ENTERPRISE CRUD SERVICE

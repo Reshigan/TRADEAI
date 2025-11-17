@@ -6,7 +6,7 @@
 const csv = require('csv-parser');
 const XLSX = require('xlsx');
 const fs = require('fs');
-const { Readable } = require('stream');
+const { _Readable } = require('stream');
 const Transaction = require('../models/Transaction');
 const SalesHistory = require('../models/SalesHistory');
 const Product = require('../models/Product');

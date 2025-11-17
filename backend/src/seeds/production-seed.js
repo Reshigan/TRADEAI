@@ -5,12 +5,12 @@ const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Campaign = require('../models/Campaign');
-const TradingTerm = require('../models/TradingTerm');
-const Report = require('../models/Report');
-const AIChat = require('../models/AIChat');
-const PromotionAnalysis = require('../models/PromotionAnalysis');
-const MarketingBudgetAllocation = require('../models/MarketingBudgetAllocation');
-const CombinationAnalysis = require('../models/CombinationAnalysis');
+const _TradingTerm = require('../models/_TradingTerm');
+const _Report = require('../models/_Report');
+const _AIChat = require('../models/_AIChat');
+const _PromotionAnalysis = require('../models/_PromotionAnalysis');
+const _MarketingBudgetAllocation = require('../models/_MarketingBudgetAllocation');
+const _CombinationAnalysis = require('../models/_CombinationAnalysis');
 const { connectDB } = require('../config/database');
 
 // Helper function to generate random values
@@ -20,7 +20,7 @@ const generateRandomValue = (min, max, decimals = 0) => {
 };
 
 // Helper function to generate random date within range
-const generateRandomDate = (startDate, endDate) => {
+const _generateRandomDate = (startDate, endDate) => {
   const start = new Date(startDate).getTime();
   const end = new Date(endDate).getTime();
   return new Date(start + Math.random() * (end - start));

@@ -10,7 +10,7 @@ const hpp = require('hpp');
 const cors = require('cors');
 const validator = require('validator');
 const crypto = require('crypto');
-const { body, validationResult, matchedData } = require('express-validator');
+const { body, validationResult, _matchedData } = require('express-validator');
 const mongoSanitize = require('express-mongo-sanitize');
 
 /**

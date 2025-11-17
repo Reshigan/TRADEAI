@@ -145,7 +145,7 @@ class SuperAdminService {
     try {
       const {
         status,
-        licenseType,
+        _licenseType,
         search,
         industry
       } = filters;

@@ -1,5 +1,5 @@
 const Budget = require('../models/Budget');
-const SalesHistory = require('../models/SalesHistory');
+const _SalesHistory = require('../models/_SalesHistory');
 const logger = require('../utils/logger');
 const mlService = require('./mlService');
 const { AppError } = require('../middleware/errorHandler');

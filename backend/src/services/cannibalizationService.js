@@ -15,7 +15,7 @@ class CannibalizationService {
    */
   async analyzePromotion(options) {
     const {
-      promotionId,
+      _promotionId,
       productId,
       customerId,
       promotionStartDate,

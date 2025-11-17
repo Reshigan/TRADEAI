@@ -4,7 +4,7 @@ const Promotion = require('../models/Promotion');
 const Budget = require('../models/Budget');
 const TradeSpend = require('../models/TradeSpend');
 const SalesHistory = require('../models/SalesHistory');
-const { sendEmail } = require('../services/emailService');
+const { _sendEmail } = require('../services/emailService');
 
 // Real-time event emitter for monitoring
 const monitoringEvents = new EventEmitter();
@@ -569,7 +569,7 @@ const monitoringController = {
     // Mock system health checks
     const memoryUsage = 68; // %
     const cpuUsage = 45; // %
-    const diskUsage = 32; // %
+    const _diskUsage = 32; // %
 
     if (memoryUsage > 85) {
       alerts.push({

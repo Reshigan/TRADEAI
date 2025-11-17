@@ -1,7 +1,7 @@
 const ss = require('simple-statistics');
-const math = require('mathjs');
-const mlPredictionService = require('./mlPredictionService');
-const aiRecommendationEngine = require('./aiRecommendationEngine');
+const _math = require('mathjs');
+const _mlPredictionService = require('./_mlPredictionService');
+const _aiRecommendationEngine = require('./_aiRecommendationEngine');
 
 class AutomatedInsightsService {
   constructor() {
@@ -716,7 +716,7 @@ class AutomatedInsightsService {
   forecastRevenue(data, days) {
     // Simple exponential smoothing forecast
     const values = data.map((d) => d.revenue);
-    const alpha = 0.3; // smoothing parameter
+    const _alpha = 0.3; // smoothing parameter
 
     const forecast = values[values.length - 1];
     const forecasts = [];

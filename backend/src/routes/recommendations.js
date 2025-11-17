@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { body, query, validationResult } = require('express-validator');
+const { body, _query, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const revenueImpactService = require('../services/revenueImpactService');
 const Customer = require('../models/Customer');
 // const Product = require('../models/Product');
-const Promotion = require('../models/Promotion');
+const _Promotion = require('../models/_Promotion');
 const logger = require('../utils/logger');
 
 router.use(authenticate);

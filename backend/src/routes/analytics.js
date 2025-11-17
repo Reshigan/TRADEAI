@@ -97,7 +97,7 @@ router.get('/promotions', authenticateToken, asyncHandler((req, res) => {
 
 // Get budget analytics
 router.get('/budgets', authenticateToken, asyncHandler((req, res) => {
-  const { year = new Date().getFullYear(), customerId } = req.query;
+  const { _year = new Date().getFullYear(), customerId } = req.query;
 
   // Return budget analytics mock data
   res.json({
@@ -123,7 +123,7 @@ router.get('/budgets', authenticateToken, asyncHandler((req, res) => {
 
 // Get trade spend analytics
 router.get('/trade-spend', authenticateToken, asyncHandler((req, res) => {
-  const { startDate, endDate, customerId, vendorId } = req.query;
+  const { _startDate, _endDate, _customerId, _vendorId } = req.query;
 
   // Return trade spend analytics mock data
   res.json({

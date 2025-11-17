@@ -11,7 +11,7 @@
 
 const Budget = require('../models/Budget');
 const TradeSpend = require('../models/TradeSpend');
-const Accrual = require('../models/Accrual');
+const _Accrual = require('../models/_Accrual');
 const logger = require('../../utils/logger');
 const { safeNumber, calculatePercentage } = require('../../utils/safeNumbers');
 
@@ -262,7 +262,7 @@ class AdvancedBudgetService {
   generateBudgetAlerts(budgetAnalysis) {
     const alerts = [];
 
-    const { amounts, percentages, status, budgetName } = budgetAnalysis;
+    const { amounts, percentages, _status, budgetName } = budgetAnalysis;
 
     // Over budget alert
     if (amounts.actual > amounts.budget) {

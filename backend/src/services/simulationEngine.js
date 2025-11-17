@@ -1,8 +1,8 @@
 const { AppError } = require('../middleware/errorHandler');
 const mlService = require('./mlService');
-const Budget = require('../models/Budget');
+const _Budget = require('../models/_Budget');
 const Promotion = require('../models/Promotion');
-const SalesHistory = require('../models/SalesHistory');
+const _SalesHistory = require('../models/_SalesHistory');
 // const Product = require('../models/Product');
 
 /**
@@ -35,7 +35,7 @@ class SimulationEngine {
       discountPercent,
       duration,
       products,
-      targetCustomers,
+      _targetCustomers,
       budget,
       historicalData = true,
       tenantId
@@ -184,8 +184,8 @@ class SimulationEngine {
   async simulatePricingStrategy(scenario) {
     const {
       products,
-      pricingModel, // 'cost_plus', 'value_based', 'competitive', 'dynamic'
-      targetMargin,
+      _pricingModel, // 'cost_plus', 'value_based', 'competitive', 'dynamic'
+      _targetMargin,
       priceChange, // percentage change
       elasticity // price elasticity coefficient
     } = scenario;
@@ -244,7 +244,7 @@ class SimulationEngine {
       products,
       timeHorizon, // months
       factors = {}, // seasonality, promotions, trends, external
-      assumptions = {}
+      _assumptions = {}
     } = scenario;
 
     // Get historical volume data
@@ -300,7 +300,7 @@ class SimulationEngine {
       marketActions = [], // our actions
       competitorActions = [],
       marketSize,
-      timeframe
+      _timeframe
     } = scenario;
 
     // Get current market position
@@ -572,7 +572,7 @@ class SimulationEngine {
 
   optimizeBudgetAllocation(params) {
     // Optimization algorithm (could use linear programming, genetic algorithm, etc.)
-    const { totalBudget, categories, historicalPerformance } = params;
+    const { totalBudget, categories, _historicalPerformance } = params;
 
     // Simple equal allocation as baseline
     const allocation = {};

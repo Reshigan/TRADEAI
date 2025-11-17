@@ -12,7 +12,7 @@
 const Customer = require('../models/Customer');
 const SalesTransaction = require('../models/SalesTransaction');
 const logger = require('../../utils/logger');
-const { safeNumber, calculatePercentage } = require('../../utils/safeNumbers');
+const { _safeNumber, _calculatePercentage } = require('../../utils/safeNumbers');
 
 class CustomerSegmentationService {
 

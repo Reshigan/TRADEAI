@@ -311,7 +311,7 @@ const requireRole = (roles) => {
  * @param {string} resourceIdParam - Parameter name containing resource ID
  * @param {string} ownerField - Field name in resource containing owner ID
  */
-const requireOwnership = (resourceIdParam = 'id', ownerField = 'createdBy') => {
+const requireOwnership = (resourceIdParam = 'id', _ownerField = 'createdBy') => {
   return (req, res, next) => {
     try {
       const userId = req.user?._id;

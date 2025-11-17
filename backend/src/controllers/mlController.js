@@ -172,7 +172,7 @@ class MLController {
   // Batch Predictions
   async batchPredict(req, res) {
     try {
-      const { predictionType, dataArray, options = {} } = req.body;
+      const { predictionType, dataArray, _options = {} } = req.body;
       const tenantId = req.tenant?.id;
 
       if (!predictionType || !dataArray || !Array.isArray(dataArray)) {
@@ -587,7 +587,7 @@ class MLController {
   // Retrain Models
   retrainModels(req, res) {
     try {
-      const { models = [], force = false } = req.body;
+      const { models = [], _force = false } = req.body;
       const tenantId = req.tenant?.id;
 
       // Mock retraining process
@@ -674,7 +674,7 @@ class MLController {
   getABTestResults(req, res) {
     try {
       const { testId } = req.params;
-      const tenantId = req.tenant?.id;
+      const _tenantId = req.tenant?.id;
 
       if (!testId) {
         return res.status(400).json({

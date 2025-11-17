@@ -549,7 +549,7 @@ const seedGONXTProductionData = async () => {
     // 8. Create 2 Years of Sales History Data
     console.log('📈 Creating 2 Years of Sales History...');
     const startDate = new Date('2022-01-01');
-    const endDate = new Date('2023-12-31');
+    const _endDate = new Date('2023-12-31');
     const salesHistoryRecords = [];
 
     // Generate monthly sales data for each customer-product combination

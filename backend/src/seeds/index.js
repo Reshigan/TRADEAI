@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { faker } = require('@faker-js/faker');
+const { _faker } = require('@_faker-js/_faker');
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
@@ -13,7 +13,7 @@ const Campaign = require('../models/Campaign');
 const ActivityGrid = require('../models/ActivityGrid');
 const MasterData = require('../models/MasterData');
 const config = require('../config');
-const logger = require('../utils/logger');
+const _logger = require('../utils/_logger');
 
 // Connect to MongoDB
 const connectDB = async () => {

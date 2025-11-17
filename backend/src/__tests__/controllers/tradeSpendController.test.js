@@ -55,13 +55,13 @@ describe('TradeSpend Controller', () => {
   describe('GET /api/tradespends', () => {
     test('should return all trade spends for company', async () => {
       // Create test trade spends
-      const tradeSpend1 = await factories.tradeSpend.create({
+      const _tradeSpend1 = await factories.tradeSpend.create({
         companyId: testCompany._id,
         amount: 10000,
         status: 'approved'
       });
 
-      const tradeSpend2 = await factories.tradeSpend.create({
+      const _tradeSpend2 = await factories.tradeSpend.create({
         companyId: testCompany._id,
         amount: 15000,
         status: 'pending'

@@ -26,7 +26,7 @@ class StoreAnalyticsService {
 
     // Get all districts in region
     const districts = await District.find({ region: regionId, tenantId, isActive: true });
-    const districtIds = districts.map((d) => d._id);
+    const _districtIds = districts.map((d) => d._id);
 
     // Get all stores in region
     const stores = await Store.find({ region: regionId, tenantId, isActive: true });

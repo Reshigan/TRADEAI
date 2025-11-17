@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const _bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 // Import all models
@@ -7,11 +7,11 @@ const Company = require('../models/Company');
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
-const SalesHistory = require('../models/SalesHistory');
+const _SalesHistory = require('../models/_SalesHistory');
 const Campaign = require('../models/Campaign');
 const Promotion = require('../models/Promotion');
 const Budget = require('../models/Budget');
-const TradeSpend = require('../models/TradeSpend');
+const _TradeSpend = require('../models/_TradeSpend');
 const TradingTerm = require('../models/TradingTerm');
 const Report = require('../models/Report');
 const AIChat = require('../models/AIChat');

@@ -6,7 +6,7 @@ const path = require('path');
 const modelsDir = path.join(__dirname, '../models');
 
 // Models to update (excluding Tenant.js, BaseTenantModel.js, and already updated ones)
-const modelsToUpdate = [
+const _modelsToUpdate = [
   'Product.js',
   'Promotion.js',
   'TradeSpend.js',
@@ -57,7 +57,7 @@ function updateModelFile(filePath) {
   const match = content.match(modelExportRegex);
 
   if (match) {
-    const [fullMatch, modelName, modelString, schemaName] = match;
+    const [fullMatch, _modelName, _modelString, schemaName] = match;
 
     // Add tenant support before model creation
     const replacement = `// Add tenant support to the schema

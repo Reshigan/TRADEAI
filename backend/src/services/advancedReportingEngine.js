@@ -125,7 +125,7 @@ class AdvancedReportingEngine {
         data,
         sections = [],
         charts = [],
-        formatting = {},
+        _formatting = {},
         fileName
       } = reportConfig;
 

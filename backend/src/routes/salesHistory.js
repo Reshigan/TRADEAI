@@ -13,7 +13,7 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     endDate,
     customerId,
     productId,
-    aggregateBy = 'day',
+    _aggregateBy = 'day',
     page = 1,
     limit = 100
   } = req.query;

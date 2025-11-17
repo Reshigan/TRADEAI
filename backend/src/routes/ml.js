@@ -206,7 +206,7 @@ router.post('/forecast', authenticateToken, asyncHandler((req, res) => {
 }));
 
 router.post('/train', authenticateToken, authorize('admin'), asyncHandler((req, res) => {
-  const { modelId, parameters } = req.body;
+  const { modelId, _parameters } = req.body;
 
   if (!modelId) {
     throw new AppError('Model ID is required', 400);

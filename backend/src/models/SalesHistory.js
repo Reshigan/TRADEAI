@@ -394,7 +394,7 @@ salesHistorySchema.statics.detectAnomalies = async function (threshold = 2) {
   });
 
   // Detect anomalies in each group
-  for (const [key, sales] of Object.entries(groups)) {
+  for (const [_key, sales] of Object.entries(groups)) {
     if (sales.length < 10) continue; // Need enough data
 
     const quantities = sales.map((s) => s.quantity);

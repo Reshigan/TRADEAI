@@ -3,8 +3,8 @@ const Promotion = require('../models/Promotion');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Budget = require('../models/Budget');
-const TradeSpend = require('../models/TradeSpend');
-const mlService = require('../services/mlService');
+const _TradeSpend = require('../models/_TradeSpend');
+const _mlService = require('../services/_mlService');
 
 /**
  * AI Chatbot Controller - Works with MongoDB data and local ML models
@@ -68,7 +68,7 @@ class AIChatbotController {
    */
   async processMessage(req, res) {
     try {
-      const { message, context, conversationHistory } = req.body;
+      const { message, _context, _conversationHistory } = req.body;
       const { user } = req;
       const companyId = user.companyId;
 

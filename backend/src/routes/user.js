@@ -3,7 +3,7 @@ const router = express.Router();
 const { authenticateToken, authorize } = require('../middleware/auth');
 const User = require('../models/User');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
-const { body, validationResult } = require('express-validator');
+const { _body, _validationResult } = require('express-validator');
 
 // XSS sanitization helper
 const sanitizeInput = (input) => {

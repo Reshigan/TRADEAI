@@ -244,7 +244,7 @@ class AIPromotionController {
      * Calculate financial projections
      */
   calculateFinancialProjections(promotionData, validation, suggestions) {
-    const { currentPrice, proposedPrice, expectedUplift } = promotionData;
+    const { _currentPrice, proposedPrice, expectedUplift } = promotionData;
     const baseVolume = 1000; // Assume base volume for calculations
 
     // Original promotion projections

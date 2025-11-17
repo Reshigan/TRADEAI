@@ -167,7 +167,7 @@ class AnalyticsEngine {
   /**
    * Predict promotion performance using historical data
    */
-  async predictPerformance(tenantId, promotionData, options = {}) {
+  async predictPerformance(tenantId, promotionData, _options = {}) {
     try {
       // Find similar historical promotions
       const similarPromotions = await this.findSimilarPromotions(tenantId, promotionData);
@@ -233,7 +233,7 @@ class AnalyticsEngine {
   /**
    * Generate comprehensive performance dashboard data
    */
-  async generatePerformanceDashboard(tenantId, dateRange, options = {}) {
+  async generatePerformanceDashboard(tenantId, dateRange, _options = {}) {
     try {
       const [
         promotionSummary,

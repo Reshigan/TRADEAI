@@ -2,7 +2,7 @@ const ReportingEngine = require('../services/reportingEngine');
 const AdvancedReportingEngine = require('../services/advancedReportingEngine');
 const Report = require('../models/Report');
 const { asyncHandler } = require('../middleware/asyncHandler');
-const { validateTenant } = require('../middleware/tenantValidation');
+const { _validateTenant } = require('../middleware/tenantValidation');
 const fs = require('fs');
 const path = require('path');
 
@@ -311,7 +311,7 @@ class ReportingController {
    * GET /api/reports/download/:reportId
    */
   downloadReport = asyncHandler((req, res) => {
-    const { reportId } = req.params;
+    const { _reportId } = req.params;
 
     // This would typically retrieve the file path from a database or cache
     // For now, returning error as files are cleaned up immediately after generation
@@ -326,7 +326,7 @@ class ReportingController {
    * GET /api/reports/history
    */
   getReportHistory = asyncHandler((req, res) => {
-    const tenantId = req.tenant.id;
+    const _tenantId = req.tenant.id;
     const { page = 1, limit = 20, reportType, status } = req.query;
 
     // This would typically query a database for report history
@@ -384,7 +384,7 @@ class ReportingController {
    * GET /api/reports/metrics
    */
   getReportMetrics = asyncHandler((req, res) => {
-    const tenantId = req.tenant.id;
+    const _tenantId = req.tenant.id;
 
     // Mock report metrics
     const metrics = {

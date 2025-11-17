@@ -145,7 +145,7 @@ class NotificationService extends EventEmitter {
    * Send accrual reminder notification
    */
   sendAccrualReminder(userId, accrualData) {
-    const { period, accrualCount, totalAmount, dueDate } = accrualData;
+    const { _period, accrualCount, totalAmount, dueDate } = accrualData;
 
     const daysUntilDue = Math.ceil((new Date(dueDate) - new Date()) / (1000 * 60 * 60 * 24));
 
@@ -183,7 +183,7 @@ class NotificationService extends EventEmitter {
    * Send promotion performance notification
    */
   sendPromotionAlert(userId, promotionData) {
-    const { promotionName, roi, effectivenessScore, status } = promotionData;
+    const { promotionName, roi, effectivenessScore, _status } = promotionData;
 
     let message, severity, icon;
 
@@ -408,7 +408,7 @@ class NotificationService extends EventEmitter {
       bySeverity: {}
     };
 
-    for (const [userId, notifications] of this.notifications) {
+    for (const [_userId, notifications] of this.notifications) {
       stats.totalNotifications += notifications.length;
       stats.unreadNotifications += notifications.filter((n) => !n.read).length;
 

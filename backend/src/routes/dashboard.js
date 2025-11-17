@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboardController');
-const { authorize, checkPermission } = require('../middleware/auth');
+const { authorize, _checkPermission } = require('../middleware/auth');
 const { query, param } = require('express-validator');
 const { validate } = require('../middleware/validation');
 
@@ -78,7 +78,7 @@ router.get('/stats', async (req, res, next) => {
 // Dashboard activity endpoint
 router.get('/activity', (req, res, next) => {
   try {
-    const { limit = 10 } = req.query;
+    const { _limit = 10 } = req.query;
     // For now, return empty array - can be populated later
     res.json({
       success: true,
@@ -92,7 +92,7 @@ router.get('/activity', (req, res, next) => {
 // Dashboard chart data endpoint
 router.get('/charts/:type', (req, res, next) => {
   try {
-    const { type } = req.params;
+    const { _type } = req.params;
     // For now, return empty array - can be populated later
     res.json({
       success: true,

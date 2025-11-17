@@ -19,7 +19,7 @@ require('dotenv').config();
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
-const Vendor = require('../models/Vendor');
+const _Vendor = require('../models/_Vendor');
 const Promotion = require('../models/Promotion');
 const Campaign = require('../models/Campaign');
 const Budget = require('../models/Budget');
@@ -1155,7 +1155,7 @@ const seedMondelezData = async () => {
     const products = await createProducts();
     const customers = await createCustomers();
     const salesHistory = await createSalesHistory(products, customers);
-    const budget = await createBudgets(products, customers);
+    const _budget = await createBudgets(products, customers);
     const promotions = await createPromotions(products, customers, users);
     const campaigns = await createCampaigns(products, customers, users);
     const tradeSpend = await createTradeSpend(customers, products);

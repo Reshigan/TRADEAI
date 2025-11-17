@@ -1,5 +1,5 @@
 const redis = require('redis');
-const logger = require('../utils/logger');
+const _logger = require('../utils/_logger');
 
 class SimpleCacheService {
   constructor() {

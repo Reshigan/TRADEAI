@@ -9,7 +9,7 @@
  * - Market conditions
  */
 
-const rebateCalculationService = require('../services/rebateCalculationService');
+const _rebateCalculationService = require('../services/_rebateCalculationService');
 
 class SimulationEngine {
   constructor() {

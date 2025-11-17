@@ -888,7 +888,7 @@ class MonitoringObservabilityService extends EventEmitter {
       fs.writeFileSync(testFile, 'health check test');
 
       // Test read
-      const content = fs.readFileSync(testFile, 'utf8');
+      const _content = fs.readFileSync(testFile, 'utf8');
 
       // Clean up
       fs.unlinkSync(testFile);

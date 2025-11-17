@@ -16,7 +16,7 @@ class ForwardBuyService {
    */
   async detectForwardBuy(options) {
     const {
-      promotionId,
+      _promotionId,
       productId,
       customerId,
       promotionStartDate,

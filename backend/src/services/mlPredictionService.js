@@ -6,10 +6,10 @@ try {
   console.warn('[MLPredictionService] Failed to load @tensorflow/tfjs-node, falling back to @tensorflow/tfjs (CPU). Error:', err.message);
   tf = require('@tensorflow/tfjs');
 }
-const { SimpleLinearRegression, PolynomialRegression } = require('ml-regression');
-const ss = require('simple-statistics');
-const math = require('mathjs');
-const cloneDeep = require('lodash.clonedeep');
+const { _SimpleLinearRegression, _PolynomialRegression } = require('ml-regression');
+const _ss = require('simple-statistics');
+const _math = require('mathjs');
+const _cloneDeep = require('lodash.clonedeep');
 
 class MLPredictionService {
   constructor() {

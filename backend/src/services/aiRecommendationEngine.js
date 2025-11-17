@@ -6,8 +6,8 @@ try {
   console.warn('[AIRecommendationEngine] Failed to load @tensorflow/tfjs-node, falling back to @tensorflow/tfjs (CPU). Error:', err.message);
   tf = require('@tensorflow/tfjs');
 }
-const ss = require('simple-statistics');
-const math = require('mathjs');
+const _ss = require('simple-statistics');
+const _math = require('mathjs');
 
 class AIRecommendationEngine {
   constructor() {

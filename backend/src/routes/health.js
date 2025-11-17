@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 // Metrics collection for Prometheus
 let requestCount = 0;
 let requestDuration = [];
-let lastRequestTime = Date.now();
+let _lastRequestTime = Date.now();
 
 let redis = null;
 

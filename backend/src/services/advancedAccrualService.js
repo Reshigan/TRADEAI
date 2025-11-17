@@ -13,7 +13,7 @@ const Accrual = require('../models/Accrual');
 const Promotion = require('../models/Promotion');
 const TradeSpend = require('../models/TradeSpend');
 const SalesTransaction = require('../models/SalesTransaction');
-const Budget = require('../models/Budget');
+const _Budget = require('../models/_Budget');
 const logger = require('../../utils/logger');
 const { safeNumber } = require('../../utils/safeNumbers');
 

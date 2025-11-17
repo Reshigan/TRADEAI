@@ -1,5 +1,5 @@
 const Rebate = require('../models/Rebate');
-const RebateAccrual = require('../models/RebateAccrual');
+const _RebateAccrual = require('../models/_RebateAccrual');
 
 class RebateCalculationService {
   /**

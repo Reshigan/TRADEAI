@@ -5,7 +5,7 @@ const { server } = require('./app');
 const { initializeJobs } = require('./jobs');
 const { initializeCache } = require('./services/cacheService');
 const { validateOrExit } = require('./utils/validateEnv');
-const { initRedis, closeRedis } = require('./config/redis');
+const { initRedis, _closeRedis } = require('./config/redis');
 
 // Validate environment variables before starting
 console.log('🔍 Validating environment configuration...\n');

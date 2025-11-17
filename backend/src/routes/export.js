@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, authorize } = require('../middleware/auth');
+const { authenticateToken, _authorize } = require('../middleware/auth');
 const { asyncHandler } = require('../middleware/errorHandler');
 const exportService = require('../services/exportService');
 const Customer = require('../models/Customer');

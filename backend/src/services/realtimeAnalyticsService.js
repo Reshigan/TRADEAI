@@ -443,7 +443,7 @@ class RealtimeAnalyticsService extends EventEmitter {
   /**
    * Get performance metrics
    */
-  getPerformanceMetrics(tenantId, timeRange = '24h', filters = {}) {
+  getPerformanceMetrics(tenantId, _timeRange = '24h', filters = {}) {
     return {
       activePromotions: 12,
       totalROI: 18.5,

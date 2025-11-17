@@ -7,7 +7,7 @@ const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const { cacheService } = require('../services/cacheService');
-const mlService = require('../services/mlService');
+const _mlService = require('../services/_mlService');
 
 /**
  * ENTERPRISE DASHBOARD CONTROLLER
@@ -15,7 +15,7 @@ const mlService = require('../services/mlService');
  */
 
 // Helper: Get currency from tenant/company context
-const getCurrency = (req) => {
+const _getCurrency = (req) => {
   return req.tenant?.currency || req.user?.company?.currency || 'ZAR';
 };
 
@@ -875,7 +875,7 @@ async function getAlerts(dateRange, filters = {}) {
 /**
  * Get top performers
  */
-async function getTopPerformers(dateRange, filters = {}, limit = 10) {
+async function getTopPerformers(dateRange, _filters = {}, limit = 10) {
   const matchCriteria = {
     date: { $gte: dateRange.start, $lte: dateRange.end }
   };
@@ -975,7 +975,7 @@ function getChannelPerformance(dateRange, filters = {}) {
 /**
  * Get regional data
  */
-function getRegionalData(dateRange, filters = {}) {
+function getRegionalData(dateRange, _filters = {}) {
   // Implementation for regional analysis
   return [];
 }
@@ -1217,7 +1217,7 @@ async function getSalesMetrics(dateRange, filters = {}) {
   };
 }
 
-async function getSalesTrend(dateRange, groupBy = 'week', filters = {}) {
+async function getSalesTrend(dateRange, _groupBy = 'week', filters = {}) {
   // Simplified implementation - group by month
   const match = {
     tenantId: filters.tenantId,

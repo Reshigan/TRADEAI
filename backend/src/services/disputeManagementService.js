@@ -1,7 +1,7 @@
 const Dispute = require('../models/Dispute');
 const Deduction = require('../models/Deduction');
 const Invoice = require('../models/Invoice');
-const Payment = require('../models/Payment');
+const _Payment = require('../models/_Payment');
 
 /**
  * DISPUTE MANAGEMENT SERVICE

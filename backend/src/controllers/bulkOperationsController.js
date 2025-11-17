@@ -1,6 +1,6 @@
 const BulkOperationsService = require('../services/bulkOperationsService');
 const { asyncHandler } = require('../middleware/asyncHandler');
-const { validateTenant } = require('../middleware/tenantValidation');
+const { _validateTenant } = require('../middleware/tenantValidation');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -389,7 +389,7 @@ class BulkOperationsController {
    * GET /api/bulk/history
    */
   getOperationHistory = asyncHandler((req, res) => {
-    const tenantId = req.tenant.id;
+    const _tenantId = req.tenant.id;
     const { page = 1, limit = 20, operation, modelType } = req.query;
 
     // This would typically query a database for operation history

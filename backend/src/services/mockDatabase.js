@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const logger = require('../utils/logger');
+const _logger = require('../utils/_logger');
 
 // Mock roles data
 const mockRoles = [
@@ -438,7 +438,7 @@ const MockUser = {
     return mockDatabase.createUserModel(user);
   },
 
-  async findByIdAndUpdate(id, updates, options = {}) {
+  async findByIdAndUpdate(id, updates, _options = {}) {
     const user = await mockDatabase.updateUser(id, updates);
     return user ? mockDatabase.createUserModel(user) : null;
   },
@@ -1197,7 +1197,7 @@ const MockCustomer = {
     return newCustomer;
   },
 
-  findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, _options = {}) {
     const index = mockCustomers.findIndex((c) => c._id === id);
     if (index === -1) return null;
     mockCustomers[index] = { ...mockCustomers[index], ...update, updatedAt: new Date() };
@@ -1269,7 +1269,7 @@ const MockProduct = {
     return newProduct;
   },
 
-  findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, _options = {}) {
     const index = mockProducts.findIndex((p) => p._id === id);
     if (index === -1) return null;
     mockProducts[index] = { ...mockProducts[index], ...update, updatedAt: new Date() };
@@ -1341,7 +1341,7 @@ const MockPromotion = {
     return newPromotion;
   },
 
-  findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, _options = {}) {
     const index = mockPromotions.findIndex((p) => p._id === id);
     if (index === -1) return null;
     mockPromotions[index] = { ...mockPromotions[index], ...update, updatedAt: new Date() };
@@ -1444,7 +1444,7 @@ const MockTradeSpend = {
     return newTradeSpend;
   },
 
-  findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, _options = {}) {
     const index = mockTradeSpends.findIndex((t) => t._id === id);
     if (index === -1) return null;
     mockTradeSpends[index] = { ...mockTradeSpends[index], ...update, updatedAt: new Date() };

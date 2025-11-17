@@ -1,7 +1,7 @@
 const ActivityGrid = require('../models/ActivityGrid');
 const Promotion = require('../models/Promotion');
 const TradeSpend = require('../models/TradeSpend');
-const Campaign = require('../models/Campaign');
+const _Campaign = require('../models/_Campaign');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 

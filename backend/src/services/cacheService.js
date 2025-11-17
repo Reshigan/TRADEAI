@@ -1,5 +1,5 @@
 const redis = require('redis');
-const { promisify } = require('util');
+const { _promisify } = require('util');
 const config = require('../config');
 const logger = require('../utils/logger');
 

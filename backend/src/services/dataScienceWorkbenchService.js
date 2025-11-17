@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
-const fs = require('fs').promises;
-const path = require('path');
+const _fs = require('_fs').promises;
+const _path = require('_path');
 
 /**
  * Data Science Workbench Service

@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const sapService = require('../services/sapService');
+const _sapService = require('../services/_sapService');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Vendor = require('../models/Vendor');

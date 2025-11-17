@@ -1,5 +1,5 @@
 const simulationEngine = require('../services/simulationEngine');
-const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const { _AppError, asyncHandler } = require('../middleware/errorHandler');
 
 /**
  * SIMULATION CONTROLLER
@@ -158,7 +158,7 @@ exports.getSavedSimulations = asyncHandler((req, res, _next) => {
 
 // Save simulation (placeholder)
 exports.saveSimulation = asyncHandler((req, res, _next) => {
-  const { scenario, results, name } = req.body;
+  const { _scenario, _results, name } = req.body;
 
   // Implementation would save simulation to database
   res.json({

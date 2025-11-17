@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
-const revenueImpactService = require('../services/revenueImpactService');
-const Budget = require('../models/Budget');
+const _revenueImpactService = require('../services/_revenueImpactService');
+const _Budget = require('../models/_Budget');
 const Promotion = require('../models/Promotion');
 const logger = require('../utils/logger');
 
@@ -37,7 +37,7 @@ router.post('/budget/reallocate', [
   handleValidationErrors
 ], async (req, res) => {
   try {
-    const { budgetId, minROI = 100 } = req.body;
+    const { _budgetId, minROI = 100 } = req.body;
     const tenantId = req.user.tenantId;
 
     const promotions = await Promotion.find({
