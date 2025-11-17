@@ -168,7 +168,7 @@ class ReportingEngine {
   /**
    * Schedule recurring reports
    */
-  async scheduleReport(tenantId, scheduleConfig) {
+  scheduleReport(tenantId, scheduleConfig) {
     try {
       const {
         reportType,
@@ -394,7 +394,7 @@ class ReportingEngine {
     return sheets;
   }
 
-  async createSheetData(reportData, sheetName, reportType) {
+  createSheetData(reportData, sheetName, reportType) {
     // This would contain the logic to transform report data into sheet-specific format
     // For brevity, returning mock data structure
 
@@ -580,7 +580,7 @@ class ReportingEngine {
     };
   }
 
-  async addPDFContent(doc, reportData, reportType, parameters) {
+  addPDFContent(doc, reportData, reportType, parameters) {
     // Add header
     doc.fontSize(20).text(`${this.reportTemplates.get(reportType).name}`, 50, 50);
     doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, 50, 80);
@@ -671,7 +671,7 @@ class ReportingEngine {
     };
   }
 
-  async executeDynamicQuery(query) {
+  executeDynamicQuery(query) {
     // This would execute the dynamic query against the appropriate collections
     // For brevity, returning mock data
     return [
@@ -710,7 +710,7 @@ class ReportingEngine {
     }
   }
 
-  async generateCustomExcelReport(data, config) {
+  generateCustomExcelReport(data, config) {
     let XLSX;
     try {
       XLSX = require('xlsx');
@@ -740,7 +740,7 @@ class ReportingEngine {
     };
   }
 
-  async generateCustomPDFReport(data, config) {
+  generateCustomPDFReport(data, config) {
     const fileName = this.generateFileName(`custom_${config.name.replace(/\s+/g, '_')}`, 'pdf');
     const filePath = path.join(process.cwd(), 'temp', 'reports', fileName);
 
@@ -805,11 +805,11 @@ class ReportingEngine {
   }
 
   // Mock data methods (in a real implementation, these would query actual data)
-  async getCustomerPerformanceData(tenantId, parameters) {
+  getCustomerPerformanceData(tenantId, parameters) {
     return Customer.find({ tenantId }).limit(100).lean();
   }
 
-  async getCustomerSummaryData(tenantId, parameters) {
+  getCustomerSummaryData(tenantId, parameters) {
     return {
       totalCustomers: 500,
       activeCustomers: 450,
@@ -818,25 +818,25 @@ class ReportingEngine {
     };
   }
 
-  async getCustomerHierarchyData(tenantId, parameters) {
+  getCustomerHierarchyData(tenantId, parameters) {
     return Customer.find({
       tenantId,
       level: { $exists: true }
     }).sort({ level: 1, path: 1 }).lean();
   }
 
-  async getProductPerformanceData(tenantId, parameters) {
+  getProductPerformanceData(tenantId, parameters) {
     return Product.find({ tenantId }).limit(100).lean();
   }
 
-  async getProductCategoryData(tenantId, parameters) {
+  getProductCategoryData(tenantId, parameters) {
     return Product.aggregate([
       { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
       { $group: { _id: '$category.primary', count: { $sum: 1 } } }
     ]);
   }
 
-  async getProductPromotionData(tenantId, parameters) {
+  getProductPromotionData(tenantId, parameters) {
     return Promotion.find({
       tenantId,
       'products.productId': { $exists: true }
@@ -879,7 +879,7 @@ class ReportingEngine {
     return liftData;
   }
 
-  async getPromotionForecastingData(tenantId, parameters) {
+  getPromotionForecastingData(tenantId, parameters) {
     // Mock forecasting data
     return [
       { month: 'Next Month', predictedROI: 18, confidence: 'High' },
@@ -888,7 +888,7 @@ class ReportingEngine {
     ];
   }
 
-  async getTradeSpendData(tenantId, parameters) {
+  getTradeSpendData(tenantId, parameters) {
     // Mock trade spend data
     return [
       { category: 'Discounts', amount: 150000, percentage: 60 },
@@ -897,7 +897,7 @@ class ReportingEngine {
     ];
   }
 
-  async getSpendAllocationData(tenantId, parameters) {
+  getSpendAllocationData(tenantId, parameters) {
     // Mock allocation data
     return [
       { segment: 'Premium Customers', allocation: 40, performance: 'Excellent' },
@@ -906,7 +906,7 @@ class ReportingEngine {
     ];
   }
 
-  async getSpendOptimizationData(tenantId, parameters) {
+  getSpendOptimizationData(tenantId, parameters) {
     // Mock optimization recommendations
     return this.analyticsEngine.optimizeSpendAllocation(tenantId, 250000);
   }

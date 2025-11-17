@@ -22,7 +22,7 @@ class TestingService extends EventEmitter {
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Testing Service...');
 
@@ -975,7 +975,7 @@ class TestingService extends EventEmitter {
   /**
    * Generate user test data
    */
-  async generateUserTestData() {
+  generateUserTestData() {
     const users = [];
     const domains = ['example.com', 'test.com', 'demo.org'];
     const roles = ['user', 'admin', 'manager', 'analyst'];
@@ -997,7 +997,7 @@ class TestingService extends EventEmitter {
   /**
    * Generate transaction test data
    */
-  async generateTransactionTestData() {
+  generateTransactionTestData() {
     const transactions = [];
     const types = ['purchase', 'refund', 'transfer', 'payment'];
     const statuses = ['completed', 'pending', 'failed', 'cancelled'];
@@ -1023,7 +1023,7 @@ class TestingService extends EventEmitter {
   /**
    * Generate analytics test data
    */
-  async generateAnalyticsTestData() {
+  generateAnalyticsTestData() {
     const analytics = [];
     const metrics = ['revenue', 'users', 'sessions', 'conversions'];
 
@@ -1050,7 +1050,7 @@ class TestingService extends EventEmitter {
   /**
    * Generate performance test data
    */
-  async generatePerformanceTestData() {
+  generatePerformanceTestData() {
     const data = [];
 
     for (let i = 0; i < 10000; i++) {
@@ -1072,7 +1072,7 @@ class TestingService extends EventEmitter {
   /**
    * Generate test report
    */
-  async generateTestReport(testRun) {
+  generateTestReport(testRun) {
     const reportId = this.generateReportId();
 
     const report = {

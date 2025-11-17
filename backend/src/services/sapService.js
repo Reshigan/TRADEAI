@@ -65,37 +65,37 @@ class SAPService {
   }
 
   // Customer APIs
-  async getCustomers(lastSyncDate = null) {
+  getCustomers(lastSyncDate = null) {
     const params = lastSyncDate ? `?changedSince=${lastSyncDate.toISOString()}` : '';
     return this.callSAP(`/api/customers${params}`);
   }
 
-  async getCustomer(customerId) {
+  getCustomer(customerId) {
     return this.callSAP(`/api/customers/${customerId}`);
   }
 
   // Product APIs
-  async getProducts(lastSyncDate = null) {
+  getProducts(lastSyncDate = null) {
     const params = lastSyncDate ? `?changedSince=${lastSyncDate.toISOString()}` : '';
     return this.callSAP(`/api/materials${params}`);
   }
 
-  async getProduct(materialId) {
+  getProduct(materialId) {
     return this.callSAP(`/api/materials/${materialId}`);
   }
 
   // Vendor APIs
-  async getVendors(lastSyncDate = null) {
+  getVendors(lastSyncDate = null) {
     const params = lastSyncDate ? `?changedSince=${lastSyncDate.toISOString()}` : '';
     return this.callSAP(`/api/vendors${params}`);
   }
 
-  async getVendor(vendorId) {
+  getVendor(vendorId) {
     return this.callSAP(`/api/vendors/${vendorId}`);
   }
 
   // Sales History APIs
-  async getSalesHistory(startDate, endDate, customerId = null, productId = null) {
+  getSalesHistory(startDate, endDate, customerId = null, productId = null) {
     const params = new URLSearchParams({
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString()
@@ -119,35 +119,35 @@ class SAPService {
   }
 
   // Inventory APIs
-  async getInventory(materialId, plant = null) {
+  getInventory(materialId, plant = null) {
     const params = plant ? `?plant=${plant}` : '';
     return this.callSAP(`/api/inventory/${materialId}${params}`);
   }
 
   // Master Data APIs
-  async getHierarchy(type, level = null) {
+  getHierarchy(type, level = null) {
     const params = level ? `?level=${level}` : '';
     return this.callSAP(`/api/hierarchies/${type}${params}`);
   }
 
-  async getCostCenters() {
+  getCostCenters() {
     return this.callSAP('/api/costcenters');
   }
 
-  async getGLAccounts() {
+  getGLAccounts() {
     return this.callSAP('/api/glaccounts');
   }
 
   // Document APIs
-  async createSalesOrder(orderData) {
+  createSalesOrder(orderData) {
     return this.callSAP('/api/salesorders', 'POST', orderData);
   }
 
-  async createCreditNote(creditNoteData) {
+  createCreditNote(creditNoteData) {
     return this.callSAP('/api/creditnotes', 'POST', creditNoteData);
   }
 
-  async getDocument(documentType, documentNumber) {
+  getDocument(documentType, documentNumber) {
     return this.callSAP(`/api/documents/${documentType}/${documentNumber}`);
   }
 

@@ -69,7 +69,7 @@ class MLIntegrationService {
   /**
    * Create Customer Lifetime Value (CLV) Model
    */
-  async createCLVModel() {
+  createCLVModel() {
     const model = tf.sequential({
       layers: [
         tf.layers.dense({ inputShape: [8], units: 64, activation: 'relu' }),
@@ -93,7 +93,7 @@ class MLIntegrationService {
   /**
    * Create Demand Forecasting Model
    */
-  async createDemandForecastModel() {
+  createDemandForecastModel() {
     const model = tf.sequential({
       layers: [
         tf.layers.lstm({
@@ -121,7 +121,7 @@ class MLIntegrationService {
   /**
    * Create Price Optimization Model
    */
-  async createPriceOptimizationModel() {
+  createPriceOptimizationModel() {
     const model = tf.sequential({
       layers: [
         tf.layers.dense({ inputShape: [10], units: 128, activation: 'relu' }),
@@ -147,7 +147,7 @@ class MLIntegrationService {
   /**
    * Create Churn Prediction Model
    */
-  async createChurnPredictionModel() {
+  createChurnPredictionModel() {
     const model = tf.sequential({
       layers: [
         tf.layers.dense({ inputShape: [12], units: 64, activation: 'relu' }),
@@ -171,7 +171,7 @@ class MLIntegrationService {
   /**
    * Create Recommendation Model
    */
-  async createRecommendationModel() {
+  createRecommendationModel() {
     // Collaborative filtering model
     const model = tf.sequential({
       layers: [
@@ -197,7 +197,7 @@ class MLIntegrationService {
   /**
    * Create Anomaly Detection Model
    */
-  async createAnomalyDetectionModel() {
+  createAnomalyDetectionModel() {
     // Autoencoder for anomaly detection
     const encoder = tf.sequential({
       layers: [
@@ -551,7 +551,7 @@ class MLIntegrationService {
 
   // Helper Methods
 
-  async prepareCLVFeatures(customer) {
+  prepareCLVFeatures(customer) {
     // Mock feature preparation - would use actual customer data
     return [
       customer.totalOrders || 0,
@@ -565,7 +565,7 @@ class MLIntegrationService {
     ];
   }
 
-  async getHistoricalSalesData(tenantId, productId, days) {
+  getHistoricalSalesData(tenantId, productId, days) {
     // Mock historical data - would query actual sales data
     const data = [];
     for (let i = 0; i < days; i++) {
@@ -634,18 +634,18 @@ class MLIntegrationService {
   }
 
   // Training methods (simplified implementations)
-  async trainCLVModel(tenantId, epochs, batchSize) {
+  trainCLVModel(tenantId, epochs, batchSize) {
     console.log(`Training CLV model for tenant ${tenantId}...`);
     // Mock training - would use actual training data
     return { loss: 0.05, accuracy: 0.92, epochs };
   }
 
-  async trainDemandForecastModel(tenantId, epochs, batchSize) {
+  trainDemandForecastModel(tenantId, epochs, batchSize) {
     console.log(`Training demand forecast model for tenant ${tenantId}...`);
     return { loss: 0.08, mae: 0.15, epochs };
   }
 
-  async trainChurnModel(tenantId, epochs, batchSize) {
+  trainChurnModel(tenantId, epochs, batchSize) {
     console.log(`Training churn prediction model for tenant ${tenantId}...`);
     return { loss: 0.12, accuracy: 0.88, precision: 0.85, recall: 0.82, epochs };
   }
@@ -718,7 +718,7 @@ class MLIntegrationService {
     return Math.min(0.99, error / threshold);
   }
 
-  async prepareChurnFeatures(customer) {
+  prepareChurnFeatures(customer) {
     // Mock churn features
     return Array(12).fill(0).map(() => Math.random());
   }
@@ -743,7 +743,7 @@ class MLIntegrationService {
     return strategies;
   }
 
-  async prepareRecommendationFeatures(customer, category) {
+  prepareRecommendationFeatures(customer, category) {
     // Mock recommendation features
     return Array(100).fill(0).map(() => Math.random());
   }
@@ -754,7 +754,7 @@ class MLIntegrationService {
     return maxScore / (avgScore + 0.1); // Avoid division by zero
   }
 
-  async preparePriceOptimizationFeatures(product, constraints) {
+  preparePriceOptimizationFeatures(product, constraints) {
     // Mock price optimization features
     return Array(10).fill(0).map(() => Math.random());
   }
