@@ -379,8 +379,8 @@ class AnalyticsController {
    * GET /api/analytics/insights
    */
   getInsights = asyncHandler((req, res) => {
-    const tenantId = req.tenant.id;
-    const { dateRange, _category } = req.query;
+    const _tenantId = req.tenant.id;
+    const { _dateRange, _category } = req.query;
 
     // This would implement intelligent insights generation
     // For now, returning mock insights
@@ -427,7 +427,7 @@ class AnalyticsController {
    * GET /api/analytics/export
    */
   exportAnalytics = asyncHandler((req, res) => {
-    const tenantId = req.tenant.id;
+    const _tenantId = req.tenant.id;
     const { type, format, dateRange, ...filters } = req.query;
 
     if (!type) {
@@ -460,7 +460,7 @@ class AnalyticsController {
    * GET /api/analytics/performance
    */
   getPerformanceMetrics = asyncHandler((req, res) => {
-    const tenantId = req.tenant.id;
+    const _tenantId = req.tenant.id;
 
     // Mock performance metrics
     const metrics = {

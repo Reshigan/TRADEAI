@@ -824,7 +824,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get trend data
  */
-function getTrendData(dateRange, filters = {}) {
+function getTrendData(dateRange, _filters = {}) {
   // Implementation for trend data
   // This would aggregate data by time periods (daily, weekly, monthly)
   // and return historical trends
@@ -839,7 +839,7 @@ function getTrendData(dateRange, filters = {}) {
 /**
  * Get alerts based on thresholds
  */
-async function getAlerts(dateRange, filters = {}) {
+async function getAlerts(dateRange, _filters = {}) {
   const alerts = [];
 
   // Check budget utilization
@@ -927,7 +927,7 @@ async function getTopPerformers(dateRange, _filters = {}, limit = 10) {
 /**
  * Get bottom performers
  */
-async function getBottomPerformers(dateRange, filters = {}, limit = 10) {
+async function getBottomPerformers(dateRange, _filters = {}, limit = 10) {
   const matchCriteria = {
     date: { $gte: dateRange.start, $lte: dateRange.end }
   };
@@ -959,7 +959,7 @@ async function getBottomPerformers(dateRange, filters = {}, limit = 10) {
 /**
  * Get category breakdown
  */
-function getCategoryBreakdown(dateRange, filters = {}) {
+function getCategoryBreakdown(dateRange, _filters = {}) {
   // Implementation for category analysis
   return [];
 }
@@ -967,7 +967,7 @@ function getCategoryBreakdown(dateRange, filters = {}) {
 /**
  * Get channel performance
  */
-function getChannelPerformance(dateRange, filters = {}) {
+function getChannelPerformance(dateRange, _filters = {}) {
   // Implementation for channel analysis
   return [];
 }

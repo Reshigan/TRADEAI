@@ -761,7 +761,7 @@ class MLPredictionService {
     return Math.max(0, 1 - Math.sqrt(variance));
   }
 
-  generateBehaviorRecommendations(behavior, customerData) {
+  generateBehaviorRecommendations(behavior, _customerData) {
     const recommendations = [];
 
     switch (behavior) {

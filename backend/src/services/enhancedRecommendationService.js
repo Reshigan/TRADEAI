@@ -523,7 +523,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Select recommendation strategy
    */
-  selectRecommendationStrategy(userProfile, context, options) {
+  selectRecommendationStrategy(userProfile, context, _options) {
     // Strategy selection logic based on user profile and context
     const strategies = [
       {
@@ -809,7 +809,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Apply business rules
    */
-  applyBusinessRules(recommendations, userProfile, context) {
+  applyBusinessRules(recommendations, userProfile, _context) {
     return recommendations.filter((item) => {
       // Filter out items outside user's price range
       const maxPrice = userProfile.behavior.avg_order_value * 2;

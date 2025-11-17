@@ -530,7 +530,7 @@ const rateLimitByRole = (req, res, next) => {
  * @param {string} token - JWT token
  * @returns {Promise<boolean>} - Whether token is blacklisted
  */
-const isTokenBlacklisted = (token) => {
+const isTokenBlacklisted = (_token) => {
   // In a real implementation, this would check a database or Redis cache
   // for blacklisted tokens
 
@@ -543,7 +543,7 @@ const isTokenBlacklisted = (token) => {
  * @param {string} token - JWT token
  * @returns {Promise<boolean>} - Whether token was blacklisted
  */
-const blacklistToken = (token) => {
+const blacklistToken = (_token) => {
   // In a real implementation, this would add the token to a database or Redis cache
   // with an expiration time matching the token's expiration
 
@@ -557,7 +557,7 @@ const blacklistToken = (token) => {
  * @param {Object} req - Express request object
  * @returns {Promise<boolean>} - Whether activity is suspicious
  */
-const checkForSuspiciousActivity = (_user, req) => {
+const checkForSuspiciousActivity = (_user, _req) => {
   // In a real implementation, this would check for suspicious activity patterns:
   // 1. Access from unusual locations
   // 2. Access at unusual times

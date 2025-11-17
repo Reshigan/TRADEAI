@@ -103,7 +103,7 @@ describe('Auth Enhanced API Integration Tests', () => {
   });
 
   describe('POST /api/auth-enhanced/login', () => {
-    let testUser;
+    let _testUser;
 
     beforeEach(async () => {
       const registerData = {

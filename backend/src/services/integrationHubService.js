@@ -499,7 +499,7 @@ class IntegrationHubService extends EventEmitter {
    * Process webhook payload
    */
   processWebhookPayload(tenantId, connectorId, payload) {
-    const connector = this.connectors.get(connectorId);
+    const _connector = this.connectors.get(connectorId);
 
     switch (connectorId) {
       case 'salesforce':
@@ -718,7 +718,7 @@ class IntegrationHubService extends EventEmitter {
     }
   }
 
-  fetchExternalData(_connector, _config, capability) {
+  fetchExternalData(_connector, _config, _capability) {
     // Mock implementation - would fetch actual data from external systems
     return [
       { id: '1', name: 'Sample Record 1' },
@@ -787,27 +787,27 @@ class IntegrationHubService extends EventEmitter {
     };
   }
 
-  getEndpointForOperation(connector, operation) {
+  getEndpointForOperation(connector, _operation) {
     // Return appropriate endpoint for operation
     return `${connector.endpoints.api}records`;
   }
 
-  processSalesforceWebhook(tenantId, payload) {
+  processSalesforceWebhook(tenantId, _payload) {
     console.log('Processing Salesforce webhook for tenant:', tenantId);
     // Process Salesforce-specific webhook payload
   }
 
-  processShopifyWebhook(tenantId, payload) {
+  processShopifyWebhook(tenantId, _payload) {
     console.log('Processing Shopify webhook for tenant:', tenantId);
     // Process Shopify-specific webhook payload
   }
 
-  processSlackWebhook(tenantId, payload) {
+  processSlackWebhook(tenantId, _payload) {
     console.log('Processing Slack webhook for tenant:', tenantId);
     // Process Slack-specific webhook payload
   }
 
-  processGenericWebhook(tenantId, connectorId, payload) {
+  processGenericWebhook(tenantId, connectorId, _payload) {
     console.log(`Processing generic webhook for ${connectorId}, tenant:`, tenantId);
     // Process generic webhook payload
   }

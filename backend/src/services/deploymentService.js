@@ -1023,7 +1023,7 @@ class DeploymentService extends EventEmitter {
   /**
    * Execute deployment strategy
    */
-  async executeDeploymentStrategy(strategy, deployment, environment) {
+  async executeDeploymentStrategy(strategy, _deployment, _environment) {
     console.log(`Executing ${strategy.name} deployment strategy`);
 
     for (const step of strategy.steps) {

@@ -609,7 +609,7 @@ class SimulationEngine {
     ];
   }
 
-  compareAllocationScenarios(scenarios) {
+  compareAllocationScenarios(_scenarios) {
     // Compare different scenarios
     return {};
   }
@@ -618,7 +618,7 @@ class SimulationEngine {
     return [];
   }
 
-  getCurrentPricingData(products) {
+  getCurrentPricingData(_products) {
     // Get current pricing and sales data
     return {
       revenue: 500000,
@@ -640,7 +640,7 @@ class SimulationEngine {
     };
   }
 
-  estimatePriceElasticity(products) {
+  estimatePriceElasticity(_products) {
     // Estimate price elasticity from historical data
     // This would use regression analysis on historical pricing and volume data
     return 1.5; // Default elasticity
@@ -692,7 +692,7 @@ class SimulationEngine {
     };
   }
 
-  applyFactorAdjustments(forecast, factors) {
+  applyFactorAdjustments(forecast, _factors) {
     // Apply adjustments for various factors
     return forecast;
   }
@@ -735,14 +735,14 @@ class SimulationEngine {
     return {};
   }
 
-  calculateMarketShareChange(currentPosition, _dynamics, marketSize) {
+  calculateMarketShareChange(currentPosition, _dynamics, _marketSize) {
     return {
       current: currentPosition.marketShare,
       projected: currentPosition.marketShare + 2
     };
   }
 
-  calculateRevenueFromMarketShare(share, _marketSize) {
+  calculateRevenueFromMarketShare(_share, _marketSize) {
     return {
       current: 0,
       projected: 0
@@ -793,7 +793,7 @@ class SimulationEngine {
     };
   }
 
-  calculateProbabilityOfTarget(_monteCarlo, target) {
+  calculateProbabilityOfTarget(_monteCarlo, _target) {
     return 0.75; // 75% probability
   }
 
@@ -809,7 +809,7 @@ class SimulationEngine {
     return result.roi || 0;
   }
 
-  calculateSensitivityCoefficient(results) {
+  calculateSensitivityCoefficient(_results) {
     // Calculate sensitivity coefficient
     return 0.5;
   }
@@ -818,7 +818,7 @@ class SimulationEngine {
     return {};
   }
 
-  generateComparisonMatrix(results) {
+  generateComparisonMatrix(_results) {
     return {};
   }
 

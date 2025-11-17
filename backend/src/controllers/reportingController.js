@@ -327,7 +327,7 @@ class ReportingController {
    */
   getReportHistory = asyncHandler((req, res) => {
     const _tenantId = req.tenant.id;
-    const { page = 1, limit = 20, reportType, status } = req.query;
+    const { page = 1, limit = 20, _reportType, _status } = req.query;
 
     // This would typically query a database for report history
     // For now, returning mock history

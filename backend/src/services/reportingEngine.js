@@ -453,7 +453,7 @@ class ReportingEngine {
     })) || [];
   }
 
-  createTrendsSheet(reportData) {
+  createTrendsSheet(_reportData) {
     // Mock trends data
     return [
       { 'Month': 'Jan 2024', 'Revenue': 95000, 'Orders': 210, 'Customers': 180 },
@@ -563,7 +563,7 @@ class ReportingEngine {
     ];
   }
 
-  getSheetFormatting(_sheetName, reportType) {
+  getSheetFormatting(_sheetName, _reportType) {
     return {
       headerStyle: {
         font: { bold: true, color: { rgb: 'FFFFFF' } },
@@ -671,7 +671,7 @@ class ReportingEngine {
     };
   }
 
-  executeDynamicQuery(query) {
+  executeDynamicQuery(_query) {
     // This would execute the dynamic query against the appropriate collections
     // For brevity, returning mock data
     return [
@@ -680,7 +680,7 @@ class ReportingEngine {
     ];
   }
 
-  processCustomReportData(data, metrics, dimensions) {
+  processCustomReportData(data, metrics, _dimensions) {
     // Process and aggregate data based on metrics and dimensions
     return data.map((row) => {
       const processed = { ...row };
@@ -805,11 +805,11 @@ class ReportingEngine {
   }
 
   // Mock data methods (in a real implementation, these would query actual data)
-  getCustomerPerformanceData(tenantId, parameters) {
+  getCustomerPerformanceData(tenantId, _parameters) {
     return Customer.find({ tenantId }).limit(100).lean();
   }
 
-  getCustomerSummaryData(_tenantId, parameters) {
+  getCustomerSummaryData(_tenantId, _parameters) {
     return {
       totalCustomers: 500,
       activeCustomers: 450,
@@ -818,32 +818,32 @@ class ReportingEngine {
     };
   }
 
-  getCustomerHierarchyData(tenantId, parameters) {
+  getCustomerHierarchyData(tenantId, _parameters) {
     return Customer.find({
       tenantId,
       level: { $exists: true }
     }).sort({ level: 1, path: 1 }).lean();
   }
 
-  getProductPerformanceData(tenantId, parameters) {
+  getProductPerformanceData(tenantId, _parameters) {
     return Product.find({ tenantId }).limit(100).lean();
   }
 
-  getProductCategoryData(tenantId, parameters) {
+  getProductCategoryData(tenantId, _parameters) {
     return Product.aggregate([
       { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
       { $group: { _id: '$category.primary', count: { $sum: 1 } } }
     ]);
   }
 
-  getProductPromotionData(tenantId, parameters) {
+  getProductPromotionData(tenantId, _parameters) {
     return Promotion.find({
       tenantId,
       'products.productId': { $exists: true }
     }).populate('products.productId').lean();
   }
 
-  async getPromotionROIData(tenantId, parameters) {
+  async getPromotionROIData(tenantId, _parameters) {
     const promotions = await Promotion.find({ tenantId }).lean();
 
     // Calculate ROI for each promotion using analytics engine

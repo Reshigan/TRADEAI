@@ -257,7 +257,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, _next) => {
     { customer: { $in: req.user.assignedCustomers } };
 
   const startDate = new Date(year, 0, 1);
-  const endDate = new Date(year, 11, 31);
+  const _endDate = new Date(year, 11, 31);
   const currentDate = new Date();
 
   // Get customer performance

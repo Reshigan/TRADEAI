@@ -52,7 +52,7 @@ const configureSecurityMiddleware = (app, config = {}) => {
   // Data sanitization against NoSQL injection
   app.use(mongoSanitize({
     replaceWith: '_',
-    onSanitize: ({ req, key }) => {
+    onSanitize: ({ _req, key }) => {
       console.warn(`Sanitized request data at key: ${key}`);
     }
   }));

@@ -289,7 +289,7 @@ class AnalyticsEngine {
     };
   }
 
-  getBaselineSales(_tenantId, productIds, customerIds, period) {
+  getBaselineSales(_tenantId, _productIds, _customerIds, _period) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -301,7 +301,7 @@ class AnalyticsEngine {
     };
   }
 
-  getPromotionalSales(_tenantId, _productIds, _customerIds, startDate, endDate) {
+  getPromotionalSales(_tenantId, _productIds, _customerIds, _startDate, _endDate) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -479,7 +479,7 @@ class AnalyticsEngine {
     }).limit(10);
   }
 
-  getDefaultPrediction(promotionData) {
+  getDefaultPrediction(_promotionData) {
     // Default prediction when no historical data available
     return {
       expectedROI: 15, // 15% ROI
@@ -545,7 +545,7 @@ class AnalyticsEngine {
   }
 
   // Dashboard helper methods (mock implementations)
-  getPromotionSummary(_tenantId, dateRange) {
+  getPromotionSummary(_tenantId, _dateRange) {
     return {
       totalPromotions: 25,
       activePromotions: 5,
@@ -555,7 +555,7 @@ class AnalyticsEngine {
     };
   }
 
-  getROITrends(_tenantId, dateRange) {
+  getROITrends(_tenantId, _dateRange) {
     return [
       { month: 'Jan', roi: 12 },
       { month: 'Feb', roi: 15 },

@@ -149,7 +149,7 @@ class CustomerSegmentationService {
   /**
    * Generate insights from ABC analysis
    */
-  generateABCInsights(summary, customers) {
+  generateABCInsights(summary, _customers) {
     const insights = [];
 
     // Pareto validation

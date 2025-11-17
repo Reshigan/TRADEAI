@@ -662,7 +662,7 @@ class BulkOperationsService {
     };
   }
 
-  transformCustomerRecord(record, options) {
+  transformCustomerRecord(record, _options) {
     return {
       'Customer Code': record.code,
       'Customer Name': record.name,
@@ -678,7 +678,7 @@ class BulkOperationsService {
     };
   }
 
-  transformProductRecord(record, options) {
+  transformProductRecord(record, _options) {
     return {
       'Product SKU': record.sku,
       'Product Name': record.name,
@@ -692,7 +692,7 @@ class BulkOperationsService {
     };
   }
 
-  transformPromotionRecord(record, options) {
+  transformPromotionRecord(record, _options) {
     return {
       'Promotion Name': record.name,
       'Type': record.type,

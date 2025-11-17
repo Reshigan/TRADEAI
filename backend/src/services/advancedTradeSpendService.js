@@ -816,7 +816,7 @@ class AdvancedTradeSpendService {
     return validations;
   }
 
-  async checkBudgetAvailability(companyId, category, amount) {
+  async checkBudgetAvailability(companyId, _category, _amount) {
     // Simplified budget check
     const budget = await Budget.findOne({
       companyId,
@@ -867,7 +867,7 @@ class AdvancedTradeSpendService {
     return 'stable';
   }
 
-  identifyVarianceDrivers(_transactions, variance) {
+  identifyVarianceDrivers(_transactions, _variance) {
     return [
       {
         driver: 'Increased promotional activity',
@@ -896,7 +896,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  generateVarianceInsights(variances) {
+  generateVarianceInsights(_variances) {
     return [
       {
         insight: 'Marketing category shows consistent overspend pattern',
@@ -1060,7 +1060,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateConfidenceIntervals(predictions, patterns) {
+  calculateConfidenceIntervals(predictions, _patterns) {
     return {
       lower: predictions.annual.total * 0.9,
       upper: predictions.annual.total * 1.1,
@@ -1076,7 +1076,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  identifySpendOpportunities(predictions, _patterns) {
+  identifySpendOpportunities(_predictions, _patterns) {
     return [
       {
         opportunity: 'Increase Q3 spending during peak season',

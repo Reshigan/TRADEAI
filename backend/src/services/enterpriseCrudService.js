@@ -240,7 +240,7 @@ class EnterpriseCrudService {
   }
 
   // Get saved views
-  getSavedView(_viewId, userId) {
+  getSavedView(_viewId, _userId) {
     // Implementation for saved views/filters
     // This would query a separate SavedViews collection
     return {};
@@ -304,7 +304,7 @@ class EnterpriseCrudService {
   }
 
   // Bulk update
-  async bulkUpdate(filter, updates, options = {}) {
+  async bulkUpdate(filter, updates, _options = {}) {
     const records = await this.model.find(filter);
 
     const results = {
@@ -327,7 +327,7 @@ class EnterpriseCrudService {
   }
 
   // Mass update with custom function
-  async massUpdate(filter, updateFn, options = {}) {
+  async massUpdate(filter, updateFn, _options = {}) {
     const records = await this.model.find(filter);
 
     for (const record of records) {
@@ -616,7 +616,7 @@ class EnterpriseCrudService {
   saveVersion(record) {
     // Implementation for version history
     // This would save a snapshot to a separate VersionHistory collection
-    const version = {
+    const _version = {
       modelName: this.modelName,
       recordId: record._id,
       data: record.toObject(),
@@ -633,7 +633,7 @@ class EnterpriseCrudService {
     return [];
   }
 
-  async rollback(_id, versionId) {
+  async rollback(_id, _versionId) {
     // Rollback to a specific version
     // const version = await VersionHistory.findById(versionId);
     // return this.update(id, version.data);
@@ -646,7 +646,7 @@ class EnterpriseCrudService {
   logAudit(action, recordId, changes, userId) {
     // Implementation for audit logging
     // This would save to an AuditLog collection
-    const auditEntry = {
+    const _auditEntry = {
       modelName: this.modelName,
       action,
       recordId,

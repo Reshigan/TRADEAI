@@ -183,7 +183,7 @@ router.put('/me', authenticateToken, asyncHandler(async (req, res) => {
 
 // Update user by ID (admin only)
 router.put('/:id', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
-  const { password, ...updates } = req.body;
+  const { _password, ...updates } = req.body;
 
   const user = await User.findByIdAndUpdate(
     req.params.id,

@@ -417,7 +417,7 @@ class CannibalizationService {
     } = options;
 
     // Find historical promotions for this product
-    const product = await Product.findById(productId);
+    const _product = await Product.findById(productId);
     const historicalPromotions = await Promotion.find({
       'products.product': productId,
       status: 'completed',

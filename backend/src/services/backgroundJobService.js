@@ -304,7 +304,7 @@ class BackgroundJobService extends EventEmitter {
    */
   async executeDataExport(job) {
     // Simulate data export
-    const { model, query, format } = job.data;
+    const { model, _query, format } = job.data;
 
     job.progress = 10;
 
@@ -422,7 +422,7 @@ class BackgroundJobService extends EventEmitter {
       byType: {}
     };
 
-    for (const [jobId, job] of this.jobs) {
+    for (const [_jobId, job] of this.jobs) {
       stats[job.status]++;
 
       if (!stats.byType[job.type]) {

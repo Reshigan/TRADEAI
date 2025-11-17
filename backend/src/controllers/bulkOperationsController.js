@@ -390,7 +390,7 @@ class BulkOperationsController {
    */
   getOperationHistory = asyncHandler((req, res) => {
     const _tenantId = req.tenant.id;
-    const { page = 1, limit = 20, operation, modelType } = req.query;
+    const { page = 1, limit = 20, _operation, _modelType } = req.query;
 
     // This would typically query a database for operation history
     // For now, returning mock history

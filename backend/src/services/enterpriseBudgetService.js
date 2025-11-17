@@ -574,7 +574,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  assessRisk(scenario) {
+  assessRisk(_scenario) {
     // Simplified risk assessment
     return {
       level: 'medium',
@@ -584,7 +584,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  assessMarketFit(scenario) {
+  assessMarketFit(_scenario) {
     return {
       score: 8.0,
       alignment: 'high',
@@ -801,7 +801,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  generateOptimizationRecommendation(_improvements, tradeoffs) {
+  generateOptimizationRecommendation(_improvements, _tradeoffs) {
     return 'Recommended optimization shows significant ROI improvement with manageable tradeoffs';
   }
 
@@ -841,7 +841,7 @@ class EnterpriseBudgetService {
     });
   }
 
-  aggregateBudgetLines(budgets, type) {
+  aggregateBudgetLines(budgets, _type) {
     const aggregated = [];
 
     budgets.forEach((budget) => {
@@ -891,7 +891,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  calculateBudgetKPIs(_budgets, period) {
+  calculateBudgetKPIs(_budgets, _period) {
     return [
       {
         name: 'Budget Utilization',
@@ -917,7 +917,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  identifyBudgetTrends(_budgets, period) {
+  identifyBudgetTrends(_budgets, _period) {
     return [
       {
         metric: 'spending',

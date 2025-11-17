@@ -634,13 +634,13 @@ class MLIntegrationService {
   }
 
   // Training methods (simplified implementations)
-  trainCLVModel(tenantId, epochs, batchSize) {
+  trainCLVModel(tenantId, epochs, _batchSize) {
     console.log(`Training CLV model for tenant ${tenantId}...`);
     // Mock training - would use actual training data
     return { loss: 0.05, accuracy: 0.92, epochs };
   }
 
-  trainDemandForecastModel(tenantId, epochs, batchSize) {
+  trainDemandForecastModel(tenantId, epochs, _batchSize) {
     console.log(`Training demand forecast model for tenant ${tenantId}...`);
     return { loss: 0.08, mae: 0.15, epochs };
   }
@@ -731,7 +731,7 @@ class MLIntegrationService {
     ];
   }
 
-  generateRetentionStrategies(churnProbability, features) {
+  generateRetentionStrategies(churnProbability, _features) {
     const strategies = [];
 
     if (churnProbability > 0.5) {

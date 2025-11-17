@@ -217,7 +217,7 @@ class PredictiveAnalyticsService {
   /**
    * Detect anomalies in transactions
    */
-  detectAnomalies(transactions, type = 'all') {
+  detectAnomalies(transactions, _type = 'all') {
     const anomalies = [];
 
     // Calculate baseline statistics
@@ -444,7 +444,7 @@ class PredictiveAnalyticsService {
     return diff / overall > 0.3; // 30% shift
   }
 
-  detectTimeAnomalies(transactions) {
+  detectTimeAnomalies(_transactions) {
     // Detect unusual transaction times or patterns
     return [];
   }
@@ -516,14 +516,14 @@ class PredictiveAnalyticsService {
     return [];
   }
 
-  analyzePaymentPatterns(settlements) {
+  analyzePaymentPatterns(_settlements) {
     return {
       averageFrequency: 30,
       totalVolume: 100000
     };
   }
 
-  calculateOptimalFrequency(settlements) {
+  calculateOptimalFrequency(_settlements) {
     return 15; // Bi-weekly
   }
 
@@ -531,7 +531,7 @@ class PredictiveAnalyticsService {
     return [1, 15]; // 1st and 15th of month
   }
 
-  calculateExpectedSavings(settlements, _newFrequency) {
+  calculateExpectedSavings(_settlements, _newFrequency) {
     return 5000; // $5K savings
   }
 
@@ -539,7 +539,7 @@ class PredictiveAnalyticsService {
     return ['Switch to bi-weekly settlements for optimal cash flow'];
   }
 
-  predictInflows(_invoices, timing, date) {
+  predictInflows(_invoices, _timing, _date) {
     return 0;
   }
 

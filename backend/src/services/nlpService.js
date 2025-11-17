@@ -528,7 +528,7 @@ class NLPService extends EventEmitter {
   /**
    * Perform entity extraction
    */
-  performEntityExtraction(text, options) {
+  performEntityExtraction(text, _options) {
     const extractedEntities = [];
 
     // Extract entities using patterns
@@ -825,7 +825,7 @@ class NLPService extends EventEmitter {
   /**
    * Generate chatbot response
    */
-  generateResponse(analysis, context) {
+  generateResponse(analysis, _context) {
     // Find matching intent
     const matchingIntent = this.chatbotIntents.find((intent) =>
       intent.intent === analysis.intent);
@@ -931,7 +931,7 @@ class NLPService extends EventEmitter {
 
   extractTopics(text) {
     // Simplified topic extraction
-    const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+    const _sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
     const wordFreq = this.calculateWordFrequency(text);
 
     // Get top words as topics

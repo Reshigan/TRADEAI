@@ -13,7 +13,7 @@ const monitoringController = {
   // Real-time dashboard metrics
   async getRealTimeDashboard(req, res) {
     try {
-      const { userId, companyId } = req.user;
+      const { _userId, companyId } = req.user;
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -435,7 +435,7 @@ const monitoringController = {
     });
   },
 
-  _getPerformanceMetrics(companyId, _timeframe) {
+  _getPerformanceMetrics(_companyId, _timeframe) {
     // Mock performance metrics
     const metrics = {
       responseTime: {

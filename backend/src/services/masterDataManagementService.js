@@ -469,7 +469,7 @@ class MasterDataManagementService {
     return recommendations;
   }
 
-  getVersionHistory(_entityType, entityId) {
+  getVersionHistory(_entityType, _entityId) {
     // In production, retrieve from version history collection
     return [
       {
@@ -496,7 +496,7 @@ class MasterDataManagementService {
     return { success: true };
   }
 
-  compareVersions(_entityType, version1, version2) {
+  compareVersions(_entityType, _version1, _version2) {
     return {
       differences: [
         { field: 'price', version1: 10.99, version2: 12.99 },

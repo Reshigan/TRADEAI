@@ -26,7 +26,7 @@ class MLService {
   }
 
   // Generate budget forecast using time series analysis
-  async generateBudgetForecast({ year, scope, historicalMonths = 24 }) {
+  async generateBudgetForecast({ _year, scope, historicalMonths = 24 }) {
     try {
       // Get historical sales data
       const endDate = new Date();

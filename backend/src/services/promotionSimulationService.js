@@ -583,7 +583,7 @@ class PromotionSimulationService {
     };
   }
 
-  calculateExpectedOutcomes(_parameters, performance) {
+  calculateExpectedOutcomes(_parameters, _performance) {
     return {
       expectedVolume: 10000,
       expectedRevenue: 500000,
@@ -823,7 +823,7 @@ class PromotionSimulationService {
     ];
   }
 
-  calculatePortfolioImprovements(_current, optimized) {
+  calculatePortfolioImprovements(_current, _optimized) {
     return {
       roiImprovement: 18,
       revenueIncrease: 250000,
@@ -831,7 +831,7 @@ class PromotionSimulationService {
     };
   }
 
-  createPortfolioImplementationPlan(_current, optimized) {
+  createPortfolioImplementationPlan(_current, _optimized) {
     return {
       phase1: 'Analyze current performance',
       phase2: 'Pilot optimized mix',

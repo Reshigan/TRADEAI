@@ -617,7 +617,7 @@ class HierarchicalDataService {
     };
   }
 
-  transformToCSV(records, entityType) {
+  transformToCSV(records, _entityType) {
     // Implementation for CSV transformation
     return records.map((record) => ({
       id: record._id,

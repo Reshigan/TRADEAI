@@ -407,7 +407,7 @@ class AdvancedReportingEngine {
    */
   async generateMultiSheetExcel(tenantId, reportConfig) {
     try {
-      const { sheets, title, fileName } = reportConfig;
+      const { sheets, _title, fileName } = reportConfig;
 
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'TradeAI Analytics';
@@ -525,7 +525,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  getCustomerData(tenantId, filters) {
+  getCustomerData(tenantId, _filters) {
     return Customer.find({ tenantId, isActive: true })
       .lean();
   }
@@ -611,7 +611,7 @@ class AdvancedReportingEngine {
     doc.moveDown();
   }
 
-  addPDFSection(doc, section, data) {
+  addPDFSection(doc, section, _data) {
     doc.fontSize(14).text(section.title, 50, doc.y);
     doc.moveDown();
 
@@ -744,12 +744,12 @@ class AdvancedReportingEngine {
     });
   }
 
-  addExcelCharts(workbook, charts, data) {
+  addExcelCharts(_workbook, _charts, _data) {
     // Chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  addPDFCharts(_doc, _charts, data) {
+  addPDFCharts(_doc, _charts, _data) {
     // PDF chart implementation would go here
     // This is a placeholder for chart functionality
   }

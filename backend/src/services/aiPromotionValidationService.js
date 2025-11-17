@@ -13,7 +13,7 @@ class AIPromotionValidationService {
      */
   validatePromotionUplift(promotionData) {
     const {
-      productId,
+      _productId,
       currentPrice,
       proposedPrice,
       expectedUplift,

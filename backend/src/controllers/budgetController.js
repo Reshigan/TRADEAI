@@ -404,7 +404,7 @@ exports.getBudgetPerformance = asyncHandler(async (req, res, _next) => {
 });
 
 // Create new version
-exports.createNewVersion = asyncHandler(async (req, res, next) => {
+exports.createNewVersion = asyncHandler(async (req, res, _next) => {
   const budget = await Budget.findById(req.params.id);
 
   if (!budget) {
@@ -421,7 +421,7 @@ exports.createNewVersion = asyncHandler(async (req, res, next) => {
 });
 
 // Lock budget
-exports.lockBudget = asyncHandler(async (req, res, next) => {
+exports.lockBudget = asyncHandler(async (req, res, _next) => {
   const { reason } = req.body;
   const budget = await Budget.findById(req.params.id);
 

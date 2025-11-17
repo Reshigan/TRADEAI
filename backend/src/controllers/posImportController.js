@@ -229,7 +229,7 @@ exports.getImportStatus = asyncHandler((req, res, next) => {
 /**
  * Get import history
  */
-exports.getImportHistory = asyncHandler((req, res, next) => {
+exports.getImportHistory = asyncHandler((req, res, _next) => {
   const tenantId = req.user.tenantId;
 
   const history = Array.from(importJobs.entries())
@@ -253,7 +253,7 @@ exports.getImportHistory = asyncHandler((req, res, next) => {
 /**
  * Download import template
  */
-exports.downloadTemplate = asyncHandler((req, res, next) => {
+exports.downloadTemplate = asyncHandler((req, res, _next) => {
   const template = posImportService.generateTemplate();
 
   // Convert to CSV

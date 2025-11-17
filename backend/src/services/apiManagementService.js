@@ -412,7 +412,7 @@ class APIManagementService {
     next();
   }
 
-  async updateAPIKeyUsage(apiKey, requestData) {
+  async updateAPIKeyUsage(apiKey, _requestData) {
     const keyData = this.apiKeys.get(apiKey);
     if (keyData) {
       keyData.usageCount++;

@@ -561,7 +561,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Generate detection result
    */
-  generateDetectionResult(model, imageData) {
+  generateDetectionResult(model, _imageData) {
     const numObjects = Math.floor(Math.random() * 8) + 1;
     const objects = [];
 
@@ -592,7 +592,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Generate classification result
    */
-  generateClassificationResult(model, imageData) {
+  generateClassificationResult(model, _imageData) {
     const predictions = model.classes.map((className) => ({
       class: className,
       confidence: Math.random()
@@ -615,7 +615,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Generate embedding result
    */
-  generateEmbeddingResult(model, imageData) {
+  generateEmbeddingResult(model, _imageData) {
     const embedding = Array.from({ length: model.embedding_dim }, () =>
       (Math.random() - 0.5) * 2
     );
@@ -630,7 +630,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Generate regression result
    */
-  generateRegressionResult(model, imageData) {
+  generateRegressionResult(model, _imageData) {
     const scores = {};
 
     model.metrics.forEach((metric) => {

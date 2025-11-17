@@ -210,7 +210,7 @@ const syncSalesHistory = async () => {
 
   try {
     // Get date range for sync (last 7 days)
-    const endDate = new Date();
+    const _endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7);
 

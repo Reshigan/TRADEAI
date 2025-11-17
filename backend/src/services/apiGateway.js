@@ -308,13 +308,13 @@ class APIGateway {
       },
       timeout: options.timeout || 30000,
       retries: options.retries || 3,
-      router: (req) => {
+      router: (_req) => {
         // Use load balancer to select instance
         const loadBalancer = this.loadBalancers.get(serviceName);
         const instance = loadBalancer.getNextInstance();
         return instance ? instance.url : service.baseUrl;
       },
-      onProxyReq: (proxyReq, req, res) => {
+      onProxyReq: (proxyReq, req, _res) => {
         // Add headers for service identification
         proxyReq.setHeader('X-Gateway-Service', serviceName);
         proxyReq.setHeader('X-Gateway-Request-ID', req.requestId);
@@ -326,7 +326,7 @@ class APIGateway {
           proxyReq.setHeader('X-Tenant-Name', req.tenant.name);
         }
       },
-      onProxyRes: (proxyRes, req, res) => {
+      onProxyRes: (proxyRes, req, _res) => {
         // Add response headers
         proxyRes.headers['X-Gateway-Service'] = serviceName;
         proxyRes.headers['X-Gateway-Request-ID'] = req.requestId;
