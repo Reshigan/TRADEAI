@@ -93,19 +93,19 @@ class MockDatabase {
   }
 
   // User operations
-  async findUserById(id) {
+  findUserById(id) {
     return this.users.find((user) => user._id === id);
   }
 
-  async findUserByEmail(email) {
+  findUserByEmail(email) {
     return this.users.find((user) => user.email === email);
   }
 
-  async findUserByEmployeeId(employeeId) {
+  findUserByEmployeeId(employeeId) {
     return this.users.find((user) => user.employeeId === employeeId);
   }
 
-  async findUserByUsername(username) {
+  findUserByUsername(username) {
     return this.users.find((user) => user.username === username);
   }
 
@@ -164,7 +164,7 @@ class MockDatabase {
     return newUser;
   }
 
-  async updateUser(id, updates) {
+  updateUser(id, updates) {
     const index = this.users.findIndex((user) => user._id === id);
     if (index === -1) return null;
 
@@ -177,7 +177,7 @@ class MockDatabase {
     return this.users[index];
   }
 
-  async deleteUser(id) {
+  deleteUser(id) {
     const index = this.users.findIndex((user) => user._id === id);
     if (index === -1) return false;
 
@@ -186,7 +186,7 @@ class MockDatabase {
   }
 
   // Session operations
-  async createSession(userId, token) {
+  createSession(userId, token) {
     this.sessions.set(token, {
       userId,
       createdAt: new Date(),
@@ -194,7 +194,7 @@ class MockDatabase {
     });
   }
 
-  async getSession(token) {
+  getSession(token) {
     const session = this.sessions.get(token);
     if (!session) return null;
 
@@ -206,12 +206,12 @@ class MockDatabase {
     return session;
   }
 
-  async deleteSession(token) {
+  deleteSession(token) {
     return this.sessions.delete(token);
   }
 
   // Helper methods
-  async comparePassword(plainPassword, hashedPassword) {
+  comparePassword(plainPassword, hashedPassword) {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
@@ -505,7 +505,7 @@ const MockUser = {
         return this;
       },
 
-      async then(resolve, reject) {
+      then(resolve, reject) {
         try {
           // Execute the actual query when awaited
           let users = mockDatabase.users;
@@ -558,7 +558,7 @@ const MockUser = {
   },
 
   // Add countDocuments method
-  async countDocuments(query = {}) {
+  countDocuments(query = {}) {
     let users = mockDatabase.users;
 
     if (query && Object.keys(query).length > 0) {
@@ -1021,7 +1021,7 @@ const MockBudget = {
     return mockQuery;
   },
 
-  async create(budgetData) {
+  create(budgetData) {
     const newBudget = {
       _id: `507f1f77bcf86cd799439${Date.now().toString().slice(-3)}`,
       ...budgetData,
@@ -1032,7 +1032,7 @@ const MockBudget = {
     return newBudget;
   },
 
-  async findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, options = {}) {
     const index = mockBudgets.findIndex((b) => b._id === id);
     if (index === -1) return null;
 
@@ -1045,7 +1045,7 @@ const MockBudget = {
     return options.new ? mockBudgets[index] : mockBudgets[index];
   },
 
-  async findByIdAndDelete(id) {
+  findByIdAndDelete(id) {
     const index = mockBudgets.findIndex((b) => b._id === id);
     if (index === -1) return null;
 
@@ -1054,7 +1054,7 @@ const MockBudget = {
     return deleted;
   },
 
-  async countDocuments(query = {}) {
+  countDocuments(query = {}) {
     let budgets = [...mockBudgets];
 
     if (query.year) {
@@ -1186,7 +1186,7 @@ const MockCustomer = {
     return mockQuery;
   },
 
-  async create(customerData) {
+  create(customerData) {
     const newCustomer = {
       _id: `507f1f77bcf86cd799439${Date.now().toString().slice(-3)}`,
       ...customerData,
@@ -1197,14 +1197,14 @@ const MockCustomer = {
     return newCustomer;
   },
 
-  async findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, options = {}) {
     const index = mockCustomers.findIndex((c) => c._id === id);
     if (index === -1) return null;
     mockCustomers[index] = { ...mockCustomers[index], ...update, updatedAt: new Date() };
     return mockCustomers[index];
   },
 
-  async findByIdAndDelete(id) {
+  findByIdAndDelete(id) {
     const index = mockCustomers.findIndex((c) => c._id === id);
     if (index === -1) return null;
     const deleted = mockCustomers[index];
@@ -1212,7 +1212,7 @@ const MockCustomer = {
     return deleted;
   },
 
-  async countDocuments(query = {}) {
+  countDocuments(query = {}) {
     let items = [...mockCustomers];
     if (query.status) {
       items = items.filter((c) => c.status === query.status);
@@ -1258,7 +1258,7 @@ const MockProduct = {
     return mockQuery;
   },
 
-  async create(productData) {
+  create(productData) {
     const newProduct = {
       _id: `507f1f77bcf86cd799439${Date.now().toString().slice(-3)}`,
       ...productData,
@@ -1269,14 +1269,14 @@ const MockProduct = {
     return newProduct;
   },
 
-  async findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, options = {}) {
     const index = mockProducts.findIndex((p) => p._id === id);
     if (index === -1) return null;
     mockProducts[index] = { ...mockProducts[index], ...update, updatedAt: new Date() };
     return mockProducts[index];
   },
 
-  async findByIdAndDelete(id) {
+  findByIdAndDelete(id) {
     const index = mockProducts.findIndex((p) => p._id === id);
     if (index === -1) return null;
     const deleted = mockProducts[index];
@@ -1284,7 +1284,7 @@ const MockProduct = {
     return deleted;
   },
 
-  async countDocuments(query = {}) {
+  countDocuments(query = {}) {
     let items = [...mockProducts];
     if (query.status) {
       items = items.filter((p) => p.status === query.status);
@@ -1330,7 +1330,7 @@ const MockPromotion = {
     return mockQuery;
   },
 
-  async create(promotionData) {
+  create(promotionData) {
     const newPromotion = {
       _id: `507f1f77bcf86cd799439${Date.now().toString().slice(-3)}`,
       ...promotionData,
@@ -1341,14 +1341,14 @@ const MockPromotion = {
     return newPromotion;
   },
 
-  async findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, options = {}) {
     const index = mockPromotions.findIndex((p) => p._id === id);
     if (index === -1) return null;
     mockPromotions[index] = { ...mockPromotions[index], ...update, updatedAt: new Date() };
     return mockPromotions[index];
   },
 
-  async findByIdAndDelete(id) {
+  findByIdAndDelete(id) {
     const index = mockPromotions.findIndex((p) => p._id === id);
     if (index === -1) return null;
     const deleted = mockPromotions[index];
@@ -1356,7 +1356,7 @@ const MockPromotion = {
     return deleted;
   },
 
-  async countDocuments(query = {}) {
+  countDocuments(query = {}) {
     let items = [...mockPromotions];
     if (query.status) {
       items = items.filter((p) => p.status === query.status);
@@ -1370,7 +1370,7 @@ const MockTradeSpend = {
   find(query = {}) {
     let shouldPopulate = false;
     const mockQuery = {
-      async exec() {
+      exec() {
         let items = [...mockTradeSpends];
         if (query.company) {
           items = items.filter((t) => t.company === query.company);
@@ -1417,7 +1417,7 @@ const MockTradeSpend = {
 
   findById(id) {
     const mockQuery = {
-      async exec() {
+      exec() {
         return mockTradeSpends.find((t) => t._id === id) || null;
       },
       populate() { return this; },
@@ -1433,7 +1433,7 @@ const MockTradeSpend = {
     return mockQuery;
   },
 
-  async create(tradeSpendData) {
+  create(tradeSpendData) {
     const newTradeSpend = {
       _id: `507f1f77bcf86cd799439${Date.now().toString().slice(-3)}`,
       ...tradeSpendData,
@@ -1444,14 +1444,14 @@ const MockTradeSpend = {
     return newTradeSpend;
   },
 
-  async findByIdAndUpdate(id, update, options = {}) {
+  findByIdAndUpdate(id, update, options = {}) {
     const index = mockTradeSpends.findIndex((t) => t._id === id);
     if (index === -1) return null;
     mockTradeSpends[index] = { ...mockTradeSpends[index], ...update, updatedAt: new Date() };
     return mockTradeSpends[index];
   },
 
-  async findByIdAndDelete(id) {
+  findByIdAndDelete(id) {
     const index = mockTradeSpends.findIndex((t) => t._id === id);
     if (index === -1) return null;
     const deleted = mockTradeSpends[index];
@@ -1459,7 +1459,7 @@ const MockTradeSpend = {
     return deleted;
   },
 
-  async countDocuments(query = {}) {
+  countDocuments(query = {}) {
     let items = [...mockTradeSpends];
     if (query.status) {
       items = items.filter((t) => t.status === query.status);
@@ -1470,7 +1470,7 @@ const MockTradeSpend = {
     return items.length;
   },
 
-  async aggregate(pipeline) {
+  aggregate(pipeline) {
     // Simple aggregation support for spending summary
     let items = [...mockTradeSpends];
 
