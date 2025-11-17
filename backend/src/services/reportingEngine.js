@@ -497,6 +497,13 @@ class ReportingEngine {
   applyExcelFormatting(worksheet, formatting) {
     if (!formatting) return;
 
+    let XLSX;
+    try {
+      XLSX = require('xlsx');
+    } catch (e) {
+      return;
+    }
+
     // Apply basic formatting
     const range = XLSX.utils.decode_range(worksheet['!ref']);
 

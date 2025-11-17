@@ -118,7 +118,7 @@ class MasterDataManagementService {
    * Data Versioning
    * Track and manage data changes over time
    */
-  async manageDataVersions(entityType, entityId, action) {
+  async manageDataVersions(entityType, entityId, action, data = {}) {
     try {
       const versions = {
         entityType,

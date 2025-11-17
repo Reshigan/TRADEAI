@@ -629,7 +629,7 @@ const refreshToken = async (req, res, next) => {
     );
 
     // Get user
-    const user = await TestUser.findById(decoded._id);
+    const user = await User.findById(decoded._id);
 
     if (!user) {
       return res.status(401).json({
