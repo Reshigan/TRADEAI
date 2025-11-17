@@ -375,7 +375,7 @@ class EnhancedRecommendationService extends EventEmitter {
       const context = await this.getRealtimeContext(userId, options.sessionId);
 
       // Select recommendation strategy
-      const strategy = this.selectRecommendationStrategy(userProfile, context, _options);
+      const strategy = this.selectRecommendationStrategy(userProfile, context, options);
 
       // Generate recommendations using selected strategy
       const recommendations = await this.executeRecommendationStrategy(
@@ -523,7 +523,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Select recommendation strategy
    */
-  selectRecommendationStrategy(userProfile, context, _options) {
+  selectRecommendationStrategy(userProfile, context, options) {
     // Strategy selection logic based on user profile and context
     const strategies = [
       {
@@ -564,7 +564,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Execute recommendation strategy
    */
-  executeRecommendationStrategy(strategy, userProfile, context, _options) {
+  executeRecommendationStrategy(strategy, userProfile, context, options) {
     const numRecommendations = options.count || 10;
 
     switch (strategy.name) {
@@ -750,7 +750,7 @@ class EnhancedRecommendationService extends EventEmitter {
   /**
    * Post-process recommendations
    */
-  postProcessRecommendations(recommendations, userProfile, context, _options) {
+  postProcessRecommendations(recommendations, userProfile, context, options) {
     let processed = [...recommendations];
 
     // Apply diversity constraints

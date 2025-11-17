@@ -539,7 +539,7 @@ class SimulationEngine {
     return ((financialImpact.netBenefit) / investment) * 100;
   }
 
-  generateRecommendations(_data) {
+  generateRecommendations(data) {
     const recommendations = [];
 
     if (data.roi > 20) {
@@ -683,7 +683,7 @@ class SimulationEngine {
     return [];
   }
 
-  decomposeTimeSeries(_data) {
+  decomposeTimeSeries(data) {
     // Time series decomposition (trend, seasonality, residual)
     return {
       trend: [],

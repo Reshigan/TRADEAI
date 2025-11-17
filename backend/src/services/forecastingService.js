@@ -19,7 +19,7 @@ class ForecastingService {
   /**
    * Generate sales forecast using multiple algorithms
    */
-  async generateSalesForecast(_tenantId, options = {}) {
+  async generateSalesForecast(tenantId, options = {}) {
     try {
       const {
         productId,
@@ -35,7 +35,7 @@ class ForecastingService {
       if (cached && !options.forceRefresh) return cached;
 
       // Get historical data
-      let historicalData = await this.getHistoricalSalesData(_tenantId, {
+      let historicalData = await this.getHistoricalSalesData(tenantId, {
         productId,
         customerId,
         months: 24 // Use 2 years of history
@@ -44,7 +44,7 @@ class ForecastingService {
       // If insufficient historical data, generate synthetic data for demo purposes
       if (historicalData.length < 12) {
         console.log(`Insufficient historical data (${historicalData.length} months), generating synthetic data for demo`);
-        historicalData = this.generateSyntheticHistoricalData(_tenantId, productId, customerId, 24);
+        historicalData = this.generateSyntheticHistoricalData(tenantId, productId, customerId, 24);
       }
 
       // Prepare time series data
@@ -106,7 +106,7 @@ class ForecastingService {
   /**
    * Generate demand forecast with multiple scenarios
    */
-  async generateDemandForecast(_tenantId, options = {}) {
+  async generateDemandForecast(tenantId, options = {}) {
     try {
       const {
         productIds = [],
@@ -131,7 +131,7 @@ class ForecastingService {
               scenario
             };
 
-            const forecast = await this.generateSalesForecast(_tenantId, forecastOptions);
+            const forecast = await this.generateSalesForecast(tenantId, forecastOptions);
 
             const key = `${productId}_${customerId}`;
             scenarioForecasts[key] = forecast;
@@ -165,7 +165,7 @@ class ForecastingService {
   /**
    * Generate budget forecast based on historical spend and planned activities
    */
-  async generateBudgetForecast(_tenantId, options = {}) {
+  async generateBudgetForecast(tenantId, options = {}) {
     try {
       const {
         horizon = 12,
@@ -240,7 +240,7 @@ class ForecastingService {
   /**
    * Scenario planning and what-if analysis
    */
-  async performScenarioPlanning(_tenantId, scenarios = []) {
+  async performScenarioPlanning(tenantId, scenarios = []) {
     try {
       const results = {};
 
@@ -261,7 +261,7 @@ class ForecastingService {
         );
 
         // Calculate impact vs baseline
-        const baselineForecast = await this.generateSalesForecast(_tenantId, {
+        const baselineForecast = await this.generateSalesForecast(tenantId, {
           horizon: 12,
           algorithm: 'ensemble'
         });
@@ -298,7 +298,7 @@ class ForecastingService {
   /**
    * Promotion performance prediction
    */
-  async predictPromotionPerformance(_tenantId, promotionData) {
+  async predictPromotionPerformance(tenantId, promotionData) {
     try {
       const {
         products,
@@ -317,7 +317,7 @@ class ForecastingService {
 
       if (similarPromotions.length < 3) {
         return {
-          prediction: 'insufficient_data',
+          prediction: 'insufficientdata',
           message: 'Not enough similar promotions for accurate prediction',
           confidence: 'low'
         };
@@ -360,7 +360,7 @@ class ForecastingService {
 
   // Helper Methods
 
-  getHistoricalSalesData(_tenantId, options = {}) {
+  getHistoricalSalesData(tenantId, options = {}) {
     const { productId, customerId, months = 24 } = options;
 
     const startDate = new Date();
@@ -623,7 +623,7 @@ class ForecastingService {
     });
   }
 
-  async adjustForExternalFactors(forecast, _tenantId, options = {}) {
+  async adjustForExternalFactors(forecast, tenantId, options = {}) {
     // Adjust for planned promotions, market conditions, etc.
     const adjustedForecast = [...forecast];
 
@@ -657,7 +657,7 @@ class ForecastingService {
   }
 
   calculateForecastAccuracy(timeSeries) {
-    if (timeSeries.length < 6) return { accuracy: 'insufficient_data' };
+    if (timeSeries.length < 6) return { accuracy: 'insufficientdata' };
 
     // Use last 6 months for accuracy calculation
     const testData = timeSeries.slice(-6);
@@ -688,7 +688,7 @@ class ForecastingService {
   }
 
   detectSeasonality(timeSeries) {
-    if (timeSeries.length < 24) return { detected: false, reason: 'insufficient_data' };
+    if (timeSeries.length < 24) return { detected: false, reason: 'insufficientdata' };
 
     const values = timeSeries.map((d) => d.units);
     const seasonalPeriod = 12;
@@ -816,7 +816,7 @@ class ForecastingService {
   /**
    * Generate synthetic historical data for demo purposes
    */
-  generateSyntheticHistoricalData(_tenantId, productId, customerId, months = 24) {
+  generateSyntheticHistoricalData(tenantId, productId, customerId, months = 24) {
     const syntheticData = [];
     const baseValue = 50000 + Math.random() * 100000; // Base sales value
     const now = new Date();
@@ -907,7 +907,7 @@ class ForecastingService {
     }));
   }
 
-  addPlannedPromotionsImpact(forecast, plannedPromotions, _tenantId) {
+  addPlannedPromotionsImpact(forecast, plannedPromotions, tenantId) {
     // Add estimated impact of planned promotions
     const adjustedForecast = [...forecast];
 

@@ -31,7 +31,7 @@ class AdvancedReportingEngine {
   /**
    * Generate Excel report
    */
-  async generateExcelReport(_tenantId, reportConfig, options = {}) {
+  async generateExcelReport(tenantId, reportConfig, options = {}) {
     try {
       const {
         reportType,
@@ -88,12 +88,12 @@ class AdvancedReportingEngine {
 
       // Add charts if specified
       if (charts.length > 0) {
-        await this.addExcelCharts(workbook, charts, _data);
+        await this.addExcelCharts(workbook, charts, data);
       }
 
       // Add summary sheet if needed
       if (options.includeSummary) {
-        await this.addSummarySheet(workbook, _data, reportType);
+        await this.addSummarySheet(workbook, data, reportType);
       }
 
       // Generate file
@@ -117,7 +117,7 @@ class AdvancedReportingEngine {
   /**
    * Generate PDF report
    */
-  async generatePDFReport(_tenantId, reportConfig, options = {}) {
+  async generatePDFReport(tenantId, reportConfig, options = {}) {
     try {
       const {
         reportType,
@@ -145,25 +145,25 @@ class AdvancedReportingEngine {
       doc.pipe(require('fs').createWriteStream(filePath));
 
       // Add header
-      this.addPDFHeader(doc, title, _tenantId);
+      this.addPDFHeader(doc, title, tenantId);
 
       // Add executive summary
       if (options.includeExecutiveSummary) {
-        this.addExecutiveSummary(doc, _data, reportType);
+        this.addExecutiveSummary(doc, data, reportType);
       }
 
       // Add sections
       for (const section of sections) {
-        await this.addPDFSection(doc, section, _data);
+        await this.addPDFSection(doc, section, data);
       }
 
       // Add charts
       if (charts.length > 0) {
-        await this.addPDFCharts(doc, charts, _data);
+        await this.addPDFCharts(doc, charts, data);
       }
 
       // Add data tables
-      this.addPDFDataTable(doc, _data, reportConfig.columns || []);
+      this.addPDFDataTable(doc, data, reportConfig.columns || []);
 
       // Add footer
       this.addPDFFooter(doc);
@@ -193,7 +193,7 @@ class AdvancedReportingEngine {
   /**
    * Create custom report template
    */
-  async createReportTemplate(_tenantId, templateConfig) {
+  async createReportTemplate(tenantId, templateConfig) {
     try {
       const {
         name,
@@ -250,7 +250,7 @@ class AdvancedReportingEngine {
   /**
    * Generate report from template
    */
-  async generateFromTemplate(_tenantId, templateId, parameters = {}) {
+  async generateFromTemplate(tenantId, templateId, parameters = {}) {
     try {
       // Get template
       let template = this.reportTemplates.get(templateId);
@@ -272,19 +272,19 @@ class AdvancedReportingEngine {
       const reportConfig = this.applyParametersToTemplate(template, parameters);
 
       // Get data based on template configuration
-      const data = await this.getReportData(_tenantId, reportConfig);
+      const data = await this.getReportData(tenantId, reportConfig);
 
       // Generate report based on requested format
       const format = parameters.format || 'excel';
       let result;
 
       if (format === 'pdf') {
-        result = await this.generatePDFReport(_tenantId, {
+        result = await this.generatePDFReport(tenantId, {
           ...reportConfig,
           data
         });
       } else {
-        result = await this.generateExcelReport(_tenantId, {
+        result = await this.generateExcelReport(tenantId, {
           ...reportConfig,
           data
         });
@@ -315,7 +315,7 @@ class AdvancedReportingEngine {
   /**
    * Schedule report generation
    */
-  async scheduleReport(_tenantId, scheduleConfig) {
+  async scheduleReport(tenantId, scheduleConfig) {
     try {
       const {
         templateId,
@@ -365,7 +365,7 @@ class AdvancedReportingEngine {
   /**
    * Get report data based on configuration
    */
-  async getReportData(_tenantId, reportConfig) {
+  async getReportData(tenantId, reportConfig) {
     try {
       const { dataSource, filters = {}, dateRange } = reportConfig;
 
@@ -373,22 +373,22 @@ class AdvancedReportingEngine {
 
       switch (dataSource) {
         case 'trade_spend':
-          data = await this.getTradeSpendData(_tenantId, _filters, dateRange);
+          data = await this.getTradeSpendData(tenantId, filters, dateRange);
           break;
         case 'promotions':
-          data = await this.getPromotionData(_tenantId, _filters, dateRange);
+          data = await this.getPromotionData(tenantId, filters, dateRange);
           break;
         case 'sales_history':
-          data = await this.getSalesHistoryData(_tenantId, _filters, dateRange);
+          data = await this.getSalesHistoryData(tenantId, filters, dateRange);
           break;
         case 'customers':
-          data = await this.getCustomerData(_tenantId, _filters);
+          data = await this.getCustomerData(tenantId, filters);
           break;
         case 'products':
-          data = await this.getProductData(_tenantId, _filters);
+          data = await this.getProductData(tenantId, filters);
           break;
         case 'analytics':
-          data = await this.getAnalyticsData(_tenantId, _filters, dateRange);
+          data = await this.getAnalyticsData(tenantId, filters, dateRange);
           break;
         default:
           throw new Error(`Unsupported data source: ${dataSource}`);
@@ -405,7 +405,7 @@ class AdvancedReportingEngine {
   /**
    * Multi-sheet Excel report generation
    */
-  async generateMultiSheetExcel(_tenantId, reportConfig) {
+  async generateMultiSheetExcel(tenantId, reportConfig) {
     try {
       const { sheets, title, fileName } = reportConfig;
 
@@ -415,7 +415,7 @@ class AdvancedReportingEngine {
 
       // Generate each sheet
       for (const sheetConfig of sheets) {
-        const data = await this.getReportData(_tenantId, sheetConfig);
+        const data = await this.getReportData(tenantId, sheetConfig);
         const worksheet = workbook.addWorksheet(sheetConfig.name);
 
         // Add sheet title
@@ -476,7 +476,7 @@ class AdvancedReportingEngine {
 
   // Helper methods for data retrieval
 
-  getTradeSpendData(_tenantId, _filters, dateRange) {
+  getTradeSpendData(tenantId, filters, dateRange) {
     const query = { tenantId };
 
     if (dateRange) {
@@ -493,7 +493,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  getPromotionData(_tenantId, _filters, dateRange) {
+  getPromotionData(tenantId, filters, dateRange) {
     const query = { tenantId };
 
     if (dateRange) {
@@ -509,7 +509,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  getSalesHistoryData(_tenantId, _filters, dateRange) {
+  getSalesHistoryData(tenantId, filters, dateRange) {
     const query = { tenantId };
 
     if (dateRange) {
@@ -525,21 +525,21 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  getCustomerData(_tenantId, _filters) {
-    return Customer.find({ _tenantId, isActive: true })
+  getCustomerData(tenantId, filters) {
+    return Customer.find({ tenantId, isActive: true })
       .lean();
   }
 
-  getProductData(_tenantId, _filters) {
-    return Product.find({ _tenantId, isActive: true })
+  getProductData(tenantId, filters) {
+    return Product.find({ tenantId, isActive: true })
       .lean();
   }
 
-  getAnalyticsData(_tenantId, _filters, dateRange) {
+  getAnalyticsData(tenantId, filters, dateRange) {
     // This would integrate with the advanced analytics engine
     // For now, return aggregated data
     const pipeline = [
-      { $match: { tenantId: new mongoose.Types.ObjectId(_tenantId) } },
+      { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
       {
         $group: {
           _id: '$customerId',
@@ -595,23 +595,23 @@ class AdvancedReportingEngine {
 
   // PDF helper methods
 
-  addPDFHeader(doc, title, _tenantId) {
+  addPDFHeader(doc, title, tenantId) {
     doc.fontSize(20).text(title || 'TradeAI Report', 50, 50);
     doc.fontSize(12).text(`Generated: ${new Date().toLocaleDateString()}`, 50, 80);
     doc.moveDown();
   }
 
-  addExecutiveSummary(doc, _data, reportType) {
+  addExecutiveSummary(doc, data, reportType) {
     doc.fontSize(16).text('Executive Summary', 50, doc.y);
     doc.moveDown();
 
     // Add summary content based on report type
-    const summary = this.generateExecutiveSummary(_data, reportType);
+    const summary = this.generateExecutiveSummary(data, reportType);
     doc.fontSize(12).text(summary, 50, doc.y);
     doc.moveDown();
   }
 
-  addPDFSection(doc, section, _data) {
+  addPDFSection(doc, section, data) {
     doc.fontSize(14).text(section.title, 50, doc.y);
     doc.moveDown();
 
@@ -621,7 +621,7 @@ class AdvancedReportingEngine {
     }
   }
 
-  addPDFDataTable(doc, _data, columns) {
+  addPDFDataTable(doc, data, columns) {
     if (!data.length) return;
 
     doc.fontSize(14).text('Data Table', 50, doc.y);
@@ -705,7 +705,7 @@ class AdvancedReportingEngine {
       config.dateRange = parameters.dateRange;
     }
 
-    if (parameters._filters) {
+    if (parameters.filters) {
       config.filters = { ...config.filters, ...parameters.filters };
     }
 
@@ -722,7 +722,7 @@ class AdvancedReportingEngine {
     return new Date(now.getTime() + 24 * 60 * 60 * 1000); // Next day for demo
   }
 
-  generateExecutiveSummary(_data, reportType) {
+  generateExecutiveSummary(data, reportType) {
     switch (reportType) {
       case 'trade_spend':
         return `This report analyzes trade spend data across ${data.length} records. Key insights include budget utilization, promotion effectiveness, and spending patterns.`;
@@ -744,17 +744,17 @@ class AdvancedReportingEngine {
     });
   }
 
-  addExcelCharts(workbook, charts, _data) {
+  addExcelCharts(workbook, charts, data) {
     // Chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  addPDFCharts(doc, charts, _data) {
+  addPDFCharts(doc, charts, data) {
     // PDF chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  addSummarySheet(workbook, _data, reportType) {
+  addSummarySheet(workbook, data, reportType) {
     const summarySheet = workbook.addWorksheet('Summary');
 
     summarySheet.addRow(['Report Summary']);

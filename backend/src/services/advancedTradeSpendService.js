@@ -13,7 +13,7 @@ class AdvancedTradeSpendService {
    * Real-Time Trade Spend Dashboard
    * Comprehensive dashboard with KPIs, trends, and alerts
    */
-  async getRealtimeDashboard(_filters) {
+  async getRealtimeDashboard(filters) {
     try {
       const {
         companyId,
@@ -59,7 +59,7 @@ class AdvancedTradeSpendService {
       dashboard.summary = this.calculateSummary(tradeSpends);
 
       // Calculate KPIs
-      dashboard.kpis = await this.calculateKPIs(tradeSpends, _filters);
+      dashboard.kpis = await this.calculateKPIs(tradeSpends, filters);
 
       // Identify trends
       dashboard.trends = await this.analyzeTrends(tradeSpends, dateRange);
@@ -183,7 +183,7 @@ class AdvancedTradeSpendService {
    * Trade Spend Variance Analysis
    * Deep dive into variances between planned and actual spend
    */
-  async analyzeSpendVariance(_filters) {
+  async analyzeSpendVariance(filters) {
     try {
       const {
         companyId,
@@ -557,7 +557,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateKPIs(tradeSpends, _filters) {
+  calculateKPIs(tradeSpends, filters) {
     const totalSpend = tradeSpends.reduce((sum, t) => sum + t.amount, 0);
     const totalRevenue = tradeSpends.reduce((sum, t) => sum + (t.revenue || 0), 0);
 
@@ -748,7 +748,7 @@ class AdvancedTradeSpendService {
     return alerts;
   }
 
-  generateRecommendations(dashboard, _filters) {
+  generateRecommendations(dashboard, filters) {
     const recommendations = [];
 
     // ROI optimization

@@ -207,9 +207,9 @@ class SecurityComplianceService extends EventEmitter {
     this.encryptionKeys.set('master', masterKey);
 
     // Generate tenant-specific keys
-    this.encryptionKeys.set('tenant_data', this.generateEncryptionKey());
-    this.encryptionKeys.set('pii_data', this.generateEncryptionKey());
-    this.encryptionKeys.set('financial_data', this.generateEncryptionKey());
+    this.encryptionKeys.set('tenantdata', this.generateEncryptionKey());
+    this.encryptionKeys.set('piidata', this.generateEncryptionKey());
+    this.encryptionKeys.set('financialdata', this.generateEncryptionKey());
 
     console.log('Encryption system initialized');
   }
@@ -267,7 +267,7 @@ class SecurityComplianceService extends EventEmitter {
       name: 'Payment Card Industry Data Security Standard',
       rules: [
         {
-          id: 'card_data_encryption',
+          id: 'carddata_encryption',
           description: 'Credit card data encryption',
           check: (data) => this.checkCardDataEncryption(data),
           severity: 'critical'
@@ -339,7 +339,7 @@ class SecurityComplianceService extends EventEmitter {
    */
   checkResourceAccess(user, permission, resource) {
     // Tenant isolation check
-    if (resource.tenantId && user.tenantId !== resource._tenantId) {
+    if (resource.tenantId && user.tenantId !== resource.tenantId) {
       return false;
     }
 
@@ -391,7 +391,7 @@ class SecurityComplianceService extends EventEmitter {
     let logs = [...this.auditLogs];
 
     // Apply filters
-    if (filters._tenantId) {
+    if (filters.tenantId) {
       logs = logs.filter((log) => log.tenantId === filters.tenantId);
     }
 
@@ -562,7 +562,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Generate compliance report
    */
-  generateComplianceReport(_tenantId, complianceType, dateRange) {
+  generateComplianceReport(tenantId, complianceType, dateRange) {
     const { startDate, endDate } = dateRange;
 
     // Get relevant audit logs
@@ -635,7 +635,7 @@ class SecurityComplianceService extends EventEmitter {
   /**
    * Generate security metrics
    */
-  getSecurityMetrics(_tenantId, timeRange = '24h') {
+  getSecurityMetrics(tenantId, timeRange = '24h') {
     const endDate = new Date();
     const startDate = new Date();
 
@@ -671,7 +671,7 @@ class SecurityComplianceService extends EventEmitter {
       failureRate: auditLogs.length > 0 ?
         `${(auditLogs.filter((log) => !log.success).length / auditLogs.length * 100).toFixed(2)}%` : '0%',
       securityAlerts: this.getSecurityAlerts(auditLogs),
-      complianceStatus: this.getComplianceStatus(_tenantId)
+      complianceStatus: this.getComplianceStatus(tenantId)
     };
 
     return metrics;
@@ -704,7 +704,7 @@ class SecurityComplianceService extends EventEmitter {
 
   checkFinancialControls(auditEntry) {
     // Mock implementation - would check financial controls
-    if (auditEntry.resource === 'financial_data' && !auditEntry.details?.approvalRequired) {
+    if (auditEntry.resource === 'financialdata' && !auditEntry.details?.approvalRequired) {
       return 'Financial data accessed without proper approval';
     }
     return null;
@@ -720,7 +720,7 @@ class SecurityComplianceService extends EventEmitter {
 
   checkCardDataEncryption(auditEntry) {
     // Mock implementation - would check card data encryption
-    if (auditEntry.resource === 'payment_data' && !auditEntry.details?.encrypted) {
+    if (auditEntry.resource === 'paymentdata' && !auditEntry.details?.encrypted) {
       return 'Unencrypted card data accessed';
     }
     return null;
@@ -728,7 +728,7 @@ class SecurityComplianceService extends EventEmitter {
 
   checkCardDataAccess(auditEntry) {
     // Mock implementation - would check card data access controls
-    if (auditEntry.resource === 'payment_data' && !auditEntry.details?.authorizedAccess) {
+    if (auditEntry.resource === 'paymentdata' && !auditEntry.details?.authorizedAccess) {
       return 'Unauthorized access to cardholder data';
     }
     return null;
@@ -826,7 +826,7 @@ class SecurityComplianceService extends EventEmitter {
 
     // Mock auto-remediation actions
     switch (violationEvent.ruleId) {
-      case 'card_data_encryption':
+      case 'carddata_encryption':
         // Immediately encrypt unencrypted card data
         console.log('Auto-encrypting card data');
         break;
@@ -888,7 +888,7 @@ class SecurityComplianceService extends EventEmitter {
       }));
   }
 
-  getComplianceStatus(_tenantId) {
+  getComplianceStatus(tenantId) {
     // Mock compliance status
     return {
       gdpr: 'compliant',

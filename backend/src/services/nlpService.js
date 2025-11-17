@@ -287,7 +287,7 @@ class NLPService extends EventEmitter {
       // Simulate sentiment analysis
       await new Promise((resolve) => setTimeout(resolve, 200));
 
-      const result = this.performSentimentAnalysis(text, _options);
+      const result = this.performSentimentAnalysis(text, options);
 
       // Cache result
       this.sentimentCache.set(cacheKey, result);
@@ -315,7 +315,7 @@ class NLPService extends EventEmitter {
   /**
    * Perform sentiment analysis
    */
-  performSentimentAnalysis(text, _options) {
+  performSentimentAnalysis(text, options) {
     // Simulate sentiment analysis logic
     const words = text.toLowerCase().split(/\s+/);
 
@@ -515,7 +515,7 @@ class NLPService extends EventEmitter {
       // Simulate entity extraction
       await new Promise((resolve) => setTimeout(resolve, 400));
 
-      const entities = this.performEntityExtraction(text, _options);
+      const entities = this.performEntityExtraction(text, options);
 
       return entities;
 
@@ -528,7 +528,7 @@ class NLPService extends EventEmitter {
   /**
    * Perform entity extraction
    */
-  performEntityExtraction(text, _options) {
+  performEntityExtraction(text, options) {
     const extractedEntities = [];
 
     // Extract entities using patterns
@@ -570,7 +570,7 @@ class NLPService extends EventEmitter {
       // Simulate text summarization
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      const summary = this.performTextSummarization(text, _options);
+      const summary = this.performTextSummarization(text, options);
 
       // Update model usage
       const model = this.models.get('text_summarizer');
@@ -588,7 +588,7 @@ class NLPService extends EventEmitter {
   /**
    * Perform text summarization
    */
-  performTextSummarization(text, _options) {
+  performTextSummarization(text, options) {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
     const maxLength = options.maxLength || 150;
     const minLength = options.minLength || 50;
@@ -652,7 +652,7 @@ class NLPService extends EventEmitter {
 
     try {
       // Perform comprehensive document processing
-      const results = await this.performDocumentProcessing(content, _options);
+      const results = await this.performDocumentProcessing(content, options);
 
       document.results = results;
       document.status = 'completed';
@@ -686,7 +686,7 @@ class NLPService extends EventEmitter {
   /**
    * Perform comprehensive document processing
    */
-  async performDocumentProcessing(content, _options) {
+  async performDocumentProcessing(content, options) {
     const results = {
       wordCount: content.split(/\s+/).length,
       characterCount: content.length,

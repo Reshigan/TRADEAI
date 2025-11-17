@@ -513,7 +513,7 @@ class TestingService extends EventEmitter {
   setupTestDataManagement() {
     const testDataSets = [
       {
-        id: 'users_dataset',
+        id: 'usersdataset',
         name: 'Users Test Dataset',
         description: 'Test data for user-related tests',
         type: 'users',
@@ -521,7 +521,7 @@ class TestingService extends EventEmitter {
         generator: () => this.generateUserTestData()
       },
       {
-        id: 'transactions_dataset',
+        id: 'transactionsdataset',
         name: 'Transactions Test Dataset',
         description: 'Test data for transaction-related tests',
         type: 'transactions',
@@ -529,7 +529,7 @@ class TestingService extends EventEmitter {
         generator: () => this.generateTransactionTestData()
       },
       {
-        id: 'analytics_dataset',
+        id: 'analyticsdataset',
         name: 'Analytics Test Dataset',
         description: 'Test data for analytics-related tests',
         type: 'analytics',
@@ -537,7 +537,7 @@ class TestingService extends EventEmitter {
         generator: () => this.generateAnalyticsTestData()
       },
       {
-        id: 'performance_dataset',
+        id: 'performancedataset',
         name: 'Performance Test Dataset',
         description: 'Large dataset for performance testing',
         type: 'performance',
@@ -720,7 +720,7 @@ class TestingService extends EventEmitter {
       await this.generateTestData(suiteId);
 
       // Run tests
-      const results = await this.executeTestSuite(suite, _options);
+      const results = await this.executeTestSuite(suite, options);
 
       // Update test run results
       testRun.results = results;
@@ -771,7 +771,7 @@ class TestingService extends EventEmitter {
   /**
    * Execute test suite
    */
-  async executeTestSuite(suite, _options) {
+  async executeTestSuite(suite, options) {
     console.log(`Executing test suite: ${suite.name}`);
 
     const results = {
@@ -786,7 +786,7 @@ class TestingService extends EventEmitter {
     // Execute each test in the suite
     for (const test of suite.tests) {
       try {
-        const testResult = await this.executeTest(test, suite.type, _options);
+        const testResult = await this.executeTest(test, suite.type, options);
         results.testResults.push(testResult);
 
         // Update counters
@@ -813,7 +813,7 @@ class TestingService extends EventEmitter {
   /**
    * Execute individual test
    */
-  async executeTest(test, suiteType, _options) {
+  async executeTest(test, suiteType, options) {
     console.log(`Executing test: ${test.name}`);
 
     // Simulate test execution time
@@ -952,11 +952,11 @@ class TestingService extends EventEmitter {
    */
   getRequiredDataSets(suiteType) {
     const dataSetMap = {
-      'unit': ['users_dataset'],
-      'integration': ['users_dataset', 'transactions_dataset'],
-      'e2e': ['users_dataset', 'transactions_dataset', 'analytics_dataset'],
-      'performance': ['performance_dataset'],
-      'security': ['users_dataset', 'transactions_dataset']
+      'unit': ['usersdataset'],
+      'integration': ['usersdataset', 'transactionsdataset'],
+      'e2e': ['usersdataset', 'transactionsdataset', 'analyticsdataset'],
+      'performance': ['performancedataset'],
+      'security': ['usersdataset', 'transactionsdataset']
     };
 
     return dataSetMap[suiteType] || [];
@@ -1011,7 +1011,7 @@ class TestingService extends EventEmitter {
         status: statuses[Math.floor(Math.random() * statuses.length)],
         createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
         metadata: {
-          source: 'test_data',
+          source: 'testdata',
           category: 'automated_test'
         }
       });
@@ -1468,7 +1468,7 @@ class TestingService extends EventEmitter {
 
     for (const [suiteId] of this.testSuites) {
       try {
-        const runId = await this.runTestSuite(suiteId, _options);
+        const runId = await this.runTestSuite(suiteId, options);
         results.push({ suiteId, runId, status: 'completed' });
       } catch (error) {
         results.push({ suiteId, status: 'failed', error: error.message });

@@ -36,7 +36,7 @@ class SecurityService {
   /**
    * Enhanced user authentication with security logging
    */
-  async authenticateUser(email, password, ipAddress, userAgent, _tenantId) {
+  async authenticateUser(email, password, ipAddress, userAgent, tenantId) {
     try {
       const startTime = Date.now();
 
@@ -69,7 +69,7 @@ class SecurityService {
       };
 
       // Only add tenantId filter if provided (for multi-tenant scenarios)
-      if (_tenantId) {
+      if (tenantId) {
         userQuery.tenantId = tenantId;
       }
 
@@ -80,7 +80,7 @@ class SecurityService {
         const logTenantId = tenantId || 'unknown';
         await this.recordFailedAttempt(lockoutKey, ipAddress, userAgent, logTenantId);
         // Skip security event logging if tenantId is not available (prevents validation errors)
-        if (_tenantId) {
+        if (tenantId) {
           await this.logSecurityEvent({
             type: 'AUTHENTICATION_FAILED',
             severity: 'MEDIUM',
@@ -235,7 +235,7 @@ class SecurityService {
   /**
    * Role-Based Access Control (RBAC) check
    */
-  async checkPermission(userId, _tenantId, resource, action, context = {}) {
+  async checkPermission(userId, tenantId, resource, action, context = {}) {
     try {
       // Get user with roles and permissions
       const user = await User.findOne({
@@ -319,7 +319,7 @@ class SecurityService {
   /**
    * Create or update role with permissions
    */
-  async manageRole(_tenantId, roleData, userId) {
+  async manageRole(tenantId, roleData, userId) {
     try {
       const { name, description, permissions, isActive = true } = roleData;
 
@@ -370,7 +370,7 @@ class SecurityService {
   /**
    * Assign role to user
    */
-  async assignRole(_tenantId, userId, roleId, assignedBy) {
+  async assignRole(tenantId, userId, roleId, assignedBy) {
     try {
       const user = await User.findOne({ _id: userId, tenantId });
       const role = await Role.findOne({ _id: roleId, tenantId });
@@ -498,7 +498,7 @@ class SecurityService {
   /**
    * Invalidate session (logout)
    */
-  async invalidateSession(sessionToken, userId, _tenantId, reason = 'USER_LOGOUT') {
+  async invalidateSession(sessionToken, userId, tenantId, reason = 'USER_LOGOUT') {
     try {
       const session = this.sessionStore.get(sessionToken);
 
@@ -601,7 +601,7 @@ class SecurityService {
   /**
    * Security monitoring and alerts
    */
-  async checkSecurityThreats(_tenantId, timeWindow = 60 * 60 * 1000) { // 1 hour
+  async checkSecurityThreats(tenantId, timeWindow = 60 * 60 * 1000) { // 1 hour
     try {
       const since = new Date(Date.now() - timeWindow);
 
@@ -609,7 +609,7 @@ class SecurityService {
       const suspiciousEvents = await SecurityEvent.aggregate([
         {
           $match: {
-            tenantId: new mongoose.Types.ObjectId(_tenantId),
+            tenantId: new mongoose.Types.ObjectId(tenantId),
             timestamp: { $gte: since },
             severity: { $in: ['HIGH', 'CRITICAL'] }
           }
@@ -625,14 +625,14 @@ class SecurityService {
 
       // Check for failed login patterns
       const failedLogins = await SecurityEvent.countDocuments({
-        tenantId: new mongoose.Types.ObjectId(_tenantId),
+        tenantId: new mongoose.Types.ObjectId(tenantId),
         type: 'AUTHENTICATION_FAILED',
         timestamp: { $gte: since }
       });
 
       // Check for unusual IP addresses
       const uniqueIPs = await SecurityEvent.distinct('ipAddress', {
-        tenantId: new mongoose.Types.ObjectId(_tenantId),
+        tenantId: new mongoose.Types.ObjectId(tenantId),
         timestamp: { $gte: since }
       });
 
@@ -654,7 +654,7 @@ class SecurityService {
 
   // Helper methods
 
-  recordFailedAttempt(key, ipAddress, userAgent, _tenantId) {
+  recordFailedAttempt(key, ipAddress, userAgent, tenantId) {
     const attempts = this.failedAttempts.get(key) || { count: 0, attempts: [] };
     attempts.count++;
     attempts.attempts.push({

@@ -24,18 +24,18 @@ class EnterpriseCrudService {
    */
 
   // Create single record
-  async create(_data, options = {}) {
+  async create(data, options = {}) {
     try {
-      const record = new this.model(_data);
+      const record = new this.model(data);
 
       if (options.validate) {
-        await this.validateData(_data);
+        await this.validateData(data);
       }
 
       await record.save();
 
       if (options.auditLog) {
-        await this.logAudit('create', record._id, _data, options.userId);
+        await this.logAudit('create', record._id, data, options.userId);
       }
 
       return record;
@@ -54,10 +54,10 @@ class EnterpriseCrudService {
 
     for (const data of dataArray) {
       try {
-        const record = await this.create(_data, options);
+        const record = await this.create(data, options);
         results.success.push({ id: record._id, data: record });
       } catch (error) {
-        results.failed.push({ _data, error: error.message });
+        results.failed.push({ data, error: error.message });
       }
     }
 
@@ -251,7 +251,7 @@ class EnterpriseCrudService {
    */
 
   // Update single record
-  async update(id, _data, options = {}) {
+  async update(id, data, options = {}) {
     const record = await this.model.findById(id);
     if (!record) {
       throw new AppError(`${this.modelName} not found`, 404);
@@ -262,11 +262,11 @@ class EnterpriseCrudService {
       await this.saveVersion(record);
     }
 
-    Object.assign(record, _data);
+    Object.assign(record, data);
     await record.save();
 
     if (options.auditLog) {
-      await this.logAudit('update', id, _data, options.userId);
+      await this.logAudit('update', id, data, options.userId);
     }
 
     return record;
@@ -469,7 +469,7 @@ class EnterpriseCrudService {
       return row;
     });
 
-    const ws = xlsx.utils.json_to_sheet(_data);
+    const ws = xlsx.utils.json_to_sheet(data);
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, ws, this.modelName);
 
@@ -530,8 +530,8 @@ class EnterpriseCrudService {
   }
 
   // Import from JSON
-  importFromJSON(_data, options = {}) {
-    const records = JSON.parse(_data);
+  importFromJSON(data, options = {}) {
+    const records = JSON.parse(data);
     return this.bulkCreate(records, options);
   }
 
@@ -539,13 +539,13 @@ class EnterpriseCrudService {
    * DATA VALIDATION & CLEANSING
    */
 
-  validateData(_data) {
+  validateData(data) {
     // Implement custom validation rules
     // This can be extended based on model schemas
     return true;
   }
 
-  cleanseData(_data) {
+  cleanseData(data) {
     // Implement data cleansing rules
     // - Trim strings
     // - Convert types
@@ -636,7 +636,7 @@ class EnterpriseCrudService {
   async rollback(id, versionId) {
     // Rollback to a specific version
     // const version = await VersionHistory.findById(versionId);
-    // return this.update(id, version._data);
+    // return this.update(id, version.data);
   }
 
   /**

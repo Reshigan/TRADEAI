@@ -983,7 +983,7 @@ async function getRegionalData(dateRange, filters = {}) {
 /**
  * Generate insights using ML
  */
-async function generateInsights(_data) {
+async function generateInsights(data) {
   // Use ML service to generate insights
   return [
     {
@@ -1950,7 +1950,7 @@ async function drillDownByTime(metric, range, filters) {
   return results;
 }
 
-function calculateAggregations(_data) {
+function calculateAggregations(data) {
   if (!data || data.length === 0) {
     return {
       total: 0,

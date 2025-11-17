@@ -496,7 +496,7 @@ class ComputerVisionService extends EventEmitter {
       if (!model) continue;
 
       try {
-        const modelResult = await this.runModelInference(model, analysis.imageData, analysis._options);
+        const modelResult = await this.runModelInference(model, analysis.imageData, analysis.options);
         results[modelId] = modelResult;
 
         // Update model usage stats
@@ -517,7 +517,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Run model inference
    */
-  async runModelInference(model, imageData, _options) {
+  async runModelInference(model, imageData, options) {
     const startTime = Date.now();
 
     // Simulate model inference time
@@ -769,7 +769,7 @@ class ComputerVisionService extends EventEmitter {
       }
 
       // Process OCR
-      const results = await this.processOCR(engine, imageData, _options);
+      const results = await this.processOCR(engine, imageData, options);
 
       ocrJob.results = results;
       ocrJob.status = 'completed';
@@ -802,7 +802,7 @@ class ComputerVisionService extends EventEmitter {
   /**
    * Process OCR
    */
-  async processOCR(engine, imageData, _options) {
+  async processOCR(engine, imageData, options) {
     // Simulate OCR processing time
     const processingTime = 1000 + Math.random() * 2000;
     await new Promise((resolve) => setTimeout(resolve, processingTime));
@@ -1327,11 +1327,11 @@ class ComputerVisionService extends EventEmitter {
       }
 
       case 'batch_processing':
-        await this.processBatch(job.images, job._options);
+        await this.processBatch(job.images, job.options);
         break;
 
       case 'quality_assessment':
-        await this.assessImageQuality(job.imageData, job._options);
+        await this.assessImageQuality(job.imageData, job.options);
         break;
 
       default:

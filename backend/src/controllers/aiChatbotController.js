@@ -187,23 +187,23 @@ class AIChatbotController {
 
       switch (type) {
         case 'performance':
-          insights = await this.generatePerformanceInsights(companyId, _parameters);
+          insights = await this.generatePerformanceInsights(companyId, parameters);
           break;
 
         case 'optimization':
-          insights = await this.generateOptimizationInsights(companyId, _parameters);
+          insights = await this.generateOptimizationInsights(companyId, parameters);
           break;
 
         case 'trends':
-          insights = await this.generateTrendInsights(companyId, _parameters);
+          insights = await this.generateTrendInsights(companyId, parameters);
           break;
 
         case 'budget':
-          insights = await this.generateBudgetInsights(companyId, _parameters);
+          insights = await this.generateBudgetInsights(companyId, parameters);
           break;
 
         default:
-          insights = await this.generateGeneralInsights(companyId, _parameters);
+          insights = await this.generateGeneralInsights(companyId, parameters);
       }
 
       // Generate recommendations based on insights
@@ -236,7 +236,7 @@ class AIChatbotController {
       const { user } = req;
       const companyId = user.companyId;
 
-      const report = await this.createAIReport(reportType, _parameters, companyId, format);
+      const report = await this.createAIReport(reportType, parameters, companyId, format);
 
       res.json({
         success: true,
@@ -418,7 +418,7 @@ class AIChatbotController {
   /**
    * Generate performance insights
    */
-  async generatePerformanceInsights(companyId, _parameters) {
+  async generatePerformanceInsights(companyId, parameters) {
     // Get recent promotions performance
     const recentPromotions = await Promotion.find({
       companyId,
@@ -545,7 +545,7 @@ class AIChatbotController {
   /**
    * Create AI-generated report
    */
-  async createAIReport(reportType, _parameters, companyId, format) {
+  async createAIReport(reportType, parameters, companyId, format) {
     const report = {
       title: `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report`,
       generatedAt: new Date().toISOString(),
@@ -557,13 +557,13 @@ class AIChatbotController {
     // Add report sections based on type
     switch (reportType) {
       case 'performance':
-        report.sections = await this.generatePerformanceReportSections(companyId, _parameters);
+        report.sections = await this.generatePerformanceReportSections(companyId, parameters);
         break;
       case 'budget':
-        report.sections = await this.generateBudgetReportSections(companyId, _parameters);
+        report.sections = await this.generateBudgetReportSections(companyId, parameters);
         break;
       default:
-        report.sections = await this.generateGeneralReportSections(companyId, _parameters);
+        report.sections = await this.generateGeneralReportSections(companyId, parameters);
     }
 
     return report;
@@ -572,7 +572,7 @@ class AIChatbotController {
   /**
    * Generate performance report sections
    */
-  async generatePerformanceReportSections(companyId, _parameters) {
+  async generatePerformanceReportSections(companyId, parameters) {
     const promotions = await Promotion.find({ companyId }).limit(20);
 
     return [
@@ -594,7 +594,7 @@ class AIChatbotController {
   /**
    * Generate budget report sections
    */
-  async generateBudgetReportSections(companyId, _parameters) {
+  async generateBudgetReportSections(companyId, parameters) {
     const budgets = await Budget.find({ companyId }).limit(20);
 
     return [
@@ -612,7 +612,7 @@ class AIChatbotController {
   /**
    * Generate general report sections
    */
-  generateGeneralReportSections(companyId, _parameters) {
+  generateGeneralReportSections(companyId, parameters) {
     return [
       {
         title: 'Overview',
