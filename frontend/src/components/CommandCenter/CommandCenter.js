@@ -85,6 +85,9 @@ const CommandCenter = () => {
       });
       
       const data = processDashboardData(budgetsArray, promotionsArray, tradeSpendsArray);
+      console.log('CommandCenter - Processed dashboard data:', data);
+      console.log('CommandCenter - quickActions type:', Array.isArray(data.quickActions), 'length:', data.quickActions?.length);
+      console.log('CommandCenter - activeWorkflows type:', Array.isArray(data.activeWorkflows), 'length:', data.activeWorkflows?.length);
       setDashboardData(data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -112,7 +115,7 @@ const CommandCenter = () => {
     if (utilizationRate < 60) {
       aiInsight = {
         type: 'warning',
-        icon: <WarningIcon />,
+        iconType: 'warning',
         title: 'Budget Underutilization Detected',
         message: `Your budget is ${utilizationRate.toFixed(0)}% utilized. AI suggests reallocating $${((totalBudget - totalSpent) * 0.3).toLocaleString()} to high-performing customers for optimal ROI.`,
         action: 'Optimize Budget',
@@ -121,7 +124,7 @@ const CommandCenter = () => {
     } else if (utilizationRate > 90) {
       aiInsight = {
         type: 'info',
-        icon: <CheckIcon />,
+        iconType: 'check',
         title: 'Budget Tracking Well',
         message: `Budget utilization at ${utilizationRate.toFixed(0)}%. On track for quarterly goals.`,
         action: 'View Details',
@@ -130,7 +133,7 @@ const CommandCenter = () => {
     } else {
       aiInsight = {
         type: 'success',
-        icon: <TrendingUpIcon />,
+        iconType: 'trending',
         title: 'Performance Above Target',
         message: `Promotions are performing 15% above forecast. Continue current strategy.`,
         action: 'View Performance',
@@ -143,7 +146,7 @@ const CommandCenter = () => {
       {
         title: 'Plan 2026 Budget',
         description: 'AI-powered annual planning ready',
-        icon: <CalendarIcon />,
+        iconType: 'calendar',
         color: 'primary',
         route: '/budgets/new-flow',
         badge: 'AI Ready'
@@ -151,7 +154,7 @@ const CommandCenter = () => {
       {
         title: 'Create Promotion',
         description: 'Start AI-assisted promotion wizard',
-        icon: <RocketIcon />,
+        iconType: 'rocket',
         color: 'secondary',
         route: '/promotions/new-flow',
         badge: 'Recommended'
@@ -159,7 +162,7 @@ const CommandCenter = () => {
       {
         title: 'Review Analytics',
         description: 'AI-generated insights available',
-        icon: <AnalyticsIcon />,
+        iconType: 'analytics',
         color: 'info',
         route: '/analytics',
         badge: '3 New Insights'
@@ -235,7 +238,12 @@ const CommandCenter = () => {
       {/* AI Insight of the Day */}
       <Alert 
         severity={dashboardData.aiInsight.type || 'info'} 
-        icon={dashboardData.aiInsight.icon}
+        icon={
+          dashboardData.aiInsight.iconType === 'warning' ? <WarningIcon /> :
+          dashboardData.aiInsight.iconType === 'check' ? <CheckIcon /> :
+          dashboardData.aiInsight.iconType === 'trending' ? <TrendingUpIcon /> :
+          undefined
+        }
         sx={{ mb: 3, fontSize: '1.1rem' }}
         action={
           <Button 
