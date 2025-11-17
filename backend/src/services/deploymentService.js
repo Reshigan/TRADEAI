@@ -883,13 +883,14 @@ class DeploymentService extends EventEmitter {
           output: 'Integration tests completed'
         };
 
-      case 'build_docker_image':
+      case 'build_docker_image': {
         const imageTag = `${pipelineRun.commit?.substring(0, 8) || 'latest'}`;
         return {
           success: true,
           output: `Docker image built: tradeai/app:${imageTag}`,
           artifacts: [`tradeai/app:${imageTag}`]
         };
+      }
 
       case 'deploy_to_staging':
         return {

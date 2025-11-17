@@ -1035,7 +1035,7 @@ class ComputerVisionService extends EventEmitter {
         }
         break;
 
-      case 'required_fields_check':
+      case 'required_fields_check': {
         const requiredFields = docTypeConfig.fields.slice(0, 3); // First 3 are required
         requiredFields.forEach((field) => {
           if (!data[field]) {
@@ -1044,6 +1044,7 @@ class ComputerVisionService extends EventEmitter {
           }
         });
         break;
+      }
 
       case 'signature_verification':
         if (docTypeConfig.type === 'contract' && !data.signatures) {
@@ -1317,12 +1318,13 @@ class ComputerVisionService extends EventEmitter {
    */
   async executeJob(job) {
     switch (job.type) {
-      case 'image_analysis':
+      case 'image_analysis': {
         const analysis = this.analyses.get(job.analysisId);
         if (analysis) {
           await this.processImageAnalysis(analysis);
         }
         break;
+      }
 
       case 'batch_processing':
         await this.processBatch(job.images, job.options);

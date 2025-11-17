@@ -531,13 +531,14 @@ class MasterDataManagementService {
           passed: !!data[rule.field],
           message: data[rule.field] ? '' : `${rule.field} is required`
         };
-      case 'range':
+      case 'range': {
         const value = data[rule.field];
         const passed = value >= rule.min && (!rule.max || value <= rule.max);
         return {
           passed,
           message: passed ? '' : `${rule.field} must be between ${rule.min} and ${rule.max}`
         };
+      }
       default:
         return { passed: true, message: '' };
     }

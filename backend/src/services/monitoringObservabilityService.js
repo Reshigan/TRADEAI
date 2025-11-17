@@ -1096,11 +1096,12 @@ class MonitoringObservabilityService extends EventEmitter {
 
   getWidgetData(widget) {
     switch (widget.type) {
-      case 'gauge':
+      case 'gauge': {
         const gaugeMetrics = this.getMetrics({ name: widget.metric });
         return gaugeMetrics.length > 0 ? gaugeMetrics[0].lastValue : 0;
+      }
 
-      case 'line_chart':
+      case 'line_chart': {
         const metrics = Array.isArray(widget.metrics) ? widget.metrics : [widget.metric];
         return metrics.map((metric) => {
           const metricData = this.getMetrics({ name: metric });
@@ -1109,10 +1110,12 @@ class MonitoringObservabilityService extends EventEmitter {
             data: metricData.length > 0 ? metricData[0].values : []
           };
         });
+      }
 
-      case 'counter':
+      case 'counter': {
         const counterMetrics = this.getMetrics({ name: widget.metric });
         return counterMetrics.length > 0 ? counterMetrics[0].lastValue : 0;
+      }
 
       default:
         return null;
