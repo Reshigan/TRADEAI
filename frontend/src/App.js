@@ -263,7 +263,7 @@ function App() {
               <Layout user={user} onLogout={handleLogout}>
                 {user?.role === 'jam' || user?.role === 'key_account_manager' ? (
                   <JAMDashboard />
-                ) : user?.role === 'manager' || user?.role === 'admin' ? (
+                ) : user?.role === 'manager' || user?.role === 'admin' || user?.role === 'super_admin' ? (
                   <ManagerDashboard />
                 ) : (
                   <CommandCenter user={user} />
