@@ -72,9 +72,12 @@ const CommandCenter = () => {
   };
 
   const processDashboardData = (budgets, promotions, tradeSpends) => {
-    // Calculate AI insight
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
-    const totalSpent = budgets.reduce((sum, b) => sum + (b.spentAmount || 0), 0);
+    const budgetsArray = Array.isArray(budgets) ? budgets : [];
+    const promotionsArray = Array.isArray(promotions) ? promotions : [];
+    const tradeSpendsArray = Array.isArray(tradeSpends) ? tradeSpends : [];
+    
+    const totalBudget = budgetsArray.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+    const totalSpent = budgetsArray.reduce((sum, b) => sum + (b.spentAmount || 0), 0);
     const utilizationRate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
     let aiInsight = {};
