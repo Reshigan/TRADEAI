@@ -575,7 +575,7 @@ class EnterpriseCrudService {
       }
     ];
 
-    return await this.model.aggregate(pipeline);
+    return this.model.aggregate(pipeline);
   }
 
   // Merge duplicates
@@ -630,14 +630,14 @@ class EnterpriseCrudService {
 
   async getVersionHistory(id) {
     // Retrieve version history for a record
-    // return await VersionHistory.find({ modelName: this.modelName, recordId: id });
+    // return VersionHistory.find({ modelName: this.modelName, recordId: id });
     return [];
   }
 
   async rollback(id, versionId) {
     // Rollback to a specific version
     // const version = await VersionHistory.findById(versionId);
-    // return await this.update(id, version.data);
+    // return this.update(id, version.data);
   }
 
   /**
@@ -711,15 +711,15 @@ class EnterpriseCrudService {
    */
 
   async aggregate(pipeline) {
-    return await this.model.aggregate(pipeline);
+    return this.model.aggregate(pipeline);
   }
 
   async count(filters = {}) {
-    return await this.model.countDocuments(filters);
+    return this.model.countDocuments(filters);
   }
 
   async distinct(field, filters = {}) {
-    return await this.model.distinct(field, filters);
+    return this.model.distinct(field, filters);
   }
 }
 

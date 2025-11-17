@@ -123,11 +123,11 @@ class DeductionService {
   }
 
   async getUnmatchedDeductions(tenantId) {
-    return await Deduction.findUnmatched(tenantId);
+    return Deduction.findUnmatched(tenantId);
   }
 
   async getDisputedDeductions(tenantId) {
-    return await Deduction.findDisputed(tenantId);
+    return Deduction.findDisputed(tenantId);
   }
 
   async getDeductionsByCustomer(tenantId, customerId, startDate, endDate) {

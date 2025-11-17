@@ -262,7 +262,7 @@ class DisputeManagementService {
    * Get overdue disputes
    */
   async getOverdueDisputes() {
-    return await Dispute.getOverdueDisputes();
+    return Dispute.getOverdueDisputes();
   }
 
   /**

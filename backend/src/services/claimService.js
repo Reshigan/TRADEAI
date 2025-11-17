@@ -112,11 +112,11 @@ class ClaimService {
   }
 
   async getUnmatchedClaims(tenantId) {
-    return await Claim.findUnmatched(tenantId);
+    return Claim.findUnmatched(tenantId);
   }
 
   async getPendingApprovalClaims(tenantId) {
-    return await Claim.findPendingApproval(tenantId);
+    return Claim.findPendingApproval(tenantId);
   }
 
   async getClaimsByCustomer(tenantId, customerId, startDate, endDate) {

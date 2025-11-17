@@ -474,17 +474,17 @@ class SimulationEngine {
   async runScenario(scenario) {
     switch (scenario.type) {
       case 'promotion_impact':
-        return await this.simulatePromotionImpact(scenario);
+        return this.simulatePromotionImpact(scenario);
       case 'budget_allocation':
-        return await this.simulateBudgetAllocation(scenario);
+        return this.simulateBudgetAllocation(scenario);
       case 'pricing_strategy':
-        return await this.simulatePricingStrategy(scenario);
+        return this.simulatePricingStrategy(scenario);
       case 'volume_projection':
-        return await this.simulateVolumeProjection(scenario);
+        return this.simulateVolumeProjection(scenario);
       case 'market_share':
-        return await this.simulateMarketShare(scenario);
+        return this.simulateMarketShare(scenario);
       case 'roi_optimization':
-        return await this.simulateROIOptimization(scenario);
+        return this.simulateROIOptimization(scenario);
       default:
         throw new AppError(`Unsupported scenario type: ${scenario.type}`, 400);
     }

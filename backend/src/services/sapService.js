@@ -67,31 +67,31 @@ class SAPService {
   // Customer APIs
   async getCustomers(lastSyncDate = null) {
     const params = lastSyncDate ? `?changedSince=${lastSyncDate.toISOString()}` : '';
-    return await this.callSAP(`/api/customers${params}`);
+    return this.callSAP(`/api/customers${params}`);
   }
 
   async getCustomer(customerId) {
-    return await this.callSAP(`/api/customers/${customerId}`);
+    return this.callSAP(`/api/customers/${customerId}`);
   }
 
   // Product APIs
   async getProducts(lastSyncDate = null) {
     const params = lastSyncDate ? `?changedSince=${lastSyncDate.toISOString()}` : '';
-    return await this.callSAP(`/api/materials${params}`);
+    return this.callSAP(`/api/materials${params}`);
   }
 
   async getProduct(materialId) {
-    return await this.callSAP(`/api/materials/${materialId}`);
+    return this.callSAP(`/api/materials/${materialId}`);
   }
 
   // Vendor APIs
   async getVendors(lastSyncDate = null) {
     const params = lastSyncDate ? `?changedSince=${lastSyncDate.toISOString()}` : '';
-    return await this.callSAP(`/api/vendors${params}`);
+    return this.callSAP(`/api/vendors${params}`);
   }
 
   async getVendor(vendorId) {
-    return await this.callSAP(`/api/vendors/${vendorId}`);
+    return this.callSAP(`/api/vendors/${vendorId}`);
   }
 
   // Sales History APIs
@@ -104,7 +104,7 @@ class SAPService {
     if (customerId) params.append('customerId', customerId);
     if (productId) params.append('productId', productId);
 
-    return await this.callSAP(`/api/sales?${params.toString()}`);
+    return this.callSAP(`/api/sales?${params.toString()}`);
   }
 
   // Pricing APIs
@@ -115,40 +115,40 @@ class SAPService {
       pricingDate: date.toISOString()
     });
 
-    return await this.callSAP(`/api/pricing?${params.toString()}`);
+    return this.callSAP(`/api/pricing?${params.toString()}`);
   }
 
   // Inventory APIs
   async getInventory(materialId, plant = null) {
     const params = plant ? `?plant=${plant}` : '';
-    return await this.callSAP(`/api/inventory/${materialId}${params}`);
+    return this.callSAP(`/api/inventory/${materialId}${params}`);
   }
 
   // Master Data APIs
   async getHierarchy(type, level = null) {
     const params = level ? `?level=${level}` : '';
-    return await this.callSAP(`/api/hierarchies/${type}${params}`);
+    return this.callSAP(`/api/hierarchies/${type}${params}`);
   }
 
   async getCostCenters() {
-    return await this.callSAP('/api/costcenters');
+    return this.callSAP('/api/costcenters');
   }
 
   async getGLAccounts() {
-    return await this.callSAP('/api/glaccounts');
+    return this.callSAP('/api/glaccounts');
   }
 
   // Document APIs
   async createSalesOrder(orderData) {
-    return await this.callSAP('/api/salesorders', 'POST', orderData);
+    return this.callSAP('/api/salesorders', 'POST', orderData);
   }
 
   async createCreditNote(creditNoteData) {
-    return await this.callSAP('/api/creditnotes', 'POST', creditNoteData);
+    return this.callSAP('/api/creditnotes', 'POST', creditNoteData);
   }
 
   async getDocument(documentType, documentNumber) {
-    return await this.callSAP(`/api/documents/${documentType}/${documentNumber}`);
+    return this.callSAP(`/api/documents/${documentType}/${documentNumber}`);
   }
 
   // Batch processing

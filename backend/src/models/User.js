@@ -160,7 +160,7 @@ userSchema.pre('save', function (next) {
 
 // Instance methods
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 userSchema.methods.generateAuthToken = function () {

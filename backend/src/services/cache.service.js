@@ -267,7 +267,7 @@ class CacheService {
     } catch (error) {
       logger.error('Cache wrap error:', { key, error: error.message });
       // Execute function without caching on error
-      return await fn();
+      return fn();
     }
   }
 

@@ -77,7 +77,7 @@ class AuditService {
    * @returns {Promise<Array>} User's audit logs
    */
   async getUserActivity(userId, options = {}) {
-    return await this.getLogs({ userId, ...options });
+    return this.getLogs({ userId, ...options });
   }
 
   /**
@@ -87,7 +87,7 @@ class AuditService {
    * @returns {Promise<Array>} Resource's audit logs
    */
   async getResourceHistory(resource, resourceId) {
-    return await this.getLogs({ resource, resourceId });
+    return this.getLogs({ resource, resourceId });
   }
 
   /**

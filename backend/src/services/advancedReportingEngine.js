@@ -550,7 +550,7 @@ class AdvancedReportingEngine {
       }
     ];
 
-    return await SalesHistory.aggregate(pipeline);
+    return SalesHistory.aggregate(pipeline);
   }
 
   // Helper methods for formatting and styling

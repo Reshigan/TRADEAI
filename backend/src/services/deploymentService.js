@@ -905,7 +905,7 @@ class DeploymentService extends EventEmitter {
         };
 
       case 'blue_green_deployment':
-        return await this.performBlueGreenDeployment(pipelineRun, options);
+        return this.performBlueGreenDeployment(pipelineRun, options);
 
       case 'health_check':
         return {

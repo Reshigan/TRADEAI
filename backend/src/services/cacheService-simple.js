@@ -60,7 +60,7 @@ class SimpleCacheService {
     }
 
     try {
-      return await this.client.get(key);
+      return this.client.get(key);
     } catch (error) {
       console.log('⚠️ Redis GET error:', error.message);
       return null;

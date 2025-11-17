@@ -203,28 +203,28 @@ class AuditTrailService {
    * Get entity history
    */
   async getEntityHistory(entityType, entityId, options = {}) {
-    return await AuditLog.getEntityHistory(entityType, entityId, options);
+    return AuditLog.getEntityHistory(entityType, entityId, options);
   }
 
   /**
    * Get user activity
    */
   async getUserActivity(userId, options = {}) {
-    return await AuditLog.getUserActivity(userId, options);
+    return AuditLog.getUserActivity(userId, options);
   }
 
   /**
    * Get compliance report
    */
   async getComplianceReport(startDate, endDate, flags = ['SOX']) {
-    return await AuditLog.getComplianceReport(startDate, endDate, flags);
+    return AuditLog.getComplianceReport(startDate, endDate, flags);
   }
 
   /**
    * Search audit logs
    */
   async searchLogs(criteria) {
-    return await AuditLog.searchLogs(criteria);
+    return AuditLog.searchLogs(criteria);
   }
 
   /**

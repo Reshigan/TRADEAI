@@ -149,7 +149,7 @@ class TenantController {
 
       // Create tenant without tenant filtering
       const tenant = await withoutTenantFilter(async () => {
-        return await Tenant.create(tenantData);
+        return Tenant.create(tenantData);
       });
 
       // Populate references
@@ -282,7 +282,7 @@ class TenantController {
       const tenant = await withoutTenantFilter(async () => {
         if (permanent === 'true') {
           // Permanent deletion (use with caution)
-          return await Tenant.findByIdAndDelete(id);
+          return Tenant.findByIdAndDelete(id);
         } else {
           // Soft delete (deactivate)
           return await Tenant.findByIdAndUpdate(

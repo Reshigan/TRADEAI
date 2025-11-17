@@ -55,7 +55,7 @@ userMinimalSchema.pre('save', async function (next) {
 
 // Instance methods
 userMinimalSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 userMinimalSchema.methods.generateAuthToken = function () {

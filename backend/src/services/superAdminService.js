@@ -255,22 +255,22 @@ class SuperAdminService {
 
       switch (action) {
         case 'upgrade':
-          return await this.upgradeLicense(license, data.newPlan);
+          return this.upgradeLicense(license, data.newPlan);
 
         case 'downgrade':
-          return await this.downgradeLicense(license, data.newPlan);
+          return this.downgradeLicense(license, data.newPlan);
 
         case 'renew':
-          return await this.renewLicense(license, data.duration);
+          return this.renewLicense(license, data.duration);
 
         case 'suspend':
-          return await this.suspendLicense(license, data.reason);
+          return this.suspendLicense(license, data.reason);
 
         case 'reactivate':
-          return await this.reactivateLicense(license);
+          return this.reactivateLicense(license);
 
         case 'cancel':
-          return await this.cancelLicense(license, data.reason);
+          return this.cancelLicense(license, data.reason);
 
         default:
           throw new AppError('Invalid license action', 400);

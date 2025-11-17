@@ -64,11 +64,11 @@ class ApprovalService {
   async getEntity(entityType, entityId) {
     switch (entityType) {
       case 'promotion':
-        return await Promotion.findById(entityId);
+        return Promotion.findById(entityId);
       case 'trade_spend':
-        return await TradeSpend.findById(entityId);
+        return TradeSpend.findById(entityId);
       case 'budget':
-        return await Budget.findById(entityId);
+        return Budget.findById(entityId);
       default:
         throw new Error(`Unknown entity type: ${entityType}`);
     }
@@ -140,11 +140,11 @@ class ApprovalService {
   }
 
   async getPendingApprovalsForUser(userId) {
-    return await Approval.findPendingForApprover(userId);
+    return Approval.findPendingForApprover(userId);
   }
 
   async getOverdueApprovals(tenantId) {
-    return await Approval.findOverdue(tenantId);
+    return Approval.findOverdue(tenantId);
   }
 
   async getApprovalsByEntity(entityType, entityId) {

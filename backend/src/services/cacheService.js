@@ -156,7 +156,7 @@ class CacheService {
     if (!this.isConnected) return -1;
 
     try {
-      return await this.client.ttl(key);
+      return this.client.ttl(key);
     } catch (error) {
       logger.error('Cache TTL error:', error);
       return -1;
@@ -213,58 +213,58 @@ class CacheService {
   // Specific cache methods
   async cacheUser(userId, userData) {
     const key = this.generateKey('user', userId);
-    return await this.set(key, userData, config.cache.ttl.user);
+    return this.set(key, userData, config.cache.ttl.user);
   }
 
   async getCachedUser(userId) {
     const key = this.generateKey('user', userId);
-    return await this.get(key);
+    return this.get(key);
   }
 
   async cacheDashboard(type, userId, data) {
     const key = this.generateKey('dashboard', type, 'user', userId);
-    return await this.set(key, data, config.cache.ttl.dashboard);
+    return this.set(key, data, config.cache.ttl.dashboard);
   }
 
   async getCachedDashboard(type, userId) {
     const key = this.generateKey('dashboard', type, 'user', userId);
-    return await this.get(key);
+    return this.get(key);
   }
 
   async cacheReport(reportId, data) {
     const key = this.generateKey('report', reportId);
-    return await this.set(key, data, config.cache.ttl.report);
+    return this.set(key, data, config.cache.ttl.report);
   }
 
   async getCachedReport(reportId) {
     const key = this.generateKey('report', reportId);
-    return await this.get(key);
+    return this.get(key);
   }
 
   async cacheActivityGrid(gridId, data) {
     const key = this.generateKey('grid', gridId);
-    return await this.set(key, data, config.cache.ttl.grid);
+    return this.set(key, data, config.cache.ttl.grid);
   }
 
   async getCachedActivityGrid(gridId) {
     const key = this.generateKey('grid', gridId);
-    return await this.get(key);
+    return this.get(key);
   }
 
   // Session management
   async setSession(sessionId, userData, ttl = 86400) {
     const key = this.generateKey('session', sessionId);
-    return await this.set(key, userData, ttl);
+    return this.set(key, userData, ttl);
   }
 
   async getSession(sessionId) {
     const key = this.generateKey('session', sessionId);
-    return await this.get(key);
+    return this.get(key);
   }
 
   async deleteSession(sessionId) {
     const key = this.generateKey('session', sessionId);
-    return await this.delete(key);
+    return this.delete(key);
   }
 
   // Rate limiting

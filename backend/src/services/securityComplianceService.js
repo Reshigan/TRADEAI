@@ -487,14 +487,14 @@ class SecurityComplianceService extends EventEmitter {
    */
   async hashPassword(password) {
     const saltRounds = 12;
-    return await bcrypt.hash(password, saltRounds);
+    return bcrypt.hash(password, saltRounds);
   }
 
   /**
    * Verify password
    */
   async verifyPassword(password, hash) {
-    return await bcrypt.compare(password, hash);
+    return bcrypt.compare(password, hash);
   }
 
   /**

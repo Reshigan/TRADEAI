@@ -118,7 +118,7 @@ router.get('/:id/features', async (req, res) => {
     }
 
     const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findById(id).select('features');
+      return Tenant.findById(id).select('features');
     });
 
     if (!tenant) {
@@ -215,7 +215,7 @@ router.get('/:id/usage', async (req, res) => {
     }
 
     const tenant = await withoutTenantFilter(async () => {
-      return await Tenant.findById(id).select('usage limits');
+      return Tenant.findById(id).select('usage limits');
     });
 
     if (!tenant) {

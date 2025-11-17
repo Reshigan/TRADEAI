@@ -370,7 +370,7 @@ class ForecastingService {
     if (productId) query.productId = productId;
     if (customerId) query.customerId = customerId;
 
-    return await SalesHistory.find(query).sort({ date: 1 });
+    return SalesHistory.find(query).sort({ date: 1 });
   }
 
   prepareTimeSeriesData(historicalData) {

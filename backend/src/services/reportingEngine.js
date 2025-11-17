@@ -791,7 +791,7 @@ class ReportingEngine {
 
   // Mock data methods (in a real implementation, these would query actual data)
   async getCustomerPerformanceData(tenantId, parameters) {
-    return await Customer.find({ tenantId }).limit(100).lean();
+    return Customer.find({ tenantId }).limit(100).lean();
   }
 
   async getCustomerSummaryData(tenantId, parameters) {
@@ -811,7 +811,7 @@ class ReportingEngine {
   }
 
   async getProductPerformanceData(tenantId, parameters) {
-    return await Product.find({ tenantId }).limit(100).lean();
+    return Product.find({ tenantId }).limit(100).lean();
   }
 
   async getProductCategoryData(tenantId, parameters) {
@@ -893,7 +893,7 @@ class ReportingEngine {
 
   async getSpendOptimizationData(tenantId, parameters) {
     // Mock optimization recommendations
-    return await this.analyticsEngine.optimizeSpendAllocation(tenantId, 250000);
+    return this.analyticsEngine.optimizeSpendAllocation(tenantId, 250000);
   }
 }
 

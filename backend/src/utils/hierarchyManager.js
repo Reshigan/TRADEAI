@@ -153,7 +153,7 @@ class HierarchyManager {
         );
       }
 
-      return await this.model.findOne({ _id: nodeId, tenantId });
+      return this.model.findOne({ _id: nodeId, tenantId });
 
     } catch (error) {
       throw new Error(`Failed to move node: ${error.message}`);
@@ -262,7 +262,7 @@ class HierarchyManager {
       query.level = { $lte: node.level + maxDepth };
     }
 
-    return await this.model.find(query).sort({ level: 1, path: 1 });
+    return this.model.find(query).sort({ level: 1, path: 1 });
   }
 
   /**
@@ -291,7 +291,7 @@ class HierarchyManager {
       query._id = { $ne: nodeId };
     }
 
-    return await this.model.find(query).sort({ name: 1 });
+    return this.model.find(query).sort({ name: 1 });
   }
 
   /**
@@ -327,7 +327,7 @@ class HierarchyManager {
       return result;
     };
 
-    return await buildTree(roots);
+    return buildTree(roots);
   }
 
   /**
@@ -361,7 +361,7 @@ class HierarchyManager {
       }
     }
 
-    return await this.model.find(query).sort({ level: 1, name: 1 });
+    return this.model.find(query).sort({ level: 1, name: 1 });
   }
 
   /**

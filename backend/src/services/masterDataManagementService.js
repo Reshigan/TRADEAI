@@ -16,15 +16,15 @@ class MasterDataManagementService {
     try {
       switch (action) {
         case 'create':
-          return await this.createProductHierarchy(data);
+          return this.createProductHierarchy(data);
         case 'update':
-          return await this.updateProductHierarchy(data);
+          return this.updateProductHierarchy(data);
         case 'getTree':
-          return await this.getProductHierarchyTree(data.companyId);
+          return this.getProductHierarchyTree(data.companyId);
         case 'addNode':
-          return await this.addHierarchyNode(data);
+          return this.addHierarchyNode(data);
         case 'moveNode':
-          return await this.moveHierarchyNode(data);
+          return this.moveHierarchyNode(data);
         default:
           throw new AppError('Invalid hierarchy action', 400);
       }
@@ -42,13 +42,13 @@ class MasterDataManagementService {
     try {
       switch (action) {
         case 'create':
-          return await this.createCustomerHierarchy(data);
+          return this.createCustomerHierarchy(data);
         case 'update':
-          return await this.updateCustomerHierarchy(data);
+          return this.updateCustomerHierarchy(data);
         case 'getTree':
-          return await this.getCustomerHierarchyTree(data.companyId);
+          return this.getCustomerHierarchyTree(data.companyId);
         case 'addNode':
-          return await this.addCustomerNode(data);
+          return this.addCustomerNode(data);
         default:
           throw new AppError('Invalid hierarchy action', 400);
       }
@@ -139,9 +139,9 @@ class MasterDataManagementService {
         case 'list':
           return versions;
         case 'restore':
-          return await this.restoreVersion(entityType, entityId, data.versionId);
+          return this.restoreVersion(entityType, entityId, data.versionId);
         case 'compare':
-          return await this.compareVersions(entityType, data.version1, data.version2);
+          return this.compareVersions(entityType, data.version1, data.version2);
         default:
           return versions;
       }
@@ -488,7 +488,7 @@ class MasterDataManagementService {
   }
 
   async getCurrentVersion(entityType, entityId) {
-    return await this.getEntity(entityType, entityId);
+    return this.getEntity(entityType, entityId);
   }
 
   async restoreVersion(entityType, entityId, versionId) {
@@ -557,7 +557,7 @@ class MasterDataManagementService {
         throw new AppError('Invalid entity type', 400);
     }
 
-    return await Model.findById(entityId).lean();
+    return Model.findById(entityId).lean();
   }
 
   async fetchEnrichmentData(source, originalData) {

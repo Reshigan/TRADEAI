@@ -52,7 +52,7 @@ class POSImportService {
   async parseFile(filePath, fileType) {
     try {
       if (fileType === 'csv') {
-        return await this.parseCSV(filePath);
+        return this.parseCSV(filePath);
       } else if (fileType === 'xlsx' || fileType === 'xls') {
         return this.parseExcel(filePath);
       } else {

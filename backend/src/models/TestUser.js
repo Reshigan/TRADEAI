@@ -54,7 +54,7 @@ testUserSchema.pre('save', async function (next) {
 
 // Instance methods
 testUserSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 const TestUser = mongoose.model('TestUser', testUserSchema);

@@ -296,9 +296,9 @@ class BulkOperationsService {
     const ext = path.extname(filePath).toLowerCase().substring(1);
 
     if (ext === 'csv') {
-      return await this.parseCSV(filePath);
+      return this.parseCSV(filePath);
     } else if (ext === 'xlsx' || ext === 'xls') {
-      return await this.parseExcel(filePath);
+      return this.parseExcel(filePath);
     }
 
     throw new Error('Unsupported file format');
@@ -426,7 +426,7 @@ class BulkOperationsService {
       query = query.populate('parentId');
     }
 
-    return await query.lean();
+    return query.lean();
   }
 
   async transformForExport(data, modelType, options) {

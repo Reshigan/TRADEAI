@@ -569,15 +569,15 @@ class EnhancedRecommendationService extends EventEmitter {
 
     switch (strategy.name) {
       case 'hybrid_deep_learning':
-        return await this.executeHybridDeepLearning(userProfile, context, numRecommendations);
+        return this.executeHybridDeepLearning(userProfile, context, numRecommendations);
       case 'collaborative_filtering':
-        return await this.executeCollaborativeFiltering(userProfile, context, numRecommendations);
+        return this.executeCollaborativeFiltering(userProfile, context, numRecommendations);
       case 'content_based':
-        return await this.executeContentBased(userProfile, context, numRecommendations);
+        return this.executeContentBased(userProfile, context, numRecommendations);
       case 'contextual_bandits':
-        return await this.executeContextualBandits(userProfile, context, numRecommendations);
+        return this.executeContextualBandits(userProfile, context, numRecommendations);
       default:
-        return await this.executePopularityBased(userProfile, context, numRecommendations);
+        return this.executePopularityBased(userProfile, context, numRecommendations);
     }
   }
 

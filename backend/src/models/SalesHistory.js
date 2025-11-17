@@ -351,7 +351,7 @@ salesHistorySchema.statics.aggregateSales = async function (filters, groupBy, me
     { $sort: { '_id.date': -1 } }
   ];
 
-  return await this.aggregate(pipeline);
+  return this.aggregate(pipeline);
 };
 
 salesHistorySchema.statics.calculateBaseline = async function (customer, product, startDate, endDate) {

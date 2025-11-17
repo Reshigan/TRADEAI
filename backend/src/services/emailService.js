@@ -72,7 +72,7 @@ class EmailService {
       <p>If you have any questions, please contact your administrator.</p>
     `;
 
-    return await this.sendEmail(user.email, subject, html);
+    return this.sendEmail(user.email, subject, html);
   }
 
   async sendPasswordResetEmail(user, resetUrl) {
@@ -86,7 +86,7 @@ class EmailService {
       <p>If you didn't request this, please ignore this email.</p>
     `;
 
-    return await this.sendEmail(user.email, subject, html);
+    return this.sendEmail(user.email, subject, html);
   }
 
   async sendApprovalRequestEmail(approver, item, type) {
@@ -104,7 +104,7 @@ class EmailService {
       <p>Please log in to the system to review and approve.</p>
     `;
 
-    return await this.sendEmail(approver.email, subject, html);
+    return this.sendEmail(approver.email, subject, html);
   }
 
   async sendApprovalNotificationEmail(user, item, type, status) {
@@ -121,7 +121,7 @@ class EmailService {
       </ul>
     `;
 
-    return await this.sendEmail(user.email, subject, html);
+    return this.sendEmail(user.email, subject, html);
   }
 
   async sendPromotionAlertEmail(users, promotion) {
@@ -140,7 +140,7 @@ class EmailService {
     `;
 
     const promises = users.map((user) => this.sendEmail(user.email, subject, html));
-    return await Promise.all(promises);
+    return Promise.all(promises);
   }
 
   async sendBudgetAlertEmail(user, budget, alertType) {
@@ -159,7 +159,7 @@ class EmailService {
       <p>Please review and take necessary action.</p>
     `;
 
-    return await this.sendEmail(user.email, subject, html);
+    return this.sendEmail(user.email, subject, html);
   }
 
   async sendReportEmail(user, report, attachmentPath = null) {
@@ -194,9 +194,9 @@ class EmailService {
         }]
       };
 
-      return await sgMail.send(msg);
+      return sgMail.send(msg);
     } else {
-      return await this.sendEmail(user.email, subject, html);
+      return this.sendEmail(user.email, subject, html);
     }
   }
 }

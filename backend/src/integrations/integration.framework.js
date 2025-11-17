@@ -282,7 +282,7 @@ class SlackIntegration extends BaseIntegration {
 
   async authenticate() {
     // Slack uses static tokens, so just verify
-    return await this.testConnection();
+    return this.testConnection();
   }
 
   async sendNotification(message) {

@@ -750,7 +750,7 @@ class RedisStore {
 
   async incr(key) {
     try {
-      return await this.client.incr(key);
+      return this.client.incr(key);
     } catch (error) {
       console.error('Redis incr error:', error);
       return 1;

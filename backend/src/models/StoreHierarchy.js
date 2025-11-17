@@ -279,17 +279,17 @@ storeSchema.pre('save', function (next) {
 // Methods
 regionSchema.methods.getDistrictCount = async function () {
   const District = mongoose.model('District');
-  return await District.countDocuments({ region: this._id, isActive: true });
+  return District.countDocuments({ region: this._id, isActive: true });
 };
 
 regionSchema.methods.getStoreCount = async function () {
   const Store = mongoose.model('Store');
-  return await Store.countDocuments({ region: this._id, isActive: true });
+  return Store.countDocuments({ region: this._id, isActive: true });
 };
 
 districtSchema.methods.getStoreCount = async function () {
   const Store = mongoose.model('Store');
-  return await Store.countDocuments({ district: this._id, isActive: true });
+  return Store.countDocuments({ district: this._id, isActive: true });
 };
 
 storeSchema.methods.getHierarchy = async function () {
