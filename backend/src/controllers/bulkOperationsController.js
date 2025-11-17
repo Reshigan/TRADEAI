@@ -327,7 +327,7 @@ class BulkOperationsController {
    * Get bulk operation status
    * GET /api/bulk/status/:operationId
    */
-  getOperationStatus = asyncHandler(async (req, res) => {
+  getOperationStatus = asyncHandler((req, res) => {
     const { operationId } = req.params;
 
     // This would typically check a job queue or database for operation status
@@ -356,7 +356,7 @@ class BulkOperationsController {
    * Get supported model types and their fields
    * GET /api/bulk/models
    */
-  getSupportedModels = asyncHandler(async (req, res) => {
+  getSupportedModels = asyncHandler((req, res) => {
     const models = {
       customer: {
         name: 'Customer',
@@ -388,7 +388,7 @@ class BulkOperationsController {
    * Get bulk operation history
    * GET /api/bulk/history
    */
-  getOperationHistory = asyncHandler(async (req, res) => {
+  getOperationHistory = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
     const { page = 1, limit = 20, operation, modelType } = req.query;
 
@@ -439,7 +439,7 @@ class BulkOperationsController {
    * Cancel bulk operation
    * POST /api/bulk/cancel/:operationId
    */
-  cancelOperation = asyncHandler(async (req, res) => {
+  cancelOperation = asyncHandler((req, res) => {
     const { operationId } = req.params;
 
     // This would typically cancel a running job

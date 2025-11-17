@@ -101,7 +101,7 @@ class TenantController {
         });
       }
 
-      const tenant = await withoutTenantFilter(async () => {
+      const tenant = await withoutTenantFilter(() => {
         return Tenant.findById(req.tenant.id)
           .populate('createdBy', 'firstName lastName email')
           .populate('updatedBy', 'firstName lastName email');
@@ -148,7 +148,7 @@ class TenantController {
       };
 
       // Create tenant without tenant filtering
-      const tenant = await withoutTenantFilter(async () => {
+      const tenant = await withoutTenantFilter(() => {
         return Tenant.create(tenantData);
       });
 
@@ -207,7 +207,7 @@ class TenantController {
 
       if (req.user.role === 'super_admin') {
         // Super admin can update any tenant
-        tenant = await withoutTenantFilter(async () => {
+        tenant = await withoutTenantFilter(() => {
           return Tenant.findByIdAndUpdate(
             id,
             updates,
@@ -223,7 +223,7 @@ class TenantController {
           });
         }
 
-        tenant = await withoutTenantFilter(async () => {
+        tenant = await withoutTenantFilter(() => {
           return Tenant.findByIdAndUpdate(
             id,
             updates,
@@ -279,7 +279,7 @@ class TenantController {
       const { id } = req.params;
       const { permanent = false } = req.query;
 
-      const tenant = await withoutTenantFilter(async () => {
+      const tenant = await withoutTenantFilter(() => {
         if (permanent === 'true') {
           // Permanent deletion (use with caution)
           return Tenant.findByIdAndDelete(id);
@@ -470,7 +470,7 @@ class TenantController {
       const { id } = req.params;
       const subscriptionUpdates = req.body;
 
-      const tenant = await withoutTenantFilter(async () => {
+      const tenant = await withoutTenantFilter(() => {
         return Tenant.findByIdAndUpdate(
           id,
           {

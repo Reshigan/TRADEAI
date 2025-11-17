@@ -340,7 +340,7 @@ app.use('/api/hierarchy', authenticateToken, hierarchyRoutes);
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
 
 // Socket.IO middleware
-io.use(async (socket, next) => {
+io.use((socket, next) => {
   try {
     const token = socket.handshake.auth.token;
     if (!token) {

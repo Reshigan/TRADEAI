@@ -533,7 +533,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
 });
 
 // Real-time Dashboard Updates
-exports.subscribeToUpdates = asyncHandler(async (req, res, _next) => {
+exports.subscribeToUpdates = asyncHandler((req, res, _next) => {
   const { dashboardType } = req.params;
   const io = req.app.get('io');
 

@@ -725,22 +725,22 @@ marketingBudgetAllocationSchema.statics.getAllocationSummary = function (company
 };
 
 // Helper methods for data retrieval (to be implemented based on specific requirements)
-marketingBudgetAllocationSchema.methods.getVolumeData = async function () {
+marketingBudgetAllocationSchema.methods.getVolumeData = function () {
   // Implementation would query SalesHistory collection
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.getRevenueData = async function () {
+marketingBudgetAllocationSchema.methods.getRevenueData = function () {
   // Implementation would query SalesHistory collection
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.getProfitData = async function () {
+marketingBudgetAllocationSchema.methods.getProfitData = function () {
   // Implementation would query SalesHistory and calculate profits
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.getHistoricalData = async function () {
+marketingBudgetAllocationSchema.methods.getHistoricalData = function () {
   // Implementation would query historical spend data
   return [];
 };

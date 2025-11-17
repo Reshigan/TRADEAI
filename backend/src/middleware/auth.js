@@ -480,7 +480,7 @@ const authorizeVendor = (req, res, next) => {
 
 // Check approval limits
 const checkApprovalLimit = (type) => {
-  return async (req, res, next) => {
+  return (req, res, next) => {
     try {
       const amount = req.body.amount || req.body.totalAmount;
 

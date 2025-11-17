@@ -824,7 +824,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get trend data
  */
-async function getTrendData(dateRange, filters = {}) {
+function getTrendData(dateRange, filters = {}) {
   // Implementation for trend data
   // This would aggregate data by time periods (daily, weekly, monthly)
   // and return historical trends
@@ -959,7 +959,7 @@ async function getBottomPerformers(dateRange, filters = {}, limit = 10) {
 /**
  * Get category breakdown
  */
-async function getCategoryBreakdown(dateRange, filters = {}) {
+function getCategoryBreakdown(dateRange, filters = {}) {
   // Implementation for category analysis
   return [];
 }
@@ -967,7 +967,7 @@ async function getCategoryBreakdown(dateRange, filters = {}) {
 /**
  * Get channel performance
  */
-async function getChannelPerformance(dateRange, filters = {}) {
+function getChannelPerformance(dateRange, filters = {}) {
   // Implementation for channel analysis
   return [];
 }
@@ -975,7 +975,7 @@ async function getChannelPerformance(dateRange, filters = {}) {
 /**
  * Get regional data
  */
-async function getRegionalData(dateRange, filters = {}) {
+function getRegionalData(dateRange, filters = {}) {
   // Implementation for regional analysis
   return [];
 }
@@ -983,7 +983,7 @@ async function getRegionalData(dateRange, filters = {}) {
 /**
  * Generate insights using ML
  */
-async function generateInsights(_data) {
+function generateInsights(_data) {
   // Use ML service to generate insights
   return [
     {
@@ -1494,7 +1494,7 @@ async function getCohortAnalysis(dateRange, filters = {}) {
   };
 }
 
-async function generateSalesInsights(metrics, trend) {
+function generateSalesInsights(metrics, trend) {
   return [
     {
       type: 'info',
@@ -1505,7 +1505,7 @@ async function generateSalesInsights(metrics, trend) {
   ];
 }
 
-async function generatePromotionInsights(metrics) {
+function generatePromotionInsights(metrics) {
   return [
     {
       type: 'info',
@@ -1516,7 +1516,7 @@ async function generatePromotionInsights(metrics) {
   ];
 }
 
-async function generateCustomerInsights(_metrics, churnAnalysis) {
+function generateCustomerInsights(_metrics, churnAnalysis) {
   return [
     {
       type: 'info',
@@ -1527,7 +1527,7 @@ async function generateCustomerInsights(_metrics, churnAnalysis) {
   ];
 }
 
-async function generateProductInsights(_performance, profitability) {
+function generateProductInsights(_performance, profitability) {
   return [
     {
       type: 'info',
@@ -1991,7 +1991,7 @@ async function getSpendTrend(year) {
 }
 
 // Additional helper functions for trade spend dashboard
-async function getTopSpendAreas(matchCriteria, limit = 10) {
+function getTopSpendAreas(matchCriteria, limit = 10) {
   return TradeSpend.aggregate([
     { $match: matchCriteria },
     { $group: { _id: '$category', total: { $sum: '$amount.spent' } } },
@@ -2017,7 +2017,7 @@ async function getBudgetVsActualSpend(year) {
   return result[0] || { totalBudget: 0, totalSpent: 0, totalCommitted: 0 };
 }
 
-async function getUpcomingCommitments(days = 30) {
+function getUpcomingCommitments(days = 30) {
   const startDate = new Date();
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + days);
@@ -2052,13 +2052,13 @@ async function getPromotionPerformanceMetrics(dateFilter) {
   return result[0] || { totalRevenue: 0, totalROI: 0, avgLift: 0 };
 }
 
-async function getTopPerformingPromotions(dateFilter, limit = 10) {
+function getTopPerformingPromotions(dateFilter, limit = 10) {
   return Promotion.find(dateFilter)
     .sort({ 'actualResults.roi': -1 })
     .limit(limit);
 }
 
-async function getPromotionTrends(dateFilter) {
+function getPromotionTrends(dateFilter) {
   return Promotion.aggregate([
     { $match: dateFilter },
     { $group: {
@@ -2070,7 +2070,7 @@ async function getPromotionTrends(dateFilter) {
   ]);
 }
 
-async function getPromotionChannelPerformance(dateFilter) {
+function getPromotionChannelPerformance(dateFilter) {
   return Promotion.aggregate([
     { $match: dateFilter },
     { $group: {
@@ -2083,7 +2083,7 @@ async function getPromotionChannelPerformance(dateFilter) {
   ]);
 }
 
-async function getPromotionROIAnalysis(dateFilter) {
+function getPromotionROIAnalysis(dateFilter) {
   return Promotion.aggregate([
     { $match: dateFilter },
     { $group: {
@@ -2108,7 +2108,7 @@ async function getCustomerMetrics() {
   return result[0] || { totalCustomers: 0, activeCustomers: 0, avgRevenue: 0 };
 }
 
-async function getCustomerSegmentAnalysis() {
+function getCustomerSegmentAnalysis() {
   return Customer.aggregate([
     { $group: {
       _id: '$segment',
@@ -2119,7 +2119,7 @@ async function getCustomerSegmentAnalysis() {
   ]);
 }
 
-async function getCustomerLifetimeValue() {
+function getCustomerLifetimeValue() {
   return Customer.aggregate([
     { $group: {
       _id: '$segment',
@@ -2148,11 +2148,11 @@ async function getChurnAnalysis() {
   };
 }
 
-async function getTopCustomersByRevenue(limit = 10) {
+function getTopCustomersByRevenue(limit = 10) {
   return Customer.find().sort({ 'metrics.totalRevenue': -1 }).limit(limit);
 }
 
-async function getCustomerGrowthTrend() {
+function getCustomerGrowthTrend() {
   return Customer.aggregate([
     { $group: {
       _id: { $month: '$createdAt' },
@@ -2185,7 +2185,7 @@ async function getProductMetrics() {
   return result[0] || { totalProducts: 0, activeProducts: 0, avgPrice: 0 };
 }
 
-async function getProductPerformance(limit = 10) {
+function getProductPerformance(limit = 10) {
   return SalesHistory.aggregate([
     { $group: {
       _id: '$product',
@@ -2199,7 +2199,7 @@ async function getProductPerformance(limit = 10) {
   ]);
 }
 
-async function getProductMix() {
+function getProductMix() {
   return Product.aggregate([
     { $group: {
       _id: '$category',
@@ -2209,7 +2209,7 @@ async function getProductMix() {
   ]);
 }
 
-async function getInventoryStatus() {
+function getInventoryStatus() {
   return Product.aggregate([
     { $group: {
       _id: null,
@@ -2219,7 +2219,7 @@ async function getInventoryStatus() {
   ]);
 }
 
-async function getPricingAnalysis() {
+function getPricingAnalysis() {
   return Product.aggregate([
     { $group: {
       _id: '$category',
@@ -2231,7 +2231,7 @@ async function getPricingAnalysis() {
   ]);
 }
 
-async function getProfitabilityAnalysis() {
+function getProfitabilityAnalysis() {
   return SalesHistory.aggregate([
     { $group: {
       _id: '$product',

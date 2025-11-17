@@ -418,7 +418,7 @@ exports.bulkUpload = asyncHandler(async (req, res, _next) => {
 });
 
 // Download template
-exports.downloadTemplate = asyncHandler(async (req, res, _next) => {
+exports.downloadTemplate = asyncHandler((req, res, _next) => {
   const { format } = req.query;
 
   const templateData = [

@@ -171,7 +171,7 @@ class ReportingController {
    * Get available report templates
    * GET /api/reports/templates
    */
-  getReportTemplates = asyncHandler(async (req, res) => {
+  getReportTemplates = asyncHandler((req, res) => {
     const templates = this.reportingEngine.getReportTemplates();
 
     res.json({
@@ -199,7 +199,7 @@ class ReportingController {
    * Get scheduled reports
    * GET /api/reports/scheduled
    */
-  getScheduledReports = asyncHandler(async (req, res) => {
+  getScheduledReports = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
 
     // Get all scheduled reports for the tenant
@@ -228,7 +228,7 @@ class ReportingController {
    * Update scheduled report
    * PUT /api/reports/scheduled/:scheduleId
    */
-  updateScheduledReport = asyncHandler(async (req, res) => {
+  updateScheduledReport = asyncHandler((req, res) => {
     const { scheduleId } = req.params;
     const updates = req.body;
 
@@ -263,7 +263,7 @@ class ReportingController {
    * Delete scheduled report
    * DELETE /api/reports/scheduled/:scheduleId
    */
-  deleteScheduledReport = asyncHandler(async (req, res) => {
+  deleteScheduledReport = asyncHandler((req, res) => {
     const { scheduleId } = req.params;
 
     const deleted = this.reportingEngine.scheduledReports.delete(scheduleId);
@@ -285,7 +285,7 @@ class ReportingController {
    * Get report generation status
    * GET /api/reports/status/:reportId
    */
-  getReportStatus = asyncHandler(async (req, res) => {
+  getReportStatus = asyncHandler((req, res) => {
     const { reportId } = req.params;
 
     // This would typically check a job queue for report generation status
@@ -310,7 +310,7 @@ class ReportingController {
    * Download generated report
    * GET /api/reports/download/:reportId
    */
-  downloadReport = asyncHandler(async (req, res) => {
+  downloadReport = asyncHandler((req, res) => {
     const { reportId } = req.params;
 
     // This would typically retrieve the file path from a database or cache
@@ -325,7 +325,7 @@ class ReportingController {
    * Get report history
    * GET /api/reports/history
    */
-  getReportHistory = asyncHandler(async (req, res) => {
+  getReportHistory = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
     const { page = 1, limit = 20, reportType, status } = req.query;
 
@@ -383,7 +383,7 @@ class ReportingController {
    * Get report metrics and analytics
    * GET /api/reports/metrics
    */
-  getReportMetrics = asyncHandler(async (req, res) => {
+  getReportMetrics = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
 
     // Mock report metrics
@@ -429,7 +429,7 @@ class ReportingController {
    * Validate report configuration
    * POST /api/reports/validate
    */
-  validateReportConfig = asyncHandler(async (req, res) => {
+  validateReportConfig = asyncHandler((req, res) => {
     const reportConfig = req.body;
 
     try {

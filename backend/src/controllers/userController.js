@@ -398,7 +398,7 @@ exports.assignRole = asyncHandler(async (req, res, _next) => {
 });
 
 // Get user roles and permissions
-exports.getUserRoles = asyncHandler(async (req, res, _next) => {
+exports.getUserRoles = asyncHandler((req, res, _next) => {
   const currentUser = req.user;
 
   // Define available roles based on current user's role

@@ -414,44 +414,44 @@ productSchema.statics.findByHierarchy = function (level, value) {
 };
 
 // Hierarchical Methods
-productSchema.methods.getAncestors = async function () {
+productSchema.methods.getAncestors = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getAncestors(this.tenantId, this._id);
 };
 
-productSchema.methods.getDescendants = async function (maxDepth = null) {
+productSchema.methods.getDescendants = function (maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
 };
 
-productSchema.methods.getChildren = async function () {
+productSchema.methods.getChildren = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getDirectChildren(this.tenantId, this._id);
 };
 
-productSchema.methods.getSiblings = async function (includeSelf = false) {
+productSchema.methods.getSiblings = function (includeSelf = false) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
 };
 
-productSchema.methods.getPathToRoot = async function () {
+productSchema.methods.getPathToRoot = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getPathToRoot(this.tenantId, this._id);
 };
 
-productSchema.methods.moveTo = async function (newParentId) {
+productSchema.methods.moveTo = function (newParentId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
 };
 
 // Static Methods for Hierarchy Management
-productSchema.statics.createHierarchyNode = async function (tenantId, productData, parentId = null) {
+productSchema.statics.createHierarchyNode = function (tenantId, productData, parentId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.createNode(tenantId, productData, parentId);

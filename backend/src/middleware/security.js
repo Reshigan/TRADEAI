@@ -134,7 +134,7 @@ const validateRequest = (type) => {
         body('email')
           .isEmail().withMessage('Please provide a valid email')
           .normalizeEmail()
-          .custom(async (email, { req }) => {
+          .custom((email, { req }) => {
             // In a real implementation, check if email already exists in database
             if (email === 'test@example.com' && req.params.id !== '123') {
               throw new Error('Email already in use');

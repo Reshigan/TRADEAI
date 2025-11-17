@@ -312,7 +312,7 @@ const requireRole = (roles) => {
  * @param {string} ownerField - Field name in resource containing owner ID
  */
 const requireOwnership = (resourceIdParam = 'id', ownerField = 'createdBy') => {
-  return async (req, res, next) => {
+  return (req, res, next) => {
     try {
       const userId = req.user?._id;
       const tenantId = req.tenant?.id;

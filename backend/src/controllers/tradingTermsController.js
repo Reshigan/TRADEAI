@@ -534,7 +534,7 @@ exports.approveRejectTradingTerm = asyncHandler(async (req, res, _next) => {
 });
 
 // Get trading term types and options
-exports.getTradingTermOptions = asyncHandler(async (req, res, _next) => {
+exports.getTradingTermOptions = asyncHandler((req, res, _next) => {
   const termTypes = [
     { value: 'volume_discount', label: 'Volume Discount', description: 'Discounts based on purchase volume' },
     { value: 'early_payment', label: 'Early Payment', description: 'Discounts for early payment' },

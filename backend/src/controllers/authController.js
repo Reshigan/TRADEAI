@@ -480,7 +480,7 @@ exports.changePassword = asyncHandler(async (req, res, _next) => {
 });
 
 // Get current user
-exports.getMe = asyncHandler(async (req, res, _next) => {
+exports.getMe = asyncHandler((req, res, _next) => {
   res.json({
     success: true,
     data: {

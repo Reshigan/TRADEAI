@@ -493,7 +493,7 @@ campaignSchema.methods.updateKPI = async function (metric, actualValue) {
   }
 };
 
-campaignSchema.methods.generateAISuggestions = async function () {
+campaignSchema.methods.generateAISuggestions = function () {
   // This would integrate with AI service to generate content suggestions
   // Placeholder for AI integration
   return {

@@ -378,7 +378,7 @@ class AnalyticsController {
    * Get analytics insights and recommendations
    * GET /api/analytics/insights
    */
-  getInsights = asyncHandler(async (req, res) => {
+  getInsights = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
     const { dateRange, category } = req.query;
 
@@ -426,7 +426,7 @@ class AnalyticsController {
    * Export analytics data
    * GET /api/analytics/export
    */
-  exportAnalytics = asyncHandler(async (req, res) => {
+  exportAnalytics = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
     const { type, format, dateRange, ...filters } = req.query;
 
@@ -459,7 +459,7 @@ class AnalyticsController {
    * Get analytics performance metrics
    * GET /api/analytics/performance
    */
-  getPerformanceMetrics = asyncHandler(async (req, res) => {
+  getPerformanceMetrics = asyncHandler((req, res) => {
     const tenantId = req.tenant.id;
 
     // Mock performance metrics
@@ -482,7 +482,7 @@ class AnalyticsController {
    * Clear analytics cache
    * DELETE /api/analytics/cache
    */
-  clearCache = asyncHandler(async (req, res) => {
+  clearCache = asyncHandler((req, res) => {
     const { type } = req.query; // 'roi', 'lift', 'all'
 
     // Clear specific cache or all caches

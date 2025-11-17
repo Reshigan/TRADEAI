@@ -337,7 +337,7 @@ permissionSchema.statics.getPermissionMatrix = function (tenantId) {
 };
 
 // Instance methods
-permissionSchema.methods.checkDependencies = async function (grantedPermissions) {
+permissionSchema.methods.checkDependencies = function (grantedPermissions) {
   if (!this.dependencies || this.dependencies.length === 0) {
     return { satisfied: true, missing: [] };
   }

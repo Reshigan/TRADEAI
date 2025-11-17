@@ -147,7 +147,7 @@ exports.compareScenarios = asyncHandler(async (req, res, _next) => {
 });
 
 // Get saved simulations (placeholder)
-exports.getSavedSimulations = asyncHandler(async (req, res, _next) => {
+exports.getSavedSimulations = asyncHandler((req, res, _next) => {
   // Implementation would fetch saved simulations from database
   res.json({
     success: true,
@@ -157,7 +157,7 @@ exports.getSavedSimulations = asyncHandler(async (req, res, _next) => {
 });
 
 // Save simulation (placeholder)
-exports.saveSimulation = asyncHandler(async (req, res, _next) => {
+exports.saveSimulation = asyncHandler((req, res, _next) => {
   const { scenario, results, name } = req.body;
 
   // Implementation would save simulation to database

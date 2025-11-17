@@ -490,81 +490,81 @@ customerSchema.methods.calculateTradingTermsValue = function (salesAmount, termT
 };
 
 // Hierarchical Methods
-customerSchema.methods.getAncestors = async function () {
+customerSchema.methods.getAncestors = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getAncestors(this.tenantId, this._id);
 };
 
-customerSchema.methods.getDescendants = async function (maxDepth = null) {
+customerSchema.methods.getDescendants = function (maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getDescendants(this.tenantId, this._id, maxDepth);
 };
 
-customerSchema.methods.getChildren = async function () {
+customerSchema.methods.getChildren = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getDirectChildren(this.tenantId, this._id);
 };
 
-customerSchema.methods.getSiblings = async function (includeSelf = false) {
+customerSchema.methods.getSiblings = function (includeSelf = false) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getSiblings(this.tenantId, this._id, includeSelf);
 };
 
-customerSchema.methods.getPathToRoot = async function () {
+customerSchema.methods.getPathToRoot = function () {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.getPathToRoot(this.tenantId, this._id);
 };
 
-customerSchema.methods.moveTo = async function (newParentId) {
+customerSchema.methods.moveTo = function (newParentId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this.constructor);
   return hierarchyManager.moveNode(this.tenantId, this._id, newParentId);
 };
 
 // Static Methods for Hierarchy Management
-customerSchema.statics.createHierarchyNode = async function (tenantId, customerData, parentId = null) {
+customerSchema.statics.createHierarchyNode = function (tenantId, customerData, parentId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.createNode(tenantId, customerData, parentId);
 };
 
-customerSchema.statics.getTree = async function (tenantId, rootId = null, maxDepth = null) {
+customerSchema.statics.getTree = function (tenantId, rootId = null, maxDepth = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.getTree(tenantId, rootId, maxDepth);
 };
 
-customerSchema.statics.searchInHierarchy = async function (tenantId, searchTerm, rootId = null) {
+customerSchema.statics.searchInHierarchy = function (tenantId, searchTerm, rootId = null) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.searchInHierarchy(tenantId, searchTerm, rootId);
 };
 
-customerSchema.statics.validateHierarchy = async function (tenantId) {
+customerSchema.statics.validateHierarchy = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.validateHierarchy(tenantId);
 };
 
-customerSchema.statics.repairHierarchy = async function (tenantId) {
+customerSchema.statics.repairHierarchy = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.repairHierarchy(tenantId);
 };
 
-customerSchema.statics.getHierarchyStats = async function (tenantId) {
+customerSchema.statics.getHierarchyStats = function (tenantId) {
   const HierarchyManager = require('../utils/hierarchyManager');
   const hierarchyManager = new HierarchyManager(this);
   return hierarchyManager.getHierarchyStats(tenantId);
 };
 
 // Geographic Methods
-customerSchema.methods.findNearby = async function (maxDistance = 10000) {
+customerSchema.methods.findNearby = function (maxDistance = 10000) {
   if (!this.address || !this.address.location || !this.address.location.coordinates) {
     return [];
   }
@@ -581,7 +581,7 @@ customerSchema.methods.findNearby = async function (maxDistance = 10000) {
   });
 };
 
-customerSchema.statics.findByLocation = async function (tenantId, longitude, latitude, maxDistance = 10000) {
+customerSchema.statics.findByLocation = function (tenantId, longitude, latitude, maxDistance = 10000) {
   return this.find({
     tenantId,
     'address.location': {

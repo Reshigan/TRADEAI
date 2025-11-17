@@ -71,7 +71,7 @@ function configureTenantErrorHandling(app) {
 /**
  * Initialize tenant system
  */
-async function initializeTenantSystem(app) {
+function initializeTenantSystem(app) {
   try {
     console.log('Initializing multi-tenant system...');
 
@@ -151,7 +151,7 @@ const tenantUtils = {
     const Tenant = require('../models/Tenant');
     const { withoutTenantFilter } = require('../middleware/tenantQueryFilter');
 
-    return withoutTenantFilter(async () => {
+    return withoutTenantFilter(() => {
       return Tenant.findByIdAndUpdate(
         tenantId,
         {
