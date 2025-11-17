@@ -609,7 +609,7 @@ const generateRefreshToken = (userId) => {
  * @param {Object} res - Express response object
  * @param {Function} next - Express next function
  */
-const refreshToken = (req, res, next) => {
+const refreshToken = async (req, res, next) => {
   try {
     // Get refresh token
     const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
@@ -691,7 +691,7 @@ const refreshToken = (req, res, next) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-const logout = (req, res) => {
+const logout = async (req, res) => {
   try {
     // Get token
     const token = req.token;
