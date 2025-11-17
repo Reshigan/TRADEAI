@@ -165,7 +165,7 @@ const livenessHandler = (req, res) => {
 };
 
 // Kubernetes readiness probe handler
-const readinessHandler = (req, res) => {
+const readinessHandler = async (req, res) => {
   // Check if critical dependencies are ready
   try {
     // Check MongoDB connection

@@ -10,7 +10,7 @@ const logger = require('../utils/logger');
 /**
  * Check if tenant has active license
  */
-exports.checkLicense = (req, res, next) => {
+exports.checkLicense = async (req, res, next) => {
   try {
     if (!req.user || !req.user.tenantId) {
       return next();

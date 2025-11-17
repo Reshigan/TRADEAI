@@ -553,7 +553,7 @@ exports.subscribeToUpdates = asyncHandler(async (req, res, next) => {
 });
 
 // Helper functions
-exports.generateAlerts = (dashboardType, year) => {
+exports.generateAlerts = async (dashboardType, year) => {
   const alerts = [];
 
   // Budget utilization alerts
@@ -596,7 +596,7 @@ exports.generateAlerts = (dashboardType, year) => {
   return alerts;
 };
 
-exports.getKAMTasks = (userId) => {
+exports.getKAMTasks = async (userId) => {
   const tasks = [];
 
   // Pending approvals

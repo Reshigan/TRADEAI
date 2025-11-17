@@ -911,7 +911,7 @@ class MonitoringObservabilityService extends EventEmitter {
 
   startHealthCheckMonitoring() {
     this.healthChecks.forEach((check, name) => {
-      const runHealthCheck = () => {
+      const runHealthCheck = async () => {
         try {
           check.lastCheck = new Date();
           check.lastResult = await check.check();
