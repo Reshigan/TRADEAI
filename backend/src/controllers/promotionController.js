@@ -7,7 +7,7 @@ const mlService = require('../services/mlService');
 const logger = require('../utils/logger');
 
 // Create new promotion
-exports.createPromotion = asyncHandler(async (req, res, next) => {
+exports.createPromotion = asyncHandler(async (req, res, _next) => {
   // Get tenant from request context
   const tenantId = req.tenantId || req.user.tenantId;
   if (!tenantId) {
@@ -84,7 +84,7 @@ exports.createPromotion = asyncHandler(async (req, res, next) => {
 });
 
 // Get all promotions
-exports.getPromotions = asyncHandler(async (req, res, next) => {
+exports.getPromotions = asyncHandler(async (req, res, _next) => {
   const {
     status,
     promotionType,
@@ -143,7 +143,7 @@ exports.getPromotions = asyncHandler(async (req, res, next) => {
 });
 
 // Get single promotion
-exports.getPromotion = asyncHandler(async (req, res, next) => {
+exports.getPromotion = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('createdBy', 'firstName lastName')
     .populate('products.product')
@@ -162,7 +162,7 @@ exports.getPromotion = asyncHandler(async (req, res, next) => {
 });
 
 // Update promotion
-exports.updatePromotion = asyncHandler(async (req, res, next) => {
+exports.updatePromotion = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -185,7 +185,7 @@ exports.updatePromotion = asyncHandler(async (req, res, next) => {
 });
 
 // Submit for approval
-exports.submitForApproval = asyncHandler(async (req, res, next) => {
+exports.submitForApproval = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -210,7 +210,7 @@ exports.submitForApproval = asyncHandler(async (req, res, next) => {
 });
 
 // Approve promotion
-exports.approvePromotion = asyncHandler(async (req, res, next) => {
+exports.approvePromotion = asyncHandler(async (req, res, _next) => {
   const { comments } = req.body;
   const promotion = await Promotion.findById(req.params.id);
 
@@ -235,7 +235,7 @@ exports.approvePromotion = asyncHandler(async (req, res, next) => {
 });
 
 // Calculate promotion performance
-exports.calculatePerformance = asyncHandler(async (req, res, next) => {
+exports.calculatePerformance = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('products.product')
     .populate('scope.customers.customer');
@@ -291,7 +291,7 @@ exports.calculatePerformance = asyncHandler(async (req, res, next) => {
 });
 
 // Get promotion calendar
-exports.getPromotionCalendar = asyncHandler(async (req, res, next) => {
+exports.getPromotionCalendar = asyncHandler(async (req, res, _next) => {
   const { year, month, view = 'month' } = req.query;
 
   let startDate, endDate;
@@ -352,7 +352,7 @@ exports.getPromotionCalendar = asyncHandler(async (req, res, next) => {
 });
 
 // Analyze cannibalization
-exports.analyzeCannibalization = asyncHandler(async (req, res, next) => {
+exports.analyzeCannibalization = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('products.product');
 
@@ -451,7 +451,7 @@ exports.analyzeCannibalization = asyncHandler(async (req, res, next) => {
 });
 
 // Clone promotion
-exports.clonePromotion = asyncHandler(async (req, res, next) => {
+exports.clonePromotion = asyncHandler(async (req, res, _next) => {
   const originalPromotion = await Promotion.findById(req.params.id);
 
   if (!originalPromotion) {
@@ -489,7 +489,7 @@ exports.clonePromotion = asyncHandler(async (req, res, next) => {
 });
 
 // Delete promotion
-exports.deletePromotion = asyncHandler(async (req, res, next) => {
+exports.deletePromotion = asyncHandler(async (req, res, _next) => {
   const tenantId = req.tenantId || req.user.tenantId;
 
   const promotion = await Promotion.findOne({
@@ -514,7 +514,7 @@ exports.deletePromotion = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionProducts = asyncHandler(async (req, res, next) => {
+exports.getPromotionProducts = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('products.product');
 
@@ -529,7 +529,7 @@ exports.getPromotionProducts = asyncHandler(async (req, res, next) => {
 });
 
 // Level 3: Add products to promotion
-exports.addPromotionProducts = asyncHandler(async (req, res, next) => {
+exports.addPromotionProducts = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -549,7 +549,7 @@ exports.addPromotionProducts = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.updatePromotionProduct = asyncHandler(async (req, res, next) => {
+exports.updatePromotionProduct = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -574,7 +574,7 @@ exports.updatePromotionProduct = asyncHandler(async (req, res, next) => {
 });
 
 // Level 4: Remove product from promotion
-exports.removePromotionProduct = asyncHandler(async (req, res, next) => {
+exports.removePromotionProduct = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -593,7 +593,7 @@ exports.removePromotionProduct = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionCustomers = asyncHandler(async (req, res, next) => {
+exports.getPromotionCustomers = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('scope.customers.customer');
 
@@ -608,7 +608,7 @@ exports.getPromotionCustomers = asyncHandler(async (req, res, next) => {
 });
 
 // Level 3: Add customers to promotion
-exports.addPromotionCustomers = asyncHandler(async (req, res, next) => {
+exports.addPromotionCustomers = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -629,7 +629,7 @@ exports.addPromotionCustomers = asyncHandler(async (req, res, next) => {
 });
 
 // Level 4: Remove customer from promotion
-exports.removePromotionCustomer = asyncHandler(async (req, res, next) => {
+exports.removePromotionCustomer = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -648,7 +648,7 @@ exports.removePromotionCustomer = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionBudget = asyncHandler(async (req, res, next) => {
+exports.getPromotionBudget = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('budgetAllocation');
 
@@ -665,7 +665,7 @@ exports.getPromotionBudget = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.updatePromotionBudget = asyncHandler(async (req, res, next) => {
+exports.updatePromotionBudget = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -691,7 +691,7 @@ exports.updatePromotionBudget = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionApprovals = asyncHandler(async (req, res, next) => {
+exports.getPromotionApprovals = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('approvals.approver', 'firstName lastName email role');
 
@@ -705,7 +705,7 @@ exports.getPromotionApprovals = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.processApproval = asyncHandler(async (req, res, next) => {
+exports.processApproval = asyncHandler(async (req, res, _next) => {
   const { action, comments } = req.body;
   const promotion = await Promotion.findById(req.params.id);
 
@@ -753,7 +753,7 @@ exports.processApproval = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionDocuments = asyncHandler(async (req, res, next) => {
+exports.getPromotionDocuments = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -766,7 +766,7 @@ exports.getPromotionDocuments = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.addPromotionDocument = asyncHandler(async (req, res, next) => {
+exports.addPromotionDocument = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -791,7 +791,7 @@ exports.addPromotionDocument = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.removePromotionDocument = asyncHandler(async (req, res, next) => {
+exports.removePromotionDocument = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -810,7 +810,7 @@ exports.removePromotionDocument = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionConflicts = asyncHandler(async (req, res, next) => {
+exports.getPromotionConflicts = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('conflicts.promotion', 'promotionId name period');
 
@@ -825,7 +825,7 @@ exports.getPromotionConflicts = asyncHandler(async (req, res, next) => {
 });
 
 // Level 3: Get promotion performance
-exports.getPromotionPerformance = asyncHandler(async (req, res, next) => {
+exports.getPromotionPerformance = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id);
 
   if (!promotion) {
@@ -843,7 +843,7 @@ exports.getPromotionPerformance = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getPromotionHistory = asyncHandler(async (req, res, next) => {
+exports.getPromotionHistory = asyncHandler(async (req, res, _next) => {
   const promotion = await Promotion.findById(req.params.id)
     .populate('history.performedBy', 'firstName lastName email');
 

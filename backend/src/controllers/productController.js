@@ -3,7 +3,7 @@ const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
 // Create product
-exports.createProduct = asyncHandler(async (req, res, next) => {
+exports.createProduct = asyncHandler(async (req, res, _next) => {
   const productData = {
     ...req.body,
     company: req.user.company,
@@ -25,7 +25,7 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 });
 
 // Get single product
-exports.getProduct = asyncHandler(async (req, res, next) => {
+exports.getProduct = asyncHandler(async (req, res, _next) => {
   const product = await Product.findById(req.params.id)
     .populate('company', 'name')
     .populate('createdBy', 'firstName lastName');
@@ -58,7 +58,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 });
 
 // Update product
-exports.updateProduct = asyncHandler(async (req, res, next) => {
+exports.updateProduct = asyncHandler(async (req, res, _next) => {
   const product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -88,7 +88,7 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 });
 
 // Delete product
-exports.deleteProduct = asyncHandler(async (req, res, next) => {
+exports.deleteProduct = asyncHandler(async (req, res, _next) => {
   const product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -126,7 +126,7 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
 });
 
 // Get all products
-exports.getProducts = asyncHandler(async (req, res, next) => {
+exports.getProducts = asyncHandler(async (req, res, _next) => {
   const {
     page = 1,
     limit = 10,
@@ -210,7 +210,7 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 });
 
 // Get product statistics
-exports.getProductStats = asyncHandler(async (req, res, next) => {
+exports.getProductStats = asyncHandler(async (req, res, _next) => {
   const stats = await Product.aggregate([
     { $match: { company: req.user.company } },
     {
@@ -259,7 +259,7 @@ exports.getProductStats = asyncHandler(async (req, res, next) => {
 });
 
 // Get product categories
-exports.getProductCategories = asyncHandler(async (req, res, next) => {
+exports.getProductCategories = asyncHandler(async (req, res, _next) => {
   const categories = await Product.distinct('category', { company: req.user.company });
 
   res.json({
@@ -269,7 +269,7 @@ exports.getProductCategories = asyncHandler(async (req, res, next) => {
 });
 
 // Get product brands
-exports.getProductBrands = asyncHandler(async (req, res, next) => {
+exports.getProductBrands = asyncHandler(async (req, res, _next) => {
   const brands = await Product.distinct('attributes.brand', { company: req.user.company });
 
   res.json({
@@ -279,7 +279,7 @@ exports.getProductBrands = asyncHandler(async (req, res, next) => {
 });
 
 // Bulk operations
-exports.bulkUpdateProducts = asyncHandler(async (req, res, next) => {
+exports.bulkUpdateProducts = asyncHandler(async (req, res, _next) => {
   const { productIds, updates } = req.body;
 
   if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
@@ -313,7 +313,7 @@ exports.bulkUpdateProducts = asyncHandler(async (req, res, next) => {
 });
 
 // Update product inventory
-exports.updateProductInventory = asyncHandler(async (req, res, next) => {
+exports.updateProductInventory = asyncHandler(async (req, res, _next) => {
   const { currentStock, reorderLevel, maxStock } = req.body;
 
   const product = await Product.findById(req.params.id);

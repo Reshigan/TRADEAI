@@ -8,7 +8,7 @@ const logger = require('../utils/logger');
 // ✅ PRODUCTION: All mock data removed - using real MongoDB only
 
 // Get all activity grids (list view)
-exports.getActivityGrids = asyncHandler(async (req, res, next) => {
+exports.getActivityGrids = asyncHandler(async (req, res, _next) => {
   const {
     page = 1,
     limit = 10,
@@ -90,7 +90,7 @@ exports.getActivityGrids = asyncHandler(async (req, res, next) => {
 });
 
 // Get activity grid (calendar/heatmap view)
-exports.getActivityGrid = asyncHandler(async (req, res, next) => {
+exports.getActivityGrid = asyncHandler(async (req, res, _next) => {
   const {
     startDate,
     endDate,
@@ -170,7 +170,7 @@ exports.getActivityGrid = asyncHandler(async (req, res, next) => {
 });
 
 // Create activity
-exports.createActivity = asyncHandler(async (req, res, next) => {
+exports.createActivity = asyncHandler(async (req, res, _next) => {
   const activityData = {
     ...req.body,
     createdBy: req.user._id
@@ -209,7 +209,7 @@ exports.createActivity = asyncHandler(async (req, res, next) => {
 });
 
 // Update activity
-exports.updateActivity = asyncHandler(async (req, res, next) => {
+exports.updateActivity = asyncHandler(async (req, res, _next) => {
   const activity = await ActivityGrid.findById(req.params.id);
 
   if (!activity) {
@@ -250,7 +250,7 @@ exports.updateActivity = asyncHandler(async (req, res, next) => {
 });
 
 // Delete activity
-exports.deleteActivity = asyncHandler(async (req, res, next) => {
+exports.deleteActivity = asyncHandler(async (req, res, _next) => {
   const activity = await ActivityGrid.findById(req.params.id);
 
   if (!activity) {
@@ -270,7 +270,7 @@ exports.deleteActivity = asyncHandler(async (req, res, next) => {
 });
 
 // Get heat map
-exports.getHeatMap = asyncHandler(async (req, res, next) => {
+exports.getHeatMap = asyncHandler(async (req, res, _next) => {
   const { year, month, groupBy = 'customer' } = req.query;
 
   const startDate = new Date(year, month - 1, 1);
@@ -362,7 +362,7 @@ exports.getHeatMap = asyncHandler(async (req, res, next) => {
 });
 
 // Get conflicts
-exports.getConflicts = asyncHandler(async (req, res, next) => {
+exports.getConflicts = asyncHandler(async (req, res, _next) => {
   const { startDate, endDate, severity } = req.query;
 
   // ✅ PRODUCTION: Always use real MongoDB queries
@@ -410,7 +410,7 @@ exports.getConflicts = asyncHandler(async (req, res, next) => {
 });
 
 // Sync activities from other modules
-exports.syncActivities = asyncHandler(async (req, res, next) => {
+exports.syncActivities = asyncHandler(async (req, res, _next) => {
   const { source, startDate, endDate } = req.body;
 
   const activities = [];

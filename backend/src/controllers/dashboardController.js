@@ -9,7 +9,7 @@ const { cacheService } = require('../services/cacheService');
 const mlService = require('../services/mlService');
 
 // Executive Dashboard
-exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
+exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const { year = new Date().getFullYear() } = req.query;
 
   // Try to get from cache
@@ -244,7 +244,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
 });
 
 // KAM Dashboard
-exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
+exports.getKAMDashboard = asyncHandler(async (req, res, _next) => {
   const { customerId, year = new Date().getFullYear() } = req.query;
 
   // Validate customer access
@@ -421,7 +421,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
 });
 
 // Analytics Dashboard
-exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
+exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
   const {
     startDate = new Date(new Date().getFullYear(), 0, 1),
     endDate = new Date(),
@@ -533,7 +533,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
 });
 
 // Real-time Dashboard Updates
-exports.subscribeToUpdates = asyncHandler(async (req, res, next) => {
+exports.subscribeToUpdates = asyncHandler(async (req, res, _next) => {
   const { dashboardType } = req.params;
   const io = req.app.get('io');
 

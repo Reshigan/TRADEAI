@@ -14,7 +14,7 @@ const crudService = new EnterpriseCrudService(Transaction);
  */
 
 // Create transaction
-exports.createTransaction = asyncHandler(async (req, res, next) => {
+exports.createTransaction = asyncHandler(async (req, res, _next) => {
   const transactionData = {
     ...req.body,
     tenantId: req.user.tenantId,
@@ -44,7 +44,7 @@ exports.createTransaction = asyncHandler(async (req, res, next) => {
 });
 
 // Get transactions with advanced filtering
-exports.getTransactions = asyncHandler(async (req, res, next) => {
+exports.getTransactions = asyncHandler(async (req, res, _next) => {
   const {
     page,
     limit,
@@ -90,7 +90,7 @@ exports.getTransactions = asyncHandler(async (req, res, next) => {
 });
 
 // Get transaction by ID
-exports.getTransactionById = asyncHandler(async (req, res, next) => {
+exports.getTransactionById = asyncHandler(async (req, res, _next) => {
   const transaction = await crudService.findById(req.params.id, {
     populate: ['customerId', 'vendorId', 'createdBy', 'workflow.approvers.userId']
   });
@@ -102,7 +102,7 @@ exports.getTransactionById = asyncHandler(async (req, res, next) => {
 });
 
 // Update transaction
-exports.updateTransaction = asyncHandler(async (req, res, next) => {
+exports.updateTransaction = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
 
   const transaction = await Transaction.findById(id);
@@ -129,7 +129,7 @@ exports.updateTransaction = asyncHandler(async (req, res, next) => {
 });
 
 // Delete transaction
-exports.deleteTransaction = asyncHandler(async (req, res, next) => {
+exports.deleteTransaction = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
 
   const result = await crudService.softDelete(id, {
@@ -144,7 +144,7 @@ exports.deleteTransaction = asyncHandler(async (req, res, next) => {
 });
 
 // Approve transaction
-exports.approveTransaction = asyncHandler(async (req, res, next) => {
+exports.approveTransaction = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const { comments } = req.body;
 
@@ -164,7 +164,7 @@ exports.approveTransaction = asyncHandler(async (req, res, next) => {
 });
 
 // Reject transaction
-exports.rejectTransaction = asyncHandler(async (req, res, next) => {
+exports.rejectTransaction = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const { comments } = req.body;
 
@@ -184,7 +184,7 @@ exports.rejectTransaction = asyncHandler(async (req, res, next) => {
 });
 
 // Settle transaction
-exports.settleTransaction = asyncHandler(async (req, res, next) => {
+exports.settleTransaction = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const { settlementData } = req.body;
 
@@ -215,7 +215,7 @@ exports.settleTransaction = asyncHandler(async (req, res, next) => {
 });
 
 // Get pending approvals
-exports.getPendingApprovals = asyncHandler(async (req, res, next) => {
+exports.getPendingApprovals = asyncHandler(async (req, res, _next) => {
   const pending = await Transaction.getPendingApprovals(req.user._id);
 
   res.json({
@@ -226,7 +226,7 @@ exports.getPendingApprovals = asyncHandler(async (req, res, next) => {
 });
 
 // Bulk approve
-exports.bulkApprove = asyncHandler(async (req, res, next) => {
+exports.bulkApprove = asyncHandler(async (req, res, _next) => {
   const { transactionIds, comments } = req.body;
 
   const results = {
@@ -300,7 +300,7 @@ const parseExcel = (buffer) => {
 };
 
 // Bulk upload transactions
-exports.bulkUpload = asyncHandler(async (req, res, next) => {
+exports.bulkUpload = asyncHandler(async (req, res, _next) => {
   if (!req.file) {
     throw new AppError('No file uploaded', 400);
   }
@@ -418,7 +418,7 @@ exports.bulkUpload = asyncHandler(async (req, res, next) => {
 });
 
 // Download template
-exports.downloadTemplate = asyncHandler(async (req, res, next) => {
+exports.downloadTemplate = asyncHandler(async (req, res, _next) => {
   const { format } = req.query;
 
   const templateData = [
@@ -462,7 +462,7 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
 });
 
 // Export transactions
-exports.exportTransactions = asyncHandler(async (req, res, next) => {
+exports.exportTransactions = asyncHandler(async (req, res, _next) => {
   const { format, ...filters } = req.query;
 
   const transactions = await Transaction.find({

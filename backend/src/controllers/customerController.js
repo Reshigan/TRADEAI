@@ -3,7 +3,7 @@ const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
 // Create customer
-exports.createCustomer = asyncHandler(async (req, res, next) => {
+exports.createCustomer = asyncHandler(async (req, res, _next) => {
   const customerData = {
     ...req.body,
     company: req.user.company,
@@ -24,7 +24,7 @@ exports.createCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Get single customer
-exports.getCustomer = asyncHandler(async (req, res, next) => {
+exports.getCustomer = asyncHandler(async (req, res, _next) => {
   const customer = await Customer.findById(req.params.id)
     .populate('company', 'name')
     .populate('createdBy', 'firstName lastName');
@@ -45,7 +45,7 @@ exports.getCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Update customer
-exports.updateCustomer = asyncHandler(async (req, res, next) => {
+exports.updateCustomer = asyncHandler(async (req, res, _next) => {
   const customer = await Customer.findById(req.params.id);
 
   if (!customer) {
@@ -74,7 +74,7 @@ exports.updateCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Delete customer
-exports.deleteCustomer = asyncHandler(async (req, res, next) => {
+exports.deleteCustomer = asyncHandler(async (req, res, _next) => {
   const customer = await Customer.findById(req.params.id);
 
   if (!customer) {
@@ -111,7 +111,7 @@ exports.deleteCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Get all customers
-exports.getCustomers = asyncHandler(async (req, res, next) => {
+exports.getCustomers = asyncHandler(async (req, res, _next) => {
   const {
     page = 1,
     limit = 10,
@@ -185,7 +185,7 @@ exports.getCustomers = asyncHandler(async (req, res, next) => {
 });
 
 // Get customer statistics
-exports.getCustomerStats = asyncHandler(async (req, res, next) => {
+exports.getCustomerStats = asyncHandler(async (req, res, _next) => {
   const stats = await Customer.aggregate([
     { $match: { company: req.user.company } },
     {
@@ -235,7 +235,7 @@ exports.getCustomerStats = asyncHandler(async (req, res, next) => {
 });
 
 // Bulk operations
-exports.bulkUpdateCustomers = asyncHandler(async (req, res, next) => {
+exports.bulkUpdateCustomers = asyncHandler(async (req, res, _next) => {
   const { customerIds, updates } = req.body;
 
   if (!customerIds || !Array.isArray(customerIds) || customerIds.length === 0) {

@@ -31,7 +31,7 @@ const generateTokens = (user) => {
 };
 
 // Register new user
-exports.register = asyncHandler(async (req, res, next) => {
+exports.register = asyncHandler(async (req, res, _next) => {
   const { email, password, firstName, lastName, employeeId, role, department } = req.body;
 
   // Check if user already exists
@@ -86,7 +86,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 });
 
 // Quick login for demo
-exports.quickLogin = asyncHandler(async (req, res, next) => {
+exports.quickLogin = asyncHandler(async (req, res, _next) => {
   const { role } = req.body;
 
   // Map role to demo user email
@@ -131,7 +131,7 @@ exports.quickLogin = asyncHandler(async (req, res, next) => {
 });
 
 // Login
-exports.login = asyncHandler(async (req, res, next) => {
+exports.login = asyncHandler(async (req, res, _next) => {
   const { email, username, password, tenantId } = req.body;
 
   if ((!email && !username) || !password) {
@@ -242,7 +242,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 // Verify 2FA
-exports.verify2FA = asyncHandler(async (req, res, next) => {
+exports.verify2FA = asyncHandler(async (req, res, _next) => {
   const { token } = req.body;
 
   // Verify the token is valid
@@ -284,7 +284,7 @@ exports.verify2FA = asyncHandler(async (req, res, next) => {
 });
 
 // Enable 2FA
-exports.enable2FA = asyncHandler(async (req, res, next) => {
+exports.enable2FA = asyncHandler(async (req, res, _next) => {
   // Generate secret
   const secret = speakeasy.generateSecret({
     name: `FMCG Trade Spend (${req.user.email})`
@@ -308,7 +308,7 @@ exports.enable2FA = asyncHandler(async (req, res, next) => {
 });
 
 // Disable 2FA
-exports.disable2FA = asyncHandler(async (req, res, next) => {
+exports.disable2FA = asyncHandler(async (req, res, _next) => {
   const { password } = req.body;
 
   // Verify password
@@ -331,7 +331,7 @@ exports.disable2FA = asyncHandler(async (req, res, next) => {
 });
 
 // Logout
-exports.logout = asyncHandler(async (req, res, next) => {
+exports.logout = asyncHandler(async (req, res, _next) => {
   // Invalidate cache
   await cacheService.deleteSession(req.token);
 
@@ -345,7 +345,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
 });
 
 // Refresh token
-exports.refreshToken = asyncHandler(async (req, res, next) => {
+exports.refreshToken = asyncHandler(async (req, res, _next) => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
@@ -374,7 +374,7 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
 });
 
 // Forgot password
-exports.forgotPassword = asyncHandler(async (req, res, next) => {
+exports.forgotPassword = asyncHandler(async (req, res, _next) => {
   const { email } = req.body;
 
   // Find user
@@ -412,7 +412,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 });
 
 // Reset password
-exports.resetPassword = asyncHandler(async (req, res, next) => {
+exports.resetPassword = asyncHandler(async (req, res, _next) => {
   const { token, password } = req.body;
 
   // Hash token
@@ -446,7 +446,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 // Change password
-exports.changePassword = asyncHandler(async (req, res, next) => {
+exports.changePassword = asyncHandler(async (req, res, _next) => {
   const { currentPassword, newPassword } = req.body;
 
   // Get user with password
@@ -480,7 +480,7 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
 });
 
 // Get current user
-exports.getMe = asyncHandler(async (req, res, next) => {
+exports.getMe = asyncHandler(async (req, res, _next) => {
   res.json({
     success: true,
     data: {
@@ -490,7 +490,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 });
 
 // Update current user
-exports.updateMe = asyncHandler(async (req, res, next) => {
+exports.updateMe = asyncHandler(async (req, res, _next) => {
   const updates = {};
   const allowedUpdates = ['firstName', 'lastName', 'preferences'];
 

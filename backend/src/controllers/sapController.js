@@ -9,7 +9,7 @@ const logger = require('../utils/logger');
 const { addJob, getJob } = require('../jobs');
 
 // Sync master data from SAP
-exports.syncMasterData = asyncHandler(async (req, res, next) => {
+exports.syncMasterData = asyncHandler(async (req, res, _next) => {
   const { dataType, fullSync = false } = req.body;
 
   // Queue the sync job
@@ -27,7 +27,7 @@ exports.syncMasterData = asyncHandler(async (req, res, next) => {
 });
 
 // Get sync status
-exports.getSyncStatus = asyncHandler(async (req, res, next) => {
+exports.getSyncStatus = asyncHandler(async (req, res, _next) => {
   const { jobId } = req.params;
 
   // Get job status from queue
@@ -50,7 +50,7 @@ exports.getSyncStatus = asyncHandler(async (req, res, next) => {
 });
 
 // Manual customer sync
-exports.syncCustomers = asyncHandler(async (req, res, next) => {
+exports.syncCustomers = asyncHandler(async (req, res, _next) => {
   const { customerCodes } = req.body;
 
   try {
@@ -142,7 +142,7 @@ exports.syncCustomers = asyncHandler(async (req, res, next) => {
 });
 
 // Manual product sync
-exports.syncProducts = asyncHandler(async (req, res, next) => {
+exports.syncProducts = asyncHandler(async (req, res, _next) => {
   const { materialNumbers } = req.body;
 
   try {
@@ -239,7 +239,7 @@ exports.syncProducts = asyncHandler(async (req, res, next) => {
 });
 
 // Sync sales data
-exports.syncSalesData = asyncHandler(async (req, res, next) => {
+exports.syncSalesData = asyncHandler(async (req, res, _next) => {
   const { startDate, endDate, customerCode } = req.body;
 
   try {
@@ -341,7 +341,7 @@ exports.syncSalesData = asyncHandler(async (req, res, next) => {
 });
 
 // Post trade spend to SAP
-exports.postTradeSpend = asyncHandler(async (req, res, next) => {
+exports.postTradeSpend = asyncHandler(async (req, res, _next) => {
   const { tradeSpendId } = req.body;
 
   const tradeSpend = await TradeSpend.findById(tradeSpendId)
@@ -414,7 +414,7 @@ exports.postTradeSpend = asyncHandler(async (req, res, next) => {
 });
 
 // Get SAP connection status
-exports.getConnectionStatus = asyncHandler(async (req, res, next) => {
+exports.getConnectionStatus = asyncHandler(async (req, res, _next) => {
   try {
     const status = await sapService.testConnection();
 

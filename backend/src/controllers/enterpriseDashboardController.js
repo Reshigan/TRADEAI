@@ -27,7 +27,7 @@ const getCurrency = (req) => {
  * Get comprehensive executive dashboard
  * Includes KPIs, trends, alerts, and drill-down data
  */
-exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
+exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const {
     year = new Date().getFullYear(),
     quarter,
@@ -131,7 +131,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
 /**
  * Get real-time KPI metrics
  */
-exports.getRealTimeKPIs = asyncHandler(async (req, res, next) => {
+exports.getRealTimeKPIs = asyncHandler(async (req, res, _next) => {
   const { metrics = 'all', period = 'today' } = req.query;
 
   const dateRange = period === 'today'
@@ -183,7 +183,7 @@ exports.getRealTimeKPIs = asyncHandler(async (req, res, next) => {
 /**
  * Get drill-down data for specific metric
  */
-exports.getDrillDownData = asyncHandler(async (req, res, next) => {
+exports.getDrillDownData = asyncHandler(async (req, res, _next) => {
   const {
     metric, // 'revenue', 'margin', 'volume', etc.
     dimension, // 'product', 'customer', 'region', 'channel'
@@ -238,7 +238,7 @@ exports.getDrillDownData = asyncHandler(async (req, res, next) => {
 /**
  * Get trade spend tracking dashboard
  */
-exports.getTradeSpendDashboard = asyncHandler(async (req, res, next) => {
+exports.getTradeSpendDashboard = asyncHandler(async (req, res, _next) => {
   const { year = new Date().getFullYear(), status, spendType } = req.query;
 
   const startDate = new Date(year, 0, 1);
@@ -315,7 +315,7 @@ exports.getTradeSpendDashboard = asyncHandler(async (req, res, next) => {
 /**
  * Get promotion performance dashboard
  */
-exports.getPromotionDashboard = asyncHandler(async (req, res, next) => {
+exports.getPromotionDashboard = asyncHandler(async (req, res, _next) => {
   const { status = 'all', period = 'current', type } = req.query;
 
   let dateFilter = {};
@@ -385,7 +385,7 @@ exports.getPromotionDashboard = asyncHandler(async (req, res, next) => {
 /**
  * Get budget utilization dashboard
  */
-exports.getBudgetDashboard = asyncHandler(async (req, res, next) => {
+exports.getBudgetDashboard = asyncHandler(async (req, res, _next) => {
   const { year = new Date().getFullYear(), department, category } = req.query;
 
   const matchCriteria = { year };
@@ -431,7 +431,7 @@ exports.getBudgetDashboard = asyncHandler(async (req, res, next) => {
 /**
  * Get sales performance dashboard
  */
-exports.getSalesPerformanceDashboard = asyncHandler(async (req, res, next) => {
+exports.getSalesPerformanceDashboard = asyncHandler(async (req, res, _next) => {
   const {
     period = 'ytd',
     groupBy = 'month',
@@ -484,7 +484,7 @@ exports.getSalesPerformanceDashboard = asyncHandler(async (req, res, next) => {
 /**
  * Get customer analytics dashboard
  */
-exports.getCustomerAnalyticsDashboard = asyncHandler(async (req, res, next) => {
+exports.getCustomerAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
   const { segment, status = 'active', period = 'ytd' } = req.query;
 
   const dateRange = calculateDateRange({ period });
@@ -527,7 +527,7 @@ exports.getCustomerAnalyticsDashboard = asyncHandler(async (req, res, next) => {
 /**
  * Get product analytics dashboard
  */
-exports.getProductAnalyticsDashboard = asyncHandler(async (req, res, next) => {
+exports.getProductAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
   const { category, brand, period = 'ytd' } = req.query;
 
   const dateRange = calculateDateRange({ period });

@@ -71,7 +71,7 @@ const mockTradingTerms = [
 ];
 
 // Get all trading terms
-exports.getTradingTerms = asyncHandler(async (req, res, next) => {
+exports.getTradingTerms = asyncHandler(async (req, res, _next) => {
   // Check if using mock database
   if (process.env.USE_MOCK_DB === 'true') {
     const {
@@ -187,7 +187,7 @@ exports.getTradingTerms = asyncHandler(async (req, res, next) => {
 });
 
 // Get single trading term
-exports.getTradingTerm = asyncHandler(async (req, res, next) => {
+exports.getTradingTerm = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
 
@@ -232,7 +232,7 @@ exports.getTradingTerm = asyncHandler(async (req, res, next) => {
 });
 
 // Create new trading term
-exports.createTradingTerm = asyncHandler(async (req, res, next) => {
+exports.createTradingTerm = asyncHandler(async (req, res, _next) => {
   const currentUser = req.user;
 
   // Check permissions
@@ -291,7 +291,7 @@ exports.createTradingTerm = asyncHandler(async (req, res, next) => {
 });
 
 // Update trading term
-exports.updateTradingTerm = asyncHandler(async (req, res, next) => {
+exports.updateTradingTerm = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
   const updates = req.body;
@@ -366,7 +366,7 @@ exports.updateTradingTerm = asyncHandler(async (req, res, next) => {
 });
 
 // Delete trading term
-exports.deleteTradingTerm = asyncHandler(async (req, res, next) => {
+exports.deleteTradingTerm = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
 
@@ -419,7 +419,7 @@ exports.deleteTradingTerm = asyncHandler(async (req, res, next) => {
 });
 
 // Submit trading term for approval
-exports.submitForApproval = asyncHandler(async (req, res, next) => {
+exports.submitForApproval = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
 
@@ -467,7 +467,7 @@ exports.submitForApproval = asyncHandler(async (req, res, next) => {
 });
 
 // Approve/Reject trading term
-exports.approveRejectTradingTerm = asyncHandler(async (req, res, next) => {
+exports.approveRejectTradingTerm = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const { action, notes } = req.body; // action: 'approve' or 'reject'
   const currentUser = req.user;
@@ -534,7 +534,7 @@ exports.approveRejectTradingTerm = asyncHandler(async (req, res, next) => {
 });
 
 // Get trading term types and options
-exports.getTradingTermOptions = asyncHandler(async (req, res, next) => {
+exports.getTradingTermOptions = asyncHandler(async (req, res, _next) => {
   const termTypes = [
     { value: 'volume_discount', label: 'Volume Discount', description: 'Discounts based on purchase volume' },
     { value: 'early_payment', label: 'Early Payment', description: 'Discounts for early payment' },
@@ -606,7 +606,7 @@ exports.getTradingTermOptions = asyncHandler(async (req, res, next) => {
 });
 
 // Calculate discount for given parameters
-exports.calculateDiscount = asyncHandler(async (req, res, next) => {
+exports.calculateDiscount = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const { volume, value, customerId, productId } = req.body;
   const currentUser = req.user;

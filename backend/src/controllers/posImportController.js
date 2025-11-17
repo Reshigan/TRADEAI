@@ -14,7 +14,7 @@ const importJobs = new Map();
 /**
  * Upload and preview POS data file
  */
-exports.uploadAndPreview = asyncHandler(async (req, res, next) => {
+exports.uploadAndPreview = asyncHandler(async (req, res, _next) => {
   if (!req.file) {
     return next(new AppError('No file uploaded', 400));
   }
@@ -71,7 +71,7 @@ exports.uploadAndPreview = asyncHandler(async (req, res, next) => {
 /**
  * Validate import data
  */
-exports.validateImport = asyncHandler(async (req, res, next) => {
+exports.validateImport = asyncHandler(async (req, res, _next) => {
   const { jobId } = req.body;
 
   const job = importJobs.get(jobId);
@@ -101,7 +101,7 @@ exports.validateImport = asyncHandler(async (req, res, next) => {
 /**
  * Confirm and execute import
  */
-exports.confirmImport = asyncHandler(async (req, res, next) => {
+exports.confirmImport = asyncHandler(async (req, res, _next) => {
   const { jobId } = req.body;
 
   const job = importJobs.get(jobId);
@@ -202,7 +202,7 @@ exports.confirmImport = asyncHandler(async (req, res, next) => {
 /**
  * Get import job status
  */
-exports.getImportStatus = asyncHandler(async (req, res, next) => {
+exports.getImportStatus = asyncHandler(async (req, res, _next) => {
   const { jobId } = req.params;
 
   const job = importJobs.get(jobId);
@@ -229,7 +229,7 @@ exports.getImportStatus = asyncHandler(async (req, res, next) => {
 /**
  * Get import history
  */
-exports.getImportHistory = asyncHandler(async (req, res, next) => {
+exports.getImportHistory = asyncHandler(async (req, res, _next) => {
   const tenantId = req.user.tenantId;
 
   const history = Array.from(importJobs.entries())
@@ -253,7 +253,7 @@ exports.getImportHistory = asyncHandler(async (req, res, next) => {
 /**
  * Download import template
  */
-exports.downloadTemplate = asyncHandler(async (req, res, next) => {
+exports.downloadTemplate = asyncHandler(async (req, res, _next) => {
   const template = posImportService.generateTemplate();
 
   // Convert to CSV
@@ -272,7 +272,7 @@ exports.downloadTemplate = asyncHandler(async (req, res, next) => {
 /**
  * Cancel import job
  */
-exports.cancelImport = asyncHandler(async (req, res, next) => {
+exports.cancelImport = asyncHandler(async (req, res, _next) => {
   const { jobId } = req.params;
 
   const job = importJobs.get(jobId);

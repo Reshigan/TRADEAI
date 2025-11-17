@@ -9,7 +9,7 @@ const logger = require('../utils/logger');
  */
 
 // Get all companies
-exports.getCompanies = asyncHandler(async (req, res, next) => {
+exports.getCompanies = asyncHandler(async (req, res, _next) => {
   const { page = 1, limit = 10, search, status, industry } = req.query;
 
   // Only super admin can access this
@@ -57,7 +57,7 @@ exports.getCompanies = asyncHandler(async (req, res, next) => {
 });
 
 // Get single company
-exports.getCompany = asyncHandler(async (req, res, next) => {
+exports.getCompany = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
 
   // Only super admin can access this
@@ -91,7 +91,7 @@ exports.getCompany = asyncHandler(async (req, res, next) => {
 });
 
 // Create new company
-exports.createCompany = asyncHandler(async (req, res, next) => {
+exports.createCompany = asyncHandler(async (req, res, _next) => {
   // Only super admin can create companies
   if (req.user.role !== 'super_admin') {
     throw new AppError('Access denied. Super admin only.', 403);
@@ -170,7 +170,7 @@ exports.createCompany = asyncHandler(async (req, res, next) => {
 });
 
 // Update company
-exports.updateCompany = asyncHandler(async (req, res, next) => {
+exports.updateCompany = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
 
   // Only super admin can update companies
@@ -204,7 +204,7 @@ exports.updateCompany = asyncHandler(async (req, res, next) => {
 });
 
 // Delete company (soft delete)
-exports.deleteCompany = asyncHandler(async (req, res, next) => {
+exports.deleteCompany = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
 
   // Only super admin can delete companies
@@ -246,7 +246,7 @@ exports.deleteCompany = asyncHandler(async (req, res, next) => {
 });
 
 // Toggle company status
-exports.toggleCompanyStatus = asyncHandler(async (req, res, next) => {
+exports.toggleCompanyStatus = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
 
   // Only super admin can toggle company status
@@ -288,7 +288,7 @@ exports.toggleCompanyStatus = asyncHandler(async (req, res, next) => {
 });
 
 // Create company administrator
-exports.createCompanyAdmin = asyncHandler(async (req, res, next) => {
+exports.createCompanyAdmin = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const {
     email,
@@ -369,7 +369,7 @@ exports.createCompanyAdmin = asyncHandler(async (req, res, next) => {
 });
 
 // Get company statistics
-exports.getCompanyStats = asyncHandler(async (req, res, next) => {
+exports.getCompanyStats = asyncHandler(async (req, res, _next) => {
   // Only super admin can access this
   if (req.user.role !== 'super_admin') {
     throw new AppError('Access denied. Super admin only.', 403);

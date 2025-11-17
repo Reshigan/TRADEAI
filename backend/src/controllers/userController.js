@@ -13,7 +13,7 @@ const bcrypt = require('bcryptjs');
  */
 
 // Get all users (with proper filtering based on role)
-exports.getUsers = asyncHandler(async (req, res, next) => {
+exports.getUsers = asyncHandler(async (req, res, _next) => {
   const { page = 1, limit = 10, search, role, status, department } = req.query;
   const currentUser = req.user;
 
@@ -65,7 +65,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 });
 
 // Get single user
-exports.getUser = asyncHandler(async (req, res, next) => {
+exports.getUser = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
 
@@ -91,7 +91,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 });
 
 // Create new user
-exports.createUser = asyncHandler(async (req, res, next) => {
+exports.createUser = asyncHandler(async (req, res, _next) => {
   const {
     email,
     password,
@@ -182,7 +182,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 });
 
 // Update user
-exports.updateUser = asyncHandler(async (req, res, next) => {
+exports.updateUser = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
   const updates = req.body;
@@ -249,7 +249,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 });
 
 // Delete user
-exports.deleteUser = asyncHandler(async (req, res, next) => {
+exports.deleteUser = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
 
@@ -299,7 +299,7 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
 });
 
 // Toggle user status (activate/deactivate)
-exports.toggleUserStatus = asyncHandler(async (req, res, next) => {
+exports.toggleUserStatus = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
 
@@ -346,7 +346,7 @@ exports.toggleUserStatus = asyncHandler(async (req, res, next) => {
 });
 
 // Assign role to user
-exports.assignRole = asyncHandler(async (req, res, next) => {
+exports.assignRole = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const { role, permissions, approvalLimits } = req.body;
   const currentUser = req.user;
@@ -398,7 +398,7 @@ exports.assignRole = asyncHandler(async (req, res, next) => {
 });
 
 // Get user roles and permissions
-exports.getUserRoles = asyncHandler(async (req, res, next) => {
+exports.getUserRoles = asyncHandler(async (req, res, _next) => {
   const currentUser = req.user;
 
   // Define available roles based on current user's role
