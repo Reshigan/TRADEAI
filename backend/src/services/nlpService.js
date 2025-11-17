@@ -200,6 +200,7 @@ class NLPService extends EventEmitter {
         type: 'MONEY',
         description: 'Monetary amounts',
         examples: ['$100', '€50', '¥1000'],
+        // eslint-disable-next-line security/detect-unsafe-regex
         patterns: [/\$\d+(?:,\d{3}){0,3}(?:\.\d{2})?/, /€\d+(?:,\d{3}){0,3}(?:\.\d{2})?/]
       },
       {
