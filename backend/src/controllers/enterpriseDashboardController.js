@@ -983,7 +983,7 @@ async function getRegionalData(dateRange, filters = {}) {
 /**
  * Generate insights using ML
  */
-async function generateInsights(data) {
+async function generateInsights(_data) {
   // Use ML service to generate insights
   return [
     {

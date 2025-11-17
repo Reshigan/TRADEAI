@@ -512,7 +512,7 @@ class PredictiveAnalyticsService {
     return { averageDays: 30, variance: 5 };
   }
 
-  getMetricData(customerId, metric, period) {
+  getMetricData(_customerId, metric, period) {
     return [];
   }
 

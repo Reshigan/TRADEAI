@@ -791,7 +791,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  identifyTradeoffs(original, optimized) {
+  identifyTradeoffs(original, _optimized) {
     return [
       {
         category: 'marketing',

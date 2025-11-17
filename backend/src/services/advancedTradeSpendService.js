@@ -597,7 +597,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  analyzeTrends(tradeSpends, dateRange) {
+  analyzeTrends(tradeSpends, _dateRange) {
     const trends = [];
 
     // Group by month
@@ -967,7 +967,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  assessOptimizationRisks(optimized, constraints) {
+  assessOptimizationRisks(_optimized, constraints) {
     return [
       {
         risk: 'Market volatility',

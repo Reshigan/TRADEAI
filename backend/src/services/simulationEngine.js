@@ -683,7 +683,7 @@ class SimulationEngine {
     return [];
   }
 
-  decomposeTimeSeries(data) {
+  decomposeTimeSeries(_data) {
     // Time series decomposition (trend, seasonality, residual)
     return {
       trend: [],

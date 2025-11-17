@@ -587,7 +587,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getChannelPerformance(_tenantId, dateRange) {
+  getChannelPerformance(_tenantId, _dateRange) {
     return [
       { channel: 'Online', roi: 22, lift: 28 },
       { channel: 'Retail', roi: 16, lift: 20 },
