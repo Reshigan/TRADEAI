@@ -809,7 +809,7 @@ class ReportingEngine {
     return Customer.find({ tenantId }).limit(100).lean();
   }
 
-  getCustomerSummaryData(tenantId, parameters) {
+  getCustomerSummaryData(_tenantId, parameters) {
     return {
       totalCustomers: 500,
       activeCustomers: 450,
@@ -879,7 +879,7 @@ class ReportingEngine {
     return liftData;
   }
 
-  getPromotionForecastingData(tenantId, _parameters) {
+  getPromotionForecastingData(_tenantId, _parameters) {
     // Mock forecasting data
     return [
       { month: 'Next Month', predictedROI: 18, confidence: 'High' },
@@ -888,7 +888,7 @@ class ReportingEngine {
     ];
   }
 
-  getTradeSpendData(tenantId, _parameters) {
+  getTradeSpendData(_tenantId, _parameters) {
     // Mock trade spend data
     return [
       { category: 'Discounts', amount: 150000, percentage: 60 },
@@ -897,7 +897,7 @@ class ReportingEngine {
     ];
   }
 
-  getSpendAllocationData(tenantId, _parameters) {
+  getSpendAllocationData(_tenantId, _parameters) {
     // Mock allocation data
     return [
       { segment: 'Premium Customers', allocation: 40, performance: 'Excellent' },

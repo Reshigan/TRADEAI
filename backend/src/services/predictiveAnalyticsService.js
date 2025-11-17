@@ -421,12 +421,12 @@ class PredictiveAnalyticsService {
     };
   }
 
-  detectCyclicalPattern(data) {
+  detectCyclicalPattern(_data) {
     // Simplified - check for regular ups and downs
     return false;
   }
 
-  detectSeasonalPattern(data) {
+  detectSeasonalPattern(_data) {
     // Simplified - would need more sophisticated analysis
     return false;
   }
@@ -484,19 +484,19 @@ class PredictiveAnalyticsService {
 
   // Data retrieval methods (would connect to database in production)
 
-  getHistoricalAccruals(customerId, months) {
+  getHistoricalAccruals(_customerId, months) {
     return [];
   }
 
-  getHistoricalDisputeRate(customerId) {
+  getHistoricalDisputeRate(_customerId) {
     return 0.1; // 10% default
   }
 
-  getVendorRiskScore(customerId) {
+  getVendorRiskScore(_customerId) {
     return 0.5; // Medium risk default
   }
 
-  getHistoricalSettlements(customerId) {
+  getHistoricalSettlements(_customerId) {
     return [];
   }
 

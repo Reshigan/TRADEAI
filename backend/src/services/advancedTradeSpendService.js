@@ -856,7 +856,7 @@ class AdvancedTradeSpendService {
     return groups;
   }
 
-  calculatePlannedSpend(budgets, groupBy, groupKey) {
+  calculatePlannedSpend(_budgets, groupBy, groupKey) {
     // Simplified calculation
     return 50000;
   }
@@ -950,7 +950,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateImprovements(current, optimized, _performance) {
+  calculateImprovements(_current, optimized, _performance) {
     return {
       projectedROIIncrease: 18,
       projectedRevenueIncrease: 250000,

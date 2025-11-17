@@ -727,7 +727,7 @@ class PromotionSimulationService {
     };
   }
 
-  analyzeCustomerImpact(promotion) {
+  analyzeCustomerImpact(_promotion) {
     return {
       newCustomers: 150,
       retainedCustomers: 450,
@@ -735,7 +735,7 @@ class PromotionSimulationService {
     };
   }
 
-  analyzeBrandImpact(promotion) {
+  analyzeBrandImpact(_promotion) {
     return {
       awareness: 'increased',
       sentiment: 'positive',
@@ -823,7 +823,7 @@ class PromotionSimulationService {
     ];
   }
 
-  calculatePortfolioImprovements(current, optimized) {
+  calculatePortfolioImprovements(_current, optimized) {
     return {
       roiImprovement: 18,
       revenueIncrease: 250000,
@@ -831,7 +831,7 @@ class PromotionSimulationService {
     };
   }
 
-  createPortfolioImplementationPlan(current, optimized) {
+  createPortfolioImplementationPlan(_current, optimized) {
     return {
       phase1: 'Analyze current performance',
       phase2: 'Pilot optimized mix',
@@ -840,7 +840,7 @@ class PromotionSimulationService {
     };
   }
 
-  analyzeCannibalizationImpact(promotion, relatedProduct) {
+  analyzeCannibalizationImpact(_promotion, relatedProduct) {
     // Simplified cannibalization analysis
     return {
       cannibalized: false,
@@ -860,7 +860,7 @@ class PromotionSimulationService {
     ];
   }
 
-  calculateNewCustomerContribution(promotion) {
+  calculateNewCustomerContribution(_promotion) {
     return {
       count: 150,
       volume: 3000,
@@ -869,7 +869,7 @@ class PromotionSimulationService {
     };
   }
 
-  calculateExistingCustomerContribution(promotion) {
+  calculateExistingCustomerContribution(_promotion) {
     return {
       count: 450,
       volume: 12000,
@@ -878,7 +878,7 @@ class PromotionSimulationService {
     };
   }
 
-  calculateFrequencyContribution(promotion) {
+  calculateFrequencyContribution(_promotion) {
     return {
       avgFrequencyIncrease: 1.5,
       volumeContribution: 2000,
@@ -886,7 +886,7 @@ class PromotionSimulationService {
     };
   }
 
-  calculateBasketSizeContribution(promotion) {
+  calculateBasketSizeContribution(_promotion) {
     return {
       avgBasketIncrease: 1.3,
       volumeContribution: 3000,
@@ -894,7 +894,7 @@ class PromotionSimulationService {
     };
   }
 
-  analyzeSustainedImpact(promotion) {
+  analyzeSustainedImpact(_promotion) {
     return {
       postPromotionWeeks: 4,
       retainedUplift: 12,

@@ -539,7 +539,7 @@ class EnterpriseCrudService {
    * DATA VALIDATION & CLEANSING
    */
 
-  validateData(data) {
+  validateData(_data) {
     // Implement custom validation rules
     // This can be extended based on model schemas
     return true;

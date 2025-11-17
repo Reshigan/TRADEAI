@@ -702,12 +702,12 @@ class MLIntegrationService {
   }
 
   // Additional helper methods would be implemented here...
-  prepareAnomalyFeatures(data, dataType) {
+  prepareAnomalyFeatures(_data, dataType) {
     // Mock feature preparation
     return Array(20).fill(0).map(() => Math.random());
   }
 
-  analyzeAnomalyDetails(original, reconstructed) {
+  analyzeAnomalyDetails(_original, reconstructed) {
     return {
       mostAnomalousFeatures: [0, 5, 12], // Indices of most anomalous features
       severity: 'medium'
@@ -723,7 +723,7 @@ class MLIntegrationService {
     return Array(12).fill(0).map(() => Math.random());
   }
 
-  identifyChurnFactors(features) {
+  identifyChurnFactors(_features) {
     return [
       'Decreased order frequency',
       'Lower engagement with promotions',
@@ -837,7 +837,7 @@ class MLIntegrationService {
     return series;
   }
 
-  analyzeCLVFactors(features) {
+  analyzeCLVFactors(_features) {
     return {
       topFactors: [
         { factor: 'Total Orders', importance: 0.35 },

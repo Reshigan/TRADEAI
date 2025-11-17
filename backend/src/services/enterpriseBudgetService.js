@@ -783,7 +783,7 @@ class EnterpriseBudgetService {
     return optimized;
   }
 
-  calculateImprovements(original, _optimized) {
+  calculateImprovements(_original, _optimized) {
     return {
       roiIncrease: 15, // Percentage
       efficiencyGain: 10,
@@ -791,7 +791,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  identifyTradeoffs(original, _optimized) {
+  identifyTradeoffs(_original, _optimized) {
     return [
       {
         category: 'marketing',
@@ -891,7 +891,7 @@ class EnterpriseBudgetService {
     };
   }
 
-  calculateBudgetKPIs(budgets, period) {
+  calculateBudgetKPIs(_budgets, period) {
     return [
       {
         name: 'Budget Utilization',
@@ -917,7 +917,7 @@ class EnterpriseBudgetService {
     ];
   }
 
-  identifyBudgetTrends(budgets, period) {
+  identifyBudgetTrends(_budgets, period) {
     return [
       {
         metric: 'spending',

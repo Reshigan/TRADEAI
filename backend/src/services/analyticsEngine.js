@@ -408,7 +408,7 @@ class AnalyticsEngine {
   // Additional helper methods would be implemented here...
   // For brevity, showing structure with mock implementations
 
-  getDetailedSalesData(tenantId, productIds, customerIds, startDate, endDate) {
+  getDetailedSalesData(_tenantId, productIds, customerIds, startDate, endDate) {
     // Mock implementation
     return {
       transactions: [],
@@ -525,7 +525,7 @@ class AnalyticsEngine {
     return recommendations;
   }
 
-  getHistoricalPerformanceData(tenantId, _constraints) {
+  getHistoricalPerformanceData(_tenantId, _constraints) {
     // Mock implementation
     return [];
   }
@@ -545,7 +545,7 @@ class AnalyticsEngine {
   }
 
   // Dashboard helper methods (mock implementations)
-  getPromotionSummary(tenantId, dateRange) {
+  getPromotionSummary(_tenantId, dateRange) {
     return {
       totalPromotions: 25,
       activePromotions: 5,
@@ -555,7 +555,7 @@ class AnalyticsEngine {
     };
   }
 
-  getROITrends(tenantId, dateRange) {
+  getROITrends(_tenantId, dateRange) {
     return [
       { month: 'Jan', roi: 12 },
       { month: 'Feb', roi: 15 },
