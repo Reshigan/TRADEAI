@@ -304,7 +304,7 @@ class EnterpriseCrudService {
   }
 
   // Bulk update
-//   async bulkUpdate(filter, updates, options = {}) {
+  async bulkUpdate(filter, updates, options = {}) {
     const records = await this.model.find(filter);
 
     const results = {
@@ -327,7 +327,7 @@ class EnterpriseCrudService {
   }
 
   // Mass update with custom function
-//   async massUpdate(filter, updateFn, options = {}) {
+  async massUpdate(filter, updateFn, options = {}) {
     const records = await this.model.find(filter);
 
     for (const record of records) {

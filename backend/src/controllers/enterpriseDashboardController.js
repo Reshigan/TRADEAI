@@ -824,7 +824,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get trend data
  */
-// async function getTrendData(dateRange, filters = {}) {
+async function getTrendData(dateRange, filters = {}) {
   // Implementation for trend data
   // This would aggregate data by time periods (daily, weekly, monthly)
   // and return historical trends
@@ -839,7 +839,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get alerts based on thresholds
  */
-// async function getAlerts(dateRange, filters = {}) {
+async function getAlerts(dateRange, filters = {}) {
   const alerts = [];
 
   // Check budget utilization
@@ -875,7 +875,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get top performers
  */
-// async function getTopPerformers(dateRange, filters = {}, limit = 10) {
+async function getTopPerformers(dateRange, filters = {}, limit = 10) {
   const matchCriteria = {
     date: { $gte: dateRange.start, $lte: dateRange.end }
   };
@@ -927,7 +927,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get bottom performers
  */
-// async function getBottomPerformers(dateRange, filters = {}, limit = 10) {
+async function getBottomPerformers(dateRange, filters = {}, limit = 10) {
   const matchCriteria = {
     date: { $gte: dateRange.start, $lte: dateRange.end }
   };
@@ -959,7 +959,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get category breakdown
  */
-// async function getCategoryBreakdown(dateRange, filters = {}) {
+async function getCategoryBreakdown(dateRange, filters = {}) {
   // Implementation for category analysis
   return [];
 }
@@ -967,7 +967,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get channel performance
  */
-// async function getChannelPerformance(dateRange, filters = {}) {
+async function getChannelPerformance(dateRange, filters = {}) {
   // Implementation for channel analysis
   return [];
 }
@@ -975,7 +975,7 @@ async function getKPIMetrics(dateRange, filters = {}, currency = 'ZAR') {
 /**
  * Get regional data
  */
-// async function getRegionalData(dateRange, filters = {}) {
+async function getRegionalData(dateRange, filters = {}) {
   // Implementation for regional analysis
   return [];
 }

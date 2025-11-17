@@ -623,7 +623,7 @@ class ForecastingService {
     });
   }
 
-//   async adjustForExternalFactors(forecast, tenantId, options = {}) {
+  async adjustForExternalFactors(forecast, tenantId, options = {}) {
     // Adjust for planned promotions, market conditions, etc.
     const adjustedForecast = [...forecast];
 

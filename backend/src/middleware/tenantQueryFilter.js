@@ -248,7 +248,7 @@ function withTenantContext(tenantId, callback) {
 /**
  * Mongoose plugin to add tenant-aware static methods
  */
-// function tenantAwarePlugin(schema, options = {}) {
+function tenantAwarePlugin(schema, options = {}) {
   // Add static methods for tenant-aware operations
   schema.statics.findByTenant = function (tenantId, filter = {}) {
     return this.find({ tenantId, ...filter });

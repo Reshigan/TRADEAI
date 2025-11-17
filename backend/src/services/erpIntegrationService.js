@@ -608,7 +608,7 @@ class ERPIntegrationService {
   /**
    * Fetch multiple entities from ERP
    */
-//   fetchAllFromERP(connection, entityType, filters = {}) {
+  fetchAllFromERP(connection, entityType, filters = {}) {
     // Implementation would vary by ERP system
     // This is a simplified version
     return [];
