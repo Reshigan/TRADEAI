@@ -61,8 +61,9 @@ const CommandCenter = () => {
         apiClient.get('/trade-spends')
       ]);
 
-      // Process data for dashboard
-      const data = processDashboardData(budgets.data, promotions.data, tradeSpends.data);
+      console.log('CommandCenter - Raw API responses:', { budgets, promotions, tradeSpends });
+      
+      const data = processDashboardData(budgets, promotions, tradeSpends);
       setDashboardData(data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
