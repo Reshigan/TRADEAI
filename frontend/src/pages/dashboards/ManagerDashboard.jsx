@@ -37,26 +37,16 @@ const ManagerDashboard = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const reallocationRes = await simulationService.getBudgetReallocation(null, 100);
-      
-      console.log('ManagerDashboard - reallocationRes:', reallocationRes);
-      
-      const recommendations = Array.isArray(reallocationRes?.recommendations) 
-        ? reallocationRes.recommendations 
-        : Array.isArray(reallocationRes?.data?.recommendations)
-        ? reallocationRes.data.recommendations
-        : [];
-      
-      const summary = reallocationRes?.summary || reallocationRes?.data?.summary || {
-        totalReallocation: 0,
-        expectedRevenueGain: 0,
-        underperformingCount: 0,
-        highPerformingCount: 0
-      };
+      // const reallocationRes = await simulationService.getBudgetReallocation(null, 100);
       
       setDashboardData({
-        budgetRecommendations: recommendations,
-        portfolioKPIs: summary
+        budgetRecommendations: [],
+        portfolioKPIs: {
+          totalReallocation: 0,
+          expectedRevenueGain: 0,
+          underperformingCount: 0,
+          highPerformingCount: 0
+        }
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
