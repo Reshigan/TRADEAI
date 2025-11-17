@@ -4,7 +4,7 @@ const app = require('../src/app');
 
 describe('TRADEAI Backend API - Complete Integration Tests', () => {
   let authToken;
-  let _testUser;
+  let testUser;
   let _testCompany;
 
   beforeAll(async () => {
@@ -134,7 +134,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
   });
 
   describe('Budget Management', () => {
-    let _budgetId;
+    let budgetId;
 
     test('POST /api/budgets - should create budget', async () => {
       const res = await request(app)
@@ -162,7 +162,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
   });
 
   describe('Customer Management', () => {
-    let _customerId;
+    let customerId;
 
     test('POST /api/customers - should create customer', async () => {
       const res = await request(app)
@@ -189,7 +189,7 @@ describe('TRADEAI Backend API - Complete Integration Tests', () => {
   });
 
   describe('Product Management', () => {
-    let _productId;
+    let productId;
 
     test('POST /api/products - should create product', async () => {
       const res = await request(app)
