@@ -757,7 +757,7 @@ class SimulationEngine {
     return {};
   }
 
-  optimizeActivityMix(params) {
+  optimizeActivityMix(_params) {
     return {};
   }
 

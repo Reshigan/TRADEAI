@@ -524,7 +524,7 @@ class MonitoringObservabilityService extends EventEmitter {
     const { name, tags, startTime, endTime, aggregation = 'raw' } = filters;
     const results = [];
 
-    this.metrics.forEach((metric, key) => {
+    this.metrics.forEach((metric, _key) => {
       // Apply name filter
       if (name && !metric.name.includes(name)) {
         return;
@@ -1171,7 +1171,7 @@ class MonitoringObservabilityService extends EventEmitter {
     const cutoff = Date.now() - (this.metricsRetentionDays * 24 * 60 * 60 * 1000);
 
     let totalRemoved = 0;
-    this.metrics.forEach((metric, key) => {
+    this.metrics.forEach((metric, _key) => {
       const initialCount = metric.values.length;
       metric.values = metric.values.filter((v) => v.timestamp > cutoff);
       totalRemoved += initialCount - metric.values.length;

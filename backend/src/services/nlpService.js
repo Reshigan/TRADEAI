@@ -861,7 +861,7 @@ class NLPService extends EventEmitter {
   /**
    * Update conversation context
    */
-  updateConversationContext(conversation, analysis, response) {
+  updateConversationContext(conversation, analysis, _response) {
     // Update context with recent intents and entities
     if (!conversation.context.recentIntents) {
       conversation.context.recentIntents = [];

@@ -535,7 +535,7 @@ class PredictiveAnalyticsService {
     return 5000; // $5K savings
   }
 
-  generateSettlementRecommendations(patterns, optimalFrequency) {
+  generateSettlementRecommendations(_patterns, optimalFrequency) {
     return ['Switch to bi-weekly settlements for optimal cash flow'];
   }
 

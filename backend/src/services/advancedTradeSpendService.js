@@ -958,7 +958,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  createImplementationPlan(current, _optimized) {
+  createImplementationPlan(_current, _optimized) {
     return {
       phase1: 'Reduce low-ROI categories by 10%',
       phase2: 'Reallocate to high-ROI categories',
@@ -1086,7 +1086,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  identifySpendRisks(predictions, patterns) {
+  identifySpendRisks(predictions, _patterns) {
     return [
       {
         risk: 'Budget overrun in Q4',

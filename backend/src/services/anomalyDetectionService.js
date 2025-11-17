@@ -710,7 +710,7 @@ class AnomalyDetectionService extends EventEmitter {
     const consensusAnomalies = [];
 
     // Apply voting logic
-    anomalyMap.forEach((groupedAnomalies, key) => {
+    anomalyMap.forEach((groupedAnomalies, _key) => {
       const voteCount = groupedAnomalies.length;
       const avgScore = groupedAnomalies.reduce((sum, a) => sum + a.score, 0) / voteCount;
 

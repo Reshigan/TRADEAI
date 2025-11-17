@@ -756,7 +756,7 @@ class AutoMLService extends EventEmitter {
   /**
    * Simulate model training and evaluation
    */
-  async simulateModelTraining(experiment, modelId, params) {
+  async simulateModelTraining(experiment, modelId, _params) {
     // Simulate training time based on model complexity
     const model = this.modelTemplates.get(modelId);
     const baseTime = model.trainingTime === 'fast' ? 100 :

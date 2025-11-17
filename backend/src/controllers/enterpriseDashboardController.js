@@ -1516,7 +1516,7 @@ async function generatePromotionInsights(metrics) {
   ];
 }
 
-async function generateCustomerInsights(metrics, churnAnalysis) {
+async function generateCustomerInsights(_metrics, churnAnalysis) {
   return [
     {
       type: 'info',
