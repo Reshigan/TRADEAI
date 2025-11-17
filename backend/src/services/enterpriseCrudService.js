@@ -453,19 +453,18 @@ class EnterpriseCrudService {
 
     const selectedFields = fields.length > 0 ? fields : Object.keys(records[0]);
 
+    // Lazy-load xlsx to avoid startup dependency
+    let xlsx;
+    try {
+      xlsx = require('xlsx');
+    } catch (e) {
+      throw new AppError('Excel export unavailable: xlsx module not installed', 500);
+    }
+
     const data = records.map((record) => {
       const row = {};
       selectedFields.forEach((field) => {
         row[field] = this.getNestedValue(record, field);
-
-        // Lazy-load xlsx to avoid startup dependency
-        let xlsx;
-        try {
-          xlsx = require('xlsx');
-        } catch (e) {
-          throw new AppError('Excel export unavailable: xlsx module not installed', 500);
-        }
-
       });
       return row;
     });

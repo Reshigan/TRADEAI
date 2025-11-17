@@ -257,9 +257,9 @@ class POSImportService {
       const end = Math.min(start + this.BATCH_SIZE, totalRows);
       const batch = validRows.slice(start, end);
 
-      try {
-        const transformedData = [];
+      const transformedData = [];
 
+      try {
         for (const row of batch) {
           try {
             const transformed = await this.transformRow(row, tenantId, userId);
