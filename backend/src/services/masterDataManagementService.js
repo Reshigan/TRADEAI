@@ -12,7 +12,7 @@ class MasterDataManagementService {
    * Product Hierarchy Management
    * Manage multi-level product hierarchies
    */
-  async manageProductHierarchy(action, data) {
+  manageProductHierarchy(action, data) {
     try {
       switch (action) {
         case 'create':
@@ -38,7 +38,7 @@ class MasterDataManagementService {
    * Customer Hierarchy Management
    * Manage customer relationships and hierarchies
    */
-  async manageCustomerHierarchy(action, data) {
+  manageCustomerHierarchy(action, data) {
     try {
       switch (action) {
         case 'create':
@@ -293,7 +293,7 @@ class MasterDataManagementService {
 
   // Helper methods
 
-  async createProductHierarchy(data) {
+  createProductHierarchy(data) {
     const { companyId, name, levels } = data;
 
     const hierarchy = {
@@ -313,7 +313,7 @@ class MasterDataManagementService {
     return hierarchy;
   }
 
-  async updateProductHierarchy(data) {
+  updateProductHierarchy(data) {
     logger.info('Product hierarchy updated', { hierarchyId: data.hierarchyId });
     return { ...data, updatedAt: new Date() };
   }
@@ -353,17 +353,17 @@ class MasterDataManagementService {
     }));
   }
 
-  async addHierarchyNode(data) {
+  addHierarchyNode(data) {
     logger.info('Hierarchy node added', { hierarchyId: data.hierarchyId });
     return { ...data, nodeId: Date.now().toString() };
   }
 
-  async moveHierarchyNode(data) {
+  moveHierarchyNode(data) {
     logger.info('Hierarchy node moved', { nodeId: data.nodeId });
     return { success: true };
   }
 
-  async createCustomerHierarchy(data) {
+  createCustomerHierarchy(data) {
     const { companyId, name, levels } = data;
 
     const hierarchy = {
@@ -381,7 +381,7 @@ class MasterDataManagementService {
     return hierarchy;
   }
 
-  async updateCustomerHierarchy(data) {
+  updateCustomerHierarchy(data) {
     return { ...data, updatedAt: new Date() };
   }
 
@@ -405,11 +405,11 @@ class MasterDataManagementService {
     return tree;
   }
 
-  async addCustomerNode(data) {
+  addCustomerNode(data) {
     return { ...data, nodeId: Date.now().toString() };
   }
 
-  async validateDataQuality(entityType, record) {
+  validateDataQuality(entityType, record) {
     const validation = {
       isValid: true,
       issues: []
@@ -469,7 +469,7 @@ class MasterDataManagementService {
     return recommendations;
   }
 
-  async getVersionHistory(entityType, entityId) {
+  getVersionHistory(entityType, entityId) {
     // In production, retrieve from version history collection
     return [
       {
@@ -487,16 +487,16 @@ class MasterDataManagementService {
     ];
   }
 
-  async getCurrentVersion(entityType, entityId) {
+  getCurrentVersion(entityType, entityId) {
     return this.getEntity(entityType, entityId);
   }
 
-  async restoreVersion(entityType, entityId, versionId) {
+  restoreVersion(entityType, entityId, versionId) {
     logger.info('Version restored', { entityType, entityId, versionId });
     return { success: true };
   }
 
-  async compareVersions(entityType, version1, version2) {
+  compareVersions(entityType, version1, version2) {
     return {
       differences: [
         { field: 'price', version1: 10.99, version2: 12.99 },
@@ -505,7 +505,7 @@ class MasterDataManagementService {
     };
   }
 
-  async getValidationRules(entityType) {
+  getValidationRules(entityType) {
     // In production, retrieve from rules configuration
     return [
       {
@@ -524,7 +524,7 @@ class MasterDataManagementService {
     ];
   }
 
-  async executeRule(rule, data) {
+  executeRule(rule, data) {
     switch (rule.type) {
       case 'required':
         return {
@@ -544,7 +544,7 @@ class MasterDataManagementService {
     }
   }
 
-  async getEntity(entityType, entityId) {
+  getEntity(entityType, entityId) {
     let Model;
     switch (entityType) {
       case 'product':
@@ -560,7 +560,7 @@ class MasterDataManagementService {
     return Model.findById(entityId).lean();
   }
 
-  async fetchEnrichmentData(source, originalData) {
+  fetchEnrichmentData(source, originalData) {
     // In production, fetch from external sources
     return {
       enrichedField1: 'enriched value',
@@ -584,7 +584,7 @@ class MasterDataManagementService {
     await Model.findByIdAndUpdate(entityId, data);
   }
 
-  async findDuplicates(records, entityType) {
+  findDuplicates(records, entityType) {
     const duplicateGroups = [];
     const processed = new Set();
 
@@ -648,7 +648,7 @@ class MasterDataManagementService {
     };
   }
 
-  async mergeRecords(entityType, records) {
+  mergeRecords(entityType, records) {
     // In production, implement smart merge logic
     const master = records[0];
     const merged = { ...master };

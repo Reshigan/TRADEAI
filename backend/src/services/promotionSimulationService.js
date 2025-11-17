@@ -458,7 +458,7 @@ class PromotionSimulationService {
 
   // Helper methods
 
-  async getHistoricalPromotions(criteria) {
+  getHistoricalPromotions(criteria) {
     return Promotion.find({
       productCategory: criteria.productCategory,
       status: 'completed'
@@ -544,7 +544,7 @@ class PromotionSimulationService {
     };
   }
 
-  async optimizeDiscount(baseParams, performance, constraints) {
+  optimizeDiscount(baseParams, performance, constraints) {
     // Simplified optimization - in production use actual optimization algorithm
     const optimalDiscount = Math.min(
       Math.max(baseParams.discount || 15, constraints.minDiscount || 10),
@@ -558,7 +558,7 @@ class PromotionSimulationService {
     };
   }
 
-  async optimizeDuration(baseParams, performance, constraints) {
+  optimizeDuration(baseParams, performance, constraints) {
     const optimalDuration = Math.min(
       Math.max(baseParams.duration || 14, constraints.minDuration || 7),
       constraints.maxDuration || 30
@@ -571,7 +571,7 @@ class PromotionSimulationService {
     };
   }
 
-  async optimizeInvestment(baseParams, performance, constraints, objectives) {
+  optimizeInvestment(baseParams, performance, constraints, objectives) {
     const targetROI = objectives.targetROI || 200;
     const optimalInvestment = (baseParams.estimatedRevenue || 100000) /
                              (targetROI / 100 + 1);
@@ -583,7 +583,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateExpectedOutcomes(parameters, performance) {
+  calculateExpectedOutcomes(parameters, performance) {
     return {
       expectedVolume: 10000,
       expectedRevenue: 500000,
@@ -701,7 +701,7 @@ class PromotionSimulationService {
     return roiScore + volumeScore;
   }
 
-  async analyzeVolumeImpact(promotion) {
+  analyzeVolumeImpact(promotion) {
     return {
       actual: promotion.actualVolume || 0,
       target: promotion.targetVolume || 0,
@@ -710,7 +710,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeRevenueImpact(promotion) {
+  analyzeRevenueImpact(promotion) {
     return {
       actual: promotion.actualRevenue || 0,
       target: promotion.targetRevenue || 0,
@@ -718,7 +718,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeProfitImpact(promotion) {
+  analyzeProfitImpact(promotion) {
     const revenue = promotion.actualRevenue || 0;
     const cost = promotion.totalCost || 0;
     return {
@@ -727,7 +727,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeCustomerImpact(promotion) {
+  analyzeCustomerImpact(promotion) {
     return {
       newCustomers: 150,
       retainedCustomers: 450,
@@ -735,7 +735,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeBrandImpact(promotion) {
+  analyzeBrandImpact(promotion) {
     return {
       awareness: 'increased',
       sentiment: 'positive',
@@ -802,7 +802,7 @@ class PromotionSimulationService {
     };
   }
 
-  async generateOptimalMix(totalBudget, constraints, objectives, companyId) {
+  generateOptimalMix(totalBudget, constraints, objectives, companyId) {
     // Simplified - in production use optimization algorithm
     return [
       {
@@ -840,7 +840,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeCannibalizationImpact(promotion, relatedProduct) {
+  analyzeCannibalizationImpact(promotion, relatedProduct) {
     // Simplified cannibalization analysis
     return {
       cannibalized: false,
@@ -860,7 +860,7 @@ class PromotionSimulationService {
     ];
   }
 
-  async calculateNewCustomerContribution(promotion) {
+  calculateNewCustomerContribution(promotion) {
     return {
       count: 150,
       volume: 3000,
@@ -869,7 +869,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateExistingCustomerContribution(promotion) {
+  calculateExistingCustomerContribution(promotion) {
     return {
       count: 450,
       volume: 12000,
@@ -878,7 +878,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateFrequencyContribution(promotion) {
+  calculateFrequencyContribution(promotion) {
     return {
       avgFrequencyIncrease: 1.5,
       volumeContribution: 2000,
@@ -886,7 +886,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateBasketSizeContribution(promotion) {
+  calculateBasketSizeContribution(promotion) {
     return {
       avgBasketIncrease: 1.3,
       volumeContribution: 3000,
@@ -894,7 +894,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeSustainedImpact(promotion) {
+  analyzeSustainedImpact(promotion) {
     return {
       postPromotionWeeks: 4,
       retainedUplift: 12,

@@ -328,16 +328,16 @@ class RealtimeEventService extends EventEmitter {
 
   // Event Handlers
 
-  async handlePOCreated(event) {
+  handlePOCreated(event) {
     console.log('PO Created:', event.data);
     // Send notification, trigger workflows, etc.
   }
 
-  async handlePOUpdated(event) {
+  handlePOUpdated(event) {
     console.log('PO Updated:', event.data);
   }
 
-  async handlePOApproved(event) {
+  handlePOApproved(event) {
     console.log('PO Approved:', event.data);
     // Trigger accrual calculation
     this.publishEvent('accrual.trigger', {
@@ -346,7 +346,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleInvoiceCreated(event) {
+  handleInvoiceCreated(event) {
     console.log('Invoice Created:', event.data);
     // Trigger auto-matching
     this.publishEvent('matching.trigger', {
@@ -355,11 +355,11 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleInvoiceMatched(event) {
+  handleInvoiceMatched(event) {
     console.log('Invoice Matched:', event.data);
   }
 
-  async handleInvoiceApproved(event) {
+  handleInvoiceApproved(event) {
     console.log('Invoice Approved:', event.data);
     // Update accruals
     this.publishEvent('accrual.update', {
@@ -368,7 +368,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handlePaymentCreated(event) {
+  handlePaymentCreated(event) {
     console.log('Payment Created:', event.data);
     // Trigger auto-application
     this.publishEvent('payment.auto_apply', {
@@ -376,7 +376,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handlePaymentApplied(event) {
+  handlePaymentApplied(event) {
     console.log('Payment Applied:', event.data);
     // Check if settlement needed
     this.publishEvent('settlement.check', {
@@ -384,12 +384,12 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleMatchingCompleted(event) {
+  handleMatchingCompleted(event) {
     console.log('Matching Completed:', event.data);
     // Send notification
   }
 
-  async handleMatchingFailed(event) {
+  handleMatchingFailed(event) {
     console.log('Matching Failed:', event.data);
     // Create dispute or alert
     if (event.data.autoCreateDispute) {
@@ -400,12 +400,12 @@ class RealtimeEventService extends EventEmitter {
     }
   }
 
-  async handleMatchingException(event) {
+  handleMatchingException(event) {
     console.log('Matching Exception:', event.data);
     // Alert user
   }
 
-  async handleDisputeCreated(event) {
+  handleDisputeCreated(event) {
     console.log('Dispute Created:', event.data);
     // Assign to analyst
     this.publishEvent('dispute.assign', {
@@ -413,26 +413,26 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleDisputeAssigned(event) {
+  handleDisputeAssigned(event) {
     console.log('Dispute Assigned:', event.data);
     // Notify assignee
   }
 
-  async handleDisputeEscalated(event) {
+  handleDisputeEscalated(event) {
     console.log('Dispute Escalated:', event.data);
     // Notify manager
   }
 
-  async handleDisputeResolved(event) {
+  handleDisputeResolved(event) {
     console.log('Dispute Resolved:', event.data);
     // Update related transactions
   }
 
-  async handleAccrualCalculated(event) {
+  handleAccrualCalculated(event) {
     console.log('Accrual Calculated:', event.data);
   }
 
-  async handleAccrualVariance(event) {
+  handleAccrualVariance(event) {
     console.log('Accrual Variance Detected:', event.data);
     // Alert if variance > threshold
     if (Math.abs(event.data.variance) > 0.1) { // 10%
@@ -440,15 +440,15 @@ class RealtimeEventService extends EventEmitter {
     }
   }
 
-  async handleAccrualReconciled(event) {
+  handleAccrualReconciled(event) {
     console.log('Accrual Reconciled:', event.data);
   }
 
-  async handleSettlementCreated(event) {
+  handleSettlementCreated(event) {
     console.log('Settlement Created:', event.data);
   }
 
-  async handleSettlementApproved(event) {
+  handleSettlementApproved(event) {
     console.log('Settlement Approved:', event.data);
     // Trigger bank reconciliation
     this.publishEvent('reconciliation.trigger', {
@@ -456,7 +456,7 @@ class RealtimeEventService extends EventEmitter {
     });
   }
 
-  async handleSettlementReconciled(event) {
+  handleSettlementReconciled(event) {
     console.log('Settlement Reconciled:', event.data);
   }
 

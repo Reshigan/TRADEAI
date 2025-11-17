@@ -152,7 +152,7 @@ class CacheService {
   }
 
   // Get remaining TTL
-  async getTTL(key) {
+  getTTL(key) {
     if (!this.isConnected) return -1;
 
     try {
@@ -211,58 +211,58 @@ class CacheService {
   }
 
   // Specific cache methods
-  async cacheUser(userId, userData) {
+  cacheUser(userId, userData) {
     const key = this.generateKey('user', userId);
     return this.set(key, userData, config.cache.ttl.user);
   }
 
-  async getCachedUser(userId) {
+  getCachedUser(userId) {
     const key = this.generateKey('user', userId);
     return this.get(key);
   }
 
-  async cacheDashboard(type, userId, data) {
+  cacheDashboard(type, userId, data) {
     const key = this.generateKey('dashboard', type, 'user', userId);
     return this.set(key, data, config.cache.ttl.dashboard);
   }
 
-  async getCachedDashboard(type, userId) {
+  getCachedDashboard(type, userId) {
     const key = this.generateKey('dashboard', type, 'user', userId);
     return this.get(key);
   }
 
-  async cacheReport(reportId, data) {
+  cacheReport(reportId, data) {
     const key = this.generateKey('report', reportId);
     return this.set(key, data, config.cache.ttl.report);
   }
 
-  async getCachedReport(reportId) {
+  getCachedReport(reportId) {
     const key = this.generateKey('report', reportId);
     return this.get(key);
   }
 
-  async cacheActivityGrid(gridId, data) {
+  cacheActivityGrid(gridId, data) {
     const key = this.generateKey('grid', gridId);
     return this.set(key, data, config.cache.ttl.grid);
   }
 
-  async getCachedActivityGrid(gridId) {
+  getCachedActivityGrid(gridId) {
     const key = this.generateKey('grid', gridId);
     return this.get(key);
   }
 
   // Session management
-  async setSession(sessionId, userData, ttl = 86400) {
+  setSession(sessionId, userData, ttl = 86400) {
     const key = this.generateKey('session', sessionId);
     return this.set(key, userData, ttl);
   }
 
-  async getSession(sessionId) {
+  getSession(sessionId) {
     const key = this.generateKey('session', sessionId);
     return this.get(key);
   }
 
-  async deleteSession(sessionId) {
+  deleteSession(sessionId) {
     const key = this.generateKey('session', sessionId);
     return this.delete(key);
   }
@@ -308,11 +308,11 @@ class MockCacheService {
     this.isConnected = true;
   }
 
-  async get(key) {
+  get(key) {
     return this.cache.get(key) || null;
   }
 
-  async set(key, value, ttl) {
+  set(key, value, ttl) {
     this.cache.set(key, value);
     if (ttl) {
       setTimeout(() => this.cache.delete(key), ttl * 1000);
@@ -320,27 +320,27 @@ class MockCacheService {
     return 'OK';
   }
 
-  async del(key) {
+  del(key) {
     return this.cache.delete(key) ? 1 : 0;
   }
 
-  async exists(key) {
+  exists(key) {
     return this.cache.has(key) ? 1 : 0;
   }
 
-  async keys(pattern) {
+  keys(pattern) {
     const allKeys = Array.from(this.cache.keys());
     if (pattern === '*') return allKeys;
     const regex = new RegExp(pattern.replace('*', '.*'));
     return allKeys.filter((key) => regex.test(key));
   }
 
-  async flushAll() {
+  flushAll() {
     this.cache.clear();
     return 'OK';
   }
 
-  async cacheUser(userId, userData) {
+  cacheUser(userId, userData) {
     return this.set(`user:${userId}`, JSON.stringify(userData), 3600);
   }
 
@@ -349,11 +349,11 @@ class MockCacheService {
     return data ? JSON.parse(data) : null;
   }
 
-  async invalidateUser(userId) {
+  invalidateUser(userId) {
     return this.del(`user:${userId}`);
   }
 
-  async cacheSession(sessionId, sessionData) {
+  cacheSession(sessionId, sessionData) {
     return this.set(`session:${sessionId}`, JSON.stringify(sessionData), 86400);
   }
 
@@ -362,11 +362,11 @@ class MockCacheService {
     return data ? JSON.parse(data) : null;
   }
 
-  async invalidateSession(sessionId) {
+  invalidateSession(sessionId) {
     return this.del(`session:${sessionId}`);
   }
 
-  async cacheData(key, data, ttl = 3600) {
+  cacheData(key, data, ttl = 3600) {
     return this.set(key, JSON.stringify(data), ttl);
   }
 
@@ -383,7 +383,7 @@ class MockCacheService {
     return keys.length;
   }
 
-  async initialize() {
+  initialize() {
     logger.info('Mock cache service initialized');
   }
 }
