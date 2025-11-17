@@ -151,8 +151,8 @@ const tenantUtils = {
     const Tenant = require('../models/Tenant');
     const { withoutTenantFilter } = require('../middleware/tenantQueryFilter');
 
-    return await withoutTenantFilter(async () => {
-      return await Tenant.findByIdAndUpdate(
+    return withoutTenantFilter(async () => {
+      return Tenant.findByIdAndUpdate(
         tenantId,
         {
           $inc: { [`usage.${usageType}`]: amount },

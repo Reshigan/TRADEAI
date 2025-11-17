@@ -343,7 +343,7 @@ class AIChatbotController {
    */
   async queryPromotions(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Promotion.find(query)
+    return Promotion.find(query)
       .populate('customer', 'name')
       .sort({ created_at: -1 })
       .limit(50);
@@ -354,7 +354,7 @@ class AIChatbotController {
    */
   async queryCustomers(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Customer.find(query)
+    return Customer.find(query)
       .sort({ name: 1 })
       .limit(50);
   }
@@ -364,7 +364,7 @@ class AIChatbotController {
    */
   async queryProducts(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Product.find(query)
+    return Product.find(query)
       .sort({ name: 1 })
       .limit(50);
   }
@@ -374,7 +374,7 @@ class AIChatbotController {
    */
   async queryBudgets(filters, companyId) {
     const query = { companyId, ...filters };
-    return await Budget.find(query)
+    return Budget.find(query)
       .sort({ created_at: -1 })
       .limit(50);
   }
