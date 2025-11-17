@@ -41,20 +41,20 @@ const TradingTermsList = () => {
   });
 
   useEffect(() => {
+    const loadTradingTerms = async () => {
+      setLoading(true);
+      try {
+        const response = await tradingTermsService.getTradingTerms(filters);
+        setTradingTerms(response.tradingTerms || response.data || []);
+      } catch (error) {
+        console.error('Failed to load trading terms:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadTradingTerms();
   }, [filters]);
-
-  const loadTradingTerms = async () => {
-    setLoading(true);
-    try {
-      const response = await tradingTermsService.getTradingTerms(filters);
-      setTradingTerms(response.tradingTerms || response.data || []);
-    } catch (error) {
-      console.error('Failed to load trading terms:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({

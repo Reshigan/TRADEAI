@@ -24,21 +24,21 @@ const RebatesList = () => {
   const [setLoading] = useState(true);
 
   useEffect(() => {
+    const loadRebates = async () => {
+      try {
+        const response = await api.get('/rebates');
+        if (response.data.success) {
+          setRebates(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to load rebates:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadRebates();
   }, []);
-
-  const loadRebates = async () => {
-    try {
-      const response = await api.get('/rebates');
-      if (response.data.success) {
-        setRebates(response.data.data);
-      }
-    } catch (error) {
-      console.error('Failed to load rebates:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this rebate?')) {
