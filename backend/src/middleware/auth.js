@@ -12,7 +12,7 @@ const securityLogger = new SecurityAuditLogger({
 });
 
 // Authenticate JWT token
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   console.log('MIDDLEWARE ENTRY POINT');
   try {
     logger.info('=== AUTH MIDDLEWARE CALLED ===');
