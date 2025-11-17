@@ -241,10 +241,11 @@ class ExternalIntegrationsService {
         connection.defaults.headers.common['Authorization'] = `apikey ${auth.key}`;
         break;
 
-      case 'basic':
+      case 'basic': {
         const basicAuth = Buffer.from(`${auth.username}:${auth.password}`).toString('base64');
         connection.defaults.headers.common['Authorization'] = `Basic ${basicAuth}`;
         break;
+      }
 
       case 'oauth2':
         if (auth.accessToken) {

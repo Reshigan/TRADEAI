@@ -150,7 +150,7 @@ class AdvancedAccrualService {
             calculationBasis = 'volume';
             break;
 
-          case 'lump_sum':
+          case 'lump_sum': {
             // Prorate lump sum over promotion period
             const promotionDays = Math.ceil((promotion.endDate - promotion.startDate) / (1000 * 60 * 60 * 24));
             const daysInMonth = Math.min(
@@ -160,6 +160,7 @@ class AdvancedAccrualService {
             accrualAmount = (safeNumber(promotion.totalBudget, 0) / promotionDays) * daysInMonth;
             calculationMethod = 'fixed_amount';
             break;
+          }
 
           default:
             // Default to percentage of sales

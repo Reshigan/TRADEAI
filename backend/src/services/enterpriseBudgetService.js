@@ -341,7 +341,7 @@ class EnterpriseBudgetService {
           workflow.nextApprovers = await this.getNextApprovers(budget, 'manager');
           break;
 
-        case 'approve':
+        case 'approve': {
           const nextLevel = await this.getNextApprovalLevel(budget);
           if (nextLevel) {
             workflow.newStatus = `pending_${nextLevel}_approval`;
@@ -350,6 +350,7 @@ class EnterpriseBudgetService {
             workflow.newStatus = 'approved';
           }
           break;
+        }
 
         case 'reject':
           workflow.newStatus = 'rejected';

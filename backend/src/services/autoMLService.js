@@ -735,11 +735,12 @@ class AutoMLService extends EventEmitter {
         case 'uniform':
           params[param] = Math.random() * (config.high - config.low) + config.low;
           break;
-        case 'log_uniform':
+        case 'log_uniform': {
           const logLow = Math.log(config.low);
           const logHigh = Math.log(config.high);
           params[param] = Math.exp(Math.random() * (logHigh - logLow) + logLow);
           break;
+        }
         case 'int_uniform':
           params[param] = Math.floor(Math.random() * (config.high - config.low + 1)) + config.low;
           break;
