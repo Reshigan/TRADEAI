@@ -571,7 +571,7 @@ class AnalyticsEngine {
     };
   }
 
-  getCustomerSegmentPerformance(tenantId, dateRange) {
+  getCustomerSegmentPerformance(_tenantId, dateRange) {
     return [
       { segment: 'Premium', roi: 25, lift: 30 },
       { segment: 'Standard', roi: 15, lift: 20 },

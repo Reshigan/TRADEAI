@@ -478,7 +478,7 @@ class AdvancedAnalyticsEngine {
     return 'negative';
   }
 
-  calculateCustomerMetrics(tenantId, options) {
+  calculateCustomerMetrics(_tenantId, options) {
     // Implementation for customer-specific metrics
     return {
       totalCustomers: 0,
@@ -489,7 +489,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculateProductMetrics(_tenantId, options) {
+  calculateProductMetrics(_tenantId, _options) {
     // Implementation for product-specific metrics
     return {
       totalProducts: 0,

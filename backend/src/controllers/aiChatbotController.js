@@ -572,7 +572,7 @@ class AIChatbotController {
   /**
    * Generate performance report sections
    */
-  async generatePerformanceReportSections(companyId, parameters) {
+  async generatePerformanceReportSections(companyId, _parameters) {
     const promotions = await Promotion.find({ companyId }).limit(20);
 
     return [

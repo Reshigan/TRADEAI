@@ -504,7 +504,7 @@ class PredictiveAnalyticsService {
     return [];
   }
 
-  getPendingPayments(customerId) {
+  getPendingPayments(_customerId) {
     return [];
   }
 

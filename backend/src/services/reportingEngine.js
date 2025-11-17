@@ -888,7 +888,7 @@ class ReportingEngine {
     ];
   }
 
-  getTradeSpendData(tenantId, parameters) {
+  getTradeSpendData(tenantId, _parameters) {
     // Mock trade spend data
     return [
       { category: 'Discounts', amount: 150000, percentage: 60 },
