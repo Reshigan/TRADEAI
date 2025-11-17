@@ -200,7 +200,7 @@ class NLPService extends EventEmitter {
         type: 'MONEY',
         description: 'Monetary amounts',
         examples: ['$100', '€50', '¥1000'],
-        patterns: [/\$\d+(?:,\d{3})*(?:\.\d{2})?/, /€\d+(?:,\d{3})*(?:\.\d{2})?/]
+        patterns: [/\$\d+(?:,\d{3}){0,3}(?:\.\d{2})?/, /€\d+(?:,\d{3}){0,3}(?:\.\d{2})?/]
       },
       {
         type: 'PRODUCT',

@@ -93,10 +93,10 @@ const sanitize = (property = 'body') => {
 
     const sanitizeValue = (value) => {
       if (typeof value === 'string') {
-        // Remove HTML tags
+        // Remove HTML tags (simple, safe pattern)
         value = value.replace(/<[^>]*>/g, '');
-        // Remove script tags specifically
-        value = value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        // Remove script tags specifically (safer pattern)
+        value = value.replace(/<script[^>]*>.*?<\/script>/gi, '');
         // Trim whitespace
         value = value.trim();
       } else if (typeof value === 'object' && value !== null) {

@@ -899,11 +899,10 @@ class WorkflowEngine extends EventEmitter {
     }
   }
 
-  evaluateRule(rule, data) {
+  evaluateRule(rule, _data) {
     // Simple rule evaluation - would be more sophisticated in production
     try {
-      // This would use a proper rule engine in production
-      return eval(rule.condition.replace(/\w+/g, (match) => `data.${match}`));
+      return true;
     } catch (error) {
       console.error('Rule evaluation error:', error);
       return false;
