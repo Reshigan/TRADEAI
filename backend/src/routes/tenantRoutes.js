@@ -63,7 +63,7 @@ router.post('/', tenantController.createTenant);
  * @desc    Get specific tenant details
  * @access  Super Admin, Tenant Admin (own tenant only)
  */
-router.get('/:id', (req, res, next) => {
+router.get('/:id', (req, res, _next) => {
   // Reuse getCurrentTenant for specific tenant access
   req.params.tenantId = req.params.id;
   tenantController.getCurrentTenant(req, res);

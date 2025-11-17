@@ -609,7 +609,7 @@ const generateRefreshToken = (userId) => {
  * @param {Object} res - Express response object
  * @param {Function} next - Express next function
  */
-const refreshToken = async (req, res, next) => {
+const refreshToken = async (req, res, _next) => {
   try {
     // Get refresh token
     const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
