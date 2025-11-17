@@ -376,7 +376,7 @@ class ReportingEngine {
     return data;
   }
 
-  async createExcelSheets(reportData, reportType, parameters) {
+  async createExcelSheets(reportData, reportType, _parameters) {
     const template = this.reportTemplates.get(reportType);
     const sheets = [];
 
@@ -580,7 +580,7 @@ class ReportingEngine {
     };
   }
 
-  addPDFContent(doc, reportData, reportType, parameters) {
+  addPDFContent(doc, reportData, reportType, _parameters) {
     // Add header
     doc.fontSize(20).text(`${this.reportTemplates.get(reportType).name}`, 50, 50);
     doc.fontSize(12).text(`Generated on: ${new Date().toLocaleDateString()}`, 50, 80);
@@ -906,7 +906,7 @@ class ReportingEngine {
     ];
   }
 
-  getSpendOptimizationData(tenantId, parameters) {
+  getSpendOptimizationData(tenantId, _parameters) {
     // Mock optimization recommendations
     return this.analyticsEngine.optimizeSpendAllocation(tenantId, 250000);
   }

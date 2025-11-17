@@ -418,7 +418,7 @@ class AIChatbotController {
   /**
    * Generate performance insights
    */
-  async generatePerformanceInsights(companyId, parameters) {
+  async generatePerformanceInsights(companyId, _parameters) {
     // Get recent promotions performance
     const recentPromotions = await Promotion.find({
       companyId,
@@ -612,7 +612,7 @@ class AIChatbotController {
   /**
    * Generate general report sections
    */
-  generateGeneralReportSections(companyId, parameters) {
+  generateGeneralReportSections(companyId, _parameters) {
     return [
       {
         title: 'Overview',
