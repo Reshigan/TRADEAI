@@ -368,7 +368,7 @@ const CommandCenter = () => {
                       </Grid>
                       <Grid item xs={3}>
                         <Chip 
-                          label={workflow.status.replace('_', ' ').toUpperCase()} 
+                          label={String(workflow.status || '').replace('_', ' ').toUpperCase()} 
                           size="small"
                           color={workflow.status === 'draft' ? 'default' : 'warning'}
                         />
