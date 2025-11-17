@@ -140,21 +140,21 @@ const CommandCenter = () => {
 
     // Active workflows (pending items)
     const activeWorkflows = [
-      ...promotions.filter(p => p.status === 'draft' || p.status === 'pending_approval').slice(0, 3).map(p => ({
+      ...promotionsArray.filter(p => p.status === 'draft' || p.status === 'pending_approval').slice(0, 3).map(p => ({
         title: `${p.name || 'Untitled Promotion'}`,
         description: `${p.customer?.name || 'Customer'} - ${p.status}`,
         status: p.status,
         route: `/promotions/${p._id}`,
         type: 'promotion'
       })),
-      ...budgets.filter(b => b.status === 'draft').slice(0, 2).map(b => ({
+      ...budgetsArray.filter(b => b.status === 'draft').slice(0, 2).map(b => ({
         title: `${b.name || 'Untitled Budget'}`,
         description: `$${(b.totalAmount || 0).toLocaleString()} - Draft`,
         status: 'draft',
         route: `/budgets/${b._id}`,
         type: 'budget'
       })),
-      ...tradeSpends.filter(ts => ts.status === 'pending').slice(0, 2).map(ts => ({
+      ...tradeSpendsArray.filter(ts => ts.status === 'pending').slice(0, 2).map(ts => ({
         title: `${ts.description || 'Trade Spend Request'}`,
         description: `$${(ts.amount || 0).toLocaleString()} - Pending approval`,
         status: 'pending',
@@ -168,8 +168,8 @@ const CommandCenter = () => {
       totalBudget: totalBudget,
       totalSpent: totalSpent,
       utilizationRate: utilizationRate,
-      activePromotions: promotions.filter(p => p.status === 'active').length,
-      pendingApprovals: [...promotions, ...tradeSpends].filter(item => 
+      activePromotions: promotionsArray.filter(p => p.status === 'active').length,
+      pendingApprovals: [...promotionsArray, ...tradeSpendsArray].filter(item => 
         item.status === 'pending_approval' || item.status === 'pending'
       ).length
     };
