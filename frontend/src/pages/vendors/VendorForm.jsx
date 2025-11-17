@@ -25,28 +25,27 @@ const VendorForm = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isEditMode) fetchVendor();
-  }, [id]);
-
-  const fetchVendor = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
-      const vendor = response.data.data || response.data;
-      setFormData({
-        name: vendor.name || '',
-        contactPerson: vendor.contactPerson || '',
-        email: vendor.email || '',
-        phone: vendor.phone || '',
-        rating: vendor.rating || '3',
-        status: vendor.status || 'active',
-        address: vendor.address || ''
-      });
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load vendor');
-    } finally {
-      setLoading(false);
-    }
+    if (!isEditMode) return;
+    
+    const fetchVendor = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+        const vendor = response.data.data || response.data;
+        setFormData({
+          name: vendor.name || '',
+          contactPerson: vendor.contactPerson || '',
+          email: vendor.email || '',
+          phone: vendor.phone || '',
+          rating: vendor.rating || '3',
+          status: vendor.status || 'active',
+          address: vendor.address || ''
+        });
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load vendor');
+      } finally {
+        setLoading(false);
+      }
     };
     
     fetchVendor();
