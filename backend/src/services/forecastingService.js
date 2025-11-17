@@ -907,7 +907,7 @@ class ForecastingService {
     }));
   }
 
-  addPlannedPromotionsImpact(forecast, plannedPromotions, tenantId) {
+  addPlannedPromotionsImpact(forecast, plannedPromotions, _tenantId) {
     // Add estimated impact of planned promotions
     const adjustedForecast = [...forecast];
 

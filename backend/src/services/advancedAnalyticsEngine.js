@@ -499,7 +499,7 @@ class AdvancedAnalyticsEngine {
     };
   }
 
-  calculatePromotionMetrics(tenantId, options) {
+  calculatePromotionMetrics(_tenantId, options) {
     // Implementation for promotion-specific metrics
     return {
       totalPromotions: 0,

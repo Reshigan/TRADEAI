@@ -888,7 +888,7 @@ class SecurityComplianceService extends EventEmitter {
       }));
   }
 
-  getComplianceStatus(tenantId) {
+  getComplianceStatus(_tenantId) {
     // Mock compliance status
     return {
       gdpr: 'compliant',

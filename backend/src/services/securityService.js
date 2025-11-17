@@ -654,7 +654,7 @@ class SecurityService {
 
   // Helper methods
 
-  recordFailedAttempt(key, ipAddress, userAgent, tenantId) {
+  recordFailedAttempt(key, ipAddress, userAgent, _tenantId) {
     const attempts = this.failedAttempts.get(key) || { count: 0, attempts: [] };
     attempts.count++;
     attempts.attempts.push({

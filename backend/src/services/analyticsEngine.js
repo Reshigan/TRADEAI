@@ -301,7 +301,7 @@ class AnalyticsEngine {
     };
   }
 
-  getPromotionalSales(tenantId, productIds, customerIds, startDate, endDate) {
+  getPromotionalSales(_tenantId, productIds, customerIds, startDate, endDate) {
     // This would typically query your sales/transaction data
     // For now, returning mock data structure
     return {
@@ -587,7 +587,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getChannelPerformance(tenantId, dateRange) {
+  getChannelPerformance(_tenantId, dateRange) {
     return [
       { channel: 'Online', roi: 22, lift: 28 },
       { channel: 'Retail', roi: 16, lift: 20 },

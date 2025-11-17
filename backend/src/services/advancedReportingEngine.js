@@ -595,7 +595,7 @@ class AdvancedReportingEngine {
 
   // PDF helper methods
 
-  addPDFHeader(doc, title, tenantId) {
+  addPDFHeader(doc, title, _tenantId) {
     doc.fontSize(20).text(title || 'TradeAI Report', 50, 50);
     doc.fontSize(12).text(`Generated: ${new Date().toLocaleDateString()}`, 50, 80);
     doc.moveDown();

@@ -744,7 +744,7 @@ class AutomatedInsightsService {
     return ['tenant1', 'tenant2', 'tenant3'];
   }
 
-  getRealTimeData(tenantId) {
+  getRealTimeData(_tenantId) {
     // Mock real-time data
     return {
       revenueChange: (Math.random() - 0.5) * 20,
