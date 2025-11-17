@@ -142,7 +142,7 @@ class DeductionService {
       if (endDate) query.deductionDate.$lte = new Date(endDate);
     }
 
-    return await Deduction.find(query)
+    return Deduction.find(query)
       .populate('customer', 'name code')
       .populate('promotion', 'name code')
       .sort({ deductionDate: -1 });

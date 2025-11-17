@@ -102,7 +102,7 @@ class TenantController {
       }
 
       const tenant = await withoutTenantFilter(async () => {
-        return await Tenant.findById(req.tenant.id)
+        return Tenant.findById(req.tenant.id)
           .populate('createdBy', 'firstName lastName email')
           .populate('updatedBy', 'firstName lastName email');
       });

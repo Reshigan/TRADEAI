@@ -64,7 +64,7 @@ class AuditService {
       if (filters.endDate) query.timestamp.$lte = new Date(filters.endDate);
     }
 
-    return await AuditLog.find(query)
+    return AuditLog.find(query)
       .populate('userId', 'firstName lastName email')
       .sort({ timestamp: -1 })
       .limit(filters.limit || 100);

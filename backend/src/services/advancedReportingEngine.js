@@ -486,7 +486,7 @@ class AdvancedReportingEngine {
       };
     }
 
-    return await TradeSpend.find(query)
+    return TradeSpend.find(query)
       .populate('promotionId', 'name type')
       .populate('customerId', 'name code')
       .populate('productId', 'name code')
@@ -503,7 +503,7 @@ class AdvancedReportingEngine {
       ];
     }
 
-    return await Promotion.find(query)
+    return Promotion.find(query)
       .populate('customers', 'name code')
       .populate('products', 'name code')
       .lean();
@@ -519,19 +519,19 @@ class AdvancedReportingEngine {
       };
     }
 
-    return await SalesHistory.find(query)
+    return SalesHistory.find(query)
       .populate('customerId', 'name code')
       .populate('productId', 'name code')
       .lean();
   }
 
   async getCustomerData(tenantId, filters) {
-    return await Customer.find({ tenantId, isActive: true })
+    return Customer.find({ tenantId, isActive: true })
       .lean();
   }
 
   async getProductData(tenantId, filters) {
-    return await Product.find({ tenantId, isActive: true })
+    return Product.find({ tenantId, isActive: true })
       .lean();
   }
 

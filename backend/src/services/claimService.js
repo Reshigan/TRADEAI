@@ -131,7 +131,7 @@ class ClaimService {
       if (endDate) query.claimDate.$lte = new Date(endDate);
     }
 
-    return await Claim.find(query)
+    return Claim.find(query)
       .populate('customer', 'name code')
       .populate('promotion', 'name code')
       .sort({ claimDate: -1 });

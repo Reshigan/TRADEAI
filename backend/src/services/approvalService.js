@@ -148,7 +148,7 @@ class ApprovalService {
   }
 
   async getApprovalsByEntity(entityType, entityId) {
-    return await Approval.find({ entityType, entityId })
+    return Approval.find({ entityType, entityId })
       .populate('requestedBy', 'name email')
       .populate('approvalChain.approver', 'name email role')
       .sort({ createdAt: -1 });
