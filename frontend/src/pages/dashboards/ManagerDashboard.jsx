@@ -21,7 +21,12 @@ const ManagerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
     budgetRecommendations: [],
-    portfolioKPIs: {}
+    portfolioKPIs: {
+      totalReallocation: 0,
+      expectedRevenueGain: 0,
+      underperformingCount: 0,
+      highPerformingCount: 0
+    }
   });
 
   useEffect(() => {
@@ -34,9 +39,24 @@ const ManagerDashboard = () => {
     try {
       const reallocationRes = await simulationService.getBudgetReallocation(null, 100);
       
+      console.log('ManagerDashboard - reallocationRes:', reallocationRes);
+      
+      const recommendations = Array.isArray(reallocationRes?.recommendations) 
+        ? reallocationRes.recommendations 
+        : Array.isArray(reallocationRes?.data?.recommendations)
+        ? reallocationRes.data.recommendations
+        : [];
+      
+      const summary = reallocationRes?.summary || reallocationRes?.data?.summary || {
+        totalReallocation: 0,
+        expectedRevenueGain: 0,
+        underperformingCount: 0,
+        highPerformingCount: 0
+      };
+      
       setDashboardData({
-        budgetRecommendations: reallocationRes.recommendations || [],
-        portfolioKPIs: reallocationRes.summary || {}
+        budgetRecommendations: recommendations,
+        portfolioKPIs: summary
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
