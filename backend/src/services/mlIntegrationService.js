@@ -810,7 +810,7 @@ class MLIntegrationService {
     };
   }
 
-  detectSeasonality(historicalData) {
+  detectSeasonality(_historicalData) {
     // Mock seasonality detection
     return {
       hasSeasonality: true,

@@ -678,7 +678,7 @@ class SimulationEngine {
     };
   }
 
-  getHistoricalVolume(products, months) {
+  getHistoricalVolume(_products, months) {
     // Get historical volume data
     return [];
   }
@@ -814,7 +814,7 @@ class SimulationEngine {
     return 0.5;
   }
 
-  extractComparisonMetrics(result) {
+  extractComparisonMetrics(_result) {
     return {};
   }
 

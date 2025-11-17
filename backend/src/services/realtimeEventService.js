@@ -31,7 +31,7 @@ class RealtimeEventService extends EventEmitter {
   initializeWebSocket(server) {
     this.wss = new WebSocket.Server({ server, path: '/ws' });
 
-    this.wss.on('connection', (ws, req) => {
+    this.wss.on('connection', (ws, _req) => {
       console.log('New WebSocket connection');
 
       ws.on('message', (message) => {

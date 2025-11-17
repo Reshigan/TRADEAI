@@ -783,7 +783,7 @@ class EnterpriseBudgetService {
     return optimized;
   }
 
-  calculateImprovements(original, optimized) {
+  calculateImprovements(original, _optimized) {
     return {
       roiIncrease: 15, // Percentage
       efficiencyGain: 10,

@@ -945,7 +945,7 @@ plt.show()`
   /**
    * Perform data exploration
    */
-  async performDataExploration(datasetId, config) {
+  async performDataExploration(datasetId, _config) {
     // Simulate data exploration process
     await new Promise((resolve) => setTimeout(resolve, 3000));
 

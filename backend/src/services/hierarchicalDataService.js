@@ -433,7 +433,7 @@ class HierarchicalDataService {
 
   // Helper methods
 
-  buildHierarchyTree(items, entityType) {
+  buildHierarchyTree(items, _entityType) {
     const tree = {};
 
     items.forEach((item) => {

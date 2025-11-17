@@ -535,7 +535,7 @@ class AdvancedReportingEngine {
       .lean();
   }
 
-  getAnalyticsData(tenantId, filters, _dateRange) {
+  getAnalyticsData(tenantId, _filters, _dateRange) {
     // This would integrate with the advanced analytics engine
     // For now, return aggregated data
     const pipeline = [

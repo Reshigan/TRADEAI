@@ -909,7 +909,7 @@ class PromotionSimulationService {
     return ((revenue - cost) / cost) * 100;
   }
 
-  assessScenarioRisk(scenario, historicalData) {
+  assessScenarioRisk(scenario, _historicalData) {
     // Simplified risk assessment
     return 5.5; // Medium risk score
   }

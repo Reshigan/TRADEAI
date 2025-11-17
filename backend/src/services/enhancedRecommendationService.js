@@ -1119,7 +1119,7 @@ class EnhancedRecommendationService extends EventEmitter {
     return Math.min(1, confidence);
   }
 
-  generateExplanation(item, userProfile, context) {
+  generateExplanation(item, userProfile, _context) {
     const explanations = [
       `Recommended because you frequently browse ${item.category}`,
       'Popular among users with similar preferences',

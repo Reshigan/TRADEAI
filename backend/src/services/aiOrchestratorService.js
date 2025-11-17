@@ -446,7 +446,7 @@ Respond with ONLY valid JSON, no other text.`;
   /**
    * Build prompt for generating explanation
    */
-  buildExplanationPrompt(userIntent, toolName, mlResult, context) {
+  buildExplanationPrompt(userIntent, toolName, mlResult, _context) {
     return `You are an AI assistant for trade promotions management. Explain the following ML prediction results to a business user in clear, actionable language.
 
 User's Original Request: "${userIntent}"

@@ -311,7 +311,7 @@ class WebSocketService {
     };
 
     // Send to all connected clients
-    this.clients.forEach((connections, userId) => {
+    this.clients.forEach((connections, _userId) => {
       connections.forEach((ws) => {
         this.sendToClient(ws, maintenanceMessage);
       });

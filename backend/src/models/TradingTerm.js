@@ -375,7 +375,7 @@ tradingTermSchema.methods.updatePerformance = async function (volume, revenue, c
 };
 
 // Static method to find applicable terms for customer/product
-tradingTermSchema.statics.findApplicableTerms = function (companyId, customerId, productId, orderValue, volume) {
+tradingTermSchema.statics.findApplicableTerms = function (companyId, customerId, _productId, orderValue, volume) {
   const now = new Date();
 
   return this.find({

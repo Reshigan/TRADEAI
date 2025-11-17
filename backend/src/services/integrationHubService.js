@@ -780,7 +780,7 @@ class IntegrationHubService extends EventEmitter {
     return 'mock_access_token';
   }
 
-  makeAPIRequest(connector, config, _options) {
+  makeAPIRequest(connector, _config, _options) {
     // Mock implementation - would make actual API requests
     return {
       data: { id: 'mock_id', status: 'success' }

@@ -781,7 +781,7 @@ class EnhancedSecurityService {
     return true;
   }
 
-  async checkConstraints(user, resource, action, context) {
+  async checkConstraints(user, resource, action, _context) {
     // Check session constraints
     const sessionPolicy = this.securityPolicies.get('session');
 

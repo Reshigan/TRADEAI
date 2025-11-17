@@ -1194,7 +1194,7 @@ class AdvancedAnalyticsService extends EventEmitter {
     return insights.sort((a, b) => b.impact === 'high' ? 1 : -1);
   }
 
-  async runInsightEngine(engineId, config) {
+  async runInsightEngine(engineId, _config) {
     // Simulate insight generation
     await new Promise((resolve) => setTimeout(resolve, 1000));
 

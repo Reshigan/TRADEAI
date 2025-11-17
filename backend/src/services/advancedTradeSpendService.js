@@ -557,7 +557,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateKPIs(tradeSpends, filters) {
+  calculateKPIs(tradeSpends, _filters) {
     const totalSpend = tradeSpends.reduce((sum, t) => sum + t.amount, 0);
     const totalRevenue = tradeSpends.reduce((sum, t) => sum + (t.revenue || 0), 0);
 
@@ -748,7 +748,7 @@ class AdvancedTradeSpendService {
     return alerts;
   }
 
-  generateRecommendations(dashboard, filters) {
+  generateRecommendations(dashboard, _filters) {
     const recommendations = [];
 
     // ROI optimization
@@ -930,7 +930,7 @@ class AdvancedTradeSpendService {
     return formatted;
   }
 
-  analyzeHistoricalPerformance(_companyId, historicalData) {
+  analyzeHistoricalPerformance(_companyId, _historicalData) {
     // Analyze historical ROI and effectiveness
     return {
       marketing: { roi: 250, effectiveness: 0.85 },
@@ -940,7 +940,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateOptimalAllocation(totalBudget, performance, constraints, objectives) {
+  calculateOptimalAllocation(totalBudget, performance, _constraints, objectives) {
     // Simplified optimization - in production use actual optimization algorithm
     return {
       marketing: totalBudget * 0.35,
@@ -958,7 +958,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  createImplementationPlan(current, optimized) {
+  createImplementationPlan(current, _optimized) {
     return {
       phase1: 'Reduce low-ROI categories by 10%',
       phase2: 'Reallocate to high-ROI categories',
@@ -1021,7 +1021,7 @@ class AdvancedTradeSpendService {
     return actions;
   }
 
-  analyzeSpendPatterns(historicalData) {
+  analyzeSpendPatterns(_historicalData) {
     // Analyze historical patterns for forecasting
     return {
       seasonality: { hasPattern: true, strength: 0.7 },

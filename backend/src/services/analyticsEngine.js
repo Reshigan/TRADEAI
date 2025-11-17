@@ -525,12 +525,12 @@ class AnalyticsEngine {
     return recommendations;
   }
 
-  getHistoricalPerformanceData(tenantId, constraints) {
+  getHistoricalPerformanceData(tenantId, _constraints) {
     // Mock implementation
     return [];
   }
 
-  applyOptimizationAlgorithm(budget, historicalData, _constraints) {
+  applyOptimizationAlgorithm(budget, _historicalData, _constraints) {
     // Simplified optimization algorithm
     return {
       allocation: {
@@ -579,7 +579,7 @@ class AnalyticsEngine {
     ];
   }
 
-  getProductPerformance(_tenantId, dateRange) {
+  getProductPerformance(_tenantId, _dateRange) {
     return [
       { category: 'Electronics', roi: 20, lift: 25 },
       { category: 'Clothing', roi: 18, lift: 22 },
