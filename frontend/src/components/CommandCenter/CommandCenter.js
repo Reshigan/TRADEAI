@@ -34,7 +34,14 @@ const CommandCenter = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
-    aiInsight: {},
+    aiInsight: {
+      type: 'info',
+      iconType: 'check',
+      title: 'Loading...',
+      message: 'Fetching dashboard data...',
+      action: 'Refresh',
+      route: '/dashboard'
+    },
     quickActions: [],
     activeWorkflows: [],
     kpis: {
