@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import MegaMenu from './MegaMenu';
 import {
+  AppBar,
+  Avatar,
+  Badge,
   Box,
   CssBaseline,
   Divider,
@@ -11,6 +13,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
+  Toolbar,
   Typography,
   useTheme,
   useMediaQuery,
@@ -26,6 +31,8 @@ import {
   BarChart as AnalyticsIcon,
   Settings as SettingsIcon,
   ChevronLeft,
+  Menu as MenuIcon,
+  Notifications as NotificationsIcon,
   Business as BusinessIcon,
   Description as ReportIcon,
   CalendarMonth as ActivityGridIcon,
@@ -140,8 +147,6 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
-  // const [walkthroughOpen, setWalkthroughOpen] = useState(false);
-  // const [walkthroughFeature, setWalkthroughFeature] = useState('');
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,
@@ -160,30 +165,6 @@ const Layout = ({ children, user, onLogout }) => {
       [sectionName]: !prev[sectionName]
     }));
   };
-  
-  // Check if walkthrough should be shown based on current path - DISABLED
-  // useEffect(() => {
-  //   const path = location.pathname;
-  //   let feature = '';
-  //   
-  //   if (path === '/dashboard') feature = 'dashboard';
-  //   else if (path.includes('/budgets')) feature = 'budgets';
-  //   else if (path.includes('/trade-spends')) feature = 'trade-spends';
-  //   else if (path.includes('/promotions')) feature = 'promotions';
-  //   else if (path.includes('/activity-grid')) feature = 'activity-grid';
-  //   else if (path.includes('/customers')) feature = 'customers';
-  //   else if (path.includes('/products')) feature = 'products';
-  //   else if (path.includes('/simulations')) feature = 'simulations';
-  //   else if (path.includes('/forecasting')) feature = 'forecasting';
-  //   else if (path.includes('/analytics')) feature = 'analytics';
-  //   else if (path.includes('/settings')) feature = 'settings';
-  //   
-  //   // Check if user has seen this walkthrough before
-  //   if (feature && !localStorage.getItem(`walkthrough_${feature}`)) {
-  //     setWalkthroughFeature(feature);
-  //     setWalkthroughOpen(true);
-  //   }
-  // }, [location.pathname]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -364,11 +345,137 @@ const Layout = ({ children, user, onLogout }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <MegaMenu 
-        user={user} 
-        onLogout={onLogout}
-        onMobileMenuToggle={handleDrawerToggle}
-      />
+      
+      {/* Top AppBar - Simple header with logo, user menu, notifications */}
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          bgcolor: 'white',
+          color: 'text.primary',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <img src={newLogo} alt="Trade AI Logo" style={{ height: 32, marginRight: 12 }} />
+            <Typography
+              variant="h6"
+              component={RouterLink}
+              to="/dashboard"
+              sx={{
+                textDecoration: 'none',
+                color: 'primary.main',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              TRADE AI
+            </Typography>
+          </Box>
+
+          <IconButton
+            color="inherit"
+            onClick={handleOpenNotificationsMenu}
+            sx={{ mr: 1 }}
+          >
+            <Badge badgeContent={3} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+
+          <IconButton onClick={handleOpenUserMenu}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', color: 'white' }}>
+              {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'U'}
+            </Avatar>
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorElUser}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+            PaperProps={{
+              sx: { mt: 1, minWidth: 200 }
+            }}
+          >
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.name || 'User'}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {user?.email}
+              </Typography>
+            </Box>
+            <Divider />
+            {(user?.role === 'admin' || user?.role === 'super_admin') && (
+              <MenuItem component={RouterLink} to="/settings" onClick={handleCloseUserMenu}>
+                <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
+                Settings
+              </MenuItem>
+            )}
+            {user?.role === 'super_admin' && (
+              <MenuItem component={RouterLink} to="/companies" onClick={handleCloseUserMenu}>
+                <BusinessIcon fontSize="small" sx={{ mr: 1 }} />
+                Companies
+              </MenuItem>
+            )}
+            <Divider />
+            <MenuItem onClick={handleLogout}>
+              Logout
+            </MenuItem>
+          </Menu>
+
+          <Menu
+            anchorEl={anchorElNotifications}
+            open={Boolean(anchorElNotifications)}
+            onClose={handleCloseNotificationsMenu}
+            PaperProps={{
+              sx: { mt: 1, minWidth: 320, maxHeight: 400 }
+            }}
+          >
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                Notifications
+              </Typography>
+            </Box>
+            <Divider />
+            <MenuItem onClick={handleCloseNotificationsMenu}>
+              <Box>
+                <Typography variant="body2">New approval request</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  2 minutes ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem onClick={handleCloseNotificationsMenu}>
+              <Box>
+                <Typography variant="body2">Budget reallocation complete</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  1 hour ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem onClick={handleCloseNotificationsMenu}>
+              <Box>
+                <Typography variant="body2">Promotion performance alert</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  3 hours ago
+                </Typography>
+              </Box>
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
       
       <Box
         component="nav"

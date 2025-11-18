@@ -34,8 +34,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import apiClient from '../../services/apiClient';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const getCurrencySymbol = () => {
   try {
@@ -84,7 +84,7 @@ const BudgetPlanningWizard = () => {
   const fetchHistoricalData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/budgets`);
+      const response = await apiClient.get(`/budgets`);
       const budgets = response.data;
       
       // Calculate historical insights
@@ -241,7 +241,7 @@ const BudgetPlanningWizard = () => {
         }))
       };
       
-      const response = await axios.post(`${API_URL}/budgets`, payload);
+      const response = await apiClient.post(`/budgets`, payload);
       
       alert('✅ Budget created successfully! Navigating to budget details...');
       navigate(`/budgets/${response.data._id}`);

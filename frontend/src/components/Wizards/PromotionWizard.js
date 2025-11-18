@@ -43,10 +43,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import apiClient from '../../services/apiClient';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const steps = [
   'Describe Promotion',
@@ -96,7 +96,7 @@ const PromotionWizard = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get(`${API_URL}/customers`);
+      const response = await apiClient.get(`/customers`);
       setCustomers(response.data);
     } catch (error) {
       console.error('Error fetching customers:', error);
@@ -105,7 +105,7 @@ const PromotionWizard = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API_URL}/products`);
+      const response = await apiClient.get(`/products`);
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -114,7 +114,7 @@ const PromotionWizard = () => {
 
   const fetchCustomerHierarchies = async () => {
     try {
-      const response = await axios.get(`${API_URL}/hierarchies/customer`);
+      const response = await apiClient.get(`/hierarchies/customer`);
       setCustomerHierarchies(response.data);
     } catch (error) {
       console.error('Error fetching customer hierarchies:', error);
@@ -123,7 +123,7 @@ const PromotionWizard = () => {
 
   const fetchProductHierarchies = async () => {
     try {
-      const response = await axios.get(`${API_URL}/hierarchies/product`);
+      const response = await apiClient.get(`/hierarchies/product`);
       setProductHierarchies(response.data);
     } catch (error) {
       console.error('Error fetching product hierarchies:', error);
@@ -256,7 +256,7 @@ const PromotionWizard = () => {
         scenario: selectedScenario
       };
       
-      const response = await axios.post(`${API_URL}/promotions`, payload);
+      const response = await apiClient.post(`/promotions`, payload);
       
       alert('✅ Promotion created successfully!');
       navigate(`/promotions/${response.data._id}`);

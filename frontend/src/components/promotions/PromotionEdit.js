@@ -23,8 +23,8 @@ import {
   Edit as EditIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+import apiClient from '../../services/apiClient';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const PromotionEdit = () => {
   const { id } = useParams();
@@ -62,9 +62,9 @@ const PromotionEdit = () => {
     try {
       setLoading(true);
       const [promotionRes, customersRes, productsRes] = await Promise.all([
-        axios.get(`${API_URL}/promotions/${id}`),
-        axios.get(`${API_URL}/customers`),
-        axios.get(`${API_URL}/products`)
+        apiClient.get(`/promotions/${id}`),
+        apiClient.get(`/customers`),
+        apiClient.get(`/products`)
       ]);
       
       setPromotion({
@@ -109,7 +109,7 @@ const PromotionEdit = () => {
       setSaving(true);
       setError('');
 
-      await axios.put(`${API_URL}/promotions/${id}`, promotion);
+      await apiClient.put(`/promotions/${id}`, promotion);
       
       setSuccess('Promotion updated successfully!');
       setTimeout(() => {
