@@ -46,9 +46,7 @@ class TradingTermsService {
     const cached = this.getFromCache(cacheKey);
     if (cached) return cached;
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trading-terms/options`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trading-terms/options`)
     );
 
     this.setCache(cacheKey, response.data);
@@ -67,9 +65,7 @@ class TradingTermsService {
       }
     });
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trading-terms?${params.toString()}`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trading-terms?${params.toString()}`)
     );
 
     this.setCache(cacheKey, response.data);
@@ -77,9 +73,7 @@ class TradingTermsService {
   }
 
   async getTradingTerm(id) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trading-terms/${id}`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trading-terms/${id}`)
     );
     return response.data;
   }
@@ -105,9 +99,7 @@ class TradingTermsService {
   }
 
   async deleteTradingTerm(id) {
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/trading-terms/${id}`,
-      this.getAuthHeaders()
+    const response = await apiClient.delete(`/trading-terms/${id}`)
     );
     this.clearCache();
     return response.data;

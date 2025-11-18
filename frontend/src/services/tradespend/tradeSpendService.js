@@ -56,9 +56,7 @@ class TradeSpendService {
     if (filters.page) params.append('page', filters.page);
     if (filters.limit) params.append('limit', filters.limit);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends?${params.toString()}`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trade-spends?${params.toString()}`)
     );
 
     this.setCache(cacheKey, response.data);
@@ -66,9 +64,7 @@ class TradeSpendService {
   }
 
   async getTradeSpend(id) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends/${id}`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trade-spends/${id}`)
     );
     return response.data;
   }
@@ -94,9 +90,7 @@ class TradeSpendService {
   }
 
   async deleteTradeSpend(id) {
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/trade-spends/${id}`,
-      this.getAuthHeaders()
+    const response = await apiClient.delete(`/trade-spends/${id}`)
     );
     this.clearCache();
     return response.data;
@@ -151,9 +145,7 @@ class TradeSpendService {
     if (year) params.append('year', year);
     if (groupBy) params.append('groupBy', groupBy);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends/summary?${params.toString()}`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trade-spends/summary?${params.toString()}`)
     );
 
     this.setCache(cacheKey, response.data);
@@ -161,9 +153,7 @@ class TradeSpendService {
   }
 
   async getWalletBalance(customerId) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends/wallet/${customerId}`,
-      this.getAuthHeaders()
+    const response = await apiClient.get(`/trade-spends/wallet/${customerId}`)
     );
     return response.data;
   }
