@@ -56,16 +56,14 @@ class TradeSpendService {
     if (filters.page) params.append('page', filters.page);
     if (filters.limit) params.append('limit', filters.limit);
 
-    const response = await apiClient.get(`/trade-spends?${params.toString()}`)
-    );
+    const response = await apiClient.get(`/trade-spends?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
   }
 
   async getTradeSpend(id) {
-    const response = await apiClient.get(`/trade-spends/${id}`)
-    );
+    const response = await apiClient.get(`/trade-spends/${id}`);
     return response.data;
   }
 
@@ -82,8 +80,7 @@ class TradeSpendService {
   }
 
   async deleteTradeSpend(id) {
-    const response = await apiClient.delete(`/trade-spends/${id}`)
-    );
+    const response = await apiClient.delete(`/trade-spends/${id}`);
     this.clearCache();
     return response.data;
   }
@@ -121,16 +118,14 @@ class TradeSpendService {
     if (year) params.append('year', year);
     if (groupBy) params.append('groupBy', groupBy);
 
-    const response = await apiClient.get(`/trade-spends/summary?${params.toString()}`)
-    );
+    const response = await apiClient.get(`/trade-spends/summary?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
   }
 
   async getWalletBalance(customerId) {
-    const response = await apiClient.get(`/trade-spends/wallet/${customerId}`)
-    );
+    const response = await apiClient.get(`/trade-spends/wallet/${customerId}`);
     return response.data;
   }
 }

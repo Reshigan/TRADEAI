@@ -46,8 +46,7 @@ class TradingTermsService {
     const cached = this.getFromCache(cacheKey);
     if (cached) return cached;
 
-    const response = await apiClient.get(`/trading-terms/options`)
-    );
+    const response = await apiClient.get(`/trading-terms/options`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
@@ -65,16 +64,14 @@ class TradingTermsService {
       }
     });
 
-    const response = await apiClient.get(`/trading-terms?${params.toString()}`)
-    );
+    const response = await apiClient.get(`/trading-terms?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
   }
 
   async getTradingTerm(id) {
-    const response = await apiClient.get(`/trading-terms/${id}`)
-    );
+    const response = await apiClient.get(`/trading-terms/${id}`);
     return response.data;
   }
 
@@ -91,8 +88,7 @@ class TradingTermsService {
   }
 
   async deleteTradingTerm(id) {
-    const response = await apiClient.delete(`/trading-terms/${id}`)
-    );
+    const response = await apiClient.delete(`/trading-terms/${id}`);
     this.clearCache();
     return response.data;
   }
