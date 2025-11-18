@@ -16,11 +16,9 @@ import {
   Psychology,
   AttachMoney,
   ShowChart,
-  BarChart,
   CompareArrows,
   TrendingUp,
-  Help,
-  Refresh
+  Help
 } from '@mui/icons-material';
 import PromotionSimulator from './PromotionSimulator';
 import BudgetOptimizer from './BudgetOptimizer';

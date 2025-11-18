@@ -43,6 +43,7 @@ const TradeSpendEdit = () => {
     date: '',
     status: 'draft',
     category: '',
+    activityType: '',
     paymentTerms: '',
     accrualType: 'immediate',
     glAccount: '',
@@ -214,6 +215,22 @@ const TradeSpendEdit = () => {
               {categories.map(cat => (
                 <MenuItem key={cat} value={cat}>{cat}</MenuItem>
               ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              select
+              label="Activity Type"
+              value={tradeSpend.activityType || ''}
+              onChange={(e) => handleChange('activityType', e.target.value)}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value="trade_marketing">Trade Marketing</MenuItem>
+              <MenuItem value="key_account">Key Account</MenuItem>
             </TextField>
           </Grid>
 

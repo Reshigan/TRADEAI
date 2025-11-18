@@ -1,6 +1,6 @@
 /**
  * Advanced Promotion Management Service
- * 
+ *
  * Features:
  * - Promotion ROI calculation
  * - Lift analysis (incremental sales)
@@ -11,12 +11,12 @@
 
 const Promotion = require('../models/Promotion');
 const SalesTransaction = require('../models/SalesTransaction');
-const Customer = require('../models/Customer');
+// const Customer = require('../models/Customer');
 const logger = require('../../utils/logger');
 const { safeNumber, calculatePercentage } = require('../../utils/safeNumbers');
 
 class AdvancedPromotionService {
-  
+
   /**
    * Calculate comprehensive ROI for a promotion
    */
@@ -25,42 +25,42 @@ class AdvancedPromotionService {
       const promotion = await Promotion.findById(promotionId)
         .populate('customerId')
         .populate('productId');
-      
+
       if (!promotion) {
         throw new Error('Promotion not found');
       }
-      
+
       // Get sales during promotion period
       const promotionSales = await this.getPromotionSales(promotion);
-      
+
       // Get baseline sales (same period last year or previous period)
       const baselineSales = await this.getBaselineSales(promotion);
-      
+
       // Calculate metrics
       const totalCost = safeNumber(promotion.totalBudget, 0);
       const revenue = promotionSales.totalRevenue;
       const baselineRevenue = baselineSales.totalRevenue;
       const incrementalRevenue = revenue - baselineRevenue;
       const incrementalUnits = promotionSales.totalQuantity - baselineSales.totalQuantity;
-      
+
       // Assume 40% gross margin
       const grossMarginPercent = 40;
       const incrementalProfit = incrementalRevenue * (grossMarginPercent / 100);
       const netProfit = incrementalProfit - totalCost;
       const roi = calculatePercentage(netProfit, totalCost);
-      
+
       // Lift calculations
-      const unitLift = baselineSales.totalQuantity > 0 
+      const unitLift = baselineSales.totalQuantity > 0
         ? calculatePercentage(incrementalUnits, baselineSales.totalQuantity)
         : 0;
-      const revenueLift = baselineRevenue > 0 
+      const revenueLift = baselineRevenue > 0
         ? calculatePercentage(incrementalRevenue, baselineRevenue)
         : 0;
-      
+
       // Efficiency metrics
       const costPerIncrementalUnit = incrementalUnits > 0 ? totalCost / incrementalUnits : 0;
       const costPerIncrementalRevenue = incrementalRevenue > 0 ? totalCost / incrementalRevenue : 0;
-      
+
       // Effectiveness score (0-100)
       const effectivenessScore = this.calculateEffectivenessScore({
         roi,
@@ -68,7 +68,7 @@ class AdvancedPromotionService {
         unitLift,
         redemptionRate: promotionSales.transactionCount / (promotionSales.transactionCount + baselineSales.transactionCount)
       });
-      
+
       const result = {
         promotion: {
           id: promotion._id,
@@ -86,11 +86,11 @@ class AdvancedPromotionService {
         },
         sales: {
           promotion: {
-            revenue: revenue,
+            revenue,
             units: promotionSales.totalQuantity,
             transactions: promotionSales.transactionCount,
-            avgTransactionValue: promotionSales.transactionCount > 0 
-              ? revenue / promotionSales.transactionCount 
+            avgTransactionValue: promotionSales.transactionCount > 0
+              ? revenue / promotionSales.transactionCount
               : 0
           },
           baseline: {
@@ -105,11 +105,11 @@ class AdvancedPromotionService {
           }
         },
         performance: {
-          roi: roi,
-          netProfit: netProfit,
-          revenueLift: revenueLift,
-          unitLift: unitLift,
-          effectivenessScore: effectivenessScore,
+          roi,
+          netProfit,
+          revenueLift,
+          unitLift,
+          effectivenessScore,
           paybackPeriod: netProfit > 0 ? totalCost / (netProfit / promotion.duration) : null
         },
         rating: this.getRating(effectivenessScore),
@@ -121,22 +121,22 @@ class AdvancedPromotionService {
           promotionType: promotion.promotionType
         })
       };
-      
+
       logger.info('Promotion ROI calculated', {
         promotionId,
         roi,
         effectivenessScore,
         incrementalRevenue
       });
-      
+
       return result;
-      
+
     } catch (error) {
       logger.error('Error calculating promotion ROI', { promotionId, error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Get sales during promotion period
    */
@@ -162,10 +162,10 @@ class AdvancedPromotionService {
         }
       }
     ]);
-    
+
     return result[0] || { totalRevenue: 0, totalQuantity: 0, transactionCount: 0 };
   }
-  
+
   /**
    * Get baseline sales (same period, previous year or pre-promotion)
    */
@@ -175,7 +175,7 @@ class AdvancedPromotionService {
     const baselineStart = new Date(promotion.startDate);
     baselineStart.setFullYear(baselineStart.getFullYear() - 1);
     const baselineEnd = new Date(baselineStart.getTime() + promotionDuration);
-    
+
     const result = await SalesTransaction.aggregate([
       {
         $match: {
@@ -197,43 +197,43 @@ class AdvancedPromotionService {
         }
       }
     ]);
-    
+
     return result[0] || { totalRevenue: 0, totalQuantity: 0, transactionCount: 0 };
   }
-  
+
   /**
    * Calculate effectiveness score (0-100)
    */
   calculateEffectivenessScore(metrics) {
     let score = 0;
-    
+
     // ROI contribution (40 points)
     if (metrics.roi >= 100) score += 40;
     else if (metrics.roi >= 50) score += 30;
     else if (metrics.roi >= 0) score += 20;
     else score += 10;
-    
+
     // Revenue lift contribution (30 points)
     if (metrics.revenueLift >= 50) score += 30;
     else if (metrics.revenueLift >= 25) score += 20;
     else if (metrics.revenueLift >= 10) score += 15;
     else score += 10;
-    
+
     // Unit lift contribution (20 points)
     if (metrics.unitLift >= 50) score += 20;
     else if (metrics.unitLift >= 25) score += 15;
     else if (metrics.unitLift >= 10) score += 10;
     else score += 5;
-    
+
     // Redemption rate contribution (10 points)
     if (metrics.redemptionRate >= 0.5) score += 10;
     else if (metrics.redemptionRate >= 0.3) score += 7;
     else if (metrics.redemptionRate >= 0.1) score += 5;
     else score += 2;
-    
+
     return Math.min(100, score);
   }
-  
+
   /**
    * Get rating based on effectiveness score
    */
@@ -244,13 +244,13 @@ class AdvancedPromotionService {
     if (score >= 20) return { grade: 'D', description: 'Poor', color: 'orange' };
     return { grade: 'F', description: 'Failed', color: 'red' };
   }
-  
+
   /**
    * Generate recommendations
    */
   generateRecommendations(metrics) {
     const recommendations = [];
-    
+
     if (metrics.roi < 0) {
       recommendations.push({
         type: 'critical',
@@ -266,7 +266,7 @@ class AdvancedPromotionService {
         action: 'Reduce promotion costs or increase customer targeting'
       });
     }
-    
+
     if (metrics.revenueLift < 10) {
       recommendations.push({
         type: 'warning',
@@ -275,7 +275,7 @@ class AdvancedPromotionService {
         action: 'Increase promotion visibility or offer more compelling value'
       });
     }
-    
+
     if (metrics.effectivenessScore >= 80) {
       recommendations.push({
         type: 'success',
@@ -284,7 +284,7 @@ class AdvancedPromotionService {
         action: 'Create template for similar future promotions'
       });
     }
-    
+
     // Type-specific recommendations
     if (metrics.promotionType === 'discount_percentage' && metrics.roi < 50) {
       recommendations.push({
@@ -294,30 +294,30 @@ class AdvancedPromotionService {
         action: 'Test volume-based discount tiers'
       });
     }
-    
+
     return recommendations;
   }
-  
+
   /**
    * Compare multiple promotions
    */
   async comparePromotions(promotionIds) {
     try {
       const comparisons = [];
-      
+
       for (const id of promotionIds) {
         const roi = await this.calculatePromotionROI(id);
         comparisons.push(roi);
       }
-      
+
       // Sort by effectiveness score
       comparisons.sort((a, b) => b.performance.effectivenessScore - a.performance.effectivenessScore);
-      
+
       // Find best practices
       const bestPromotion = comparisons[0];
       const avgROI = comparisons.reduce((sum, p) => sum + p.performance.roi, 0) / comparisons.length;
       const avgLift = comparisons.reduce((sum, p) => sum + p.performance.revenueLift, 0) / comparisons.length;
-      
+
       return {
         promotions: comparisons,
         summary: {
@@ -332,33 +332,33 @@ class AdvancedPromotionService {
         },
         insights: this.generateInsights(comparisons)
       };
-      
+
     } catch (error) {
       logger.error('Error comparing promotions', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Generate insights from promotion comparison
    */
   generateInsights(comparisons) {
     const insights = [];
-    
+
     // Best promotion type
     const byType = {};
-    comparisons.forEach(p => {
+    comparisons.forEach((p) => {
       const type = p.promotion.type;
       if (!byType[type]) byType[type] = [];
       byType[type].push(p.performance.roi);
     });
-    
+
     const avgByType = Object.entries(byType).map(([type, rois]) => ({
       type,
       avgROI: rois.reduce((sum, roi) => sum + roi, 0) / rois.length,
       count: rois.length
     })).sort((a, b) => b.avgROI - a.avgROI);
-    
+
     if (avgByType.length > 0) {
       insights.push({
         category: 'Promotion Type',
@@ -366,45 +366,45 @@ class AdvancedPromotionService {
         data: avgByType
       });
     }
-    
+
     // Duration analysis
-    const shortTerm = comparisons.filter(p => p.promotion.duration <= 7);
-    const longTerm = comparisons.filter(p => p.promotion.duration > 7);
-    
+    const shortTerm = comparisons.filter((p) => p.promotion.duration <= 7);
+    const longTerm = comparisons.filter((p) => p.promotion.duration > 7);
+
     if (shortTerm.length > 0 && longTerm.length > 0) {
       const shortAvg = shortTerm.reduce((sum, p) => sum + p.performance.roi, 0) / shortTerm.length;
       const longAvg = longTerm.reduce((sum, p) => sum + p.performance.roi, 0) / longTerm.length;
-      
+
       insights.push({
         category: 'Duration',
-        insight: shortAvg > longAvg 
+        insight: shortAvg > longAvg
           ? `Short-term promotions (≤7 days) perform better with ${shortAvg.toFixed(1)}% avg ROI`
           : `Long-term promotions (>7 days) perform better with ${longAvg.toFixed(1)}% avg ROI`,
         data: { shortTerm: shortAvg, longTerm: longAvg }
       });
     }
-    
+
     return insights;
   }
-  
+
   /**
    * Create promotion template from successful promotion
    */
   async createPromotionTemplate(promotionId, templateName) {
     try {
       const promotion = await Promotion.findById(promotionId);
-      
+
       if (!promotion) {
         throw new Error('Promotion not found');
       }
-      
+
       // Calculate ROI to ensure it's worthy of being a template
       const roi = await this.calculatePromotionROI(promotionId);
-      
+
       if (roi.performance.effectivenessScore < 60) {
         throw new Error('Promotion effectiveness score too low to create template (must be ≥60)');
       }
-      
+
       const template = {
         name: templateName,
         basedOn: promotionId,
@@ -422,11 +422,11 @@ class AdvancedPromotionService {
         expectedLift: roi.performance.revenueLift,
         createdAt: new Date()
       };
-      
+
       logger.info('Promotion template created', { templateName, basedOn: promotionId });
-      
+
       return template;
-      
+
     } catch (error) {
       logger.error('Error creating promotion template', { promotionId, error: error.message });
       throw error;

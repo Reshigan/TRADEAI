@@ -58,10 +58,9 @@ import {
   Visibility,
   VisibilityOff
 } from '@mui/icons-material';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { format, addDays } from 'date-fns';
+import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer} from 'recharts';
+import {format} from 'date-fns';
 import api from '../../services/api';
-import { formatCurrency } from '../../utils/formatters';
 
 const MLPredictionDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -70,9 +69,9 @@ const MLPredictionDashboard = () => {
   const [predictions, setPredictions] = useState({});
   const [modelMetrics, setModelMetrics] = useState({});
   const [trainingStatus, setTrainingStatus] = useState({});
-  const [batchJobs, setBatchJobs] = useState([]);
+  const [, setBatchJobs] = useState([]);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('');
+  '';
 
   // Prediction forms state
   const [customerBehaviorForm, setCustomerBehaviorForm] = useState({
@@ -93,7 +92,6 @@ const MLPredictionDashboard = () => {
     includePromotions: true
   });
 
-  const [churnPredictionForm, setChurnPredictionForm] = useState({
     customerId: 'CUST001',
     daysSinceLastPurchase: 45,
     totalPurchases: 12,
@@ -107,7 +105,6 @@ const MLPredictionDashboard = () => {
     satisfactionScore: 0.6
   });
 
-  const [promotionOptimizationForm, setPromotionOptimizationForm] = useState({
     discountPercentage: 20,
     durationDays: 14,
     budget: 10000,
@@ -122,7 +119,6 @@ const MLPredictionDashboard = () => {
     productCategory: 2
   });
 
-  const [priceOptimizationForm, setPriceOptimizationForm] = useState({
     productId: 'PROD001',
     currentPrice: 99.99,
     cost: 45.00,

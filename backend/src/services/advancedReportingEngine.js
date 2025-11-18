@@ -23,7 +23,7 @@ class AdvancedReportingEngine {
     this.scheduledReports = new Map();
     this.reportQueue = [];
     this.isProcessing = false;
-    
+
     // Initialize default templates
     this.initializeDefaultTemplates();
   }
@@ -56,7 +56,7 @@ class AdvancedReportingEngine {
 
       // Add header
       if (title) {
-        worksheet.mergeCells('A1:' + this.getColumnLetter(columns.length) + '1');
+        worksheet.mergeCells(`A1:${this.getColumnLetter(columns.length)}1`);
         const titleCell = worksheet.getCell('A1');
         titleCell.value = title;
         titleCell.font = { size: 16, bold: true };
@@ -64,7 +64,7 @@ class AdvancedReportingEngine {
       }
 
       // Add column headers
-      const headerRow = worksheet.addRow(columns.map(col => col.header));
+      const headerRow = worksheet.addRow(columns.map((col) => col.header));
       headerRow.font = { bold: true };
       headerRow.fill = {
         type: 'pattern',
@@ -73,8 +73,8 @@ class AdvancedReportingEngine {
       };
 
       // Add data rows
-      data.forEach(row => {
-        const dataRow = columns.map(col => {
+      data.forEach((row) => {
+        const dataRow = columns.map((col) => {
           const value = this.getNestedValue(row, col.key);
           return this.formatCellValue(value, col.type);
         });
@@ -82,7 +82,7 @@ class AdvancedReportingEngine {
       });
 
       // Auto-fit columns
-      worksheet.columns.forEach(column => {
+      worksheet.columns.forEach((column) => {
         column.width = Math.max(column.width || 10, 15);
       });
 
@@ -125,7 +125,7 @@ class AdvancedReportingEngine {
         data,
         sections = [],
         charts = [],
-        formatting = {},
+        _formatting = {},
         fileName
       } = reportConfig;
 
@@ -407,8 +407,8 @@ class AdvancedReportingEngine {
    */
   async generateMultiSheetExcel(tenantId, reportConfig) {
     try {
-      const { sheets, title, fileName } = reportConfig;
-      
+      const { sheets, _title, fileName } = reportConfig;
+
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'TradeAI Analytics';
       workbook.created = new Date();
@@ -420,7 +420,7 @@ class AdvancedReportingEngine {
 
         // Add sheet title
         if (sheetConfig.title) {
-          worksheet.mergeCells('A1:' + this.getColumnLetter(sheetConfig.columns.length) + '1');
+          worksheet.mergeCells(`A1:${this.getColumnLetter(sheetConfig.columns.length)}1`);
           const titleCell = worksheet.getCell('A1');
           titleCell.value = sheetConfig.title;
           titleCell.font = { size: 14, bold: true };
@@ -428,7 +428,7 @@ class AdvancedReportingEngine {
         }
 
         // Add headers
-        const headerRow = worksheet.addRow(sheetConfig.columns.map(col => col.header));
+        const headerRow = worksheet.addRow(sheetConfig.columns.map((col) => col.header));
         headerRow.font = { bold: true };
         headerRow.fill = {
           type: 'pattern',
@@ -437,8 +437,8 @@ class AdvancedReportingEngine {
         };
 
         // Add data
-        data.forEach(row => {
-          const dataRow = sheetConfig.columns.map(col => {
+        data.forEach((row) => {
+          const dataRow = sheetConfig.columns.map((col) => {
             const value = this.getNestedValue(row, col.key);
             return this.formatCellValue(value, col.type);
           });
@@ -446,7 +446,7 @@ class AdvancedReportingEngine {
         });
 
         // Auto-fit columns
-        worksheet.columns.forEach(column => {
+        worksheet.columns.forEach((column) => {
           column.width = Math.max(column.width || 10, 15);
         });
       }
@@ -476,9 +476,9 @@ class AdvancedReportingEngine {
 
   // Helper methods for data retrieval
 
-  async getTradeSpendData(tenantId, filters, dateRange) {
+  getTradeSpendData(tenantId, filters, dateRange) {
     const query = { tenantId };
-    
+
     if (dateRange) {
       query.createdAt = {
         $gte: new Date(dateRange.startDate),
@@ -486,16 +486,16 @@ class AdvancedReportingEngine {
       };
     }
 
-    return await TradeSpend.find(query)
+    return TradeSpend.find(query)
       .populate('promotionId', 'name type')
       .populate('customerId', 'name code')
       .populate('productId', 'name code')
       .lean();
   }
 
-  async getPromotionData(tenantId, filters, dateRange) {
+  getPromotionData(tenantId, filters, dateRange) {
     const query = { tenantId };
-    
+
     if (dateRange) {
       query.$or = [
         { startDate: { $gte: new Date(dateRange.startDate), $lte: new Date(dateRange.endDate) } },
@@ -503,15 +503,15 @@ class AdvancedReportingEngine {
       ];
     }
 
-    return await Promotion.find(query)
+    return Promotion.find(query)
       .populate('customers', 'name code')
       .populate('products', 'name code')
       .lean();
   }
 
-  async getSalesHistoryData(tenantId, filters, dateRange) {
+  getSalesHistoryData(tenantId, filters, dateRange) {
     const query = { tenantId };
-    
+
     if (dateRange) {
       query.date = {
         $gte: new Date(dateRange.startDate),
@@ -519,23 +519,23 @@ class AdvancedReportingEngine {
       };
     }
 
-    return await SalesHistory.find(query)
+    return SalesHistory.find(query)
       .populate('customerId', 'name code')
       .populate('productId', 'name code')
       .lean();
   }
 
-  async getCustomerData(tenantId, filters) {
-    return await Customer.find({ tenantId, isActive: true })
+  getCustomerData(tenantId, _filters) {
+    return Customer.find({ tenantId, isActive: true })
       .lean();
   }
 
-  async getProductData(tenantId, filters) {
-    return await Product.find({ tenantId, isActive: true })
+  getProductData(tenantId, _filters) {
+    return Product.find({ tenantId, isActive: true })
       .lean();
   }
 
-  async getAnalyticsData(tenantId, filters, dateRange) {
+  getAnalyticsData(tenantId, _filters, _dateRange) {
     // This would integrate with the advanced analytics engine
     // For now, return aggregated data
     const pipeline = [
@@ -550,7 +550,7 @@ class AdvancedReportingEngine {
       }
     ];
 
-    return await SalesHistory.aggregate(pipeline);
+    return SalesHistory.aggregate(pipeline);
   }
 
   // Helper methods for formatting and styling
@@ -580,7 +580,7 @@ class AdvancedReportingEngine {
 
   formatCellValue(value, type) {
     if (value === null || value === undefined) return '';
-    
+
     switch (type) {
       case 'currency':
         return typeof value === 'number' ? value.toFixed(2) : value;
@@ -595,7 +595,7 @@ class AdvancedReportingEngine {
 
   // PDF helper methods
 
-  addPDFHeader(doc, title, tenantId) {
+  addPDFHeader(doc, title, _tenantId) {
     doc.fontSize(20).text(title || 'TradeAI Report', 50, 50);
     doc.fontSize(12).text(`Generated: ${new Date().toLocaleDateString()}`, 50, 80);
     doc.moveDown();
@@ -604,17 +604,17 @@ class AdvancedReportingEngine {
   addExecutiveSummary(doc, data, reportType) {
     doc.fontSize(16).text('Executive Summary', 50, doc.y);
     doc.moveDown();
-    
+
     // Add summary content based on report type
     const summary = this.generateExecutiveSummary(data, reportType);
     doc.fontSize(12).text(summary, 50, doc.y);
     doc.moveDown();
   }
 
-  addPDFSection(doc, section, data) {
+  addPDFSection(doc, section, _data) {
     doc.fontSize(14).text(section.title, 50, doc.y);
     doc.moveDown();
-    
+
     if (section.content) {
       doc.fontSize(12).text(section.content, 50, doc.y);
       doc.moveDown();
@@ -630,7 +630,7 @@ class AdvancedReportingEngine {
     // Simple table implementation
     const tableTop = doc.y;
     const itemHeight = 20;
-    
+
     // Headers
     columns.forEach((col, i) => {
       doc.fontSize(10).text(col.header, 50 + (i * 100), tableTop, { width: 90 });
@@ -692,7 +692,7 @@ class AdvancedReportingEngine {
       }
     ];
 
-    defaultTemplates.forEach(template => {
+    defaultTemplates.forEach((template) => {
       this.reportTemplates.set(template.id, template);
     });
   }
@@ -700,15 +700,15 @@ class AdvancedReportingEngine {
   applyParametersToTemplate(template, parameters) {
     // Apply dynamic parameters to template
     const config = { ...template };
-    
+
     if (parameters.dateRange) {
       config.dateRange = parameters.dateRange;
     }
-    
+
     if (parameters.filters) {
       config.filters = { ...config.filters, ...parameters.filters };
     }
-    
+
     if (parameters.title) {
       config.title = parameters.title;
     }
@@ -716,7 +716,7 @@ class AdvancedReportingEngine {
     return config;
   }
 
-  calculateNextRun(cronExpression) {
+  calculateNextRun(_cronExpression) {
     // Simple next run calculation - in production, use a proper cron library
     const now = new Date();
     return new Date(now.getTime() + 24 * 60 * 60 * 1000); // Next day for demo
@@ -738,35 +738,35 @@ class AdvancedReportingEngine {
     worksheet.addRow(['Generated:', new Date().toISOString()]);
     worksheet.addRow(['Total Sheets:', sheets.length]);
     worksheet.addRow([]);
-    
+
     sheets.forEach((sheet, index) => {
       worksheet.addRow([`Sheet ${index + 1}:`, sheet.name]);
     });
   }
 
-  async addExcelCharts(workbook, charts, data) {
+  addExcelCharts(_workbook, _charts, _data) {
     // Chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  async addPDFCharts(doc, charts, data) {
+  addPDFCharts(_doc, _charts, _data) {
     // PDF chart implementation would go here
     // This is a placeholder for chart functionality
   }
 
-  async addSummarySheet(workbook, data, reportType) {
+  addSummarySheet(workbook, data, reportType) {
     const summarySheet = workbook.addWorksheet('Summary');
-    
+
     summarySheet.addRow(['Report Summary']);
     summarySheet.addRow(['Report Type:', reportType]);
     summarySheet.addRow(['Generated:', new Date().toISOString()]);
     summarySheet.addRow(['Total Records:', data.length]);
-    
+
     // Add type-specific summary
     if (reportType === 'trade_spend') {
       const totalPlanned = data.reduce((sum, item) => sum + (item.plannedAmount || 0), 0);
       const totalActual = data.reduce((sum, item) => sum + (item.actualAmount || 0), 0);
-      
+
       summarySheet.addRow(['Total Planned Amount:', totalPlanned]);
       summarySheet.addRow(['Total Actual Amount:', totalActual]);
       summarySheet.addRow(['Variance:', totalActual - totalPlanned]);

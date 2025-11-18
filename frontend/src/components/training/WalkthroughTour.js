@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -11,7 +10,6 @@ import {
   Stepper,
   Step,
   StepLabel,
-  StepContent,
   Typography,
   useTheme,
   useMediaQuery

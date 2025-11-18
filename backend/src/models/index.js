@@ -21,7 +21,7 @@ const User = require('./UserMinimal');
 
 module.exports = {
   // Company,
-  User,
+  User
   // Customer,
   // Product,
   // Vendor,

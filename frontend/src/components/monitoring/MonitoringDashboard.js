@@ -19,7 +19,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Select,
   MenuItem,
   FormControl,
@@ -27,9 +26,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-  Divider,
-  Alert,
   LinearProgress,
   Tabs,
   Tab,
@@ -38,14 +34,10 @@ import {
   FormControlLabel,
   Accordion,
   AccordionSummary,
-  AccordionDetails,
-  Tooltip
+  AccordionDetails
 } from '@mui/material';
 import {
-  Dashboard,
-  Notifications,
   Timeline,
-  BugReport,
   Speed,
   Memory,
   Storage,
@@ -58,16 +50,12 @@ import {
   Settings,
   Download,
   Visibility,
-  NotificationsActive,
   ExpandMore,
   Search,
-  FilterList,
   TrendingUp,
-  TrendingDown,
-  Assessment,
-  MonitorHeart
+  TrendingDown
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area} from 'recharts';
 import axios from 'axios';
 
 const MonitoringDashboard = () => {
@@ -76,14 +64,14 @@ const MonitoringDashboard = () => {
   const [logs, setLogs] = useState([]);
   const [traces, setTraces] = useState([]);
   const [alerts, setAlerts] = useState([]);
-  const [dashboards, setDashboards] = useState([]);
-  const [selectedDashboard, setSelectedDashboard] = useState('system_overview');
+  const [, setDashboards] = useState([]);
+  'system_overview';
   const [alertDialog, setAlertDialog] = useState({ open: false, alert: null });
   const [logDialog, setLogDialog] = useState({ open: false, log: null });
   const [traceDialog, setTraceDialog] = useState({ open: false, trace: null });
   const [loading, setLoading] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [refreshInterval, setRefreshInterval] = useState(30);
+  30;
   const [filters, setFilters] = useState({
     timeRange: '1h',
     logLevel: 'all',

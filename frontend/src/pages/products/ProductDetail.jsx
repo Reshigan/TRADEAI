@@ -1,50 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
+import { useToast } from '../../components/common/ToastNotification';
+import analytics from '../../utils/analytics';
 import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
+    analytics.trackPageView('product_detail', { productId: id });
   }, [id]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
+      const startTime = Date.now();
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
       setData(response.data.data || response.data);
       setError(null);
+      
+      analytics.trackEvent('product_detail_loaded', {
+        productId: id,
+        loadTime: Date.now() - startTime
+      });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load product details');
+      const errorMsg = err.response?.data?.message || 'Failed to load product details';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = () => {
+    analytics.trackEvent('product_edit_clicked', { productId: id });
     navigate(`/products/${id}/edit`);
   };
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
+        analytics.trackEvent('product_deleted', { productId: id });
+        toast.success('Product deleted successfully!');
         navigate('/products');
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete product');
+        const errorMsg = err.response?.data?.message || 'Failed to delete product';
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <DetailPageSkeleton />;
   if (error) return <ErrorMessage message={error} />;
   if (!data) return <ErrorMessage message="Product not found" />;
 
@@ -62,6 +79,9 @@ const ProductDetail = () => {
         <div className="header-actions">
           <button onClick={() => navigate('/products')} className="btn-secondary">
             Back to List
+          </button>
+          <button onClick={() => navigate(`/promotions?productId=${id}`)} className="btn-secondary">
+            View Promotions
           </button>
           <button onClick={handleEdit} className="btn-primary">
             Edit

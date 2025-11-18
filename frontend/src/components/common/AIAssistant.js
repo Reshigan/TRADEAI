@@ -7,10 +7,6 @@ import {
   IconButton,
   Fab,
   Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
   Avatar,
   CircularProgress,
   Tooltip
@@ -20,9 +16,7 @@ import {
   Send as SendIcon,
   SmartToy as SmartToyIcon,
   Person as PersonIcon,
-  MoreVert as MoreVertIcon,
-  Delete as DeleteIcon,
-  Save as SaveIcon
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 
 // AI Service API call

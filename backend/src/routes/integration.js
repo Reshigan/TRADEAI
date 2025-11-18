@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, authorize } = require('../middleware/auth');
-const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const { _AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
 // Get integration status
-router.get('/status', authenticateToken, asyncHandler(async (req, res) => {
+router.get('/status', authenticateToken, asyncHandler((req, res) => {
   const integrations = {
     sap: {
       connected: false,
@@ -23,7 +23,7 @@ router.get('/status', authenticateToken, asyncHandler(async (req, res) => {
       status: 'inactive'
     }
   };
-  
+
   res.json({
     success: true,
     data: integrations
@@ -31,7 +31,7 @@ router.get('/status', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Test SAP connection
-router.post('/sap/test', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
+router.post('/sap/test', authenticateToken, authorize('admin'), asyncHandler((req, res) => {
   // Implementation would test SAP connection
   res.json({
     success: true,
@@ -41,12 +41,12 @@ router.post('/sap/test', authenticateToken, authorize('admin'), asyncHandler(asy
 }));
 
 // Webhook endpoints
-router.post('/webhooks/:service', asyncHandler(async (req, res) => {
+router.post('/webhooks/:service', asyncHandler((req, res) => {
   const { service } = req.params;
-  
+
   // Log webhook data
   logger.info('Webhook received', { service, body: req.body });
-  
+
   res.json({
     success: true,
     message: 'Webhook processed'
@@ -54,10 +54,10 @@ router.post('/webhooks/:service', asyncHandler(async (req, res) => {
 }));
 
 // Configure integration
-router.put('/configure/:service', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
+router.put('/configure/:service', authenticateToken, authorize('admin'), asyncHandler((req, res) => {
   const { service } = req.params;
   const config = req.body;
-  
+
   // Implementation would save configuration
   res.json({
     success: true,

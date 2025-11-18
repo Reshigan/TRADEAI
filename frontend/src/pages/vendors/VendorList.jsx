@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
 const VendorList = () => {
   const navigate = useNavigate();
@@ -11,26 +11,26 @@ const VendorList = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const params = search ? `?search=${search}` : '';
+        const response = await axios.get(`${API_BASE_URL}/vendors${params}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+          setVendors(response.data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch vendors:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchVendors();
   }, [search]);
-
-  const fetchVendors = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const params = search ? `?search=${search}` : '';
-      const response = await axios.get(`${API_BASE_URL}/vendors${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (response.data.success) {
-        setVendors(response.data.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch vendors:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <div style={{ padding: '20px' }}>Loading vendors...</div>;
 

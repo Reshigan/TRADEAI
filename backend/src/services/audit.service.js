@@ -50,21 +50,21 @@ class AuditService {
    * @param {Object} filters - Filter parameters
    * @returns {Promise<Array>} Audit logs
    */
-  async getLogs(filters = {}) {
+  getLogs(filters = {}) {
     const query = {};
 
     if (filters.userId) query.userId = filters.userId;
     if (filters.action) query.action = filters.action;
     if (filters.resource) query.resource = filters.resource;
     if (filters.resourceId) query.resourceId = filters.resourceId;
-    
+
     if (filters.startDate || filters.endDate) {
       query.timestamp = {};
       if (filters.startDate) query.timestamp.$gte = new Date(filters.startDate);
       if (filters.endDate) query.timestamp.$lte = new Date(filters.endDate);
     }
 
-    return await AuditLog.find(query)
+    return AuditLog.find(query)
       .populate('userId', 'firstName lastName email')
       .sort({ timestamp: -1 })
       .limit(filters.limit || 100);
@@ -76,8 +76,8 @@ class AuditService {
    * @param {Object} options - Query options
    * @returns {Promise<Array>} User's audit logs
    */
-  async getUserActivity(userId, options = {}) {
-    return await this.getLogs({ userId, ...options });
+  getUserActivity(userId, options = {}) {
+    return this.getLogs({ userId, ...options });
   }
 
   /**
@@ -86,8 +86,8 @@ class AuditService {
    * @param {string} resourceId - Resource ID
    * @returns {Promise<Array>} Resource's audit logs
    */
-  async getResourceHistory(resource, resourceId) {
-    return await this.getLogs({ resource, resourceId });
+  getResourceHistory(resource, resourceId) {
+    return this.getLogs({ resource, resourceId });
   }
 
   /**
@@ -97,14 +97,14 @@ class AuditService {
    */
   async generateComplianceReport({ startDate, endDate, userId, action }) {
     const logs = await this.getLogs({ startDate, endDate, userId, action });
-    
+
     const report = {
       period: { startDate, endDate },
       totalActions: logs.length,
       actionsByType: {},
       actionsByResource: {},
       actionsByUser: {},
-      logs: logs.map(log => ({
+      logs: logs.map((log) => ({
         timestamp: log.timestamp,
         user: log.userId ? `${log.userId.firstName} ${log.userId.lastName}` : 'Unknown',
         action: log.action,
@@ -115,10 +115,10 @@ class AuditService {
     };
 
     // Group by action type
-    logs.forEach(log => {
+    logs.forEach((log) => {
       report.actionsByType[log.action] = (report.actionsByType[log.action] || 0) + 1;
       report.actionsByResource[log.resource] = (report.actionsByResource[log.resource] || 0) + 1;
-      
+
       if (log.userId) {
         const userName = `${log.userId.firstName} ${log.userId.lastName}`;
         report.actionsByUser[userName] = (report.actionsByUser[userName] || 0) + 1;

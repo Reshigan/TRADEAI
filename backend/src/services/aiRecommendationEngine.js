@@ -6,8 +6,8 @@ try {
   console.warn('[AIRecommendationEngine] Failed to load @tensorflow/tfjs-node, falling back to @tensorflow/tfjs (CPU). Error:', err.message);
   tf = require('@tensorflow/tfjs');
 }
-const ss = require('simple-statistics');
-const math = require('mathjs');
+const _ss = require('simple-statistics');
+const _math = require('mathjs');
 
 class AIRecommendationEngine {
   constructor() {
@@ -20,16 +20,16 @@ class AIRecommendationEngine {
 
   async initialize() {
     if (this.initialized) return;
-    
+
     console.log('Initializing AI Recommendation Engine...');
-    
+
     // Initialize recommendation models
     await this.initializeRecommendationModels();
-    
+
     // Load user profiles and item features
     await this.loadUserProfiles();
     await this.loadItemFeatures();
-    
+
     this.initialized = true;
     console.log('AI Recommendation Engine initialized successfully');
   }
@@ -37,16 +37,16 @@ class AIRecommendationEngine {
   async initializeRecommendationModels() {
     // Product recommendation model
     await this.initializeProductRecommendationModel();
-    
+
     // Customer segmentation model
     await this.initializeCustomerSegmentationModel();
-    
+
     // Personalized promotion model
     await this.initializePersonalizedPromotionModel();
-    
+
     // Content-based filtering model
     await this.initializeContentBasedModel();
-    
+
     // Collaborative filtering model
     await this.initializeCollaborativeFilteringModel();
   }
@@ -56,48 +56,48 @@ class AIRecommendationEngine {
       // Neural collaborative filtering model
       const userInput = tf.input({ shape: [1], name: 'user_input' });
       const itemInput = tf.input({ shape: [1], name: 'item_input' });
-      
+
       // User embedding
       const userEmbedding = tf.layers.embedding({
         inputDim: 10000, // max users
         outputDim: 50,
         name: 'user_embedding'
       }).apply(userInput);
-      
+
       // Item embedding
       const itemEmbedding = tf.layers.embedding({
         inputDim: 5000, // max items
         outputDim: 50,
         name: 'item_embedding'
       }).apply(itemInput);
-      
+
       // Flatten embeddings
       const userFlat = tf.layers.flatten().apply(userEmbedding);
       const itemFlat = tf.layers.flatten().apply(itemEmbedding);
-      
+
       // Concatenate embeddings
       const concat = tf.layers.concatenate().apply([userFlat, itemFlat]);
-      
+
       // Dense layers
       const dense1 = tf.layers.dense({ units: 128, activation: 'relu' }).apply(concat);
       const dropout1 = tf.layers.dropout({ rate: 0.2 }).apply(dense1);
       const dense2 = tf.layers.dense({ units: 64, activation: 'relu' }).apply(dropout1);
       const dropout2 = tf.layers.dropout({ rate: 0.2 }).apply(dense2);
       const output = tf.layers.dense({ units: 1, activation: 'sigmoid' }).apply(dropout2);
-      
+
       const model = tf.model({ inputs: [userInput, itemInput], outputs: output });
-      
+
       model.compile({
         optimizer: tf.train.adam(0.001),
         loss: 'binaryCrossentropy',
         metrics: ['accuracy']
       });
-      
+
       this.models.set('productRecommendation', model);
-      
+
       // Train with synthetic data
       await this.trainProductRecommendationModel(model);
-      
+
     } catch (error) {
       console.error('Error initializing product recommendation model:', error);
     }
@@ -124,10 +124,10 @@ class AIRecommendationEngine {
       });
 
       this.models.set('customerSegmentation', model);
-      
+
       // Train with synthetic data
       await this.trainCustomerSegmentationModel(model);
-      
+
     } catch (error) {
       console.error('Error initializing customer segmentation model:', error);
     }
@@ -156,10 +156,10 @@ class AIRecommendationEngine {
       });
 
       this.models.set('personalizedPromotion', model);
-      
+
       // Train with synthetic data
       await this.trainPersonalizedPromotionModel(model);
-      
+
     } catch (error) {
       console.error('Error initializing personalized promotion model:', error);
     }
@@ -186,10 +186,10 @@ class AIRecommendationEngine {
       });
 
       this.models.set('contentBased', model);
-      
+
       // Train with synthetic data
       await this.trainContentBasedModel(model);
-      
+
     } catch (error) {
       console.error('Error initializing content-based model:', error);
     }
@@ -216,10 +216,10 @@ class AIRecommendationEngine {
       });
 
       this.models.set('collaborativeFiltering', model);
-      
+
       // Train with synthetic data
       await this.trainCollaborativeFilteringModel(model);
-      
+
     } catch (error) {
       console.error('Error initializing collaborative filtering model:', error);
     }
@@ -228,7 +228,7 @@ class AIRecommendationEngine {
   // Product Recommendations
   async getProductRecommendations(userId, options = {}) {
     await this.initialize();
-    
+
     const {
       limit = 10,
       category = null,
@@ -240,26 +240,26 @@ class AIRecommendationEngine {
     try {
       // Get user profile
       const userProfile = await this.getUserProfile(userId);
-      
+
       // Get candidate products
       const candidates = await this.getCandidateProducts(userProfile, category, priceRange);
-      
+
       // Score products using multiple approaches
       const scoredProducts = await this.scoreProducts(userId, candidates, userProfile);
-      
+
       // Apply diversity and ranking
       const rankedProducts = this.applyDiversityRanking(scoredProducts, diversityFactor);
-      
+
       // Get top recommendations
       const recommendations = rankedProducts.slice(0, limit);
-      
+
       // Add explanations if requested
       if (includeReasons) {
         for (const rec of recommendations) {
           rec.reasons = await this.generateRecommendationReasons(userId, rec, userProfile);
         }
       }
-      
+
       return {
         userId,
         recommendations,
@@ -279,7 +279,7 @@ class AIRecommendationEngine {
   // Customer Segmentation
   async segmentCustomer(customerData) {
     await this.initialize();
-    
+
     const model = this.models.get('customerSegmentation');
     if (!model) throw new Error('Customer segmentation model not available');
 
@@ -288,23 +288,23 @@ class AIRecommendationEngine {
       const features = this.normalizeCustomerSegmentationFeatures(customerData);
       const prediction = model.predict(tf.tensor2d([features]));
       const probabilities = await prediction.data();
-      
+
       const segments = [
         'Champions', 'Loyal Customers', 'Potential Loyalists', 'New Customers',
         'Promising', 'Need Attention', 'About to Sleep', 'At Risk'
       ];
-      
+
       const segmentScores = segments.map((segment, index) => ({
         segment,
         probability: probabilities[index],
         confidence: this.calculateConfidence(probabilities[index])
       }));
-      
+
       // Sort by probability
       segmentScores.sort((a, b) => b.probability - a.probability);
-      
+
       const primarySegment = segmentScores[0];
-      
+
       return {
         customerId: customerData.customerId,
         primarySegment: primarySegment.segment,
@@ -322,7 +322,7 @@ class AIRecommendationEngine {
   // Personalized Promotions
   async getPersonalizedPromotions(userId, options = {}) {
     await this.initialize();
-    
+
     const {
       limit = 5,
       budget = null,
@@ -334,23 +334,23 @@ class AIRecommendationEngine {
       // Get user profile and segment
       const userProfile = await this.getUserProfile(userId);
       const segmentation = await this.segmentCustomer(userProfile);
-      
+
       // Get promotion candidates
       const promotionCandidates = await this.getPromotionCandidates(budget, channel, timeframe);
-      
+
       // Score promotions for this user
       const scoredPromotions = await this.scorePromotions(userId, promotionCandidates, userProfile, segmentation);
-      
+
       // Rank and select top promotions
       const rankedPromotions = scoredPromotions
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
-      
+
       // Add personalization details
       for (const promotion of rankedPromotions) {
         promotion.personalization = await this.personalizePromotion(promotion, userProfile);
       }
-      
+
       return {
         userId,
         segment: segmentation.primarySegment,
@@ -370,27 +370,27 @@ class AIRecommendationEngine {
   // Content-Based Recommendations
   async getContentBasedRecommendations(userId, itemId, options = {}) {
     await this.initialize();
-    
+
     const { limit = 10, similarityThreshold = 0.7 } = options;
 
     try {
       // Get item features
       const itemFeatures = await this.getItemFeatures(itemId);
-      
+
       // Find similar items
       const similarItems = await this.findSimilarItems(itemFeatures, similarityThreshold);
-      
+
       // Get user preferences
       const userProfile = await this.getUserProfile(userId);
-      
+
       // Score similar items based on user preferences
       const scoredItems = await this.scoreItemsForUser(similarItems, userProfile);
-      
+
       // Rank and return top recommendations
       const recommendations = scoredItems
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
-      
+
       return {
         userId,
         baseItem: itemId,
@@ -408,12 +408,12 @@ class AIRecommendationEngine {
   // Collaborative Filtering Recommendations
   async getCollaborativeRecommendations(userId, options = {}) {
     await this.initialize();
-    
+
     const { limit = 10, method = 'user-based' } = options;
 
     try {
       let recommendations;
-      
+
       if (method === 'user-based') {
         recommendations = await this.getUserBasedRecommendations(userId, limit);
       } else if (method === 'item-based') {
@@ -424,7 +424,7 @@ class AIRecommendationEngine {
         const itemBased = await this.getItemBasedRecommendations(userId, Math.floor(limit / 2));
         recommendations = [...userBased, ...itemBased];
       }
-      
+
       return {
         userId,
         recommendations,
@@ -440,7 +440,7 @@ class AIRecommendationEngine {
   // Hybrid Recommendations
   async getHybridRecommendations(userId, options = {}) {
     await this.initialize();
-    
+
     const {
       limit = 10,
       weights = { collaborative: 0.4, content: 0.3, popularity: 0.2, personal: 0.1 },
@@ -455,7 +455,7 @@ class AIRecommendationEngine {
         this.getPopularityRecommendations(userId, { limit: limit * 2 }),
         this.getPersonalizedRecommendations(userId, { limit: limit * 2 })
       ]);
-      
+
       // Combine and weight recommendations
       const combinedScores = this.combineRecommendationScores([
         { recommendations: collaborative.recommendations, weight: weights.collaborative },
@@ -463,13 +463,13 @@ class AIRecommendationEngine {
         { recommendations: popularity.recommendations, weight: weights.popularity },
         { recommendations: personal.recommendations, weight: weights.personal }
       ]);
-      
+
       // Apply diversity and ranking
       const diversifiedRecommendations = this.applyDiversityRanking(combinedScores, diversityFactor);
-      
+
       // Get top recommendations
       const finalRecommendations = diversifiedRecommendations.slice(0, limit);
-      
+
       return {
         userId,
         recommendations: finalRecommendations,
@@ -493,7 +493,7 @@ class AIRecommendationEngine {
   // Real-time Recommendations
   async getRealTimeRecommendations(userId, context = {}) {
     await this.initialize();
-    
+
     const {
       currentPage = null,
       currentProduct = null,
@@ -504,7 +504,7 @@ class AIRecommendationEngine {
 
     try {
       let recommendations = [];
-      
+
       // Context-aware recommendations based on current activity
       if (currentProduct) {
         // Product detail page - show related products
@@ -523,7 +523,7 @@ class AIRecommendationEngine {
         const hybrid = await this.getHybridRecommendations(userId, { limit });
         recommendations = hybrid.recommendations;
       }
-      
+
       // Add real-time context
       for (const rec of recommendations) {
         rec.context = {
@@ -532,7 +532,7 @@ class AIRecommendationEngine {
           personalization: await this.getPersonalizationLevel(userId, rec)
         };
       }
-      
+
       return {
         userId,
         context: {
@@ -562,12 +562,12 @@ class AIRecommendationEngine {
 
     const results = [];
     const batches = this.createBatches(userIds, batchSize);
-    
+
     for (const batch of batches) {
       const batchPromises = batch.map(async (userId) => {
         try {
           let recommendations;
-          
+
           switch (method) {
             case 'collaborative':
               recommendations = await this.getCollaborativeRecommendations(userId, { limit });
@@ -581,24 +581,24 @@ class AIRecommendationEngine {
             default:
               recommendations = await this.getHybridRecommendations(userId, { limit });
           }
-          
+
           return { userId, success: true, recommendations };
         } catch (error) {
           return { userId, success: false, error: error.message };
         }
       });
-      
-      const batchResults = parallel 
+
+      const batchResults = parallel
         ? await Promise.all(batchPromises)
         : await this.sequentialProcess(batchPromises);
-      
+
       results.push(...batchResults);
     }
-    
+
     return {
       totalUsers: userIds.length,
-      successCount: results.filter(r => r.success).length,
-      errorCount: results.filter(r => !r.success).length,
+      successCount: results.filter((r) => r.success).length,
+      errorCount: results.filter((r) => !r.success).length,
       results,
       method,
       timestamp: new Date().toISOString()
@@ -610,18 +610,18 @@ class AIRecommendationEngine {
     // Generate synthetic training data for product recommendations
     const trainingData = this.generateProductRecommendationTrainingData();
     const { userIds, itemIds, ratings } = trainingData;
-    
-    const userTensor = tf.tensor2d(userIds.map(id => [id]));
-    const itemTensor = tf.tensor2d(itemIds.map(id => [id]));
-    const ratingTensor = tf.tensor2d(ratings.map(r => [r]));
-    
+
+    const userTensor = tf.tensor2d(userIds.map((id) => [id]));
+    const itemTensor = tf.tensor2d(itemIds.map((id) => [id]));
+    const ratingTensor = tf.tensor2d(ratings.map((r) => [r]));
+
     await model.fit([userTensor, itemTensor], ratingTensor, {
       epochs: 50,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     userTensor.dispose();
     itemTensor.dispose();
     ratingTensor.dispose();
@@ -630,17 +630,17 @@ class AIRecommendationEngine {
   async trainCustomerSegmentationModel(model) {
     const trainingData = this.generateCustomerSegmentationTrainingData();
     const { inputs, outputs } = trainingData;
-    
+
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 75,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -648,17 +648,17 @@ class AIRecommendationEngine {
   async trainPersonalizedPromotionModel(model) {
     const trainingData = this.generatePersonalizedPromotionTrainingData();
     const { inputs, outputs } = trainingData;
-    
+
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 60,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -666,17 +666,17 @@ class AIRecommendationEngine {
   async trainContentBasedModel(model) {
     const trainingData = this.generateContentBasedTrainingData();
     const { inputs, outputs } = trainingData;
-    
+
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 40,
       batchSize: 32,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -684,17 +684,17 @@ class AIRecommendationEngine {
   async trainCollaborativeFilteringModel(model) {
     const trainingData = this.generateCollaborativeFilteringTrainingData();
     const { inputs, outputs } = trainingData;
-    
+
     const xs = tf.tensor2d(inputs);
     const ys = tf.tensor2d(outputs);
-    
+
     await model.fit(xs, ys, {
       epochs: 80,
       batchSize: 16,
       validationSplit: 0.2,
       verbose: 0
     });
-    
+
     xs.dispose();
     ys.dispose();
   }
@@ -704,20 +704,20 @@ class AIRecommendationEngine {
     const userIds = [];
     const itemIds = [];
     const ratings = [];
-    
+
     for (let i = 0; i < 10000; i++) {
       userIds.push(Math.floor(Math.random() * 1000));
       itemIds.push(Math.floor(Math.random() * 500));
       ratings.push(Math.random()); // 0-1 rating
     }
-    
+
     return { userIds, itemIds, ratings };
   }
 
   generateCustomerSegmentationTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 2000; i++) {
       // Generate customer features (15 features)
       const features = [
@@ -737,23 +737,23 @@ class AIRecommendationEngine {
         Math.random(), // social_engagement
         Math.random() * 100 // loyalty_points
       ];
-      
+
       // Generate segment (one-hot encoded)
       const segmentIndex = Math.floor(Math.random() * 8);
       const segment = new Array(8).fill(0);
       segment[segmentIndex] = 1;
-      
+
       inputs.push(features);
       outputs.push(segment);
     }
-    
+
     return { inputs, outputs };
   }
 
   generatePersonalizedPromotionTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 1500; i++) {
       // Generate user and promotion features (20 features)
       const features = [
@@ -778,57 +778,57 @@ class AIRecommendationEngine {
         Math.random() * 100, // inventory_level
         Math.random() // market_trend
       ];
-      
+
       // Generate promotion type preference (one-hot encoded)
       const promotionIndex = Math.floor(Math.random() * 10);
       const promotion = new Array(10).fill(0);
       promotion[promotionIndex] = 1;
-      
+
       inputs.push(features);
       outputs.push(promotion);
     }
-    
+
     return { inputs, outputs };
   }
 
   generateContentBasedTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 1200; i++) {
       // Generate item features (25 features)
       const features = Array.from({ length: 25 }, () => Math.random());
-      
+
       // Generate preference score (0 or 1)
       const preference = Math.random() > 0.5 ? 1 : 0;
-      
+
       inputs.push(features);
       outputs.push([preference]);
     }
-    
+
     return { inputs, outputs };
   }
 
   generateCollaborativeFilteringTrainingData() {
     const inputs = [];
     const outputs = [];
-    
+
     for (let i = 0; i < 800; i++) {
       // Generate user-item interaction matrix features (100 features)
       const features = Array.from({ length: 100 }, () => Math.random());
-      
+
       // Generate rating (1-5)
       const rating = Math.floor(Math.random() * 5) + 1;
-      
+
       inputs.push(features);
       outputs.push([rating]);
     }
-    
+
     return { inputs, outputs };
   }
 
   // Utility Methods
-  async getUserProfile(userId) {
+  getUserProfile(userId) {
     // Mock user profile - in real implementation, fetch from database
     return {
       userId,
@@ -845,13 +845,13 @@ class AIRecommendationEngine {
     };
   }
 
-  async getItemFeatures(itemId) {
+  getItemFeatures(itemId) {
     // Mock item features - in real implementation, fetch from database
     return {
       itemId,
       category: 'electronics',
       price: 50 + Math.random() * 500,
-      brand: 'brand' + Math.floor(Math.random() * 10),
+      brand: `brand${Math.floor(Math.random() * 10)}`,
       rating: 3 + Math.random() * 2,
       features: Array.from({ length: 25 }, () => Math.random())
     };
@@ -880,7 +880,7 @@ class AIRecommendationEngine {
   // Additional utility methods would continue here...
   // (truncated for brevity)
 
-  async getRecommendationMetrics() {
+  getRecommendationMetrics() {
     return {
       models: Array.from(this.models.keys()),
       userProfiles: this.userProfiles.size,

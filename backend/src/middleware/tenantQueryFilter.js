@@ -16,10 +16,10 @@ class TenantQueryFilter {
    */
   activate(tenantId) {
     if (this.isActive) return;
-    
+
     this.tenantId = tenantId;
     this.isActive = true;
-    
+
     // Store original methods
     this.originalMethods = {
       find: mongoose.Query.prototype.find,
@@ -33,7 +33,7 @@ class TenantQueryFilter {
       countDocuments: mongoose.Query.prototype.countDocuments,
       distinct: mongoose.Query.prototype.distinct
     };
-    
+
     // Override query methods
     this.overrideQueryMethods();
   }
@@ -43,10 +43,10 @@ class TenantQueryFilter {
    */
   deactivate() {
     if (!this.isActive) return;
-    
+
     // Restore original methods
     Object.assign(mongoose.Query.prototype, this.originalMethods);
-    
+
     this.isActive = false;
     this.tenantId = null;
     this.originalMethods = {};
@@ -57,75 +57,75 @@ class TenantQueryFilter {
    */
   overrideQueryMethods() {
     const self = this;
-    
+
     // Find operations
-    mongoose.Query.prototype.find = function(filter) {
+    mongoose.Query.prototype.find = function (filter) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.find.call(this, filter);
     };
-    
-    mongoose.Query.prototype.findOne = function(filter) {
+
+    mongoose.Query.prototype.findOne = function (filter) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.findOne.call(this, filter);
     };
-    
+
     // Update operations
-    mongoose.Query.prototype.findOneAndUpdate = function(filter, update, options) {
+    mongoose.Query.prototype.findOneAndUpdate = function (filter, update, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.findOneAndUpdate.call(this, filter, update, options);
     };
-    
-    mongoose.Query.prototype.updateOne = function(filter, update, options) {
+
+    mongoose.Query.prototype.updateOne = function (filter, update, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.updateOne.call(this, filter, update, options);
     };
-    
-    mongoose.Query.prototype.updateMany = function(filter, update, options) {
+
+    mongoose.Query.prototype.updateMany = function (filter, update, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.updateMany.call(this, filter, update, options);
     };
-    
+
     // Delete operations
-    mongoose.Query.prototype.findOneAndDelete = function(filter, options) {
+    mongoose.Query.prototype.findOneAndDelete = function (filter, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.findOneAndDelete.call(this, filter, options);
     };
-    
-    mongoose.Query.prototype.deleteOne = function(filter, options) {
+
+    mongoose.Query.prototype.deleteOne = function (filter, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.deleteOne.call(this, filter, options);
     };
-    
-    mongoose.Query.prototype.deleteMany = function(filter, options) {
+
+    mongoose.Query.prototype.deleteMany = function (filter, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.deleteMany.call(this, filter, options);
     };
-    
+
     // Count operations
-    mongoose.Query.prototype.countDocuments = function(filter, options) {
+    mongoose.Query.prototype.countDocuments = function (filter, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
       return self.originalMethods.countDocuments.call(this, filter, options);
     };
-    
-    mongoose.Query.prototype.distinct = function(field, filter, options) {
+
+    mongoose.Query.prototype.distinct = function (field, filter, options) {
       if (!this.getOptions().skipTenantFilter && self.shouldApplyTenantFilter(this)) {
         this.where({ tenantId: self.tenantId });
       }
@@ -138,13 +138,13 @@ class TenantQueryFilter {
    */
   shouldApplyTenantFilter(query) {
     const modelName = query.model.modelName;
-    
+
     // Skip system models that don't need tenant filtering
     const systemModels = ['Tenant', 'User']; // User might need special handling
     if (systemModels.includes(modelName)) {
       return false;
     }
-    
+
     // Check if model has tenantId field
     const schema = query.model.schema;
     return schema.paths.tenantId !== undefined;
@@ -162,20 +162,20 @@ function applyTenantQueryFilter(req, res, next) {
   if (!req.tenant || !req.tenant.id) {
     return next();
   }
-  
+
   // Activate tenant filtering
   tenantQueryFilter.activate(req.tenant.id);
-  
+
   // Deactivate on response finish
   res.on('finish', () => {
     tenantQueryFilter.deactivate();
   });
-  
+
   // Deactivate on error
   res.on('error', () => {
     tenantQueryFilter.deactivate();
   });
-  
+
   next();
 }
 
@@ -185,14 +185,14 @@ function applyTenantQueryFilter(req, res, next) {
 function withoutTenantFilter(callback) {
   const wasActive = tenantQueryFilter.isActive;
   const originalTenantId = tenantQueryFilter.tenantId;
-  
+
   if (wasActive) {
     tenantQueryFilter.deactivate();
   }
-  
+
   try {
     const result = callback();
-    
+
     // Handle promises
     if (result && typeof result.then === 'function') {
       return result.finally(() => {
@@ -201,7 +201,7 @@ function withoutTenantFilter(callback) {
         }
       });
     }
-    
+
     return result;
   } finally {
     if (wasActive) {
@@ -216,16 +216,16 @@ function withoutTenantFilter(callback) {
 function withTenantContext(tenantId, callback) {
   const wasActive = tenantQueryFilter.isActive;
   const originalTenantId = tenantQueryFilter.tenantId;
-  
+
   if (wasActive) {
     tenantQueryFilter.deactivate();
   }
-  
+
   tenantQueryFilter.activate(tenantId);
-  
+
   try {
     const result = callback();
-    
+
     // Handle promises
     if (result && typeof result.then === 'function') {
       return result.finally(() => {
@@ -235,7 +235,7 @@ function withTenantContext(tenantId, callback) {
         }
       });
     }
-    
+
     return result;
   } finally {
     tenantQueryFilter.deactivate();
@@ -248,34 +248,34 @@ function withTenantContext(tenantId, callback) {
 /**
  * Mongoose plugin to add tenant-aware static methods
  */
-function tenantAwarePlugin(schema, options = {}) {
+function tenantAwarePlugin(schema, _options = {}) {
   // Add static methods for tenant-aware operations
-  schema.statics.findByTenant = function(tenantId, filter = {}) {
+  schema.statics.findByTenant = function (tenantId, filter = {}) {
     return this.find({ tenantId, ...filter });
   };
-  
-  schema.statics.findOneByTenant = function(tenantId, filter = {}) {
+
+  schema.statics.findOneByTenant = function (tenantId, filter = {}) {
     return this.findOne({ tenantId, ...filter });
   };
-  
-  schema.statics.createForTenant = function(tenantId, data) {
+
+  schema.statics.createForTenant = function (tenantId, data) {
     return this.create({ ...data, tenantId });
   };
-  
-  schema.statics.updateByTenant = function(tenantId, filter, update, options) {
+
+  schema.statics.updateByTenant = function (tenantId, filter, update, options) {
     return this.updateMany({ tenantId, ...filter }, update, options);
   };
-  
-  schema.statics.deleteByTenant = function(tenantId, filter, options) {
+
+  schema.statics.deleteByTenant = function (tenantId, filter, options) {
     return this.deleteMany({ tenantId, ...filter }, options);
   };
-  
-  schema.statics.countByTenant = function(tenantId, filter = {}) {
+
+  schema.statics.countByTenant = function (tenantId, filter = {}) {
     return this.countDocuments({ tenantId, ...filter });
   };
-  
+
   // Add instance methods
-  schema.methods.belongsToTenant = function(tenantId) {
+  schema.methods.belongsToTenant = function (tenantId) {
     return this.tenantId && this.tenantId.toString() === tenantId.toString();
   };
 }
@@ -290,7 +290,7 @@ function addTenantMatchStage(pipeline, tenantId) {
       tenantId: new mongoose.Types.ObjectId(tenantId)
     }
   });
-  
+
   return pipeline;
 }
 
@@ -302,7 +302,7 @@ function validateTenantConsistency(req, res, next) {
   if (!req.tenant) {
     return next();
   }
-  
+
   // Validate that any tenantId in request body matches current tenant
   if (req.body && req.body.tenantId) {
     if (req.body.tenantId !== req.tenant.id) {
@@ -312,12 +312,12 @@ function validateTenantConsistency(req, res, next) {
       });
     }
   }
-  
+
   // Auto-set tenantId for create operations
   if (req.method === 'POST' && req.body && !req.body.tenantId) {
     req.body.tenantId = req.tenant.id;
   }
-  
+
   next();
 }
 

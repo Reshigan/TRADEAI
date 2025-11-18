@@ -40,9 +40,9 @@ const testUserSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-testUserSchema.pre('save', async function(next) {
+testUserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -53,8 +53,8 @@ testUserSchema.pre('save', async function(next) {
 });
 
 // Instance methods
-testUserSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+testUserSchema.methods.comparePassword = function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 const TestUser = mongoose.model('TestUser', testUserSchema);

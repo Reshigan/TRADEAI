@@ -31,9 +31,9 @@ class TwoFAService {
    */
   verifyToken(secret, token) {
     return speakeasy.totp.verify({
-      secret: secret,
+      secret,
       encoding: 'base32',
-      token: token,
+      token,
       window: 2 // Allow 2 time steps before and after
     });
   }

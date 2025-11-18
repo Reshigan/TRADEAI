@@ -3,7 +3,7 @@ const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const logger = require('../utils/logger');
 
 // Create customer
-exports.createCustomer = asyncHandler(async (req, res, next) => {
+exports.createCustomer = asyncHandler(async (req, res, _next) => {
   const customerData = {
     ...req.body,
     company: req.user.company,
@@ -24,7 +24,7 @@ exports.createCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Get single customer
-exports.getCustomer = asyncHandler(async (req, res, next) => {
+exports.getCustomer = asyncHandler(async (req, res, _next) => {
   const customer = await Customer.findById(req.params.id)
     .populate('company', 'name')
     .populate('createdBy', 'firstName lastName');
@@ -45,7 +45,7 @@ exports.getCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Update customer
-exports.updateCustomer = asyncHandler(async (req, res, next) => {
+exports.updateCustomer = asyncHandler(async (req, res, _next) => {
   const customer = await Customer.findById(req.params.id);
 
   if (!customer) {
@@ -59,7 +59,7 @@ exports.updateCustomer = asyncHandler(async (req, res, next) => {
 
   Object.assign(customer, req.body);
   customer.lastModifiedBy = req.user._id;
-  
+
   await customer.save();
 
   logger.logAudit('customer_updated', req.user._id, {
@@ -74,7 +74,7 @@ exports.updateCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Delete customer
-exports.deleteCustomer = asyncHandler(async (req, res, next) => {
+exports.deleteCustomer = asyncHandler(async (req, res, _next) => {
   const customer = await Customer.findById(req.params.id);
 
   if (!customer) {
@@ -89,10 +89,10 @@ exports.deleteCustomer = asyncHandler(async (req, res, next) => {
   // Check if customer is referenced in other documents
   const TradeSpend = require('../models/TradeSpend');
   const Promotion = require('../models/Promotion');
-  
+
   const tradeSpendCount = await TradeSpend.countDocuments({ customer: customer._id });
   const promotionCount = await Promotion.countDocuments({ 'scope.customers.customer': customer._id });
-  
+
   if (tradeSpendCount > 0 || promotionCount > 0) {
     throw new AppError('Cannot delete customer with existing trade spends or promotions', 400);
   }
@@ -111,7 +111,7 @@ exports.deleteCustomer = asyncHandler(async (req, res, next) => {
 });
 
 // Get all customers
-exports.getCustomers = asyncHandler(async (req, res, next) => {
+exports.getCustomers = asyncHandler(async (req, res, _next) => {
   const {
     page = 1,
     limit = 10,
@@ -126,7 +126,7 @@ exports.getCustomers = asyncHandler(async (req, res, next) => {
 
   // Build query
   const query = { company: req.user.company };
-  
+
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
@@ -134,23 +134,23 @@ exports.getCustomers = asyncHandler(async (req, res, next) => {
       { 'contact.email': { $regex: search, $options: 'i' } }
     ];
   }
-  
+
   if (status) {
     query.status = status;
   }
-  
+
   if (type) {
     query.type = type;
   }
-  
+
   if (tier) {
     query['classification.tier'] = tier;
   }
-  
+
   if (region) {
     query['classification.region'] = region;
   }
-  
+
   // Apply additional filters
   Object.assign(query, filters);
 
@@ -185,7 +185,7 @@ exports.getCustomers = asyncHandler(async (req, res, next) => {
 });
 
 // Get customer statistics
-exports.getCustomerStats = asyncHandler(async (req, res, next) => {
+exports.getCustomerStats = asyncHandler(async (req, res, _next) => {
   const stats = await Customer.aggregate([
     { $match: { company: req.user.company } },
     {
@@ -235,7 +235,7 @@ exports.getCustomerStats = asyncHandler(async (req, res, next) => {
 });
 
 // Bulk operations
-exports.bulkUpdateCustomers = asyncHandler(async (req, res, next) => {
+exports.bulkUpdateCustomers = asyncHandler(async (req, res, _next) => {
   const { customerIds, updates } = req.body;
 
   if (!customerIds || !Array.isArray(customerIds) || customerIds.length === 0) {
@@ -243,7 +243,7 @@ exports.bulkUpdateCustomers = asyncHandler(async (req, res, next) => {
   }
 
   const result = await Customer.updateMany(
-    { 
+    {
       _id: { $in: customerIds },
       company: req.user.company
     },

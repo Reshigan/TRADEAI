@@ -4,8 +4,8 @@
  */
 
 const SalesHistory = require('../models/SalesHistory');
-const Transaction = require('../models/Transaction');
-const Promotion = require('../models/Promotion');
+const _Transaction = require('../models/_Transaction');
+const _Promotion = require('../models/_Promotion');
 
 class BaselineService {
   /**
@@ -50,7 +50,7 @@ class BaselineService {
 
     return {
       method: 'control_store',
-      baseline: controlSales.map(item => ({
+      baseline: controlSales.map((item) => ({
         date: item._id,
         baselineQuantity: item.avgQuantity,
         baselineRevenue: item.avgRevenue
@@ -114,18 +114,18 @@ class BaselineService {
     // Generate baseline for promotion period
     const baseline = [];
     const currentDate = new Date(promotionStartDate);
-    
+
     while (currentDate <= promotionEndDate) {
       const dayOfWeek = currentDate.getDay();
       const seasonalFactor = seasonalAdjustment[dayOfWeek] || 1.0;
-      
+
       baseline.push({
         date: new Date(currentDate),
         baselineQuantity: avgDailyQuantity * seasonalFactor,
         baselineRevenue: avgDailyRevenue * seasonalFactor,
         seasonalFactor
       });
-      
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -167,7 +167,7 @@ class BaselineService {
       dayOfWeekSales[i] = [];
     }
 
-    sales.forEach(sale => {
+    sales.forEach((sale) => {
       const dayOfWeek = sale.date.getDay();
       dayOfWeekSales[dayOfWeek].push(sale.quantity);
     });
@@ -242,7 +242,7 @@ class BaselineService {
       const window = sales.slice(i - windowSize + 1, i + 1);
       const avgQuantity = window.reduce((sum, item) => sum + item.quantity, 0) / windowSize;
       const avgRevenue = window.reduce((sum, item) => sum + item.revenue, 0) / windowSize;
-      
+
       movingAverages.push({
         date: sales[i].date,
         baselineQuantity: avgQuantity,
@@ -252,17 +252,17 @@ class BaselineService {
 
     // Use last MA value as baseline for promotion period
     const lastMA = movingAverages[movingAverages.length - 1];
-    
+
     const baseline = [];
     const currentDate = new Date(promotionStartDate);
-    
+
     while (currentDate <= promotionEndDate) {
       baseline.push({
         date: new Date(currentDate),
         baselineQuantity: lastMA.baselineQuantity,
         baselineRevenue: lastMA.baselineRevenue
       });
-      
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -321,14 +321,14 @@ class BaselineService {
     // Use smoothed value as baseline
     const baseline = [];
     const currentDate = new Date(promotionStartDate);
-    
+
     while (currentDate <= promotionEndDate) {
       baseline.push({
         date: new Date(currentDate),
         baselineQuantity: smoothedQuantity,
         baselineRevenue: smoothedRevenue
       });
-      
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -419,8 +419,8 @@ class BaselineService {
     }).sort({ date: 1 });
 
     // Calculate incremental volume
-    const incrementalAnalysis = baseline.map(b => {
-      const actual = actualSales.find(a => 
+    const incrementalAnalysis = baseline.map((b) => {
+      const actual = actualSales.find((a) =>
         a.date.toISOString().split('T')[0] === b.date.toISOString().split('T')[0]
       );
 
@@ -435,19 +435,19 @@ class BaselineService {
         baselineRevenue: b.baselineRevenue,
         actualRevenue,
         incrementalRevenue: actualRevenue - b.baselineRevenue,
-        liftPercentage: b.baselineQuantity > 0 ? 
+        liftPercentage: b.baselineQuantity > 0 ?
           ((actualQuantity - b.baselineQuantity) / b.baselineQuantity * 100) : 0
       };
     });
 
     // Calculate totals
-    const totalIncrementalQuantity = incrementalAnalysis.reduce((sum, item) => 
+    const totalIncrementalQuantity = incrementalAnalysis.reduce((sum, item) =>
       sum + item.incrementalQuantity, 0);
-    const totalIncrementalRevenue = incrementalAnalysis.reduce((sum, item) => 
+    const totalIncrementalRevenue = incrementalAnalysis.reduce((sum, item) =>
       sum + item.incrementalRevenue, 0);
-    const totalBaselineQuantity = baseline.reduce((sum, item) => 
+    const totalBaselineQuantity = baseline.reduce((sum, item) =>
       sum + item.baselineQuantity, 0);
-    const totalActualQuantity = incrementalAnalysis.reduce((sum, item) => 
+    const totalActualQuantity = incrementalAnalysis.reduce((sum, item) =>
       sum + item.actualQuantity, 0);
 
     return {
@@ -457,7 +457,7 @@ class BaselineService {
         totalIncrementalRevenue,
         totalBaselineQuantity,
         totalActualQuantity,
-        overallLift: totalBaselineQuantity > 0 ? 
+        overallLift: totalBaselineQuantity > 0 ?
           (totalIncrementalQuantity / totalBaselineQuantity * 100) : 0
       },
       baselineMethod: baselineResult.recommended.method

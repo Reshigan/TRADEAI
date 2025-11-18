@@ -1,7 +1,7 @@
 // TRADEAI v2.0 - Dashboard Component Tests for 100% Coverage
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import Dashboard from '../../components/Dashboard';

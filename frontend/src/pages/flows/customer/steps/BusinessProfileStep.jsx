@@ -14,8 +14,7 @@ import {
 } from '@mui/material';
 import {
   Business as BusinessIcon,
-  TrendingUp as TrendingUpIcon,
-  CalendarToday as CalendarIcon
+  TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
 
 const BusinessProfileStep = ({ data, onChange, errors = {} }) => {

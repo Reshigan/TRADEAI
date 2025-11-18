@@ -18,26 +18,26 @@ class IntegrationHubService extends EventEmitter {
     this.integrationMetrics = new Map();
     this.webhookApp = express();
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
   async initializeService() {
     try {
       console.log('Initializing Integration Hub Service...');
-      
+
       // Initialize connectors
       await this.initializeConnectors();
-      
+
       // Setup webhook server
       this.setupWebhookServer();
-      
+
       // Load API configurations
       await this.loadAPIConfigurations();
-      
+
       // Start sync job monitoring
       this.startSyncJobMonitoring();
-      
+
       this.isInitialized = true;
       console.log('Integration Hub Service initialized successfully');
     } catch (error) {
@@ -48,7 +48,7 @@ class IntegrationHubService extends EventEmitter {
   /**
    * Initialize available connectors
    */
-  async initializeConnectors() {
+  initializeConnectors() {
     // Salesforce Connector
     this.connectors.set('salesforce', {
       id: 'salesforce',
@@ -231,7 +231,7 @@ class IntegrationHubService extends EventEmitter {
   /**
    * Load API configurations
    */
-  async loadAPIConfigurations() {
+  loadAPIConfigurations() {
     // Load tenant-specific API configurations
     // In production, this would load from database
     this.apiConfigurations.set('tenant_1', {
@@ -431,21 +431,21 @@ class IntegrationHubService extends EventEmitter {
     try {
       // Get data from external system
       const externalData = await this.fetchExternalData(connector, config, capability);
-      
+
       // Transform data using field mappings
       const transformedData = this.transformData(externalData, connector.fieldMappings[capability]);
-      
+
       // Apply filters
       const filteredData = this.applyFilters(transformedData, config.filters[capability]);
-      
+
       // Sync to internal system
       const syncResults = await this.syncToInternalSystem(syncJob.tenantId, capability, filteredData);
-      
+
       // Update sync job metrics
       syncJob.recordsProcessed += filteredData.length;
       syncJob.recordsSuccessful += syncResults.successful;
       syncJob.recordsFailed += syncResults.failed;
-      
+
       if (syncResults.errors.length > 0) {
         syncJob.errors.push(...syncResults.errors);
       }
@@ -499,8 +499,8 @@ class IntegrationHubService extends EventEmitter {
    * Process webhook payload
    */
   processWebhookPayload(tenantId, connectorId, payload) {
-    const connector = this.connectors.get(connectorId);
-    
+    const _connector = this.connectors.get(connectorId);
+
     switch (connectorId) {
       case 'salesforce':
         this.processSalesforceWebhook(tenantId, payload);
@@ -530,10 +530,10 @@ class IntegrationHubService extends EventEmitter {
     try {
       // Get access token
       const accessToken = await this.getAccessToken(connector, config);
-      
+
       // Transform data for external system
       const transformedData = this.transformDataForExternal(data, connector.fieldMappings);
-      
+
       // Send to external system
       const response = await this.makeAPIRequest(connector, config, {
         method: operation === 'create' ? 'POST' : 'PUT',
@@ -585,10 +585,10 @@ class IntegrationHubService extends EventEmitter {
     };
 
     // Calculate metrics from sync jobs
-    this.syncJobs.forEach(job => {
+    this.syncJobs.forEach((job) => {
       if (job.tenantId === tenantId && (!connectorId || job.connectorId === connectorId)) {
         metrics.syncJobs.total++;
-        
+
         switch (job.status) {
           case 'completed':
             metrics.syncJobs.successful++;
@@ -600,7 +600,7 @@ class IntegrationHubService extends EventEmitter {
             metrics.syncJobs.running++;
             break;
         }
-        
+
         metrics.dataVolume.recordsProcessed += job.recordsProcessed;
         metrics.dataVolume.recordsSuccessful += job.recordsSuccessful;
         metrics.dataVolume.recordsFailed += job.recordsFailed;
@@ -614,7 +614,7 @@ class IntegrationHubService extends EventEmitter {
    * Get available connectors
    */
   getAvailableConnectors() {
-    return Array.from(this.connectors.values()).map(connector => ({
+    return Array.from(this.connectors.values()).map((connector) => ({
       id: connector.id,
       name: connector.name,
       type: connector.type,
@@ -718,7 +718,7 @@ class IntegrationHubService extends EventEmitter {
     }
   }
 
-  async fetchExternalData(connector, config, capability) {
+  fetchExternalData(_connector, _config, _capability) {
     // Mock implementation - would fetch actual data from external systems
     return [
       { id: '1', name: 'Sample Record 1' },
@@ -729,7 +729,7 @@ class IntegrationHubService extends EventEmitter {
   transformData(data, fieldMappings) {
     if (!fieldMappings) return data;
 
-    return data.map(record => {
+    return data.map((record) => {
       const transformed = {};
       Object.entries(fieldMappings).forEach(([externalField, internalField]) => {
         if (record[externalField] !== undefined) {
@@ -756,7 +756,7 @@ class IntegrationHubService extends EventEmitter {
   applyFilters(data, filters) {
     if (!filters) return data;
 
-    return data.filter(record => {
+    return data.filter((record) => {
       return Object.entries(filters).every(([field, condition]) => {
         const value = this.getNestedValue(record, field);
         return this.evaluateFilterCondition(value, condition);
@@ -764,10 +764,10 @@ class IntegrationHubService extends EventEmitter {
     });
   }
 
-  async syncToInternalSystem(tenantId, capability, data) {
+  syncToInternalSystem(tenantId, capability, data) {
     // Mock implementation - would sync to actual internal system
     console.log(`Syncing ${data.length} ${capability} records for tenant ${tenantId}`);
-    
+
     return {
       successful: data.length,
       failed: 0,
@@ -775,39 +775,39 @@ class IntegrationHubService extends EventEmitter {
     };
   }
 
-  async getAccessToken(connector, config) {
+  getAccessToken(_connector, _config) {
     // Mock implementation - would get actual access tokens
     return 'mock_access_token';
   }
 
-  async makeAPIRequest(connector, config, options) {
+  makeAPIRequest(_connector, _config, _options) {
     // Mock implementation - would make actual API requests
     return {
       data: { id: 'mock_id', status: 'success' }
     };
   }
 
-  getEndpointForOperation(connector, operation) {
+  getEndpointForOperation(connector, _operation) {
     // Return appropriate endpoint for operation
-    return connector.endpoints.api + 'records';
+    return `${connector.endpoints.api}records`;
   }
 
-  processSalesforceWebhook(tenantId, payload) {
+  processSalesforceWebhook(tenantId, _payload) {
     console.log('Processing Salesforce webhook for tenant:', tenantId);
     // Process Salesforce-specific webhook payload
   }
 
-  processShopifyWebhook(tenantId, payload) {
+  processShopifyWebhook(tenantId, _payload) {
     console.log('Processing Shopify webhook for tenant:', tenantId);
     // Process Shopify-specific webhook payload
   }
 
-  processSlackWebhook(tenantId, payload) {
+  processSlackWebhook(tenantId, _payload) {
     console.log('Processing Slack webhook for tenant:', tenantId);
     // Process Slack-specific webhook payload
   }
 
-  processGenericWebhook(tenantId, connectorId, payload) {
+  processGenericWebhook(tenantId, connectorId, _payload) {
     console.log(`Processing generic webhook for ${connectorId}, tenant:`, tenantId);
     // Process generic webhook payload
   }
@@ -815,14 +815,14 @@ class IntegrationHubService extends EventEmitter {
   setNestedValue(obj, path, value) {
     const keys = path.split('.');
     let current = obj;
-    
+
     for (let i = 0; i < keys.length - 1; i++) {
       if (!(keys[i] in current)) {
         current[keys[i]] = {};
       }
       current = current[keys[i]];
     }
-    
+
     current[keys[keys.length - 1]] = value;
   }
 
@@ -835,7 +835,7 @@ class IntegrationHubService extends EventEmitter {
     if (typeof condition === 'string' || typeof condition === 'number') {
       return value === condition;
     }
-    
+
     if (condition.operator) {
       switch (condition.operator) {
         case 'equals':
@@ -850,7 +850,7 @@ class IntegrationHubService extends EventEmitter {
           return true;
       }
     }
-    
+
     return true;
   }
 

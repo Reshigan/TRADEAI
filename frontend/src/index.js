@@ -6,6 +6,9 @@ import './index.css';
 import './styles/App.css';
 import App from './App';
 
+window.__BUILD_ID__ = '2025-11-16T07:27Z';
+console.info('BUILD_ID', window.__BUILD_ID__);
+
 // Create a custom theme
 const theme = createTheme({
   palette: {

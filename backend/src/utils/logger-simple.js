@@ -4,7 +4,7 @@ const logger = {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] INFO: ${message}`, meta);
   },
-  
+
   error: (message, error = null) => {
     const timestamp = new Date().toISOString();
     console.error(`[${timestamp}] ERROR: ${message}`);
@@ -12,12 +12,12 @@ const logger = {
       console.error('Error details:', error);
     }
   },
-  
+
   warn: (message, meta = {}) => {
     const timestamp = new Date().toISOString();
     console.warn(`[${timestamp}] WARN: ${message}`, meta);
   },
-  
+
   debug: (message, meta = {}) => {
     if (process.env.NODE_ENV === 'development') {
       const timestamp = new Date().toISOString();

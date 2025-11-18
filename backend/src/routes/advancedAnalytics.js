@@ -1,10 +1,10 @@
 /**
  * Advanced Analytics API Routes
  * Phase 2 Features - Enterprise Business Intelligence
- * 
+ *
  * Endpoints for:
  * - Accrual management & reconciliation
- * - Budget variance analysis & forecasting  
+ * - Budget variance analysis & forecasting
  * - Promotion ROI & effectiveness
  * - Customer segmentation (ABC, RFM)
  */
@@ -28,7 +28,7 @@ router.post('/accruals/calculate',
   restrictTo('manager', 'admin'),
   catchAsync(async (req, res) => {
     const { year, month, tenant, calculateBy } = req.body;
-    
+
     const results = await advancedAccrualService.calculateMonthlyAccruals({
       year: parseInt(year),
       month: parseInt(month),
@@ -36,7 +36,7 @@ router.post('/accruals/calculate',
       calculateBy,
       userId: req.user._id
     });
-    
+
     res.status(200).json({ success: true, data: results });
   })
 );

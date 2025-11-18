@@ -9,15 +9,10 @@ import {
   Typography,
   TextField,
   MenuItem,
-  InputAdornment,
-  CircularProgress,
-  Alert,
-  Chip,
-  Avatar
+  InputAdornment
 } from '@mui/material';
 import {
   Add as AddIcon,
-  FilterList as FilterListIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
 

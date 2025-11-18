@@ -12,12 +12,10 @@ import {
   TableSortLabel,
   TextField,
   InputAdornment,
-  Chip,
   IconButton,
   Tooltip,
   Menu,
   MenuItem,
-  ListItemIcon,
   ListItemText,
   Checkbox,
   Typography,
@@ -30,10 +28,7 @@ import {
   ViewColumn as ColumnsIcon,
   Download as ExportIcon,
   MoreVert as MoreIcon,
-  Psychology as AIIcon,
-  Star as StarIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon
+  Psychology as AIIcon
 } from '@mui/icons-material';
 
 /**
@@ -67,7 +62,7 @@ const SmartDataGrid = ({
   const [orderBy, setOrderBy] = useState('');
   const [order, setOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterAnchor, setFilterAnchor] = useState(null);
+  const [setFilterAnchor] = useState(null);
   const [columnsAnchor, setColumnsAnchor] = useState(null);
   const [visibleColumns, setVisibleColumns] = useState(
     columns.reduce((acc, col) => ({ ...acc, [col.id]: true }), {})

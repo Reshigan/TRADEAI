@@ -24,8 +24,6 @@ import {
   InfoOutlined
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,

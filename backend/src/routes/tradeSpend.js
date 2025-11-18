@@ -3,7 +3,7 @@ const router = express.Router();
 const tradeSpendController = require('../controllers/tradeSpendController');
 const { authorize, checkPermission, checkApprovalLimit } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
-const { validate, commonValidations } = require('../middleware/validation');
+const { validate, _commonValidations } = require('../middleware/validation');
 
 // Validation rules
 const createTradeSpendValidation = [
@@ -28,7 +28,11 @@ router.get('/',
   query('spendType').optional().isIn(['marketing', 'cash_coop', 'trading_terms', 'rebate', 'promotion']),
   query('status').optional(),
   query('customer').optional().isMongoId(),
+  query('customerId').optional().isMongoId(),
   query('vendor').optional().isMongoId(),
+  query('vendorId').optional().isMongoId(),
+  query('product').optional().isMongoId(),
+  query('productId').optional().isMongoId(),
   query('startDate').optional().isISO8601(),
   query('endDate').optional().isISO8601(),
   query('page').optional().isInt({ min: 1 }),
@@ -104,6 +108,55 @@ router.delete('/:id',
   param('id').isMongoId(),
   validate,
   tradeSpendController.deleteTradeSpend
+);
+
+router.get('/:id/accruals',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendAccruals
+);
+
+router.post('/:id/accruals',
+  checkPermission('trade_spend', 'update'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.addTradeSpendAccrual
+);
+
+router.get('/:id/documents',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendDocuments
+);
+
+router.post('/:id/documents',
+  checkPermission('trade_spend', 'update'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.addTradeSpendDocument
+);
+
+router.get('/:id/approvals',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendApprovals
+);
+
+router.get('/:id/performance',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendPerformance
+);
+
+router.get('/:id/history',
+  checkPermission('trade_spend', 'read'),
+  param('id').isMongoId(),
+  validate,
+  tradeSpendController.getTradeSpendHistory
 );
 
 module.exports = router;

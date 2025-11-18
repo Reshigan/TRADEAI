@@ -18,7 +18,7 @@ const sanitizeInput = (input) => {
 // Get all products
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, category, brand, status } = req.query;
-  
+
   const query = {};
   if (search) {
     query.$or = [
@@ -30,14 +30,14 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   if (category) query['category.primary'] = category;
   if (brand) query['brand.name'] = brand;
   if (status) query.status = status;
-  
+
   const products = await Product.find(query)
     .limit(limit * 1)
     .skip((page - 1) * limit)
     .sort({ name: 1 });
-  
+
   const count = await Product.countDocuments(query);
-  
+
   res.json({
     success: true,
     data: products,
@@ -50,11 +50,11 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 // Get product by ID
 router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
-  
+
   if (!product) {
     throw new AppError('Product not found', 404);
   }
-  
+
   res.json({
     success: true,
     data: product
@@ -68,20 +68,20 @@ router.post('/', authenticateToken, authorize('admin', 'manager'), asyncHandler(
   if (!tenantId) {
     throw new AppError('Tenant context not found', 400);
   }
-  
+
   // Sanitize string fields to prevent XSS
   const sanitizedData = { ...req.body };
   if (sanitizedData.name) sanitizedData.name = sanitizeInput(sanitizedData.name);
   if (sanitizedData.sku) sanitizedData.sku = sanitizeInput(sanitizedData.sku);
   if (sanitizedData.sapMaterialId) sanitizedData.sapMaterialId = sanitizeInput(sanitizedData.sapMaterialId);
   if (sanitizedData.description) sanitizedData.description = sanitizeInput(sanitizedData.description);
-  
+
   const product = await Product.create({
     ...sanitizedData,
     tenantId,
     createdBy: req.user._id
   });
-  
+
   res.status(201).json({
     success: true,
     data: product
@@ -95,11 +95,11 @@ router.put('/:id', authenticateToken, authorize('admin', 'manager'), asyncHandle
     req.body,
     { new: true, runValidators: true }
   );
-  
+
   if (!product) {
     throw new AppError('Product not found', 404);
   }
-  
+
   res.json({
     success: true,
     data: product
@@ -109,11 +109,11 @@ router.put('/:id', authenticateToken, authorize('admin', 'manager'), asyncHandle
 // Delete product
 router.delete('/:id', authenticateToken, authorize('admin'), asyncHandler(async (req, res) => {
   const product = await Product.findByIdAndDelete(req.params.id);
-  
+
   if (!product) {
     throw new AppError('Product not found', 404);
   }
-  
+
   res.json({
     success: true,
     message: 'Product deleted successfully'
@@ -123,11 +123,11 @@ router.delete('/:id', authenticateToken, authorize('admin'), asyncHandler(async 
 // Get product hierarchy
 router.get('/:id/hierarchy', authenticateToken, asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
-  
+
   if (!product) {
     throw new AppError('Product not found', 404);
   }
-  
+
   res.json({
     success: true,
     data: {
@@ -143,11 +143,61 @@ router.get('/category/:category', authenticateToken, asyncHandler(async (req, re
     'category.primary': req.params.category,
     status: 'active'
   }).sort({ name: 1 });
-  
+
   res.json({
     success: true,
     data: products,
     count: products.length
+  });
+}));
+
+router.get('/:id/promotions', authenticateToken, asyncHandler(async (req, res) => {
+  const Promotion = require('../models/Promotion');
+  const promotions = await Promotion.find({ 'products.product': req.params.id })
+    .populate('scope.customers.customer', 'name code')
+    .sort({ 'period.startDate': -1 });
+
+  res.json({
+    success: true,
+    data: promotions
+  });
+}));
+
+router.get('/:id/campaigns', authenticateToken, asyncHandler(async (req, res) => {
+  const Campaign = require('../models/Campaign');
+  const Promotion = require('../models/Promotion');
+
+  const promotions = await Promotion.find({ 'products.product': req.params.id }).select('campaign');
+  const campaignIds = [...new Set(promotions.map((p) => p.campaign).filter(Boolean))];
+  const campaigns = await Campaign.find({ _id: { $in: campaignIds } });
+
+  res.json({
+    success: true,
+    data: campaigns
+  });
+}));
+
+router.get('/:id/trading-terms', authenticateToken, asyncHandler(async (req, res) => {
+  const TradingTerm = require('../models/TradingTerm');
+  const tradingTerms = await TradingTerm.find({ 'applicability.products': req.params.id })
+    .sort({ createdAt: -1 });
+
+  res.json({
+    success: true,
+    data: tradingTerms
+  });
+}));
+
+router.get('/:id/sales-history', authenticateToken, asyncHandler(async (req, res) => {
+  const SalesHistory = require('../models/SalesHistory');
+  const salesHistory = await SalesHistory.find({ product: req.params.id })
+    .populate('customer', 'name code')
+    .sort({ date: -1 })
+    .limit(100);
+
+  res.json({
+    success: true,
+    data: salesHistory
   });
 }));
 

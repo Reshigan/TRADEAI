@@ -37,7 +37,7 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
     required: true,
     enum: ['brand_based', 'customer_based', 'channel_based', 'product_based', 'region_based', 'campaign_based', 'mixed']
   },
-  
+
   allocationLevel: {
     type: String,
     required: true,
@@ -146,7 +146,7 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
       required: true,
       enum: ['volume_based', 'revenue_based', 'profit_based', 'strategic_priority', 'historical_performance', 'market_potential', 'custom_formula']
     },
-    
+
     // Volume-based allocation
     volumeAllocation: {
       basePeriod: {
@@ -224,19 +224,19 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
       type: String,
       default: 'AUD'
     },
-    
+
     // Calculated allocations
     calculatedAllocations: [{
       targetId: String, // Reference to brand, customer, channel, etc.
       targetType: String,
       targetName: String,
-      
+
       // Allocation amounts
       baseAllocation: Number,
       adjustedAllocation: Number,
       finalAllocation: Number,
       percentage: Number,
-      
+
       // Calculation details
       calculationBasis: {
         volume: Number,
@@ -245,7 +245,7 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
         historicalSpend: Number,
         strategicWeight: Number
       },
-      
+
       // Performance expectations
       expectedOutcomes: {
         volumeTarget: Number,
@@ -338,23 +338,23 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
       targetId: String,
       targetType: String,
       targetName: String,
-      
+
       spendToDate: Number,
       remainingBudget: Number,
       utilizationRate: Number,
-      
+
       // Performance metrics
       actualVolume: Number,
       actualRevenue: Number,
       actualProfit: Number,
       actualROI: Number,
-      
+
       // Variance analysis
       budgetVariance: Number,
       volumeVariance: Number,
       revenueVariance: Number,
       profitVariance: Number,
-      
+
       lastUpdated: Date
     }],
 
@@ -364,16 +364,16 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
       totalRemaining: Number,
       averageUtilization: Number,
       averageROI: Number,
-      
+
       // Variance summary
       budgetVarianceTotal: Number,
       performanceVarianceTotal: Number,
-      
+
       // Efficiency metrics
       costPerUnit: Number,
       costPerRevenue: Number,
       efficiencyScore: Number,
-      
+
       lastCalculated: Date
     }
   },
@@ -382,21 +382,21 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
   reallocationHistory: [{
     date: Date,
     reason: String,
-    
+
     // Changes made
     changes: [{
       targetId: String,
       targetType: String,
       targetName: String,
-      
+
       previousAllocation: Number,
       newAllocation: Number,
       changeAmount: Number,
       changePercentage: Number,
-      
+
       rationale: String
     }],
-    
+
     // Approval
     requestedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -407,7 +407,7 @@ const marketingBudgetAllocationSchema = new mongoose.Schema({
       ref: 'User'
     },
     approvalDate: Date,
-    
+
     // Impact assessment
     expectedImpact: String,
     actualImpact: String
@@ -492,38 +492,38 @@ marketingBudgetAllocationSchema.index({ company: 1, 'validityPeriod.startDate': 
 marketingBudgetAllocationSchema.index({ company: 1, isActive: 1 });
 
 // Compound indexes for complex queries
-marketingBudgetAllocationSchema.index({ 
-  company: 1, 
-  allocationType: 1, 
+marketingBudgetAllocationSchema.index({
+  company: 1,
+  allocationType: 1,
   'approvalWorkflow.status': 1,
-  'validityPeriod.startDate': 1 
+  'validityPeriod.startDate': 1
 });
 
 // Virtual for total allocated amount
-marketingBudgetAllocationSchema.virtual('totalAllocated').get(function() {
+marketingBudgetAllocationSchema.virtual('totalAllocated').get(function () {
   if (!this.budgetDistribution.calculatedAllocations) return 0;
   return this.budgetDistribution.calculatedAllocations.reduce((sum, allocation) => sum + allocation.finalAllocation, 0);
 });
 
 // Virtual for allocation utilization
-marketingBudgetAllocationSchema.virtual('utilizationRate').get(function() {
+marketingBudgetAllocationSchema.virtual('utilizationRate').get(function () {
   const totalBudget = this.budgetDistribution.totalBudget;
   const totalSpent = this.performance.overallPerformance?.totalSpent || 0;
   return totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 });
 
 // Virtual for remaining budget
-marketingBudgetAllocationSchema.virtual('remainingBudget').get(function() {
+marketingBudgetAllocationSchema.virtual('remainingBudget').get(function () {
   const totalBudget = this.budgetDistribution.totalBudget;
   const totalSpent = this.performance.overallPerformance?.totalSpent || 0;
   return totalBudget - totalSpent;
 });
 
 // Virtual for performance status
-marketingBudgetAllocationSchema.virtual('performanceStatus').get(function() {
+marketingBudgetAllocationSchema.virtual('performanceStatus').get(function () {
   const utilization = this.utilizationRate;
   const roi = this.performance.overallPerformance?.averageROI || 0;
-  
+
   if (utilization > 90 && roi > 150) return 'excellent';
   if (utilization > 70 && roi > 100) return 'good';
   if (utilization > 50 && roi > 50) return 'fair';
@@ -531,13 +531,13 @@ marketingBudgetAllocationSchema.virtual('performanceStatus').get(function() {
 });
 
 // Method to calculate allocations based on method
-marketingBudgetAllocationSchema.methods.calculateAllocations = async function() {
+marketingBudgetAllocationSchema.methods.calculateAllocations = async function () {
   const method = this.allocationMethod.primaryMethod;
   const totalBudget = this.budgetDistribution.totalBudget;
-  
+
   // Get base data for calculations
   let baseData = [];
-  
+
   switch (method) {
     case 'volume_based':
       baseData = await this.getVolumeData();
@@ -551,15 +551,15 @@ marketingBudgetAllocationSchema.methods.calculateAllocations = async function() 
     default:
       baseData = await this.getHistoricalData();
   }
-  
+
   // Calculate proportional allocations
   const totalBase = baseData.reduce((sum, item) => sum + item.value, 0);
   const allocations = [];
-  
+
   for (const item of baseData) {
     const basePercentage = totalBase > 0 ? (item.value / totalBase) * 100 : 0;
     const baseAllocation = (basePercentage / 100) * totalBudget;
-    
+
     // Apply adjustment factors
     let adjustedAllocation = baseAllocation;
     for (const factor of this.allocationMethod.adjustmentFactors || []) {
@@ -567,10 +567,10 @@ marketingBudgetAllocationSchema.methods.calculateAllocations = async function() 
         adjustedAllocation = this.applyAdjustmentFactor(adjustedAllocation, factor);
       }
     }
-    
+
     // Apply proportional rules
     const finalAllocation = this.applyProportionalRules(adjustedAllocation, item);
-    
+
     allocations.push({
       targetId: item.id,
       targetType: item.type,
@@ -582,15 +582,15 @@ marketingBudgetAllocationSchema.methods.calculateAllocations = async function() 
       calculationBasis: item.basis
     });
   }
-  
+
   this.budgetDistribution.calculatedAllocations = allocations;
   return this.save();
 };
 
 // Method to update performance metrics
-marketingBudgetAllocationSchema.methods.updatePerformance = function(targetId, metrics) {
-  let targetPerformance = this.performance.actualSpend.find(p => p.targetId === targetId);
-  
+marketingBudgetAllocationSchema.methods.updatePerformance = function (targetId, metrics) {
+  let targetPerformance = this.performance.actualSpend.find((p) => p.targetId === targetId);
+
   if (!targetPerformance) {
     targetPerformance = {
       targetId,
@@ -602,16 +602,16 @@ marketingBudgetAllocationSchema.methods.updatePerformance = function(targetId, m
     };
     this.performance.actualSpend.push(targetPerformance);
   }
-  
+
   // Update metrics
   Object.assign(targetPerformance, metrics, { lastUpdated: new Date() });
-  
+
   // Calculate derived metrics
-  const allocation = this.budgetDistribution.calculatedAllocations.find(a => a.targetId === targetId);
+  const allocation = this.budgetDistribution.calculatedAllocations.find((a) => a.targetId === targetId);
   if (allocation) {
     targetPerformance.remainingBudget = allocation.finalAllocation - targetPerformance.spendToDate;
     targetPerformance.utilizationRate = (targetPerformance.spendToDate / allocation.finalAllocation) * 100;
-    
+
     // Calculate variances
     targetPerformance.budgetVariance = targetPerformance.spendToDate - allocation.finalAllocation;
     if (allocation.expectedOutcomes) {
@@ -620,44 +620,44 @@ marketingBudgetAllocationSchema.methods.updatePerformance = function(targetId, m
       targetPerformance.profitVariance = (targetPerformance.actualProfit || 0) - (allocation.expectedOutcomes.profitTarget || 0);
     }
   }
-  
+
   // Update overall performance
   this.calculateOverallPerformance();
-  
+
   return this.save();
 };
 
 // Method to calculate overall performance
-marketingBudgetAllocationSchema.methods.calculateOverallPerformance = function() {
+marketingBudgetAllocationSchema.methods.calculateOverallPerformance = function () {
   const actualSpend = this.performance.actualSpend || [];
-  
+
   if (actualSpend.length === 0) return;
-  
+
   const totalSpent = actualSpend.reduce((sum, spend) => sum + spend.spendToDate, 0);
   const totalRemaining = this.budgetDistribution.totalBudget - totalSpent;
   const averageUtilization = actualSpend.reduce((sum, spend) => sum + spend.utilizationRate, 0) / actualSpend.length;
-  
+
   // Calculate average ROI
-  const rois = actualSpend.filter(spend => spend.actualROI > 0).map(spend => spend.actualROI);
+  const rois = actualSpend.filter((spend) => spend.actualROI > 0).map((spend) => spend.actualROI);
   const averageROI = rois.length > 0 ? rois.reduce((sum, roi) => sum + roi, 0) / rois.length : 0;
-  
+
   // Calculate variances
   const budgetVarianceTotal = actualSpend.reduce((sum, spend) => sum + (spend.budgetVariance || 0), 0);
   const performanceVarianceTotal = actualSpend.reduce((sum, spend) => sum + (spend.revenueVariance || 0), 0);
-  
+
   // Calculate efficiency metrics
   const totalVolume = actualSpend.reduce((sum, spend) => sum + (spend.actualVolume || 0), 0);
   const totalRevenue = actualSpend.reduce((sum, spend) => sum + (spend.actualRevenue || 0), 0);
-  
+
   const costPerUnit = totalVolume > 0 ? totalSpent / totalVolume : 0;
   const costPerRevenue = totalRevenue > 0 ? (totalSpent / totalRevenue) * 100 : 0;
-  
+
   // Calculate efficiency score (0-100)
-  const efficiencyScore = Math.min(100, Math.max(0, 
+  const efficiencyScore = Math.min(100, Math.max(0,
     (averageROI / 2) + // ROI component (max 50 points)
     (Math.max(0, 100 - costPerRevenue) / 2) // Cost efficiency component (max 50 points)
   ));
-  
+
   this.performance.overallPerformance = {
     totalSpent,
     totalRemaining,
@@ -673,16 +673,16 @@ marketingBudgetAllocationSchema.methods.calculateOverallPerformance = function()
 };
 
 // Method to reallocate budget
-marketingBudgetAllocationSchema.methods.reallocateBudget = function(changes, reason, requestedBy) {
+marketingBudgetAllocationSchema.methods.reallocateBudget = function (changes, reason, requestedBy) {
   const reallocation = {
     date: new Date(),
     reason,
     changes: [],
     requestedBy
   };
-  
+
   for (const change of changes) {
-    const allocation = this.budgetDistribution.calculatedAllocations.find(a => a.targetId === change.targetId);
+    const allocation = this.budgetDistribution.calculatedAllocations.find((a) => a.targetId === change.targetId);
     if (allocation) {
       reallocation.changes.push({
         targetId: change.targetId,
@@ -694,22 +694,22 @@ marketingBudgetAllocationSchema.methods.reallocateBudget = function(changes, rea
         changePercentage: ((change.newAllocation - allocation.finalAllocation) / allocation.finalAllocation) * 100,
         rationale: change.rationale
       });
-      
+
       // Update allocation
       allocation.finalAllocation = change.newAllocation;
       allocation.percentage = (change.newAllocation / this.budgetDistribution.totalBudget) * 100;
     }
   }
-  
+
   this.reallocationHistory.push(reallocation);
   return this.save();
 };
 
 // Static method to get allocation summary for company
-marketingBudgetAllocationSchema.statics.getAllocationSummary = function(companyId, fiscalYear) {
+marketingBudgetAllocationSchema.statics.getAllocationSummary = function (companyId, fiscalYear) {
   const matchStage = { company: companyId };
   if (fiscalYear) matchStage['validityPeriod.fiscalYear'] = fiscalYear;
-  
+
   return this.aggregate([
     { $match: matchStage },
     {
@@ -725,32 +725,32 @@ marketingBudgetAllocationSchema.statics.getAllocationSummary = function(companyI
 };
 
 // Helper methods for data retrieval (to be implemented based on specific requirements)
-marketingBudgetAllocationSchema.methods.getVolumeData = async function() {
+marketingBudgetAllocationSchema.methods.getVolumeData = function () {
   // Implementation would query SalesHistory collection
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.getRevenueData = async function() {
+marketingBudgetAllocationSchema.methods.getRevenueData = function () {
   // Implementation would query SalesHistory collection
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.getProfitData = async function() {
+marketingBudgetAllocationSchema.methods.getProfitData = function () {
   // Implementation would query SalesHistory and calculate profits
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.getHistoricalData = async function() {
+marketingBudgetAllocationSchema.methods.getHistoricalData = function () {
   // Implementation would query historical spend data
   return [];
 };
 
-marketingBudgetAllocationSchema.methods.shouldApplyFactor = function(factor, item) {
+marketingBudgetAllocationSchema.methods.shouldApplyFactor = function (_factor, _item) {
   // Implementation would evaluate factor conditions
   return true;
 };
 
-marketingBudgetAllocationSchema.methods.applyAdjustmentFactor = function(allocation, factor) {
+marketingBudgetAllocationSchema.methods.applyAdjustmentFactor = function (allocation, factor) {
   switch (factor.type) {
     case 'multiplier':
       return allocation * factor.value;
@@ -763,10 +763,10 @@ marketingBudgetAllocationSchema.methods.applyAdjustmentFactor = function(allocat
   }
 };
 
-marketingBudgetAllocationSchema.methods.applyProportionalRules = function(allocation, item) {
+marketingBudgetAllocationSchema.methods.applyProportionalRules = function (allocation, _item) {
   // Apply minimum and maximum constraints
   const rules = this.proportionalRules;
-  
+
   if (rules.volumeProportions?.enabled) {
     if (rules.volumeProportions.minimumAllocation) {
       allocation = Math.max(allocation, rules.volumeProportions.minimumAllocation);
@@ -775,7 +775,7 @@ marketingBudgetAllocationSchema.methods.applyProportionalRules = function(alloca
       allocation = Math.min(allocation, rules.volumeProportions.maximumAllocation);
     }
   }
-  
+
   return allocation;
 };
 

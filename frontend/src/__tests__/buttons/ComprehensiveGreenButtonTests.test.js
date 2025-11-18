@@ -11,9 +11,9 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
@@ -152,9 +152,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
       const { container } = renderWithProviders(<TradeSpendList />);
       
       // Find the Create Trade Spend button
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create trade spend/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create trade spend/i });
       
       // Verify button exists and has correct styling
       expect(createButton).toBeInTheDocument();
@@ -176,7 +174,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
       const { container } = renderWithProviders(<TradeSpendDetail />);
       
       // Wait for component to load
-      await waitFor(() => screen.getByText(/test trade spend/i));
+      await screen.findByText(/test trade spend/i);
       
       // Find Edit button
       const editButton = screen.getByRole('button', { name: /edit/i });
@@ -195,7 +193,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-003: TradeSpendDetail "Save" button - Saves Changes', async () => {
       const { container } = renderWithProviders(<TradeSpendDetail />);
       
-      await waitFor(() => screen.getByRole('button', { name: /edit/i }));
+      await screen.findByRole('button', { name: /edit/i });
       
       // Enter edit mode
       fireEvent.click(screen.getByRole('button', { name: /edit/i }));
@@ -222,9 +220,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-004: PromotionList "Create Promotion" button - Opens Create Dialog', async () => {
       renderWithProviders(<PromotionList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create promotion/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create promotion/i });
       
       expect(createButton).toBeInTheDocument();
       expect(createButton).toHaveClass('MuiButton-containedPrimary');
@@ -240,7 +236,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-005: PromotionDetail "Edit Promotion" button - Activates Edit Mode', async () => {
       renderWithProviders(<PromotionDetail />);
       
-      await waitFor(() => screen.getByRole('button', { name: /edit/i }));
+      await screen.findByRole('button', { name: /edit/i });
       
       const editButton = screen.getByRole('button', { name: /edit/i });
       expect(editButton).toHaveClass('MuiButton-containedPrimary');
@@ -270,9 +266,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-007: CustomerList "Create Customer" button - Navigates to Form', async () => {
       renderWithProviders(<CustomerList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create customer/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create customer/i });
       
       expect(createButton).toBeInTheDocument();
       expect(createButton).toHaveClass('MuiButton-containedPrimary');
@@ -287,7 +281,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-008: CustomerDetail "Edit Customer" button - Enables Editing', async () => {
       renderWithProviders(<CustomerDetail />);
       
-      await waitFor(() => screen.getByRole('button', { name: /edit/i }));
+      await screen.findByRole('button', { name: /edit/i });
       
       const editButton = screen.getByRole('button', { name: /edit/i });
       expect(editButton).toHaveClass('MuiButton-containedPrimary');
@@ -317,9 +311,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-010: BudgetList "Create Budget" button - Opens Creation Form', async () => {
       renderWithProviders(<BudgetList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create budget/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create budget/i });
       
       expect(createButton).toBeInTheDocument();
       expect(createButton).toHaveClass('MuiButton-containedPrimary');
@@ -334,7 +326,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-011: BudgetDetail "Edit Budget" button - Enters Edit State', async () => {
       renderWithProviders(<BudgetDetail />);
       
-      await waitFor(() => screen.getByRole('button', { name: /edit/i }));
+      await screen.findByRole('button', { name: /edit/i });
       
       const editButton = screen.getByRole('button', { name: /edit/i });
       expect(editButton).toBeVisible();
@@ -364,9 +356,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-013: ProductList "Create Product" button - Initiates Product Creation', async () => {
       renderWithProviders(<ProductList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create product/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create product/i });
       
       expect(createButton).toBeInTheDocument();
       expect(createButton).toHaveClass('MuiButton-containedPrimary');
@@ -381,7 +371,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-014: ProductDetail "Edit Product" button - Switches to Edit Mode', async () => {
       renderWithProviders(<ProductDetail />);
       
-      await waitFor(() => screen.getByRole('button', { name: /edit/i }));
+      await screen.findByRole('button', { name: /edit/i });
       
       const editButton = screen.getByRole('button', { name: /edit/i });
       
@@ -410,9 +400,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-016: UserList "Create User" button - Opens User Creation Form', async () => {
       renderWithProviders(<UserList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create user/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create user/i });
       
       expect(createButton).toBeInTheDocument();
       expect(createButton).toHaveClass('MuiButton-containedPrimary');
@@ -453,9 +441,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-019: CompanyList "Create Company" button - Navigates to Company Form', async () => {
       renderWithProviders(<CompanyList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create company/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create company/i });
       
       expect(createButton).toBeInTheDocument();
       
@@ -534,9 +520,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('GB-025: ReportList "Create Report" button - Opens Report Builder', async () => {
       renderWithProviders(<ReportList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create report/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create report/i });
       
       expect(createButton).toBeInTheDocument();
       
@@ -738,9 +722,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
       const { rerender } = renderWithProviders(<TradeSpendList />);
       
       // Step 1: Click Create
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create trade spend/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create trade spend/i });
       fireEvent.click(createButton);
       
       expect(mockNavigate).toHaveBeenCalled();
@@ -748,7 +730,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
       // Step 2: Render Detail page
       rerender(<TradeSpendDetail />);
       
-      await waitFor(() => screen.getByRole('button', { name: /edit/i }));
+      await screen.findByRole('button', { name: /edit/i });
       
       // Step 3: Click Edit
       const editButton = screen.getByRole('button', { name: /edit/i });
@@ -821,9 +803,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
       const user = userEvent.setup();
       renderWithProviders(<TradeSpendList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create trade spend/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create trade spend/i });
       
       // Tab to button
       await user.tab();
@@ -889,9 +869,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('PERF-001: Button click handlers execute within 100ms', async () => {
       renderWithProviders(<TradeSpendList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create trade spend/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create trade spend/i });
       
       const startTime = performance.now();
       fireEvent.click(createButton);
@@ -904,9 +882,7 @@ describe('🟢 COMPREHENSIVE GREEN BUTTON TEST SUITE', () => {
     test('PERF-002: Multiple rapid clicks handled correctly', async () => {
       renderWithProviders(<TradeSpendList />);
       
-      const createButton = await waitFor(() => 
-        screen.getByRole('button', { name: /create trade spend/i })
-      );
+      const createButton = await screen.findByRole('button', { name: /create trade spend/i });
       
       // Click 5 times rapidly
       for (let i = 0; i < 5; i++) {

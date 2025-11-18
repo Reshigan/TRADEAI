@@ -28,14 +28,14 @@ router.get('/stream',
  */
 router.get('/',
   protect,
-  catchAsync(async (req, res) => {
+  catchAsync((req, res) => {
     const { unreadOnly, limit } = req.query;
-    
+
     const notifications = notificationService.getNotifications(req.user._id, {
       unreadOnly: unreadOnly === 'true',
       limit: parseInt(limit) || 50
     });
-    
+
     res.status(200).json({
       success: true,
       count: notifications.length,
@@ -51,12 +51,12 @@ router.get('/',
  */
 router.post('/:id/read',
   protect,
-  catchAsync(async (req, res) => {
+  catchAsync((req, res) => {
     const notification = notificationService.markAsRead(
       req.user._id,
       parseInt(req.params.id)
     );
-    
+
     res.status(200).json({
       success: true,
       data: notification
@@ -71,9 +71,9 @@ router.post('/:id/read',
  */
 router.post('/read-all',
   protect,
-  catchAsync(async (req, res) => {
+  catchAsync((req, res) => {
     const result = notificationService.markAllAsRead(req.user._id);
-    
+
     res.status(200).json({
       success: true,
       data: result
@@ -88,9 +88,9 @@ router.post('/read-all',
  */
 router.delete('/',
   protect,
-  catchAsync(async (req, res) => {
+  catchAsync((req, res) => {
     const result = notificationService.clearNotifications(req.user._id);
-    
+
     res.status(200).json({
       success: true,
       data: result
@@ -105,7 +105,7 @@ router.delete('/',
  */
 router.get('/stats',
   protect,
-  catchAsync(async (req, res) => {
+  catchAsync((req, res) => {
     // Only admin can see global stats
     if (req.user.role !== 'admin') {
       return res.status(403).json({
@@ -113,9 +113,9 @@ router.get('/stats',
         error: 'Access denied'
       });
     }
-    
+
     const stats = notificationService.getStatistics();
-    
+
     res.status(200).json({
       success: true,
       data: stats

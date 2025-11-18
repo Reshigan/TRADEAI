@@ -6,7 +6,7 @@ const { addTenantSupport } = require('./BaseTenantModel');
 const userSchema = new mongoose.Schema({
   // Tenant Association - CRITICAL for multi-tenant isolation
   // Note: tenantId will be added by addTenantSupport()
-  
+
   // Legacy company support (will be migrated to tenant)
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -132,14 +132,14 @@ userSchema.index({ department: 1 });
 userSchema.index({ isActive: 1 });
 
 // Virtual for full name
-userSchema.virtual('fullName').get(function() {
+userSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -151,7 +151,7 @@ userSchema.pre('save', async function(next) {
 });
 
 // Update available wallet balance
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
   if (this.isModified('cashCoopWallet.allocated') || this.isModified('cashCoopWallet.spent')) {
     this.cashCoopWallet.available = this.cashCoopWallet.allocated - this.cashCoopWallet.spent;
   }
@@ -159,15 +159,15 @@ userSchema.pre('save', function(next) {
 });
 
 // Instance methods
-userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+userSchema.methods.comparePassword = function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.methods.generateAuthToken = function() {
+userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
-    { 
-      _id: this._id, 
-      email: this.email, 
+    {
+      _id: this._id,
+      email: this.email,
       role: this.role,
       department: this.department,
       tenantId: this.tenantId,
@@ -179,21 +179,21 @@ userSchema.methods.generateAuthToken = function() {
   return token;
 };
 
-userSchema.methods.hasPermission = function(module, action) {
+userSchema.methods.hasPermission = function (module, action) {
   // Super admin and admin have all permissions
   if (this.role === 'super_admin' || this.role === 'admin') return true;
-  
+
   // Check specific permissions
-  const permission = this.permissions.find(p => p.module === module);
+  const permission = this.permissions.find((p) => p.module === module);
   return permission && permission.actions.includes(action);
 };
 
-userSchema.methods.canApprove = function(type, amount) {
+userSchema.methods.canApprove = function (type, amount) {
   const limit = this.approvalLimits[type] || 0;
   return limit >= amount || this.role === 'super_admin' || this.role === 'admin';
 };
 
-userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
@@ -205,23 +205,23 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 };
 
 // Static methods
-userSchema.statics.findByCredentials = async function(email, password, companyId = null) {
+userSchema.statics.findByCredentials = async function (email, password, companyId = null) {
   const query = { email, isActive: true };
   // Add company filter for multi-tenant support
   if (companyId) {
     query.company = companyId;
   }
-  
+
   const user = await this.findOne(query);
   if (!user) {
     throw new Error('Invalid login credentials');
   }
-  
+
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     throw new Error('Invalid login credentials');
   }
-  
+
   return user;
 };
 

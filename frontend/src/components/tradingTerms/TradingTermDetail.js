@@ -26,7 +26,7 @@ const TradingTermDetail = () => {
   const navigate = useNavigate();
   const [tradingTerm, setTradingTerm] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [setError] = useState('');
 
   useEffect(() => {
     fetchTradingTerm();

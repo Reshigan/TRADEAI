@@ -14,14 +14,18 @@ const apiClient = axios.create({
 // Add auth token and tenant ID to requests
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const tenantId = localStorage.getItem('tenantId');
+    console.log('[apiClient] Request interceptor - checking localStorage for token...');
+    console.log('[apiClient] Token found:', token ? 'YES (length: ' + token.length + ')' : 'NO');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('[apiClient] Authorization header set');
     }
     if (tenantId) {
       config.headers['X-Tenant-ID'] = tenantId;
     }
+    console.log('[apiClient] Final headers:', config.headers);
     return config;
   },
   (error) => {
@@ -372,7 +376,7 @@ export const dashboardsApi = {
   }
 };
 
-export default {
+const enterpriseApi = {
   enterpriseBudget: enterpriseBudgetApi,
   tradeSpend: tradeSpendApi,
   promotionSimulation: promotionSimulationApi,
@@ -381,3 +385,4 @@ export default {
   simulations: simulationsApi,
   dashboards: dashboardsApi
 };
+export default enterpriseApi;

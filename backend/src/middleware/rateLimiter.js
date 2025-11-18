@@ -26,30 +26,30 @@ exports.apiLimiter = rateLimit({
 // Strict limiter for authentication endpoints - prevents brute force attacks
 // Disable in development/test environments for easier testing
 const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
-exports.authLimiter = isDevelopment 
+exports.authLimiter = isDevelopment
   ? (req, res, next) => next() // Bypass in development
   : rateLimit({
-      windowMs: parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-      max: parseInt(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS) || 5, // Only 5 attempts per window
-      skipSuccessfulRequests: true, // Don't count successful logins
-      skipFailedRequests: false, // Count failed attempts
-      message: {
+    windowMs: parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+    max: parseInt(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS) || 5, // Only 5 attempts per window
+    skipSuccessfulRequests: true, // Don't count successful logins
+    skipFailedRequests: false, // Count failed attempts
+    message: {
+      success: false,
+      error: 'Too many authentication attempts. Please try again after 15 minutes.',
+      securityNote: 'Your IP has been temporarily blocked due to multiple failed login attempts.'
+    },
+    handler: (req, res) => {
+      // Log security event
+      console.warn(`🔐 Rate limit exceeded for authentication: IP=${req.ip}, Path=${req.path}`);
+
+      res.status(429).json({
         success: false,
-        error: 'Too many authentication attempts. Please try again after 15 minutes.',
-        securityNote: 'Your IP has been temporarily blocked due to multiple failed login attempts.'
-      },
-      handler: (req, res) => {
-        // Log security event
-        console.warn(`🔐 Rate limit exceeded for authentication: IP=${req.ip}, Path=${req.path}`);
-        
-        res.status(429).json({
-          success: false,
-          error: 'Too many login attempts.',
-          message: 'For security reasons, your account has been temporarily locked. Please try again after 15 minutes.',
-          lockedUntil: new Date(Date.now() + 15 * 60 * 1000).toISOString()
-        });
-      }
-    });
+        error: 'Too many login attempts.',
+        message: 'For security reasons, your account has been temporarily locked. Please try again after 15 minutes.',
+        lockedUntil: new Date(Date.now() + 15 * 60 * 1000).toISOString()
+      });
+    }
+  });
 
 // Speed limiter - slows down requests instead of blocking (softer approach)
 exports.speedLimiter = slowDown({
@@ -92,7 +92,7 @@ exports.passwordResetLimiter = rateLimit({
   },
   handler: (req, res) => {
     console.warn(`🔐 Password reset rate limit exceeded: IP=${req.ip}, Email=${req.body.email}`);
-    
+
     res.status(429).json({
       success: false,
       error: 'Password reset limit reached.',
@@ -126,11 +126,11 @@ exports.requestLogger = (req, res, next) => {
     userAgent: req.get('user-agent'),
     tenantId: req.user?.tenantId || 'anonymous'
   };
-  
+
   // Log suspicious patterns
   if (req.path.includes('../') || req.path.includes('..\\')) {
     console.warn('⚠️  Suspicious path traversal attempt:', logEntry);
   }
-  
+
   next();
 };

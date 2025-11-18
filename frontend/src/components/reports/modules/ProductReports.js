@@ -20,17 +20,14 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Divider,
   Alert
 } from '@mui/material';
 import {
   Inventory as ProductIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  Assessment as ReportIcon,
   GetApp as DownloadIcon,
   MoreVert as MoreIcon,
-  DateRange as DateRangeIcon,
   FilterList as FilterIcon,
   AttachMoney as RevenueIcon,
   ShoppingCart as SalesIcon,
@@ -40,8 +37,6 @@ import {
 import {
   LineChart,
   Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart,

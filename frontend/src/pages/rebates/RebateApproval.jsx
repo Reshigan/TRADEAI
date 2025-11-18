@@ -24,7 +24,7 @@ import {
   Divider,
   Alert
 } from '@mui/material';
-import { CheckCircle, Cancel, Visibility, Info } from '@mui/icons-material';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import rebateService from '../../services/rebateService';
 
 const RebateApproval = () => {

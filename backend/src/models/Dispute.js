@@ -232,24 +232,24 @@ disputeSchema.index({ 'sla.responseOverdue': 1 });
 disputeSchema.index({ 'sla.resolutionOverdue': 1 });
 
 // Virtuals
-disputeSchema.virtual('age').get(function() {
+disputeSchema.virtual('age').get(function () {
   const now = new Date();
   const created = this.createdAt || now;
   return Math.floor((now - created) / (1000 * 60 * 60)); // hours
 });
 
-disputeSchema.virtual('daysOpen').get(function() {
+disputeSchema.virtual('daysOpen').get(function () {
   return Math.floor(this.age / 24);
 });
 
-disputeSchema.virtual('responseTimeRemaining').get(function() {
+disputeSchema.virtual('responseTimeRemaining').get(function () {
   if (!this.sla.responseDeadline) return null;
   const now = new Date();
   const hours = (this.sla.responseDeadline - now) / (1000 * 60 * 60);
   return Math.max(0, Math.floor(hours));
 });
 
-disputeSchema.virtual('resolutionTimeRemaining').get(function() {
+disputeSchema.virtual('resolutionTimeRemaining').get(function () {
   if (!this.sla.resolutionDeadline) return null;
   const now = new Date();
   const hours = (this.sla.resolutionDeadline - now) / (1000 * 60 * 60);
@@ -257,7 +257,7 @@ disputeSchema.virtual('resolutionTimeRemaining').get(function() {
 });
 
 // Pre-save middleware
-disputeSchema.pre('save', function(next) {
+disputeSchema.pre('save', function (next) {
   // Calculate SLA deadlines if not set
   if (!this.sla.responseDeadline && this.createdAt) {
     this.sla.responseDeadline = new Date(this.createdAt.getTime() + (this.sla.responseTime * 60 * 60 * 1000));
@@ -273,7 +273,7 @@ disputeSchema.pre('save', function(next) {
     this.sla.responseOverdue = true;
   }
 
-  if (this.sla.resolutionDeadline && now > this.sla.resolutionDeadline && 
+  if (this.sla.resolutionDeadline && now > this.sla.resolutionDeadline &&
       !['resolved', 'closed', 'rejected'].includes(this.status)) {
     this.sla.resolutionOverdue = true;
   }
@@ -282,11 +282,11 @@ disputeSchema.pre('save', function(next) {
 });
 
 // Methods
-disputeSchema.methods.assign = function(userId) {
+disputeSchema.methods.assign = function (userId) {
   this.assignedTo = userId;
   this.assignedDate = new Date();
   this.status = 'in_review';
-  
+
   this.activities.push({
     date: new Date(),
     action: 'assigned',
@@ -297,25 +297,25 @@ disputeSchema.methods.assign = function(userId) {
   return this.save();
 };
 
-disputeSchema.methods.addComment = function(userId, comment, internal = false) {
+disputeSchema.methods.addComment = function (userId, comment, internal = false) {
   this.comments.push({
     date: new Date(),
-    userId: userId,
-    comment: comment,
-    internal: internal
+    userId,
+    comment,
+    internal
   });
 
   this.activities.push({
     date: new Date(),
     action: 'commented',
     performedBy: userId,
-    comment: comment
+    comment
   });
 
   return this.save();
 };
 
-disputeSchema.methods.escalate = function(userId, toUserId, reason) {
+disputeSchema.methods.escalate = function (userId, toUserId, reason) {
   this.escalated = true;
   this.escalatedTo = toUserId;
   this.escalatedAt = new Date();
@@ -334,7 +334,7 @@ disputeSchema.methods.escalate = function(userId, toUserId, reason) {
   return this.save();
 };
 
-disputeSchema.methods.resolve = function(userId, resolution, approvedAmount, notes) {
+disputeSchema.methods.resolve = function (userId, resolution, approvedAmount, notes) {
   this.status = 'resolved';
   this.resolution = resolution;
   this.resolutionDate = new Date();
@@ -354,7 +354,7 @@ disputeSchema.methods.resolve = function(userId, resolution, approvedAmount, not
   return this.save();
 };
 
-disputeSchema.methods.close = function(userId) {
+disputeSchema.methods.close = function (userId) {
   if (this.status !== 'resolved') {
     throw new Error('Only resolved disputes can be closed');
   }
@@ -370,7 +370,7 @@ disputeSchema.methods.close = function(userId) {
   return this.save();
 };
 
-disputeSchema.methods.reopen = function(userId, reason) {
+disputeSchema.methods.reopen = function (userId, reason) {
   if (this.status !== 'closed') {
     throw new Error('Only closed disputes can be reopened');
   }
@@ -389,7 +389,7 @@ disputeSchema.methods.reopen = function(userId, reason) {
   return this.save();
 };
 
-disputeSchema.methods.initiateChargeback = function(reference) {
+disputeSchema.methods.initiateChargeback = function (reference) {
   this.chargebackInitiated = true;
   this.chargebackDate = new Date();
   this.chargebackReference = reference;
@@ -397,7 +397,7 @@ disputeSchema.methods.initiateChargeback = function(reference) {
 };
 
 // Statics
-disputeSchema.statics.getOverdueDisputes = function() {
+disputeSchema.statics.getOverdueDisputes = function () {
   return this.find({
     $or: [
       { 'sla.responseOverdue': true },
@@ -407,11 +407,11 @@ disputeSchema.statics.getOverdueDisputes = function() {
   }).populate('customerId assignedTo');
 };
 
-disputeSchema.statics.getDisputesByStatus = function(status) {
+disputeSchema.statics.getDisputesByStatus = function (status) {
   return this.find({ status }).populate('customerId assignedTo');
 };
 
-disputeSchema.statics.getAssignedDisputes = function(userId) {
+disputeSchema.statics.getAssignedDisputes = function (userId) {
   return this.find({
     assignedTo: userId,
     status: { $nin: ['resolved', 'closed'] }

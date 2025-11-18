@@ -1,9 +1,9 @@
 const { AppError } = require('../middleware/errorHandler');
 const mlService = require('./mlService');
-const Budget = require('../models/Budget');
+const _Budget = require('../models/_Budget');
 const Promotion = require('../models/Promotion');
-const SalesHistory = require('../models/SalesHistory');
-const Product = require('../models/Product');
+const _SalesHistory = require('../models/_SalesHistory');
+// const Product = require('../models/Product');
 
 /**
  * TRADING SIMULATION ENGINE
@@ -28,19 +28,19 @@ class SimulationEngine {
    */
   async simulatePromotionImpact(scenario) {
     console.log('[SimulationEngine] simulatePromotionImpact called', { scenario });
-    
+
     const {
       promotionType,
       discount,
       discountPercent,
       duration,
       products,
-      targetCustomers,
+      _targetCustomers,
       budget,
       historicalData = true,
       tenantId
     } = scenario;
-    
+
     // Handle both discount and discountPercent parameters
     const discountValue = discount || discountPercent || 0;
     console.log('[SimulationEngine] Using discountValue:', discountValue);
@@ -184,8 +184,8 @@ class SimulationEngine {
   async simulatePricingStrategy(scenario) {
     const {
       products,
-      pricingModel, // 'cost_plus', 'value_based', 'competitive', 'dynamic'
-      targetMargin,
+      _pricingModel, // 'cost_plus', 'value_based', 'competitive', 'dynamic'
+      _targetMargin,
       priceChange, // percentage change
       elasticity // price elasticity coefficient
     } = scenario;
@@ -244,7 +244,7 @@ class SimulationEngine {
       products,
       timeHorizon, // months
       factors = {}, // seasonality, promotions, trends, external
-      assumptions = {}
+      _assumptions = {}
     } = scenario;
 
     // Get historical volume data
@@ -300,7 +300,7 @@ class SimulationEngine {
       marketActions = [], // our actions
       competitorActions = [],
       marketSize,
-      timeframe
+      _timeframe
     } = scenario;
 
     // Get current market position
@@ -398,7 +398,7 @@ class SimulationEngine {
     for (const variation of variations) {
       const variedScenario = { ...baseScenario, ...variation };
       const result = await this.runScenario(variedScenario);
-      
+
       results.variations.push({
         variation,
         result,
@@ -421,12 +421,12 @@ class SimulationEngine {
       const paramResults = [];
 
       for (const variation of variations) {
-        const variedScenario = { 
+        const variedScenario = {
           ...scenario,
           skipSensitivity: true  // Prevent infinite loop
         };
         variedScenario[param] = scenario[param] * (1 + variation / 100);
-        
+
         const result = await this.runScenario(variedScenario);
         paramResults.push({
           variation,
@@ -471,26 +471,26 @@ class SimulationEngine {
    * HELPER FUNCTIONS
    */
 
-  async runScenario(scenario) {
-    switch(scenario.type) {
+  runScenario(scenario) {
+    switch (scenario.type) {
       case 'promotion_impact':
-        return await this.simulatePromotionImpact(scenario);
+        return this.simulatePromotionImpact(scenario);
       case 'budget_allocation':
-        return await this.simulateBudgetAllocation(scenario);
+        return this.simulateBudgetAllocation(scenario);
       case 'pricing_strategy':
-        return await this.simulatePricingStrategy(scenario);
+        return this.simulatePricingStrategy(scenario);
       case 'volume_projection':
-        return await this.simulateVolumeProjection(scenario);
+        return this.simulateVolumeProjection(scenario);
       case 'market_share':
-        return await this.simulateMarketShare(scenario);
+        return this.simulateMarketShare(scenario);
       case 'roi_optimization':
-        return await this.simulateROIOptimization(scenario);
+        return this.simulateROIOptimization(scenario);
       default:
         throw new AppError(`Unsupported scenario type: ${scenario.type}`, 400);
     }
   }
 
-  calculateBaselineMetrics(products, duration) {
+  calculateBaselineMetrics(_products, _duration) {
     // Calculate baseline metrics from historical data
     return {
       revenue: 100000,
@@ -565,29 +565,29 @@ class SimulationEngine {
     return recommendations;
   }
 
-  async getHistoricalPerformance(categories) {
+  getHistoricalPerformance(_categories) {
     // Fetch historical performance data
     return {};
   }
 
-  async optimizeBudgetAllocation(params) {
+  optimizeBudgetAllocation(params) {
     // Optimization algorithm (could use linear programming, genetic algorithm, etc.)
-    const { totalBudget, categories, historicalPerformance } = params;
-    
+    const { totalBudget, categories, _historicalPerformance } = params;
+
     // Simple equal allocation as baseline
     const allocation = {};
     const perCategory = totalBudget / categories.length;
-    
-    categories.forEach(category => {
+
+    categories.forEach((category) => {
       allocation[category] = perCategory;
     });
 
     return allocation;
   }
 
-  async calculateExpectedOutcomes(allocation) {
+  calculateExpectedOutcomes(allocation) {
     const outcomes = {};
-    
+
     for (const [category, budget] of Object.entries(allocation)) {
       outcomes[category] = {
         budget,
@@ -599,7 +599,7 @@ class SimulationEngine {
     return outcomes;
   }
 
-  async generateAllocationScenarios(totalBudget, categories) {
+  generateAllocationScenarios(_totalBudget, _categories) {
     // Generate different allocation scenarios
     return [
       { name: 'Equal Distribution', allocation: {} },
@@ -609,16 +609,16 @@ class SimulationEngine {
     ];
   }
 
-  compareAllocationScenarios(scenarios) {
+  compareAllocationScenarios(_scenarios) {
     // Compare different scenarios
     return {};
   }
 
-  generateBudgetRecommendations(allocation, outcomes) {
+  generateBudgetRecommendations(_allocation, _outcomes) {
     return [];
   }
 
-  async getCurrentPricingData(products) {
+  getCurrentPricingData(_products) {
     // Get current pricing and sales data
     return {
       revenue: 500000,
@@ -631,7 +631,7 @@ class SimulationEngine {
   calculateDemandResponse(priceChange, elasticity) {
     // Price elasticity of demand calculation
     const volumeChange = -elasticity * priceChange;
-    
+
     return {
       priceElasticity: elasticity,
       priceChange,
@@ -640,7 +640,7 @@ class SimulationEngine {
     };
   }
 
-  async estimatePriceElasticity(products) {
+  estimatePriceElasticity(_products) {
     // Estimate price elasticity from historical data
     // This would use regression analysis on historical pricing and volume data
     return 1.5; // Default elasticity
@@ -649,7 +649,7 @@ class SimulationEngine {
   calculateMarginImpact(currentData, priceChange, demandResponse) {
     const newRevenue = currentData.revenue * (1 + priceChange) * (1 + demandResponse.volumeChange);
     const newMargin = newRevenue * (currentData.margin / currentData.revenue);
-    
+
     return {
       current: currentData.margin,
       projected: newMargin,
@@ -658,7 +658,7 @@ class SimulationEngine {
     };
   }
 
-  async analyzeCompetitivePosition(products, priceChange) {
+  analyzeCompetitivePosition(products, priceChange) {
     // Competitive positioning analysis
     return {
       currentPosition: 'middle',
@@ -667,23 +667,23 @@ class SimulationEngine {
     };
   }
 
-  generatePricingRecommendations(revenueImpact, marginImpact) {
+  generatePricingRecommendations(_revenueImpact, _marginImpact) {
     return [];
   }
 
-  assessPricingRisk(scenario, demandResponse) {
+  assessPricingRisk(_scenario, _demandResponse) {
     return {
       level: 'moderate',
       factors: []
     };
   }
 
-  async getHistoricalVolume(products, months) {
+  getHistoricalVolume(_products, _months) {
     // Get historical volume data
     return [];
   }
 
-  decomposeTimeSeries(data) {
+  decomposeTimeSeries(_data) {
     // Time series decomposition (trend, seasonality, residual)
     return {
       trend: [],
@@ -692,12 +692,12 @@ class SimulationEngine {
     };
   }
 
-  applyFactorAdjustments(forecast, factors) {
+  applyFactorAdjustments(forecast, _factors) {
     // Apply adjustments for various factors
     return forecast;
   }
 
-  calculateConfidenceIntervals(forecast, historical) {
+  calculateConfidenceIntervals(_forecast, _historical) {
     // Calculate confidence intervals
     return {
       lower95: [],
@@ -707,7 +707,7 @@ class SimulationEngine {
     };
   }
 
-  generateVolumeScenarios(forecast, intervals) {
+  generateVolumeScenarios(forecast, _intervals) {
     return {
       optimistic: [],
       base: forecast,
@@ -715,15 +715,15 @@ class SimulationEngine {
     };
   }
 
-  analyzeFactorContributions(factors, forecast) {
+  analyzeFactorContributions(_factors, _forecast) {
     return {};
   }
 
-  generateVolumeRecommendations(scenarios) {
+  generateVolumeRecommendations(_scenarios) {
     return [];
   }
 
-  async getCurrentMarketPosition(products) {
+  getCurrentMarketPosition(_products) {
     return {
       marketShare: 15,
       rank: 3,
@@ -731,47 +731,47 @@ class SimulationEngine {
     };
   }
 
-  modelCompetitiveDynamics(ourActions, competitorActions) {
+  modelCompetitiveDynamics(_ourActions, _competitorActions) {
     return {};
   }
 
-  calculateMarketShareChange(currentPosition, dynamics, marketSize) {
+  calculateMarketShareChange(currentPosition, _dynamics, _marketSize) {
     return {
       current: currentPosition.marketShare,
       projected: currentPosition.marketShare + 2
     };
   }
 
-  calculateRevenueFromMarketShare(share, marketSize) {
+  calculateRevenueFromMarketShare(_share, _marketSize) {
     return {
       current: 0,
       projected: 0
     };
   }
 
-  generateMarketShareRecommendations(share) {
+  generateMarketShareRecommendations(_share) {
     return [];
   }
 
-  async getHistoricalROI(activities) {
+  getHistoricalROI(_activities) {
     return {};
   }
 
-  async optimizeActivityMix(params) {
+  optimizeActivityMix(_params) {
     return {};
   }
 
-  calculateExpectedROI(mix) {
+  calculateExpectedROI(_mix) {
     return {
       expected: 150,
       range: [100, 200]
     };
   }
 
-  async runMonteCarloSimulation(mix, iterations) {
+  runMonteCarloSimulation(mix, iterations) {
     // Monte Carlo simulation
     const results = [];
-    
+
     for (let i = 0; i < iterations; i++) {
       // Add random variation
       const roi = 150 + (Math.random() - 0.5) * 50;
@@ -793,15 +793,15 @@ class SimulationEngine {
     };
   }
 
-  calculateProbabilityOfTarget(monteCarlo, target) {
+  calculateProbabilityOfTarget(_monteCarlo, _target) {
     return 0.75; // 75% probability
   }
 
-  generateROIRecommendations(expected, target) {
+  generateROIRecommendations(_expected, _target) {
     return [];
   }
 
-  calculateDelta(base, variation) {
+  calculateDelta(_base, _variation) {
     return {};
   }
 
@@ -809,16 +809,16 @@ class SimulationEngine {
     return result.roi || 0;
   }
 
-  calculateSensitivityCoefficient(results) {
+  calculateSensitivityCoefficient(_results) {
     // Calculate sensitivity coefficient
     return 0.5;
   }
 
-  extractComparisonMetrics(result) {
+  extractComparisonMetrics(_result) {
     return {};
   }
 
-  generateComparisonMatrix(results) {
+  generateComparisonMatrix(_results) {
     return {};
   }
 

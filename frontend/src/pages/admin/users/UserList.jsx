@@ -21,7 +21,7 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/users`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users`);
       setUsers(response.data.data || response.data || []);
       setError(null);
     } catch (err) {
@@ -34,7 +34,7 @@ const UserList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}`);
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}`);
         fetchUsers();
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete user');
@@ -44,7 +44,7 @@ const UserList = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}/status`, {
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}/status`, {
         isActive: !currentStatus
       });
       fetchUsers();

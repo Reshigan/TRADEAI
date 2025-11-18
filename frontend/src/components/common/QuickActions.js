@@ -8,8 +8,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Box,
-  Tooltip
+  Box
 } from '@mui/material';
 import {
   Add as AddIcon,

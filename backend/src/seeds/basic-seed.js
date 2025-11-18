@@ -56,13 +56,13 @@ const seedDatabase = async () => {
       }
     ]);
 
-    const gonxtCompany = companies.find(c => c.code === 'GONXT');
-    const testCompany = companies.find(c => c.code === 'TEST');
+    const gonxtCompany = companies.find((c) => c.code === 'GONXT');
+    const testCompany = companies.find((c) => c.code === 'TEST');
 
     // Create users
     console.log('Creating users...');
     const password = await bcrypt.hash('Vantax1234#', 10);
-    
+
     const users = await User.insertMany([
       {
         company: gonxtCompany._id,
@@ -87,7 +87,7 @@ const seedDatabase = async () => {
         employeeId: 'TEST001'
       }
     ]);
-    
+
     console.log(`Created ${companies.length} companies`);
     console.log(`Created ${users.length} users`);
     console.log('\n✅ Basic database seeded successfully!');

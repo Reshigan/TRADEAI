@@ -4,7 +4,7 @@ const Promotion = require('../models/Promotion');
 const Budget = require('../models/Budget');
 const TradeSpend = require('../models/TradeSpend');
 const SalesHistory = require('../models/SalesHistory');
-const { sendEmail } = require('../services/emailService');
+const { _sendEmail } = require('../services/emailService');
 
 // Real-time event emitter for monitoring
 const monitoringEvents = new EventEmitter();
@@ -13,7 +13,7 @@ const monitoringController = {
   // Real-time dashboard metrics
   async getRealTimeDashboard(req, res) {
     try {
-      const { userId, companyId } = req.user;
+      const { _userId, companyId } = req.user;
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -94,8 +94,8 @@ const monitoringController = {
       const { companyId } = req.user;
       const { status, type, priority } = req.query;
 
-      let filter = { companyId };
-      
+      const filter = { companyId };
+
       if (status) filter.status = status;
       if (type) filter.type = type;
       if (priority) filter.priority = priority;
@@ -106,11 +106,11 @@ const monitoringController = {
         alerts,
         totalCount: alerts.length,
         summary: {
-          critical: alerts.filter(a => a.priority === 'critical').length,
-          warning: alerts.filter(a => a.priority === 'warning').length,
-          info: alerts.filter(a => a.priority === 'info').length,
-          active: alerts.filter(a => a.status === 'active').length,
-          resolved: alerts.filter(a => a.status === 'resolved').length
+          critical: alerts.filter((a) => a.priority === 'critical').length,
+          warning: alerts.filter((a) => a.priority === 'warning').length,
+          info: alerts.filter((a) => a.priority === 'info').length,
+          active: alerts.filter((a) => a.status === 'active').length,
+          resolved: alerts.filter((a) => a.status === 'resolved').length
         }
       });
 
@@ -157,7 +157,7 @@ const monitoringController = {
   },
 
   // Real-time event streaming
-  async streamEvents(req, res) {
+  streamEvents(req, res) {
     try {
       const { companyId } = req.user;
 
@@ -244,7 +244,7 @@ const monitoringController = {
     });
 
     const totalPromotions = await Promotion.countDocuments({ companyId });
-    
+
     return {
       active: activePromotions,
       total: totalPromotions,
@@ -254,7 +254,7 @@ const monitoringController = {
 
   async _getTodaySpend(companyId, today) {
     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    
+
     const todaySpend = await TradeSpend.aggregate([
       {
         $match: {
@@ -273,7 +273,7 @@ const monitoringController = {
     ]);
 
     const data = todaySpend[0] || { totalActual: 0, totalPlanned: 0, count: 0 };
-    
+
     return {
       actual: data.totalActual,
       planned: data.totalPlanned,
@@ -282,7 +282,7 @@ const monitoringController = {
     };
   },
 
-  async _getWeeklyBudgetUtilization(companyId, weekStart) {
+  async _getWeeklyBudgetUtilization(companyId, _weekStart) {
     const budgets = await Budget.aggregate([
       {
         $match: {
@@ -301,7 +301,7 @@ const monitoringController = {
     ]);
 
     const data = budgets[0] || { totalBudget: 0, allocatedBudget: 0, count: 0 };
-    
+
     return {
       total: data.totalBudget,
       allocated: data.allocatedBudget,
@@ -312,7 +312,7 @@ const monitoringController = {
 
   async _getMonthlyPerformance(companyId, monthStart) {
     const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
-    
+
     const performance = await SalesHistory.aggregate([
       {
         $match: {
@@ -332,7 +332,7 @@ const monitoringController = {
     ]);
 
     const data = performance[0] || { totalValue: 0, totalUnits: 0, avgValue: 0, count: 0 };
-    
+
     return {
       revenue: data.totalValue,
       units: data.totalUnits,
@@ -342,7 +342,7 @@ const monitoringController = {
     };
   },
 
-  async _getActiveAlerts(companyId) {
+  _getActiveAlerts(_companyId) {
     // Mock alert data - in production, this would query an Alerts collection
     const mockAlerts = [
       {
@@ -366,7 +366,7 @@ const monitoringController = {
     return mockAlerts;
   },
 
-  async _getSystemHealth() {
+  _getSystemHealth() {
     // Mock system health data
     return {
       status: 'healthy',
@@ -386,7 +386,7 @@ const monitoringController = {
     };
   },
 
-  async _createAlert(alertConfig) {
+  _createAlert(alertConfig) {
     // In production, this would save to an Alerts collection
     return {
       id: new mongoose.Types.ObjectId(),
@@ -395,7 +395,7 @@ const monitoringController = {
     };
   },
 
-  async _getAlerts(filter) {
+  _getAlerts(filter) {
     // Mock alerts data - in production, query from database
     const mockAlerts = [
       {
@@ -427,7 +427,7 @@ const monitoringController = {
       }
     ];
 
-    return mockAlerts.filter(alert => {
+    return mockAlerts.filter((alert) => {
       if (filter.status && alert.status !== filter.status) return false;
       if (filter.type && alert.type !== filter.type) return false;
       if (filter.priority && alert.priority !== filter.priority) return false;
@@ -435,7 +435,7 @@ const monitoringController = {
     });
   },
 
-  async _getPerformanceMetrics(companyId, timeframe) {
+  _getPerformanceMetrics(_companyId, _timeframe) {
     // Mock performance metrics
     const metrics = {
       responseTime: {
@@ -489,7 +489,7 @@ const monitoringController = {
     }
 
     // Emit alerts to real-time stream
-    results.forEach(alert => {
+    results.forEach((alert) => {
       monitoringEvents.emit('alert', {
         type: 'alert',
         companyId,
@@ -503,14 +503,14 @@ const monitoringController = {
 
   async _checkBudgetThresholds(companyId) {
     const alerts = [];
-    
+
     // Check budget utilization
     const budgets = await Budget.find({ companyId });
-    
+
     for (const budget of budgets) {
-      const utilizationRate = budget.totalAmount > 0 ? 
+      const utilizationRate = budget.totalAmount > 0 ?
         (budget.allocatedAmount / budget.totalAmount) * 100 : 0;
-      
+
       if (utilizationRate > 90) {
         alerts.push({
           type: 'budget_threshold',
@@ -533,13 +533,13 @@ const monitoringController = {
     return alerts;
   },
 
-  async _checkPerformanceThresholds(companyId) {
+  _checkPerformanceThresholds(_companyId) {
     const alerts = [];
-    
+
     // Mock performance threshold checks
     const responseTime = 125; // ms
     const errorRate = 0.02; // 2%
-    
+
     if (responseTime > 200) {
       alerts.push({
         type: 'performance',
@@ -549,7 +549,7 @@ const monitoringController = {
         currentValue: responseTime
       });
     }
-    
+
     if (errorRate > 0.05) {
       alerts.push({
         type: 'performance',
@@ -563,14 +563,14 @@ const monitoringController = {
     return alerts;
   },
 
-  async _checkSystemHealth() {
+  _checkSystemHealth() {
     const alerts = [];
-    
+
     // Mock system health checks
     const memoryUsage = 68; // %
     const cpuUsage = 45; // %
-    const diskUsage = 32; // %
-    
+    const _diskUsage = 32; // %
+
     if (memoryUsage > 85) {
       alerts.push({
         type: 'system_health',
@@ -580,7 +580,7 @@ const monitoringController = {
         currentValue: memoryUsage
       });
     }
-    
+
     if (cpuUsage > 80) {
       alerts.push({
         type: 'system_health',

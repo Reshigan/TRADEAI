@@ -10,7 +10,6 @@ import {
   CircularProgress,
   Tabs,
   Tab,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -28,35 +27,20 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  Switch,
-  FormControlLabel,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemSecondaryAction
+  MenuItem
 } from '@mui/material';
 import {
   Security,
   Shield,
   Warning,
-  Error,
-  CheckCircle,
-  Visibility,
-  VisibilityOff,
   VpnKey,
   Person,
-  Group,
   AdminPanelSettings,
   Timeline,
   Refresh,
   Settings,
-  Download,
   Block,
   Lock,
-  Unlock,
-  QrCode,
   PhoneAndroid
 } from '@mui/icons-material';
 import {
@@ -70,9 +54,7 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
-  BarChart,
-  Bar
+  Cell
 } from 'recharts';
 import { securityService } from '../../services/api';
 
@@ -86,7 +68,7 @@ const EnhancedSecurityDashboard = () => {
   // Security data
   const [securityOverview, setSecurityOverview] = useState(null);
   const [securityEvents, setSecurityEvents] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
+  const [, setAuditLogs] = useState([]);
   const [userSessions, setUserSessions] = useState([]);
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);

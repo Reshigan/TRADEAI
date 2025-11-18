@@ -160,19 +160,19 @@ licenseSchema.index({ status: 1 });
 licenseSchema.index({ 'dates.expiryDate': 1 });
 
 // Methods
-licenseSchema.methods.isExpired = function() {
+licenseSchema.methods.isExpired = function () {
   return this.dates.expiryDate < new Date();
 };
 
-licenseSchema.methods.isActive = function() {
+licenseSchema.methods.isActive = function () {
   return this.status === 'active' && !this.isExpired();
 };
 
-licenseSchema.methods.canAccessFeature = function(featureName) {
+licenseSchema.methods.canAccessFeature = function (featureName) {
   return this.features[featureName] === true;
 };
 
-licenseSchema.methods.hasCapacity = function(resource) {
+licenseSchema.methods.hasCapacity = function (resource) {
   const usageMap = {
     users: { current: this.usage.currentUsers, max: this.features.maxUsers },
     budgets: { current: this.usage.currentBudgets, max: this.features.maxBudgets },
@@ -182,12 +182,12 @@ licenseSchema.methods.hasCapacity = function(resource) {
 
   const usage = usageMap[resource];
   if (!usage) return true;
-  
+
   return usage.current < usage.max;
 };
 
 // Static methods
-licenseSchema.statics.getLicensePlans = function() {
+licenseSchema.statics.getLicensePlans = function () {
   return {
     trial: {
       name: 'Trial',

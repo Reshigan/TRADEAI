@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 class EmailService {
   constructor() {
     this.provider = config.email.provider;
-    
+
     if (this.provider === 'sendgrid') {
       sgMail.setApiKey(config.email.sendgrid.apiKey);
     } else {
@@ -22,16 +22,16 @@ class EmailService {
       });
     }
   }
-  
+
   async sendEmail(to, subject, html, text = null) {
     try {
       // Skip email sending in mock mode
       const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true' || process.env.NODE_ENV === 'mock';
       if (USE_MOCK_DB) {
         logger.info(`[MOCK EMAIL] To: ${to}, Subject: ${subject}`);
-        return { success: true, messageId: 'mock-' + Date.now() };
+        return { success: true, messageId: `mock-${Date.now()}` };
       }
-      
+
       if (this.provider === 'sendgrid') {
         const msg = {
           to,
@@ -40,7 +40,7 @@ class EmailService {
           text: text || subject,
           html
         };
-        
+
         await sgMail.send(msg);
       } else {
         const mailOptions = {
@@ -50,10 +50,10 @@ class EmailService {
           text: text || subject,
           html
         };
-        
+
         await this.transporter.sendMail(mailOptions);
       }
-      
+
       logger.info('Email sent successfully', { to, subject });
       return true;
     } catch (error) {
@@ -61,8 +61,8 @@ class EmailService {
       throw error;
     }
   }
-  
-  async sendWelcomeEmail(user) {
+
+  sendWelcomeEmail(user) {
     const subject = 'Welcome to FMCG Trade Spend Management';
     const html = `
       <h1>Welcome ${user.firstName}!</h1>
@@ -71,11 +71,11 @@ class EmailService {
       <p>Your role: ${user.role}</p>
       <p>If you have any questions, please contact your administrator.</p>
     `;
-    
-    return await this.sendEmail(user.email, subject, html);
+
+    return this.sendEmail(user.email, subject, html);
   }
-  
-  async sendPasswordResetEmail(user, resetUrl) {
+
+  sendPasswordResetEmail(user, resetUrl) {
     const subject = 'Password Reset Request';
     const html = `
       <h1>Password Reset</h1>
@@ -85,11 +85,11 @@ class EmailService {
       <p>This link will expire in 30 minutes.</p>
       <p>If you didn't request this, please ignore this email.</p>
     `;
-    
-    return await this.sendEmail(user.email, subject, html);
+
+    return this.sendEmail(user.email, subject, html);
   }
-  
-  async sendApprovalRequestEmail(approver, item, type) {
+
+  sendApprovalRequestEmail(approver, item, type) {
     const subject = `Approval Required: ${type}`;
     const html = `
       <h1>Approval Required</h1>
@@ -103,11 +103,11 @@ class EmailService {
       </ul>
       <p>Please log in to the system to review and approve.</p>
     `;
-    
-    return await this.sendEmail(approver.email, subject, html);
+
+    return this.sendEmail(approver.email, subject, html);
   }
-  
-  async sendApprovalNotificationEmail(user, item, type, status) {
+
+  sendApprovalNotificationEmail(user, item, type, status) {
     const subject = `${type} ${status}`;
     const html = `
       <h1>${type} ${status}</h1>
@@ -120,11 +120,11 @@ class EmailService {
         ${status === 'Rejected' ? `<li>Reason: ${item.rejectionReason}</li>` : ''}
       </ul>
     `;
-    
-    return await this.sendEmail(user.email, subject, html);
+
+    return this.sendEmail(user.email, subject, html);
   }
-  
-  async sendPromotionAlertEmail(users, promotion) {
+
+  sendPromotionAlertEmail(users, promotion) {
     const subject = `New Promotion: ${promotion.name}`;
     const html = `
       <h1>New Promotion Alert</h1>
@@ -138,12 +138,12 @@ class EmailService {
       </ul>
       <p>Please log in to view full details.</p>
     `;
-    
-    const promises = users.map(user => this.sendEmail(user.email, subject, html));
-    return await Promise.all(promises);
+
+    const promises = users.map((user) => this.sendEmail(user.email, subject, html));
+    return Promise.all(promises);
   }
-  
-  async sendBudgetAlertEmail(user, budget, alertType) {
+
+  sendBudgetAlertEmail(user, budget, alertType) {
     const subject = `Budget Alert: ${alertType}`;
     const html = `
       <h1>Budget Alert</h1>
@@ -158,11 +158,11 @@ class EmailService {
       </ul>
       <p>Please review and take necessary action.</p>
     `;
-    
-    return await this.sendEmail(user.email, subject, html);
+
+    return this.sendEmail(user.email, subject, html);
   }
-  
-  async sendReportEmail(user, report, attachmentPath = null) {
+
+  sendReportEmail(user, report, attachmentPath = null) {
     const subject = `Report: ${report.name}`;
     const html = `
       <h1>Report Generated</h1>
@@ -175,12 +175,12 @@ class EmailService {
       </ul>
       ${attachmentPath ? '<p>The report is attached to this email.</p>' : '<p>Please log in to download the report.</p>'}
     `;
-    
+
     if (this.provider === 'sendgrid' && attachmentPath) {
       // Handle SendGrid attachment
       const fs = require('fs');
       const attachment = fs.readFileSync(attachmentPath).toString('base64');
-      
+
       const msg = {
         to: user.email,
         from: config.email.from,
@@ -193,10 +193,10 @@ class EmailService {
           disposition: 'attachment'
         }]
       };
-      
-      return await sgMail.send(msg);
+
+      return sgMail.send(msg);
     } else {
-      return await this.sendEmail(user.email, subject, html);
+      return this.sendEmail(user.email, subject, html);
     }
   }
 }

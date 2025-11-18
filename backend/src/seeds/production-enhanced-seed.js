@@ -6,17 +6,17 @@ const connectDB = require('../config/database');
 const seedCompleteProductionData = async () => {
   try {
     console.log('Starting complete production data seeding...');
-    
+
     // First seed basic production data (companies, users, customers, products, campaigns)
     console.log('Step 1: Seeding basic production data...');
     await seedProductionData();
-    
+
     // Then seed enhanced analytics data (trading terms, reports, AI chats, etc.)
     console.log('Step 2: Seeding enhanced analytics data...');
     await seedEnhancedAnalyticsData();
-    
+
     console.log('Complete production data seeding finished successfully!');
-    
+
   } catch (error) {
     console.error('Error in complete production seeding:', error);
     throw error;

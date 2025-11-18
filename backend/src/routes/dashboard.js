@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboardController');
-const { authorize, checkPermission } = require('../middleware/auth');
+const { authorize, _checkPermission } = require('../middleware/auth');
 const { query, param } = require('express-validator');
 const { validate } = require('../middleware/validation');
 
 // Default dashboard - routes to appropriate dashboard based on role
-router.get('/', async (req, res, next) => {
+router.get('/', (req, res, next) => {
   try {
     // Return mock dashboard data for UAT testing
     res.json({
@@ -44,7 +44,7 @@ router.get('/stats', async (req, res, next) => {
     // Get current counts
     const totalCustomers = await Customer.countDocuments({ status: { $ne: 'deleted' } });
     const totalProducts = await Product.countDocuments({ status: { $ne: 'deleted' } });
-    const activePromotions = await Promotion.countDocuments({ 
+    const activePromotions = await Promotion.countDocuments({
       status: 'active',
       'period.endDate': { $gte: new Date() }
     });
@@ -76,9 +76,9 @@ router.get('/stats', async (req, res, next) => {
 });
 
 // Dashboard activity endpoint
-router.get('/activity', async (req, res, next) => {
+router.get('/activity', (req, res, next) => {
   try {
-    const { limit = 10 } = req.query;
+    const { _limit = 10 } = req.query;
     // For now, return empty array - can be populated later
     res.json({
       success: true,
@@ -90,9 +90,9 @@ router.get('/activity', async (req, res, next) => {
 });
 
 // Dashboard chart data endpoint
-router.get('/charts/:type', async (req, res, next) => {
+router.get('/charts/:type', (req, res, next) => {
   try {
-    const { type } = req.params;
+    const { _type } = req.params;
     // For now, return empty array - can be populated later
     res.json({
       success: true,

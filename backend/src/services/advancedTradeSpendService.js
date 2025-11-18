@@ -1,6 +1,6 @@
 const TradeSpend = require('../models/TradeSpend');
 const Budget = require('../models/Budget');
-const SalesHistory = require('../models/SalesHistory');
+const _SalesHistory = require('../models/_SalesHistory');
 const logger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 
@@ -122,7 +122,7 @@ class AdvancedTradeSpendService {
       // Validate transaction
       transaction.validations = await this.validateTransaction(transactionData);
 
-      if (transaction.validations.some(v => v.severity === 'error')) {
+      if (transaction.validations.some((v) => v.severity === 'error')) {
         transaction.status = 'failed';
         return transaction;
       }
@@ -238,7 +238,7 @@ class AdvancedTradeSpendService {
 
         // Calculate variance
         variance.variance = variance.actual - variance.planned;
-        variance.variancePercent = 
+        variance.variancePercent =
           (variance.variance / variance.planned) * 100;
 
         // Determine trend
@@ -380,10 +380,10 @@ class AdvancedTradeSpendService {
       // Match records
       for (const internal of internalRecords) {
         const match = this.findMatchingRecord(internal, externalData);
-        
+
         if (match) {
           const discrepancy = this.compareRecords(internal, match);
-          
+
           if (discrepancy.hasDiscrepancy) {
             reconciliation.discrepancies.push({
               internal,
@@ -426,10 +426,10 @@ class AdvancedTradeSpendService {
       };
 
       // Determine status
-      if (reconciliation.discrepancies.length === 0 && 
+      if (reconciliation.discrepancies.length === 0 &&
           reconciliation.unmatched.length === 0) {
         reconciliation.status = 'reconciled';
-      } else if (reconciliation.discrepancies.length > 
+      } else if (reconciliation.discrepancies.length >
                  internalRecords.length * 0.1) {
         reconciliation.status = 'requires_review';
       } else {
@@ -550,14 +550,14 @@ class AdvancedTradeSpendService {
     return {
       totalSpend: tradeSpends.reduce((sum, t) => sum + t.amount, 0),
       transactionCount: tradeSpends.length,
-      averageTransaction: tradeSpends.length > 0 ? 
+      averageTransaction: tradeSpends.length > 0 ?
         tradeSpends.reduce((sum, t) => sum + t.amount, 0) / tradeSpends.length : 0,
-      categories: [...new Set(tradeSpends.map(t => t.category))].length,
-      customers: [...new Set(tradeSpends.map(t => t.customer))].length
+      categories: [...new Set(tradeSpends.map((t) => t.category))].length,
+      customers: [...new Set(tradeSpends.map((t) => t.customer))].length
     };
   }
 
-  async calculateKPIs(tradeSpends, filters) {
+  calculateKPIs(tradeSpends, _filters) {
     const totalSpend = tradeSpends.reduce((sum, t) => sum + t.amount, 0);
     const totalRevenue = tradeSpends.reduce((sum, t) => sum + (t.revenue || 0), 0);
 
@@ -597,12 +597,12 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  async analyzeTrends(tradeSpends, dateRange) {
+  analyzeTrends(tradeSpends, _dateRange) {
     const trends = [];
-    
+
     // Group by month
     const monthlySpend = {};
-    tradeSpends.forEach(t => {
+    tradeSpends.forEach((t) => {
       const month = new Date(t.date).toISOString().slice(0, 7);
       monthlySpend[month] = (monthlySpend[month] || 0) + t.amount;
     });
@@ -631,8 +631,8 @@ class AdvancedTradeSpendService {
 
   analyzeCategoryBreakdown(tradeSpends) {
     const breakdown = {};
-    
-    tradeSpends.forEach(t => {
+
+    tradeSpends.forEach((t) => {
       const category = t.category || 'uncategorized';
       if (!breakdown[category]) {
         breakdown[category] = {
@@ -647,8 +647,8 @@ class AdvancedTradeSpendService {
     });
 
     const total = Object.values(breakdown).reduce((sum, b) => sum + b.total, 0);
-    
-    return Object.values(breakdown).map(b => ({
+
+    return Object.values(breakdown).map((b) => ({
       ...b,
       percentage: (b.total / total) * 100
     })).sort((a, b) => b.total - a.total);
@@ -656,11 +656,11 @@ class AdvancedTradeSpendService {
 
   analyzeTopSpenders(tradeSpends) {
     const spenders = {};
-    
-    tradeSpends.forEach(t => {
+
+    tradeSpends.forEach((t) => {
       const customer = t.customer?._id || t.customer || 'unknown';
       const customerName = t.customer?.name || 'Unknown';
-      
+
       if (!spenders[customer]) {
         spenders[customer] = {
           customerId: customer,
@@ -670,12 +670,12 @@ class AdvancedTradeSpendService {
           categories: {}
         };
       }
-      
+
       spenders[customer].total += t.amount;
       spenders[customer].count += 1;
-      
+
       const category = t.category || 'uncategorized';
-      spenders[customer].categories[category] = 
+      spenders[customer].categories[category] =
         (spenders[customer].categories[category] || 0) + t.amount;
     });
 
@@ -684,10 +684,10 @@ class AdvancedTradeSpendService {
       .slice(0, 10);
   }
 
-  async calculateROI(tradeSpends) {
+  calculateROI(tradeSpends) {
     const totalSpend = tradeSpends.reduce((sum, t) => sum + t.amount, 0);
     const totalRevenue = tradeSpends.reduce((sum, t) => sum + (t.revenue || 0), 0);
-    
+
     return {
       totalSpend,
       totalRevenue,
@@ -699,8 +699,8 @@ class AdvancedTradeSpendService {
 
   calculateROIByCategory(tradeSpends) {
     const categories = {};
-    
-    tradeSpends.forEach(t => {
+
+    tradeSpends.forEach((t) => {
       const cat = t.category || 'uncategorized';
       if (!categories[cat]) {
         categories[cat] = { spend: 0, revenue: 0 };
@@ -732,10 +732,10 @@ class AdvancedTradeSpendService {
 
     // Unusual activity
     const avgTransaction = summary.averageTransaction;
-    const highValueTransactions = tradeSpends.filter(t => 
+    const highValueTransactions = tradeSpends.filter((t) =>
       t.amount > avgTransaction * 3
     );
-    
+
     if (highValueTransactions.length > 0) {
       alerts.push({
         severity: 'medium',
@@ -748,7 +748,7 @@ class AdvancedTradeSpendService {
     return alerts;
   }
 
-  async generateRecommendations(dashboard, filters) {
+  generateRecommendations(dashboard, _filters) {
     const recommendations = [];
 
     // ROI optimization
@@ -763,7 +763,7 @@ class AdvancedTradeSpendService {
     }
 
     // Budget utilization
-    const utilization = dashboard.kpis.find(k => k.name === 'Budget Utilization');
+    const utilization = dashboard.kpis.find((k) => k.name === 'Budget Utilization');
     if (utilization && utilization.value < 70) {
       recommendations.push({
         type: 'utilization',
@@ -816,7 +816,7 @@ class AdvancedTradeSpendService {
     return validations;
   }
 
-  async checkBudgetAvailability(companyId, category, amount) {
+  async checkBudgetAvailability(companyId, _category, _amount) {
     // Simplified budget check
     const budget = await Budget.findOne({
       companyId,
@@ -831,12 +831,12 @@ class AdvancedTradeSpendService {
     return { available: true, remaining: 100000 };
   }
 
-  async updateBudgetUtilization(companyId, category, amount) {
+  updateBudgetUtilization(companyId, category, amount) {
     // Update budget utilization tracking
     logger.info('Budget utilization updated', { companyId, category, amount });
   }
 
-  async reconcileTransaction(tradeSpend) {
+  reconcileTransaction(tradeSpend) {
     return {
       status: 'reconciled',
       matchedAt: new Date(),
@@ -846,8 +846,8 @@ class AdvancedTradeSpendService {
 
   groupTransactions(transactions, groupBy) {
     const groups = {};
-    
-    transactions.forEach(t => {
+
+    transactions.forEach((t) => {
       const key = t[groupBy] || 'unknown';
       if (!groups[key]) groups[key] = [];
       groups[key].push(t);
@@ -856,7 +856,7 @@ class AdvancedTradeSpendService {
     return groups;
   }
 
-  calculatePlannedSpend(budgets, groupBy, groupKey) {
+  calculatePlannedSpend(_budgets, _groupBy, _groupKey) {
     // Simplified calculation
     return 50000;
   }
@@ -867,7 +867,7 @@ class AdvancedTradeSpendService {
     return 'stable';
   }
 
-  async identifyVarianceDrivers(transactions, variance) {
+  identifyVarianceDrivers(_transactions, _variance) {
     return [
       {
         driver: 'Increased promotional activity',
@@ -885,18 +885,18 @@ class AdvancedTradeSpendService {
   calculateVarianceSummary(variances) {
     const totalPlanned = variances.reduce((sum, v) => sum + v.planned, 0);
     const totalActual = variances.reduce((sum, v) => sum + v.actual, 0);
-    
+
     return {
       totalPlanned,
       totalActual,
       totalVariance: totalActual - totalPlanned,
       totalVariancePercent: ((totalActual - totalPlanned) / totalPlanned) * 100,
-      overSpent: variances.filter(v => v.variance > 0).length,
-      underSpent: variances.filter(v => v.variance < 0).length
+      overSpent: variances.filter((v) => v.variance > 0).length,
+      underSpent: variances.filter((v) => v.variance < 0).length
     };
   }
 
-  generateVarianceInsights(variances) {
+  generateVarianceInsights(_variances) {
     return [
       {
         insight: 'Marketing category shows consistent overspend pattern',
@@ -908,11 +908,11 @@ class AdvancedTradeSpendService {
 
   suggestCorrectiveActions(variances) {
     return variances
-      .filter(v => Math.abs(v.variancePercent) > 15)
-      .map(v => ({
+      .filter((v) => Math.abs(v.variancePercent) > 15)
+      .map((v) => ({
         variance: v,
-        action: v.variance > 0 ? 
-          'Implement spending controls' : 
+        action: v.variance > 0 ?
+          'Implement spending controls' :
           'Accelerate planned activities',
         priority: Math.abs(v.variancePercent) > 25 ? 'high' : 'medium'
       }));
@@ -920,7 +920,7 @@ class AdvancedTradeSpendService {
 
   formatAllocation(aggregatedData) {
     const formatted = {};
-    aggregatedData.forEach(item => {
+    aggregatedData.forEach((item) => {
       formatted[item._id] = {
         total: item.total,
         count: item.count,
@@ -930,7 +930,7 @@ class AdvancedTradeSpendService {
     return formatted;
   }
 
-  async analyzeHistoricalPerformance(companyId, historicalData) {
+  analyzeHistoricalPerformance(_companyId, _historicalData) {
     // Analyze historical ROI and effectiveness
     return {
       marketing: { roi: 250, effectiveness: 0.85 },
@@ -940,7 +940,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateOptimalAllocation(totalBudget, performance, constraints, objectives) {
+  calculateOptimalAllocation(totalBudget, _performance, _constraints, _objectives) {
     // Simplified optimization - in production use actual optimization algorithm
     return {
       marketing: totalBudget * 0.35,
@@ -950,7 +950,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateImprovements(current, optimized, performance) {
+  calculateImprovements(_current, _optimized, _performance) {
     return {
       projectedROIIncrease: 18,
       projectedRevenueIncrease: 250000,
@@ -958,7 +958,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  createImplementationPlan(current, optimized) {
+  createImplementationPlan(_current, _optimized) {
     return {
       phase1: 'Reduce low-ROI categories by 10%',
       phase2: 'Reallocate to high-ROI categories',
@@ -967,7 +967,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  assessOptimizationRisks(optimized, constraints) {
+  assessOptimizationRisks(_optimized, _constraints) {
     return [
       {
         risk: 'Market volatility',
@@ -978,7 +978,7 @@ class AdvancedTradeSpendService {
   }
 
   findMatchingRecord(internal, externalData) {
-    return externalData.find(ext => 
+    return externalData.find((ext) =>
       ext.reference === internal.reference ||
       (ext.amount === internal.amount && ext.date === internal.date)
     );
@@ -994,7 +994,7 @@ class AdvancedTradeSpendService {
   }
 
   findMatchingInternalRecord(external, internalRecords) {
-    return internalRecords.find(int => 
+    return internalRecords.find((int) =>
       int.reference === external.reference
     );
   }
@@ -1021,7 +1021,7 @@ class AdvancedTradeSpendService {
     return actions;
   }
 
-  analyzeSpendPatterns(historicalData) {
+  analyzeSpendPatterns(_historicalData) {
     // Analyze historical patterns for forecasting
     return {
       seasonality: { hasPattern: true, strength: 0.7 },
@@ -1033,9 +1033,9 @@ class AdvancedTradeSpendService {
   predictCategorySpend(category, patterns, month, includeSeasonality) {
     // Simplified prediction
     const baseAmount = 50000;
-    const seasonalityFactor = includeSeasonality ? 
+    const seasonalityFactor = includeSeasonality ?
       (1 + Math.sin(month / 12 * 2 * Math.PI) * 0.2) : 1;
-    
+
     return baseAmount * seasonalityFactor;
   }
 
@@ -1060,7 +1060,7 @@ class AdvancedTradeSpendService {
     };
   }
 
-  calculateConfidenceIntervals(predictions, patterns) {
+  calculateConfidenceIntervals(predictions, _patterns) {
     return {
       lower: predictions.annual.total * 0.9,
       upper: predictions.annual.total * 1.1,
@@ -1076,7 +1076,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  identifySpendOpportunities(predictions, patterns) {
+  identifySpendOpportunities(_predictions, _patterns) {
     return [
       {
         opportunity: 'Increase Q3 spending during peak season',
@@ -1086,7 +1086,7 @@ class AdvancedTradeSpendService {
     ];
   }
 
-  identifySpendRisks(predictions, patterns) {
+  identifySpendRisks(_predictions, _patterns) {
     return [
       {
         risk: 'Budget overrun in Q4',

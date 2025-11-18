@@ -11,8 +11,7 @@ import {
 import {
   Add as AddIcon,
   TrendingUp as TrendingUpIcon,
-  Inventory as InventoryIcon,
-  AttachMoney as MoneyIcon
+  Inventory as InventoryIcon
 } from '@mui/icons-material';
 
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
@@ -25,7 +24,7 @@ const ProductListEnhanced = () => {
   const theme = useTheme();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [setError] = useState(null);
   const [openForm, setOpenForm] = useState(false);
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Box, Button, Card, CardContent, Grid, Typography, Divider,
-  Tabs, Tab, Chip, Avatar, LinearProgress, useTheme, Alert
+  Box, Button, Card, CardContent, Grid, Typography,
+  Tabs, Tab, Chip, LinearProgress, Alert
 } from '@mui/material';
 import {
   Edit as EditIcon, ArrowBack as ArrowBackIcon,
@@ -16,7 +16,6 @@ import { ollamaService } from '../../services/ollama/ollamaService';
 const CustomerDetailEnhanced = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
   const [customer, setCustomer] = useState(null);
   const [relatedData, setRelatedData] = useState({ budgets: [], promotions: [], tradeSpends: [] });
   const [loading, setLoading] = useState(true);

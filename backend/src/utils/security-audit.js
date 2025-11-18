@@ -27,7 +27,7 @@ class SecurityAuditLogger {
     this.maxLogSize = options.maxLogSize || 10 * 1024 * 1024; // 10MB
     this.maxLogFiles = options.maxLogFiles || 10;
     this.enableConsole = options.enableConsole !== false;
-    
+
     // Log levels
     this.levels = {
       debug: 0,
@@ -36,11 +36,11 @@ class SecurityAuditLogger {
       error: 3,
       critical: 4
     };
-    
+
     // Initialize logger
     this.initialize();
   }
-  
+
   /**
    * Initialize logger
    */
@@ -50,7 +50,7 @@ class SecurityAuditLogger {
       if (!fs.existsSync(this.logDir)) {
         await mkdir(this.logDir, { recursive: true });
       }
-      
+
       // Check if log file exists and rotate if needed
       const logPath = path.join(this.logDir, this.logFile);
       if (fs.existsSync(logPath)) {
@@ -63,17 +63,17 @@ class SecurityAuditLogger {
       console.error('Error initializing security audit logger:', error);
     }
   }
-  
+
   /**
    * Rotate log files
    */
-  async rotateLogFiles() {
+  rotateLogFiles() {
     try {
       // Rotate existing log files
       for (let i = this.maxLogFiles - 1; i > 0; i--) {
         const oldFile = path.join(this.logDir, `${this.logFile}.${i}`);
         const newFile = path.join(this.logDir, `${this.logFile}.${i + 1}`);
-        
+
         if (fs.existsSync(oldFile)) {
           if (i === this.maxLogFiles - 1) {
             // Delete oldest log file
@@ -84,11 +84,11 @@ class SecurityAuditLogger {
           }
         }
       }
-      
+
       // Rename current log file
       const currentFile = path.join(this.logDir, this.logFile);
       const newFile = path.join(this.logDir, `${this.logFile}.1`);
-      
+
       if (fs.existsSync(currentFile)) {
         fs.renameSync(currentFile, newFile);
       }
@@ -96,7 +96,7 @@ class SecurityAuditLogger {
       console.error('Error rotating log files:', error);
     }
   }
-  
+
   /**
    * Log security event
    * @param {string} level - Log level
@@ -107,7 +107,7 @@ class SecurityAuditLogger {
     if (this.levels[level] < this.levels[this.logLevel]) {
       return;
     }
-    
+
     try {
       const timestamp = new Date().toISOString();
       const logEntry = {
@@ -116,25 +116,25 @@ class SecurityAuditLogger {
         message,
         ...data
       };
-      
+
       // Add log entry to file
       const logPath = path.join(this.logDir, this.logFile);
-      await appendFile(logPath, JSON.stringify(logEntry) + '\n');
-      
+      await appendFile(logPath, `${JSON.stringify(logEntry)}\n`);
+
       // Log to console if enabled
       if (this.enableConsole) {
         const consoleMethod = level === 'debug' ? 'debug' :
-                             level === 'info' ? 'info' :
-                             level === 'warn' ? 'warn' :
-                             'error';
-        
+          level === 'info' ? 'info' :
+            level === 'warn' ? 'warn' :
+              'error';
+
         console[consoleMethod](`[${timestamp}] [${level.toUpperCase()}] ${message}`, data);
       }
     } catch (error) {
       console.error('Error logging security event:', error);
     }
   }
-  
+
   /**
    * Log debug event
    * @param {string} message - Log message
@@ -143,7 +143,7 @@ class SecurityAuditLogger {
   debug(message, data = {}) {
     return this.log('debug', message, data);
   }
-  
+
   /**
    * Log info event
    * @param {string} message - Log message
@@ -152,7 +152,7 @@ class SecurityAuditLogger {
   info(message, data = {}) {
     return this.log('info', message, data);
   }
-  
+
   /**
    * Log warning event
    * @param {string} message - Log message
@@ -161,7 +161,7 @@ class SecurityAuditLogger {
   warn(message, data = {}) {
     return this.log('warn', message, data);
   }
-  
+
   /**
    * Log error event
    * @param {string} message - Log message
@@ -170,7 +170,7 @@ class SecurityAuditLogger {
   error(message, data = {}) {
     return this.log('error', message, data);
   }
-  
+
   /**
    * Log critical event
    * @param {string} message - Log message
@@ -179,7 +179,7 @@ class SecurityAuditLogger {
   critical(message, data = {}) {
     return this.log('critical', message, data);
   }
-  
+
   /**
    * Log authentication event
    * @param {Object} user - User information
@@ -190,7 +190,7 @@ class SecurityAuditLogger {
   logAuth(user, action, success, context = {}) {
     const level = success ? 'info' : 'warn';
     const message = `Authentication ${action} ${success ? 'succeeded' : 'failed'} for user ${user.email || user.username || 'unknown'}`;
-    
+
     return this.log(level, message, {
       event_type: 'authentication',
       user_id: user.id,
@@ -203,7 +203,7 @@ class SecurityAuditLogger {
       ...context
     });
   }
-  
+
   /**
    * Log access event
    * @param {Object} user - User information
@@ -215,7 +215,7 @@ class SecurityAuditLogger {
   logAccess(user, resource, action, authorized, context = {}) {
     const level = authorized ? 'info' : 'warn';
     const message = `Access ${authorized ? 'granted' : 'denied'} for ${action} on ${resource} by user ${user.email || user.username || 'unknown'}`;
-    
+
     return this.log(level, message, {
       event_type: 'access_control',
       user_id: user.id,
@@ -229,7 +229,7 @@ class SecurityAuditLogger {
       ...context
     });
   }
-  
+
   /**
    * Log data modification event
    * @param {Object} user - User information
@@ -240,7 +240,7 @@ class SecurityAuditLogger {
    */
   logDataModification(user, resource, action, changes, context = {}) {
     const message = `Data ${action} on ${resource} by user ${user.email || user.username || 'unknown'}`;
-    
+
     return this.log('info', message, {
       event_type: 'data_modification',
       user_id: user.id,
@@ -254,7 +254,7 @@ class SecurityAuditLogger {
       ...context
     });
   }
-  
+
   /**
    * Log security violation event
    * @param {string} type - Violation type
@@ -263,7 +263,7 @@ class SecurityAuditLogger {
    */
   logSecurityViolation(type, description, context = {}) {
     const message = `Security violation detected: ${type}`;
-    
+
     return this.log('critical', message, {
       event_type: 'security_violation',
       violation_type: type,
@@ -289,13 +289,13 @@ class SecurityVulnerabilityScanner {
     this.scanInterval = options.scanInterval || 24 * 60 * 60 * 1000; // 24 hours
     this.scanTimeout = options.scanTimeout || 30 * 60 * 1000; // 30 minutes
     this.scanningEnabled = options.scanningEnabled !== false;
-    
+
     // Initialize scanner
     if (this.scanningEnabled) {
       this.scheduleScan();
     }
   }
-  
+
   /**
    * Schedule vulnerability scan
    */
@@ -305,25 +305,25 @@ class SecurityVulnerabilityScanner {
         .then(() => {
           this.scheduleScan();
         })
-        .catch(error => {
+        .catch((error) => {
           this.logger.error('Error performing vulnerability scan:', { error: error.message });
           this.scheduleScan();
         });
     }, this.scanInterval);
   }
-  
+
   /**
    * Perform vulnerability scan
    */
   async performScan() {
     this.logger.info('Starting security vulnerability scan');
-    
+
     try {
       // Set scan timeout
       const scanTimeout = setTimeout(() => {
         this.logger.error('Security vulnerability scan timed out');
       }, this.scanTimeout);
-      
+
       // Perform scans
       await Promise.all([
         this.scanDependencies(),
@@ -331,27 +331,27 @@ class SecurityVulnerabilityScanner {
         this.scanFilePermissions(),
         this.scanSecrets()
       ]);
-      
+
       // Clear timeout
       clearTimeout(scanTimeout);
-      
+
       this.logger.info('Security vulnerability scan completed');
     } catch (error) {
       this.logger.error('Error during security vulnerability scan:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Scan dependencies for vulnerabilities
    */
-  async scanDependencies() {
+  scanDependencies() {
     this.logger.info('Scanning dependencies for vulnerabilities');
-    
+
     try {
       // In a real implementation, this would use a vulnerability database
       // or a service like npm audit, Snyk, or Dependabot
-      
+
       // Simulate dependency scan
       const vulnerabilities = [
         // Example vulnerability (in a real implementation, this would be actual findings)
@@ -364,31 +364,31 @@ class SecurityVulnerabilityScanner {
           recommendation: 'Update to version 1.0.1 or later'
         }
       ];
-      
+
       // Log vulnerabilities
       if (vulnerabilities.length > 0) {
         this.logger.warn(`Found ${vulnerabilities.length} vulnerable dependencies`, { vulnerabilities });
       } else {
         this.logger.info('No vulnerable dependencies found');
       }
-      
+
       return vulnerabilities;
     } catch (error) {
       this.logger.error('Error scanning dependencies:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Scan configuration for security issues
    */
-  async scanConfiguration() {
+  scanConfiguration() {
     this.logger.info('Scanning configuration for security issues');
-    
+
     try {
       // In a real implementation, this would check configuration files
       // for security issues like weak TLS settings, missing security headers, etc.
-      
+
       // Simulate configuration scan
       const issues = [
         // Example issue (in a real implementation, this would be actual findings)
@@ -400,31 +400,31 @@ class SecurityVulnerabilityScanner {
           recommendation: 'Disable TLS 1.0 and 1.1, and enable only TLS 1.2 and 1.3'
         }
       ];
-      
+
       // Log issues
       if (issues.length > 0) {
         this.logger.warn(`Found ${issues.length} configuration security issues`, { issues });
       } else {
         this.logger.info('No configuration security issues found');
       }
-      
+
       return issues;
     } catch (error) {
       this.logger.error('Error scanning configuration:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Scan file permissions for security issues
    */
-  async scanFilePermissions() {
+  scanFilePermissions() {
     this.logger.info('Scanning file permissions for security issues');
-    
+
     try {
       // In a real implementation, this would check file permissions
       // for security issues like world-writable files, etc.
-      
+
       // Simulate file permissions scan
       const issues = [
         // Example issue (in a real implementation, this would be actual findings)
@@ -436,31 +436,31 @@ class SecurityVulnerabilityScanner {
           recommendation: 'Change permissions to 0644 or more restrictive'
         }
       ];
-      
+
       // Log issues
       if (issues.length > 0) {
         this.logger.warn(`Found ${issues.length} file permission security issues`, { issues });
       } else {
         this.logger.info('No file permission security issues found');
       }
-      
+
       return issues;
     } catch (error) {
       this.logger.error('Error scanning file permissions:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Scan for hardcoded secrets
    */
-  async scanSecrets() {
+  scanSecrets() {
     this.logger.info('Scanning for hardcoded secrets');
-    
+
     try {
       // In a real implementation, this would use a tool like git-secrets,
       // trufflehog, or a custom regex-based scanner
-      
+
       // Simulate secrets scan
       const secrets = [
         // Example secret (in a real implementation, this would be actual findings)
@@ -473,21 +473,21 @@ class SecurityVulnerabilityScanner {
           recommendation: 'Move the API key to an environment variable or secure vault'
         }
       ];
-      
+
       // Log secrets
       if (secrets.length > 0) {
         this.logger.critical(`Found ${secrets.length} hardcoded secrets`, { secrets });
       } else {
         this.logger.info('No hardcoded secrets found');
       }
-      
+
       return secrets;
     } catch (error) {
       this.logger.error('Error scanning for secrets:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Scan for common security vulnerabilities
    * @param {Object} req - Express request object
@@ -495,25 +495,25 @@ class SecurityVulnerabilityScanner {
   scanRequest(req) {
     try {
       const issues = [];
-      
+
       // Check for common attack patterns
       const attackPatterns = this.detectAttackPatterns(req);
       if (attackPatterns.length > 0) {
         issues.push(...attackPatterns);
       }
-      
+
       // Check for suspicious headers
       const suspiciousHeaders = this.detectSuspiciousHeaders(req);
       if (suspiciousHeaders.length > 0) {
         issues.push(...suspiciousHeaders);
       }
-      
+
       // Check for suspicious IP
       const suspiciousIP = this.detectSuspiciousIP(req);
       if (suspiciousIP) {
         issues.push(suspiciousIP);
       }
-      
+
       // Log issues
       if (issues.length > 0) {
         this.logger.warn(`Detected ${issues.length} security issues in request`, {
@@ -524,14 +524,14 @@ class SecurityVulnerabilityScanner {
           user_agent: req.headers['user-agent']
         });
       }
-      
+
       return issues;
     } catch (error) {
       this.logger.error('Error scanning request:', { error: error.message });
       return [];
     }
   }
-  
+
   /**
    * Detect attack patterns in request
    * @param {Object} req - Express request object
@@ -539,15 +539,15 @@ class SecurityVulnerabilityScanner {
    */
   detectAttackPatterns(req) {
     const issues = [];
-    
+
     // SQL injection patterns
     const sqlPatterns = [
-      /(\%27)|(\')|(\-\-)|(\%23)|(#)/i,
-      /((\%3D)|(=))[^\n]*((\%27)|(\')|(\-\-)|(\%3B)|(;))/i,
-      /\w*((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))/i,
-      /((\%27)|(\'))union/i
+      /(%27)|(')|(--)|(%23)|(#)/i,
+      /((%3D)|(=))[^\n]*((%27)|(')|(--)|(%3B)|(;))/i,
+      /\w*((%27)|(')){((%6F)|o|(%4F))((%72)|r|(%52))/i,
+      /((%27)|(')){union/i
     ];
-    
+
     // XSS patterns
     const xssPatterns = [
       /<script[^>]*>.*?<\/script>/i,
@@ -555,7 +555,7 @@ class SecurityVulnerabilityScanner {
       /on\w+[\s\r\n]*=[\s\r\n]*['"]/i,
       /javascript:[^\s]*/i
     ];
-    
+
     // Path traversal patterns
     const pathTraversalPatterns = [
       /(\.\.\/)/i,
@@ -564,7 +564,7 @@ class SecurityVulnerabilityScanner {
       /(%252e%252e%252f)/i,
       /(%c0%ae%c0%ae%c0%af)/i
     ];
-    
+
     // Check query parameters
     if (req.query) {
       for (const [key, value] of Object.entries(req.query)) {
@@ -581,7 +581,7 @@ class SecurityVulnerabilityScanner {
               break;
             }
           }
-          
+
           // Check XSS
           for (const pattern of xssPatterns) {
             if (pattern.test(value)) {
@@ -594,7 +594,7 @@ class SecurityVulnerabilityScanner {
               break;
             }
           }
-          
+
           // Check path traversal
           for (const pattern of pathTraversalPatterns) {
             if (pattern.test(value)) {
@@ -610,13 +610,13 @@ class SecurityVulnerabilityScanner {
         }
       }
     }
-    
+
     // Check body parameters
     if (req.body) {
       const checkBody = (obj, prefix = 'body') => {
         for (const [key, value] of Object.entries(obj)) {
           const location = `${prefix}.${key}`;
-          
+
           if (typeof value === 'string') {
             // Check SQL injection
             for (const pattern of sqlPatterns) {
@@ -630,7 +630,7 @@ class SecurityVulnerabilityScanner {
                 break;
               }
             }
-            
+
             // Check XSS
             for (const pattern of xssPatterns) {
               if (pattern.test(value)) {
@@ -643,7 +643,7 @@ class SecurityVulnerabilityScanner {
                 break;
               }
             }
-            
+
             // Check path traversal
             for (const pattern of pathTraversalPatterns) {
               if (pattern.test(value)) {
@@ -662,13 +662,13 @@ class SecurityVulnerabilityScanner {
           }
         }
       };
-      
+
       checkBody(req.body);
     }
-    
+
     return issues;
   }
-  
+
   /**
    * Detect suspicious headers in request
    * @param {Object} req - Express request object
@@ -676,7 +676,7 @@ class SecurityVulnerabilityScanner {
    */
   detectSuspiciousHeaders(req) {
     const issues = [];
-    
+
     // Check for suspicious user agent
     const userAgent = req.headers['user-agent'];
     if (userAgent) {
@@ -690,7 +690,7 @@ class SecurityVulnerabilityScanner {
         /acunetix/i,
         /nmap/i
       ];
-      
+
       for (const pattern of suspiciousUserAgents) {
         if (pattern.test(userAgent)) {
           issues.push({
@@ -703,7 +703,7 @@ class SecurityVulnerabilityScanner {
         }
       }
     }
-    
+
     // Check for suspicious headers
     const suspiciousHeaders = [
       'x-forwarded-for',
@@ -711,7 +711,7 @@ class SecurityVulnerabilityScanner {
       'x-remote-addr',
       'x-remote-ip'
     ];
-    
+
     for (const header of suspiciousHeaders) {
       if (req.headers[header]) {
         issues.push({
@@ -722,10 +722,10 @@ class SecurityVulnerabilityScanner {
         });
       }
     }
-    
+
     return issues;
   }
-  
+
   /**
    * Detect suspicious IP in request
    * @param {Object} req - Express request object
@@ -734,10 +734,10 @@ class SecurityVulnerabilityScanner {
   detectSuspiciousIP(req) {
     // In a real implementation, this would check against a database of known
     // malicious IPs, Tor exit nodes, etc.
-    
+
     // Simulate IP check
     const ip = req.ip || req.connection.remoteAddress;
-    
+
     // Example check (in a real implementation, this would be actual checks)
     if (ip === '1.2.3.4') {
       return {
@@ -747,7 +747,7 @@ class SecurityVulnerabilityScanner {
         value: ip
       };
     }
-    
+
     return null;
   }
 }
@@ -776,13 +776,13 @@ class FileIntegrityMonitor {
       'logs',
       'tmp'
     ];
-    
+
     // Initialize monitor
     if (this.monitoringEnabled) {
       this.initialize();
     }
   }
-  
+
   /**
    * Initialize file integrity monitor
    */
@@ -793,20 +793,20 @@ class FileIntegrityMonitor {
       if (!fs.existsSync(baselineDir)) {
         await mkdir(baselineDir, { recursive: true });
       }
-      
+
       // Check if baseline file exists
       if (!fs.existsSync(this.baselineFile)) {
         // Create baseline
         await this.createBaseline();
       }
-      
+
       // Schedule monitoring
       this.scheduleMonitoring();
     } catch (error) {
       this.logger.error('Error initializing file integrity monitor:', { error: error.message });
     }
   }
-  
+
   /**
    * Schedule file integrity monitoring
    */
@@ -816,67 +816,67 @@ class FileIntegrityMonitor {
         .then(() => {
           this.scheduleMonitoring();
         })
-        .catch(error => {
+        .catch((error) => {
           this.logger.error('Error checking file integrity:', { error: error.message });
           this.scheduleMonitoring();
         });
     }, this.monitorInterval);
   }
-  
+
   /**
    * Create file integrity baseline
    */
   async createBaseline() {
     this.logger.info('Creating file integrity baseline');
-    
+
     try {
       // Set baseline timeout
       const baselineTimeout = setTimeout(() => {
         this.logger.error('File integrity baseline creation timed out');
       }, this.monitorTimeout);
-      
+
       // Calculate file hashes
       const baseline = await this.calculateFileHashes();
-      
+
       // Save baseline
       await writeFile(this.baselineFile, JSON.stringify(baseline, null, 2));
-      
+
       // Clear timeout
       clearTimeout(baselineTimeout);
-      
+
       this.logger.info('File integrity baseline created', { files: Object.keys(baseline).length });
-      
+
       return baseline;
     } catch (error) {
       this.logger.error('Error creating file integrity baseline:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Check file integrity against baseline
    */
   async checkIntegrity() {
     this.logger.info('Checking file integrity');
-    
+
     try {
       // Set check timeout
       const checkTimeout = setTimeout(() => {
         this.logger.error('File integrity check timed out');
       }, this.monitorTimeout);
-      
+
       // Load baseline
       const baseline = JSON.parse(await readFile(this.baselineFile, 'utf8'));
-      
+
       // Calculate current file hashes
       const current = await this.calculateFileHashes();
-      
+
       // Compare baseline with current
       const changes = this.compareHashes(baseline, current);
-      
+
       // Clear timeout
       clearTimeout(checkTimeout);
-      
+
       // Log changes
       if (changes.added.length > 0 || changes.modified.length > 0 || changes.deleted.length > 0) {
         this.logger.warn('File integrity changes detected', {
@@ -888,29 +888,29 @@ class FileIntegrityMonitor {
       } else {
         this.logger.info('No file integrity changes detected');
       }
-      
+
       return changes;
     } catch (error) {
       this.logger.error('Error checking file integrity:', { error: error.message });
       throw error;
     }
   }
-  
+
   /**
    * Calculate file hashes for monitored paths
    * @returns {Object} - File hashes
    */
   async calculateFileHashes() {
     const hashes = {};
-    
+
     // Process each monitored path
     for (const monitoredPath of this.monitoredPaths) {
       await this.processDirectory(monitoredPath, hashes);
     }
-    
+
     return hashes;
   }
-  
+
   /**
    * Process directory recursively
    * @param {string} dirPath - Directory path
@@ -922,19 +922,19 @@ class FileIntegrityMonitor {
       if (!fs.existsSync(dirPath)) {
         return;
       }
-      
+
       // Get directory contents
       const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-      
+
       // Process each entry
       for (const entry of entries) {
         const entryPath = path.join(dirPath, entry.name);
-        
+
         // Skip excluded paths
         if (this.isExcluded(entryPath)) {
           continue;
         }
-        
+
         if (entry.isDirectory()) {
           // Process subdirectory
           await this.processDirectory(entryPath, hashes);
@@ -948,27 +948,27 @@ class FileIntegrityMonitor {
       this.logger.error('Error processing directory:', { dirPath, error: error.message });
     }
   }
-  
+
   /**
    * Calculate file hash
    * @param {string} filePath - File path
    * @returns {string} - File hash
    */
-  async calculateFileHash(filePath) {
+  calculateFileHash(filePath) {
     return new Promise((resolve, reject) => {
       try {
         const hash = crypto.createHash('sha256');
         const stream = fs.createReadStream(filePath);
-        
-        stream.on('data', data => {
+
+        stream.on('data', (data) => {
           hash.update(data);
         });
-        
+
         stream.on('end', () => {
           resolve(hash.digest('hex'));
         });
-        
-        stream.on('error', error => {
+
+        stream.on('error', (error) => {
           reject(error);
         });
       } catch (error) {
@@ -976,19 +976,19 @@ class FileIntegrityMonitor {
       }
     });
   }
-  
+
   /**
    * Check if path is excluded
    * @param {string} filePath - File path
    * @returns {boolean} - Whether path is excluded
    */
   isExcluded(filePath) {
-    return this.excludedPaths.some(excludedPath => {
+    return this.excludedPaths.some((excludedPath) => {
       return filePath.includes(path.sep + excludedPath + path.sep) ||
              filePath.endsWith(path.sep + excludedPath);
     });
   }
-  
+
   /**
    * Compare file hashes
    * @param {Object} baseline - Baseline hashes
@@ -1001,7 +1001,7 @@ class FileIntegrityMonitor {
       modified: [],
       deleted: []
     };
-    
+
     // Check for added and modified files
     for (const [filePath, hash] of Object.entries(current)) {
       if (!baseline[filePath]) {
@@ -1010,32 +1010,32 @@ class FileIntegrityMonitor {
         changes.modified.push(filePath);
       }
     }
-    
+
     // Check for deleted files
     for (const filePath of Object.keys(baseline)) {
       if (!current[filePath]) {
         changes.deleted.push(filePath);
       }
     }
-    
+
     return changes;
   }
-  
+
   /**
    * Update baseline with current file hashes
    */
   async updateBaseline() {
     this.logger.info('Updating file integrity baseline');
-    
+
     try {
       // Calculate current file hashes
       const current = await this.calculateFileHashes();
-      
+
       // Save baseline
       await writeFile(this.baselineFile, JSON.stringify(current, null, 2));
-      
+
       this.logger.info('File integrity baseline updated', { files: Object.keys(current).length });
-      
+
       return current;
     } catch (error) {
       this.logger.error('Error updating file integrity baseline:', { error: error.message });

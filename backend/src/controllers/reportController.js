@@ -6,16 +6,16 @@ const Product = require('../models/Product');
 const SalesHistory = require('../models/SalesHistory');
 const Report = require('../models/Report');
 const ExcelJS = require('exceljs');
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path');
+const _PDFDocument = require('pdfkit');
+const _fs = require('_fs');
+const _path = require('_path');
 const analyticsController = require('./analyticsController');
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
 const reportController = {
   // CRUD Operations for Report entities
-  
+
   // Create report
   async createReport(req, res) {
     try {
@@ -60,22 +60,22 @@ const reportController = {
 
       // Build query
       const query = { company: req.user.company };
-      
+
       if (search) {
         query.$or = [
           { name: { $regex: search, $options: 'i' } },
           { description: { $regex: search, $options: 'i' } }
         ];
       }
-      
+
       if (reportType) {
         query.reportType = reportType;
       }
-      
+
       if (status) {
         query.status = status;
       }
-      
+
       // Apply additional filters
       Object.assign(query, filters);
 
@@ -161,7 +161,7 @@ const reportController = {
 
       Object.assign(report, req.body);
       report.lastModifiedBy = req.user._id;
-      
+
       await report.save();
 
       logger.logAudit('report_updated', req.user._id, {
@@ -223,17 +223,17 @@ const reportController = {
   },
 
   // Analytics and Generation Functions
-  
+
   // Generate promotion effectiveness report
   async generatePromotionEffectivenessReport({ promotionId, startDate, endDate }) {
     const promotion = await Promotion.findById(promotionId)
       .populate('customer')
       .populate('products');
-    
+
     if (!promotion) {
       throw new Error('Promotion not found');
     }
-    
+
     // Calculate metrics
     const salesDuringPromotion = await SalesHistory.aggregate([
       {
@@ -254,7 +254,7 @@ const reportController = {
         }
       }
     ]);
-    
+
     return {
       promotion: {
         id: promotion._id,
@@ -267,28 +267,28 @@ const reportController = {
         actualSpend: promotion.actualSpend || 0,
         salesVolume: salesDuringPromotion[0]?.totalUnits || 0,
         salesValue: salesDuringPromotion[0]?.totalValue || 0,
-        roi: promotion.actualSpend ? 
+        roi: promotion.actualSpend ?
           ((salesDuringPromotion[0]?.totalValue || 0) - promotion.actualSpend) / promotion.actualSpend : 0
       }
     };
   },
-  
+
   // Generate budget utilization report
-  async generateBudgetUtilizationReport({ budgetId, year, quarter }) {
+  async generateBudgetUtilizationReport({ budgetId, year, _quarter }) {
     const query = {};
     if (budgetId) query._id = budgetId;
     if (year) query.year = year;
-    
+
     const budgets = await Budget.find(query)
       .populate('customer')
       .populate('vendor');
-    
+
     const reports = await Promise.all(budgets.map(async (budget) => {
       const tradeSpends = await TradeSpend.find({ budget: budget._id });
-      
+
       const totalSpent = tradeSpends.reduce((sum, ts) => sum + (ts.actualSpend || 0), 0);
       const utilization = budget.totalAmount ? (totalSpent / budget.totalAmount) * 100 : 0;
-      
+
       return {
         budget: {
           id: budget._id,
@@ -304,33 +304,33 @@ const reportController = {
         }
       };
     }));
-    
+
     return reports;
   },
-  
+
   // Generate customer performance report
   async generateCustomerPerformanceReport({ customerId, startDate, endDate, tenantId }) {
     logger.debug('Customer Performance Report Started');
     logger.debug('Report parameters', { customerId, startDate, endDate, tenantId });
-    
+
     const query = {};
     if (customerId) query._id = customerId;
     if (tenantId) query.tenantId = new mongoose.Types.ObjectId(tenantId);
-    
+
     logger.debug('Customer query', { query });
     const customers = await Customer.find(query);
     logger.debug('Found customers', { count: customers.length });
-    
+
     const reports = await Promise.all(customers.map(async (customer) => {
       const matchQuery = {
         customer: customer._id
       };
-      
+
       // Add tenant filtering
       if (tenantId) {
         matchQuery.tenantId = new mongoose.Types.ObjectId(tenantId);
       }
-      
+
       // Add date filtering if provided
       if (startDate && endDate) {
         matchQuery.date = {
@@ -340,7 +340,7 @@ const reportController = {
       }
 
       logger.debug('Match query', { matchQuery });
-      
+
       const salesData = await SalesHistory.aggregate([
         {
           $match: matchQuery
@@ -354,9 +354,9 @@ const reportController = {
           }
         }
       ]);
-      
+
       logger.debug('Sales data result', { salesData });
-      
+
       return {
         customer: {
           id: customer._id,
@@ -367,22 +367,22 @@ const reportController = {
           salesVolume: salesData[0]?.totalUnits || 0,
           salesValue: salesData[0]?.totalValue || 0,
           transactions: salesData[0]?.transactionCount || 0,
-          avgTransactionValue: salesData[0]?.transactionCount ? 
+          avgTransactionValue: salesData[0]?.transactionCount ?
             (salesData[0].totalValue / salesData[0].transactionCount) : 0
         }
       };
     }));
-    
+
     return reports;
   },
-  
+
   // Generate product performance report
   async generateProductPerformanceReport({ productId, startDate, endDate }) {
     const query = {};
     if (productId) query._id = productId;
-    
+
     const products = await Product.find(query);
-    
+
     const reports = await Promise.all(products.map(async (product) => {
       const salesData = await SalesHistory.aggregate([
         {
@@ -402,7 +402,7 @@ const reportController = {
           }
         }
       ]);
-      
+
       return {
         product: {
           id: product._id,
@@ -412,26 +412,26 @@ const reportController = {
         performance: {
           unitsSold: salesData[0]?.totalUnits || 0,
           revenue: salesData[0]?.totalValue || 0,
-          avgPrice: salesData[0]?.totalUnits ? 
+          avgPrice: salesData[0]?.totalUnits ?
             (salesData[0].totalValue / salesData[0].totalUnits) : 0
         }
       };
     }));
-    
+
     return reports;
   },
-  
+
   // Generate trade spend ROI report
   async generateTradeSpendROIReport({ startDate, endDate, customerId, vendorId }) {
     const query = {};
     if (customerId) query.customer = customerId;
     if (vendorId) query.vendor = vendorId;
-    
+
     const tradeSpends = await TradeSpend.find(query)
       .populate('customer')
       .populate('vendor')
       .populate('promotions');
-    
+
     const reports = await Promise.all(tradeSpends.map(async (ts) => {
       const salesData = await SalesHistory.aggregate([
         {
@@ -450,11 +450,11 @@ const reportController = {
           }
         }
       ]);
-      
+
       const revenue = salesData[0]?.totalValue || 0;
       const spend = ts.actualSpend || ts.plannedSpend;
       const roi = spend ? ((revenue - spend) / spend) * 100 : 0;
-      
+
       return {
         tradeSpend: {
           id: ts._id,
@@ -471,15 +471,15 @@ const reportController = {
         }
       };
     }));
-    
+
     return reports;
   },
-  
+
   // Export report
-  async exportReport({ reportType, filters, format }) {
+  async exportReport({ reportType, filters, _format }) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Report');
-    
+
     // Add headers based on report type
     switch (reportType) {
       case 'budget-utilization':
@@ -494,7 +494,7 @@ const reportController = {
         break;
       // Add other report types...
     }
-    
+
     // Generate report data
     let data;
     switch (reportType) {
@@ -503,21 +503,21 @@ const reportController = {
         break;
       // Add other report types...
     }
-    
+
     // Add data to worksheet
     if (data && Array.isArray(data)) {
-      data.forEach(item => {
+      data.forEach((item) => {
         worksheet.addRow(item);
       });
     }
-    
+
     // Generate buffer
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer;
   },
-  
+
   // Schedule report
-  async scheduleReport({ reportType, filters, schedule, recipients, createdBy }) {
+  scheduleReport({ reportType, filters, schedule, recipients, createdBy }) {
     // Implementation would save scheduled report configuration
     return {
       id: `schedule-${Date.now()}`,
@@ -567,20 +567,20 @@ const reportController = {
       } = req.body;
 
       if (!reportName || !metrics || !dimensions) {
-        return res.status(400).json({ 
-          error: 'Missing required fields: reportName, metrics, dimensions' 
+        return res.status(400).json({
+          error: 'Missing required fields: reportName, metrics, dimensions'
         });
       }
 
       const reportConfig = {
         id: new Date().getTime().toString(),
         name: reportName,
-        metrics: metrics,
-        dimensions: dimensions,
+        metrics,
+        dimensions,
         filters: filters || {},
-        dateRange: dateRange,
+        dateRange,
         visualizations: visualizations || [],
-        format: format,
+        format,
         createdBy: req.user?.id,
         createdAt: new Date()
       };
@@ -610,7 +610,7 @@ const reportController = {
   },
 
   // Get report templates
-  async getReportTemplates(req, res) {
+  getReportTemplates(req, res) {
     try {
       const templates = [
         {
@@ -654,7 +654,7 @@ const reportController = {
   },
 
   // Get report analytics
-  async getReportAnalytics(req, res) {
+  getReportAnalytics(req, res) {
     try {
       const { period = '30days' } = req.query;
 
@@ -699,7 +699,7 @@ const reportController = {
   async _generateCustomReportData(reportConfig) {
     const { metrics, dimensions, filters } = reportConfig;
     const data = {};
-    
+
     for (const metric of metrics) {
       switch (metric) {
         case 'roi':
@@ -712,8 +712,8 @@ const reportController = {
           data.efficiency = await analyticsController._calculateEfficiencyMetrics(filters);
           break;
         default:
-          data[metric] = { 
-            value: Math.random() * 100, 
+          data[metric] = {
+            value: Math.random() * 100,
             trend: Math.random() > 0.5 ? 'up' : 'down'
           };
       }
@@ -727,7 +727,7 @@ const reportController = {
     return data;
   },
 
-  async _generateCustomReportFile(reportConfig, reportData) {
+  _generateCustomReportFile(reportConfig, _reportData) {
     const { format, name } = reportConfig;
     const timestamp = new Date().toISOString().split('T')[0];
     return `${name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.${format}`;

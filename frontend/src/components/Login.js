@@ -9,12 +9,11 @@ import {
   Box, 
   Alert,
   InputAdornment,
-  IconButton,
-  Divider
+  IconButton
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { authService } from '../services/api';
-import { validateEmail, validatePassword, validateForm } from '../utils/validation';
+import newLogo from '../assets/new_logo.svg';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -62,16 +61,23 @@ const Login = ({ onLogin }) => {
 
       console.log('Login response:', data);
 
-      if (data.token || data.data?.token) {
+      if (data.token || data.data?.token || data.data?.tokens?.accessToken) {
         const userData = data.user || data.data?.user || data.data;
-        const token = data.token || data.data?.token;
+        const token = data.token || data.data?.token || data.data?.tokens?.accessToken;
+        const accessToken = data.data?.tokens?.accessToken || data.token || data.data?.token;
+        const refreshToken = data.data?.tokens?.refreshToken || '';
         
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', token);
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('isAuthenticated', 'true');
         
+        console.log('Login successful, stored token and user data');
         console.log('Login successful, calling onLogin with:', userData);
-        onLogin(userData);
+        if (typeof onLogin === 'function') {
+          onLogin(userData);
+        }
         
         // Navigate to dashboard
         console.log('Navigating to dashboard');
@@ -141,7 +147,7 @@ const Login = ({ onLogin }) => {
           <Box flex={1} pr={4} className="slide-in">
             <Box display="flex" alignItems="center" mb={3}>
               <img 
-                src="/images/corporate-logo.svg" 
+                src={newLogo} 
                 alt="Trade AI Logo"
                 style={{ height: '60px', marginRight: '1rem' }}
               />

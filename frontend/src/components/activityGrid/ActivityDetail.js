@@ -23,15 +23,15 @@ import {
   Category as CategoryIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { useAuth } from '../../contexts/AuthContext';
-import { activityGridService } from '../../services/activityGridService';
+
+import activityGridService from '../../services/api/activityGridService';
 import ActivityForm from './ActivityForm';
 
 const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const { user } = useAuth();
+
 
   useEffect(() => {
     if (open && activityId) {

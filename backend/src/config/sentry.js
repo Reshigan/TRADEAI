@@ -35,14 +35,14 @@ function initSentry(app) {
         new Sentry.Integrations.OnUncaughtException(),
         new Sentry.Integrations.OnUnhandledRejection(),
         new Sentry.Integrations.LinkedErrors(),
-        new Sentry.Integrations.ContextLines(),
+        new Sentry.Integrations.ContextLines()
       ],
 
       // Filter sensitive data
-      beforeSend(event, hint) {
+      beforeSend(event, _hint) {
         // Don't send errors from health checks
         if (event.request && event.request.url) {
-          if (event.request.url.includes('/health') || 
+          if (event.request.url.includes('/health') ||
               event.request.url.includes('/api/health')) {
             return null;
           }
@@ -84,7 +84,7 @@ function initSentry(app) {
         'JsonWebTokenError',
         'TokenExpiredError',
         // Rate limiting (not errors)
-        'Too many requests',
+        'Too many requests'
       ],
 
       // Configure which errors to send
@@ -138,7 +138,7 @@ function captureException(error, context = {}) {
     }
 
     if (context.extra) {
-      Object.keys(context.extra).forEach(key => {
+      Object.keys(context.extra).forEach((key) => {
         scope.setExtra(key, context.extra[key]);
       });
     }
@@ -164,7 +164,7 @@ function captureMessage(message, level = 'info', context = {}) {
     }
 
     if (context.extra) {
-      Object.keys(context.extra).forEach(key => {
+      Object.keys(context.extra).forEach((key) => {
         scope.setExtra(key, context.extra[key]);
       });
     }

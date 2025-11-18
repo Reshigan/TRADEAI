@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Tabs,
-  Tab,
-  Typography,
-  Paper
+  Tab
 } from '@mui/material';
 import {
   List as ListIcon,

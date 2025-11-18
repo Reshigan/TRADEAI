@@ -26,7 +26,7 @@ class BaseIntegration extends EventEmitter {
    * Test connection to the external service
    * @returns {Promise<boolean>}
    */
-  async testConnection() {
+  testConnection() {
     throw new Error('testConnection() must be implemented by subclass');
   }
 
@@ -34,7 +34,7 @@ class BaseIntegration extends EventEmitter {
    * Authenticate with the external service
    * @returns {Promise<boolean>}
    */
-  async authenticate() {
+  authenticate() {
     throw new Error('authenticate() must be implemented by subclass');
   }
 
@@ -45,7 +45,7 @@ class BaseIntegration extends EventEmitter {
    */
   async makeRequest(options) {
     let lastError;
-    
+
     for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
       try {
         const response = await axios({
@@ -57,20 +57,20 @@ class BaseIntegration extends EventEmitter {
             'User-Agent': 'TRADEAI/2.0'
           }
         });
-        
+
         this.emit('request_success', { attempt, options, response: response.data });
         return response.data;
       } catch (error) {
         lastError = error;
         this.emit('request_error', { attempt, options, error });
-        
+
         if (attempt < this.retryAttempts) {
           // Exponential backoff
           await this.sleep(1000 * Math.pow(2, attempt - 1));
         }
       }
     }
-    
+
     throw lastError;
   }
 
@@ -80,7 +80,7 @@ class BaseIntegration extends EventEmitter {
    * @returns {Promise<void>}
    */
   sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -115,7 +115,7 @@ class SAPIntegration extends BaseIntegration {
         method: 'GET',
         url: '/api/v1/ping'
       });
-      
+
       this.isConnected = response.status === 'ok';
       return this.isConnected;
     } catch (error) {
@@ -134,7 +134,7 @@ class SAPIntegration extends BaseIntegration {
           apiKey: this.apiKey
         }
       });
-      
+
       this.accessToken = response.accessToken;
       this.tokenExpiry = new Date(Date.now() + response.expiresIn * 1000);
       return true;
@@ -146,27 +146,27 @@ class SAPIntegration extends BaseIntegration {
 
   async syncProducts(products) {
     await this.ensureAuthenticated();
-    
+
     const response = await this.makeRequest({
       method: 'POST',
       url: '/api/v1/products/batch',
       headers: { Authorization: `Bearer ${this.accessToken}` },
       data: { products }
     });
-    
+
     return response;
   }
 
   async syncOrders(orders) {
     await this.ensureAuthenticated();
-    
+
     const response = await this.makeRequest({
       method: 'POST',
       url: '/api/v1/orders/batch',
       headers: { Authorization: `Bearer ${this.accessToken}` },
       data: { orders }
     });
-    
+
     return response;
   }
 
@@ -193,7 +193,7 @@ class GoogleCalendarIntegration extends BaseIntegration {
         url: '/users/me/calendarList',
         headers: { Authorization: `Bearer ${this.apiKey}` }
       });
-      
+
       this.isConnected = !!response.items;
       return this.isConnected;
     } catch (error) {
@@ -211,7 +211,7 @@ class GoogleCalendarIntegration extends BaseIntegration {
         refresh_token: this.refreshToken,
         grant_type: 'refresh_token'
       });
-      
+
       this.accessToken = response.data.access_token;
       this.tokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
       return true;
@@ -223,7 +223,7 @@ class GoogleCalendarIntegration extends BaseIntegration {
 
   async createCampaignEvent(campaign) {
     await this.ensureAuthenticated();
-    
+
     const event = {
       summary: campaign.name,
       description: campaign.description,
@@ -237,14 +237,14 @@ class GoogleCalendarIntegration extends BaseIntegration {
         ]
       }
     };
-    
+
     const response = await this.makeRequest({
       method: 'POST',
       url: '/calendars/primary/events',
       headers: { Authorization: `Bearer ${this.accessToken}` },
       data: event
     });
-    
+
     return response;
   }
 
@@ -271,7 +271,7 @@ class SlackIntegration extends BaseIntegration {
         url: '/auth.test',
         headers: { Authorization: `Bearer ${this.apiKey}` }
       });
-      
+
       this.isConnected = response.ok;
       return this.isConnected;
     } catch (error) {
@@ -280,9 +280,9 @@ class SlackIntegration extends BaseIntegration {
     }
   }
 
-  async authenticate() {
+  authenticate() {
     // Slack uses static tokens, so just verify
-    return await this.testConnection();
+    return this.testConnection();
   }
 
   async sendNotification(message) {
@@ -291,12 +291,12 @@ class SlackIntegration extends BaseIntegration {
       blocks: message.blocks || [],
       attachments: message.attachments || []
     });
-    
+
     return response.data;
   }
 
-  async notifyCampaignLaunch(campaign) {
-    return await this.sendNotification({
+  notifyCampaignLaunch(campaign) {
+    return this.sendNotification({
       text: `🚀 Campaign Launched: ${campaign.name}`,
       blocks: [
         {
@@ -327,7 +327,7 @@ class IntegrationManager {
    */
   register(name, integration) {
     this.integrations.set(name, integration);
-    
+
     // Setup logging
     integration.on('log', (log) => {
       console.log(`[${log.integration}] ${log.level.toUpperCase()}: ${log.message}`, log);
@@ -349,7 +349,7 @@ class IntegrationManager {
    */
   async testAll() {
     const results = {};
-    
+
     for (const [name, integration] of this.integrations) {
       try {
         results[name] = await integration.testConnection();
@@ -357,7 +357,7 @@ class IntegrationManager {
         results[name] = false;
       }
     }
-    
+
     return results;
   }
 
@@ -367,14 +367,14 @@ class IntegrationManager {
    */
   getStatus() {
     const status = {};
-    
+
     for (const [name, integration] of this.integrations) {
       status[name] = {
         connected: integration.isConnected,
         name: integration.name
       };
     }
-    
+
     return status;
   }
 }

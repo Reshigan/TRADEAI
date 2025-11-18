@@ -31,7 +31,7 @@ const CustomerForm = () => {
   const fetchCustomer = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/customers/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/customers/${id}`);
       const customer = response.data.data || response.data;
       setFormData({
         name: customer.name || '',
@@ -62,7 +62,7 @@ const CustomerForm = () => {
 
     try {
       setSaving(true);
-      const url = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/customers${isEditMode ? `/${id}` : ''}`;
+      const url = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/customers${isEditMode ? `/${id}` : ''}`;
       await axios[isEditMode ? 'put' : 'post'](url, formData);
       navigate('/customers');
     } catch (err) {

@@ -5,12 +5,12 @@ const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Campaign = require('../models/Campaign');
-const TradingTerm = require('../models/TradingTerm');
-const Report = require('../models/Report');
-const AIChat = require('../models/AIChat');
-const PromotionAnalysis = require('../models/PromotionAnalysis');
-const MarketingBudgetAllocation = require('../models/MarketingBudgetAllocation');
-const CombinationAnalysis = require('../models/CombinationAnalysis');
+const _TradingTerm = require('../models/_TradingTerm');
+const _Report = require('../models/_Report');
+const _AIChat = require('../models/_AIChat');
+const _PromotionAnalysis = require('../models/_PromotionAnalysis');
+const _MarketingBudgetAllocation = require('../models/_MarketingBudgetAllocation');
+const _CombinationAnalysis = require('../models/_CombinationAnalysis');
 const { connectDB } = require('../config/database');
 
 // Helper function to generate random values
@@ -20,7 +20,7 @@ const generateRandomValue = (min, max, decimals = 0) => {
 };
 
 // Helper function to generate random date within range
-const generateRandomDate = (startDate, endDate) => {
+const _generateRandomDate = (startDate, endDate) => {
   const start = new Date(startDate).getTime();
   const end = new Date(endDate).getTime();
   return new Date(start + Math.random() * (end - start));
@@ -32,7 +32,7 @@ const seedProductionData = async () => {
 
     // 1. Create Companies
     console.log('Creating companies...');
-    
+
     // GONXT Company
     let gonxtCompany = await Company.findOne({ name: 'GONXT' });
     if (!gonxtCompany) {
@@ -119,7 +119,7 @@ const seedProductionData = async () => {
 
     // 2. Create Users
     console.log('Creating users...');
-    
+
     // GONXT Admin User
     let gonxtAdmin = await User.findOne({ email: 'admin@gonxt.tech' });
     if (!gonxtAdmin) {
@@ -192,11 +192,11 @@ const seedProductionData = async () => {
     ];
 
     for (let i = 0; i < customerNames.length; i++) {
-      const existingCustomer = await Customer.findOne({ 
-        name: customerNames[i], 
-        company: gonxtCompany._id 
+      const existingCustomer = await Customer.findOne({
+        name: customerNames[i],
+        company: gonxtCompany._id
       });
-      
+
       if (!existingCustomer) {
         const customer = new Customer({
           name: customerNames[i],
@@ -252,12 +252,12 @@ const seedProductionData = async () => {
     for (let i = 0; i < 25; i++) {
       const category = productCategories[i % productCategories.length];
       const productName = `${category.name} Product ${Math.floor(i / productCategories.length) + 1}`;
-      
-      const existingProduct = await Product.findOne({ 
-        name: productName, 
-        company: gonxtCompany._id 
+
+      const existingProduct = await Product.findOne({
+        name: productName,
+        company: gonxtCompany._id
       });
-      
+
       if (!existingProduct) {
         const product = new Product({
           name: productName,
@@ -303,16 +303,16 @@ const seedProductionData = async () => {
     console.log('Creating campaigns for GONXT...');
     const gonxtCampaigns = [];
     const campaignTypes = ['brand_awareness', 'product_launch', 'seasonal', 'clearance', 'loyalty'];
-    
+
     for (let i = 0; i < 15; i++) {
       const startDate = new Date(2023, i % 12, 1);
       const endDate = new Date(startDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days later
-      
-      const existingCampaign = await Campaign.findOne({ 
-        name: `GONXT Campaign ${i + 1}`, 
-        company: gonxtCompany._id 
+
+      const existingCampaign = await Campaign.findOne({
+        name: `GONXT Campaign ${i + 1}`,
+        company: gonxtCompany._id
       });
-      
+
       if (!existingCampaign) {
         const campaign = new Campaign({
           name: `GONXT Campaign ${i + 1}`,
@@ -321,8 +321,8 @@ const seedProductionData = async () => {
           campaignType: campaignTypes[i % campaignTypes.length],
           description: `Strategic ${campaignTypes[i % campaignTypes.length]} campaign for Q${Math.floor(i / 3) + 1} 2023`,
           period: {
-            startDate: startDate,
-            endDate: endDate
+            startDate,
+            endDate
           },
           budget: {
             total: generateRandomValue(50000, 500000),

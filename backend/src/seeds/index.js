@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { faker } = require('@faker-js/faker');
+const { _faker } = require('@_faker-js/_faker');
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
@@ -13,7 +13,7 @@ const Campaign = require('../models/Campaign');
 const ActivityGrid = require('../models/ActivityGrid');
 const MasterData = require('../models/MasterData');
 const config = require('../config');
-const logger = require('../utils/logger');
+const _logger = require('../utils/_logger');
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -46,9 +46,9 @@ const clearData = async () => {
 // Create users
 const createUsers = async () => {
   console.log('Creating users...');
-  
+
   const password = await bcrypt.hash('Vantax1234#', 10);
-  
+
   const users = [
     {
       email: 'info@vantax.co.za',
@@ -122,7 +122,7 @@ const createUsers = async () => {
       employeeId: 'EMP007'
     }
   ];
-  
+
   const createdUsers = await User.insertMany(users);
   console.log(`Created ${createdUsers.length} users`);
   return createdUsers;
@@ -131,7 +131,7 @@ const createUsers = async () => {
 // Create customers (South African retailers)
 const createCustomers = async () => {
   console.log('Creating customers...');
-  
+
   const customers = [
     // Level 1: National Chains
     {
@@ -350,7 +350,7 @@ const createCustomers = async () => {
       }
     }
   ];
-  
+
   const createdCustomers = await Customer.insertMany(customers);
   console.log(`Created ${createdCustomers.length} customers`);
   return createdCustomers;
@@ -359,7 +359,7 @@ const createCustomers = async () => {
 // Create products (Diplomat products)
 const createProducts = async () => {
   console.log('Creating products...');
-  
+
   const products = [
     // Supermatch Matches
     {
@@ -621,7 +621,7 @@ const createProducts = async () => {
       status: 'active'
     }
   ];
-  
+
   const createdProducts = await Product.insertMany(products);
   console.log(`Created ${createdProducts.length} products`);
   return createdProducts;
@@ -630,7 +630,7 @@ const createProducts = async () => {
 // Create vendors
 const createVendors = async () => {
   console.log('Creating vendors...');
-  
+
   const vendors = [
     {
       code: 'DIPL001',
@@ -703,7 +703,7 @@ const createVendors = async () => {
       status: 'active'
     }
   ];
-  
+
   const createdVendors = await Vendor.insertMany(vendors);
   console.log(`Created ${createdVendors.length} vendors`);
   return createdVendors;
@@ -712,16 +712,16 @@ const createVendors = async () => {
 // Generate sales history for a year
 const generateSalesHistory = async (customers, products) => {
   console.log('Generating sales history...');
-  
+
   const salesData = [];
   const currentDate = new Date();
   const startDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
-  
+
   // Generate daily sales for each customer-product combination
   for (const customer of customers) {
     for (const product of products) {
-      let date = new Date(startDate);
-      
+      const date = new Date(startDate);
+
       while (date <= currentDate) {
         // Skip some days randomly to simulate realistic patterns
         if (Math.random() > 0.3) {
@@ -734,39 +734,39 @@ const generateSalesHistory = async (customers, products) => {
           else if (customer.code.includes('MAKR')) baseVolume = 600;
           else if (customer.code.includes('CHOP')) baseVolume = 150;
           else if (customer.code.includes('SPAZ')) baseVolume = 50;
-          
+
           // Add seasonality
           const month = date.getMonth();
           let seasonalFactor = 1;
           if ([10, 11].includes(month)) seasonalFactor = 1.3; // Year-end peak
           if ([0, 1].includes(month)) seasonalFactor = 0.8; // January/February low
           if ([5, 6].includes(month)) seasonalFactor = 0.9; // Winter low
-          
+
           // Add day of week variation
           const dayOfWeek = date.getDay();
           let dayFactor = 1;
           if (dayOfWeek === 0) dayFactor = 0.7; // Sunday
           if (dayOfWeek === 6) dayFactor = 1.2; // Saturday
           if (dayOfWeek === 5) dayFactor = 1.1; // Friday
-          
+
           // Add random variation
           const randomFactor = 0.7 + Math.random() * 0.6;
-          
+
           // Calculate final volume
           const volume = Math.round(baseVolume * seasonalFactor * dayFactor * randomFactor);
-          
+
           // Calculate pricing with some variation
           const basePrice = product.pricing.listPrice;
           const discount = Math.random() * 0.15; // 0-15% discount
           const invoicePrice = basePrice * (1 - discount);
-          
+
           // Calculate costs
           const cogs = basePrice * 0.65; // 65% cost
           const freight = volume * 0.5; // R0.50 per unit freight
-          
+
           const revenue = volume * invoicePrice;
           const grossMargin = revenue - (volume * cogs);
-          
+
           salesData.push({
             date: new Date(date),
             year: date.getFullYear(),
@@ -780,7 +780,7 @@ const generateSalesHistory = async (customers, products) => {
             uom: product.uom.sales,
             pricing: {
               listPrice: basePrice,
-              invoicePrice: invoicePrice,
+              invoicePrice,
               discount: basePrice * discount
             },
             revenue: {
@@ -790,27 +790,27 @@ const generateSalesHistory = async (customers, products) => {
             },
             cost: {
               cogs: volume * cogs,
-              freight: freight
+              freight
             },
             margins: {
-              grossMargin: grossMargin,
+              grossMargin,
               grossMarginPercentage: (grossMargin / revenue) * 100
             }
           });
         }
-        
+
         date.setDate(date.getDate() + 1);
       }
     }
   }
-  
+
   // Insert in batches
   const batchSize = 1000;
   for (let i = 0; i < salesData.length; i += batchSize) {
     const batch = salesData.slice(i, i + batchSize);
     await SalesHistory.insertMany(batch);
   }
-  
+
   console.log(`Generated ${salesData.length} sales records`);
   return salesData;
 };
@@ -818,28 +818,28 @@ const generateSalesHistory = async (customers, products) => {
 // Create budgets
 const createBudgets = async (users, customers, products) => {
   console.log('Creating budgets...');
-  
+
   const currentYear = new Date().getFullYear();
   const budgets = [];
-  
+
   // Create annual budget
   const annualBudget = {
     name: `FY${currentYear} Annual Trade Spend Budget`,
     year: currentYear,
     budgetType: 'annual',
     scope: {
-      customers: customers.map(c => c._id),
-      products: products.map(p => p._id),
+      customers: customers.map((c) => c._id),
+      products: products.map((p) => p._id),
       channels: ['modern_trade', 'wholesale', 'convenience', 'traditional_trade', 'premium']
     },
     budgetLines: [],
     status: 'approved',
     version: 1,
-    createdBy: users.find(u => u.role === 'finance')._id,
-    approvedBy: users.find(u => u.role === 'director')._id,
+    createdBy: users.find((u) => u.role === 'finance')._id,
+    approvedBy: users.find((u) => u.role === 'director')._id,
     approvedDate: new Date(currentYear, 0, 15)
   };
-  
+
   // Generate monthly budget lines
   const monthlyBudgets = {};
   for (let month = 1; month <= 12; month++) {
@@ -850,14 +850,14 @@ const createBudgets = async (users, customers, products) => {
       rebates: 200000 + Math.random() * 50000,
       promotions: 600000 + Math.random() * 200000
     };
-    
+
     annualBudget.budgetLines.push({
       month,
       allocations: monthlyBudgets[month],
       total: Object.values(monthlyBudgets[month]).reduce((a, b) => a + b, 0)
     });
   }
-  
+
   // Calculate annual totals
   annualBudget.annualTotals = {
     marketing: annualBudget.budgetLines.reduce((sum, line) => sum + line.allocations.marketing, 0),
@@ -866,11 +866,11 @@ const createBudgets = async (users, customers, products) => {
     rebates: annualBudget.budgetLines.reduce((sum, line) => sum + line.allocations.rebates, 0),
     promotions: annualBudget.budgetLines.reduce((sum, line) => sum + line.allocations.promotions, 0)
   };
-  
+
   annualBudget.annualTotals.total = Object.values(annualBudget.annualTotals).reduce((a, b) => a + b, 0);
-  
+
   budgets.push(annualBudget);
-  
+
   // Create quarterly budgets
   for (let quarter = 1; quarter <= 4; quarter++) {
     const quarterBudget = {
@@ -882,21 +882,21 @@ const createBudgets = async (users, customers, products) => {
       budgetLines: [],
       status: 'approved',
       version: 1,
-      createdBy: users.find(u => u.role === 'manager')._id,
-      approvedBy: users.find(u => u.role === 'director')._id,
+      createdBy: users.find((u) => u.role === 'manager')._id,
+      approvedBy: users.find((u) => u.role === 'director')._id,
       approvedDate: new Date(currentYear, (quarter - 1) * 3, 1)
     };
-    
+
     // Add quarterly lines
     const startMonth = (quarter - 1) * 3 + 1;
     for (let i = 0; i < 3; i++) {
       const month = startMonth + i;
       quarterBudget.budgetLines.push(annualBudget.budgetLines[month - 1]);
     }
-    
+
     budgets.push(quarterBudget);
   }
-  
+
   const createdBudgets = await Budget.insertMany(budgets);
   console.log(`Created ${createdBudgets.length} budgets`);
   return createdBudgets;
@@ -905,11 +905,11 @@ const createBudgets = async (users, customers, products) => {
 // Create promotions with mixed results
 const createPromotions = async (users, customers, products, vendors) => {
   console.log('Creating promotions...');
-  
+
   const promotions = [];
   const currentDate = new Date();
   const yearStart = new Date(currentDate.getFullYear(), 0, 1);
-  
+
   // Promotion templates
   const promotionTypes = [
     { type: 'tpr', name: 'Temporary Price Reduction', discount: 15, duration: 14 },
@@ -918,20 +918,20 @@ const createPromotions = async (users, customers, products, vendors) => {
     { type: 'bogo', name: 'Buy One Get One', discount: 50, duration: 3 },
     { type: 'combo', name: 'Combo Deal', discount: 25, duration: 14 }
   ];
-  
+
   // Create promotions throughout the year
   let promotionDate = new Date(yearStart);
   let promotionCount = 0;
-  
+
   while (promotionDate < currentDate) {
     // Select random customers and products
     const selectedCustomers = customers.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1);
     const selectedProducts = products.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1);
     const promotionType = promotionTypes[Math.floor(Math.random() * promotionTypes.length)];
-    
+
     // Determine performance (70% successful, 30% underperforming)
     const isSuccessful = Math.random() > 0.3;
-    
+
     const promotion = {
       promotionId: `PROMO-${currentDate.getFullYear()}-${String(++promotionCount).padStart(4, '0')}`,
       name: `${promotionType.name} - ${selectedProducts[0].name}`,
@@ -941,18 +941,18 @@ const createPromotions = async (users, customers, products, vendors) => {
         startDate: new Date(promotionDate),
         endDate: new Date(promotionDate.getTime() + promotionType.duration * 24 * 60 * 60 * 1000)
       },
-      products: selectedProducts.map(p => ({
+      products: selectedProducts.map((p) => ({
         product: p._id,
         discount: promotionType.discount + (Math.random() * 10 - 5),
         targetVolume: 1000 + Math.floor(Math.random() * 2000),
         minimumOrder: 100
       })),
       scope: {
-        customers: selectedCustomers.map(c => ({
+        customers: selectedCustomers.map((c) => ({
           customer: c._id,
           stores: ['all']
         })),
-        channels: [...new Set(selectedCustomers.map(c => c.channel))]
+        channels: [...new Set(selectedCustomers.map((c) => c.channel))]
       },
       mechanics: {
         displayType: promotionType.type === 'display' ? 'end-cap' : 'shelf',
@@ -976,20 +976,20 @@ const createPromotions = async (users, customers, products, vendors) => {
         roiActual: isSuccessful ? (2 + Math.random() * 3) : (0.5 + Math.random() * 0.8),
         effectiveness: isSuccessful ? 'high' : 'low'
       },
-      createdBy: users.find(u => u.role === 'kam')._id,
-      approvedBy: users.find(u => u.role === 'manager')._id,
+      createdBy: users.find((u) => u.role === 'kam')._id,
+      approvedBy: users.find((u) => u.role === 'manager')._id,
       vendor: vendors[0]._id
     };
-    
+
     // Calculate total cost
     promotion.financial.costs.totalCost = Object.values(promotion.financial.costs).reduce((a, b) => a + b, 0);
-    
+
     promotions.push(promotion);
-    
+
     // Move to next promotion date (7-21 days later)
     promotionDate = new Date(promotionDate.getTime() + (7 + Math.floor(Math.random() * 14)) * 24 * 60 * 60 * 1000);
   }
-  
+
   const createdPromotions = await Promotion.insertMany(promotions);
   console.log(`Created ${createdPromotions.length} promotions`);
   return createdPromotions;
@@ -998,11 +998,11 @@ const createPromotions = async (users, customers, products, vendors) => {
 // Create trade spends
 const createTradeSpends = async (users, customers, vendors, budgets) => {
   console.log('Creating trade spends...');
-  
+
   const tradeSpends = [];
   const currentDate = new Date();
   const yearStart = new Date(currentDate.getFullYear(), 0, 1);
-  
+
   const spendTypes = [
     { type: 'marketing', category: 'co_op_advertising' },
     { type: 'cash_coop', category: 'volume_incentive' },
@@ -1010,25 +1010,25 @@ const createTradeSpends = async (users, customers, vendors, budgets) => {
     { type: 'rebate', category: 'growth_rebate' },
     { type: 'promotion', category: 'display' }
   ];
-  
+
   let spendCount = 0;
-  
+
   // Create spends for each customer
   for (const customer of customers) {
     // Create 5-15 spends per customer throughout the year
     const numSpends = 5 + Math.floor(Math.random() * 10);
-    
+
     for (let i = 0; i < numSpends; i++) {
       const spendType = spendTypes[Math.floor(Math.random() * spendTypes.length)];
       const spendDate = new Date(yearStart.getTime() + Math.random() * (currentDate - yearStart));
-      
+
       // Determine if spend is successful
       const isSuccessful = Math.random() > 0.2; // 80% success rate
-      
+
       const requestedAmount = 10000 + Math.random() * 90000;
       const approvedAmount = isSuccessful ? requestedAmount * (0.8 + Math.random() * 0.2) : requestedAmount * (0.5 + Math.random() * 0.3);
       const spentAmount = spendDate < currentDate ? approvedAmount * (0.9 + Math.random() * 0.1) : 0;
-      
+
       const tradeSpend = {
         spendId: `TS-${currentDate.getFullYear()}-${String(++spendCount).padStart(4, '0')}`,
         spendType: spendType.type,
@@ -1052,21 +1052,21 @@ const createTradeSpends = async (users, customers, vendors, budgets) => {
           kpi: isSuccessful ? 'achieved' : 'partial',
           notes: isSuccessful ? 'All KPIs met' : 'Partial achievement of targets'
         },
-        createdBy: users.find(u => u.role === 'kam')._id,
-        approvedBy: users.find(u => u.role === 'manager')._id,
+        createdBy: users.find((u) => u.role === 'kam')._id,
+        approvedBy: users.find((u) => u.role === 'manager')._id,
         approvalDate: new Date(spendDate.getTime() + 2 * 24 * 60 * 60 * 1000),
         approvalComments: 'Approved as per trade agreement'
       };
-      
+
       // Link to budget
       if (budgets.length > 0) {
         tradeSpend.linkedBudget = budgets[0]._id;
       }
-      
+
       tradeSpends.push(tradeSpend);
     }
   }
-  
+
   const createdTradeSpends = await TradeSpend.insertMany(tradeSpends);
   console.log(`Created ${createdTradeSpends.length} trade spends`);
   return createdTradeSpends;
@@ -1075,7 +1075,7 @@ const createTradeSpends = async (users, customers, vendors, budgets) => {
 // Create campaigns
 const createCampaigns = async (users, customers, products) => {
   console.log('Creating campaigns...');
-  
+
   const campaigns = [
     {
       campaignId: 'CAMP-2024-0001',
@@ -1088,8 +1088,8 @@ const createCampaigns = async (users, customers, products) => {
       },
       objectives: ['Increase stationery sales by 30%', 'Build brand awareness'],
       scope: {
-        customers: customers.filter(c => ['modern_trade', 'wholesale'].includes(c.channel)).map(c => c._id),
-        products: products.filter(p => p.category.primary === 'Stationery').map(p => p._id),
+        customers: customers.filter((c) => ['modern_trade', 'wholesale'].includes(c.channel)).map((c) => c._id),
+        products: products.filter((p) => p.category.primary === 'Stationery').map((p) => p._id),
         channels: ['modern_trade', 'wholesale']
       },
       budget: {
@@ -1118,7 +1118,7 @@ const createCampaigns = async (users, customers, products) => {
         reachAchieved: 85,
         roiActual: 2.3
       },
-      createdBy: users.find(u => u.role === 'manager')._id
+      createdBy: users.find((u) => u.role === 'manager')._id
     },
     {
       campaignId: 'CAMP-2024-0002',
@@ -1131,8 +1131,8 @@ const createCampaigns = async (users, customers, products) => {
       },
       objectives: ['Drive DIY product sales', 'Increase market share'],
       scope: {
-        customers: customers.map(c => c._id),
-        products: products.filter(p => p.category.primary === 'DIY').map(p => p._id),
+        customers: customers.map((c) => c._id),
+        products: products.filter((p) => p.category.primary === 'DIY').map((p) => p._id),
         channels: ['modern_trade', 'wholesale', 'traditional_trade']
       },
       budget: {
@@ -1151,10 +1151,10 @@ const createCampaigns = async (users, customers, products) => {
           cost: 100000
         }
       ],
-      createdBy: users.find(u => u.role === 'manager')._id
+      createdBy: users.find((u) => u.role === 'manager')._id
     }
   ];
-  
+
   const createdCampaigns = await Campaign.insertMany(campaigns);
   console.log(`Created ${createdCampaigns.length} campaigns`);
   return createdCampaigns;
@@ -1163,7 +1163,7 @@ const createCampaigns = async (users, customers, products) => {
 // Create master data configurations
 const createMasterData = async () => {
   console.log('Creating master data configurations...');
-  
+
   const masterData = [
     {
       type: 'promotion_type',
@@ -1215,7 +1215,7 @@ const createMasterData = async () => {
       isActive: true
     }
   ];
-  
+
   const createdMasterData = await MasterData.insertMany(masterData);
   console.log(`Created ${createdMasterData.length} master data records`);
   return createdMasterData;
@@ -1224,25 +1224,25 @@ const createMasterData = async () => {
 // Update user wallets
 const updateUserWallets = async (users, customers) => {
   console.log('Updating user wallets...');
-  
-  const kams = users.filter(u => u.role === 'kam');
-  
+
+  const kams = users.filter((u) => u.role === 'kam');
+
   for (const kam of kams) {
     const wallet = {};
-    
+
     // Assign random customers to KAMs
     const assignedCustomers = customers.sort(() => 0.5 - Math.random()).slice(0, 3);
-    
+
     for (const customer of assignedCustomers) {
       wallet[customer._id.toString()] = 100000 + Math.random() * 400000; // R100k - R500k per customer
     }
-    
+
     await User.findByIdAndUpdate(kam._id, {
       wallet,
-      assignedCustomers: assignedCustomers.map(c => c._id)
+      assignedCustomers: assignedCustomers.map((c) => c._id)
     });
   }
-  
+
   console.log('User wallets updated');
 };
 
@@ -1260,24 +1260,24 @@ const seedDatabase = async () => {
   try {
     await connectDB();
     await clearData();
-    
+
     // Create data in order
     const users = await createUsers();
     const customers = await createCustomers();
     const products = await createProducts();
     const vendors = await createVendors();
     const masterData = await createMasterData();
-    
+
     // Generate transactional data
     await generateSalesHistory(customers, products);
     const budgets = await createBudgets(users, customers, products);
     const promotions = await createPromotions(users, customers, products, vendors);
     const tradeSpends = await createTradeSpends(users, customers, vendors, budgets);
     const campaigns = await createCampaigns(users, customers, products);
-    
+
     // Update user wallets
     await updateUserWallets(users, customers);
-    
+
     console.log('\n✅ Database seeded successfully!');
     console.log('\n📊 Summary:');
     console.log(`- Users: ${users.length}`);
@@ -1289,14 +1289,14 @@ const seedDatabase = async () => {
     console.log(`- Trade Spends: ${tradeSpends.length}`);
     console.log(`- Campaigns: ${campaigns.length}`);
     console.log(`- Master Data: ${masterData.length}`);
-    
+
     console.log('\n🔐 Login Credentials:');
     console.log('Admin: info@vantax.co.za / Vantax1234#');
     console.log('Director: director@testco.com / Vantax1234#');
     console.log('Manager: manager@testco.com / Vantax1234#');
     console.log('KAM: kam1@testco.com / Vantax1234#');
     console.log('Analyst: analyst@testco.com / Vantax1234#');
-    
+
     process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error);

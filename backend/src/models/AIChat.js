@@ -21,14 +21,14 @@ const aiChatSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  
+
   // Chat Configuration
   chatType: {
     type: String,
     enum: ['general_insights', 'sales_analysis', 'customer_insights', 'product_performance', 'promotion_analysis', 'profitability_analysis'],
     default: 'general_insights'
   },
-  
+
   // Context for AI Analysis
   context: {
     // Data scope for analysis
@@ -50,7 +50,7 @@ const aiChatSchema = new mongoose.Schema({
       brands: [String],
       categories: [String]
     },
-    
+
     // Available data sources for this company
     availableDataSources: [{
       source: String, // 'sales_history', 'customers', 'products', etc.
@@ -61,7 +61,7 @@ const aiChatSchema = new mongoose.Schema({
         enum: ['excellent', 'good', 'fair', 'poor']
       }
     }],
-    
+
     // Company-specific business rules and KPIs
     businessContext: {
       primaryKPIs: [String],
@@ -91,7 +91,7 @@ const aiChatSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     },
-    
+
     // AI Analysis Details
     analysis: {
       // Data queries executed
@@ -101,7 +101,7 @@ const aiChatSchema = new mongoose.Schema({
         resultCount: Number,
         executionTime: Number
       }],
-      
+
       // Insights generated
       insights: [{
         type: {
@@ -118,16 +118,16 @@ const aiChatSchema = new mongoose.Schema({
         supportingData: mongoose.Schema.Types.Mixed,
         actionable: Boolean
       }],
-      
+
       // Data sources used
       dataSourcesUsed: [String],
-      
+
       // Processing metadata
       processingTime: Number,
       modelVersion: String,
       confidenceScore: Number
     },
-    
+
     // Visualizations and attachments
     attachments: [{
       type: {
@@ -143,7 +143,7 @@ const aiChatSchema = new mongoose.Schema({
         series: [mongoose.Schema.Types.Mixed]
       }
     }],
-    
+
     // User feedback
     feedback: {
       helpful: Boolean,
@@ -194,7 +194,7 @@ const aiChatSchema = new mongoose.Schema({
     enum: ['active', 'paused', 'completed', 'archived'],
     default: 'active'
   },
-  
+
   // Session Metadata
   sessionMetadata: {
     startedAt: {
@@ -275,15 +275,15 @@ aiChatSchema.index({ company: 1, 'sessionMetadata.lastActivityAt': -1 });
 aiChatSchema.index({ 'privacy.dataRetentionDays': 1, createdAt: 1 }); // For cleanup
 
 // Compound indexes for complex queries
-aiChatSchema.index({ 
-  company: 1, 
-  user: 1, 
+aiChatSchema.index({
+  company: 1,
+  user: 1,
   status: 1,
-  'sessionMetadata.lastActivityAt': -1 
+  'sessionMetadata.lastActivityAt': -1
 });
 
 // Virtual for session duration
-aiChatSchema.virtual('sessionDuration').get(function() {
+aiChatSchema.virtual('sessionDuration').get(function () {
   if (this.sessionMetadata.endedAt) {
     return Math.floor((this.sessionMetadata.endedAt - this.sessionMetadata.startedAt) / 1000);
   }
@@ -291,17 +291,17 @@ aiChatSchema.virtual('sessionDuration').get(function() {
 });
 
 // Virtual for message count
-aiChatSchema.virtual('messageCount').get(function() {
+aiChatSchema.virtual('messageCount').get(function () {
   return this.messages.length;
 });
 
 // Virtual for latest message
-aiChatSchema.virtual('latestMessage').get(function() {
+aiChatSchema.virtual('latestMessage').get(function () {
   return this.messages.length > 0 ? this.messages[this.messages.length - 1] : null;
 });
 
 // Virtual for insights summary
-aiChatSchema.virtual('insightsSummary').get(function() {
+aiChatSchema.virtual('insightsSummary').get(function () {
   const allInsights = this.messages.reduce((acc, msg) => {
     if (msg.analysis && msg.analysis.insights) {
       acc.push(...msg.analysis.insights);
@@ -312,11 +312,11 @@ aiChatSchema.virtual('insightsSummary').get(function() {
   const summary = {
     total: allInsights.length,
     byType: {},
-    actionable: allInsights.filter(i => i.actionable).length,
+    actionable: allInsights.filter((i) => i.actionable).length,
     averageConfidence: 0
   };
 
-  allInsights.forEach(insight => {
+  allInsights.forEach((insight) => {
     summary.byType[insight.type] = (summary.byType[insight.type] || 0) + 1;
     summary.averageConfidence += insight.confidence || 0;
   });
@@ -329,9 +329,9 @@ aiChatSchema.virtual('insightsSummary').get(function() {
 });
 
 // Method to add message to chat
-aiChatSchema.methods.addMessage = function(role, content, analysis = null, attachments = []) {
+aiChatSchema.methods.addMessage = function (role, content, analysis = null, attachments = []) {
   const messageId = new mongoose.Types.ObjectId().toString();
-  
+
   const message = {
     messageId,
     role,
@@ -342,89 +342,89 @@ aiChatSchema.methods.addMessage = function(role, content, analysis = null, attac
   };
 
   this.messages.push(message);
-  
+
   // Update analytics
   this.analytics.totalMessages += 1;
   if (role === 'user') {
     this.analytics.userMessages += 1;
   } else if (role === 'assistant') {
     this.analytics.assistantMessages += 1;
-    
+
     if (analysis) {
       this.analytics.insightsGenerated += (analysis.insights || []).length;
-      this.analytics.actionableInsights += (analysis.insights || []).filter(i => i.actionable).length;
+      this.analytics.actionableInsights += (analysis.insights || []).filter((i) => i.actionable).length;
       this.analytics.totalProcessingTime += analysis.processingTime || 0;
-      
+
       if (analysis.queriesExecuted) {
         this.analytics.dataPointsAnalyzed += analysis.queriesExecuted.reduce((sum, q) => sum + (q.resultCount || 0), 0);
       }
     }
   }
-  
+
   // Update session metadata
   this.sessionMetadata.lastActivityAt = new Date();
-  
+
   return message;
 };
 
 // Method to end session
-aiChatSchema.methods.endSession = function() {
+aiChatSchema.methods.endSession = function () {
   this.status = 'completed';
   this.sessionMetadata.endedAt = new Date();
   this.sessionMetadata.duration = this.sessionDuration;
-  
+
   // Calculate quality metrics
   this.calculateQualityMetrics();
-  
+
   return this.save();
 };
 
 // Method to calculate quality metrics
-aiChatSchema.methods.calculateQualityMetrics = function() {
-  const messages = this.messages.filter(m => m.role === 'assistant');
-  
+aiChatSchema.methods.calculateQualityMetrics = function () {
+  const messages = this.messages.filter((m) => m.role === 'assistant');
+
   if (messages.length === 0) return;
-  
+
   // Calculate average response time
   let totalResponseTime = 0;
   let responseCount = 0;
-  
+
   for (let i = 1; i < this.messages.length; i++) {
-    if (this.messages[i].role === 'assistant' && this.messages[i-1].role === 'user') {
-      const responseTime = this.messages[i].timestamp - this.messages[i-1].timestamp;
+    if (this.messages[i].role === 'assistant' && this.messages[i - 1].role === 'user') {
+      const responseTime = this.messages[i].timestamp - this.messages[i - 1].timestamp;
       totalResponseTime += responseTime;
       responseCount++;
     }
   }
-  
+
   if (responseCount > 0) {
     this.analytics.averageResponseTime = totalResponseTime / responseCount;
   }
-  
+
   // Calculate average confidence score
   const confidenceScores = messages
-    .map(m => m.analysis?.confidenceScore)
-    .filter(score => score !== undefined);
-  
+    .map((m) => m.analysis?.confidenceScore)
+    .filter((score) => score !== undefined);
+
   if (confidenceScores.length > 0) {
     this.analytics.averageConfidenceScore = confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length;
   }
-  
+
   // Calculate overall quality metrics
   const feedbacks = this.messages
-    .map(m => m.feedback)
-    .filter(f => f && f.rating);
-  
+    .map((m) => m.feedback)
+    .filter((f) => f && f.rating);
+
   if (feedbacks.length > 0) {
     this.quality.userSatisfaction = feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length;
   }
-  
-  this.quality.responseSpeed = this.analytics.averageResponseTime < 5000 ? 5 : 
-                              this.analytics.averageResponseTime < 10000 ? 4 :
-                              this.analytics.averageResponseTime < 20000 ? 3 : 2;
-  
+
+  this.quality.responseSpeed = this.analytics.averageResponseTime < 5000 ? 5 :
+    this.analytics.averageResponseTime < 10000 ? 4 :
+      this.analytics.averageResponseTime < 20000 ? 3 : 2;
+
   this.quality.insightRelevance = this.analytics.averageConfidenceScore / 20; // Convert to 1-5 scale
-  
+
   this.quality.overallRating = (
     (this.quality.userSatisfaction || 3) +
     (this.quality.responseSpeed || 3) +
@@ -433,7 +433,7 @@ aiChatSchema.methods.calculateQualityMetrics = function() {
 };
 
 // Static method to find active sessions for user
-aiChatSchema.statics.findActiveSessionsForUser = function(companyId, userId) {
+aiChatSchema.statics.findActiveSessionsForUser = function (companyId, userId) {
   return this.find({
     company: companyId,
     user: userId,
@@ -442,15 +442,15 @@ aiChatSchema.statics.findActiveSessionsForUser = function(companyId, userId) {
 };
 
 // Static method to get chat analytics for company
-aiChatSchema.statics.getCompanyAnalytics = function(companyId, dateRange = {}) {
+aiChatSchema.statics.getCompanyAnalytics = function (companyId, dateRange = {}) {
   const matchStage = { company: companyId };
-  
+
   if (dateRange.startDate || dateRange.endDate) {
     matchStage.createdAt = {};
     if (dateRange.startDate) matchStage.createdAt.$gte = dateRange.startDate;
     if (dateRange.endDate) matchStage.createdAt.$lte = dateRange.endDate;
   }
-  
+
   return this.aggregate([
     { $match: matchStage },
     {
@@ -469,7 +469,7 @@ aiChatSchema.statics.getCompanyAnalytics = function(companyId, dateRange = {}) {
 };
 
 // Pre-save middleware
-aiChatSchema.pre('save', function(next) {
+aiChatSchema.pre('save', function (next) {
   // Update last activity timestamp
   this.sessionMetadata.lastActivityAt = new Date();
   next();
@@ -478,10 +478,10 @@ aiChatSchema.pre('save', function(next) {
 // TTL index for automatic cleanup based on retention policy
 aiChatSchema.index(
   { createdAt: 1 },
-  { 
+  {
     expireAfterSeconds: 0,
-    partialFilterExpression: { 
-      'privacy.dataRetentionDays': { $exists: true } 
+    partialFilterExpression: {
+      'privacy.dataRetentionDays': { $exists: true }
     }
   }
 );

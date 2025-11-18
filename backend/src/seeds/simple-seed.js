@@ -42,7 +42,7 @@ const seedDatabase = async () => {
     // Create users
     console.log('Creating users...');
     const password = await bcrypt.hash('Vantax1234#', 10);
-    
+
     const users = await User.insertMany([
       {
         email: 'info@vantax.co.za',

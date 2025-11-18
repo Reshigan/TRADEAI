@@ -25,19 +25,11 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
   ListItemSecondaryAction,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
   Timeline,
   TimelineItem,
   TimelineSeparator,
@@ -49,23 +41,15 @@ import {
 import {
   AccountTree,
   PlayArrow,
-  Pause,
-  Stop,
   CheckCircle,
   Error,
-  Warning,
   Schedule,
-  Person,
   Assignment,
   Visibility,
-  Edit,
-  Delete,
   Refresh,
-  Add,
   Timeline as TimelineIcon,
   Analytics,
-  Speed,
-  TrendingUp
+  Speed
 } from '@mui/icons-material';
 import {
   LineChart,
@@ -95,7 +79,7 @@ const EnhancedWorkflowDashboard = () => {
   const [workflowOverview, setWorkflowOverview] = useState(null);
   const [activeWorkflows, setActiveWorkflows] = useState([]);
   const [pendingApprovals, setPendingApprovals] = useState([]);
-  const [workflowTemplates, setWorkflowTemplates] = useState([]);
+  const [, setWorkflowTemplates] = useState([]);
   const [workflowAnalytics, setWorkflowAnalytics] = useState(null);
   
   // Dialogs

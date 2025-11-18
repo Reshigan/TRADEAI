@@ -21,29 +21,29 @@ class MonitoringObservabilityService extends EventEmitter {
     this.logRetentionDays = 30;
     this.metricsRetentionDays = 90;
     this.isInitialized = false;
-    
+
     this.initializeService();
   }
 
-  async initializeService() {
+  initializeService() {
     try {
       console.log('Initializing Monitoring and Observability Service...');
-      
+
       // Setup system monitoring
       this.setupSystemMonitoring();
-      
+
       // Initialize alert rules
       this.initializeAlertRules();
-      
+
       // Setup health checks
       this.setupHealthChecks();
-      
+
       // Create default dashboards
       this.createDefaultDashboards();
-      
+
       // Start background tasks
       this.startBackgroundTasks();
-      
+
       this.isInitialized = true;
       console.log('Monitoring and Observability Service initialized successfully');
     } catch (error) {
@@ -327,7 +327,7 @@ class MonitoringObservabilityService extends EventEmitter {
   recordMetric(name, value, tags = {}, timestamp = null) {
     const metricKey = this.generateMetricKey(name, tags);
     const metricTimestamp = timestamp || Date.now();
-    
+
     if (!this.metrics.has(metricKey)) {
       this.metrics.set(metricKey, {
         name,
@@ -337,19 +337,19 @@ class MonitoringObservabilityService extends EventEmitter {
         lastTimestamp: null
       });
     }
-    
+
     const metric = this.metrics.get(metricKey);
     metric.values.push({ value, timestamp: metricTimestamp });
     metric.lastValue = value;
     metric.lastTimestamp = metricTimestamp;
-    
+
     // Keep only recent values (last 24 hours for high-frequency metrics)
     const cutoff = metricTimestamp - (24 * 60 * 60 * 1000);
-    metric.values = metric.values.filter(v => v.timestamp > cutoff);
-    
+    metric.values = metric.values.filter((v) => v.timestamp > cutoff);
+
     // Check alert rules
     this.checkAlertRules(name, value, tags);
-    
+
     // Emit metric recorded event
     this.emit('metric_recorded', {
       name,
@@ -375,17 +375,17 @@ class MonitoringObservabilityService extends EventEmitter {
       requestId: metadata.requestId,
       traceId: metadata.traceId
     };
-    
+
     this.logs.push(logEntry);
-    
+
     // Emit log recorded event
     this.emit('log_recorded', logEntry);
-    
+
     // Check for error patterns
     if (level === 'error' || level === 'critical') {
       this.analyzeErrorPatterns(logEntry);
     }
-    
+
     return logEntry.id;
   }
 
@@ -395,7 +395,7 @@ class MonitoringObservabilityService extends EventEmitter {
   startTrace(operationName, parentTraceId = null) {
     const traceId = this.generateTraceId();
     const spanId = this.generateSpanId();
-    
+
     const trace = {
       traceId,
       spanId,
@@ -408,9 +408,9 @@ class MonitoringObservabilityService extends EventEmitter {
       logs: [],
       status: 'active'
     };
-    
+
     this.traces.set(traceId, trace);
-    
+
     return {
       traceId,
       spanId,
@@ -428,13 +428,13 @@ class MonitoringObservabilityService extends EventEmitter {
         trace.endTime = Date.now();
         trace.duration = trace.endTime - trace.startTime;
         trace.status = 'completed';
-        
+
         // Record trace duration as metric
         this.recordMetric('trace.duration', trace.duration, {
           operation: operationName,
           service: trace.tags.service || 'tradeai'
         });
-        
+
         this.emit('trace_completed', trace);
       }
     };
@@ -448,7 +448,7 @@ class MonitoringObservabilityService extends EventEmitter {
     if (!rule || !rule.enabled) {
       return null;
     }
-    
+
     const alertId = this.generateAlertId();
     const alert = {
       id: alertId,
@@ -465,17 +465,17 @@ class MonitoringObservabilityService extends EventEmitter {
       metadata,
       actions: rule.actions
     };
-    
+
     this.alerts.set(alertId, alert);
-    
+
     // Execute alert actions
     this.executeAlertActions(alert);
-    
+
     // Emit alert created event
     this.emit('alert_created', alert);
-    
+
     console.log(`Alert created: ${alert.ruleName} (${alert.severity})`);
-    
+
     return alertId;
   }
 
@@ -487,14 +487,14 @@ class MonitoringObservabilityService extends EventEmitter {
     if (!alert) {
       throw new Error('Alert not found');
     }
-    
+
     alert.acknowledgedAt = new Date();
     alert.acknowledgedBy = acknowledgedBy;
     alert.acknowledgedNotes = notes;
     alert.status = 'acknowledged';
-    
+
     this.emit('alert_acknowledged', alert);
-    
+
     return alert;
   }
 
@@ -506,14 +506,14 @@ class MonitoringObservabilityService extends EventEmitter {
     if (!alert) {
       throw new Error('Alert not found');
     }
-    
+
     alert.resolvedAt = new Date();
     alert.resolvedBy = resolvedBy;
     alert.resolvedNotes = notes;
     alert.status = 'resolved';
-    
+
     this.emit('alert_resolved', alert);
-    
+
     return alert;
   }
 
@@ -522,32 +522,32 @@ class MonitoringObservabilityService extends EventEmitter {
    */
   getMetrics(filters = {}) {
     const { name, tags, startTime, endTime, aggregation = 'raw' } = filters;
-    let results = [];
-    
-    this.metrics.forEach((metric, key) => {
+    const results = [];
+
+    this.metrics.forEach((metric, _key) => {
       // Apply name filter
       if (name && !metric.name.includes(name)) {
         return;
       }
-      
+
       // Apply tag filters
       if (tags && !this.matchesTags(metric.tags, tags)) {
         return;
       }
-      
+
       // Apply time range filter
       let values = metric.values;
       if (startTime || endTime) {
-        values = values.filter(v => {
+        values = values.filter((v) => {
           if (startTime && v.timestamp < startTime) return false;
           if (endTime && v.timestamp > endTime) return false;
           return true;
         });
       }
-      
+
       // Apply aggregation
       const aggregatedValues = this.aggregateValues(values, aggregation);
-      
+
       results.push({
         name: metric.name,
         tags: metric.tags,
@@ -556,7 +556,7 @@ class MonitoringObservabilityService extends EventEmitter {
         lastTimestamp: metric.lastTimestamp
       });
     });
-    
+
     return results;
   }
 
@@ -565,39 +565,39 @@ class MonitoringObservabilityService extends EventEmitter {
    */
   getLogs(filters = {}) {
     const { level, service, tenantId, startTime, endTime, search, limit = 1000 } = filters;
-    
+
     let filteredLogs = [...this.logs];
-    
+
     // Apply filters
     if (level) {
-      filteredLogs = filteredLogs.filter(log => log.level === level.toUpperCase());
+      filteredLogs = filteredLogs.filter((log) => log.level === level.toUpperCase());
     }
-    
+
     if (service) {
-      filteredLogs = filteredLogs.filter(log => log.service === service);
+      filteredLogs = filteredLogs.filter((log) => log.service === service);
     }
-    
+
     if (tenantId) {
-      filteredLogs = filteredLogs.filter(log => log.tenantId === tenantId);
+      filteredLogs = filteredLogs.filter((log) => log.tenantId === tenantId);
     }
-    
+
     if (startTime) {
-      filteredLogs = filteredLogs.filter(log => log.timestamp >= new Date(startTime));
+      filteredLogs = filteredLogs.filter((log) => log.timestamp >= new Date(startTime));
     }
-    
+
     if (endTime) {
-      filteredLogs = filteredLogs.filter(log => log.timestamp <= new Date(endTime));
+      filteredLogs = filteredLogs.filter((log) => log.timestamp <= new Date(endTime));
     }
-    
+
     if (search) {
-      filteredLogs = filteredLogs.filter(log => 
+      filteredLogs = filteredLogs.filter((log) =>
         log.message.toLowerCase().includes(search.toLowerCase())
       );
     }
-    
+
     // Sort by timestamp (newest first)
     filteredLogs.sort((a, b) => b.timestamp - a.timestamp);
-    
+
     // Apply limit
     return filteredLogs.slice(0, limit);
   }
@@ -607,33 +607,33 @@ class MonitoringObservabilityService extends EventEmitter {
    */
   getTraces(filters = {}) {
     const { operationName, service, startTime, endTime, minDuration, maxDuration } = filters;
-    let results = [];
-    
-    this.traces.forEach(trace => {
+    const results = [];
+
+    this.traces.forEach((trace) => {
       // Apply operation name filter
       if (operationName && !trace.operationName.includes(operationName)) {
         return;
       }
-      
+
       // Apply service filter
       if (service && trace.tags.service !== service) {
         return;
       }
-      
+
       // Apply time range filter
       if (startTime && trace.startTime < startTime) return;
       if (endTime && trace.startTime > endTime) return;
-      
+
       // Apply duration filters
       if (minDuration && trace.duration < minDuration) return;
       if (maxDuration && trace.duration > maxDuration) return;
-      
+
       results.push(trace);
     });
-    
+
     // Sort by start time (newest first)
     results.sort((a, b) => b.startTime - a.startTime);
-    
+
     return results;
   }
 
@@ -642,34 +642,34 @@ class MonitoringObservabilityService extends EventEmitter {
    */
   getAlerts(filters = {}) {
     const { status, severity, ruleId, startTime, endTime } = filters;
-    let results = [];
-    
-    this.alerts.forEach(alert => {
+    const results = [];
+
+    this.alerts.forEach((alert) => {
       // Apply status filter
       if (status && alert.status !== status) {
         return;
       }
-      
+
       // Apply severity filter
       if (severity && alert.severity !== severity) {
         return;
       }
-      
+
       // Apply rule filter
       if (ruleId && alert.ruleId !== ruleId) {
         return;
       }
-      
+
       // Apply time range filter
       if (startTime && alert.createdAt < new Date(startTime)) return;
       if (endTime && alert.createdAt > new Date(endTime)) return;
-      
+
       results.push(alert);
     });
-    
+
     // Sort by creation time (newest first)
     results.sort((a, b) => b.createdAt - a.createdAt);
-    
+
     return results;
   }
 
@@ -681,15 +681,15 @@ class MonitoringObservabilityService extends EventEmitter {
     if (!dashboard) {
       throw new Error('Dashboard not found');
     }
-    
+
     const dashboardData = {
       ...dashboard,
-      widgets: dashboard.widgets.map(widget => ({
+      widgets: dashboard.widgets.map((widget) => ({
         ...widget,
         data: this.getWidgetData(widget)
       }))
     };
-    
+
     return dashboardData;
   }
 
@@ -707,7 +707,7 @@ class MonitoringObservabilityService extends EventEmitter {
         cpu: process.cpuUsage()
       }
     };
-    
+
     // Get health check results
     this.healthChecks.forEach((check, name) => {
       health.checks[name] = {
@@ -717,12 +717,12 @@ class MonitoringObservabilityService extends EventEmitter {
         message: check.lastResult?.message,
         duration: check.lastResult?.duration
       };
-      
+
       if (check.lastResult?.status === 'unhealthy') {
         health.status = 'unhealthy';
       }
     });
-    
+
     return health;
   }
 
@@ -732,23 +732,23 @@ class MonitoringObservabilityService extends EventEmitter {
     const totalMem = os.totalmem();
     const freeMem = os.freemem();
     const usedMem = totalMem - freeMem;
-    
+
     // CPU usage (simplified calculation)
     const cpuUsage = cpus.reduce((acc, cpu) => {
       const total = Object.values(cpu.times).reduce((a, b) => a + b, 0);
       const idle = cpu.times.idle;
       return acc + ((total - idle) / total) * 100;
     }, 0) / cpus.length;
-    
+
     // Memory usage
     const memoryUsage = (usedMem / totalMem) * 100;
-    
+
     // Disk usage (simplified)
     const diskUsage = this.getDiskUsage();
-    
+
     // Network I/O (mock data)
     const networkStats = this.getNetworkStats();
-    
+
     // Record metrics
     this.recordMetric('system.cpu.usage', cpuUsage);
     this.recordMetric('system.memory.usage', memoryUsage);
@@ -766,13 +766,13 @@ class MonitoringObservabilityService extends EventEmitter {
   collectApplicationMetrics() {
     // Application-specific metrics
     const memUsage = process.memoryUsage();
-    
+
     this.recordMetric('app.memory.heap_used', memUsage.heapUsed);
     this.recordMetric('app.memory.heap_total', memUsage.heapTotal);
     this.recordMetric('app.memory.external', memUsage.external);
     this.recordMetric('app.memory.rss', memUsage.rss);
     this.recordMetric('app.uptime', process.uptime());
-    
+
     // Event loop lag (simplified)
     const start = process.hrtime.bigint();
     setImmediate(() => {
@@ -786,10 +786,10 @@ class MonitoringObservabilityService extends EventEmitter {
     const heapUsedMB = memUsage.heapUsed / 1024 / 1024;
     const heapTotalMB = memUsage.heapTotal / 1024 / 1024;
     const heapUsagePercent = (heapUsedMB / heapTotalMB) * 100;
-    
+
     if (heapUsagePercent > 85) {
       console.warn(`High memory usage detected: ${heapUsagePercent.toFixed(2)}%`);
-      
+
       // Force garbage collection if available
       if (global.gc) {
         global.gc();
@@ -799,13 +799,13 @@ class MonitoringObservabilityService extends EventEmitter {
   }
 
   // Health check methods
-  async checkDatabaseHealth() {
+  checkDatabaseHealth() {
     try {
       // Mock database health check
       const start = Date.now();
       // await mongoose.connection.db.admin().ping();
       const duration = Date.now() - start;
-      
+
       return {
         status: 'healthy',
         message: 'Database connection successful',
@@ -820,13 +820,13 @@ class MonitoringObservabilityService extends EventEmitter {
     }
   }
 
-  async checkRedisHealth() {
+  checkRedisHealth() {
     try {
       // Mock Redis health check
       const start = Date.now();
       // await redisClient.ping();
       const duration = Date.now() - start;
-      
+
       return {
         status: 'healthy',
         message: 'Redis connection successful',
@@ -841,19 +841,19 @@ class MonitoringObservabilityService extends EventEmitter {
     }
   }
 
-  async checkExternalAPIsHealth() {
+  checkExternalAPIsHealth() {
     const results = [];
     const apis = [
       { name: 'Salesforce', url: 'https://api.salesforce.com/health' },
       { name: 'Google Analytics', url: 'https://analytics.googleapis.com/health' }
     ];
-    
+
     for (const api of apis) {
       try {
         const start = Date.now();
         // Mock API health check
         const duration = Date.now() - start;
-        
+
         results.push({
           name: api.name,
           status: 'healthy',
@@ -867,34 +867,34 @@ class MonitoringObservabilityService extends EventEmitter {
         });
       }
     }
-    
-    const unhealthyAPIs = results.filter(r => r.status === 'unhealthy');
-    
+
+    const unhealthyAPIs = results.filter((r) => r.status === 'unhealthy');
+
     return {
       status: unhealthyAPIs.length === 0 ? 'healthy' : 'unhealthy',
-      message: unhealthyAPIs.length === 0 ? 
-        'All external APIs are healthy' : 
+      message: unhealthyAPIs.length === 0 ?
+        'All external APIs are healthy' :
         `${unhealthyAPIs.length} external APIs are unhealthy`,
       details: results
     };
   }
 
-  async checkFileSystemHealth() {
+  checkFileSystemHealth() {
     try {
       const testFile = path.join(os.tmpdir(), 'health_check_test.txt');
       const start = Date.now();
-      
+
       // Test write
       fs.writeFileSync(testFile, 'health check test');
-      
+
       // Test read
-      const content = fs.readFileSync(testFile, 'utf8');
-      
+      const _content = fs.readFileSync(testFile, 'utf8');
+
       // Clean up
       fs.unlinkSync(testFile);
-      
+
       const duration = Date.now() - start;
-      
+
       return {
         status: 'healthy',
         message: 'File system read/write successful',
@@ -915,14 +915,14 @@ class MonitoringObservabilityService extends EventEmitter {
         try {
           check.lastCheck = new Date();
           check.lastResult = await check.check();
-          
+
           // Record health check metric
           this.recordMetric(`health.${name}`, check.lastResult.status === 'healthy' ? 1 : 0);
-          
+
           if (check.lastResult.duration) {
             this.recordMetric(`health.${name}.duration`, check.lastResult.duration);
           }
-          
+
         } catch (error) {
           check.lastResult = {
             status: 'unhealthy',
@@ -931,10 +931,10 @@ class MonitoringObservabilityService extends EventEmitter {
           };
         }
       };
-      
+
       // Run initial check
       runHealthCheck();
-      
+
       // Schedule periodic checks
       setInterval(runHealthCheck, check.interval);
     });
@@ -944,16 +944,16 @@ class MonitoringObservabilityService extends EventEmitter {
   checkAlertRules(metricName, value, tags) {
     this.alertRules.forEach((rule, ruleId) => {
       if (!rule.enabled) return;
-      
+
       // Simple rule evaluation (would be more sophisticated in production)
       const shouldAlert = this.evaluateAlertCondition(rule, metricName, value, tags);
-      
+
       if (shouldAlert) {
         // Check if alert already exists and is active
         const existingAlert = Array.from(this.alerts.values()).find(
-          alert => alert.ruleId === ruleId && alert.status === 'active'
+          (alert) => alert.ruleId === ruleId && alert.status === 'active'
         );
-        
+
         if (!existingAlert) {
           this.createAlert(ruleId, value, { metricName, tags });
         }
@@ -961,7 +961,7 @@ class MonitoringObservabilityService extends EventEmitter {
     });
   }
 
-  evaluateAlertCondition(rule, metricName, value, tags) {
+  evaluateAlertCondition(rule, metricName, value, _tags) {
     // Simplified condition evaluation
     switch (rule.id) {
       case 'high_cpu_usage':
@@ -980,7 +980,7 @@ class MonitoringObservabilityService extends EventEmitter {
   }
 
   executeAlertActions(alert) {
-    alert.actions.forEach(action => {
+    alert.actions.forEach((action) => {
       switch (action) {
         case 'email':
           this.sendEmailAlert(alert);
@@ -1012,15 +1012,15 @@ class MonitoringObservabilityService extends EventEmitter {
     // Mock PagerDuty notification
   }
 
-  analyzeErrorPatterns(logEntry) {
+  analyzeErrorPatterns(_logEntry) {
     // Simple error pattern analysis
     const recentErrors = this.logs
-      .filter(log => 
-        log.level === 'ERROR' && 
+      .filter((log) =>
+        log.level === 'ERROR' &&
         log.timestamp > new Date(Date.now() - 300000) // Last 5 minutes
       )
       .length;
-    
+
     if (recentErrors > 10) {
       this.createAlert('high_error_rate', recentErrors, {
         pattern: 'high_frequency_errors',
@@ -1035,7 +1035,7 @@ class MonitoringObservabilityService extends EventEmitter {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, value]) => `${key}:${value}`)
       .join(',');
-    
+
     return tagString ? `${name}|${tagString}` : name;
   }
 
@@ -1056,7 +1056,7 @@ class MonitoringObservabilityService extends EventEmitter {
   }
 
   matchesTags(metricTags, filterTags) {
-    return Object.entries(filterTags).every(([key, value]) => 
+    return Object.entries(filterTags).every(([key, value]) =>
       metricTags[key] === value
     );
   }
@@ -1065,27 +1065,27 @@ class MonitoringObservabilityService extends EventEmitter {
     if (aggregation === 'raw' || values.length === 0) {
       return values;
     }
-    
-    const nums = values.map(v => v.value);
-    
+
+    const nums = values.map((v) => v.value);
+
     switch (aggregation) {
       case 'avg':
-        return [{ 
+        return [{
           value: nums.reduce((a, b) => a + b, 0) / nums.length,
           timestamp: values[values.length - 1].timestamp
         }];
       case 'sum':
-        return [{ 
+        return [{
           value: nums.reduce((a, b) => a + b, 0),
           timestamp: values[values.length - 1].timestamp
         }];
       case 'min':
-        return [{ 
+        return [{
           value: Math.min(...nums),
           timestamp: values[values.length - 1].timestamp
         }];
       case 'max':
-        return [{ 
+        return [{
           value: Math.max(...nums),
           timestamp: values[values.length - 1].timestamp
         }];
@@ -1096,24 +1096,27 @@ class MonitoringObservabilityService extends EventEmitter {
 
   getWidgetData(widget) {
     switch (widget.type) {
-      case 'gauge':
+      case 'gauge': {
         const gaugeMetrics = this.getMetrics({ name: widget.metric });
         return gaugeMetrics.length > 0 ? gaugeMetrics[0].lastValue : 0;
-      
-      case 'line_chart':
+      }
+
+      case 'line_chart': {
         const metrics = Array.isArray(widget.metrics) ? widget.metrics : [widget.metric];
-        return metrics.map(metric => {
+        return metrics.map((metric) => {
           const metricData = this.getMetrics({ name: metric });
           return {
             name: metric,
             data: metricData.length > 0 ? metricData[0].values : []
           };
         });
-      
-      case 'counter':
+      }
+
+      case 'counter': {
         const counterMetrics = this.getMetrics({ name: widget.metric });
         return counterMetrics.length > 0 ? counterMetrics[0].lastValue : 0;
-      
+      }
+
       default:
         return null;
     }
@@ -1137,27 +1140,27 @@ class MonitoringObservabilityService extends EventEmitter {
     setInterval(() => {
       this.cleanupOldLogs();
     }, 60 * 60 * 1000); // Every hour
-    
+
     // Clean up old metrics
     setInterval(() => {
       this.cleanupOldMetrics();
     }, 60 * 60 * 1000); // Every hour
-    
+
     // Clean up old traces
     setInterval(() => {
       this.cleanupOldTraces();
     }, 60 * 60 * 1000); // Every hour
-    
+
     console.log('Background cleanup tasks started');
   }
 
   cleanupOldLogs() {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - this.logRetentionDays);
-    
+
     const initialCount = this.logs.length;
-    this.logs = this.logs.filter(log => log.timestamp > cutoff);
-    
+    this.logs = this.logs.filter((log) => log.timestamp > cutoff);
+
     const removedCount = initialCount - this.logs.length;
     if (removedCount > 0) {
       console.log(`Cleaned up ${removedCount} old log entries`);
@@ -1166,14 +1169,14 @@ class MonitoringObservabilityService extends EventEmitter {
 
   cleanupOldMetrics() {
     const cutoff = Date.now() - (this.metricsRetentionDays * 24 * 60 * 60 * 1000);
-    
+
     let totalRemoved = 0;
-    this.metrics.forEach((metric, key) => {
+    this.metrics.forEach((metric, _key) => {
       const initialCount = metric.values.length;
-      metric.values = metric.values.filter(v => v.timestamp > cutoff);
+      metric.values = metric.values.filter((v) => v.timestamp > cutoff);
       totalRemoved += initialCount - metric.values.length;
     });
-    
+
     if (totalRemoved > 0) {
       console.log(`Cleaned up ${totalRemoved} old metric values`);
     }
@@ -1181,7 +1184,7 @@ class MonitoringObservabilityService extends EventEmitter {
 
   cleanupOldTraces() {
     const cutoff = Date.now() - (7 * 24 * 60 * 60 * 1000); // 7 days
-    
+
     let removedCount = 0;
     this.traces.forEach((trace, traceId) => {
       if (trace.startTime < cutoff) {
@@ -1189,7 +1192,7 @@ class MonitoringObservabilityService extends EventEmitter {
         removedCount++;
       }
     });
-    
+
     if (removedCount > 0) {
       console.log(`Cleaned up ${removedCount} old traces`);
     }

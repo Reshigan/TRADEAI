@@ -2,7 +2,7 @@ const ExcelJS = require('exceljs');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Promotion = require('../models/Promotion');
@@ -26,13 +26,13 @@ class BulkOperationsService {
     try {
       // Validate file
       await this.validateFile(filePath);
-      
+
       // Parse file based on format
       const data = await this.parseFile(filePath);
-      
+
       // Validate data structure
       const validationResult = await this.validateData(data, modelType, tenantId);
-      
+
       if (validationResult.errors.length > 0 && !options.ignoreErrors) {
         return {
           success: false,
@@ -44,9 +44,9 @@ class BulkOperationsService {
 
       // Process valid records in batches
       const result = await this.processImport(
-        tenantId, 
-        validationResult.validRecords, 
-        modelType, 
+        tenantId,
+        validationResult.validRecords,
+        modelType,
         options
       );
 
@@ -72,16 +72,16 @@ class BulkOperationsService {
     try {
       const format = options.format || 'xlsx';
       const includeHierarchy = options.includeHierarchy || false;
-      
+
       // Get data based on model type
       const data = await this.getData(tenantId, modelType, filters, includeHierarchy);
-      
+
       // Transform data for export
       const exportData = await this.transformForExport(data, modelType, options);
-      
+
       // Generate file
       const filePath = await this.generateFile(exportData, format, modelType);
-      
+
       return {
         success: true,
         filePath,
@@ -112,13 +112,13 @@ class BulkOperationsService {
       // Process updates in batches
       for (let i = 0; i < updates.length; i += this.batchSize) {
         const batch = updates.slice(i, i + this.batchSize);
-        
+
         try {
-          const bulkOps = batch.map(update => ({
+          const bulkOps = batch.map((update) => ({
             updateOne: {
-              filter: { 
-                _id: update._id, 
-                tenantId: tenantId 
+              filter: {
+                _id: update._id,
+                tenantId
               },
               update: { $set: update.data },
               upsert: options.upsert || false
@@ -151,7 +151,7 @@ class BulkOperationsService {
     try {
       const Model = this.getModel(modelType);
       const softDelete = options.softDelete !== false; // Default to soft delete
-      
+
       const results = {
         deleted: 0,
         errors: [],
@@ -163,15 +163,15 @@ class BulkOperationsService {
       if (softDelete) {
         // Soft delete - mark as deleted
         const result = await Model.updateMany(
-          { 
-            _id: { $in: ids }, 
-            tenantId: tenantId 
+          {
+            _id: { $in: ids },
+            tenantId
           },
-          { 
-            $set: { 
-              isDeleted: true, 
-              deletedAt: new Date() 
-            } 
+          {
+            $set: {
+              isDeleted: true,
+              deletedAt: new Date()
+            }
           }
         );
         results.deleted = result.modifiedCount;
@@ -179,7 +179,7 @@ class BulkOperationsService {
         // Hard delete - actually remove from database
         const result = await Model.deleteMany({
           _id: { $in: ids },
-          tenantId: tenantId
+          tenantId
         });
         results.deleted = result.deletedCount;
       }
@@ -199,7 +199,7 @@ class BulkOperationsService {
     try {
       const Model = this.getModel(modelType);
       const syncKey = options.syncKey || 'code'; // Field to match records
-      
+
       const results = {
         created: 0,
         updated: 0,
@@ -213,16 +213,16 @@ class BulkOperationsService {
       // Process in batches
       for (let i = 0; i < externalData.length; i += this.batchSize) {
         const batch = externalData.slice(i, i + this.batchSize);
-        
+
         try {
           const batchResults = await this.processSyncBatch(
-            tenantId, 
-            Model, 
-            batch, 
-            syncKey, 
+            tenantId,
+            Model,
+            batch,
+            syncKey,
             options
           );
-          
+
           results.created += batchResults.created;
           results.updated += batchResults.updated;
           results.unchanged += batchResults.unchanged;
@@ -251,16 +251,16 @@ class BulkOperationsService {
     try {
       const format = options.format || 'xlsx';
       const includeExamples = options.includeExamples || false;
-      
+
       // Get field definitions for the model
       const fields = this.getModelFields(modelType);
-      
+
       // Create template data
       const templateData = this.createTemplateData(fields, includeExamples);
-      
+
       // Generate file
       const filePath = await this.generateFile(templateData, format, `${modelType}_template`);
-      
+
       return {
         success: true,
         filePath,
@@ -276,7 +276,7 @@ class BulkOperationsService {
 
   // Helper Methods
 
-  async validateFile(filePath) {
+  validateFile(filePath) {
     if (!fs.existsSync(filePath)) {
       throw new Error('File not found');
     }
@@ -292,22 +292,22 @@ class BulkOperationsService {
     }
   }
 
-  async parseFile(filePath) {
+  parseFile(filePath) {
     const ext = path.extname(filePath).toLowerCase().substring(1);
-    
+
     if (ext === 'csv') {
-      return await this.parseCSV(filePath);
+      return this.parseCSV(filePath);
     } else if (ext === 'xlsx' || ext === 'xls') {
-      return await this.parseExcel(filePath);
+      return this.parseExcel(filePath);
     }
-    
+
     throw new Error('Unsupported file format');
   }
 
-  async parseCSV(filePath) {
+  parseCSV(filePath) {
     return new Promise((resolve, reject) => {
       const results = [];
-      
+
       fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (data) => results.push(data))
@@ -319,15 +319,15 @@ class BulkOperationsService {
   async parseExcel(filePath) {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
-    
+
     const worksheet = workbook.worksheets[0];
     if (!worksheet) {
       throw new Error('No worksheet found in Excel file');
     }
-    
+
     const data = [];
     const headers = [];
-    
+
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) {
         // First row is headers
@@ -343,27 +343,27 @@ class BulkOperationsService {
         data.push(rowData);
       }
     });
-    
+
     return data;
   }
 
   async validateData(data, modelType, tenantId) {
     const validRecords = [];
     const errors = [];
-    
+
     const validator = this.getValidator(modelType);
-    
+
     for (let i = 0; i < data.length; i++) {
       const record = data[i];
       const validation = await validator(record, tenantId, i + 1);
-      
+
       if (validation.isValid) {
         validRecords.push(validation.record);
       } else {
         errors.push(...validation.errors);
       }
     }
-    
+
     return { validRecords, errors };
   }
 
@@ -381,15 +381,15 @@ class BulkOperationsService {
     // Process in batches
     for (let i = 0; i < records.length; i += this.batchSize) {
       const batch = records.slice(i, i + this.batchSize);
-      
+
       try {
         if (options.updateExisting) {
           // Upsert operation
-          const bulkOps = batch.map(record => ({
+          const bulkOps = batch.map((record) => ({
             updateOne: {
-              filter: { 
-                code: record.code, 
-                tenantId: tenantId 
+              filter: {
+                code: record.code,
+                tenantId
               },
               update: { $set: record },
               upsert: true
@@ -418,26 +418,26 @@ class BulkOperationsService {
     return results;
   }
 
-  async getData(tenantId, modelType, filters, includeHierarchy) {
+  getData(tenantId, modelType, filters, includeHierarchy) {
     const Model = this.getModel(modelType);
     let query = Model.find({ tenantId, ...filters });
-    
+
     if (includeHierarchy && (modelType === 'customer' || modelType === 'product')) {
       query = query.populate('parentId');
     }
-    
-    return await query.lean();
+
+    return query.lean();
   }
 
-  async transformForExport(data, modelType, options) {
+  transformForExport(data, modelType, options) {
     const transformer = this.getTransformer(modelType);
-    return data.map(record => transformer(record, options));
+    return data.map((record) => transformer(record, options));
   }
 
   async generateFile(data, format, filename) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filePath = path.join(process.cwd(), 'temp', `${filename}_${timestamp}.${format}`);
-    
+
     // Ensure temp directory exists
     const tempDir = path.dirname(filePath);
     if (!fs.existsSync(tempDir)) {
@@ -449,19 +449,19 @@ class BulkOperationsService {
     } else if (format === 'xlsx') {
       await this.generateExcel(data, filePath);
     }
-    
+
     return filePath;
   }
 
-  async generateCSV(data, filePath) {
+  generateCSV(data, filePath) {
     if (data.length === 0) return;
-    
+
     const headers = Object.keys(data[0]);
     const csvContent = [
       headers.join(','),
-      ...data.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+      ...data.map((row) => headers.map((header) => `"${row[header] || ''}"`).join(','))
     ].join('\n');
-    
+
     fs.writeFileSync(filePath, csvContent);
   }
 
@@ -469,14 +469,14 @@ class BulkOperationsService {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'TRADEAI';
     workbook.created = new Date();
-    
+
     const worksheet = workbook.addWorksheet('Data');
-    
+
     if (data && data.length > 0) {
       // Add headers
       const headers = Object.keys(data[0]);
       worksheet.addRow(headers);
-      
+
       // Style header row
       const headerRow = worksheet.getRow(1);
       headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
@@ -487,31 +487,31 @@ class BulkOperationsService {
       };
       headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
       headerRow.height = 20;
-      
+
       // Add data rows
-      data.forEach(row => {
-        const values = headers.map(header => row[header]);
+      data.forEach((row) => {
+        const values = headers.map((header) => row[header]);
         worksheet.addRow(values);
       });
-      
+
       // Auto-size columns
       headers.forEach((header, index) => {
         const column = worksheet.getColumn(index + 1);
         column.width = Math.max(15, header.length + 5);
       });
-      
+
       // Add auto-filter
       worksheet.autoFilter = {
         from: { row: 1, column: 1 },
         to: { row: 1, column: headers.length }
       };
-      
+
       // Freeze header row
       worksheet.views = [
         { state: 'frozen', xSplit: 0, ySplit: 1 }
       ];
     }
-    
+
     await workbook.xlsx.writeFile(filePath);
   }
 
@@ -521,12 +521,12 @@ class BulkOperationsService {
       product: Product,
       promotion: Promotion
     };
-    
+
     const model = models[modelType.toLowerCase()];
     if (!model) {
       throw new Error(`Unsupported model type: ${modelType}`);
     }
-    
+
     return model;
   }
 
@@ -536,7 +536,7 @@ class BulkOperationsService {
       product: this.validateProductRecord.bind(this),
       promotion: this.validatePromotionRecord.bind(this)
     };
-    
+
     return validators[modelType.toLowerCase()] || this.validateGenericRecord.bind(this);
   }
 
@@ -546,41 +546,41 @@ class BulkOperationsService {
       product: this.transformProductRecord.bind(this),
       promotion: this.transformPromotionRecord.bind(this)
     };
-    
+
     return transformers[modelType.toLowerCase()] || this.transformGenericRecord.bind(this);
   }
 
   async validateCustomerRecord(record, tenantId, rowNumber) {
     const errors = [];
     const validRecord = { ...record, tenantId };
-    
+
     // Required fields validation
     if (!record.name) {
       errors.push(`Row ${rowNumber}: Customer name is required`);
     }
-    
+
     if (!record.code) {
       errors.push(`Row ${rowNumber}: Customer code is required`);
     }
-    
+
     if (!record.email) {
       errors.push(`Row ${rowNumber}: Customer email is required`);
     } else if (!/\S+@\S+\.\S+/.test(record.email)) {
       errors.push(`Row ${rowNumber}: Invalid email format`);
     }
-    
+
     // Check for duplicates
     if (record.code) {
-      const existing = await Customer.findOne({ 
-        code: record.code, 
-        tenantId 
+      const existing = await Customer.findOne({
+        code: record.code,
+        tenantId
       });
-      
+
       if (existing) {
         errors.push(`Row ${rowNumber}: Customer code '${record.code}' already exists`);
       }
     }
-    
+
     return {
       isValid: errors.length === 0,
       record: validRecord,
@@ -591,28 +591,28 @@ class BulkOperationsService {
   async validateProductRecord(record, tenantId, rowNumber) {
     const errors = [];
     const validRecord = { ...record, tenantId };
-    
+
     // Required fields validation
     if (!record.name) {
       errors.push(`Row ${rowNumber}: Product name is required`);
     }
-    
+
     if (!record.sku) {
       errors.push(`Row ${rowNumber}: Product SKU is required`);
     }
-    
+
     // Check for duplicates
     if (record.sku) {
-      const existing = await Product.findOne({ 
-        sku: record.sku, 
-        tenantId 
+      const existing = await Product.findOne({
+        sku: record.sku,
+        tenantId
       });
-      
+
       if (existing) {
         errors.push(`Row ${rowNumber}: Product SKU '${record.sku}' already exists`);
       }
     }
-    
+
     return {
       isValid: errors.length === 0,
       record: validRecord,
@@ -620,33 +620,33 @@ class BulkOperationsService {
     };
   }
 
-  async validatePromotionRecord(record, tenantId, rowNumber) {
+  validatePromotionRecord(record, tenantId, rowNumber) {
     const errors = [];
     const validRecord = { ...record, tenantId };
-    
+
     // Required fields validation
     if (!record.name) {
       errors.push(`Row ${rowNumber}: Promotion name is required`);
     }
-    
+
     if (!record.startDate) {
       errors.push(`Row ${rowNumber}: Start date is required`);
     }
-    
+
     if (!record.endDate) {
       errors.push(`Row ${rowNumber}: End date is required`);
     }
-    
+
     // Date validation
     if (record.startDate && record.endDate) {
       const start = new Date(record.startDate);
       const end = new Date(record.endDate);
-      
+
       if (start >= end) {
         errors.push(`Row ${rowNumber}: End date must be after start date`);
       }
     }
-    
+
     return {
       isValid: errors.length === 0,
       record: validRecord,
@@ -654,7 +654,7 @@ class BulkOperationsService {
     };
   }
 
-  async validateGenericRecord(record, tenantId, rowNumber) {
+  validateGenericRecord(record, tenantId, _rowNumber) {
     return {
       isValid: true,
       record: { ...record, tenantId },
@@ -662,7 +662,7 @@ class BulkOperationsService {
     };
   }
 
-  transformCustomerRecord(record, options) {
+  transformCustomerRecord(record, _options) {
     return {
       'Customer Code': record.code,
       'Customer Name': record.name,
@@ -678,7 +678,7 @@ class BulkOperationsService {
     };
   }
 
-  transformProductRecord(record, options) {
+  transformProductRecord(record, _options) {
     return {
       'Product SKU': record.sku,
       'Product Name': record.name,
@@ -692,7 +692,7 @@ class BulkOperationsService {
     };
   }
 
-  transformPromotionRecord(record, options) {
+  transformPromotionRecord(record, _options) {
     return {
       'Promotion Name': record.name,
       'Type': record.type,
@@ -705,7 +705,7 @@ class BulkOperationsService {
     };
   }
 
-  transformGenericRecord(record, options) {
+  transformGenericRecord(record, _options) {
     return record;
   }
 
@@ -737,21 +737,21 @@ class BulkOperationsService {
         { name: 'description', required: false, type: 'string' }
       ]
     };
-    
+
     return fieldDefinitions[modelType.toLowerCase()] || [];
   }
 
   createTemplateData(fields, includeExamples) {
     const templateRow = {};
-    
-    fields.forEach(field => {
+
+    fields.forEach((field) => {
       if (includeExamples) {
         templateRow[field.name] = this.getExampleValue(field);
       } else {
         templateRow[field.name] = '';
       }
     });
-    
+
     return includeExamples ? [templateRow] : [];
   }
 
@@ -763,7 +763,7 @@ class BulkOperationsService {
       date: '2024-01-01',
       enum: 'Option1'
     };
-    
+
     return examples[field.type] || 'Example';
   }
 
@@ -785,7 +785,7 @@ class BulkOperationsService {
         if (existing) {
           // Check if update is needed
           const hasChanges = this.hasSignificantChanges(existing, record, options.ignoreFields);
-          
+
           if (hasChanges) {
             await Model.updateOne(
               { _id: existing._id },
@@ -814,18 +814,18 @@ class BulkOperationsService {
 
   hasSignificantChanges(existing, newRecord, ignoreFields = []) {
     const fieldsToCheck = Object.keys(newRecord).filter(
-      field => !ignoreFields.includes(field) && field !== '_id' && field !== 'tenantId'
+      (field) => !ignoreFields.includes(field) && field !== '_id' && field !== 'tenantId'
     );
 
-    return fieldsToCheck.some(field => {
+    return fieldsToCheck.some((field) => {
       const existingValue = existing[field];
       const newValue = newRecord[field];
-      
+
       // Handle different data types
       if (existingValue instanceof Date && typeof newValue === 'string') {
         return existingValue.toISOString() !== new Date(newValue).toISOString();
       }
-      
+
       return existingValue !== newValue;
     });
   }

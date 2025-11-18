@@ -16,10 +16,6 @@ import {
   Typography,
   Grid,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   TextField,
   Chip,
   Alert,
@@ -28,7 +24,6 @@ import {
   Tab,
   Paper,
   IconButton,
-  Tooltip,
   Divider,
   Stack
 } from '@mui/material';
@@ -40,11 +35,9 @@ import {
   Refresh,
   Download,
   CheckCircle,
-  Warning,
-  Info
+  Warning
 } from '@mui/icons-material';
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -52,7 +45,6 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
   ResponsiveContainer,
-  AreaChart,
   Area,
   BarChart,
   Bar,

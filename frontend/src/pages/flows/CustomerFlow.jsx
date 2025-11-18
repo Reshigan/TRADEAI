@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import FlowContainer from '../../components/flows/FlowContainer';
 import BasicInfoStep from './customer/steps/BasicInfoStep';

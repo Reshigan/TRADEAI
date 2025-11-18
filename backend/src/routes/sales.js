@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const SalesTransaction = require('../../models/SalesTransaction');
-const Customer = require('../models/Customer');
-const Product = require('../models/Product');
+// const Customer = require('../models/Customer');
+// const Product = require('../models/Product');
 const { authenticateToken: auth } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
@@ -18,13 +18,13 @@ router.get('/overview', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
-    logger.debug('Sales overview request', { 
-      userId: req.user._id, 
-      companyId, 
-      companyIdType: typeof companyId 
+
+    logger.debug('Sales overview request', {
+      userId: req.user._id,
+      companyId,
+      companyIdType: typeof companyId
     });
-    
+
     const matchQuery = { company: companyId, status: 'completed' };
     if (startDate && endDate) {
       matchQuery.date = {
@@ -32,7 +32,7 @@ router.get('/overview', auth, async (req, res) => {
         $lte: new Date(endDate)
       };
     }
-    
+
     const overview = await SalesTransaction.aggregate([
       { $match: matchQuery },
       {
@@ -46,7 +46,7 @@ router.get('/overview', auth, async (req, res) => {
         }
       }
     ]);
-    
+
     const result = overview[0] || {
       totalRevenue: 0,
       totalTransactions: 0,
@@ -54,7 +54,7 @@ router.get('/overview', auth, async (req, res) => {
       avgTransactionValue: 0,
       totalDiscount: 0
     };
-    
+
     res.json({
       success: true,
       data: result
@@ -78,7 +78,7 @@ router.get('/by-period', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
+
     let groupBy;
     if (period === 'monthly') {
       groupBy = {
@@ -95,7 +95,7 @@ router.get('/by-period', auth, async (req, res) => {
         year: { $year: '$date' }
       };
     }
-    
+
     const salesByPeriod = await SalesTransaction.aggregate([
       {
         $match: {
@@ -120,7 +120,7 @@ router.get('/by-period', auth, async (req, res) => {
         $sort: { '_id.year': 1, '_id.month': 1, '_id.quarter': 1 }
       }
     ]);
-    
+
     res.json({
       success: true,
       data: salesByPeriod
@@ -144,7 +144,7 @@ router.get('/top-customers', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
+
     const matchQuery = { company: companyId, status: 'completed' };
     if (startDate && endDate) {
       matchQuery.date = {
@@ -152,7 +152,7 @@ router.get('/top-customers', auth, async (req, res) => {
         $lte: new Date(endDate)
       };
     }
-    
+
     const topCustomers = await SalesTransaction.aggregate([
       { $match: matchQuery },
       {
@@ -187,7 +187,7 @@ router.get('/top-customers', auth, async (req, res) => {
         }
       }
     ]);
-    
+
     res.json({
       success: true,
       data: topCustomers
@@ -211,7 +211,7 @@ router.get('/top-products', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
+
     const matchQuery = { company: companyId, status: 'completed' };
     if (startDate && endDate) {
       matchQuery.date = {
@@ -219,7 +219,7 @@ router.get('/top-products', auth, async (req, res) => {
         $lte: new Date(endDate)
       };
     }
-    
+
     const topProducts = await SalesTransaction.aggregate([
       { $match: matchQuery },
       {
@@ -255,7 +255,7 @@ router.get('/top-products', auth, async (req, res) => {
         }
       }
     ]);
-    
+
     res.json({
       success: true,
       data: topProducts
@@ -279,7 +279,7 @@ router.get('/by-channel', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
+
     const matchQuery = { company: companyId, status: 'completed' };
     if (startDate && endDate) {
       matchQuery.date = {
@@ -287,7 +287,7 @@ router.get('/by-channel', auth, async (req, res) => {
         $lte: new Date(endDate)
       };
     }
-    
+
     const salesByChannel = await SalesTransaction.aggregate([
       { $match: matchQuery },
       {
@@ -301,7 +301,7 @@ router.get('/by-channel', auth, async (req, res) => {
       },
       { $sort: { totalRevenue: -1 } }
     ]);
-    
+
     res.json({
       success: true,
       data: salesByChannel
@@ -325,11 +325,11 @@ router.get('/trends', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
+
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - parseInt(days));
-    
+
     let groupBy;
     if (period === 'daily') {
       groupBy = {
@@ -348,7 +348,7 @@ router.get('/trends', auth, async (req, res) => {
         month: { $month: '$date' }
       };
     }
-    
+
     const trends = await SalesTransaction.aggregate([
       {
         $match: {
@@ -369,7 +369,7 @@ router.get('/trends', auth, async (req, res) => {
         $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1, '_id.week': 1 }
       }
     ]);
-    
+
     res.json({
       success: true,
       data: trends
@@ -405,7 +405,7 @@ router.post('/', auth, async (req, res) => {
     } else {
       companyId = req.user.companyId;
     }
-    
+
     // If no company ID, try using tenantId (for multi-tenant setups)
     if (!companyId) {
       companyId = req.tenantId || req.user.tenantId;
@@ -485,7 +485,7 @@ router.get('/transactions', auth, async (req, res) => {
       sortBy = 'date',
       sortOrder = 'desc'
     } = req.query;
-    
+
     let companyId;
     if (req.user.companyId && req.user.companyId._id) {
       companyId = req.user.companyId._id;
@@ -493,10 +493,10 @@ router.get('/transactions', auth, async (req, res) => {
       companyId = req.user.companyId;
     }
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
+
     // Build query
     const query = { company: companyId };
-    
+
     if (customer) query.customer = customer;
     if (product) query.product = product;
     if (channel) query.channel = channel;
@@ -506,20 +506,20 @@ router.get('/transactions', auth, async (req, res) => {
         $lte: new Date(endDate)
       };
     }
-    
+
     // Build sort
     const sort = {};
     sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
-    
+
     const transactions = await SalesTransaction.find(query)
       .populate('customer', 'name tier')
       .populate('product', 'name sku category')
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
-    
+
     const total = await SalesTransaction.countDocuments(query);
-    
+
     res.json({
       success: true,
       data: {

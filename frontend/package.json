@@ -22,6 +22,7 @@
     "hoopy": "^0.1.4",
     "jsonpath": "^1.1.1",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.553.0",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
@@ -30,6 +31,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.10.0",
     "react-scripts": "^5.0.1",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.5.0",
     "socket.io-client": "^4.6.1",
     "uuid": "^9.0.0",
@@ -51,12 +53,13 @@
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "tryer": "^1.0.1",
     "typescript": "^5.0.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "GENERATE_SOURCEMAP=true react-scripts build",
     "build:fallback": "node build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -67,7 +70,23 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "plugins": [
+      "unused-imports"
+    ],
+    "rules": {
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
   },
   "proxy": "http://localhost:5000",
   "browserslist": {

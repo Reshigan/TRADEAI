@@ -1,7 +1,7 @@
 const Promotion = require('../models/Promotion');
 const SalesHistory = require('../models/SalesHistory');
 const Product = require('../models/Product');
-const Customer = require('../models/Customer');
+// const Customer = require('../models/Customer');
 const logger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 
@@ -81,7 +81,7 @@ class PromotionSimulationService {
       );
 
       // Optimize discount level
-      optimization.optimizedParameters.discount = 
+      optimization.optimizedParameters.discount =
         await this.optimizeDiscount(
           baseParams,
           historicalPerformance,
@@ -89,7 +89,7 @@ class PromotionSimulationService {
         );
 
       // Optimize duration
-      optimization.optimizedParameters.duration = 
+      optimization.optimizedParameters.duration =
         await this.optimizeDuration(
           baseParams,
           historicalPerformance,
@@ -97,7 +97,7 @@ class PromotionSimulationService {
         );
 
       // Optimize investment
-      optimization.optimizedParameters.investment = 
+      optimization.optimizedParameters.investment =
         await this.optimizeInvestment(
           baseParams,
           historicalPerformance,
@@ -158,26 +158,26 @@ class PromotionSimulationService {
       simulation.incremental = {
         volume: simulation.predicted.volume - simulation.baseline.volume,
         revenue: simulation.predicted.revenue - simulation.baseline.revenue,
-        volumeUplift: ((simulation.predicted.volume - simulation.baseline.volume) / 
+        volumeUplift: ((simulation.predicted.volume - simulation.baseline.volume) /
                        simulation.baseline.volume) * 100,
-        revenueUplift: ((simulation.predicted.revenue - simulation.baseline.revenue) / 
+        revenueUplift: ((simulation.predicted.revenue - simulation.baseline.revenue) /
                         simulation.baseline.revenue) * 100
       };
 
       // Calculate ROI
-      const totalCost = promotionParams.investment + 
+      const totalCost = promotionParams.investment +
                        (simulation.incremental.volume * promotionParams.productCost);
-      const grossProfit = simulation.incremental.revenue - 
+      const grossProfit = simulation.incremental.revenue -
                          (simulation.incremental.volume * promotionParams.productCost);
-      
+
       simulation.roi = {
         investment: promotionParams.investment,
         totalCost,
         incrementalRevenue: simulation.incremental.revenue,
         grossProfit,
         roi: (grossProfit / totalCost) * 100,
-        paybackPeriod: this.calculatePaybackPeriod(totalCost, grossProfit, 
-                                                   promotionParams.duration)
+        paybackPeriod: this.calculatePaybackPeriod(totalCost, grossProfit,
+          promotionParams.duration)
       };
 
       // Calculate breakeven point
@@ -223,7 +223,7 @@ class PromotionSimulationService {
         actualROI: promotion.actualROI || 0,
         targetROI: promotion.targetROI || 0,
         roiAchievement: ((promotion.actualROI || 0) / (promotion.targetROI || 1)) * 100,
-        volumeAchievement: ((promotion.actualVolume || 0) / 
+        volumeAchievement: ((promotion.actualVolume || 0) /
                            (promotion.targetVolume || 1)) * 100,
         effectivenessScore: 0
       };
@@ -376,8 +376,8 @@ class PromotionSimulationService {
         grossUplift: promotion.actualVolume || 0,
         cannibalization: analysis.totalCannibalization,
         netUplift: (promotion.actualVolume || 0) - analysis.totalCannibalization,
-        netUpliftPercent: (((promotion.actualVolume || 0) - 
-                           analysis.totalCannibalization) / 
+        netUpliftPercent: (((promotion.actualVolume || 0) -
+                           analysis.totalCannibalization) /
                           (promotion.actualVolume || 1)) * 100
       };
 
@@ -431,10 +431,10 @@ class PromotionSimulationService {
       // Calculate lift
       analysis.lift = {
         volumeLift: analysis.promoted.volume - analysis.baseline.volume,
-        volumeLiftPercent: ((analysis.promoted.volume - analysis.baseline.volume) / 
+        volumeLiftPercent: ((analysis.promoted.volume - analysis.baseline.volume) /
                            analysis.baseline.volume) * 100,
         revenueLift: analysis.promoted.revenue - analysis.baseline.revenue,
-        revenueLiftPercent: ((analysis.promoted.revenue - analysis.baseline.revenue) / 
+        revenueLiftPercent: ((analysis.promoted.revenue - analysis.baseline.revenue) /
                             analysis.baseline.revenue) * 100
       };
 
@@ -458,8 +458,8 @@ class PromotionSimulationService {
 
   // Helper methods
 
-  async getHistoricalPromotions(criteria) {
-    return await Promotion.find({
+  getHistoricalPromotions(criteria) {
+    return Promotion.find({
       productCategory: criteria.productCategory,
       status: 'completed'
     }).limit(100).lean();
@@ -467,7 +467,7 @@ class PromotionSimulationService {
 
   async simulateScenario(promotionData, scenario, historicalData) {
     const basePerformance = await this.calculateBaseline(promotionData);
-    
+
     // Apply scenario adjustments
     const adjustedPromotion = {
       ...promotionData,
@@ -485,9 +485,9 @@ class PromotionSimulationService {
       baseline: basePerformance,
       predicted: predictedPerformance,
       uplift: {
-        volume: ((predictedPerformance.volume - basePerformance.volume) / 
+        volume: ((predictedPerformance.volume - basePerformance.volume) /
                  basePerformance.volume) * 100,
-        revenue: ((predictedPerformance.revenue - basePerformance.revenue) / 
+        revenue: ((predictedPerformance.revenue - basePerformance.revenue) /
                   basePerformance.revenue) * 100
       },
       roi: this.calculateScenarioROI(adjustedPromotion, predictedPerformance),
@@ -497,13 +497,13 @@ class PromotionSimulationService {
 
   compareScenarios(scenarios) {
     return {
-      bestROI: scenarios.reduce((best, s) => 
+      bestROI: scenarios.reduce((best, s) =>
         s.roi > best.roi ? s : best
       ),
-      lowestRisk: scenarios.reduce((lowest, s) => 
+      lowestRisk: scenarios.reduce((lowest, s) =>
         s.riskScore < lowest.riskScore ? s : lowest
       ),
-      highestUplift: scenarios.reduce((highest, s) => 
+      highestUplift: scenarios.reduce((highest, s) =>
         s.uplift.volume > highest.uplift.volume ? s : highest
       )
     };
@@ -511,7 +511,7 @@ class PromotionSimulationService {
 
   generateRecommendation(scenarios, comparison) {
     const recommended = comparison.bestROI;
-    
+
     return {
       scenario: recommended.name,
       reason: `Highest ROI of ${recommended.roi.toFixed(2)}% with acceptable risk`,
@@ -534,17 +534,17 @@ class PromotionSimulationService {
     }).limit(50);
 
     return {
-      avgROI: historicalPromotions.reduce((sum, p) => 
+      avgROI: historicalPromotions.reduce((sum, p) =>
         sum + (p.actualROI || 0), 0) / (historicalPromotions.length || 1),
-      avgUplift: historicalPromotions.reduce((sum, p) => 
+      avgUplift: historicalPromotions.reduce((sum, p) =>
         sum + (p.volumeUplift || 0), 0) / (historicalPromotions.length || 1),
-      successRate: (historicalPromotions.filter(p => 
+      successRate: (historicalPromotions.filter((p) =>
         p.actualROI > p.targetROI).length / historicalPromotions.length) * 100,
       count: historicalPromotions.length
     };
   }
 
-  async optimizeDiscount(baseParams, performance, constraints) {
+  optimizeDiscount(baseParams, performance, constraints) {
     // Simplified optimization - in production use actual optimization algorithm
     const optimalDiscount = Math.min(
       Math.max(baseParams.discount || 15, constraints.minDiscount || 10),
@@ -558,7 +558,7 @@ class PromotionSimulationService {
     };
   }
 
-  async optimizeDuration(baseParams, performance, constraints) {
+  optimizeDuration(baseParams, performance, constraints) {
     const optimalDuration = Math.min(
       Math.max(baseParams.duration || 14, constraints.minDuration || 7),
       constraints.maxDuration || 30
@@ -571,9 +571,9 @@ class PromotionSimulationService {
     };
   }
 
-  async optimizeInvestment(baseParams, performance, constraints, objectives) {
+  optimizeInvestment(baseParams, performance, constraints, objectives) {
     const targetROI = objectives.targetROI || 200;
-    const optimalInvestment = (baseParams.estimatedRevenue || 100000) / 
+    const optimalInvestment = (baseParams.estimatedRevenue || 100000) /
                              (targetROI / 100 + 1);
 
     return {
@@ -583,7 +583,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateExpectedOutcomes(parameters, performance) {
+  calculateExpectedOutcomes(_parameters, _performance) {
     return {
       expectedVolume: 10000,
       expectedRevenue: 500000,
@@ -607,11 +607,11 @@ class PromotionSimulationService {
     return tradeoffs;
   }
 
-  calculateConfidenceScore(performance, parameters) {
+  calculateConfidenceScore(performance, _parameters) {
     // Base confidence on historical data availability
     const dataConfidence = Math.min(performance.count / 20, 1);
     const performanceConfidence = performance.successRate / 100;
-    
+
     return (dataConfidence + performanceConfidence) / 2;
   }
 
@@ -661,19 +661,19 @@ class PromotionSimulationService {
   }
 
   calculateBreakeven(params) {
-    const unitContribution = params.productPrice * (1 - (params.discount || 15) / 100) - 
+    const unitContribution = params.productPrice * (1 - (params.discount || 15) / 100) -
                             params.productCost;
-    const breakeven Volume = params.investment / unitContribution;
+    const breakevenVolume = params.investment / unitContribution;
 
     return {
       volume: breakevenVolume,
-      revenue: breakevenVolume * params.productPrice * 
+      revenue: breakevenVolume * params.productPrice *
                (1 - (params.discount || 15) / 100),
       days: params.duration / 2 // Simplified
     };
   }
 
-  async performSensitivityAnalysis(params, baseline) {
+  async performSensitivityAnalysis(params, _baseline) {
     const sensitivities = {
       discount: [],
       investment: [],
@@ -701,7 +701,7 @@ class PromotionSimulationService {
     return roiScore + volumeScore;
   }
 
-  async analyzeVolumeImpact(promotion) {
+  analyzeVolumeImpact(promotion) {
     return {
       actual: promotion.actualVolume || 0,
       target: promotion.targetVolume || 0,
@@ -710,7 +710,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeRevenueImpact(promotion) {
+  analyzeRevenueImpact(promotion) {
     return {
       actual: promotion.actualRevenue || 0,
       target: promotion.targetRevenue || 0,
@@ -718,7 +718,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeProfitImpact(promotion) {
+  analyzeProfitImpact(promotion) {
     const revenue = promotion.actualRevenue || 0;
     const cost = promotion.totalCost || 0;
     return {
@@ -727,7 +727,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeCustomerImpact(promotion) {
+  analyzeCustomerImpact(_promotion) {
     return {
       newCustomers: 150,
       retainedCustomers: 450,
@@ -735,7 +735,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeBrandImpact(promotion) {
+  analyzeBrandImpact(_promotion) {
     return {
       awareness: 'increased',
       sentiment: 'positive',
@@ -751,7 +751,7 @@ class PromotionSimulationService {
       _id: { $ne: promotion._id }
     }).limit(10);
 
-    const avgROI = similarPromotions.reduce((sum, p) => 
+    const avgROI = similarPromotions.reduce((sum, p) =>
       sum + (p.actualROI || 0), 0) / (similarPromotions.length || 1);
 
     return {
@@ -763,7 +763,7 @@ class PromotionSimulationService {
     };
   }
 
-  generateEffectivenessInsights(overall, dimensional) {
+  generateEffectivenessInsights(overall, _dimensional) {
     const insights = [];
 
     if (overall.effectivenessScore > 75) {
@@ -796,13 +796,13 @@ class PromotionSimulationService {
     return {
       totalInvestment: promotions.reduce((sum, p) => sum + (p.investment || 0), 0),
       totalRevenue: promotions.reduce((sum, p) => sum + (p.actualRevenue || 0), 0),
-      avgROI: promotions.reduce((sum, p) => 
+      avgROI: promotions.reduce((sum, p) =>
         sum + (p.actualROI || 0), 0) / (promotions.length || 1),
       count: promotions.length
     };
   }
 
-  async generateOptimalMix(totalBudget, constraints, objectives, companyId) {
+  generateOptimalMix(totalBudget, _constraints, _objectives, _companyId) {
     // Simplified - in production use optimization algorithm
     return [
       {
@@ -823,7 +823,7 @@ class PromotionSimulationService {
     ];
   }
 
-  calculatePortfolioImprovements(current, optimized) {
+  calculatePortfolioImprovements(_current, _optimized) {
     return {
       roiImprovement: 18,
       revenueIncrease: 250000,
@@ -831,7 +831,7 @@ class PromotionSimulationService {
     };
   }
 
-  createPortfolioImplementationPlan(current, optimized) {
+  createPortfolioImplementationPlan(_current, _optimized) {
     return {
       phase1: 'Analyze current performance',
       phase2: 'Pilot optimized mix',
@@ -840,7 +840,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeCannibalizationImpact(promotion, relatedProduct) {
+  analyzeCannibalizationImpact(_promotion, _relatedProduct) {
     // Simplified cannibalization analysis
     return {
       cannibalized: false,
@@ -850,7 +850,7 @@ class PromotionSimulationService {
     };
   }
 
-  generateCannibalizationRecommendations(analysis) {
+  generateCannibalizationRecommendations(_analysis) {
     return [
       {
         priority: 'high',
@@ -860,7 +860,7 @@ class PromotionSimulationService {
     ];
   }
 
-  async calculateNewCustomerContribution(promotion) {
+  calculateNewCustomerContribution(_promotion) {
     return {
       count: 150,
       volume: 3000,
@@ -869,7 +869,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateExistingCustomerContribution(promotion) {
+  calculateExistingCustomerContribution(_promotion) {
     return {
       count: 450,
       volume: 12000,
@@ -878,7 +878,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateFrequencyContribution(promotion) {
+  calculateFrequencyContribution(_promotion) {
     return {
       avgFrequencyIncrease: 1.5,
       volumeContribution: 2000,
@@ -886,7 +886,7 @@ class PromotionSimulationService {
     };
   }
 
-  async calculateBasketSizeContribution(promotion) {
+  calculateBasketSizeContribution(_promotion) {
     return {
       avgBasketIncrease: 1.3,
       volumeContribution: 3000,
@@ -894,7 +894,7 @@ class PromotionSimulationService {
     };
   }
 
-  async analyzeSustainedImpact(promotion) {
+  analyzeSustainedImpact(_promotion) {
     return {
       postPromotionWeeks: 4,
       retainedUplift: 12,
@@ -909,7 +909,7 @@ class PromotionSimulationService {
     return ((revenue - cost) / cost) * 100;
   }
 
-  assessScenarioRisk(scenario, historicalData) {
+  assessScenarioRisk(_scenario, _historicalData) {
     // Simplified risk assessment
     return 5.5; // Medium risk score
   }

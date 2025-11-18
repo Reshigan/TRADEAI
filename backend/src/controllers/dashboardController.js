@@ -3,19 +3,19 @@ const Promotion = require('../models/Promotion');
 const TradeSpend = require('../models/TradeSpend');
 const SalesHistory = require('../models/SalesHistory');
 const Customer = require('../models/Customer');
-const Product = require('../models/Product');
+// const Product = require('../models/Product');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const { cacheService } = require('../services/cacheService');
 const mlService = require('../services/mlService');
 
 // Executive Dashboard
-exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
+exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const { year = new Date().getFullYear() } = req.query;
-  
+
   // Try to get from cache
   const cacheKey = cacheService.generateKey('dashboard', 'executive', 'year', year);
   const cached = await cacheService.get(cacheKey);
-  
+
   if (cached) {
     return res.json({
       success: true,
@@ -23,12 +23,12 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
       cached: true
     });
   }
-  
+
   const startDate = new Date(year, 0, 1);
   const endDate = new Date(year, 11, 31);
   const currentDate = new Date();
   const ytdEndDate = currentDate > endDate ? endDate : currentDate;
-  
+
   // Get YTD Sales
   const salesData = await SalesHistory.aggregate([
     {
@@ -45,11 +45,11 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-  
+
   // Get last year same period for comparison
   const lastYearStart = new Date(year - 1, 0, 1);
   const lastYearEnd = new Date(year - 1, ytdEndDate.getMonth(), ytdEndDate.getDate());
-  
+
   const lastYearSales = await SalesHistory.aggregate([
     {
       $match: {
@@ -64,7 +64,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-  
+
   // Get Trade Spend
   const tradeSpendData = await TradeSpend.aggregate([
     {
@@ -80,39 +80,39 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-  
+
   // Get Active Promotions
   const activePromotions = await Promotion.countDocuments({
     'period.startDate': { $lte: currentDate },
     'period.endDate': { $gte: currentDate },
     status: 'active'
   });
-  
+
   // Get Budget Performance
   const budgets = await Budget.find({
     year,
     status: 'approved',
     budgetType: 'budget'
   });
-  
-  let budgetPerformance = {
+
+  const budgetPerformance = {
     salesBudget: 0,
     salesActual: salesData[0]?.totalRevenue || 0,
     tradeSpendBudget: 0,
     tradeSpendActual: tradeSpendData.reduce((sum, item) => sum + item.total, 0)
   };
-  
-  budgets.forEach(budget => {
+
+  budgets.forEach((budget) => {
     budgetPerformance.salesBudget += budget.annualTotals.sales.value;
     budgetPerformance.tradeSpendBudget += budget.annualTotals.tradeSpend.total;
   });
-  
+
   // Calculate KPIs
   const kpis = {
     revenue: {
       ytd: salesData[0]?.totalRevenue || 0,
       lastYear: lastYearSales[0]?.totalRevenue || 0,
-      growth: lastYearSales[0]?.totalRevenue ? 
+      growth: lastYearSales[0]?.totalRevenue ?
         ((salesData[0]?.totalRevenue - lastYearSales[0].totalRevenue) / lastYearSales[0].totalRevenue) * 100 : 0,
       vsTarget: budgetPerformance.salesBudget > 0 ?
         ((salesData[0]?.totalRevenue / budgetPerformance.salesBudget) * 100) : 0
@@ -137,7 +137,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
         ((salesData[0].totalRevenue - budgetPerformance.tradeSpendActual) / budgetPerformance.tradeSpendActual) : 0
     }
   };
-  
+
   // Get monthly trend
   const monthlyTrend = await SalesHistory.aggregate([
     {
@@ -155,7 +155,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
     },
     { $sort: { '_id.month': 1 } }
   ]);
-  
+
   // Get top performers
   const topCustomers = await SalesHistory.aggregate([
     {
@@ -181,7 +181,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
     },
     { $unwind: '$customer' }
   ]);
-  
+
   const topProducts = await SalesHistory.aggregate([
     {
       $match: {
@@ -207,7 +207,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
     },
     { $unwind: '$product' }
   ]);
-  
+
   const dashboard = {
     period: {
       year,
@@ -216,12 +216,12 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
     kpis,
     monthlyTrend,
     topPerformers: {
-      customers: topCustomers.map(c => ({
+      customers: topCustomers.map((c) => ({
         id: c._id,
         name: c.customer.name,
         revenue: c.revenue
       })),
-      products: topProducts.map(p => ({
+      products: topProducts.map((p) => ({
         id: p._id,
         name: p.product.name,
         sku: p.product.sku,
@@ -233,10 +233,10 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
     tradeSpendBreakdown: tradeSpendData,
     alerts: await this.generateAlerts('executive', year)
   };
-  
+
   // Cache the result
   await cacheService.set(cacheKey, dashboard, 300); // 5 minutes
-  
+
   res.json({
     success: true,
     data: dashboard
@@ -244,22 +244,22 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, next) => {
 });
 
 // KAM Dashboard
-exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
+exports.getKAMDashboard = asyncHandler(async (req, res, _next) => {
   const { customerId, year = new Date().getFullYear() } = req.query;
-  
+
   // Validate customer access
   if (customerId && !req.user.assignedCustomers.includes(customerId)) {
     throw new AppError('Not authorized to view this customer', 403);
   }
-  
-  const customerFilter = customerId ? 
-    { customer: customerId } : 
+
+  const customerFilter = customerId ?
+    { customer: customerId } :
     { customer: { $in: req.user.assignedCustomers } };
-  
+
   const startDate = new Date(year, 0, 1);
-  const endDate = new Date(year, 11, 31);
+  const _endDate = new Date(year, 11, 31);
   const currentDate = new Date();
-  
+
   // Get customer performance
   const customerPerformance = await SalesHistory.aggregate([
     {
@@ -286,17 +286,17 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
     },
     { $unwind: '$customer' }
   ]);
-  
+
   // Get active promotions
   const activePromotions = await Promotion.find({
     'scope.customers.customer': customerId || { $in: req.user.assignedCustomers },
     'period.endDate': { $gte: currentDate },
     status: { $in: ['approved', 'active'] }
   })
-  .populate('products.product', 'name sku')
-  .sort('period.startDate')
-  .limit(10);
-  
+    .populate('products.product', 'name sku')
+    .sort('period.startDate')
+    .limit(10);
+
   // Get pending approvals
   const pendingApprovals = await TradeSpend.countDocuments({
     ...customerFilter,
@@ -304,7 +304,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
     'approvals.level': req.user.role,
     'approvals.status': 'pending'
   });
-  
+
   // Get wallet balances
   const walletBalances = {};
   if (req.user.wallet) {
@@ -322,7 +322,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   }
-  
+
   // Get trade spend summary
   const tradeSpendSummary = await TradeSpend.aggregate([
     {
@@ -340,7 +340,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-  
+
   // Get product performance
   const productPerformance = await SalesHistory.aggregate([
     {
@@ -368,13 +368,13 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
     },
     { $unwind: '$product' }
   ]);
-  
+
   const dashboard = {
     period: {
       year,
       currentDate
     },
-    customerPerformance: customerPerformance.map(cp => ({
+    customerPerformance: customerPerformance.map((cp) => ({
       customer: {
         id: cp.customer._id,
         name: cp.customer.name,
@@ -388,12 +388,12 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
         avgOrderValue: cp.visits > 0 ? cp.revenue / cp.visits : 0
       }
     })),
-    activePromotions: activePromotions.map(p => ({
+    activePromotions: activePromotions.map((p) => ({
       id: p._id,
       name: p.name,
       period: p.period,
       type: p.promotionType,
-      products: p.products.map(prod => ({
+      products: p.products.map((prod) => ({
         name: prod.product.name,
         sku: prod.product.sku,
         discount: prod.promotionalPrice
@@ -402,7 +402,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
     pendingApprovals,
     walletBalances: Object.values(walletBalances),
     tradeSpendSummary,
-    productPerformance: productPerformance.map(p => ({
+    productPerformance: productPerformance.map((p) => ({
       product: {
         id: p.product._id,
         name: p.product.name,
@@ -413,7 +413,7 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
     })),
     tasks: await this.getKAMTasks(req.user._id)
   };
-  
+
   res.json({
     success: true,
     data: dashboard
@@ -421,13 +421,13 @@ exports.getKAMDashboard = asyncHandler(async (req, res, next) => {
 });
 
 // Analytics Dashboard
-exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
-  const { 
+exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
+  const {
     startDate = new Date(new Date().getFullYear(), 0, 1),
     endDate = new Date(),
     groupBy = 'month'
   } = req.query;
-  
+
   // Sales Analytics
   const salesAnalytics = await SalesHistory.aggregate([
     {
@@ -446,7 +446,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
     },
     { $sort: { '_id': 1 } }
   ]);
-  
+
   // Channel Performance
   const channelPerformance = await SalesHistory.aggregate([
     {
@@ -471,7 +471,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-  
+
   // Promotion Effectiveness
   const promotionAnalytics = await Promotion.aggregate([
     {
@@ -491,28 +491,28 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
       }
     }
   ]);
-  
+
   // Anomalies
   const recentSales = await SalesHistory.find({
     date: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
   }).select('date customer product quantity revenue anomaly');
-  
+
   const anomalies = await mlService.detectAnomalies(
-    recentSales.map(s => ({
+    recentSales.map((s) => ({
       date: s.date,
       value: s.revenue.gross,
       customer: s.customer,
       product: s.product
     }))
   );
-  
+
   // Forecast
   const forecast = await mlService.generateBudgetForecast({
     year: new Date().getFullYear(),
     scope: {},
     historicalMonths: 12
   });
-  
+
   const dashboard = {
     period: {
       startDate,
@@ -525,7 +525,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
     forecast: forecast.monthlyForecasts.slice(0, 3),
     insights: await this.generateInsights(salesAnalytics, channelPerformance, promotionAnalytics)
   };
-  
+
   res.json({
     success: true,
     data: dashboard
@@ -533,10 +533,10 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, next) => {
 });
 
 // Real-time Dashboard Updates
-exports.subscribeToUpdates = asyncHandler(async (req, res, next) => {
+exports.subscribeToUpdates = asyncHandler((req, res, _next) => {
   const { dashboardType } = req.params;
   const io = req.app.get('io');
-  
+
   // Join dashboard room
   const socketId = req.headers['x-socket-id'];
   if (socketId) {
@@ -545,7 +545,7 @@ exports.subscribeToUpdates = asyncHandler(async (req, res, next) => {
       socket.join(`dashboard:${dashboardType}`);
     }
   }
-  
+
   res.json({
     success: true,
     message: `Subscribed to ${dashboardType} dashboard updates`
@@ -555,16 +555,16 @@ exports.subscribeToUpdates = asyncHandler(async (req, res, next) => {
 // Helper functions
 exports.generateAlerts = async (dashboardType, year) => {
   const alerts = [];
-  
+
   // Budget utilization alerts
   const budgets = await Budget.find({
     year,
     status: 'approved'
   });
-  
+
   for (const budget of budgets) {
     const utilization = (budget.annualTotals.tradeSpend.total / budget.annualTotals.tradeSpend.total) * 100;
-    
+
     if (utilization > 90) {
       alerts.push({
         type: 'budget',
@@ -574,7 +574,7 @@ exports.generateAlerts = async (dashboardType, year) => {
       });
     }
   }
-  
+
   // Promotion alerts
   const upcomingPromotions = await Promotion.countDocuments({
     'period.startDate': {
@@ -583,7 +583,7 @@ exports.generateAlerts = async (dashboardType, year) => {
     },
     status: 'approved'
   });
-  
+
   if (upcomingPromotions > 0) {
     alerts.push({
       type: 'promotion',
@@ -592,19 +592,19 @@ exports.generateAlerts = async (dashboardType, year) => {
       action: 'Ensure execution readiness'
     });
   }
-  
+
   return alerts;
 };
 
 exports.getKAMTasks = async (userId) => {
   const tasks = [];
-  
+
   // Pending approvals
   const pendingApprovals = await TradeSpend.countDocuments({
     createdBy: userId,
     status: 'submitted'
   });
-  
+
   if (pendingApprovals > 0) {
     tasks.push({
       type: 'approval',
@@ -612,7 +612,7 @@ exports.getKAMTasks = async (userId) => {
       priority: 'high'
     });
   }
-  
+
   // Expiring promotions
   const expiringPromotions = await Promotion.countDocuments({
     createdBy: userId,
@@ -622,7 +622,7 @@ exports.getKAMTasks = async (userId) => {
     },
     status: 'active'
   });
-  
+
   if (expiringPromotions > 0) {
     tasks.push({
       type: 'promotion',
@@ -630,7 +630,7 @@ exports.getKAMTasks = async (userId) => {
       priority: 'medium'
     });
   }
-  
+
   return tasks;
 };
 
@@ -662,15 +662,15 @@ exports.getGroupByExpression = (groupBy) => {
   }
 };
 
-exports.generateInsights = async (salesData, channelData, promotionData) => {
+exports.generateInsights = (salesData, channelData, promotionData) => {
   const insights = [];
-  
+
   // Sales trend insight
   if (salesData.length > 1) {
     const lastPeriod = salesData[salesData.length - 1];
     const previousPeriod = salesData[salesData.length - 2];
     const growth = ((lastPeriod.revenue - previousPeriod.revenue) / previousPeriod.revenue) * 100;
-    
+
     insights.push({
       type: 'trend',
       title: growth > 0 ? 'Sales Growing' : 'Sales Declining',
@@ -678,7 +678,7 @@ exports.generateInsights = async (salesData, channelData, promotionData) => {
       impact: Math.abs(growth) > 10 ? 'high' : 'medium'
     });
   }
-  
+
   // Channel performance insight
   const topChannel = channelData.sort((a, b) => b.revenue - a.revenue)[0];
   if (topChannel) {
@@ -689,7 +689,7 @@ exports.generateInsights = async (salesData, channelData, promotionData) => {
       impact: 'medium'
     });
   }
-  
+
   // Promotion effectiveness
   const bestPromotion = promotionData.sort((a, b) => b.avgROI - a.avgROI)[0];
   if (bestPromotion) {
@@ -700,6 +700,6 @@ exports.generateInsights = async (salesData, channelData, promotionData) => {
       impact: 'high'
     });
   }
-  
+
   return insights;
 };

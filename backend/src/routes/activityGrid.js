@@ -3,7 +3,7 @@ const router = express.Router();
 const activityGridController = require('../controllers/activityGridController');
 const { authorize, checkPermission } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
-const { validate, commonValidations } = require('../middleware/validation');
+const { validate, _commonValidations } = require('../middleware/validation');
 
 // Get activity grids list
 router.get('/list',

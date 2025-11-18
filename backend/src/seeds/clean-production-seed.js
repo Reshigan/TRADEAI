@@ -314,7 +314,7 @@ const cleanAndSeedProductionData = async () => {
     }
     console.log(`✓ ${campaigns.length} campaigns created`);
 
-    console.log(`\nProduction data seeding completed successfully!`);
+    console.log('\nProduction data seeding completed successfully!');
     console.log(`Created/Verified:
     - 2 Companies (GONXT, Test Company)
     - 2 Admin Users

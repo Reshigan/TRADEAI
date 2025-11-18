@@ -278,7 +278,7 @@ transactionSchema.virtual('customer', {
 });
 
 // Pre-save middleware to generate transaction number
-transactionSchema.pre('save', async function(next) {
+transactionSchema.pre('save', function (next) {
   if (this.isNew && !this.transactionNumber) {
     const prefix = this.transactionType.toUpperCase().substring(0, 3);
     const timestamp = Date.now().toString().slice(-8);
@@ -289,12 +289,12 @@ transactionSchema.pre('save', async function(next) {
 });
 
 // Instance method to calculate totals
-transactionSchema.methods.calculateTotals = function() {
+transactionSchema.methods.calculateTotals = function () {
   let gross = 0;
   let discount = 0;
   let tax = 0;
 
-  this.items.forEach(item => {
+  this.items.forEach((item) => {
     gross += item.quantity * item.unitPrice;
     discount += item.discount || 0;
     tax += item.tax || 0;
@@ -307,8 +307,8 @@ transactionSchema.methods.calculateTotals = function() {
 };
 
 // Instance method to approve transaction
-transactionSchema.methods.approve = async function(userId, comments) {
-  const approver = this.workflow.approvers.find(a => 
+transactionSchema.methods.approve = async function (userId, comments) {
+  const approver = this.workflow.approvers.find((a) =>
     a.userId.toString() === userId.toString() && a.action === 'pending'
   );
 
@@ -321,7 +321,7 @@ transactionSchema.methods.approve = async function(userId, comments) {
   approver.comments = comments;
 
   // Check if all approvers have approved
-  const allApproved = this.workflow.approvers.every(a => a.action === 'approved');
+  const allApproved = this.workflow.approvers.every((a) => a.action === 'approved');
 
   if (allApproved) {
     this.status = 'approved';
@@ -334,8 +334,8 @@ transactionSchema.methods.approve = async function(userId, comments) {
 };
 
 // Instance method to reject transaction
-transactionSchema.methods.reject = async function(userId, comments) {
-  const approver = this.workflow.approvers.find(a => 
+transactionSchema.methods.reject = async function (userId, comments) {
+  const approver = this.workflow.approvers.find((a) =>
     a.userId.toString() === userId.toString() && a.action === 'pending'
   );
 
@@ -354,11 +354,11 @@ transactionSchema.methods.reject = async function(userId, comments) {
 };
 
 // Static method to get pending approvals for a user
-transactionSchema.statics.getPendingApprovals = function(userId) {
+transactionSchema.statics.getPendingApprovals = function (userId) {
   return this.find({
     'workflow.approvers': {
       $elemMatch: {
-        userId: userId,
+        userId,
         action: 'pending'
       }
     },

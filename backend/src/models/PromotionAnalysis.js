@@ -15,7 +15,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
     ref: 'Promotion',
     required: true
   },
-  
+
   // Analysis Type
   analysisType: {
     type: String,
@@ -32,7 +32,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       max: 100,
       required: true
     },
-    
+
     // Predicted Metrics
     predictedMetrics: {
       volumeLift: {
@@ -58,7 +58,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
         confidence: Number
       }
     },
-    
+
     // Risk Assessment
     riskFactors: [{
       factor: String,
@@ -70,7 +70,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       mitigation: String,
       probability: Number
     }],
-    
+
     // Model Confidence
     modelConfidence: {
       overall: Number,
@@ -106,7 +106,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
         historicalPerformance: Number
       }
     },
-    
+
     // Product Characteristics
     productFeatures: {
       category: String,
@@ -123,7 +123,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       elasticity: Number,
       competitivePosition: Number
     },
-    
+
     // Customer Characteristics
     customerFeatures: {
       tier: String,
@@ -134,7 +134,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       promotionResponsiveness: Number,
       historicalPerformance: Number
     },
-    
+
     // Market Characteristics
     marketFeatures: {
       competitiveActivity: Number,
@@ -163,7 +163,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       keyDifferences: [String],
       lessons: [String]
     }],
-    
+
     // Benchmark Performance
     benchmarks: {
       categoryAverage: {
@@ -182,7 +182,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
         roi: Number
       }
     },
-    
+
     // Trend Analysis
     trends: {
       promotionFrequency: Number,
@@ -200,11 +200,11 @@ const promotionAnalysisSchema = new mongoose.Schema({
     },
     title: String,
     description: String,
-    
+
     // Current vs Recommended
     current: mongoose.Schema.Types.Mixed,
     recommended: mongoose.Schema.Types.Mixed,
-    
+
     // Impact Estimation
     expectedImpact: {
       volumeLift: Number,
@@ -212,7 +212,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       profitImprovement: Number,
       riskReduction: Number
     },
-    
+
     // Implementation
     implementation: {
       difficulty: {
@@ -223,14 +223,14 @@ const promotionAnalysisSchema = new mongoose.Schema({
       resources: [String],
       dependencies: [String]
     },
-    
+
     // Priority and Confidence
     priority: {
       type: String,
       enum: ['low', 'medium', 'high', 'critical']
     },
     confidence: Number,
-    
+
     // Supporting Evidence
     evidence: [{
       type: String,
@@ -243,7 +243,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
   alternatives: [{
     name: String,
     description: String,
-    
+
     // Promotion Structure
     structure: {
       discountType: String,
@@ -252,7 +252,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       timing: String,
       targeting: mongoose.Schema.Types.Mixed
     },
-    
+
     // Predicted Performance
     predictedPerformance: {
       successProbability: Number,
@@ -261,17 +261,17 @@ const promotionAnalysisSchema = new mongoose.Schema({
       roi: Number,
       profitability: Number
     },
-    
+
     // Advantages and Disadvantages
     advantages: [String],
     disadvantages: [String],
-    
+
     // Risk Assessment
     riskLevel: {
       type: String,
       enum: ['low', 'medium', 'high']
     },
-    
+
     // Implementation Complexity
     complexity: {
       type: String,
@@ -288,7 +288,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       customerResponse: Number,
       lastUpdated: Date
     },
-    
+
     // Performance vs Prediction
     predictionAccuracy: {
       volumeAccuracy: Number,
@@ -296,7 +296,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       participationAccuracy: Number,
       overallAccuracy: Number
     },
-    
+
     // Alerts and Flags
     alerts: [{
       type: {
@@ -311,7 +311,7 @@ const promotionAnalysisSchema = new mongoose.Schema({
       timestamp: Date,
       acknowledged: Boolean
     }],
-    
+
     // Adjustment Recommendations
     adjustmentRecommendations: [{
       type: String,
@@ -408,15 +408,15 @@ promotionAnalysisSchema.index({ company: 1, 'analysisMetadata.analysisDate': -1 
 promotionAnalysisSchema.index({ 'modelInfo.modelVersion': 1 });
 
 // Compound indexes for complex queries
-promotionAnalysisSchema.index({ 
-  company: 1, 
-  analysisType: 1, 
+promotionAnalysisSchema.index({
+  company: 1,
+  analysisType: 1,
   status: 1,
-  'analysisMetadata.analysisDate': -1 
+  'analysisMetadata.analysisDate': -1
 });
 
 // Virtual for success category
-promotionAnalysisSchema.virtual('successCategory').get(function() {
+promotionAnalysisSchema.virtual('successCategory').get(function () {
   const probability = this.prediction.successProbability;
   if (probability >= 80) return 'highly_likely';
   if (probability >= 60) return 'likely';
@@ -426,12 +426,12 @@ promotionAnalysisSchema.virtual('successCategory').get(function() {
 });
 
 // Virtual for risk level
-promotionAnalysisSchema.virtual('overallRiskLevel').get(function() {
+promotionAnalysisSchema.virtual('overallRiskLevel').get(function () {
   if (!this.prediction.riskFactors || this.prediction.riskFactors.length === 0) return 'low';
-  
-  const criticalRisks = this.prediction.riskFactors.filter(r => r.severity === 'critical').length;
-  const highRisks = this.prediction.riskFactors.filter(r => r.severity === 'high').length;
-  
+
+  const criticalRisks = this.prediction.riskFactors.filter((r) => r.severity === 'critical').length;
+  const highRisks = this.prediction.riskFactors.filter((r) => r.severity === 'high').length;
+
   if (criticalRisks > 0) return 'critical';
   if (highRisks > 2) return 'high';
   if (highRisks > 0) return 'medium';
@@ -439,11 +439,11 @@ promotionAnalysisSchema.virtual('overallRiskLevel').get(function() {
 });
 
 // Virtual for recommendation priority
-promotionAnalysisSchema.virtual('topRecommendation').get(function() {
+promotionAnalysisSchema.virtual('topRecommendation').get(function () {
   if (!this.recommendations || this.recommendations.length === 0) return null;
-  
+
   return this.recommendations
-    .filter(r => r.priority === 'critical' || r.priority === 'high')
+    .filter((r) => r.priority === 'critical' || r.priority === 'high')
     .sort((a, b) => {
       const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
       return priorityOrder[b.priority] - priorityOrder[a.priority] || b.confidence - a.confidence;
@@ -451,39 +451,39 @@ promotionAnalysisSchema.virtual('topRecommendation').get(function() {
 });
 
 // Method to update real-time metrics
-promotionAnalysisSchema.methods.updateRealTimeMetrics = function(metrics) {
+promotionAnalysisSchema.methods.updateRealTimeMetrics = function (metrics) {
   this.realTimeMetrics.currentPerformance = {
     ...this.realTimeMetrics.currentPerformance,
     ...metrics,
     lastUpdated: new Date()
   };
-  
+
   // Calculate prediction accuracy
   const predicted = this.prediction.predictedMetrics;
   const actual = this.realTimeMetrics.currentPerformance;
-  
+
   if (predicted.volumeLift && actual.volumeToDate) {
-    this.realTimeMetrics.predictionAccuracy.volumeAccuracy = 
+    this.realTimeMetrics.predictionAccuracy.volumeAccuracy =
       Math.max(0, 100 - Math.abs((actual.volumeToDate - predicted.volumeLift.units) / predicted.volumeLift.units * 100));
   }
-  
+
   if (predicted.revenueLift && actual.revenueToDate) {
-    this.realTimeMetrics.predictionAccuracy.revenueAccuracy = 
+    this.realTimeMetrics.predictionAccuracy.revenueAccuracy =
       Math.max(0, 100 - Math.abs((actual.revenueToDate - predicted.revenueLift.amount) / predicted.revenueLift.amount * 100));
   }
-  
+
   // Calculate overall accuracy
-  const accuracies = Object.values(this.realTimeMetrics.predictionAccuracy).filter(a => a > 0);
+  const accuracies = Object.values(this.realTimeMetrics.predictionAccuracy).filter((a) => a > 0);
   if (accuracies.length > 0) {
-    this.realTimeMetrics.predictionAccuracy.overallAccuracy = 
+    this.realTimeMetrics.predictionAccuracy.overallAccuracy =
       accuracies.reduce((sum, acc) => sum + acc, 0) / accuracies.length;
   }
-  
+
   return this.save();
 };
 
 // Method to add alert
-promotionAnalysisSchema.methods.addAlert = function(type, severity, message) {
+promotionAnalysisSchema.methods.addAlert = function (type, severity, message) {
   this.realTimeMetrics.alerts.push({
     type,
     severity,
@@ -491,38 +491,38 @@ promotionAnalysisSchema.methods.addAlert = function(type, severity, message) {
     timestamp: new Date(),
     acknowledged: false
   });
-  
+
   return this.save();
 };
 
 // Method to calculate quality score
-promotionAnalysisSchema.methods.calculateQualityScore = function() {
+promotionAnalysisSchema.methods.calculateQualityScore = function () {
   const weights = {
     dataCompleteness: 0.25,
     dataAccuracy: 0.25,
     modelReliability: 0.25,
     predictionStability: 0.25
   };
-  
-  this.quality.overallQuality = 
+
+  this.quality.overallQuality =
     (this.quality.dataCompleteness || 0) * weights.dataCompleteness +
     (this.quality.dataAccuracy || 0) * weights.dataAccuracy +
     (this.quality.modelReliability || 0) * weights.modelReliability +
     (this.quality.predictionStability || 0) * weights.predictionStability;
-  
+
   return this.quality.overallQuality;
 };
 
 // Static method to get analysis summary for company
-promotionAnalysisSchema.statics.getCompanyAnalyticsSummary = function(companyId, dateRange = {}) {
+promotionAnalysisSchema.statics.getCompanyAnalyticsSummary = function (companyId, dateRange = {}) {
   const matchStage = { company: companyId };
-  
+
   if (dateRange.startDate || dateRange.endDate) {
     matchStage['analysisMetadata.analysisDate'] = {};
     if (dateRange.startDate) matchStage['analysisMetadata.analysisDate'].$gte = dateRange.startDate;
     if (dateRange.endDate) matchStage['analysisMetadata.analysisDate'].$lte = dateRange.endDate;
   }
-  
+
   return this.aggregate([
     { $match: matchStage },
     {
@@ -552,7 +552,7 @@ promotionAnalysisSchema.statics.getCompanyAnalyticsSummary = function(companyId,
 };
 
 // Static method to find promotions needing analysis
-promotionAnalysisSchema.statics.findPromotionsNeedingAnalysis = function(companyId) {
+promotionAnalysisSchema.statics.findPromotionsNeedingAnalysis = function (companyId) {
   return this.aggregate([
     {
       $lookup: {
@@ -587,12 +587,12 @@ promotionAnalysisSchema.statics.findPromotionsNeedingAnalysis = function(company
 };
 
 // Pre-save middleware
-promotionAnalysisSchema.pre('save', function(next) {
+promotionAnalysisSchema.pre('save', function (next) {
   // Calculate quality score if not set
   if (!this.quality.overallQuality) {
     this.calculateQualityScore();
   }
-  
+
   next();
 });
 

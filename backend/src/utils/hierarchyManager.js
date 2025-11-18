@@ -25,7 +25,7 @@ class HierarchyManager {
    */
   parsePathToAncestors(path) {
     if (!path) return [];
-    return path.split('/').filter(id => id && id.length > 0);
+    return path.split('/').filter((id) => id && id.length > 0);
   }
 
   /**
@@ -45,15 +45,15 @@ class HierarchyManager {
       let level = 0;
 
       if (parentId) {
-        const parent = await this.model.findOne({ 
-          _id: parentId, 
-          tenantId 
+        const parent = await this.model.findOne({
+          _id: parentId,
+          tenantId
         });
-        
+
         if (!parent) {
           throw new Error('Parent node not found');
         }
-        
+
         parentPath = parent.path || '';
         level = parent.level + 1;
       }
@@ -100,17 +100,17 @@ class HierarchyManager {
 
       const oldPath = node.path;
       const oldParentId = node.parentId;
-      
+
       let newParentPath = '';
       let newLevel = 0;
 
       if (newParentId) {
         // Check if new parent exists and is not a descendant
-        const newParent = await this.model.findOne({ 
-          _id: newParentId, 
-          tenantId 
+        const newParent = await this.model.findOne({
+          _id: newParentId,
+          tenantId
         });
-        
+
         if (!newParent) {
           throw new Error('New parent not found');
         }
@@ -153,7 +153,7 @@ class HierarchyManager {
         );
       }
 
-      return await this.model.findOne({ _id: nodeId, tenantId });
+      return this.model.findOne({ _id: nodeId, tenantId });
 
     } catch (error) {
       throw new Error(`Failed to move node: ${error.message}`);
@@ -236,11 +236,11 @@ class HierarchyManager {
     if (!node || !node.path) return [];
 
     const ancestorIds = this.parsePathToAncestors(node.path).slice(0, -1); // Exclude self
-    
+
     if (ancestorIds.length === 0) return [];
 
-    return await this.model.find({
-      _id: { $in: ancestorIds.map(id => new mongoose.Types.ObjectId(id)) },
+    return this.model.find({
+      _id: { $in: ancestorIds.map((id) => new mongoose.Types.ObjectId(id)) },
       tenantId
     }).sort({ level: 1 });
   }
@@ -252,7 +252,7 @@ class HierarchyManager {
     const node = await this.model.findOne({ _id: nodeId, tenantId });
     if (!node) return [];
 
-    let query = {
+    const query = {
       tenantId,
       path: { $regex: `^${this.escapeRegex(node.path)}` },
       _id: { $ne: nodeId } // Exclude self
@@ -262,14 +262,14 @@ class HierarchyManager {
       query.level = { $lte: node.level + maxDepth };
     }
 
-    return await this.model.find(query).sort({ level: 1, path: 1 });
+    return this.model.find(query).sort({ level: 1, path: 1 });
   }
 
   /**
    * Get direct children of a node
    */
-  async getDirectChildren(tenantId, nodeId) {
-    return await this.model.find({
+  getDirectChildren(tenantId, nodeId) {
+    return this.model.find({
       tenantId,
       parentId: nodeId
     }).sort({ name: 1 });
@@ -282,7 +282,7 @@ class HierarchyManager {
     const node = await this.model.findOne({ _id: nodeId, tenantId });
     if (!node) return [];
 
-    let query = {
+    const query = {
       tenantId,
       parentId: node.parentId
     };
@@ -291,15 +291,15 @@ class HierarchyManager {
       query._id = { $ne: nodeId };
     }
 
-    return await this.model.find(query).sort({ name: 1 });
+    return this.model.find(query).sort({ name: 1 });
   }
 
   /**
    * Get tree structure starting from a node
    */
   async getTree(tenantId, rootId = null, maxDepth = null) {
-    let rootQuery = { tenantId };
-    
+    const rootQuery = { tenantId };
+
     if (rootId) {
       rootQuery._id = rootId;
     } else {
@@ -307,27 +307,27 @@ class HierarchyManager {
     }
 
     const roots = await this.model.find(rootQuery).sort({ name: 1 });
-    
+
     const buildTree = async (nodes) => {
       const result = [];
-      
+
       for (const node of nodes) {
         const nodeObj = node.toObject();
-        
+
         if (maxDepth === null || node.level < maxDepth) {
           const children = await this.getDirectChildren(tenantId, node._id);
           if (children.length > 0) {
             nodeObj.children = await buildTree(children);
           }
         }
-        
+
         result.push(nodeObj);
       }
-      
+
       return result;
     };
 
-    return await buildTree(roots);
+    return buildTree(roots);
   }
 
   /**
@@ -336,9 +336,9 @@ class HierarchyManager {
   async getPathToRoot(tenantId, nodeId) {
     const ancestors = await this.getAncestors(tenantId, nodeId);
     const node = await this.model.findOne({ _id: nodeId, tenantId });
-    
+
     if (!node) return [];
-    
+
     return [...ancestors, node];
   }
 
@@ -346,7 +346,7 @@ class HierarchyManager {
    * Search within hierarchy
    */
   async searchInHierarchy(tenantId, searchTerm, rootId = null) {
-    let query = {
+    const query = {
       tenantId,
       $or: [
         { name: { $regex: searchTerm, $options: 'i' } },
@@ -361,7 +361,7 @@ class HierarchyManager {
       }
     }
 
-    return await this.model.find(query).sort({ level: 1, name: 1 });
+    return this.model.find(query).sort({ level: 1, name: 1 });
   }
 
   /**
@@ -403,7 +403,7 @@ class HierarchyManager {
       issues.push({
         type: 'orphaned_nodes',
         count: orphanedNodes.length,
-        nodes: orphanedNodes.map(n => n._id)
+        nodes: orphanedNodes.map((n) => n._id)
       });
     }
 

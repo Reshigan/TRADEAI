@@ -93,7 +93,7 @@ exports.calculateIncremental = asyncHandler(async (req, res, next) => {
 /**
  * Get available baseline methods
  */
-exports.getMethods = asyncHandler(async (req, res, next) => {
+exports.getMethods = asyncHandler((req, res, _next) => {
   res.json({
     success: true,
     data: {

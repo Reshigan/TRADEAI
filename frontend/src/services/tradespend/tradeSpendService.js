@@ -1,0 +1,124 @@
+import apiClient from '../apiClient';
+
+
+class TradeSpendService {
+  constructor() {
+    this.cache = new Map();
+    this.cacheTTL = 5 * 60 * 1000; // 5 minutes
+  }
+
+  getCacheKey(method, params) {
+    return `${method}_${JSON.stringify(params)}`;
+  }
+
+  getFromCache(key) {
+    const cached = this.cache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
+      return cached.data;
+    }
+    this.cache.delete(key);
+    return null;
+  }
+
+  setCache(key, data) {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now()
+    });
+  }
+
+  clearCache() {
+    this.cache.clear();
+  }
+
+  async getTradeSpends(filters = {}) {
+    const cacheKey = this.getCacheKey('getTradeSpends', filters);
+    const cached = this.getFromCache(cacheKey);
+    if (cached) return cached;
+
+    const params = new URLSearchParams();
+    if (filters.spendType) params.append('spendType', filters.spendType);
+    if (filters.status) params.append('status', filters.status);
+    if (filters.customer) params.append('customer', filters.customer);
+    if (filters.vendor) params.append('vendor', filters.vendor);
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.page) params.append('page', filters.page);
+    if (filters.limit) params.append('limit', filters.limit);
+
+    const response = await apiClient.get(`/trade-spends?${params.toString()}`);
+
+    this.setCache(cacheKey, response.data);
+    return response.data;
+  }
+
+  async getTradeSpend(id) {
+    const response = await apiClient.get(`/trade-spends/${id}`);
+    return response.data;
+  }
+
+  async createTradeSpend(data) {
+    const response = await apiClient.post(`/trade-spends`, data);
+    this.clearCache();
+    return response.data;
+  }
+
+  async updateTradeSpend(id, data) {
+    const response = await apiClient.put(`/trade-spends/${id}`, data);
+    this.clearCache();
+    return response.data;
+  }
+
+  async deleteTradeSpend(id) {
+    const response = await apiClient.delete(`/trade-spends/${id}`);
+    this.clearCache();
+    return response.data;
+  }
+
+  async submitForApproval(id) {
+    const response = await apiClient.post(`/trade-spends/${id}/submit`, {});
+    this.clearCache();
+    return response.data;
+  }
+
+  async approveTradeSpend(id, approvedAmount, comments) {
+    const response = await apiClient.post(`/trade-spends/${id}/approve`, { approvedAmount, comments });
+    this.clearCache();
+    return response.data;
+  }
+
+  async rejectTradeSpend(id, reason) {
+    const response = await apiClient.post(`/trade-spends/${id}/reject`, { reason });
+    this.clearCache();
+    return response.data;
+  }
+
+  async recordSpend(id, amount, documents = []) {
+    const response = await apiClient.post(`/trade-spends/${id}/record-spend`, { amount, documents });
+    this.clearCache();
+    return response.data;
+  }
+
+  async getTradeSpendSummary(year, groupBy = 'month') {
+    const cacheKey = this.getCacheKey('getTradeSpendSummary', { year, groupBy });
+    const cached = this.getFromCache(cacheKey);
+    if (cached) return cached;
+
+    const params = new URLSearchParams();
+    if (year) params.append('year', year);
+    if (groupBy) params.append('groupBy', groupBy);
+
+    const response = await apiClient.get(`/trade-spends/summary?${params.toString()}`);
+
+    this.setCache(cacheKey, response.data);
+    return response.data;
+  }
+
+  async getWalletBalance(customerId) {
+    const response = await apiClient.get(`/trade-spends/wallet/${customerId}`);
+    return response.data;
+  }
+}
+
+const tradeSpendService = new TradeSpendService();
+export default tradeSpendService;

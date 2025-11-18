@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 // Metrics collection for Prometheus
 let requestCount = 0;
 let requestDuration = [];
-let lastRequestTime = Date.now();
+const _lastRequestTime = {};
 
 let redis = null;
 
@@ -29,7 +29,7 @@ try {
 }
 
 // Basic health check - fast response
-router.get('/health', async (req, res) => {
+router.get('/health', (req, res) => {
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -44,7 +44,7 @@ router.get('/health', async (req, res) => {
 // Detailed health check with dependency status
 router.get('/health/detailed', async (req, res) => {
   const startTime = Date.now();
-  
+
   const health = {
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -68,7 +68,7 @@ router.get('/health/detailed', async (req, res) => {
       const pingStart = Date.now();
       await mongoose.connection.db.admin().ping();
       const latency = Date.now() - pingStart;
-      
+
       health.checks.mongodb = {
         status: 'healthy',
         state: 'connected',
@@ -98,7 +98,7 @@ router.get('/health/detailed', async (req, res) => {
       const pingStart = Date.now();
       await redis.ping();
       const latency = Date.now() - pingStart;
-      
+
       health.checks.redis = {
         status: 'healthy',
         latency: `${latency}ms`
@@ -148,9 +148,9 @@ router.get('/health/detailed', async (req, res) => {
   health.responseTime = `${Date.now() - startTime}ms`;
 
   // Determine HTTP status code
-  const statusCode = health.status === 'healthy' ? 200 : 
-                     health.status === 'warning' ? 200 : 
-                     health.status === 'degraded' ? 503 : 500;
+  const statusCode = health.status === 'healthy' ? 200 :
+    health.status === 'warning' ? 200 :
+      health.status === 'degraded' ? 503 : 500;
 
   res.status(statusCode).json(health);
 });
@@ -203,11 +203,11 @@ router.get('/health/ready', readinessHandler);
 router.get('/health/readiness', readinessHandler);
 
 // Startup probe (for slow-starting applications)
-router.get('/health/startup', async (req, res) => {
+router.get('/health/startup', (req, res) => {
   try {
     // Check if application has fully started
     const isStarted = mongoose.connection.readyState === 1;
-    
+
     if (isStarted) {
       res.status(200).json({
         status: 'started',
@@ -233,10 +233,10 @@ router.get('/health/test-tenant/:tenantId', async (req, res) => {
   try {
     const Tenant = require('../models/Tenant');
     const tenantId = req.params.tenantId;
-    
+
     console.log('Looking up tenant with ID:', tenantId);
     const tenant = await Tenant.findById(tenantId);
-    
+
     if (tenant) {
       res.json({
         success: true,
@@ -269,10 +269,10 @@ router.get('/metrics', async (req, res) => {
     const memUsage = process.memoryUsage();
     const cpuUsage = process.cpuUsage();
     const uptime = process.uptime();
-    
+
     // MongoDB connection status
     const mongoConnected = mongoose.connection.readyState === 1 ? 1 : 0;
-    
+
     // Redis connection status
     let redisConnected = 0;
     if (redis) {
@@ -283,7 +283,7 @@ router.get('/metrics', async (req, res) => {
         redisConnected = 0;
       }
     }
-    
+
     // Basic metrics in Prometheus format
     const metrics = `
 # HELP nodejs_heap_size_used_bytes Process heap space used in bytes
@@ -337,7 +337,7 @@ tradeai_http_requests_total ${requestCount}
 
     res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
     res.send(metrics);
-    
+
   } catch (error) {
     logger.error('Error generating metrics:', error);
     res.status(500).send('# Error generating metrics\n');
@@ -348,19 +348,19 @@ tradeai_http_requests_total ${requestCount}
 router.use((req, res, next) => {
   requestCount++;
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     requestDuration.push(duration);
-    
+
     // Keep only last 100 request durations
     if (requestDuration.length > 100) {
       requestDuration = requestDuration.slice(-100);
     }
-    
-    lastRequestTime = Date.now();
+
+    _lastRequestTime[req.path] = Date.now();
   });
-  
+
   next();
 });
 

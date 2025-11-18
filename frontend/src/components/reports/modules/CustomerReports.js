@@ -34,15 +34,11 @@ import {
   MoreVert as MoreIcon,
   DateRange as DateRangeIcon,
   FilterList as FilterIcon,
-  Star as StarIcon,
-  ShoppingCart as OrdersIcon,
-  AttachMoney as RevenueIcon
+  Star as StarIcon
 } from '@mui/icons-material';
 import {
   LineChart,
   Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart,

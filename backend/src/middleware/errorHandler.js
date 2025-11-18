@@ -24,16 +24,16 @@ const handleMongoError = (error) => {
       'DUPLICATE_ENTRY'
     );
   }
-  
+
   if (error.name === 'ValidationError') {
-    const errors = Object.values(error.errors).map(err => err.message);
+    const errors = Object.values(error.errors).map((err) => err.message);
     return new AppError(
       `Validation error: ${errors.join(', ')}`,
       400,
       'VALIDATION_ERROR'
     );
   }
-  
+
   if (error.name === 'CastError') {
     return new AppError(
       `Invalid ${error.path}: ${error.value}`,
@@ -41,37 +41,37 @@ const handleMongoError = (error) => {
       'INVALID_ID'
     );
   }
-  
+
   return error;
 };
 
 // JWT error handler
-const handleJWTError = () => 
+const handleJWTError = () =>
   new AppError('Invalid token. Please log in again.', 401, 'INVALID_TOKEN');
 
-const handleJWTExpiredError = () => 
+const handleJWTExpiredError = () =>
   new AppError('Your token has expired. Please log in again.', 401, 'TOKEN_EXPIRED');
 
 // Main error handler middleware
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   let error = { ...err };
   error.message = err.message;
-  
+
   // Log error
   logger.logError(err, req, {
     statusCode: err.statusCode,
     code: err.code
   });
-  
+
   // MongoDB errors
   if (err.name === 'MongoError' || err.name === 'ValidationError' || err.name === 'CastError') {
     error = handleMongoError(err);
   }
-  
+
   // JWT errors
   if (err.name === 'JsonWebTokenError') error = handleJWTError();
   if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
-  
+
   // Multer errors
   if (err.name === 'MulterError') {
     if (err.code === 'LIMIT_FILE_SIZE') {
@@ -80,11 +80,11 @@ const errorHandler = (err, req, res, next) => {
       error = new AppError('File upload error', 400, 'FILE_UPLOAD_ERROR');
     }
   }
-  
+
   // Set default values
   error.statusCode = error.statusCode || 500;
   error.status = error.status || 'error';
-  
+
   // Send error response
   const response = {
     success: false,
@@ -93,19 +93,19 @@ const errorHandler = (err, req, res, next) => {
       code: error.code
     }
   };
-  
+
   // Add stack trace in development
   if (config.env === 'development') {
     response.error.stack = err.stack;
     response.error.details = err;
   }
-  
+
   // Don't leak error details in production
   if (config.env === 'production' && !error.isOperational) {
     response.error.message = 'Something went wrong';
     response.error.code = 'INTERNAL_ERROR';
   }
-  
+
   res.status(error.statusCode).json(response);
 };
 

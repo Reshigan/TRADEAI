@@ -41,6 +41,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     year: new Date().getFullYear() + 1,
     customer_id: '',
     total_amount: '',
+    budgetCategory: 'marketing',
     status: 'draft',
     notes: ''
   });
@@ -58,6 +59,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
         year: budget.year,
         customer_id: budget.customer.id,
         total_amount: budget.total_amount,
+        budgetCategory: budget.budgetCategory || 'marketing',
         status: budget.status,
         notes: budget.notes || ''
       });
@@ -108,6 +110,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
         code: `BUD-${formData.year}-${customerCode}`,
         year: parseInt(formData.year),
         budgetType: 'budget',
+        budgetCategory: formData.budgetCategory || 'marketing',
         scope: {
           level: 'customer',
           customers: [formData.customer_id]
@@ -200,6 +203,22 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
                 startAdornment: <InputAdornment position="start">{getCurrencySymbol()}</InputAdornment>,
               }}
             />
+          </Grid>
+          
+          <Grid item xs={12}>
+            <FormControl fullWidth required>
+              <InputLabel id="budget-category-label">Budget Category</InputLabel>
+              <Select
+                labelId="budget-category-label"
+                name="budgetCategory"
+                value={formData.budgetCategory}
+                onChange={handleChange}
+                label="Budget Category"
+              >
+                <MenuItem value="marketing">Marketing</MenuItem>
+                <MenuItem value="trade_marketing">Trade Marketing</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           
           <Grid item xs={12}>

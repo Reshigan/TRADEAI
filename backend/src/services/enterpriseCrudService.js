@@ -1,7 +1,7 @@
 const { AppError } = require('../middleware/errorHandler');
 const csvParser = require('csv-parser');
 const fs = require('fs');
-const { pipeline } = require('stream/promises');
+const { _pipeline } = require('stream/promises');
 
 /**
  * ENTERPRISE CRUD SERVICE
@@ -27,13 +27,13 @@ class EnterpriseCrudService {
   async create(data, options = {}) {
     try {
       const record = new this.model(data);
-      
+
       if (options.validate) {
         await this.validateData(data);
       }
 
       await record.save();
-      
+
       if (options.auditLog) {
         await this.logAudit('create', record._id, data, options.userId);
       }
@@ -145,7 +145,7 @@ class EnterpriseCrudService {
 
     // Apply search if provided
     if (search && searchFields.length > 0) {
-      query.$or = searchFields.map(field => ({
+      query.$or = searchFields.map((field) => ({
         [field]: { $regex: search, $options: 'i' }
       }));
     }
@@ -190,7 +190,7 @@ class EnterpriseCrudService {
     const { limit = 20, skip = 0 } = options;
 
     const searchQuery = {
-      $or: fields.map(field => ({
+      $or: fields.map((field) => ({
         [field]: { $regex: searchTerm, $options: 'i' }
       }))
     };
@@ -216,7 +216,7 @@ class EnterpriseCrudService {
     ];
 
     const facets = {};
-    facetFields.forEach(field => {
+    facetFields.forEach((field) => {
       facets[field] = [
         { $group: { _id: `$${field}`, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
@@ -240,7 +240,7 @@ class EnterpriseCrudService {
   }
 
   // Get saved views
-  async getSavedView(viewId, userId) {
+  getSavedView(_viewId, _userId) {
     // Implementation for saved views/filters
     // This would query a separate SavedViews collection
     return {};
@@ -304,9 +304,9 @@ class EnterpriseCrudService {
   }
 
   // Bulk update
-  async bulkUpdate(filter, updates, options = {}) {
+  async bulkUpdate(filter, updates, _options = {}) {
     const records = await this.model.find(filter);
-    
+
     const results = {
       success: [],
       failed: [],
@@ -327,9 +327,9 @@ class EnterpriseCrudService {
   }
 
   // Mass update with custom function
-  async massUpdate(filter, updateFn, options = {}) {
+  async massUpdate(filter, updateFn, _options = {}) {
     const records = await this.model.find(filter);
-    
+
     for (const record of records) {
       await updateFn(record);
       await record.save();
@@ -422,22 +422,22 @@ class EnterpriseCrudService {
   // Export to CSV
   async exportToCSV(filters = {}, fields = []) {
     const records = await this.model.find(filters).lean();
-    
+
     if (records.length === 0) {
       return null;
     }
 
     // Convert to CSV format
     const selectedFields = fields.length > 0 ? fields : Object.keys(records[0]);
-    
-    let csv = selectedFields.join(',') + '\n';
-    
-    records.forEach(record => {
-      const row = selectedFields.map(field => {
+
+    let csv = `${selectedFields.join(',')}\n`;
+
+    records.forEach((record) => {
+      const row = selectedFields.map((field) => {
         const value = this.getNestedValue(record, field);
         return this.escapeCSV(value);
       });
-      csv += row.join(',') + '\n';
+      csv += `${row.join(',')}\n`;
     });
 
     return csv;
@@ -446,18 +446,13 @@ class EnterpriseCrudService {
   // Export to Excel
   async exportToExcel(filters = {}, fields = []) {
     const records = await this.model.find(filters).lean();
-    
+
     if (records.length === 0) {
       return null;
     }
 
     const selectedFields = fields.length > 0 ? fields : Object.keys(records[0]);
-    
-    const data = records.map(record => {
-      const row = {};
-      selectedFields.forEach(field => {
-        row[field] = this.getNestedValue(record, field);
-      
+
     // Lazy-load xlsx to avoid startup dependency
     let xlsx;
     try {
@@ -466,31 +461,35 @@ class EnterpriseCrudService {
       throw new AppError('Excel export unavailable: xlsx module not installed', 500);
     }
 
-});
+    const data = records.map((record) => {
+      const row = {};
+      selectedFields.forEach((field) => {
+        row[field] = this.getNestedValue(record, field);
+      });
       return row;
     });
 
     const ws = xlsx.utils.json_to_sheet(data);
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, ws, this.modelName);
-    
+
     return xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
   }
 
   // Export to JSON
   async exportToJSON(filters = {}, fields = []) {
     let query = this.model.find(filters);
-    
+
     if (fields.length > 0) {
       query = query.select(fields.join(' '));
     }
-    
+
     const records = await query.lean();
     return JSON.stringify(records, null, 2);
   }
 
   // Import from CSV
-  async importFromCSV(filePath, options = {}) {
+  importFromCSV(filePath, options = {}) {
     const results = {
       success: [],
       failed: [],
@@ -498,7 +497,7 @@ class EnterpriseCrudService {
     };
 
     const records = [];
-    
+
     return new Promise((resolve, reject) => {
       fs.createReadStream(filePath)
         .pipe(csvParser())
@@ -517,7 +516,7 @@ class EnterpriseCrudService {
   }
 
   // Import from Excel
-  async importFromExcel(filePath, options = {}) {
+  importFromExcel(filePath, options = {}) {
     let xlsx;
     try {
       xlsx = require('xlsx');
@@ -531,7 +530,7 @@ class EnterpriseCrudService {
   }
 
   // Import from JSON
-  async importFromJSON(data, options = {}) {
+  importFromJSON(data, options = {}) {
     const records = JSON.parse(data);
     return this.bulkCreate(records, options);
   }
@@ -540,13 +539,13 @@ class EnterpriseCrudService {
    * DATA VALIDATION & CLEANSING
    */
 
-  async validateData(data) {
+  validateData(_data) {
     // Implement custom validation rules
     // This can be extended based on model schemas
     return true;
   }
 
-  async cleanseData(data) {
+  cleanseData(data) {
     // Implement data cleansing rules
     // - Trim strings
     // - Convert types
@@ -556,7 +555,7 @@ class EnterpriseCrudService {
   }
 
   // Find duplicates
-  async findDuplicates(fields = []) {
+  findDuplicates(fields = []) {
     const pipeline = [
       {
         $group: {
@@ -575,7 +574,7 @@ class EnterpriseCrudService {
       }
     ];
 
-    return await this.model.aggregate(pipeline);
+    return this.model.aggregate(pipeline);
   }
 
   // Merge duplicates
@@ -614,10 +613,10 @@ class EnterpriseCrudService {
    * VERSION HISTORY
    */
 
-  async saveVersion(record) {
+  saveVersion(record) {
     // Implementation for version history
     // This would save a snapshot to a separate VersionHistory collection
-    const version = {
+    const _version = {
       modelName: this.modelName,
       recordId: record._id,
       data: record.toObject(),
@@ -628,26 +627,26 @@ class EnterpriseCrudService {
     // await VersionHistory.create(version);
   }
 
-  async getVersionHistory(id) {
+  getVersionHistory(_id) {
     // Retrieve version history for a record
-    // return await VersionHistory.find({ modelName: this.modelName, recordId: id });
+    // return VersionHistory.find({ modelName: this.modelName, recordId: id });
     return [];
   }
 
-  async rollback(id, versionId) {
+  async rollback(_id, _versionId) {
     // Rollback to a specific version
     // const version = await VersionHistory.findById(versionId);
-    // return await this.update(id, version.data);
+    // return this.update(id, version.data);
   }
 
   /**
    * AUDIT LOGGING
    */
 
-  async logAudit(action, recordId, changes, userId) {
+  logAudit(action, recordId, changes, userId) {
     // Implementation for audit logging
     // This would save to an AuditLog collection
-    const auditEntry = {
+    const _auditEntry = {
       modelName: this.modelName,
       action,
       recordId,
@@ -692,7 +691,7 @@ class EnterpriseCrudService {
   }
 
   getNestedValue(obj, path) {
-    return path.split('.').reduce((current, key) => 
+    return path.split('.').reduce((current, key) =>
       current && current[key] !== undefined ? current[key] : '', obj
     );
   }
@@ -710,16 +709,16 @@ class EnterpriseCrudService {
    * AGGREGATION HELPERS
    */
 
-  async aggregate(pipeline) {
-    return await this.model.aggregate(pipeline);
+  aggregate(pipeline) {
+    return this.model.aggregate(pipeline);
   }
 
-  async count(filters = {}) {
-    return await this.model.countDocuments(filters);
+  count(filters = {}) {
+    return this.model.countDocuments(filters);
   }
 
-  async distinct(field, filters = {}) {
-    return await this.model.distinct(field, filters);
+  distinct(field, filters = {}) {
+    return this.model.distinct(field, filters);
   }
 }
 

@@ -24,7 +24,6 @@ import {
 import {
   Recommend,
   Refresh,
-  TrendingUp,
   Star,
   ShoppingCart
 } from '@mui/icons-material';

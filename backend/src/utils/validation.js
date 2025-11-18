@@ -22,26 +22,26 @@ const isValidEmail = (email) => {
  */
 const validatePasswordStrength = (password) => {
   if (!password || typeof password !== 'string') {
-    return { 
-      valid: false, 
-      message: 'Password is required' 
+    return {
+      valid: false,
+      message: 'Password is required'
     };
   }
-  
+
   const checks = {
     length: password.length >= 8,
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /[0-9]/.test(password),
-    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
   };
-  
+
   const passed = Object.values(checks).filter(Boolean).length;
   const strength = passed / Object.keys(checks).length;
-  
+
   let message = '';
   let valid = true;
-  
+
   if (!checks.length) {
     message = 'Password must be at least 8 characters long';
     valid = false;
@@ -58,7 +58,7 @@ const validatePasswordStrength = (password) => {
     message = 'Password must contain at least one special character';
     valid = false;
   }
-  
+
   return {
     valid,
     message,
@@ -75,22 +75,22 @@ const validatePasswordStrength = (password) => {
  */
 const isValidDate = (date, options = {}) => {
   if (!date) return false;
-  
+
   try {
     // Check if date is in valid format
     if (!validator.isISO8601(date)) return false;
-    
+
     const dateObj = new Date(date);
-    
+
     // Check if date is valid
     if (isNaN(dateObj.getTime())) return false;
-    
+
     // Check min date
     if (options.min && dateObj < new Date(options.min)) return false;
-    
+
     // Check max date
     if (options.max && dateObj > new Date(options.max)) return false;
-    
+
     return true;
   } catch (error) {
     return false;
@@ -105,24 +105,24 @@ const isValidDate = (date, options = {}) => {
  */
 const isValidNumber = (value, options = {}) => {
   if (value === undefined || value === null) return false;
-  
+
   // Convert to string if it's a number
   const strValue = typeof value === 'number' ? String(value) : value;
-  
+
   // Check if it's a valid number
   if (!validator.isNumeric(strValue)) return false;
-  
+
   const numValue = parseFloat(strValue);
-  
+
   // Check min value
   if (options.min !== undefined && numValue < options.min) return false;
-  
+
   // Check max value
   if (options.max !== undefined && numValue > options.max) return false;
-  
+
   // Check if integer is required
   if (options.integer && !Number.isInteger(numValue)) return false;
-  
+
   return true;
 };
 
@@ -134,22 +134,22 @@ const isValidNumber = (value, options = {}) => {
  */
 const isValidString = (value, options = {}) => {
   if (!value || typeof value !== 'string') return false;
-  
+
   // Check min length
   if (options.minLength !== undefined && value.length < options.minLength) return false;
-  
+
   // Check max length
   if (options.maxLength !== undefined && value.length > options.maxLength) return false;
-  
+
   // Check if alphanumeric only
   if (options.alphanumeric && !validator.isAlphanumeric(value)) return false;
-  
+
   // Check if alphabetic only
   if (options.alpha && !validator.isAlpha(value)) return false;
-  
+
   // Check against regex pattern
   if (options.pattern && !options.pattern.test(value)) return false;
-  
+
   return true;
 };
 
@@ -161,7 +161,7 @@ const isValidString = (value, options = {}) => {
  */
 const isValidUrl = (url, options = {}) => {
   if (!url || typeof url !== 'string') return false;
-  
+
   const urlOptions = {
     protocols: options.protocols || ['http', 'https'],
     require_protocol: options.requireProtocol !== false,
@@ -172,7 +172,7 @@ const isValidUrl = (url, options = {}) => {
     allow_trailing_dot: false,
     allow_protocol_relative_urls: options.allowProtocolRelativeUrls || false
   };
-  
+
   return validator.isURL(url, urlOptions);
 };
 
@@ -216,21 +216,21 @@ const isValidCreditCard = (cardNumber) => {
  */
 const validateObject = (data, schema) => {
   const errors = {};
-  
+
   for (const [field, rules] of Object.entries(schema)) {
     const value = data[field];
-    
+
     // Check required fields
     if (rules.required && (value === undefined || value === null || value === '')) {
       errors[field] = `${field} is required`;
       continue;
     }
-    
+
     // Skip validation for undefined optional fields
     if (value === undefined || value === null) {
       continue;
     }
-    
+
     // Validate by type
     switch (rules.type) {
       case 'string':
@@ -244,7 +244,7 @@ const validateObject = (data, schema) => {
           errors[field] = rules.patternMessage || `${field} has an invalid format`;
         }
         break;
-        
+
       case 'number':
         if (typeof value !== 'number' && (typeof value !== 'string' || !validator.isNumeric(value))) {
           errors[field] = `${field} must be a number`;
@@ -259,13 +259,13 @@ const validateObject = (data, schema) => {
           }
         }
         break;
-        
+
       case 'boolean':
         if (typeof value !== 'boolean') {
           errors[field] = `${field} must be a boolean`;
         }
         break;
-        
+
       case 'date':
         if (!isValidDate(value, rules)) {
           errors[field] = `${field} must be a valid date`;
@@ -277,25 +277,25 @@ const validateObject = (data, schema) => {
           }
         }
         break;
-        
+
       case 'email':
         if (!isValidEmail(value)) {
           errors[field] = `${field} must be a valid email address`;
         }
         break;
-        
+
       case 'url':
         if (!isValidUrl(value, rules)) {
           errors[field] = `${field} must be a valid URL`;
         }
         break;
-        
+
       case 'phone':
         if (!isValidPhone(value, rules.locale)) {
           errors[field] = `${field} must be a valid phone number`;
         }
         break;
-        
+
       case 'array':
         if (!Array.isArray(value)) {
           errors[field] = `${field} must be an array`;
@@ -315,13 +315,13 @@ const validateObject = (data, schema) => {
               return itemValid ? null : { index, error: `Item at index ${index} is invalid` };
             }
           }).filter(Boolean);
-          
+
           if (itemErrors.length > 0) {
             errors[field] = { items: itemErrors };
           }
         }
         break;
-        
+
       case 'object':
         if (typeof value !== 'object' || Array.isArray(value) || value === null) {
           errors[field] = `${field} must be an object`;
@@ -333,14 +333,14 @@ const validateObject = (data, schema) => {
           }
         }
         break;
-        
+
       case 'enum':
         if (!rules.values.includes(value)) {
           errors[field] = `${field} must be one of: ${rules.values.join(', ')}`;
         }
         break;
     }
-    
+
     // Custom validation function
     if (rules.validate && typeof rules.validate === 'function') {
       const customError = rules.validate(value, data);
@@ -349,7 +349,7 @@ const validateObject = (data, schema) => {
       }
     }
   }
-  
+
   return {
     valid: Object.keys(errors).length === 0,
     errors
@@ -407,7 +407,7 @@ const createValidationSchema = (type) => {
           type: 'string',
           required: true,
           minLength: 8,
-          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+          pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/,
           patternMessage: 'Password must contain at least one number, one uppercase letter, one lowercase letter, and one special character'
         },
         role: {
@@ -420,7 +420,7 @@ const createValidationSchema = (type) => {
           required: false
         }
       };
-      
+
     case 'product':
       return {
         name: {
@@ -454,7 +454,7 @@ const createValidationSchema = (type) => {
           required: true
         }
       };
-      
+
     case 'promotion':
       return {
         name: {
@@ -496,7 +496,7 @@ const createValidationSchema = (type) => {
           itemType: 'string'
         }
       };
-      
+
     case 'order':
       return {
         customer: {
@@ -569,7 +569,7 @@ const createValidationSchema = (type) => {
           required: true
         }
       };
-      
+
     default:
       return {};
   }

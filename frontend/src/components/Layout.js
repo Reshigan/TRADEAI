@@ -1,30 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import MegaMenu from './MegaMenu';
 import {
-  AppBar,
   Box,
   CssBaseline,
   Divider,
   Drawer,
   IconButton,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
   Typography,
-  Avatar,
-  Menu,
-  MenuItem,
-  Tooltip,
-  Badge,
   useTheme,
   useMediaQuery,
   Collapse
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
   AccountBalance as BudgetIcon,
   Receipt as TradeSpendIcon,
@@ -33,9 +25,6 @@ import {
   Inventory as ProductIcon,
   BarChart as AnalyticsIcon,
   Settings as SettingsIcon,
-  Notifications as NotificationsIcon,
-  AccountCircle,
-  Logout,
   ChevronLeft,
   Business as BusinessIcon,
   Description as ReportIcon,
@@ -45,17 +34,19 @@ import {
   Timeline as ForecastingIcon,
   ExpandLess,
   ExpandMore,
-  AccountCircle as AccountCircleIcon,
   Psychology as AIIcon,
   Lightbulb as LightbulbIcon,
   Rocket as RocketIcon,
   TrendingUp as MonitorIcon,
-  Storage as DataIcon
+  Storage as DataIcon,
+  Assignment as AssignmentIcon,
+  Receipt as ReceiptIcon,
+  Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import QuickActions from './common/QuickActions';
-import SearchBar from './common/SearchBar';
 import Breadcrumbs from './common/Breadcrumbs';
 import AIAssistant from './AIAssistant/AIAssistant';
+import newLogo from '../assets/new_logo.svg';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
 // import { Walkthrough } from './common';
@@ -66,35 +57,60 @@ const getMenuItems = (user) => {
   const baseItems = [
     { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'NEW' },
     {
-      text: '📊 Plan & Budget',
-      icon: <BudgetIcon />,
+      text: '📋 Plan',
+      icon: <LightbulbIcon />,
       subItems: [
-        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow', badge: 'AI' },
-        { text: 'Budget Management', icon: <BudgetIcon />, path: '/budgets' },
-        { text: 'Budget Monitoring', icon: <MonitorIcon />, path: '/budgets?view=monitor' },
+        { text: 'Promotion Planner', icon: <PromotionIcon />, path: '/promotion-planner', badge: 'AI' },
+        { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
+        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
+        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
+        { text: 'All Budgets', icon: <BudgetIcon />, path: '/budgets' },
       ]
     },
     {
-      text: '✨ Create & Execute',
+      text: '🚀 Execute',
       icon: <RocketIcon />,
       subItems: [
-        { text: 'Promotion Wizard', icon: <PromotionIcon />, path: '/promotions/new-flow', badge: 'AI' },
-        { text: 'Trade Spend Request', icon: <TradeSpendIcon />, path: '/trade-spends/new' },
-        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-        { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
-        { text: 'All Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Promotions Timeline', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'NEW' },
         { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
+        { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
+        { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
       ]
     },
     {
-      text: '📈 Monitor & Optimize',
-      icon: <MonitorIcon />,
+      text: '📊 Analyze',
+      icon: <AnalyticsIcon />,
       subItems: [
         { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
         { text: 'AI Insights', icon: <AIIcon />, path: '/analytics' },
         { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
         { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
-        { text: 'Simulations', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
+    {
+      text: '🎯 Optimize',
+      icon: <MonitorIcon />,
+      subItems: [
+        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
+        { text: 'Budget Reallocation', icon: <BudgetIcon />, path: '/budget-console' },
+        { text: 'Scenario Planning', icon: <SimulationIcon />, path: '/simulations' },
+      ]
+    },
+    {
+      text: '✅ Approvals',
+      icon: <AssignmentIcon />,
+      subItems: [
+        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'NEW' },
+      ]
+    },
+    {
+      text: '💰 Claims & Deductions',
+      icon: <ReceiptIcon />,
+      subItems: [
+        { text: 'Claims', icon: <ReceiptIcon />, path: '/claims', badge: 'NEW' },
+        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions', badge: 'NEW' },
+        { text: 'Reconciliation', icon: <AssessmentIcon />, path: '/deductions/reconciliation', badge: 'NEW' },
       ]
     },
     {
@@ -124,8 +140,8 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
-  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
-  const [walkthroughFeature, setWalkthroughFeature] = useState('');
+  // const [walkthroughOpen, setWalkthroughOpen] = useState(false);
+  // const [walkthroughFeature, setWalkthroughFeature] = useState('');
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,
@@ -145,29 +161,29 @@ const Layout = ({ children, user, onLogout }) => {
     }));
   };
   
-  // Check if walkthrough should be shown based on current path
-  useEffect(() => {
-    const path = location.pathname;
-    let feature = '';
-    
-    if (path === '/dashboard') feature = 'dashboard';
-    else if (path.includes('/budgets')) feature = 'budgets';
-    else if (path.includes('/trade-spends')) feature = 'trade-spends';
-    else if (path.includes('/promotions')) feature = 'promotions';
-    else if (path.includes('/activity-grid')) feature = 'activity-grid';
-    else if (path.includes('/customers')) feature = 'customers';
-    else if (path.includes('/products')) feature = 'products';
-    else if (path.includes('/simulations')) feature = 'simulations';
-    else if (path.includes('/forecasting')) feature = 'forecasting';
-    else if (path.includes('/analytics')) feature = 'analytics';
-    else if (path.includes('/settings')) feature = 'settings';
-    
-    // Check if user has seen this walkthrough before
-    if (feature && !localStorage.getItem(`walkthrough_${feature}`)) {
-      setWalkthroughFeature(feature);
-      setWalkthroughOpen(true);
-    }
-  }, [location.pathname]);
+  // Check if walkthrough should be shown based on current path - DISABLED
+  // useEffect(() => {
+  //   const path = location.pathname;
+  //   let feature = '';
+  //   
+  //   if (path === '/dashboard') feature = 'dashboard';
+  //   else if (path.includes('/budgets')) feature = 'budgets';
+  //   else if (path.includes('/trade-spends')) feature = 'trade-spends';
+  //   else if (path.includes('/promotions')) feature = 'promotions';
+  //   else if (path.includes('/activity-grid')) feature = 'activity-grid';
+  //   else if (path.includes('/customers')) feature = 'customers';
+  //   else if (path.includes('/products')) feature = 'products';
+  //   else if (path.includes('/simulations')) feature = 'simulations';
+  //   else if (path.includes('/forecasting')) feature = 'forecasting';
+  //   else if (path.includes('/analytics')) feature = 'analytics';
+  //   else if (path.includes('/settings')) feature = 'settings';
+  //   
+  //   // Check if user has seen this walkthrough before
+  //   if (feature && !localStorage.getItem(`walkthrough_${feature}`)) {
+  //     setWalkthroughFeature(feature);
+  //     setWalkthroughOpen(true);
+  //   }
+  // }, [location.pathname]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -196,9 +212,9 @@ const Layout = ({ children, user, onLogout }) => {
 
   const drawer = (
     <div>
-      <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, minHeight: 64 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/images/modern-logo-bold-new.svg" alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
+          <img src={newLogo} alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
           <Typography 
             variant="h6" 
             noWrap 
@@ -219,7 +235,7 @@ const Layout = ({ children, user, onLogout }) => {
             <ChevronLeft />
           </IconButton>
         )}
-      </Toolbar>
+      </Box>
       <Divider />
       <List sx={{ px: 1 }}>
         {menuItems.map((item) => (
@@ -348,123 +364,11 @@ const Layout = ({ children, user, onLogout }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          boxShadow: 1,
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          
-          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', md: 'block' }, mr: 3 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text ||
-             menuItems.flatMap(m => m.subItems || []).find(s => s.path === location.pathname)?.text ||
-             'Dashboard'}
-          </Typography>
-          
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' }, mr: 2 }}>
-            <SearchBar />
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title="Notifications">
-              <IconButton 
-                color="inherit" 
-                onClick={handleOpenNotificationsMenu}
-                size="large"
-              >
-                <Badge badgeContent={3} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="notifications-menu"
-              anchorEl={anchorElNotifications}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElNotifications)}
-              onClose={handleCloseNotificationsMenu}
-            >
-              <MenuItem onClick={handleCloseNotificationsMenu}>
-                <Typography textAlign="center">Budget approval request</Typography>
-              </MenuItem>
-              <MenuItem onClick={handleCloseNotificationsMenu}>
-                <Typography textAlign="center">New promotion created</Typography>
-              </MenuItem>
-              <MenuItem onClick={handleCloseNotificationsMenu}>
-                <Typography textAlign="center">Trade spend limit reached</Typography>
-              </MenuItem>
-            </Menu>
-            
-            <Box sx={{ ml: 2 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.name || 'User'} src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem>
-                  <Box sx={{ px: 1 }}>
-                    <Typography variant="subtitle1">{user?.name || 'User'}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {user?.role === 'admin' ? 'Administrator' : 
-                       user?.role === 'manager' ? 'Manager' : 'Key Account Manager'}
-                    </Typography>
-                  </Box>
-                </MenuItem>
-                <Divider />
-                <MenuItem component={RouterLink} to="/settings" onClick={handleCloseUserMenu}>
-                  <ListItemIcon>
-                    <SettingsIcon fontSize="small" />
-                  </ListItemIcon>
-                  <Typography textAlign="center">Settings</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleLogout}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  <Typography textAlign="center">Logout</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <MegaMenu 
+        user={user} 
+        onLogout={onLogout}
+        onMobileMenuToggle={handleDrawerToggle}
+      />
       
       <Box
         component="nav"
@@ -502,12 +406,12 @@ const Layout = ({ children, user, onLogout }) => {
         sx={{ 
           flexGrow: 1, 
           p: 3, 
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: '100%',
           minHeight: '100vh',
-          bgcolor: 'background.default'
+          bgcolor: 'background.default',
+          mt: 8
         }}
       >
-        <Toolbar />
         <Breadcrumbs />
         {children}
         <QuickActions />

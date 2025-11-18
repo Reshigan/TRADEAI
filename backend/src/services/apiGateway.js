@@ -22,29 +22,29 @@ class APIGateway {
     this.metrics = new Map();
     this.redisClient = null;
     this.isInitialized = false;
-    
+
     this.initializeGateway();
   }
 
   async initializeGateway() {
     try {
       console.log('Initializing API Gateway...');
-      
+
       // Initialize Redis for caching and rate limiting
       await this.initializeRedis();
-      
+
       // Setup middleware
       this.setupMiddleware();
-      
+
       // Register services
       await this.registerServices();
-      
+
       // Setup routes
       this.setupRoutes();
-      
+
       // Setup monitoring
       this.setupMonitoring();
-      
+
       this.isInitialized = true;
       console.log('API Gateway initialized successfully');
     } catch (error) {
@@ -73,9 +73,9 @@ class APIGateway {
           defaultSrc: ["'self'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "https:"],
-        },
-      },
+          imgSrc: ["'self'", 'data:', 'https:']
+        }
+      }
     }));
 
     // CORS configuration
@@ -115,7 +115,7 @@ class APIGateway {
     this.app.use(this.versioningMiddleware.bind(this));
   }
 
-  async registerServices() {
+  registerServices() {
     // Register microservices
     this.services.set('analytics', {
       name: 'Analytics Service',
@@ -308,44 +308,44 @@ class APIGateway {
       },
       timeout: options.timeout || 30000,
       retries: options.retries || 3,
-      router: (req) => {
+      router: (_req) => {
         // Use load balancer to select instance
         const loadBalancer = this.loadBalancers.get(serviceName);
         const instance = loadBalancer.getNextInstance();
         return instance ? instance.url : service.baseUrl;
       },
-      onProxyReq: (proxyReq, req, res) => {
+      onProxyReq: (proxyReq, req, _res) => {
         // Add headers for service identification
         proxyReq.setHeader('X-Gateway-Service', serviceName);
         proxyReq.setHeader('X-Gateway-Request-ID', req.requestId);
         proxyReq.setHeader('X-Gateway-Timestamp', new Date().toISOString());
-        
+
         // Forward tenant information
         if (req.tenant) {
           proxyReq.setHeader('X-Tenant-ID', req.tenant.id);
           proxyReq.setHeader('X-Tenant-Name', req.tenant.name);
         }
       },
-      onProxyRes: (proxyRes, req, res) => {
+      onProxyRes: (proxyRes, req, _res) => {
         // Add response headers
         proxyRes.headers['X-Gateway-Service'] = serviceName;
         proxyRes.headers['X-Gateway-Request-ID'] = req.requestId;
-        
+
         // Update metrics
         this.updateServiceMetrics(serviceName, req, proxyRes);
       },
       onError: (err, req, res) => {
         console.error(`Proxy error for ${serviceName}:`, err.message);
-        
+
         // Update error metrics
         this.updateErrorMetrics(serviceName, err);
-        
+
         // Mark instance as unhealthy if connection error
         if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
           const loadBalancer = this.loadBalancers.get(serviceName);
           loadBalancer.markInstanceUnhealthy(req.target);
         }
-        
+
         res.status(502).json({
           error: 'Service temporarily unavailable',
           service: serviceName,
@@ -363,15 +363,15 @@ class APIGateway {
   requestLogger(req, res, next) {
     req.requestId = this.generateRequestId();
     req.startTime = Date.now();
-    
+
     console.log(`[${req.requestId}] ${req.method} ${req.originalUrl} - ${req.ip}`);
-    
+
     // Log response when finished
     res.on('finish', () => {
       const duration = Date.now() - req.startTime;
       console.log(`[${req.requestId}] ${res.statusCode} - ${duration}ms`);
     });
-    
+
     next();
   }
 
@@ -382,21 +382,21 @@ class APIGateway {
       this.incrementMetric(`requests.${service}.total`);
       this.incrementMetric(`requests.${service}.${req.method.toLowerCase()}`);
     }
-    
+
     // Collect response metrics when finished
     res.on('finish', () => {
       const duration = Date.now() - req.startTime;
-      
+
       if (service) {
         this.recordMetric(`response_time.${service}`, duration);
         this.incrementMetric(`responses.${service}.${Math.floor(res.statusCode / 100)}xx`);
-        
+
         if (res.statusCode >= 400) {
           this.incrementMetric(`errors.${service}.total`);
         }
       }
     });
-    
+
     next();
   }
 
@@ -407,7 +407,7 @@ class APIGateway {
     }
 
     const token = req.headers.authorization?.replace('Bearer ', '');
-    
+
     if (!token) {
       return res.status(401).json({
         error: 'Authentication required',
@@ -434,7 +434,7 @@ class APIGateway {
     }
 
     const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId;
-    
+
     if (!tenantId) {
       return res.status(400).json({
         error: 'Tenant ID required',
@@ -448,14 +448,14 @@ class APIGateway {
       name: `Tenant ${tenantId}`,
       plan: 'enterprise'
     };
-    
+
     next();
   }
 
   versioningMiddleware(req, res, next) {
     const apiVersion = req.headers['x-api-version'] || '1.0';
     req.apiVersion = apiVersion;
-    
+
     // Version compatibility check
     if (!this.isVersionSupported(apiVersion)) {
       return res.status(400).json({
@@ -464,30 +464,30 @@ class APIGateway {
         requestedVersion: apiVersion
       });
     }
-    
+
     next();
   }
 
-  errorHandler(error, req, res, next) {
+  errorHandler(error, req, res, _next) {
     console.error(`[${req.requestId}] Error:`, error);
-    
+
     // Update error metrics
     this.incrementMetric('errors.gateway.total');
-    
+
     if (error.type === 'entity.too.large') {
       return res.status(413).json({
         error: 'Request too large',
         message: 'Request body exceeds size limit'
       });
     }
-    
+
     if (error.message === 'Not allowed by CORS') {
       return res.status(403).json({
         error: 'CORS error',
         message: 'Origin not allowed'
       });
     }
-    
+
     res.status(500).json({
       error: 'Internal server error',
       requestId: req.requestId,
@@ -512,16 +512,16 @@ class APIGateway {
   async performHealthChecks() {
     for (const [serviceName, service] of this.services) {
       const loadBalancer = this.loadBalancers.get(serviceName);
-      
+
       for (const instance of service.instances) {
         try {
           const response = await fetch(`${instance.url}${service.healthCheck}`, {
             timeout: 5000
           });
-          
+
           const isHealthy = response.ok;
           loadBalancer.updateInstanceHealth(instance.url, isHealthy);
-          
+
         } catch (error) {
           loadBalancer.updateInstanceHealth(instance.url, false);
           console.warn(`Health check failed for ${serviceName} instance ${instance.url}:`, error.message);
@@ -553,64 +553,64 @@ class APIGateway {
   recordMetric(key, value) {
     const existing = this.metrics.get(key) || [];
     existing.push({ value, timestamp: Date.now() });
-    
+
     // Keep only last 1000 values
     if (existing.length > 1000) {
       existing.splice(0, existing.length - 1000);
     }
-    
+
     this.metrics.set(key, existing);
   }
 
   getServiceHealthStatus() {
     const status = {};
-    
+
     this.services.forEach((service, serviceName) => {
       const loadBalancer = this.loadBalancers.get(serviceName);
       const healthyInstances = loadBalancer.getHealthyInstances();
-      
+
       status[serviceName] = {
         healthy: healthyInstances.length > 0,
         totalInstances: service.instances.length,
         healthyInstances: healthyInstances.length
       };
     });
-    
+
     return status;
   }
 
   getGatewayMetrics() {
     const totalRequests = Array.from(this.metrics.keys())
-      .filter(key => key.startsWith('requests.') && key.endsWith('.total'))
+      .filter((key) => key.startsWith('requests.') && key.endsWith('.total'))
       .reduce((sum, key) => sum + (this.metrics.get(key) || 0), 0);
-    
+
     const totalErrors = Array.from(this.metrics.keys())
-      .filter(key => key.startsWith('errors.') && key.endsWith('.total'))
+      .filter((key) => key.startsWith('errors.') && key.endsWith('.total'))
       .reduce((sum, key) => sum + (this.metrics.get(key) || 0), 0);
-    
+
     return {
       totalRequests,
       totalErrors,
-      errorRate: totalRequests > 0 ? (totalErrors / totalRequests * 100).toFixed(2) + '%' : '0%',
+      errorRate: totalRequests > 0 ? `${(totalErrors / totalRequests * 100).toFixed(2)}%` : '0%',
       uptime: process.uptime()
     };
   }
 
   getDetailedMetrics() {
     const metrics = {};
-    
+
     // Group metrics by category
     this.metrics.forEach((value, key) => {
       const parts = key.split('.');
       const category = parts[0];
-      
+
       if (!metrics[category]) {
         metrics[category] = {};
       }
-      
+
       if (Array.isArray(value)) {
         // For time-series data, calculate statistics
-        const values = value.map(v => v.value);
+        const values = value.map((v) => v.value);
         metrics[category][key] = {
           count: values.length,
           avg: values.reduce((a, b) => a + b, 0) / values.length,
@@ -622,14 +622,14 @@ class APIGateway {
         metrics[category][key] = value;
       }
     });
-    
+
     return metrics;
   }
 
   updateServiceMetrics(serviceName, req, proxyRes) {
     const duration = Date.now() - req.startTime;
     this.recordMetric(`service_response_time.${serviceName}`, duration);
-    
+
     if (proxyRes.statusCode >= 400) {
       this.incrementMetric(`service_errors.${serviceName}.total`);
     }
@@ -643,10 +643,10 @@ class APIGateway {
   cleanupMetrics() {
     // Remove old time-series data
     const cutoff = Date.now() - (24 * 60 * 60 * 1000); // 24 hours
-    
+
     this.metrics.forEach((value, key) => {
       if (Array.isArray(value)) {
-        const filtered = value.filter(v => v.timestamp > cutoff);
+        const filtered = value.filter((v) => v.timestamp > cutoff);
         if (filtered.length !== value.length) {
           this.metrics.set(key, filtered);
         }
@@ -660,7 +660,7 @@ class APIGateway {
       if (!this.isInitialized) {
         return reject(new Error('Gateway not initialized'));
       }
-      
+
       const server = this.app.listen(port, (error) => {
         if (error) {
           reject(error);
@@ -674,11 +674,11 @@ class APIGateway {
 
   async shutdown() {
     console.log('Shutting down API Gateway...');
-    
+
     if (this.redisClient) {
       await this.redisClient.quit();
     }
-    
+
     console.log('API Gateway shutdown complete');
   }
 }
@@ -688,7 +688,7 @@ class APIGateway {
  */
 class LoadBalancer {
   constructor(instances) {
-    this.instances = instances.map(instance => ({
+    this.instances = instances.map((instance) => ({
       ...instance,
       healthy: true,
       requests: 0,
@@ -699,15 +699,15 @@ class LoadBalancer {
 
   getNextInstance() {
     const healthyInstances = this.getHealthyInstances();
-    
+
     if (healthyInstances.length === 0) {
       return null;
     }
-    
+
     // Round-robin with weights
     let selectedInstance = null;
     let minRequests = Infinity;
-    
+
     for (const instance of healthyInstances) {
       const weightedRequests = instance.requests / (instance.weight || 1);
       if (weightedRequests < minRequests) {
@@ -715,20 +715,20 @@ class LoadBalancer {
         selectedInstance = instance;
       }
     }
-    
+
     if (selectedInstance) {
       selectedInstance.requests++;
     }
-    
+
     return selectedInstance;
   }
 
   getHealthyInstances() {
-    return this.instances.filter(instance => instance.healthy);
+    return this.instances.filter((instance) => instance.healthy);
   }
 
   updateInstanceHealth(url, healthy) {
-    const instance = this.instances.find(i => i.url === url);
+    const instance = this.instances.find((i) => i.url === url);
     if (instance) {
       instance.healthy = healthy;
       instance.lastHealthCheck = Date.now();
@@ -748,9 +748,9 @@ class RedisStore {
     this.client = redisClient;
   }
 
-  async incr(key) {
+  incr(key) {
     try {
-      return await this.client.incr(key);
+      return this.client.incr(key);
     } catch (error) {
       console.error('Redis incr error:', error);
       return 1;

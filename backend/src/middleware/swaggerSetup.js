@@ -13,34 +13,34 @@ const swaggerOptions = {
     info: {
       title: 'Trade AI Platform API',
       version: '2.0.0',
-      description: 'Comprehensive API for the Trade AI Platform',
+      description: 'Comprehensive API for the Trade AI Platform'
     },
     servers: [
       {
         url: process.env.API_BASE_URL || 'http://localhost:3000/api',
-        description: 'Development server',
-      },
+        description: 'Development server'
+      }
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
+          bearerFormat: 'JWT'
+        }
+      }
     },
     security: [
       {
-        bearerAuth: [],
-      },
-    ],
+        bearerAuth: []
+      }
+    ]
   },
   apis: [
     path.join(__dirname, '../routes/*.js'),
     path.join(__dirname, '../controllers/*.js'),
-    path.join(__dirname, '../models/*.js'),
-  ],
+    path.join(__dirname, '../models/*.js')
+  ]
 };
 
 // Generate specs from JSDoc comments
@@ -51,12 +51,12 @@ const mergedSpecs = {
   ...swaggerDocument,
   paths: {
     ...swaggerDocument.paths,
-    ...specs.paths,
+    ...specs.paths
   },
   components: {
     ...swaggerDocument.components,
-    ...specs.components,
-  },
+    ...specs.components
+  }
 };
 
 // Custom CSS for Swagger UI
@@ -81,8 +81,8 @@ const swaggerUiOptions = {
     filter: true,
     showExtensions: true,
     showCommonExtensions: true,
-    tryItOutEnabled: true,
-  },
+    tryItOutEnabled: true
+  }
 };
 
 // Setup function to configure Swagger middleware
@@ -110,9 +110,9 @@ const setupSwagger = (app) => {
       documentation: {
         swagger: '/api-docs',
         json: '/api-docs/json',
-        yaml: '/api-docs/yaml',
+        yaml: '/api-docs/yaml'
       },
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     });
   });
 
@@ -128,11 +128,11 @@ const validateApiRequest = (schema) => {
     if (error) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: error.details.map(detail => ({
+        details: error.details.map((detail) => ({
           field: detail.path.join('.'),
-          message: detail.message,
+          message: detail.message
         })),
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
     }
     next();
@@ -145,26 +145,26 @@ const generateRouteDocumentation = (routes) => {
     endpoints: [],
     totalEndpoints: 0,
     endpointsByMethod: {},
-    endpointsByTag: {},
+    endpointsByTag: {}
   };
 
-  routes.forEach(route => {
+  routes.forEach((route) => {
     const { method, path, description, tags = [] } = route;
-    
+
     documentation.endpoints.push({
       method: method.toUpperCase(),
       path,
       description,
-      tags,
+      tags
     });
 
     // Count by method
-    documentation.endpointsByMethod[method.toUpperCase()] = 
+    documentation.endpointsByMethod[method.toUpperCase()] =
       (documentation.endpointsByMethod[method.toUpperCase()] || 0) + 1;
 
     // Count by tag
-    tags.forEach(tag => {
-      documentation.endpointsByTag[tag] = 
+    tags.forEach((tag) => {
+      documentation.endpointsByTag[tag] =
         (documentation.endpointsByTag[tag] || 0) + 1;
     });
   });
@@ -179,12 +179,12 @@ const createVersionedSpec = (version, baseSpec) => {
     ...baseSpec,
     info: {
       ...baseSpec.info,
-      version,
+      version
     },
-    servers: baseSpec.servers.map(server => ({
+    servers: baseSpec.servers.map((server) => ({
       ...server,
-      url: server.url.replace('/api', `/api/v${version}`),
-    })),
+      url: server.url.replace('/api', `/api/v${version}`)
+    }))
   };
 };
 
@@ -196,5 +196,5 @@ module.exports = {
   createVersionedSpec,
   swaggerDocument: mergedSpecs,
   swaggerOptions,
-  swaggerUiOptions,
+  swaggerUiOptions
 };

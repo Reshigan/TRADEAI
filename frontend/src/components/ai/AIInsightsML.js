@@ -17,10 +17,6 @@ import {
   Typography,
   Chip,
   Alert,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   IconButton,
   CircularProgress,
   Divider

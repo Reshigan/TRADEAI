@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const tradingTermsController = require('../controllers/tradingTermsController');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, _authorize } = require('../middleware/auth');
 
 // Apply authentication to all routes
 router.use(authenticate);

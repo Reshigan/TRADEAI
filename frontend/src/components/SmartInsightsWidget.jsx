@@ -15,7 +15,6 @@ import {
 import {
   Notifications as NotificationsIcon,
   TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
   Warning as WarningIcon,
   Info as InfoIcon,
   CheckCircle as CheckCircleIcon,

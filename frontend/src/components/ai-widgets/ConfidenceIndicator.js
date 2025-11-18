@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { Chip, Tooltip } from '@mui/material';
-import { CheckCircle, Info } from '@mui/icons-material';
+import {CheckCircle} from '@mui/icons-material';
 
 const ConfidenceIndicator = ({ 
   confidence, 
