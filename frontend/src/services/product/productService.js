@@ -1,6 +1,5 @@
-import axios from 'axios';
+import apiClient from '../apiClient';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const cache = new Map();
@@ -26,10 +25,6 @@ const clearCache = () => {
   cache.clear();
 };
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 const productService = {
   getProducts: async (filters = {}) => {

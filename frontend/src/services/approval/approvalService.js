@@ -1,83 +1,43 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  };
-};
+import apiClient from '../apiClient';
 
 class ApprovalService {
   async createApproval(entityType, entityId, amount, metadata = {}) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/approvals`,
-      { entityType, entityId, amount, metadata },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post('/approvals', { entityType, entityId, amount, metadata });
     return response.data;
   }
 
   async getPendingApprovals() {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/approvals/pending`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get('/approvals/pending');
     return response.data;
   }
 
   async getOverdueApprovals() {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/approvals/overdue`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get('/approvals/overdue');
     return response.data;
   }
 
   async getApprovalsByEntity(entityType, entityId) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/approvals/entity/${entityType}/${entityId}`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/approvals/entity/${entityType}/${entityId}`);
     return response.data;
   }
 
   async approveApproval(approvalId, comments) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/approvals/${approvalId}/approve`,
-      { comments },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/approvals/${approvalId}/approve`, { comments });
     return response.data;
   }
 
   async rejectApproval(approvalId, reason) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/approvals/${approvalId}/reject`,
-      { reason },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/approvals/${approvalId}/reject`, { reason });
     return response.data;
   }
 
   async cancelApproval(approvalId, reason) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/approvals/${approvalId}/cancel`,
-      { reason },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/approvals/${approvalId}/cancel`, { reason });
     return response.data;
   }
 
   async checkSLA(approvalId) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/approvals/${approvalId}/sla`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/approvals/${approvalId}/sla`);
     return response.data;
   }
 }

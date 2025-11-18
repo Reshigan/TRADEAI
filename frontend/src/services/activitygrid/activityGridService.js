@@ -1,21 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+import apiClient from '../apiClient';
 
 class ActivityGridService {
   constructor() {
     this.cache = new Map();
     this.cacheTTL = 2 * 60 * 1000; // 2 minutes (shorter for activity grid)
-  }
-
-  getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    };
   }
 
   getCacheKey(method, params) {
@@ -54,10 +42,7 @@ class ActivityGridService {
     if (filters.page) params.append('page', filters.page);
     if (filters.limit) params.append('limit', filters.limit);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/activity-grid?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/activity-grid?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
@@ -73,10 +58,7 @@ class ActivityGridService {
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/activity-grid/list?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/activity-grid/list?${params.toString()}`);
 
     return response.data;
   }
@@ -91,10 +73,7 @@ class ActivityGridService {
     params.append('month', month);
     if (groupBy) params.append('groupBy', groupBy);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/activity-grid/heat-map?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/activity-grid/heat-map?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
@@ -106,49 +85,31 @@ class ActivityGridService {
     if (filters.endDate) params.append('endDate', filters.endDate);
     if (filters.severity) params.append('severity', filters.severity);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/activity-grid/conflicts?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/activity-grid/conflicts?${params.toString()}`);
 
     return response.data;
   }
 
   async createActivity(data) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/activity-grid`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post('/activity-grid', data);
     this.clearCache();
     return response.data;
   }
 
   async updateActivity(id, data) {
-    const response = await axios.put(
-      `${API_BASE_URL}/api/activity-grid/${id}`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.put(`/activity-grid/${id}`, data);
     this.clearCache();
     return response.data;
   }
 
   async deleteActivity(id) {
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/activity-grid/${id}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.delete(`/activity-grid/${id}`);
     this.clearCache();
     return response.data;
   }
 
   async syncActivities(source, startDate, endDate) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/activity-grid/sync`,
-      { source, startDate, endDate },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post('/activity-grid/sync', { source, startDate, endDate });
     this.clearCache();
     return response.data;
   }
