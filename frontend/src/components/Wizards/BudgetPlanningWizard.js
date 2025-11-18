@@ -33,7 +33,6 @@ import {
   Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import apiClient from '../../services/apiClient';
 
 
