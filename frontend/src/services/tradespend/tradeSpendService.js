@@ -7,16 +7,6 @@ class TradeSpendService {
     this.cacheTTL = 5 * 60 * 1000; // 5 minutes
   }
 
-  getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    };
-  }
-
   getCacheKey(method, params) {
     return `${method}_${JSON.stringify(params)}`;
   }
