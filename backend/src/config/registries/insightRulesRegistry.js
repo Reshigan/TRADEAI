@@ -1,9 +1,9 @@
 /**
  * InsightRulesRegistry
- * 
+ *
  * Defines deterministic business rules for anomaly detection and insight generation.
  * Each rule specifies conditions, thresholds, and actions for generating insights.
- * 
+ *
  * Structure: INSIGHT_RULES[module] = { ruleId: { definition } }
  */
 
@@ -25,7 +25,7 @@ const INSIGHT_RULES = {
       generateInsight: (entity) => {
         const overspend = entity.spentAmount - entity.totalAmount;
         const overspendPercentage = ((overspend / entity.totalAmount) * 100).toFixed(2);
-        
+
         return {
           title: `Budget Overspend: ${entity.name}`,
           description: `Budget has exceeded allocated amount by ${overspendPercentage}% (${overspend.toLocaleString()} ${entity.currency})`,
@@ -54,7 +54,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     budgetUnderutilization: {
       id: 'budgetUnderutilization',
       name: 'Budget Under-utilization',
@@ -66,7 +66,7 @@ const INSIGHT_RULES = {
         const totalDays = Math.floor((new Date(entity.endDate) - new Date(entity.startDate)) / (1000 * 60 * 60 * 24));
         const expectedUtilization = (daysElapsed / totalDays) * 100;
         const actualUtilization = (entity.spentAmount / entity.totalAmount) * 100;
-        
+
         return actualUtilization < (expectedUtilization - 20) && daysElapsed > 30;
       },
       threshold: {
@@ -79,7 +79,7 @@ const INSIGHT_RULES = {
         const expectedUtilization = (daysElapsed / totalDays) * 100;
         const actualUtilization = (entity.spentAmount / entity.totalAmount) * 100;
         const gap = (expectedUtilization - actualUtilization).toFixed(2);
-        
+
         return {
           title: `Budget Under-utilization: ${entity.name}`,
           description: `Budget utilization (${actualUtilization.toFixed(2)}%) is ${gap}% below expected pace (${expectedUtilization.toFixed(2)}%)`,
@@ -103,7 +103,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     budgetBurnRateAnomaly: {
       id: 'budgetBurnRateAnomaly',
       name: 'Budget Burn Rate Anomaly',
@@ -112,10 +112,10 @@ const INSIGHT_RULES = {
       category: 'anomaly',
       condition: (entity, historicalData) => {
         if (!historicalData || !historicalData.averageBurnRate) return false;
-        
+
         const currentBurnRate = entity.spentAmount / Math.max(1, Math.floor((Date.now() - new Date(entity.startDate)) / (1000 * 60 * 60 * 24)));
         const threshold = historicalData.averageBurnRate * 1.5;
-        
+
         return currentBurnRate > threshold;
       },
       threshold: {
@@ -125,7 +125,7 @@ const INSIGHT_RULES = {
       generateInsight: (entity, historicalData) => {
         const currentBurnRate = entity.spentAmount / Math.max(1, Math.floor((Date.now() - new Date(entity.startDate)) / (1000 * 60 * 60 * 24)));
         const increase = ((currentBurnRate - historicalData.averageBurnRate) / historicalData.averageBurnRate * 100).toFixed(2);
-        
+
         return {
           title: `Budget Burn Rate Spike: ${entity.name}`,
           description: `Current burn rate (${currentBurnRate.toLocaleString()}/day) is ${increase}% higher than average`,
@@ -169,7 +169,7 @@ const INSIGHT_RULES = {
       },
       generateInsight: (entity) => {
         const roi = ((entity.actualSales - entity.investedAmount) / entity.investedAmount) * 100;
-        
+
         return {
           title: `Low ROI: ${entity.name}`,
           description: `Promotion ROI (${roi.toFixed(2)}%) is below 50% target threshold`,
@@ -198,7 +198,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     promotionConflict: {
       id: 'promotionConflict',
       name: 'Promotion Conflict',
@@ -236,7 +236,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     underperformingPromotion: {
       id: 'underperformingPromotion',
       name: 'Underperforming Promotion',
@@ -255,7 +255,7 @@ const INSIGHT_RULES = {
       generateInsight: (entity) => {
         const performance = (entity.actualSales / entity.forecastSales) * 100;
         const gap = (100 - performance).toFixed(2);
-        
+
         return {
           title: `Underperforming: ${entity.name}`,
           description: `Actual sales (${performance.toFixed(2)}%) are ${gap}% below forecast`,
@@ -304,7 +304,7 @@ const INSIGHT_RULES = {
       },
       generateInsight: (entity) => {
         const daysOpen = Math.floor((Date.now() - new Date(entity.submissionDate)) / (1000 * 60 * 60 * 24));
-        
+
         return {
           title: `Slow Processing: Claim ${entity.claimNumber}`,
           description: `Claim has been open for ${daysOpen} days, exceeding 10-day SLA`,
@@ -328,7 +328,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     highValueClaim: {
       id: 'highValueClaim',
       name: 'High Value Claim',
@@ -366,7 +366,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     claimPatternAnomaly: {
       id: 'claimPatternAnomaly',
       name: 'Claim Pattern Anomaly',
@@ -383,7 +383,7 @@ const INSIGHT_RULES = {
       },
       generateInsight: (entity, context) => {
         const increase = ((entity.claimAmount - context.customerClaimHistory.averageAmount) / context.customerClaimHistory.averageAmount * 100).toFixed(2);
-        
+
         return {
           title: `Claim Anomaly: ${entity.claimNumber}`,
           description: `Claim amount is ${increase}% higher than customer's average`,
@@ -427,7 +427,7 @@ const INSIGHT_RULES = {
       },
       generateInsight: (entity) => {
         const daysOpen = Math.floor((Date.now() - new Date(entity.postingDate)) / (1000 * 60 * 60 * 24));
-        
+
         return {
           title: `Unresolved Deduction: ${entity.deductionNumber}`,
           description: `Deduction has been open for ${daysOpen} days, exceeding 14-day target`,
@@ -451,7 +451,7 @@ const INSIGHT_RULES = {
         };
       }
     },
-    
+
     highInvalidDeductionRate: {
       id: 'highInvalidDeductionRate',
       name: 'High Invalid Deduction Rate',
@@ -469,7 +469,7 @@ const INSIGHT_RULES = {
       },
       generateInsight: (entity, context) => {
         const invalidRate = (context.customerDeductionHistory.invalidCount / context.customerDeductionHistory.totalCount) * 100;
-        
+
         return {
           title: `High Invalid Deduction Rate: ${entity.customerName}`,
           description: `Customer has ${invalidRate.toFixed(2)}% invalid deduction rate (${context.customerDeductionHistory.invalidCount} of ${context.customerDeductionHistory.totalCount})`,
@@ -513,7 +513,7 @@ const INSIGHT_RULES = {
       },
       generateInsight: (entity, context) => {
         const ratio = (entity.accruedAmount / context.netSales) * 100;
-        
+
         return {
           title: `High Trade Spend Ratio: ${entity.name}`,
           description: `Trade spend ratio (${ratio.toFixed(2)}%) exceeds 20% target threshold`,
@@ -557,7 +557,7 @@ const INSIGHT_RULES = {
       generateInsight: (entity) => {
         const utilization = (entity.spentAmount / entity.totalAllocation) * 100;
         const remaining = entity.totalAllocation - entity.spentAmount;
-        
+
         return {
           title: `Wallet Near Depletion: ${entity.walletName}`,
           description: `Wallet is ${utilization.toFixed(2)}% utilized with only ${remaining.toLocaleString()} ${entity.currency} remaining`,

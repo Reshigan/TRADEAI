@@ -1,10 +1,10 @@
 /**
  * ProcessModelRegistry
- * 
+ *
  * Defines process stages, validations, allowed actions, and exit criteria
  * for each module and company type. This is the single source of truth
  * for process-driven UI and business logic.
- * 
+ *
  * Structure: PROCESS_MODELS[module][companyType] = { stages: [...] }
  */
 
@@ -1424,7 +1424,7 @@ const getCurrentStage = (module, companyType, entity) => {
   };
 
   const stageId = statusToStageMap[entity.status] || processModel.stages[0].id;
-  return processModel.stages.find(s => s.id === stageId) || processModel.stages[0];
+  return processModel.stages.find((s) => s.id === stageId) || processModel.stages[0];
 };
 
 /**
@@ -1434,16 +1434,16 @@ const validateStage = (stage, entity) => {
   const errors = [];
 
   // Check required fields
-  stage.requiredFields.forEach(field => {
+  stage.requiredFields.forEach((field) => {
     if (!entity[field] || (Array.isArray(entity[field]) && entity[field].length === 0)) {
       errors.push(`${field} is required for ${stage.name} stage`);
     }
   });
 
-  stage.validations.forEach(validation => {
+  stage.validations.forEach((validation) => {
     const value = entity[validation.field];
     const rule = VALIDATION_RULES[validation.rule];
-    
+
     if (!rule) {
       console.warn(`Unknown validation rule: ${validation.rule}`);
       return;
@@ -1491,7 +1491,7 @@ const validateStage = (stage, entity) => {
 const getAllowedActions = (module, companyType, entity) => {
   const stage = getCurrentStage(module, companyType, entity);
   if (!stage) return [];
-  
+
   return stage.allowedActions;
 };
 
@@ -1503,7 +1503,7 @@ const getNextBestAction = (module, companyType, entity) => {
   if (!stage) return null;
 
   const validation = validateStage(stage, entity);
-  
+
   if (!validation.valid) {
     return {
       action: 'complete_required_fields',
@@ -1537,7 +1537,7 @@ const getAllModules = () => {
 /**
  * Get stage-to-tabs mapping for ProcessShell
  */
-const getStageToTabsMapping = (module, companyType) => {
+const getStageToTabsMapping = (_module, _companyType) => {
   const basicMapping = {
     plan: ['overview', 'details'],
     commit: ['overview', 'approvals'],

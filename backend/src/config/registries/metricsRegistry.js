@@ -1,9 +1,9 @@
 /**
  * MetricsRegistry
- * 
+ *
  * Defines KPI metrics for each module with calculation logic,
  * thresholds, and visualization preferences.
- * 
+ *
  * Structure: METRICS[module] = { metricId: { definition } }
  */
 
@@ -716,7 +716,7 @@ const getMetricsByCategory = (module, category) => {
   if (!moduleMetrics) return {};
 
   return Object.keys(moduleMetrics)
-    .filter(key => moduleMetrics[key].category === category)
+    .filter((key) => moduleMetrics[key].category === category)
     .reduce((acc, key) => {
       acc[key] = moduleMetrics[key];
       return acc;
@@ -733,15 +733,15 @@ const formatMetricValue = (value, format, currency = 'ZAR') => {
     case 'currency':
       return new Intl.NumberFormat('en-ZA', {
         style: 'currency',
-        currency: currency
+        currency
       }).format(value);
-    
+
     case 'percentage':
       return `${value.toFixed(2)}%`;
-    
+
     case 'number':
       return new Intl.NumberFormat('en-ZA').format(value);
-    
+
     default:
       return value.toString();
   }
