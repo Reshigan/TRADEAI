@@ -25,6 +25,7 @@ import {
 import { Add as AddIcon, Visibility as ViewIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import kamWalletService from '../../services/kamwallet/kamWalletService';
+import userService from '../../services/user/userService';
 import { useCurrency } from '../../contexts/CurrencyContext';
 
 const KAMWalletManagement = () => {
