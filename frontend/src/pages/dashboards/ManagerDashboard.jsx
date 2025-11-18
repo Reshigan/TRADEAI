@@ -30,7 +30,7 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
-    analytics.trackPageView('manager_dashboard');
+    // analytics.trackPageView('manager_dashboard');
   }, []);
 
   const loadDashboardData = async () => {
