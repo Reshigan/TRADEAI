@@ -70,21 +70,13 @@ class TradeSpendService {
   }
 
   async createTradeSpend(data) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends`, data);
     this.clearCache();
     return response.data;
   }
 
   async updateTradeSpend(id, data) {
-    const response = await axios.put(
-      `${API_BASE_URL}/api/trade-spends/${id}`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.put(`/trade-spends/${id}`, data);
     this.clearCache();
     return response.data;
   }
@@ -97,41 +89,25 @@ class TradeSpendService {
   }
 
   async submitForApproval(id) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/submit`,
-      {},
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/submit`, {});
     this.clearCache();
     return response.data;
   }
 
   async approveTradeSpend(id, approvedAmount, comments) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/approve`,
-      { approvedAmount, comments },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/approve`, { approvedAmount, comments });
     this.clearCache();
     return response.data;
   }
 
   async rejectTradeSpend(id, reason) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/reject`,
-      { reason },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/reject`, { reason });
     this.clearCache();
     return response.data;
   }
 
   async recordSpend(id, amount, documents = []) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/record-spend`,
-      { amount, documents },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/record-spend`, { amount, documents });
     this.clearCache();
     return response.data;
   }
