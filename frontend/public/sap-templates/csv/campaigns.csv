@@ -1,0 +1,6 @@
+campaign_code,campaign_name,campaign_type,start_date,end_date,target_audience,planned_budget,actual_spend,currency,status,owner,description
+CAMP2025-001,Valentine's Day Campaign,SEASONAL,2025-02-01,2025-02-16,MASS_MARKET,2500000,0,ZAR,PLANNED,john.smith@company.com,Valentine's Day chocolate promotion across all retailers
+CAMP2025-002,Easter Campaign,SEASONAL,2025-03-15,2025-04-10,MASS_MARKET,3500000,0,ZAR,PLANNED,jane.doe@company.com,Easter chocolate campaign with special packaging
+CAMP2025-003,Mother's Day Campaign,SEASONAL,2025-05-01,2025-05-15,PREMIUM,1500000,0,ZAR,PLANNED,sarah.williams@company.com,Premium chocolate gift boxes for Mother's Day
+CAMP2025-004,Winter Warmth Campaign,BRAND_BUILDING,2025-06-01,2025-08-31,MASS_MARKET,4000000,0,ZAR,PLANNED,david.brown@company.com,Winter hot chocolate and comfort food campaign
+CAMP2025-005,Back to School Campaign,SEASONAL,2025-01-10,2025-01-31,FAMILIES,1800000,0,ZAR,PLANNED,mike.jones@company.com,Lunchbox snack packs for back to school

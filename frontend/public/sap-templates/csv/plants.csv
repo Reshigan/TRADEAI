@@ -1,0 +1,6 @@
+plant,plant_name,company_code,country,city,region,plant_type,valuation_area
+P001,Johannesburg Manufacturing Plant,1000,ZA,Johannesburg,Gauteng,MANUFACTURING,P001
+P002,Cape Town Distribution Center,1000,ZA,Cape Town,Western Cape,DISTRIBUTION,P002
+P003,Durban Distribution Center,1000,ZA,Durban,KwaZulu-Natal,DISTRIBUTION,P003
+P004,Windhoek Plant,1100,NA,Windhoek,Khomas,MANUFACTURING,P004
+P005,Gaborone Distribution Center,1200,BW,Gaborone,South-East,DISTRIBUTION,P005
