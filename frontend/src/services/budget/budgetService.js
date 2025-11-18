@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+import apiClient from '../apiClient';
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const cache = new Map();
@@ -26,11 +24,6 @@ const clearCache = () => {
   cache.clear();
 };
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 const budgetService = {
   getBudgets: async (filters = {}) => {
     const cacheKey = getCacheKey('budgets', filters);
@@ -38,10 +31,7 @@ const budgetService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/budgets`, {
-        params: filters,
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get('/budgets', { params: filters });
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -56,9 +46,7 @@ const budgetService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/budgets/${id}`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/budgets/${id}`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -73,9 +61,7 @@ const budgetService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/budgets/${budgetId}/hierarchy`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/budgets/${budgetId}/hierarchy`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -90,9 +76,7 @@ const budgetService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/budgets/${budgetId}/performance`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/budgets/${budgetId}/performance`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -103,10 +87,8 @@ const budgetService = {
 
   createBudget: async (budgetData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/budgets`, budgetData, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.post('/budgets', budgetData);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error('Failed to create budget:', error);
@@ -116,10 +98,8 @@ const budgetService = {
 
   updateBudget: async (id, budgetData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/api/budgets/${id}`, budgetData, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.put(`/budgets/${id}`, budgetData);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error(`Failed to update budget ${id}:`, error);
@@ -129,10 +109,8 @@ const budgetService = {
 
   deleteBudget: async (id) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/api/budgets/${id}`, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.delete(`/budgets/${id}`);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error(`Failed to delete budget ${id}:`, error);

@@ -61,16 +61,23 @@ const Login = ({ onLogin }) => {
 
       console.log('Login response:', data);
 
-      if (data.token || data.data?.token) {
+      if (data.token || data.data?.token || data.data?.tokens?.accessToken) {
         const userData = data.user || data.data?.user || data.data;
-        const token = data.token || data.data?.token;
+        const token = data.token || data.data?.token || data.data?.tokens?.accessToken;
+        const accessToken = data.data?.tokens?.accessToken || data.token || data.data?.token;
+        const refreshToken = data.data?.tokens?.refreshToken || '';
         
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', token);
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('isAuthenticated', 'true');
         
+        console.log('Login successful, stored token and user data');
         console.log('Login successful, calling onLogin with:', userData);
-        onLogin(userData);
+        if (typeof onLogin === 'function') {
+          onLogin(userData);
+        }
         
         // Navigate to dashboard
         console.log('Navigating to dashboard');

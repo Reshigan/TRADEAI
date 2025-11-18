@@ -1,21 +1,10 @@
-import axios from 'axios';
+import apiClient from '../apiClient';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 class TradingTermsService {
   constructor() {
     this.cache = new Map();
     this.cacheTTL = 5 * 60 * 1000; // 5 minutes
-  }
-
-  getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    };
   }
 
   getCacheKey(method, params) {
@@ -47,10 +36,7 @@ class TradingTermsService {
     const cached = this.getFromCache(cacheKey);
     if (cached) return cached;
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trading-terms/options`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trading-terms/options`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
@@ -68,78 +54,49 @@ class TradingTermsService {
       }
     });
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trading-terms?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trading-terms?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
   }
 
   async getTradingTerm(id) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trading-terms/${id}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trading-terms/${id}`);
     return response.data;
   }
 
   async createTradingTerm(data) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trading-terms`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trading-terms`, data);
     this.clearCache();
     return response.data;
   }
 
   async updateTradingTerm(id, data) {
-    const response = await axios.put(
-      `${API_BASE_URL}/api/trading-terms/${id}`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.put(`/trading-terms/${id}`, data);
     this.clearCache();
     return response.data;
   }
 
   async deleteTradingTerm(id) {
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/trading-terms/${id}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.delete(`/trading-terms/${id}`);
     this.clearCache();
     return response.data;
   }
 
   async submitForApproval(id) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trading-terms/${id}/submit`,
-      {},
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trading-terms/${id}/submit`, {});
     this.clearCache();
     return response.data;
   }
 
   async approveRejectTradingTerm(id, action, notes) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trading-terms/${id}/approve-reject`,
-      { action, notes },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trading-terms/${id}/approve-reject`, { action, notes });
     this.clearCache();
     return response.data;
   }
 
   async calculateDiscount(id, volume, value) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trading-terms/${id}/calculate`,
-      { volume, value },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trading-terms/${id}/calculate`, { volume, value });
     return response.data;
   }
 }

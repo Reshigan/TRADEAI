@@ -31,7 +31,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import simulationService from '../../services/simulation/simulationService';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
@@ -47,7 +47,7 @@ const JAMDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
-    trackEvent('page_view', { page: 'jam_dashboard' });
+    analytics.trackEvent('page_view', { page: 'jam_dashboard' });
   }, []);
 
   const loadDashboardData = async () => {

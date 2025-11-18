@@ -34,7 +34,14 @@ const CommandCenter = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
-    aiInsight: {},
+    aiInsight: {
+      type: 'info',
+      iconType: 'check',
+      title: 'Loading...',
+      message: 'Fetching dashboard data...',
+      action: 'Refresh',
+      route: '/dashboard'
+    },
     quickActions: [],
     activeWorkflows: [],
     kpis: {
@@ -61,8 +68,33 @@ const CommandCenter = () => {
         apiClient.get('/trade-spends')
       ]);
 
-      // Process data for dashboard
-      const data = processDashboardData(budgets.data, promotions.data, tradeSpends.data);
+      console.log('CommandCenter - Raw API responses:', { budgets, promotions, tradeSpends });
+      console.log('CommandCenter - budgets type:', typeof budgets, 'isArray:', Array.isArray(budgets));
+      console.log('CommandCenter - budgets.data type:', typeof budgets?.data, 'isArray:', Array.isArray(budgets?.data));
+      console.log('CommandCenter - budgets.data.data type:', typeof budgets?.data?.data, 'isArray:', Array.isArray(budgets?.data?.data));
+      
+      const toArray = (response) => {
+        if (Array.isArray(response)) return response;
+        if (Array.isArray(response?.data?.data)) return response.data.data;
+        if (Array.isArray(response?.data)) return response.data;
+        if (Array.isArray(response?.items)) return response.items;
+        return [];
+      };
+      
+      const budgetsArray = toArray(budgets);
+      const promotionsArray = toArray(promotions);
+      const tradeSpendsArray = toArray(tradeSpends);
+      
+      console.log('CommandCenter - Extracted arrays:', { 
+        budgetsArray: budgetsArray.length + ' items', 
+        promotionsArray: promotionsArray.length + ' items', 
+        tradeSpendsArray: tradeSpendsArray.length + ' items' 
+      });
+      
+      const data = processDashboardData(budgetsArray, promotionsArray, tradeSpendsArray);
+      console.log('CommandCenter - Processed dashboard data:', data);
+      console.log('CommandCenter - quickActions type:', Array.isArray(data.quickActions), 'length:', data.quickActions?.length);
+      console.log('CommandCenter - activeWorkflows type:', Array.isArray(data.activeWorkflows), 'length:', data.activeWorkflows?.length);
       setDashboardData(data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -72,16 +104,25 @@ const CommandCenter = () => {
   };
 
   const processDashboardData = (budgets, promotions, tradeSpends) => {
-    // Calculate AI insight
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
-    const totalSpent = budgets.reduce((sum, b) => sum + (b.spentAmount || 0), 0);
+    console.log('processDashboardData - Input types:', {
+      budgets: Array.isArray(budgets) ? `array[${budgets.length}]` : typeof budgets,
+      promotions: Array.isArray(promotions) ? `array[${promotions.length}]` : typeof promotions,
+      tradeSpends: Array.isArray(tradeSpends) ? `array[${tradeSpends.length}]` : typeof tradeSpends
+    });
+    
+    const budgetsArray = Array.isArray(budgets) ? budgets : [];
+    const promotionsArray = Array.isArray(promotions) ? promotions : [];
+    const tradeSpendsArray = Array.isArray(tradeSpends) ? tradeSpends : [];
+    
+    const totalBudget = budgetsArray.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+    const totalSpent = budgetsArray.reduce((sum, b) => sum + (b.spentAmount || 0), 0);
     const utilizationRate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
     let aiInsight = {};
     if (utilizationRate < 60) {
       aiInsight = {
         type: 'warning',
-        icon: <WarningIcon />,
+        iconType: 'warning',
         title: 'Budget Underutilization Detected',
         message: `Your budget is ${utilizationRate.toFixed(0)}% utilized. AI suggests reallocating $${((totalBudget - totalSpent) * 0.3).toLocaleString()} to high-performing customers for optimal ROI.`,
         action: 'Optimize Budget',
@@ -90,7 +131,7 @@ const CommandCenter = () => {
     } else if (utilizationRate > 90) {
       aiInsight = {
         type: 'info',
-        icon: <CheckIcon />,
+        iconType: 'check',
         title: 'Budget Tracking Well',
         message: `Budget utilization at ${utilizationRate.toFixed(0)}%. On track for quarterly goals.`,
         action: 'View Details',
@@ -99,7 +140,7 @@ const CommandCenter = () => {
     } else {
       aiInsight = {
         type: 'success',
-        icon: <TrendingUpIcon />,
+        iconType: 'trending',
         title: 'Performance Above Target',
         message: `Promotions are performing 15% above forecast. Continue current strategy.`,
         action: 'View Performance',
@@ -112,7 +153,7 @@ const CommandCenter = () => {
       {
         title: 'Plan 2026 Budget',
         description: 'AI-powered annual planning ready',
-        icon: <CalendarIcon />,
+        iconType: 'calendar',
         color: 'primary',
         route: '/budgets/new-flow',
         badge: 'AI Ready'
@@ -120,7 +161,7 @@ const CommandCenter = () => {
       {
         title: 'Create Promotion',
         description: 'Start AI-assisted promotion wizard',
-        icon: <RocketIcon />,
+        iconType: 'rocket',
         color: 'secondary',
         route: '/promotions/new-flow',
         badge: 'Recommended'
@@ -128,7 +169,7 @@ const CommandCenter = () => {
       {
         title: 'Review Analytics',
         description: 'AI-generated insights available',
-        icon: <AnalyticsIcon />,
+        iconType: 'analytics',
         color: 'info',
         route: '/analytics',
         badge: '3 New Insights'
@@ -137,21 +178,21 @@ const CommandCenter = () => {
 
     // Active workflows (pending items)
     const activeWorkflows = [
-      ...promotions.filter(p => p.status === 'draft' || p.status === 'pending_approval').slice(0, 3).map(p => ({
+      ...promotionsArray.filter(p => p.status === 'draft' || p.status === 'pending_approval').slice(0, 3).map(p => ({
         title: `${p.name || 'Untitled Promotion'}`,
         description: `${p.customer?.name || 'Customer'} - ${p.status}`,
         status: p.status,
         route: `/promotions/${p._id}`,
         type: 'promotion'
       })),
-      ...budgets.filter(b => b.status === 'draft').slice(0, 2).map(b => ({
+      ...budgetsArray.filter(b => b.status === 'draft').slice(0, 2).map(b => ({
         title: `${b.name || 'Untitled Budget'}`,
         description: `$${(b.totalAmount || 0).toLocaleString()} - Draft`,
         status: 'draft',
         route: `/budgets/${b._id}`,
         type: 'budget'
       })),
-      ...tradeSpends.filter(ts => ts.status === 'pending').slice(0, 2).map(ts => ({
+      ...tradeSpendsArray.filter(ts => ts.status === 'pending').slice(0, 2).map(ts => ({
         title: `${ts.description || 'Trade Spend Request'}`,
         description: `$${(ts.amount || 0).toLocaleString()} - Pending approval`,
         status: 'pending',
@@ -165,8 +206,8 @@ const CommandCenter = () => {
       totalBudget: totalBudget,
       totalSpent: totalSpent,
       utilizationRate: utilizationRate,
-      activePromotions: promotions.filter(p => p.status === 'active').length,
-      pendingApprovals: [...promotions, ...tradeSpends].filter(item => 
+      activePromotions: promotionsArray.filter(p => p.status === 'active').length,
+      pendingApprovals: [...promotionsArray, ...tradeSpendsArray].filter(item => 
         item.status === 'pending_approval' || item.status === 'pending'
       ).length
     };
@@ -204,7 +245,12 @@ const CommandCenter = () => {
       {/* AI Insight of the Day */}
       <Alert 
         severity={dashboardData.aiInsight.type || 'info'} 
-        icon={dashboardData.aiInsight.icon}
+        icon={
+          dashboardData.aiInsight.iconType === 'warning' ? <WarningIcon /> :
+          dashboardData.aiInsight.iconType === 'check' ? <CheckIcon /> :
+          dashboardData.aiInsight.iconType === 'trending' ? <TrendingUpIcon /> :
+          undefined
+        }
         sx={{ mb: 3, fontSize: '1.1rem' }}
         action={
           <Button 
@@ -255,7 +301,10 @@ const CommandCenter = () => {
                         borderRadius: 2
                       }}
                     >
-                      {action.icon}
+                      {action.iconType === 'calendar' ? <CalendarIcon /> :
+                       action.iconType === 'rocket' ? <RocketIcon /> :
+                       action.iconType === 'analytics' ? <AnalyticsIcon /> :
+                       null}
                     </Box>
                     {action.badge && (
                       <Chip 
@@ -326,7 +375,7 @@ const CommandCenter = () => {
                       </Grid>
                       <Grid item xs={3}>
                         <Chip 
-                          label={workflow.status.replace('_', ' ').toUpperCase()} 
+                          label={String(workflow.status || '').replace('_', ' ').toUpperCase()} 
                           size="small"
                           color={workflow.status === 'draft' ? 'default' : 'warning'}
                         />

@@ -30,7 +30,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import deductionService from '../../services/deduction/deductionService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const DeductionsList = () => {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const DeductionsList = () => {
   useEffect(() => {
     loadDeductions();
     loadStatistics();
-    trackEvent('deductions_list_viewed', { filter });
+    analytics.trackEvent('deductions_list_viewed', { filter });
   }, [filter]);
 
   const loadDeductions = async () => {
@@ -84,7 +84,7 @@ const DeductionsList = () => {
       setLoading(true);
       const response = await deductionService.autoMatchDeductions();
       
-      trackEvent('deductions_auto_matched', {
+      analytics.trackEvent('deductions_auto_matched', {
         matchCount: response.data?.length || 0
       });
       

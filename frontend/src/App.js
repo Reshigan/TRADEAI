@@ -121,6 +121,10 @@ import ActivityFormPage from './pages/activities/ActivityFormPage';
 // Auth Components
 import Register from './pages/auth/Register';
 
+// KAM Wallet Components
+import KAMWalletManagement from './pages/kamwallet/KAMWalletManagement';
+import KAMWalletAllocate from './pages/kamwallet/KAMWalletAllocate';
+
 // Enterprise Components
 import EnterpriseDashboard from './components/enterprise/EnterpriseDashboard';
 
@@ -263,7 +267,7 @@ function App() {
               <Layout user={user} onLogout={handleLogout}>
                 {user?.role === 'jam' || user?.role === 'key_account_manager' ? (
                   <JAMDashboard />
-                ) : user?.role === 'manager' || user?.role === 'admin' ? (
+                ) : user?.role === 'manager' || user?.role === 'admin' || user?.role === 'super_admin' ? (
                   <ManagerDashboard />
                 ) : (
                   <CommandCenter user={user} />
@@ -1443,6 +1447,30 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <ReportBuilder />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/kamwallet" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <KAMWalletManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/kamwallet/:id/allocate" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <KAMWalletAllocate />
               </Layout>
             ) : (
               <Navigate to="/" replace />

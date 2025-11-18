@@ -1,85 +1,43 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  };
-};
+import apiClient from '../apiClient';
 
 class DeductionService {
   async createDeduction(deductionData) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/deductions`,
-      deductionData,
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/api/deductions`, deductionData);
     return response.data;
   }
 
   async validateDeduction(deductionId, validatedAmount) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/deductions/${deductionId}/validate`,
-      { validatedAmount },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/api/deductions/${deductionId}/validate`, { validatedAmount });
     return response.data;
   }
 
   async disputeDeduction(deductionId, reason) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/deductions/${deductionId}/dispute`,
-      { reason },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/api/deductions/${deductionId}/dispute`, { reason });
     return response.data;
   }
 
   async resolveDeduction(deductionId, resolutionType, finalAmount, notes) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/deductions/${deductionId}/resolve`,
-      { resolutionType, finalAmount, notes },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/api/deductions/${deductionId}/resolve`, { resolutionType, finalAmount, notes });
     return response.data;
   }
 
   async matchDeductionToClaim(deductionId, claimId, matchedAmount) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/deductions/${deductionId}/match-claim`,
-      { claimId, matchedAmount },
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/api/deductions/${deductionId}/match-claim`, { claimId, matchedAmount });
     return response.data;
   }
 
   async autoMatchDeductions() {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/deductions/auto-match`,
-      {},
-      getAuthHeaders()
-    );
+    const response = await apiClient.post(`/api/deductions/auto-match`, {});
     return response.data;
   }
 
   async getUnmatchedDeductions() {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/deductions/unmatched`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/api/deductions/unmatched`);
     return response.data;
   }
 
   async getDisputedDeductions() {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/deductions/disputed`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/api/deductions/disputed`);
     return response.data;
   }
 
@@ -88,10 +46,7 @@ class DeductionService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    const response = await axios.get(
-      `${API_BASE_URL}/api/deductions/customer/${customerId}?${params.toString()}`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/api/deductions/customer/${customerId}?${params.toString()}`);
     return response.data;
   }
 
@@ -100,10 +55,7 @@ class DeductionService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    const response = await axios.get(
-      `${API_BASE_URL}/api/deductions/statistics?${params.toString()}`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/api/deductions/statistics?${params.toString()}`);
     return response.data;
   }
 
@@ -112,10 +64,7 @@ class DeductionService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    const response = await axios.get(
-      `${API_BASE_URL}/api/deductions/reconcile/${customerId}?${params.toString()}`,
-      getAuthHeaders()
-    );
+    const response = await apiClient.get(`/api/deductions/reconcile/${customerId}?${params.toString()}`);
     return response.data;
   }
 }

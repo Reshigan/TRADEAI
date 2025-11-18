@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import deductionService from '../../services/deduction/deductionService';
 import customerService from '../../services/customer/customerService';
 import { useToast } from '../../components/common/ToastNotification';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const CreateDeduction = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const CreateDeduction = () => {
 
   useEffect(() => {
     loadCustomers();
-    trackEvent('create_deduction_page_viewed');
+    analytics.trackEvent('create_deduction_page_viewed');
   }, []);
 
   const loadCustomers = async () => {
@@ -82,7 +82,7 @@ const CreateDeduction = () => {
 
       await deductionService.createDeduction(formData);
 
-      trackEvent('deduction_created', {
+      analytics.trackEvent('deduction_created', {
         deductionType: formData.deductionType,
         amount: formData.amount
       });
@@ -93,7 +93,7 @@ const CreateDeduction = () => {
       console.error('Error creating deduction:', err);
       setError(err.message || 'Failed to create deduction');
       showToast(err.message || 'Failed to create deduction', 'error');
-      trackEvent('deduction_create_failed', { error: err.message });
+      analytics.trackEvent('deduction_create_failed', { error: err.message });
     } finally {
       setLoading(false);
     }

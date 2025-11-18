@@ -31,7 +31,7 @@ import {
 import claimService from '../../services/claim/claimService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const ClaimDetail = () => {
   const { id } = useParams();
@@ -54,7 +54,7 @@ const ClaimDetail = () => {
       setError(null);
       const data = await claimService.getById(id);
       setClaim(data);
-      trackEvent('claim_detail_viewed', { claimId: id, claimType: data.claimType });
+      analytics.trackEvent('claim_detail_viewed', { claimId: id, claimType: data.claimType });
     } catch (err) {
       console.error('Error fetching claim detail:', err);
       setError(err.message || 'Failed to load claim details');
@@ -69,12 +69,12 @@ const ClaimDetail = () => {
       setActionLoading(true);
       await claimService.submit(id);
       showToast('Claim submitted successfully', 'success');
-      trackEvent('claim_submitted', { claimId: id, claimType: claim.claimType });
+      analytics.trackEvent('claim_submitted', { claimId: id, claimType: claim.claimType });
       fetchClaimDetail();
     } catch (err) {
       console.error('Error submitting claim:', err);
       showToast(err.message || 'Failed to submit claim', 'error');
-      trackEvent('claim_submit_failed', { claimId: id, error: err.message });
+      analytics.trackEvent('claim_submit_failed', { claimId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }
@@ -85,12 +85,12 @@ const ClaimDetail = () => {
       setActionLoading(true);
       await claimService.approve(id, { comments: 'Approved' });
       showToast('Claim approved successfully', 'success');
-      trackEvent('claim_approved', { claimId: id, claimType: claim.claimType });
+      analytics.trackEvent('claim_approved', { claimId: id, claimType: claim.claimType });
       fetchClaimDetail();
     } catch (err) {
       console.error('Error approving claim:', err);
       showToast(err.message || 'Failed to approve claim', 'error');
-      trackEvent('claim_approve_failed', { claimId: id, error: err.message });
+      analytics.trackEvent('claim_approve_failed', { claimId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }
@@ -106,13 +106,13 @@ const ClaimDetail = () => {
       setActionLoading(true);
       await claimService.reject(id, { comments: rejectReason });
       showToast('Claim rejected', 'success');
-      trackEvent('claim_rejected', { claimId: id, claimType: claim.claimType });
+      analytics.trackEvent('claim_rejected', { claimId: id, claimType: claim.claimType });
       setRejectDialogOpen(false);
       fetchClaimDetail();
     } catch (err) {
       console.error('Error rejecting claim:', err);
       showToast(err.message || 'Failed to reject claim', 'error');
-      trackEvent('claim_reject_failed', { claimId: id, error: err.message });
+      analytics.trackEvent('claim_reject_failed', { claimId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }

@@ -1,21 +1,10 @@
-import axios from 'axios';
+import apiClient from '../apiClient';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 class TradeSpendService {
   constructor() {
     this.cache = new Map();
     this.cacheTTL = 5 * 60 * 1000; // 5 minutes
-  }
-
-  getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    };
   }
 
   getCacheKey(method, params) {
@@ -57,88 +46,55 @@ class TradeSpendService {
     if (filters.page) params.append('page', filters.page);
     if (filters.limit) params.append('limit', filters.limit);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trade-spends?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
   }
 
   async getTradeSpend(id) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends/${id}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trade-spends/${id}`);
     return response.data;
   }
 
   async createTradeSpend(data) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends`, data);
     this.clearCache();
     return response.data;
   }
 
   async updateTradeSpend(id, data) {
-    const response = await axios.put(
-      `${API_BASE_URL}/api/trade-spends/${id}`,
-      data,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.put(`/trade-spends/${id}`, data);
     this.clearCache();
     return response.data;
   }
 
   async deleteTradeSpend(id) {
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/trade-spends/${id}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.delete(`/trade-spends/${id}`);
     this.clearCache();
     return response.data;
   }
 
   async submitForApproval(id) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/submit`,
-      {},
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/submit`, {});
     this.clearCache();
     return response.data;
   }
 
   async approveTradeSpend(id, approvedAmount, comments) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/approve`,
-      { approvedAmount, comments },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/approve`, { approvedAmount, comments });
     this.clearCache();
     return response.data;
   }
 
   async rejectTradeSpend(id, reason) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/reject`,
-      { reason },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/reject`, { reason });
     this.clearCache();
     return response.data;
   }
 
   async recordSpend(id, amount, documents = []) {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/trade-spends/${id}/record-spend`,
-      { amount, documents },
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.post(`/trade-spends/${id}/record-spend`, { amount, documents });
     this.clearCache();
     return response.data;
   }
@@ -152,20 +108,14 @@ class TradeSpendService {
     if (year) params.append('year', year);
     if (groupBy) params.append('groupBy', groupBy);
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends/summary?${params.toString()}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trade-spends/summary?${params.toString()}`);
 
     this.setCache(cacheKey, response.data);
     return response.data;
   }
 
   async getWalletBalance(customerId) {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/trade-spends/wallet/${customerId}`,
-      this.getAuthHeaders()
-    );
+    const response = await apiClient.get(`/trade-spends/wallet/${customerId}`);
     return response.data;
   }
 }

@@ -62,6 +62,7 @@ const BudgetEdit = () => {
   const [budget, setBudget] = useState({
     year: new Date().getFullYear(),
     totalBudget: 0,
+    budgetCategory: 'marketing',
     allocations: [],
     status: 'draft',
     description: '',
@@ -263,6 +264,20 @@ const BudgetEdit = () => {
                 startAdornment: getCurrencySymbol()
               }}
             />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              select
+              label="Budget Category"
+              value={budget.budgetCategory || 'marketing'}
+              onChange={(e) => handleChange('budgetCategory', e.target.value)}
+              required
+            >
+              <MenuItem value="marketing">Marketing</MenuItem>
+              <MenuItem value="trade_marketing">Trade Marketing</MenuItem>
+            </TextField>
           </Grid>
 
           <Grid item xs={12} sm={6}>

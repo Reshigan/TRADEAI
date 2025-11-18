@@ -31,7 +31,7 @@ import {
 import approvalService from '../../services/approval/approvalService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const ApprovalDetail = () => {
   const { id } = useParams();
@@ -54,7 +54,7 @@ const ApprovalDetail = () => {
       setError(null);
       const data = await approvalService.getById(id);
       setApproval(data);
-      trackEvent('approval_detail_viewed', { approvalId: id, requestType: data.requestType });
+      analytics.trackEvent('approval_detail_viewed', { approvalId: id, requestType: data.requestType });
     } catch (err) {
       console.error('Error fetching approval detail:', err);
       setError(err.message || 'Failed to load approval details');
@@ -69,12 +69,12 @@ const ApprovalDetail = () => {
       setActionLoading(true);
       await approvalService.approve(id, { comments: 'Approved' });
       showToast('Approval request approved successfully', 'success');
-      trackEvent('approval_approved', { approvalId: id, requestType: approval.requestType });
+      analytics.trackEvent('approval_approved', { approvalId: id, requestType: approval.requestType });
       navigate('/approvals');
     } catch (err) {
       console.error('Error approving request:', err);
       showToast(err.message || 'Failed to approve request', 'error');
-      trackEvent('approval_approve_failed', { approvalId: id, error: err.message });
+      analytics.trackEvent('approval_approve_failed', { approvalId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }
@@ -90,13 +90,13 @@ const ApprovalDetail = () => {
       setActionLoading(true);
       await approvalService.reject(id, { comments: rejectReason });
       showToast('Approval request rejected', 'success');
-      trackEvent('approval_rejected', { approvalId: id, requestType: approval.requestType });
+      analytics.trackEvent('approval_rejected', { approvalId: id, requestType: approval.requestType });
       setRejectDialogOpen(false);
       navigate('/approvals');
     } catch (err) {
       console.error('Error rejecting request:', err);
       showToast(err.message || 'Failed to reject request', 'error');
-      trackEvent('approval_reject_failed', { approvalId: id, error: err.message });
+      analytics.trackEvent('approval_reject_failed', { approvalId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }

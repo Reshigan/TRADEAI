@@ -30,6 +30,11 @@ const budgetSchema = new mongoose.Schema({
     enum: ['forecast', 'budget', 'revised_budget', 'scenario'],
     required: true
   },
+  budgetCategory: {
+    type: String,
+    enum: ['marketing', 'trade_marketing'],
+    default: 'marketing'
+  },
   version: {
     type: Number,
     default: 1

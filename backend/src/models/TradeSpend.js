@@ -22,6 +22,11 @@ const tradeSpendSchema = new mongoose.Schema({
     enum: ['marketing', 'cash_coop', 'trading_terms', 'rebate', 'promotion'],
     required: true
   },
+  activityType: {
+    type: String,
+    enum: ['trade_marketing', 'key_account'],
+    default: null
+  },
 
   // Spend Category (for detailed classification)
   category: {

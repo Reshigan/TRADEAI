@@ -42,7 +42,7 @@ const isTokenExpiringSoon = (token) => {
 // Add request interceptor for authentication and token refresh
 api.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const refreshToken = localStorage.getItem('refreshToken');
     
     if (token) {
@@ -58,8 +58,9 @@ api.interceptors.request.use(
             { refreshToken }
           );
           
-          const newToken = response.data.token || response.data.accessToken;
+          const newToken = response.data.token || response.data.accessToken || response.data.data?.tokens?.accessToken;
           localStorage.setItem('token', newToken);
+          localStorage.setItem('accessToken', newToken);
           config.headers.Authorization = `Bearer ${newToken}`;
           
           isRefreshing = false;
