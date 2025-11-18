@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import MegaMenu from './MegaMenu';
 import {
-  AppBar,
   Box,
   CssBaseline,
   Divider,
@@ -11,19 +11,12 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
   Typography,
-  Avatar,
-  Menu,
-  MenuItem,
-  Tooltip,
-  Badge,
   useTheme,
   useMediaQuery,
   Collapse
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
   AccountBalance as BudgetIcon,
   Receipt as TradeSpendIcon,
@@ -32,8 +25,6 @@ import {
   Inventory as ProductIcon,
   BarChart as AnalyticsIcon,
   Settings as SettingsIcon,
-  Notifications as NotificationsIcon,
-  Logout,
   ChevronLeft,
   Business as BusinessIcon,
   Description as ReportIcon,
@@ -53,7 +44,6 @@ import {
   Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import QuickActions from './common/QuickActions';
-import SearchBar from './common/SearchBar';
 import Breadcrumbs from './common/Breadcrumbs';
 import AIAssistant from './AIAssistant/AIAssistant';
 import newLogo from '../assets/new_logo.svg';
@@ -222,7 +212,7 @@ const Layout = ({ children, user, onLogout }) => {
 
   const drawer = (
     <div>
-      <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, minHeight: 64 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <img src={newLogo} alt="Trade AI Logo" style={{ height: 32, marginRight: 8 }} />
           <Typography 
@@ -245,7 +235,7 @@ const Layout = ({ children, user, onLogout }) => {
             <ChevronLeft />
           </IconButton>
         )}
-      </Toolbar>
+      </Box>
       <Divider />
       <List sx={{ px: 1 }}>
         {menuItems.map((item) => (
@@ -374,123 +364,11 @@ const Layout = ({ children, user, onLogout }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          boxShadow: 1,
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          
-          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', md: 'block' }, mr: 3 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text ||
-             menuItems.flatMap(m => m.subItems || []).find(s => s.path === location.pathname)?.text ||
-             'Dashboard'}
-          </Typography>
-          
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' }, mr: 2 }}>
-            <SearchBar />
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Tooltip title="Notifications">
-              <IconButton 
-                color="inherit" 
-                onClick={handleOpenNotificationsMenu}
-                size="large"
-              >
-                <Badge badgeContent={3} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="notifications-menu"
-              anchorEl={anchorElNotifications}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElNotifications)}
-              onClose={handleCloseNotificationsMenu}
-            >
-              <MenuItem onClick={handleCloseNotificationsMenu}>
-                <Typography textAlign="center">Budget approval request</Typography>
-              </MenuItem>
-              <MenuItem onClick={handleCloseNotificationsMenu}>
-                <Typography textAlign="center">New promotion created</Typography>
-              </MenuItem>
-              <MenuItem onClick={handleCloseNotificationsMenu}>
-                <Typography textAlign="center">Trade spend limit reached</Typography>
-              </MenuItem>
-            </Menu>
-            
-            <Box sx={{ ml: 2 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.name || 'User'} src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem>
-                  <Box sx={{ px: 1 }}>
-                    <Typography variant="subtitle1">{user?.name || 'User'}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {user?.role === 'admin' ? 'Administrator' : 
-                       user?.role === 'manager' ? 'Manager' : 'Key Account Manager'}
-                    </Typography>
-                  </Box>
-                </MenuItem>
-                <Divider />
-                <MenuItem component={RouterLink} to="/settings" onClick={handleCloseUserMenu}>
-                  <ListItemIcon>
-                    <SettingsIcon fontSize="small" />
-                  </ListItemIcon>
-                  <Typography textAlign="center">Settings</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleLogout}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  <Typography textAlign="center">Logout</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <MegaMenu 
+        user={user} 
+        onLogout={onLogout}
+        onMobileMenuToggle={handleDrawerToggle}
+      />
       
       <Box
         component="nav"
@@ -528,12 +406,12 @@ const Layout = ({ children, user, onLogout }) => {
         sx={{ 
           flexGrow: 1, 
           p: 3, 
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: '100%',
           minHeight: '100vh',
-          bgcolor: 'background.default'
+          bgcolor: 'background.default',
+          mt: 8
         }}
       >
-        <Toolbar />
         <Breadcrumbs />
         {children}
         <QuickActions />
