@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -150,8 +150,8 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
-  const [setWalkthroughOpen] = useState(false);
-  const [setWalkthroughFeature] = useState('');
+  // const [walkthroughOpen, setWalkthroughOpen] = useState(false);
+  // const [walkthroughFeature, setWalkthroughFeature] = useState('');
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,
@@ -171,29 +171,29 @@ const Layout = ({ children, user, onLogout }) => {
     }));
   };
   
-  // Check if walkthrough should be shown based on current path
-  useEffect(() => {
-    const path = location.pathname;
-    let feature = '';
-    
-    if (path === '/dashboard') feature = 'dashboard';
-    else if (path.includes('/budgets')) feature = 'budgets';
-    else if (path.includes('/trade-spends')) feature = 'trade-spends';
-    else if (path.includes('/promotions')) feature = 'promotions';
-    else if (path.includes('/activity-grid')) feature = 'activity-grid';
-    else if (path.includes('/customers')) feature = 'customers';
-    else if (path.includes('/products')) feature = 'products';
-    else if (path.includes('/simulations')) feature = 'simulations';
-    else if (path.includes('/forecasting')) feature = 'forecasting';
-    else if (path.includes('/analytics')) feature = 'analytics';
-    else if (path.includes('/settings')) feature = 'settings';
-    
-    // Check if user has seen this walkthrough before
-    if (feature && !localStorage.getItem(`walkthrough_${feature}`)) {
-      setWalkthroughFeature(feature);
-      setWalkthroughOpen(true);
-    }
-  }, [location.pathname]);
+  // Check if walkthrough should be shown based on current path - DISABLED
+  // useEffect(() => {
+  //   const path = location.pathname;
+  //   let feature = '';
+  //   
+  //   if (path === '/dashboard') feature = 'dashboard';
+  //   else if (path.includes('/budgets')) feature = 'budgets';
+  //   else if (path.includes('/trade-spends')) feature = 'trade-spends';
+  //   else if (path.includes('/promotions')) feature = 'promotions';
+  //   else if (path.includes('/activity-grid')) feature = 'activity-grid';
+  //   else if (path.includes('/customers')) feature = 'customers';
+  //   else if (path.includes('/products')) feature = 'products';
+  //   else if (path.includes('/simulations')) feature = 'simulations';
+  //   else if (path.includes('/forecasting')) feature = 'forecasting';
+  //   else if (path.includes('/analytics')) feature = 'analytics';
+  //   else if (path.includes('/settings')) feature = 'settings';
+  //   
+  //   // Check if user has seen this walkthrough before
+  //   if (feature && !localStorage.getItem(`walkthrough_${feature}`)) {
+  //     setWalkthroughFeature(feature);
+  //     setWalkthroughOpen(true);
+  //   }
+  // }, [location.pathname]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
