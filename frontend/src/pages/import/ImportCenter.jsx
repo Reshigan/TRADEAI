@@ -18,8 +18,6 @@ import {
   Paper,
   Alert,
   LinearProgress,
-  Chip,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -30,7 +28,6 @@ import {
   Download as DownloadIcon,
   CheckCircle as CheckIcon,
   Error as ErrorIcon,
-  Info as InfoIcon,
   Visibility as PreviewIcon,
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';

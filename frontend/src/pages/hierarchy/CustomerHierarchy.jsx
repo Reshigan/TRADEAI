@@ -6,8 +6,6 @@ import {
   Typography,
   Button,
   IconButton,
-  TreeView,
-  TreeItem,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -16,12 +14,13 @@ import {
   Alert,
   Chip,
 } from '@mui/material';
+import TreeView from '@mui/lab/TreeView';
+import TreeItem from '@mui/lab/TreeItem';
 import {
   ExpandMore as ExpandMoreIcon,
   ChevronRight as ChevronRightIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
   Business as BusinessIcon,
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';

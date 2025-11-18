@@ -15,14 +15,12 @@ import {
   TableRow,
   Paper,
   Alert,
-  Button,
   Tab,
   Tabs,
 } from '@mui/material';
 import {
   AccountBalance as BudgetIcon,
   Receipt as WalletIcon,
-  Assignment as TermsIcon,
   TrendingUp as TrendingIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';

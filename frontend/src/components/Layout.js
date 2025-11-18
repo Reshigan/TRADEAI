@@ -44,7 +44,6 @@ import {
   Psychology as AIIcon,
   Lightbulb as LightbulbIcon,
   Rocket as RocketIcon,
-  TrendingUp as MonitorIcon,
   Storage as DataIcon,
   Assignment as AssignmentIcon,
   Receipt as ReceiptIcon,
@@ -54,29 +53,30 @@ import QuickActions from './common/QuickActions';
 import Breadcrumbs from './common/Breadcrumbs';
 import AIAssistant from './AIAssistant/AIAssistant';
 import newLogo from '../assets/new_logo.svg';
+import { useCompanyType } from '../contexts/CompanyTypeContext';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
 // import { Walkthrough } from './common';
 
 const drawerWidth = 240;
 
-const getMenuItems = (user) => {
+const getMenuItems = (user, labels, features) => {
   const baseItems = [
     { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'AI' },
     {
-      text: '💰 Funding & Planning',
+      text: `💰 ${labels.fundingPlanning}`,
       icon: <BudgetIcon />,
       subItems: [
-        { text: 'Funding Overview', icon: <AssessmentIcon />, path: '/funding-overview', badge: 'NEW' },
+        { text: labels.fundingOverview, icon: <AssessmentIcon />, path: '/funding-overview', badge: 'NEW' },
         { text: 'Annual Budgets', icon: <BudgetIcon />, path: '/budgets' },
         { text: 'Budget Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
         { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
         { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-        { text: 'KAM Wallets', icon: <ReceiptIcon />, path: '/kam-wallets' },
+        { text: 'KAM Wallets', icon: <ReceiptIcon />, path: '/kamwallet' },
       ]
     },
     {
-      text: '📋 Activity Planning',
+      text: `📋 ${labels.activityPlanning}`,
       icon: <LightbulbIcon />,
       subItems: [
         { text: 'Promotion Planner', icon: <PromotionIcon />, path: '/promotion-planner', badge: 'AI' },
@@ -94,7 +94,7 @@ const getMenuItems = (user) => {
       ]
     },
     {
-      text: '🚀 Execution',
+      text: `🚀 ${labels.execution}`,
       icon: <RocketIcon />,
       subItems: [
         { text: 'Active Promotions', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'LIVE' },
@@ -104,17 +104,17 @@ const getMenuItems = (user) => {
       ]
     },
     {
-      text: '💵 Claims & Settlement',
+      text: `💵 ${labels.claimsSettlement}`,
       icon: <ReceiptIcon />,
       subItems: [
-        { text: 'Customer Claims', icon: <ReceiptIcon />, path: '/claims' },
-        { text: 'Reconciliation Hub', icon: <AssessmentIcon />, path: '/reconciliation-hub', badge: 'AI' },
-        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions' },
+        { text: labels.claims, icon: <ReceiptIcon />, path: '/claims' },
+        { text: labels.reconciliationHub, icon: <AssessmentIcon />, path: '/reconciliation-hub', badge: 'AI' },
+        { text: labels.deductions, icon: <ReceiptIcon />, path: '/deductions' },
         { text: 'Settlements', icon: <AssessmentIcon />, path: '/deductions/reconciliation' },
       ]
     },
     {
-      text: '📊 Performance & Insights',
+      text: `📊 ${labels.performanceInsights}`,
       icon: <AnalyticsIcon />,
       subItems: [
         { text: 'Budget vs Actual', icon: <AssessmentIcon />, path: '/budget-console' },
@@ -129,9 +129,11 @@ const getMenuItems = (user) => {
       icon: <DataIcon />,
       subItems: [
         { text: 'Import Center', icon: <DataIcon />, path: '/import-center', badge: 'NEW' },
-        { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
+        { text: labels.customers, icon: <CustomerIcon />, path: '/customers' },
+        { text: 'Customer Hierarchy', icon: <CustomerIcon />, path: '/hierarchy/customers', badge: 'NEW' },
         { text: 'Products', icon: <ProductIcon />, path: '/products' },
-        { text: 'Vendors', icon: <BusinessIcon />, path: '/vendors' },
+        { text: 'Product Hierarchy', icon: <ProductIcon />, path: '/hierarchy/products', badge: 'NEW' },
+        ...(features.showVendors ? [{ text: 'Vendors', icon: <BusinessIcon />, path: '/vendors', badge: 'NEW' }] : []),
       ]
     },
   ];
@@ -163,7 +165,8 @@ const Layout = ({ children, user, onLogout }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const menuItems = getMenuItems(user);
+  const { labels, features } = useCompanyType();
+  const menuItems = getMenuItems(user, labels, features);
 
   const toggleSection = (sectionName) => {
     setOpenSections(prev => ({

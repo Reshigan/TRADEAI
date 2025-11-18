@@ -19,6 +19,7 @@ import {
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { usePageVariants } from '../../hooks/usePageVariants';
 
 import PromotionOverview from './tabs/PromotionOverview';
 import PromotionProducts from './tabs/PromotionProducts';
@@ -42,16 +43,17 @@ const PromotionDetailWithTabs = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
 
-  const tabs = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'products', label: 'Products' },
-    { value: 'customers', label: 'Customers' },
-    { value: 'budget', label: 'Budget' },
-    { value: 'approvals', label: 'Approvals' },
-    { value: 'documents', label: 'Documents' },
-    { value: 'conflicts', label: 'Conflicts' },
-    { value: 'performance', label: 'Performance' },
-    { value: 'history', label: 'History' }
+  const pageVariant = usePageVariants('promotionDetail');
+  const tabs = pageVariant?.tabs || [
+    { id: 'overview', label: 'Overview', path: 'overview' },
+    { id: 'products', label: 'Products', path: 'products' },
+    { id: 'customers', label: 'Customers', path: 'customers' },
+    { id: 'budget', label: 'Budget', path: 'budget' },
+    { id: 'approvals', label: 'Approvals', path: 'approvals' },
+    { id: 'documents', label: 'Documents', path: 'documents' },
+    { id: 'conflicts', label: 'Conflicts', path: 'conflicts' },
+    { id: 'performance', label: 'Performance', path: 'performance' },
+    { id: 'history', label: 'History', path: 'history' }
   ];
 
   useEffect(() => {
@@ -172,7 +174,7 @@ const PromotionDetailWithTabs = () => {
           scrollButtons="auto"
         >
           {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
+            <Tab key={tab.id} value={tab.path} label={tab.label} />
           ))}
         </Tabs>
       </Paper>

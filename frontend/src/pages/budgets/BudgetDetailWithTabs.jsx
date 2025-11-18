@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { usePageVariants } from '../../hooks/usePageVariants';
 
 import BudgetOverview from './tabs/BudgetOverview';
 import BudgetAllocations from './tabs/BudgetAllocations';
@@ -21,16 +22,17 @@ const BudgetDetailWithTabs = () => {
   const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
-
-  const tabs = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'allocations', label: 'Allocations' },
-    { value: 'spending', label: 'Spending' },
-    { value: 'transfers', label: 'Transfers' },
-    { value: 'approvals', label: 'Approvals' },
-    { value: 'scenarios', label: 'Scenarios' },
-    { value: 'forecast', label: 'Forecast' },
-    { value: 'history', label: 'History' }
+  
+  const pageVariant = usePageVariants('budgetDetail');
+  const tabs = pageVariant?.tabs || [
+    { id: 'overview', label: 'Overview', path: 'overview' },
+    { id: 'allocations', label: 'Allocations', path: 'allocations' },
+    { id: 'spending', label: 'Spending', path: 'spending' },
+    { id: 'transfers', label: 'Transfers', path: 'transfers' },
+    { id: 'approvals', label: 'Approvals', path: 'approvals' },
+    { id: 'scenarios', label: 'Scenarios', path: 'scenarios' },
+    { id: 'forecast', label: 'Forecast', path: 'forecast' },
+    { id: 'history', label: 'History', path: 'history' }
   ];
 
   useEffect(() => {
@@ -94,7 +96,7 @@ const BudgetDetailWithTabs = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
           {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
+            <Tab key={tab.id} value={tab.path} label={tab.label} />
           ))}
         </Tabs>
       </Paper>
