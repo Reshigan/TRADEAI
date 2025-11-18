@@ -1,0 +1,5 @@
+promo_code,name,kunnr,matnr_list,start_date,end_date,mechanic,expected_lift_pct,funding_source,committed_amount,currency
+PROMO001,Valentine's Day Special,1000001,MAT001;MAT004,2025-02-10,2025-02-16,off_invoice,25.0,budget,50000,ZAR
+PROMO002,Easter Promotion,1000002,MAT003;MAT005,2025-03-20,2025-04-05,scanback,30.0,budget,75000,ZAR
+PROMO003,Mother's Day Gift Sets,1000003,MAT005,2025-05-08,2025-05-14,fixed_fee,20.0,terms,35000,ZAR
+PROMO004,Winter Warmers,1000004,MAT001;MAT002;MAT004,2025-06-01,2025-06-30,off_invoice,15.0,wallet,25000,ZAR

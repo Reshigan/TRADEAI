@@ -125,6 +125,19 @@ import Register from './pages/auth/Register';
 import KAMWalletManagement from './pages/kamwallet/KAMWalletManagement';
 import KAMWalletAllocate from './pages/kamwallet/KAMWalletAllocate';
 
+// Hierarchy Components
+import CustomerHierarchy from './pages/hierarchy/CustomerHierarchy';
+import ProductHierarchy from './pages/hierarchy/ProductHierarchy';
+
+// Import Center
+import ImportCenter from './pages/import/ImportCenter';
+
+import FundingOverview from './pages/funding/FundingOverview';
+
+import VendorManagement from './pages/vendors/VendorManagement';
+
+import { CompanyTypeProvider } from './contexts/CompanyTypeContext';
+
 // Enterprise Components
 import EnterpriseDashboard from './components/enterprise/EnterpriseDashboard';
 
@@ -227,29 +240,30 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <Router>
-        {/* Global Command Bar */}
-        {isAuthenticated && (
-          <>
-            <CommandBar
-              isOpen={isCommandBarOpen}
-              onClose={() => setIsCommandBarOpen(false)}
-              onExecute={handleCommandExecute}
-            />
-            <CopilotPanel
-              isOpen={isCopilotOpen}
-              onClose={() => setIsCopilotOpen(false)}
-              context={copilotContext}
-              recommendations={copilotContext?.recommendations}
-            />
-            <OnboardingWizard
-              open={showOnboarding}
-              onClose={() => setShowOnboarding(false)}
-              userRole={user?.role}
-            />
-          </>
-        )}
-        <Routes>
+        <CompanyTypeProvider user={user}>
+          <Router>
+          {/* Global Command Bar */}
+          {isAuthenticated && (
+            <>
+              <CommandBar
+                isOpen={isCommandBarOpen}
+                onClose={() => setIsCommandBarOpen(false)}
+                onExecute={handleCommandExecute}
+              />
+              <CopilotPanel
+                isOpen={isCopilotOpen}
+                onClose={() => setIsCopilotOpen(false)}
+                context={copilotContext}
+                recommendations={copilotContext?.recommendations}
+              />
+              <OnboardingWizard
+                open={showOnboarding}
+                onClose={() => setShowOnboarding(false)}
+                userRole={user?.role}
+              />
+            </>
+          )}
+          <Routes>
         <Route 
           path="/" 
           element={
@@ -1501,9 +1515,70 @@ function App() {
           <Route path="security" element={<SettingsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
+        <Route 
+          path="/import-center" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ImportCenter />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/funding-overview" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <FundingOverview />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/hierarchy/customers" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CustomerHierarchy />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/hierarchy/products" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ProductHierarchy />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/vendors" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <VendorManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
-        </Router>
+          </Router>
+        </CompanyTypeProvider>
       </ToastProvider>
     </ErrorBoundary>
   );

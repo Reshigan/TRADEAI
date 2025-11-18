@@ -62,70 +62,76 @@ const drawerWidth = 240;
 
 const getMenuItems = (user) => {
   const baseItems = [
-    { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'NEW' },
+    { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'AI' },
     {
-      text: '📋 Plan',
+      text: '💰 Funding & Planning',
+      icon: <BudgetIcon />,
+      subItems: [
+        { text: 'Funding Overview', icon: <AssessmentIcon />, path: '/funding-overview', badge: 'NEW' },
+        { text: 'Annual Budgets', icon: <BudgetIcon />, path: '/budgets' },
+        { text: 'Budget Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
+        { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
+        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
+        { text: 'KAM Wallets', icon: <ReceiptIcon />, path: '/kam-wallets' },
+      ]
+    },
+    {
+      text: '📋 Activity Planning',
       icon: <LightbulbIcon />,
       subItems: [
         { text: 'Promotion Planner', icon: <PromotionIcon />, path: '/promotion-planner', badge: 'AI' },
-        { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
-        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
-        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
-        { text: 'All Budgets', icon: <BudgetIcon />, path: '/budgets' },
-      ]
-    },
-    {
-      text: '🚀 Execute',
-      icon: <RocketIcon />,
-      subItems: [
-        { text: 'Promotions Timeline', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'NEW' },
-        { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
         { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
-        { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
-        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-      ]
-    },
-    {
-      text: '📊 Analyze',
-      icon: <AnalyticsIcon />,
-      subItems: [
-        { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
-        { text: 'AI Insights', icon: <AIIcon />, path: '/analytics' },
-        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
-      ]
-    },
-    {
-      text: '🎯 Optimize',
-      icon: <MonitorIcon />,
-      subItems: [
+        { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
         { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
-        { text: 'Budget Reallocation', icon: <BudgetIcon />, path: '/budget-console' },
-        { text: 'Scenario Planning', icon: <SimulationIcon />, path: '/simulations' },
       ]
     },
     {
-      text: '✅ Approvals',
+      text: '✅ Approvals & Commitments',
       icon: <AssignmentIcon />,
       subItems: [
-        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'NEW' },
+        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'AI' },
+        { text: 'Budget Commitments', icon: <BudgetIcon />, path: '/budget-console' },
       ]
     },
     {
-      text: '💰 Claims & Deductions',
+      text: '🚀 Execution',
+      icon: <RocketIcon />,
+      subItems: [
+        { text: 'Active Promotions', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'LIVE' },
+        { text: 'Trade Spend Capture', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Activity Timeline', icon: <ActivityGridIcon />, path: '/activity-grid' },
+        { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
+      ]
+    },
+    {
+      text: '💵 Claims & Settlement',
       icon: <ReceiptIcon />,
       subItems: [
-        { text: 'Claims', icon: <ReceiptIcon />, path: '/claims', badge: 'NEW' },
-        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions', badge: 'NEW' },
-        { text: 'Reconciliation', icon: <AssessmentIcon />, path: '/deductions/reconciliation', badge: 'NEW' },
+        { text: 'Customer Claims', icon: <ReceiptIcon />, path: '/claims' },
+        { text: 'Reconciliation Hub', icon: <AssessmentIcon />, path: '/reconciliation-hub', badge: 'AI' },
+        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions' },
+        { text: 'Settlements', icon: <AssessmentIcon />, path: '/deductions/reconciliation' },
       ]
     },
     {
-      text: '📚 Data & Master Files',
+      text: '📊 Performance & Insights',
+      icon: <AnalyticsIcon />,
+      subItems: [
+        { text: 'Budget vs Actual', icon: <AssessmentIcon />, path: '/budget-console' },
+        { text: 'ROI Analysis', icon: <AnalyticsIcon />, path: '/analytics', badge: 'AI' },
+        { text: 'AI Recommendations', icon: <AIIcon />, path: '/ai-insights', badge: 'AI' },
+        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
+        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting', badge: 'AI' },
+      ]
+    },
+    {
+      text: '📚 Master Data',
       icon: <DataIcon />,
       subItems: [
+        { text: 'Import Center', icon: <DataIcon />, path: '/import-center', badge: 'NEW' },
         { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
         { text: 'Products', icon: <ProductIcon />, path: '/products' },
+        { text: 'Vendors', icon: <BusinessIcon />, path: '/vendors' },
       ]
     },
   ];

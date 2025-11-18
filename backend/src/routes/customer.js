@@ -15,6 +15,35 @@ const sanitizeInput = (input) => {
     .replace(/\//g, '&#x2F;');
 };
 
+// Get customer hierarchy tree
+router.get('/hierarchy', authenticateToken, asyncHandler(async (req, res) => {
+  const tenantId = req.tenantId || req.user.tenantId;
+  
+  const buildTree = async (parentId = null) => {
+    const customers = await Customer.find({ 
+      tenantId,
+      parentId: parentId 
+    }).sort({ name: 1 });
+    
+    const tree = await Promise.all(customers.map(async (customer) => {
+      const children = await buildTree(customer._id);
+      return {
+        ...customer.toObject(),
+        children
+      };
+    }));
+    
+    return tree;
+  };
+  
+  const tree = await buildTree(null);
+  
+  res.json({
+    success: true,
+    data: tree
+  });
+}));
+
 // Get all customers
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, status, channel } = req.query;

@@ -1,0 +1,6 @@
+kunnr,name,group,channel,region,parent_kunnr,hierarchy_level,payment_terms,price_list,sales_org,dist_channel,division,currency
+1000001,Shoprite Checkers,Shoprite Holdings,Retail,Gauteng,,1,NET30,PL001,1000,10,00,ZAR
+1000002,Pick n Pay,Pick n Pay Stores,Retail,Western Cape,,1,NET30,PL001,1000,10,00,ZAR
+1000003,Woolworths,Woolworths Holdings,Retail,Gauteng,,1,NET45,PL002,1000,10,00,ZAR
+1000004,Spar,Spar Group,Retail,KwaZulu-Natal,,1,NET30,PL001,1000,10,00,ZAR
+1000005,Makro,Massmart Holdings,Wholesale,Gauteng,,1,NET30,PL003,1000,20,00,ZAR

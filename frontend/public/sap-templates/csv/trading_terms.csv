@@ -1,0 +1,5 @@
+term_code,cond_type,description,kunnr,start_date,end_date,basis,rate_type,rate,cap_amount,settlement_freq,accrual_gl,cost_center
+TT001,ZB01,Volume Rebate Q1 2025,1000001,2025-01-01,2025-03-31,volume,percent,5.0,50000,quarterly,400100,CC001
+TT002,ZB02,Growth Incentive 2025,1000002,2025-01-01,2025-12-31,value,percent,3.0,100000,annual,400100,CC001
+TT003,ZB03,Listing Fee 2025,1000003,2025-01-01,2025-12-31,value,amount,25000,,annual,400200,CC002
+TT004,ZB04,Display Allowance Q1,1000004,2025-01-01,2025-03-31,value,percent,2.5,30000,quarterly,400100,CC001
