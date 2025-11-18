@@ -5,7 +5,7 @@ class ClaimService {
     const response = await apiClient.post(
       `/api/claims`,
       claimData,
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -14,7 +14,7 @@ class ClaimService {
     const response = await apiClient.post(
       `/api/claims/${claimId}/submit`,
       {},
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -23,7 +23,7 @@ class ClaimService {
     const response = await apiClient.post(
       `/api/claims/${claimId}/approve`,
       { approvedAmount },
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -32,7 +32,7 @@ class ClaimService {
     const response = await apiClient.post(
       `/api/claims/${claimId}/reject`,
       { reason },
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -41,7 +41,7 @@ class ClaimService {
     const response = await apiClient.post(
       `/api/claims/${claimId}/match-invoice`,
       { invoiceId, invoiceNumber, matchedAmount },
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -50,7 +50,7 @@ class ClaimService {
     const response = await apiClient.post(
       `/api/claims/auto-match`,
       {},
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -58,7 +58,7 @@ class ClaimService {
   async getUnmatchedClaims() {
     const response = await apiClient.get(
       `/api/claims/unmatched`,
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -66,7 +66,7 @@ class ClaimService {
   async getPendingApprovalClaims() {
     const response = await apiClient.get(
       `/api/claims/pending-approval`,
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -78,7 +78,7 @@ class ClaimService {
     
     const response = await apiClient.get(
       `/api/claims/customer/${customerId}?${params.toString()}`,
-      getAuthHeaders()
+      
     );
     return response.data;
   }
@@ -90,7 +90,7 @@ class ClaimService {
     
     const response = await apiClient.get(
       `/api/claims/statistics?${params.toString()}`,
-      getAuthHeaders()
+      
     );
     return response.data;
   }
