@@ -107,6 +107,12 @@ const userSchema = new mongoose.Schema({
       sms: { type: Boolean, default: false }
     }
   },
+  skillLevel: {
+    type: String,
+    enum: ['simple', 'standard', 'pro'],
+    default: 'standard',
+    description: 'User skill level for adaptive UI (simple=beginner, standard=intermediate, pro=advanced)'
+  },
   sapUserId: String,
   integrationTokens: [{
     system: String,
