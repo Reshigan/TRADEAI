@@ -29,7 +29,7 @@ import {
 import deductionService from '../../services/deduction/deductionService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const DeductionDetail = () => {
   const { id } = useParams();
@@ -54,7 +54,7 @@ const DeductionDetail = () => {
       setError(null);
       const data = await deductionService.getById(id);
       setDeduction(data);
-      trackEvent('deduction_detail_viewed', { deductionId: id, deductionType: data.deductionType });
+      analytics.trackEvent('deduction_detail_viewed', { deductionId: id, deductionType: data.deductionType });
     } catch (err) {
       console.error('Error fetching deduction detail:', err);
       setError(err.message || 'Failed to load deduction details');
@@ -69,12 +69,12 @@ const DeductionDetail = () => {
       setActionLoading(true);
       await deductionService.validate(id, { notes: 'Validated' });
       showToast('Deduction validated successfully', 'success');
-      trackEvent('deduction_validated', { deductionId: id, deductionType: deduction.deductionType });
+      analytics.trackEvent('deduction_validated', { deductionId: id, deductionType: deduction.deductionType });
       fetchDeductionDetail();
     } catch (err) {
       console.error('Error validating deduction:', err);
       showToast(err.message || 'Failed to validate deduction', 'error');
-      trackEvent('deduction_validate_failed', { deductionId: id, error: err.message });
+      analytics.trackEvent('deduction_validate_failed', { deductionId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }
@@ -90,13 +90,13 @@ const DeductionDetail = () => {
       setActionLoading(true);
       await deductionService.dispute(id, { reason: disputeReason });
       showToast('Deduction disputed successfully', 'success');
-      trackEvent('deduction_disputed', { deductionId: id, deductionType: deduction.deductionType });
+      analytics.trackEvent('deduction_disputed', { deductionId: id, deductionType: deduction.deductionType });
       setDisputeDialogOpen(false);
       fetchDeductionDetail();
     } catch (err) {
       console.error('Error disputing deduction:', err);
       showToast(err.message || 'Failed to dispute deduction', 'error');
-      trackEvent('deduction_dispute_failed', { deductionId: id, error: err.message });
+      analytics.trackEvent('deduction_dispute_failed', { deductionId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }
@@ -112,13 +112,13 @@ const DeductionDetail = () => {
       setActionLoading(true);
       await deductionService.resolve(id, { notes: resolutionNotes });
       showToast('Deduction resolved successfully', 'success');
-      trackEvent('deduction_resolved', { deductionId: id, deductionType: deduction.deductionType });
+      analytics.trackEvent('deduction_resolved', { deductionId: id, deductionType: deduction.deductionType });
       setResolveDialogOpen(false);
       fetchDeductionDetail();
     } catch (err) {
       console.error('Error resolving deduction:', err);
       showToast(err.message || 'Failed to resolve deduction', 'error');
-      trackEvent('deduction_resolve_failed', { deductionId: id, error: err.message });
+      analytics.trackEvent('deduction_resolve_failed', { deductionId: id, error: err.message });
     } finally {
       setActionLoading(false);
     }

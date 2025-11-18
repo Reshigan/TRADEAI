@@ -28,7 +28,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import claimService from '../../services/claim/claimService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const ClaimsList = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const ClaimsList = () => {
   useEffect(() => {
     loadClaims();
     loadStatistics();
-    trackEvent('claims_list_viewed', { filter });
+    analytics.trackEvent('claims_list_viewed', { filter });
   }, [filter]);
 
   const loadClaims = async () => {
@@ -82,7 +82,7 @@ const ClaimsList = () => {
       setLoading(true);
       const response = await claimService.autoMatchClaims();
       
-      trackEvent('claims_auto_matched', {
+      analytics.trackEvent('claims_auto_matched', {
         matchCount: response.data?.length || 0
       });
       

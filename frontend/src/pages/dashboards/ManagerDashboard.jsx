@@ -13,7 +13,6 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
-import analytics from '../../utils/analytics';
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();

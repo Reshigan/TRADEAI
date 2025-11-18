@@ -22,7 +22,7 @@ import { Add as AddIcon, Delete as DeleteIcon, Save as SaveIcon } from '@mui/ico
 import { useNavigate } from 'react-router-dom';
 import claimService from '../../services/claim/claimService';
 import customerService from '../../services/customer/customerService';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const CreateClaim = () => {
   const navigate = useNavigate();
@@ -123,7 +123,7 @@ const CreateClaim = () => {
         await claimService.submitClaim(response.data._id);
       }
 
-      trackEvent('claim_created', {
+      analytics.trackEvent('claim_created', {
         claimType: formData.claimType,
         amount: formData.claimAmount,
         submitted: submitForApproval

@@ -34,7 +34,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import approvalService from '../../services/approval/approvalService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const ApprovalsList = () => {
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ const ApprovalsList = () => {
 
   useEffect(() => {
     loadApprovals();
-    trackEvent('approvals_list_viewed', { filter });
+    analytics.trackEvent('approvals_list_viewed', { filter });
   }, [filter]);
 
   const loadApprovals = async () => {
@@ -78,7 +78,7 @@ const ApprovalsList = () => {
       setActionLoading(true);
       await approvalService.approveApproval(selectedApproval._id, actionComment);
       
-      trackEvent('approval_approved', {
+      analytics.trackEvent('approval_approved', {
         approvalId: selectedApproval._id,
         entityType: selectedApproval.entityType
       });
@@ -100,7 +100,7 @@ const ApprovalsList = () => {
       setActionLoading(true);
       await approvalService.rejectApproval(selectedApproval._id, actionComment);
       
-      trackEvent('approval_rejected', {
+      analytics.trackEvent('approval_rejected', {
         approvalId: selectedApproval._id,
         entityType: selectedApproval.entityType
       });

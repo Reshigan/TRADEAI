@@ -168,16 +168,3 @@ class Analytics {
 const analytics = new Analytics();
 
 export default analytics;
-
-export const {
-  trackEvent,
-  trackError,
-  trackPageView,
-  trackCommandBarUsage,
-  trackAIRecommendationAction,
-  trackSimulationRun,
-  trackPromotionCreated,
-  trackBudgetReallocation,
-  trackConflictResolution,
-  setUser
-} = analytics;

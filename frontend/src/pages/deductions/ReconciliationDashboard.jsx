@@ -27,7 +27,7 @@ import deductionService from '../../services/deduction/deductionService';
 import claimService from '../../services/claim/claimService';
 import customerService from '../../services/customer/customerService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const ReconciliationDashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ const ReconciliationDashboard = () => {
       setDeductions(deductionsResponse.data || []);
       setClaims(claimsResponse.data || []);
 
-      trackEvent('reconciliation_performed', {
+      analytics.trackEvent('reconciliation_performed', {
         customerId: selectedCustomer,
         startDate,
         endDate

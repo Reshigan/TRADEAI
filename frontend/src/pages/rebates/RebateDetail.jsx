@@ -27,7 +27,7 @@ import {
 import api from '../../services/api';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
-import { trackEvent } from '../../utils/analytics';
+import analytics from '../../utils/analytics';
 
 const RebateDetail = () => {
   const { id } = useParams();
@@ -45,7 +45,7 @@ const RebateDetail = () => {
         const response = await api.get(`/rebates/${id}`);
         const data = response.data.success ? response.data.data : response.data;
         setRebate(data);
-        trackEvent('rebate_detail_viewed', { rebateId: id, rebateType: data.type });
+        analytics.trackEvent('rebate_detail_viewed', { rebateId: id, rebateType: data.type });
       } catch (err) {
         console.error('Error fetching rebate detail:', err);
         setError(err.message || 'Failed to load rebate details');
@@ -63,12 +63,12 @@ const RebateDetail = () => {
       try {
         await api.delete(`/rebates/${id}`);
         showToast('Rebate deleted successfully', 'success');
-        trackEvent('rebate_deleted', { rebateId: id });
+        analytics.trackEvent('rebate_deleted', { rebateId: id });
         navigate('/rebates');
       } catch (err) {
         console.error('Error deleting rebate:', err);
         showToast(err.message || 'Failed to delete rebate', 'error');
-        trackEvent('rebate_delete_failed', { rebateId: id, error: err.message });
+        analytics.trackEvent('rebate_delete_failed', { rebateId: id, error: err.message });
       }
     }
   };
