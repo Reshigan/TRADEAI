@@ -1,7 +1,6 @@
 import apiClient from '../apiClient';
 
-
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 const cache = new Map();
 
 const getCacheKey = (endpoint, params) => {
@@ -25,7 +24,6 @@ const clearCache = () => {
   cache.clear();
 };
 
-
 const productService = {
   getProducts: async (filters = {}) => {
     const cacheKey = getCacheKey('products', filters);
@@ -33,10 +31,7 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/products`, {
-        params: filters,
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/products`, { params: filters });
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -51,9 +46,7 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/products/${id}`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/products/${id}`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -69,12 +62,10 @@ const productService = {
 
     try {
       const url = productId 
-        ? `${API_BASE_URL}/api/products/${productId}/hierarchy`
-        : `${API_BASE_URL}/api/products/hierarchy`;
+        ? `/api/products/${productId}/hierarchy`
+        : `/api/products/hierarchy`;
       
-      const response = await axios.get(url, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(url);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -89,9 +80,7 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/products/${productId}/performance`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/products/${productId}/performance`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -102,10 +91,8 @@ const productService = {
 
   createProduct: async (productData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/products`, productData, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.post(`/api/products`, productData);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error('Failed to create product:', error);
@@ -115,10 +102,8 @@ const productService = {
 
   updateProduct: async (id, productData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/api/products/${id}`, productData, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.put(`/api/products/${id}`, productData);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error(`Failed to update product ${id}:`, error);
@@ -128,10 +113,8 @@ const productService = {
 
   deleteProduct: async (id) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/api/products/${id}`, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.delete(`/api/products/${id}`);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error(`Failed to delete product ${id}:`, error);

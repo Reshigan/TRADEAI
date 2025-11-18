@@ -1,7 +1,6 @@
 import apiClient from '../apiClient';
 
-
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 const cache = new Map();
 
 const getCacheKey = (endpoint, params) => {
@@ -25,7 +24,6 @@ const clearCache = () => {
   cache.clear();
 };
 
-
 const customerService = {
   getCustomers: async (filters = {}) => {
     const cacheKey = getCacheKey('customers', filters);
@@ -33,10 +31,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/customers`, {
-        params: filters,
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/customers`, { params: filters });
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -51,9 +46,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/customers/${id}`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/customers/${id}`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -69,12 +62,10 @@ const customerService = {
 
     try {
       const url = customerId 
-        ? `${API_BASE_URL}/api/customers/${customerId}/hierarchy`
-        : `${API_BASE_URL}/api/customers/hierarchy`;
+        ? `/api/customers/${customerId}/hierarchy`
+        : `/api/customers/hierarchy`;
       
-      const response = await axios.get(url, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(url);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -89,9 +80,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/customers/${customerId}/performance`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/customers/${customerId}/performance`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -106,9 +95,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/customers/${customerId}/ai-insights`, {
-        headers: getAuthHeaders()
-      });
+      const response = await apiClient.get(`/api/customers/${customerId}/ai-insights`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -119,10 +106,8 @@ const customerService = {
 
   createCustomer: async (customerData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/customers`, customerData, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.post(`/api/customers`, customerData);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error('Failed to create customer:', error);
@@ -132,10 +117,8 @@ const customerService = {
 
   updateCustomer: async (id, customerData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/api/customers/${id}`, customerData, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.put(`/api/customers/${id}`, customerData);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error(`Failed to update customer ${id}:`, error);
@@ -145,10 +128,8 @@ const customerService = {
 
   deleteCustomer: async (id) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/api/customers/${id}`, {
-        headers: getAuthHeaders()
-      });
-      clearCache(); // Invalidate cache on mutation
+      const response = await apiClient.delete(`/api/customers/${id}`);
+      clearCache();
       return response.data;
     } catch (error) {
       console.error(`Failed to delete customer ${id}:`, error);
