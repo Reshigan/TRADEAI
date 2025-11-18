@@ -2,7 +2,7 @@ import apiClient from '../apiClient';
 
 class ClaimService {
   async createClaim(claimData) {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_BASE_URL}/api/claims`,
       claimData,
       getAuthHeaders()
@@ -11,7 +11,7 @@ class ClaimService {
   }
 
   async submitClaim(claimId) {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_BASE_URL}/api/claims/${claimId}/submit`,
       {},
       getAuthHeaders()
@@ -20,7 +20,7 @@ class ClaimService {
   }
 
   async approveClaim(claimId, approvedAmount) {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_BASE_URL}/api/claims/${claimId}/approve`,
       { approvedAmount },
       getAuthHeaders()
@@ -29,7 +29,7 @@ class ClaimService {
   }
 
   async rejectClaim(claimId, reason) {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_BASE_URL}/api/claims/${claimId}/reject`,
       { reason },
       getAuthHeaders()
@@ -38,7 +38,7 @@ class ClaimService {
   }
 
   async matchClaimToInvoice(claimId, invoiceId, invoiceNumber, matchedAmount) {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_BASE_URL}/api/claims/${claimId}/match-invoice`,
       { invoiceId, invoiceNumber, matchedAmount },
       getAuthHeaders()
@@ -47,7 +47,7 @@ class ClaimService {
   }
 
   async autoMatchClaims() {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_BASE_URL}/api/claims/auto-match`,
       {},
       getAuthHeaders()
@@ -56,7 +56,7 @@ class ClaimService {
   }
 
   async getUnmatchedClaims() {
-    const response = await axios.get(
+    const response = await apiClient.get(
       `${API_BASE_URL}/api/claims/unmatched`,
       getAuthHeaders()
     );
@@ -64,7 +64,7 @@ class ClaimService {
   }
 
   async getPendingApprovalClaims() {
-    const response = await axios.get(
+    const response = await apiClient.get(
       `${API_BASE_URL}/api/claims/pending-approval`,
       getAuthHeaders()
     );
@@ -76,7 +76,7 @@ class ClaimService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    const response = await axios.get(
+    const response = await apiClient.get(
       `${API_BASE_URL}/api/claims/customer/${customerId}?${params.toString()}`,
       getAuthHeaders()
     );
@@ -88,7 +88,7 @@ class ClaimService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     
-    const response = await axios.get(
+    const response = await apiClient.get(
       `${API_BASE_URL}/api/claims/statistics?${params.toString()}`,
       getAuthHeaders()
     );
