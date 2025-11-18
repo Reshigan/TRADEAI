@@ -1,19 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+import apiClient from '../apiClient';
 
 class SimulationService {
   constructor() {
     this.cache = new Map();
-    this.cacheTTL = 5 * 60 * 1000; // 5 minutes
-  }
-
-  getAuthHeaders() {
-    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
+    this.cacheTTL = 5 * 60 * 1000;
   }
 
   getCacheKey(endpoint, params) {
@@ -42,11 +32,7 @@ class SimulationService {
 
   async simulatePromotion(promotionData) {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/simulations/promotion`,
-        promotionData,
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.post(`/api/simulations/promotion`, promotionData);
       return response.data;
     } catch (error) {
       console.error('Promotion simulation failed:', error);
@@ -56,11 +42,7 @@ class SimulationService {
 
   async compareScenarios(scenarios, baseline = null) {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/simulations/compare`,
-        { scenarios, baseline },
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.post(`/api/simulations/compare`, { scenarios, baseline });
       return response.data;
     } catch (error) {
       console.error('Scenario comparison failed:', error);
@@ -74,11 +56,7 @@ class SimulationService {
     if (cached) return cached;
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/recommendations/next-best-promotion`,
-        { customerId, limit },
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.post(`/api/recommendations/next-best-promotion`, { customerId, limit });
       this.setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -93,11 +71,7 @@ class SimulationService {
     if (cached) return cached;
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/optimizer/budget/reallocate`,
-        { budgetId, minROI },
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.post(`/api/optimizer/budget/reallocate`, { budgetId, minROI });
       this.setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -108,11 +82,7 @@ class SimulationService {
 
   async previewConflicts(promotionData, excludePromotionId = null) {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/promotions/conflicts/preview`,
-        { ...promotionData, excludePromotionId },
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.post(`/api/promotions/conflicts/preview`, { ...promotionData, excludePromotionId });
       return response.data;
     } catch (error) {
       console.error('Conflict preview failed:', error);
@@ -129,10 +99,7 @@ class SimulationService {
       const params = new URLSearchParams({ year, view });
       if (month) params.append('month', month);
 
-      const response = await axios.get(
-        `${API_BASE_URL}/api/promotions/calendar?${params.toString()}`,
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.get(`/api/promotions/calendar?${params.toString()}`);
       this.setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -143,11 +110,7 @@ class SimulationService {
 
   async orchestrateAI(userIntent, context = {}) {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/ai-orchestrator/orchestrate`,
-        { userIntent, context },
-        { headers: this.getAuthHeaders() }
-      );
+      const response = await apiClient.post(`/api/ai-orchestrator/orchestrate`, { userIntent, context });
       return response.data;
     } catch (error) {
       console.error('AI orchestration failed:', error);
