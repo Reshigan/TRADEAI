@@ -164,6 +164,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
             { text: 'Claims', path: '/claims', badge: 'NEW', description: 'Manage customer claims' },
             { text: 'Deductions', path: '/deductions', badge: 'NEW', description: 'Track and manage deductions' },
             { text: 'Reconciliation', path: '/deductions/reconciliation', badge: 'NEW', description: 'Reconcile claims and deductions' },
+            { text: 'KAM Wallet', path: '/kamwallet', badge: 'NEW', description: 'Manage KAM discretionary spend' },
           ]
         }
       ]

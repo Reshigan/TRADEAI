@@ -64,10 +64,8 @@ const KAMWalletManagement = () => {
 
   const loadUsers = async () => {
     try {
-      setUsers([
-        { _id: '1', name: 'KAM User 1', email: 'kam1@test.com' },
-        { _id: '2', name: 'KAM User 2', email: 'kam2@test.com' }
-      ]);
+      const data = await userService.getUsers({ role: 'key_account_manager' });
+      setUsers(data);
     } catch (err) {
       console.error('Failed to load users:', err);
     }

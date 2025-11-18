@@ -64,11 +64,8 @@ const KAMWalletAllocate = () => {
 
   const loadCustomers = async () => {
     try {
-      setCustomers([
-        { _id: '1', name: 'Customer A', code: 'CUST001' },
-        { _id: '2', name: 'Customer B', code: 'CUST002' },
-        { _id: '3', name: 'Customer C', code: 'CUST003' }
-      ]);
+      const data = await customerService.getCustomers();
+      setCustomers(data);
     } catch (err) {
       console.error('Failed to load customers:', err);
     }
