@@ -4,9 +4,9 @@
  */
 
 import axios from 'axios';
+import apiClient from './apiClient';
 
-const ML_BASE_URL = process.env.REACT_APP_ML_URL || 'http://localhost:8001';
-const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const ML_BASE_URL = process.env.REACT_APP_ML_URL || '/api/ml';
 
 class MLIntegrationService {
   constructor() {
@@ -16,19 +16,7 @@ class MLIntegrationService {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    this.apiClient = axios.create({
-      baseURL: BACKEND_URL,
-      timeout: 10000
-    });
-
-    // Add auth token
-    this.apiClient.interceptors.request.use(config => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
+    this.apiClient = apiClient;
   }
 
   /**

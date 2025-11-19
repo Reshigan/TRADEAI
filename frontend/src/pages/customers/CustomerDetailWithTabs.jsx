@@ -5,6 +5,8 @@ import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { usePageVariants } from '../../hooks/usePageVariants';
+import { useCompanyType } from '../../contexts/CompanyTypeContext';
 
 import CustomerOverview from './tabs/CustomerOverview';
 import CustomerPromotions from './tabs/CustomerPromotions';
@@ -22,15 +24,17 @@ const CustomerDetailWithTabs = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
 
-  const tabs = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'promotions', label: 'Promotions' },
-    { value: 'trade-spends', label: 'Trade Spends' },
-    { value: 'trading-terms', label: 'Trading Terms' },
-    { value: 'budgets', label: 'Budgets' },
-    { value: 'claims', label: 'Claims' },
-    { value: 'deductions', label: 'Deductions' },
-    { value: 'sales-history', label: 'Sales History' }
+  const pageVariant = usePageVariants('customerDetail');
+  const { labels } = useCompanyType();
+  const tabs = pageVariant?.tabs || [
+    { id: 'overview', label: 'Overview', path: 'overview' },
+    { id: 'promotions', label: 'Promotions', path: 'promotions' },
+    { id: 'trade-spends', label: 'Trade Spends', path: 'trade-spends' },
+    { id: 'trading-terms', label: 'Trading Terms', path: 'trading-terms' },
+    { id: 'budgets', label: 'Budgets', path: 'budgets' },
+    { id: 'claims', label: 'Claims', path: 'claims' },
+    { id: 'deductions', label: 'Deductions', path: 'deductions' },
+    { id: 'sales-history', label: 'Sales History', path: 'sales-history' }
   ];
 
   useEffect(() => {
@@ -81,7 +85,7 @@ const CustomerDetailWithTabs = () => {
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button startIcon={<BackIcon />} onClick={() => navigate('/customers')}>Back</Button>
+          <Button startIcon={<BackIcon />} onClick={() => navigate('/customers')}>Back to {labels.customers}</Button>
           <Box>
             <Typography variant="h4">{customer.name}</Typography>
             <Typography variant="body2" color="text.secondary">{customer.code}</Typography>
@@ -94,7 +98,7 @@ const CustomerDetailWithTabs = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
           {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
+            <Tab key={tab.id} value={tab.path} label={tab.label} />
           ))}
         </Tabs>
       </Paper>

@@ -1,0 +1,6 @@
+matnr,sku,name,brand,category,subcategory,size,uom,list_price,std_cost,gtin,currency
+MAT001,SKU-CHOC-001,Milk Chocolate Bar 80g,Abie's,Chocolate,Milk Chocolate,80,G,15.99,8.50,6001234567890,ZAR
+MAT002,SKU-CHOC-002,Dark Chocolate Bar 80g,Abie's,Chocolate,Dark Chocolate,80,G,17.99,9.00,6001234567891,ZAR
+MAT003,SKU-CHOC-003,White Chocolate Bar 80g,Abie's,Chocolate,White Chocolate,80,G,16.99,8.75,6001234567892,ZAR
+MAT004,SKU-CHOC-004,Milk Chocolate Slab 150g,Abie's,Chocolate,Milk Chocolate,150,G,28.99,15.00,6001234567893,ZAR
+MAT005,SKU-CHOC-005,Assorted Chocolates Box 250g,Abie's,Chocolate,Assorted,250,G,89.99,45.00,6001234567894,ZAR

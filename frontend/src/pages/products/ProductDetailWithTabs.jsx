@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { usePageVariants } from '../../hooks/usePageVariants';
 
 import ProductOverview from './tabs/ProductOverview';
 import ProductPromotions from './tabs/ProductPromotions';
@@ -19,12 +20,13 @@ const ProductDetailWithTabs = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
 
-  const tabs = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'promotions', label: 'Promotions' },
-    { value: 'campaigns', label: 'Campaigns' },
-    { value: 'trading-terms', label: 'Trading Terms' },
-    { value: 'sales-history', label: 'Sales History' }
+  const pageVariant = usePageVariants('productDetail');
+  const tabs = pageVariant?.tabs || [
+    { id: 'overview', label: 'Overview', path: 'overview' },
+    { id: 'promotions', label: 'Promotions', path: 'promotions' },
+    { id: 'campaigns', label: 'Campaigns', path: 'campaigns' },
+    { id: 'trading-terms', label: 'Trading Terms', path: 'trading-terms' },
+    { id: 'sales-history', label: 'Sales History', path: 'sales-history' }
   ];
 
   useEffect(() => {
@@ -88,7 +90,7 @@ const ProductDetailWithTabs = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
           {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
+            <Tab key={tab.id} value={tab.path} label={tab.label} />
           ))}
         </Tabs>
       </Paper>

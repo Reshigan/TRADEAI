@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { usePageVariants } from '../../hooks/usePageVariants';
 
 import TradeSpendOverview from './tabs/TradeSpendOverview';
 import TradeSpendAccruals from './tabs/TradeSpendAccruals';
@@ -20,13 +21,14 @@ const TradeSpendDetailWithTabs = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
 
-  const tabs = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'accruals', label: 'Accruals' },
-    { value: 'documents', label: 'Documents' },
-    { value: 'approvals', label: 'Approvals' },
-    { value: 'performance', label: 'Performance' },
-    { value: 'history', label: 'History' }
+  const pageVariant = usePageVariants('tradeSpendDetail');
+  const tabs = pageVariant?.tabs || [
+    { id: 'overview', label: 'Overview', path: 'overview' },
+    { id: 'accruals', label: 'Accruals', path: 'accruals' },
+    { id: 'documents', label: 'Documents', path: 'documents' },
+    { id: 'approvals', label: 'Approvals', path: 'approvals' },
+    { id: 'performance', label: 'Performance', path: 'performance' },
+    { id: 'history', label: 'History', path: 'history' }
   ];
 
   useEffect(() => {
@@ -90,7 +92,7 @@ const TradeSpendDetailWithTabs = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
           {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
+            <Tab key={tab.id} value={tab.path} label={tab.label} />
           ))}
         </Tabs>
       </Paper>

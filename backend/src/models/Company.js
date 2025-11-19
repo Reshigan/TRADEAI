@@ -28,6 +28,17 @@ const companySchema = new mongoose.Schema({
     enum: ['fmcg', 'retail', 'manufacturing', 'distribution', 'other'],
     default: 'fmcg'
   },
+  companyType: {
+    type: String,
+    enum: ['manufacturer', 'distributor', 'retailer'],
+    required: true,
+    default: 'manufacturer',
+    index: true
+  },
+  vendorCompanies: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company'
+  }],
   country: {
     type: String,
     required: true,
@@ -116,6 +127,12 @@ const companySchema = new mongoose.Schema({
         type: String,
         default: '17:00'
       }
+    },
+    // Company-type-specific UI customization
+    uiCustomization: {
+      navigationLabels: mongoose.Schema.Types.Mixed,
+      processSteps: [String],
+      featureToggles: mongoose.Schema.Types.Mixed
     }
   },
 

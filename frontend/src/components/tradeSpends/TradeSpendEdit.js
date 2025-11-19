@@ -22,9 +22,8 @@ import {
   Cancel as CancelIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import apiClient from '../../services/apiClient';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const TradeSpendEdit = () => {
   const { id } = useParams();
@@ -62,9 +61,9 @@ const TradeSpendEdit = () => {
     try {
       setLoading(true);
       const [tradeSpendRes, customersRes, productsRes] = await Promise.all([
-        axios.get(`${API_URL}/trade-spends/${id}`),
-        axios.get(`${API_URL}/customers`),
-        axios.get(`${API_URL}/products`)
+        apiClient.get(`/trade-spends/${id}`),
+        apiClient.get(`/customers`),
+        apiClient.get(`/products`)
       ]);
       
       setTradeSpend({
@@ -103,7 +102,7 @@ const TradeSpendEdit = () => {
       setSaving(true);
       setError('');
 
-      await axios.put(`${API_URL}/trade-spends/${id}`, tradeSpend);
+      await apiClient.put(`/trade-spends/${id}`, tradeSpend);
       
       setSuccess('Trade spend updated successfully!');
       setTimeout(() => {

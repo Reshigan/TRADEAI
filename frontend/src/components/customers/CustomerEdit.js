@@ -28,9 +28,8 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import apiClient from '../../services/apiClient';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const getCurrencySymbol = () => {
   try {
@@ -88,7 +87,7 @@ const CustomerEdit = () => {
   const fetchCustomer = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/customers/${id}`);
+      const response = await apiClient.get(`/customers/${id}`);
       setCustomer({
         ...response.data,
         address: response.data.address || {
@@ -170,7 +169,7 @@ const CustomerEdit = () => {
       setSaving(true);
       setError('');
 
-      await axios.put(`${API_URL}/customers/${id}`, customer);
+      await apiClient.put(`/customers/${id}`, customer);
       
       setSuccess('Customer updated successfully!');
       setTimeout(() => {

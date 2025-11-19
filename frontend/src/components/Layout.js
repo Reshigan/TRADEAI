@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import MegaMenu from './MegaMenu';
 import {
+  AppBar,
+  Avatar,
+  Badge,
   Box,
   CssBaseline,
   Divider,
@@ -11,6 +13,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
+  Toolbar,
   Typography,
   useTheme,
   useMediaQuery,
@@ -26,6 +31,8 @@ import {
   BarChart as AnalyticsIcon,
   Settings as SettingsIcon,
   ChevronLeft,
+  Menu as MenuIcon,
+  Notifications as NotificationsIcon,
   Business as BusinessIcon,
   Description as ReportIcon,
   CalendarMonth as ActivityGridIcon,
@@ -37,7 +44,6 @@ import {
   Psychology as AIIcon,
   Lightbulb as LightbulbIcon,
   Rocket as RocketIcon,
-  TrendingUp as MonitorIcon,
   Storage as DataIcon,
   Assignment as AssignmentIcon,
   Receipt as ReceiptIcon,
@@ -47,78 +53,87 @@ import QuickActions from './common/QuickActions';
 import Breadcrumbs from './common/Breadcrumbs';
 import AIAssistant from './AIAssistant/AIAssistant';
 import newLogo from '../assets/new_logo.svg';
+import { useCompanyType } from '../contexts/CompanyTypeContext';
 
 // TEMPORARILY DISABLE COMMON COMPONENTS TO TEST
 // import { Walkthrough } from './common';
 
 const drawerWidth = 240;
 
-const getMenuItems = (user) => {
+const getMenuItems = (user, labels, features) => {
   const baseItems = [
-    { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'NEW' },
+    { text: '🏠 Command Center', icon: <AIIcon />, path: '/dashboard', badge: 'AI' },
     {
-      text: '📋 Plan',
+      text: `💰 ${labels.fundingPlanning}`,
+      icon: <BudgetIcon />,
+      subItems: [
+        { text: labels.fundingOverview, icon: <AssessmentIcon />, path: '/funding-overview', badge: 'NEW' },
+        { text: 'Annual Budgets', icon: <BudgetIcon />, path: '/budgets' },
+        { text: 'Budget Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
+        { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
+        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
+        { text: 'KAM Wallets', icon: <ReceiptIcon />, path: '/kamwallet' },
+      ]
+    },
+    {
+      text: `📋 ${labels.activityPlanning}`,
       icon: <LightbulbIcon />,
       subItems: [
         { text: 'Promotion Planner', icon: <PromotionIcon />, path: '/promotion-planner', badge: 'AI' },
-        { text: 'Budget Console', icon: <BudgetIcon />, path: '/budget-console', badge: 'AI' },
-        { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
-        { text: 'Annual Planning', icon: <LightbulbIcon />, path: '/budgets/new-flow' },
-        { text: 'All Budgets', icon: <BudgetIcon />, path: '/budgets' },
-      ]
-    },
-    {
-      text: '🚀 Execute',
-      icon: <RocketIcon />,
-      subItems: [
-        { text: 'Promotions Timeline', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'NEW' },
-        { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
         { text: 'All Promotions', icon: <PromotionIcon />, path: '/promotions' },
-        { text: 'Trade Spends', icon: <TradeSpendIcon />, path: '/trade-spends' },
-        { text: 'Trading Terms', icon: <TradingTermsIcon />, path: '/trading-terms' },
-      ]
-    },
-    {
-      text: '📊 Analyze',
-      icon: <AnalyticsIcon />,
-      subItems: [
-        { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
-        { text: 'AI Insights', icon: <AIIcon />, path: '/analytics' },
-        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting' },
-      ]
-    },
-    {
-      text: '🎯 Optimize',
-      icon: <MonitorIcon />,
-      subItems: [
+        { text: 'Activity Calendar', icon: <ActivityGridIcon />, path: '/activity-grid' },
         { text: 'Simulation Studio', icon: <SimulationIcon />, path: '/simulation-studio', badge: 'AI' },
-        { text: 'Budget Reallocation', icon: <BudgetIcon />, path: '/budget-console' },
-        { text: 'Scenario Planning', icon: <SimulationIcon />, path: '/simulations' },
       ]
     },
     {
-      text: '✅ Approvals',
+      text: '✅ Approvals & Commitments',
       icon: <AssignmentIcon />,
       subItems: [
-        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'NEW' },
+        { text: 'Pending Approvals', icon: <AssignmentIcon />, path: '/approvals', badge: 'AI' },
+        { text: 'Budget Commitments', icon: <BudgetIcon />, path: '/budget-console' },
       ]
     },
     {
-      text: '💰 Claims & Deductions',
+      text: `🚀 ${labels.execution}`,
+      icon: <RocketIcon />,
+      subItems: [
+        { text: 'Active Promotions', icon: <ActivityGridIcon />, path: '/promotions-timeline', badge: 'LIVE' },
+        { text: 'Trade Spend Capture', icon: <TradeSpendIcon />, path: '/trade-spends' },
+        { text: 'Activity Timeline', icon: <ActivityGridIcon />, path: '/activity-grid' },
+        { text: 'Live Performance', icon: <DashboardIcon />, path: '/realtime-dashboard', badge: 'LIVE' },
+      ]
+    },
+    {
+      text: `💵 ${labels.claimsSettlement}`,
       icon: <ReceiptIcon />,
       subItems: [
-        { text: 'Claims', icon: <ReceiptIcon />, path: '/claims', badge: 'NEW' },
-        { text: 'Deductions', icon: <ReceiptIcon />, path: '/deductions', badge: 'NEW' },
-        { text: 'Reconciliation', icon: <AssessmentIcon />, path: '/deductions/reconciliation', badge: 'NEW' },
+        { text: labels.claims, icon: <ReceiptIcon />, path: '/claims' },
+        { text: labels.reconciliationHub, icon: <AssessmentIcon />, path: '/reconciliation-hub', badge: 'AI' },
+        { text: labels.deductions, icon: <ReceiptIcon />, path: '/deductions' },
+        { text: 'Settlements', icon: <AssessmentIcon />, path: '/deductions/reconciliation' },
       ]
     },
     {
-      text: '📚 Data & Master Files',
+      text: `📊 ${labels.performanceInsights}`,
+      icon: <AnalyticsIcon />,
+      subItems: [
+        { text: 'Budget vs Actual', icon: <AssessmentIcon />, path: '/budget-console' },
+        { text: 'ROI Analysis', icon: <AnalyticsIcon />, path: '/analytics', badge: 'AI' },
+        { text: 'AI Recommendations', icon: <AIIcon />, path: '/ai-insights', badge: 'AI' },
+        { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
+        { text: 'Forecasting', icon: <ForecastingIcon />, path: '/forecasting', badge: 'AI' },
+      ]
+    },
+    {
+      text: '📚 Master Data',
       icon: <DataIcon />,
       subItems: [
-        { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
+        { text: 'Import Center', icon: <DataIcon />, path: '/import-center', badge: 'NEW' },
+        { text: labels.customers, icon: <CustomerIcon />, path: '/customers' },
+        { text: 'Customer Hierarchy', icon: <CustomerIcon />, path: '/hierarchy/customers', badge: 'NEW' },
         { text: 'Products', icon: <ProductIcon />, path: '/products' },
+        { text: 'Product Hierarchy', icon: <ProductIcon />, path: '/hierarchy/products', badge: 'NEW' },
+        ...(features.showVendors ? [{ text: 'Vendors', icon: <BusinessIcon />, path: '/vendors', badge: 'NEW' }] : []),
       ]
     },
   ];
@@ -140,8 +155,6 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
-  // const [walkthroughOpen, setWalkthroughOpen] = useState(false);
-  // const [walkthroughFeature, setWalkthroughFeature] = useState('');
   const [openSections, setOpenSections] = useState({
     'Trade Management': true,
     'Master Data': true,
@@ -152,7 +165,8 @@ const Layout = ({ children, user, onLogout }) => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const menuItems = getMenuItems(user);
+  const { labels, features } = useCompanyType();
+  const menuItems = getMenuItems(user, labels, features);
 
   const toggleSection = (sectionName) => {
     setOpenSections(prev => ({
@@ -160,30 +174,6 @@ const Layout = ({ children, user, onLogout }) => {
       [sectionName]: !prev[sectionName]
     }));
   };
-  
-  // Check if walkthrough should be shown based on current path - DISABLED
-  // useEffect(() => {
-  //   const path = location.pathname;
-  //   let feature = '';
-  //   
-  //   if (path === '/dashboard') feature = 'dashboard';
-  //   else if (path.includes('/budgets')) feature = 'budgets';
-  //   else if (path.includes('/trade-spends')) feature = 'trade-spends';
-  //   else if (path.includes('/promotions')) feature = 'promotions';
-  //   else if (path.includes('/activity-grid')) feature = 'activity-grid';
-  //   else if (path.includes('/customers')) feature = 'customers';
-  //   else if (path.includes('/products')) feature = 'products';
-  //   else if (path.includes('/simulations')) feature = 'simulations';
-  //   else if (path.includes('/forecasting')) feature = 'forecasting';
-  //   else if (path.includes('/analytics')) feature = 'analytics';
-  //   else if (path.includes('/settings')) feature = 'settings';
-  //   
-  //   // Check if user has seen this walkthrough before
-  //   if (feature && !localStorage.getItem(`walkthrough_${feature}`)) {
-  //     setWalkthroughFeature(feature);
-  //     setWalkthroughOpen(true);
-  //   }
-  // }, [location.pathname]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -364,11 +354,137 @@ const Layout = ({ children, user, onLogout }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <MegaMenu 
-        user={user} 
-        onLogout={onLogout}
-        onMobileMenuToggle={handleDrawerToggle}
-      />
+      
+      {/* Top AppBar - Simple header with logo, user menu, notifications */}
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          bgcolor: 'white',
+          color: 'text.primary',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <img src={newLogo} alt="Trade AI Logo" style={{ height: 32, marginRight: 12 }} />
+            <Typography
+              variant="h6"
+              component={RouterLink}
+              to="/dashboard"
+              sx={{
+                textDecoration: 'none',
+                color: 'primary.main',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              TRADE AI
+            </Typography>
+          </Box>
+
+          <IconButton
+            color="inherit"
+            onClick={handleOpenNotificationsMenu}
+            sx={{ mr: 1 }}
+          >
+            <Badge badgeContent={3} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+
+          <IconButton onClick={handleOpenUserMenu}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', color: 'white' }}>
+              {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'U'}
+            </Avatar>
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorElUser}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+            PaperProps={{
+              sx: { mt: 1, minWidth: 200 }
+            }}
+          >
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.name || 'User'}
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {user?.email}
+              </Typography>
+            </Box>
+            <Divider />
+            {(user?.role === 'admin' || user?.role === 'super_admin') && (
+              <MenuItem component={RouterLink} to="/settings" onClick={handleCloseUserMenu}>
+                <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
+                Settings
+              </MenuItem>
+            )}
+            {user?.role === 'super_admin' && (
+              <MenuItem component={RouterLink} to="/companies" onClick={handleCloseUserMenu}>
+                <BusinessIcon fontSize="small" sx={{ mr: 1 }} />
+                Companies
+              </MenuItem>
+            )}
+            <Divider />
+            <MenuItem onClick={handleLogout}>
+              Logout
+            </MenuItem>
+          </Menu>
+
+          <Menu
+            anchorEl={anchorElNotifications}
+            open={Boolean(anchorElNotifications)}
+            onClose={handleCloseNotificationsMenu}
+            PaperProps={{
+              sx: { mt: 1, minWidth: 320, maxHeight: 400 }
+            }}
+          >
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                Notifications
+              </Typography>
+            </Box>
+            <Divider />
+            <MenuItem onClick={handleCloseNotificationsMenu}>
+              <Box>
+                <Typography variant="body2">New approval request</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  2 minutes ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem onClick={handleCloseNotificationsMenu}>
+              <Box>
+                <Typography variant="body2">Budget reallocation complete</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  1 hour ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem onClick={handleCloseNotificationsMenu}>
+              <Box>
+                <Typography variant="body2">Promotion performance alert</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  3 hours ago
+                </Typography>
+              </Box>
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
       
       <Box
         component="nav"

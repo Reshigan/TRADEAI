@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { usePageVariants } from '../../hooks/usePageVariants';
 
 import CampaignOverview from './tabs/CampaignOverview';
 import CampaignBudget from './tabs/CampaignBudget';
@@ -18,11 +19,12 @@ const CampaignDetailWithTabs = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
 
-  const tabs = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'budget', label: 'Budget' },
-    { value: 'performance', label: 'Performance' },
-    { value: 'history', label: 'History' }
+  const pageVariant = usePageVariants('campaignDetail');
+  const tabs = pageVariant?.tabs || [
+    { id: 'overview', label: 'Overview', path: 'overview' },
+    { id: 'budget', label: 'Budget', path: 'budget' },
+    { id: 'performance', label: 'Performance', path: 'performance' },
+    { id: 'history', label: 'History', path: 'history' }
   ];
 
   useEffect(() => {
@@ -86,7 +88,7 @@ const CampaignDetailWithTabs = () => {
       <Paper sx={{ mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
           {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
+            <Tab key={tab.id} value={tab.path} label={tab.label} />
           ))}
         </Tabs>
       </Paper>

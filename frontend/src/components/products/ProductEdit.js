@@ -19,9 +19,8 @@ import {
   Cancel as CancelIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import apiClient from '../../services/apiClient';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const getCurrencySymbol = () => {
   try {
@@ -81,7 +80,7 @@ const ProductEdit = () => {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/products/${id}`);
+      const response = await apiClient.get(`/products/${id}`);
       setProduct({
         ...response.data,
         dimensions: response.data.dimensions || { length: 0, width: 0, height: 0 }
@@ -121,7 +120,7 @@ const ProductEdit = () => {
       setSaving(true);
       setError('');
 
-      await axios.put(`${API_URL}/products/${id}`, product);
+      await apiClient.put(`/products/${id}`, product);
       
       setSuccess('Product updated successfully!');
       setTimeout(() => {
