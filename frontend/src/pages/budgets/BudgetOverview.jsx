@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  CircularProgress,
+  Chip,
+  LinearProgress
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Edit as EditIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 import BudgetAIInsights from '../../components/ai/budgets/BudgetAIInsights';
 
@@ -47,40 +61,85 @@ const BudgetOverview = () => {
     return '#10b981';
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading budgets...</div>;
+  const getUtilizationColorValue = (percent) => {
+    if (percent >= 90) return '#ef4444';
+    if (percent >= 75) return '#f59e0b';
+    return '#10b981';
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-        <div>
-          <h1>💰 Budget Overview</h1>
-          <p style={{ color: '#666' }}>{budgets.length} budget(s) found</p>
-        </div>
-        <button onClick={() => navigate('/budgets/new')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-          + New Budget
-        </button>
-      </div>
+    <Box sx={{ p: 3 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box>
+          <Typography variant="h4" fontWeight={700} mb={0.5}>
+            💰 Budget Overview
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {budgets.length} budget(s) found
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/budgets/new')}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
+          New Budget
+        </Button>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Total Budget</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{formatCurrency(summary.total)}</div>
-        </div>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Allocated</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{formatCurrency(summary.allocated)}</div>
-        </div>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Spent</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{formatCurrency(summary.spent)}</div>
-        </div>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Remaining</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(summary.remaining)}</div>
-        </div>
-      </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Total Budget
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {formatCurrency(summary.total)}
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Allocated
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {formatCurrency(summary.allocated)}
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Spent
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {formatCurrency(summary.spent)}
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Remaining
+            </Typography>
+            <Typography variant="h5" fontWeight={700} color="success.main">
+              {formatCurrency(summary.remaining)}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ marginBottom: '30px' }}>
+      <Box mb={4}>
         <BudgetAIInsights 
           budget={{
             _id: 'overview',
@@ -101,56 +160,99 @@ const BudgetOverview = () => {
             console.log('Apply forecasting:', forecastData);
           }}
         />
-      </div>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+      <Grid container spacing={3}>
         {budgets.map(budget => {
           const utilization = budget.allocated ? ((budget.spent / budget.allocated) * 100).toFixed(1) : 0;
           
           return (
-            <div key={budget._id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white', cursor: 'pointer' }} onClick={() => navigate(`/budgets/${budget._id}`)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-                <h3 style={{ margin: 0 }}>{budget.budgetName}</h3>
-                <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '4px', backgroundColor: budget.status === 'Active' ? '#10b981' : '#6b7280', color: 'white' }}>
-                  {budget.status}
-                </span>
-              </div>
-              
-              <div style={{ marginBottom: '10px' }}>
-                <div style={{ fontSize: '12px', color: '#666' }}>Department: {budget.department}</div>
-                <div style={{ fontSize: '12px', color: '#666' }}>Period: {new Date(budget.startDate).toLocaleDateString()} - {new Date(budget.endDate).toLocaleDateString()}</div>
-              </div>
+            <Grid item xs={12} md={6} lg={4} key={budget._id}>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  border: '1px solid', 
+                  borderColor: 'divider', 
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                  '&:hover': { borderColor: 'primary.main' }
+                }}
+                onClick={() => navigate(`/budgets/${budget._id}`)}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Typography variant="h6" fontWeight={600}>
+                    {budget.budgetName}
+                  </Typography>
+                  <Chip 
+                    label={budget.status}
+                    size="small"
+                    color={budget.status === 'Active' ? 'success' : 'default'}
+                  />
+                </Box>
+                
+                <Box mb={2}>
+                  <Typography variant="body2" color="text.secondary">
+                    Department: {budget.department}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Period: {new Date(budget.startDate).toLocaleDateString()} - {new Date(budget.endDate).toLocaleDateString()}
+                  </Typography>
+                </Box>
 
-              <div style={{ marginBottom: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '5px' }}>
-                  <span>Allocated: {formatCurrency(budget.allocated)}</span>
-                  <span>Spent: {formatCurrency(budget.spent)}</span>
-                </div>
-                <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${utilization}%`, height: '100%', backgroundColor: getUtilizationColor(utilization), transition: 'width 0.3s' }} />
-                </div>
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px', textAlign: 'right' }}>
-                  {utilization}% utilized
-                </div>
-              </div>
+                <Box mb={2}>
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="body2">Allocated: {formatCurrency(budget.allocated)}</Typography>
+                    <Typography variant="body2">Spent: {formatCurrency(budget.spent)}</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={parseFloat(utilization)} 
+                    sx={{ 
+                      height: 8, 
+                      borderRadius: 1,
+                      bgcolor: 'grey.200',
+                      '& .MuiLinearProgress-bar': {
+                        bgcolor: getUtilizationColorValue(utilization)
+                      }
+                    }}
+                  />
+                  <Typography variant="caption" color="text.secondary" display="block" textAlign="right" mt={0.5}>
+                    {utilization}% utilized
+                  </Typography>
+                </Box>
 
-              <button onClick={(e) => { e.stopPropagation(); navigate(`/budgets/${budget._id}/edit`); }} style={{ width: '100%', padding: '8px', backgroundColor: '#f3f4f6', border: 'none', borderRadius: '4px', cursor: 'pointer', marginTop: '10px' }}>
-                Edit Budget
-              </button>
-            </div>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/budgets/${budget._id}/edit`); }}
+                  sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+                >
+                  Edit Budget
+                </Button>
+              </Paper>
+            </Grid>
           );
         })}
-      </div>
+      </Grid>
 
       {budgets.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <h3>No budgets found</h3>
-          <button onClick={() => navigate('/budgets/new')} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            + Create Budget
-          </button>
-        </div>
+        <Box textAlign="center" py={8}>
+          <Typography variant="h6" mb={3}>
+            No budgets found
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/budgets/new')}
+            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+          >
+            Create Budget
+          </Button>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
