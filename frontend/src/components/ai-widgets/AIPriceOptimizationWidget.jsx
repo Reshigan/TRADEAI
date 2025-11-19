@@ -46,7 +46,7 @@ const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 2
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/optimize/price`,
+        `${process.env.REACT_APP_API_URL || '/api'}/ai/optimize/price`,
         {
           productId,
           currentPrice,

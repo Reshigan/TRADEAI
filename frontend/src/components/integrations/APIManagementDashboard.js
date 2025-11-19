@@ -93,57 +93,20 @@ const APIManagementDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock data for demonstration
-              ],
-        analytics: {
-          totalRequests: 1337000,
-          totalErrors: 15420,
-          averageResponseTime: 145,
-          successRate: 98.85,
-          topEndpoints: [
-            { endpoint: 'GET /api/analytics/dashboard', count: 125000 },
-            { endpoint: 'POST /api/ml/predictions', count: 98000 },
-            { endpoint: 'GET /api/promotions', count: 87000 },
-            { endpoint: 'POST /api/integrations/sync', count: 65000 },
-            { endpoint: 'GET /api/reports/generate', count: 45000 }
-          ],
-          hourlyStats: Array.from({ length: 24 }, (_, i) => ({
-            hour: new Date(Date.now() - (23 - i) * 60 * 60 * 1000).toISOString().slice(0, 13),
-            requests: Math.floor(Math.random() * 5000) + 1000,
-            errors: Math.floor(Math.random() * 100) + 10,
-            responseTime: Math.floor(Math.random() * 200) + 100
-          })),
-          statusCodeDistribution: {
-            '200': 1200000,
-            '201': 85000,
-            '400': 25000,
-            '401': 8000,
-            '404': 12000,
-            '500': 7000
-          }
-        },
-        usage: Array.from({ length: 7 }, (_, i) => ({
-          date: format(subDays(new Date(), 6 - i), 'yyyy-MM-dd'),
-          requests: Math.floor(Math.random() * 50000) + 20000,
-          errors: Math.floor(Math.random() * 1000) + 200,
-          averageResponseTime: Math.floor(Math.random() * 100) + 120
-        })),
-        health: {
-          status: 'healthy',
-          redis: 'connected',
-          rateLimiters: 8,
-          apiKeys: 3,
-          analytics: 168
-        }
-      };
+      const response = await api.get('/api-management/dashboard');
+      const data = response.data;
 
-      setApiKeys(mockData.apiKeys);
-      setAnalytics(mockData.analytics);
-      setUsage(mockData.usage);
-      setHealth(mockData.health);
+      setApiKeys(data.apiKeys || []);
+      setAnalytics(data.analytics || null);
+      setUsage(data.usage || []);
+      setHealth(data.health || null);
     } catch (error) {
       setError('Failed to load API management data');
       console.error('Error loading API management data:', error);
+      setApiKeys([]);
+      setAnalytics(null);
+      setUsage([]);
+      setHealth(null);
     } finally {
       setLoading(false);
     }

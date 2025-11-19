@@ -52,14 +52,6 @@ const ProcessShell = ({ module, entityId, entity, children }) => {
       }
     } catch (error) {
       console.error('Error loading process model:', error);
-      setCurrentStage({
-        name: 'plan',
-        displayName: 'Planning',
-        progress: 60
-      });
-      setProcessModel({
-        stages: ['plan', 'commit', 'execute', 'claim', 'reconcile', 'review']
-      });
     } finally {
       setLoading(false);
     }
@@ -143,7 +135,7 @@ const ProcessShell = ({ module, entityId, entity, children }) => {
       <InsightBanner module={module} entityId={entityId} />
 
       {/* Process Stepper */}
-      {!isSimpleMode() && renderProcessStepper()}
+      {!isSimpleMode() && processModel && currentStage && renderProcessStepper()}
 
       {/* Key Metrics */}
       {Object.keys(metrics).length > 0 && (

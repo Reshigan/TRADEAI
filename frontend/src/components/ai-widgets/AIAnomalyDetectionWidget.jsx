@@ -55,7 +55,7 @@ const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/detect/anomalies`,
+        `${process.env.REACT_APP_API_URL || '/api'}/ai/detect/anomalies`,
         {
           metricType: scope === 'all' ? 'sales' : scope,
           threshold: 2.5

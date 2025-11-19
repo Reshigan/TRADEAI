@@ -12,7 +12,7 @@
 import axios from 'axios';
 
 // ML API base URL (can be configured via environment variable)
-const ML_API_BASE_URL = process.env.REACT_APP_ML_API_URL || 'http://localhost:8001';
+const ML_API_BASE_URL = process.env.REACT_APP_ML_API_URL || '/api/ml';
 const ML_API_VERSION = '/api/v1';
 
 // Create axios instance for ML API

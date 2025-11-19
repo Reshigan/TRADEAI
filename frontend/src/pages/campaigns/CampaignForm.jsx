@@ -33,7 +33,7 @@ const CampaignForm = () => {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/campaigns/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`);
       const campaign = response.data.data || response.data;
       
       setFormData({
@@ -80,12 +80,12 @@ const CampaignForm = () => {
 
       if (isEditMode) {
         await axios.put(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/campaigns/${id}`,
+          `${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`,
           payload
         );
       } else {
         await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/campaigns`,
+          `${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns`,
           payload
         );
       }

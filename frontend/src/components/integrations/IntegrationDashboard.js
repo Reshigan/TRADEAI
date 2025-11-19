@@ -111,71 +111,20 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock data for demonstration
-                ]
-        },
-        webhooks: {
-          total: 3,
-          active: 2,
-          list: [
-            {
-              id: 'wh_1',
-              url: 'https://api.example.com/webhooks/orders',
-              events: ['order.created', 'order.updated'],
-              active: true,
-              createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'wh_2',
-              url: 'https://crm.example.com/webhooks/customers',
-              events: ['user.created', 'user.updated'],
-              active: true,
-              createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'wh_3',
-              url: 'https://analytics.example.com/webhooks/events',
-              events: ['*'],
-              active: false,
-              createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-            }
-          ]
-        },
-        api: {
-          analytics: {
-            totalRequests: 15420,
-            totalErrors: 234,
-            averageResponseTime: 145,
-            hourlyStats: Array.from({ length: 24 }, (_, i) => ({
-              hour: new Date(Date.now() - (23 - i) * 60 * 60 * 1000).toISOString().slice(0, 13),
-              requests: Math.floor(Math.random() * 1000) + 200,
-              errors: Math.floor(Math.random() * 50)
-            })),
-            statusCodeDistribution: {
-              '200': 12500,
-              '201': 1800,
-              '400': 150,
-              '401': 45,
-              '404': 80,
-              '500': 34
-            }
-          }
-        },
-        summary: {
-          totalIntegrations: 6,
-          activeWebhooks: 2,
-          dailyAPIRequests: 15420,
-          systemHealth: 'healthy'
-        }
-      };
+      const response = await api.get('/integrations/dashboard');
+      const data = response.data;
 
-      setDashboardData(mockDashboardData);
-      setIntegrations(mockDashboardData.integrations.list);
-      setWebhooks(mockDashboardData.webhooks.list);
-      setApiAnalytics(mockDashboardData.api.analytics);
+      setDashboardData(data);
+      setIntegrations(data.integrations?.list || []);
+      setWebhooks(data.webhooks?.list || []);
+      setApiAnalytics(data.api?.analytics || null);
     } catch (error) {
       setError('Failed to load dashboard data');
       console.error('Error loading dashboard data:', error);
+      setDashboardData(null);
+      setIntegrations([]);
+      setWebhooks([]);
+      setApiAnalytics(null);
     } finally {
       setLoading(false);
     }

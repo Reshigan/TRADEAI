@@ -32,7 +32,7 @@ const ProductForm = () => {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`);
       const product = response.data.data || response.data;
       setFormData({
         name: product.name || '',
@@ -70,7 +70,7 @@ const ProductForm = () => {
         cost: formData.cost ? parseFloat(formData.cost) : 0,
         stock: formData.stock ? parseInt(formData.stock) : 0
       };
-      const url = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products${isEditMode ? `/${id}` : ''}`;
+      const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/products${isEditMode ? `/${id}` : ''}`;
       await axios[isEditMode ? 'put' : 'post'](url, payload);
       navigate('/products');
     } catch (err) {

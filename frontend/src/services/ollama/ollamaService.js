@@ -3,7 +3,7 @@
  * Uses tiny models optimized for low memory environments
  */
 
-const OLLAMA_BASE_URL = process.env.REACT_APP_OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_BASE_URL = process.env.REACT_APP_OLLAMA_URL || '/api/ollama';
 // Use tinyllama - only ~600MB RAM, perfect for 8GB server
 const DEFAULT_MODEL = 'tinyllama'; // Fallback: llama3.2:1b if tinyllama not available
 
