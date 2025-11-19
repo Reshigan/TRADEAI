@@ -77,6 +77,7 @@ const hierarchyRoutes = require('./routes/hierarchy');
 const insightsRoutes = require('./routes/insights');
 const metricsRoutes = require('./routes/metrics');
 const processModelRoutes = require('./routes/processModel');
+const importRoutes = require('./routes/import');
 
 // Create Express app
 const app = express();
@@ -341,6 +342,7 @@ app.use('/api/hierarchy', authenticateToken, hierarchyRoutes);
 app.use('/api/insights', authenticateToken, insightsRoutes);
 app.use('/api/metrics', authenticateToken, metricsRoutes);
 app.use('/api/process-model', authenticateToken, processModelRoutes);
+app.use('/api/import', authenticateToken, importRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
