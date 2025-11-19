@@ -159,9 +159,30 @@ const TourOverlay = ({ module, onComplete }) => {
   const handleExplain = async () => {
     try {
       setLoading(true);
-      alert('LLM explanation feature coming soon with Ollama integration');
+      
+      const response = await apiClient.post('/ollama/chat', {
+        model: 'tinyllama',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant explaining trade promotions management concepts. Keep explanations concise and practical.'
+          },
+          {
+            role: 'user',
+            content: `Explain this concept in simple terms: ${currentStepData.title}. Context: ${currentStepData.content}`
+          }
+        ],
+        stream: false
+      });
+      
+      if (response.data.success && response.data.data.message) {
+        alert(response.data.data.message.content);
+      } else {
+        alert('Unable to get explanation at this time. Please try again later.');
+      }
     } catch (error) {
       console.error('Error getting explanation:', error);
+      alert('Unable to get explanation at this time. Please try again later.');
     } finally {
       setLoading(false);
     }

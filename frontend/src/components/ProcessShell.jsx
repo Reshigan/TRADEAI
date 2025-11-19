@@ -33,6 +33,25 @@ const ProcessShell = ({ module, entityId, entity, children }) => {
   const loadProcessModel = async () => {
     try {
       setLoading(true);
+      
+      const companyType = entity?.company?.companyType || 'manufacturer';
+      
+      const modelResponse = await apiClient.get(`/process-model/${module}/${companyType}`);
+      if (modelResponse.data.success) {
+        setProcessModel(modelResponse.data.data);
+      }
+      
+      const stageResponse = await apiClient.get(`/process-model/${module}/${companyType}/stage/${entityId}`);
+      if (stageResponse.data.success) {
+        const { currentStage: stage, allowedActions, nextBestAction } = stageResponse.data.data;
+        setCurrentStage({
+          ...stage,
+          allowedActions,
+          nextBestAction
+        });
+      }
+    } catch (error) {
+      console.error('Error loading process model:', error);
       setCurrentStage({
         name: 'plan',
         displayName: 'Planning',
@@ -41,8 +60,6 @@ const ProcessShell = ({ module, entityId, entity, children }) => {
       setProcessModel({
         stages: ['plan', 'commit', 'execute', 'claim', 'reconcile', 'review']
       });
-    } catch (error) {
-      console.error('Error loading process model:', error);
     } finally {
       setLoading(false);
     }
