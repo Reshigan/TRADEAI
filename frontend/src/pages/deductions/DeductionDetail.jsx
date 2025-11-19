@@ -29,7 +29,6 @@ import {
   Link as LinkIcon
 } from '@mui/icons-material';
 import deductionService from '../../services/deduction/deductionService';
-import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import ProcessShell from '../../components/ProcessShell';

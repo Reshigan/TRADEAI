@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import apiClient from '../utils/apiClient';
+import apiClient from '../services/apiClient';
 
 const UserSkillContext = createContext();
 
