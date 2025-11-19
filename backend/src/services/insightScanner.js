@@ -8,6 +8,7 @@
 const { evaluateRules, getAllModules } = require('../config/registries/insightRulesRegistry');
 const Insight = require('../models/Insight');
 const { emitInsightUpdate } = require('./socketService');
+const logger = require('../utils/logger');
 
 class InsightScanner {
   constructor() {
@@ -21,11 +22,11 @@ class InsightScanner {
    */
   start() {
     if (this.isRunning) {
-      console.log('InsightScanner is already running');
+      logger.info('InsightScanner is already running');
       return;
     }
 
-    console.log('Starting InsightScanner...');
+    logger.info('Starting InsightScanner...');
     this.isRunning = true;
 
     this.scan();
@@ -40,11 +41,11 @@ class InsightScanner {
    */
   stop() {
     if (!this.isRunning) {
-      console.log('InsightScanner is not running');
+      logger.info('InsightScanner is not running');
       return;
     }
 
-    console.log('Stopping InsightScanner...');
+    logger.info('Stopping InsightScanner...');
     this.isRunning = false;
 
     if (this.intervalId) {
@@ -57,7 +58,7 @@ class InsightScanner {
    * Run a full scan across all modules
    */
   async scan() {
-    console.log('InsightScanner: Starting scan...');
+    logger.info('InsightScanner: Starting scan...');
     const startTime = Date.now();
 
     try {
@@ -70,9 +71,9 @@ class InsightScanner {
       }
 
       const duration = Date.now() - startTime;
-      console.log(`InsightScanner: Scan complete. Generated ${totalInsights} insights in ${duration}ms`);
+      logger.info(`InsightScanner: Scan complete. Generated ${totalInsights} insights in ${duration}ms`);
     } catch (error) {
-      console.error('InsightScanner: Error during scan:', error);
+      logger.error('InsightScanner: Error during scan:', error);
     }
   }
 
@@ -83,7 +84,7 @@ class InsightScanner {
     try {
       const Model = this.getModelForModule(module);
       if (!Model) {
-        console.warn(`InsightScanner: No model found for module ${module}`);
+        logger.warn(`InsightScanner: No model found for module ${module}`);
         return 0;
       }
 
@@ -102,7 +103,7 @@ class InsightScanner {
 
       return insightCount;
     } catch (error) {
-      console.error(`InsightScanner: Error scanning module ${module}:`, error);
+      logger.error(`InsightScanner: Error scanning module ${module}:`, error);
       return 0;
     }
   }
@@ -137,7 +138,7 @@ class InsightScanner {
 
       return savedInsights;
     } catch (error) {
-      console.error(`InsightScanner: Error scanning entity ${entity._id}:`, error);
+      logger.error(`InsightScanner: Error scanning entity ${entity._id}:`, error);
       return [];
     }
   }
@@ -257,7 +258,7 @@ class InsightScanner {
           break;
       }
     } catch (error) {
-      console.error(`Error getting context for ${module}:`, error);
+      logger.error(`Error getting context for ${module}:`, error);
     }
 
     return context;
@@ -284,7 +285,7 @@ class InsightScanner {
 
       return modelMap[module] || null;
     } catch (error) {
-      console.error(`Error loading model for ${module}:`, error);
+      logger.error(`Error loading model for ${module}:`, error);
       return null;
     }
   }
@@ -306,7 +307,7 @@ class InsightScanner {
 
       return await this.scanEntity(module, entity, Model);
     } catch (error) {
-      console.error('Error scanning entity on-demand:', error);
+      logger.error('Error scanning entity on-demand:', error);
       throw error;
     }
   }

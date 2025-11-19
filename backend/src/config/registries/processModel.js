@@ -1394,13 +1394,11 @@ const PROCESS_MODELS = {
 const getProcessModel = (module, companyType = 'manufacturer') => {
   const moduleModel = PROCESS_MODELS[module];
   if (!moduleModel) {
-    console.warn(`No process model found for module: ${module}`);
     return null;
   }
 
   const processModel = moduleModel[companyType];
   if (!processModel) {
-    console.warn(`No process model found for company type: ${companyType} in module: ${module}`);
     return moduleModel.manufacturer || null;
   }
 
@@ -1445,7 +1443,6 @@ const validateStage = (stage, entity) => {
     const rule = VALIDATION_RULES[validation.rule];
 
     if (!rule) {
-      console.warn(`Unknown validation rule: ${validation.rule}`);
       return;
     }
 

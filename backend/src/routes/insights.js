@@ -3,6 +3,7 @@ const router = express.Router();
 const Insight = require('../models/Insight');
 const insightScanner = require('../services/insightScanner');
 const { protect } = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 router.get('/', protect, async (req, res) => {
   try {
@@ -39,7 +40,7 @@ router.get('/', protect, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching insights:', error);
+    logger.error('Error fetching insights:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching insights',
@@ -68,7 +69,7 @@ router.get('/summary', protect, async (req, res) => {
       data: summary
     });
   } catch (error) {
-    console.error('Error fetching insights summary:', error);
+    logger.error('Error fetching insights summary:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching insights summary',
@@ -89,7 +90,7 @@ router.get('/top/:module', protect, async (req, res) => {
       data: insights
     });
   } catch (error) {
-    console.error('Error fetching top insights:', error);
+    logger.error('Error fetching top insights:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching top insights',
@@ -117,7 +118,7 @@ router.get('/:id', protect, async (req, res) => {
       data: insight
     });
   } catch (error) {
-    console.error('Error fetching insight:', error);
+    logger.error('Error fetching insight:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching insight',
@@ -144,7 +145,7 @@ router.post('/:id/acknowledge', protect, async (req, res) => {
       data: insight
     });
   } catch (error) {
-    console.error('Error acknowledging insight:', error);
+    logger.error('Error acknowledging insight:', error);
     res.status(500).json({
       success: false,
       message: 'Error acknowledging insight',
@@ -180,7 +181,7 @@ router.post('/:id/assign', protect, async (req, res) => {
       data: insight
     });
   } catch (error) {
-    console.error('Error assigning insight:', error);
+    logger.error('Error assigning insight:', error);
     res.status(500).json({
       success: false,
       message: 'Error assigning insight',
@@ -209,7 +210,7 @@ router.post('/:id/resolve', protect, async (req, res) => {
       data: insight
     });
   } catch (error) {
-    console.error('Error resolving insight:', error);
+    logger.error('Error resolving insight:', error);
     res.status(500).json({
       success: false,
       message: 'Error resolving insight',
@@ -238,7 +239,7 @@ router.post('/:id/dismiss', protect, async (req, res) => {
       data: insight
     });
   } catch (error) {
-    console.error('Error dismissing insight:', error);
+    logger.error('Error dismissing insight:', error);
     res.status(500).json({
       success: false,
       message: 'Error dismissing insight',
@@ -259,7 +260,7 @@ router.post('/scan/:module/:entityId', protect, async (req, res) => {
       message: `Generated ${insights.length} insights`
     });
   } catch (error) {
-    console.error('Error scanning entity:', error);
+    logger.error('Error scanning entity:', error);
     res.status(500).json({
       success: false,
       message: 'Error scanning entity',

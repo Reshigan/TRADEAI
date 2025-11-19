@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const logger = require('../utils/logger');
 
 const analyticsEventSchema = new mongoose.Schema({
   eventId: {
@@ -112,7 +113,7 @@ analyticsEventSchema.statics.logEvent = async function (eventData) {
     });
     return event;
   } catch (error) {
-    console.error('Error logging analytics event:', error);
+    logger.error('Error logging analytics event:', error);
     return null;
   }
 };

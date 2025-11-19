@@ -695,13 +695,11 @@ const getAllMetrics = () => {
 const getMetric = (module, metricId) => {
   const moduleMetrics = METRICS[module];
   if (!moduleMetrics) {
-    console.warn(`No metrics found for module: ${module}`);
     return null;
   }
 
   const metric = moduleMetrics[metricId];
   if (!metric) {
-    console.warn(`No metric found for ID: ${metricId} in module: ${module}`);
     return null;
   }
 

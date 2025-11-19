@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const metricsService = require('../services/metricsService');
 const { protect } = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 router.get('/:module/:entityId', protect, async (req, res) => {
   try {
@@ -57,7 +58,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
       entityId
     });
   } catch (error) {
-    console.error('Error fetching metrics:', error);
+    logger.error('Error fetching metrics:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching metrics',
@@ -75,7 +76,7 @@ router.get('/cache/stats', protect, (req, res) => {
       data: stats
     });
   } catch (error) {
-    console.error('Error fetching cache stats:', error);
+    logger.error('Error fetching cache stats:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching cache stats',
@@ -95,7 +96,7 @@ router.delete('/cache/:module/:entityId', protect, (req, res) => {
       message: 'Cache cleared'
     });
   } catch (error) {
-    console.error('Error clearing cache:', error);
+    logger.error('Error clearing cache:', error);
     res.status(500).json({
       success: false,
       message: 'Error clearing cache',
@@ -113,7 +114,7 @@ router.delete('/cache', protect, (req, res) => {
       message: 'All cache cleared'
     });
   } catch (error) {
-    console.error('Error clearing all cache:', error);
+    logger.error('Error clearing all cache:', error);
     res.status(500).json({
       success: false,
       message: 'Error clearing all cache',

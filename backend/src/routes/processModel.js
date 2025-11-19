@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const logger = require('../utils/logger');
 const {
   getProcessModel,
   getCurrentStage,
@@ -32,7 +33,7 @@ router.get('/:module/:companyType', protect, (req, res) => {
       data: processModel
     });
   } catch (error) {
-    console.error('Error fetching process model:', error);
+    logger.error('Error fetching process model:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching process model',
@@ -90,7 +91,7 @@ router.get('/:module/:companyType/stage/:entityId', protect, async (req, res) =>
       }
     });
   } catch (error) {
-    console.error('Error fetching current stage:', error);
+    logger.error('Error fetching current stage:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching current stage',
@@ -143,7 +144,7 @@ router.post('/:module/:companyType/validate', protect, async (req, res) => {
       data: validation
     });
   } catch (error) {
-    console.error('Error validating stage:', error);
+    logger.error('Error validating stage:', error);
     res.status(500).json({
       success: false,
       message: 'Error validating stage',
@@ -167,7 +168,7 @@ router.get('/:module/tabs', protect, (req, res) => {
       data: tabsMapping
     });
   } catch (error) {
-    console.error('Error fetching tabs mapping:', error);
+    logger.error('Error fetching tabs mapping:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching tabs mapping',

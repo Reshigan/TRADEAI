@@ -6,6 +6,7 @@
  */
 
 const { getMetrics, formatMetricValue } = require('../config/registries/metricsRegistry');
+const logger = require('../utils/logger');
 
 class MetricsService {
   constructor() {
@@ -38,7 +39,7 @@ class MetricsService {
           category: metric.category
         };
       } catch (error) {
-        console.error(`Error calculating metric ${metricId}:`, error);
+        logger.error(`Error calculating metric ${metricId}:`, error);
         results[metricId] = {
           id: metricId,
           name: metric.name,
@@ -69,7 +70,7 @@ class MetricsService {
 
       return null;
     } catch (error) {
-      console.error(`Error calculating metric ${metric.id}:`, error);
+      logger.error(`Error calculating metric ${metric.id}:`, error);
       return null;
     }
   }

@@ -604,13 +604,11 @@ const getAllInsightRules = () => {
 const getInsightRule = (module, ruleId) => {
   const moduleRules = INSIGHT_RULES[module];
   if (!moduleRules) {
-    console.warn(`No insight rules found for module: ${module}`);
     return null;
   }
 
   const rule = moduleRules[ruleId];
   if (!rule) {
-    console.warn(`No insight rule found for ID: ${ruleId} in module: ${module}`);
     return null;
   }
 
@@ -641,7 +639,6 @@ const evaluateRules = (module, entity, context = {}) => {
         });
       }
     } catch (error) {
-      console.error(`Error evaluating rule ${ruleId} for module ${module}:`, error);
     }
   }
 
