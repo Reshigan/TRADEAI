@@ -340,6 +340,7 @@ app.use('/api/deductions', authenticateToken, deductionsRoutes);
 app.use('/api/hierarchy', authenticateToken, hierarchyRoutes);
 app.use('/api/insights', authenticateToken, insightsRoutes);
 app.use('/api/metrics', authenticateToken, metricsRoutes);
+app.use('/api/process-model', authenticateToken, processModelRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
