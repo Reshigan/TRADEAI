@@ -150,13 +150,13 @@ class InsightScanner {
 
     try {
       switch (module) {
-        case 'budget':
+        case 'budget': {
           const historicalBudgets = await Model.find({
             company: entity.company,
             year: { $lt: entity.year },
             status: { $in: ['approved', 'locked'] }
           }).limit(3).lean();
-
+          
           if (historicalBudgets.length > 0) {
             const totalBurnRate = historicalBudgets.reduce((sum, budget) => {
               const spent = budget.spent || 0;
@@ -174,8 +174,9 @@ class InsightScanner {
             };
           }
           break;
+        }
 
-        case 'promotion':
+        case 'promotion': {
           // Check for overlapping promotions using the static method
           const PromotionModel = require('../models/Promotion');
           const overlapping = await PromotionModel.findOverlapping(
@@ -187,8 +188,9 @@ class InsightScanner {
           context.hasOverlappingPromotions = overlapping.length > 0;
           context.conflictCount = overlapping.length;
           break;
+        }
 
-        case 'claim':
+        case 'claim': {
           if (entity.customer) {
             const ClaimModel = require('../models/Claim');
             const customerClaims = await ClaimModel.find({
@@ -210,8 +212,9 @@ class InsightScanner {
             }
           }
           break;
+        }
 
-        case 'deduction':
+        case 'deduction': {
           if (entity.customer) {
             const DeductionModel = require('../models/Deduction');
             const customerDeductions = await DeductionModel.find({
@@ -225,8 +228,9 @@ class InsightScanner {
             };
           }
           break;
+        }
 
-        case 'tradeSpend':
+        case 'tradeSpend': {
           const SalesTransaction = require('../models/SalesTransaction');
           const salesData = await SalesTransaction.aggregate([
             {
@@ -247,6 +251,7 @@ class InsightScanner {
           ]);
           context.netSales = salesData[0]?.totalSales || 0;
           break;
+        }
 
         default:
           break;
