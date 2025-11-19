@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Badge, Button, Collapse } from 'react-bootstrap';
 import { FaExclamationTriangle, FaInfoCircle, FaCheckCircle, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import apiClient from '../utils/apiClient';
+import apiClient from '../services/apiClient';
 
 const InsightBanner = ({ module, entityId }) => {
   const [insights, setInsights] = useState([]);

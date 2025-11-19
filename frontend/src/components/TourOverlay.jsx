@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, ProgressBar } from 'react-bootstrap';
 import { FaArrowLeft, FaArrowRight, FaTimes, FaQuestionCircle } from 'react-icons/fa';
-import apiClient from '../utils/apiClient';
+import apiClient from '../services/apiClient';
 
 const TourOverlay = ({ module, onComplete }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Badge, Button, ProgressBar } from 'react-bootstrap';
 import { FaChartLine, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import InsightBanner from './InsightBanner';
-import apiClient from '../utils/apiClient';
+import apiClient from '../services/apiClient';
 import { useUserSkillContext } from '../hooks/useUserSkillContext';
 
 const ProcessShell = ({ module, entityId, entity, children }) => {
