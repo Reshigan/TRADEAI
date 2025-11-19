@@ -17,22 +17,14 @@
  * Timezone: Africa/Johannesburg
  */
 
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-
 // Models
 const Tenant = require('../models/Tenant');
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Budget = require('../models/Budget');
-const Promotion = require('../models/Promotion');
-const TradeSpend = require('../models/TradeSpend');
-const SalesHistory = require('../models/SalesHistory');
 
 // Configuration
-const MONTHS = 6;
-const RECORDS_PER_MONTH = 50000;
 const START_DATE = new Date('2025-05-01'); // 6 months ago from now
 const CURRENCY = 'ZAR';
 
