@@ -13,7 +13,7 @@ const reportRunSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   status: {
     type: String,
     enum: ['pending', 'running', 'completed', 'failed'],
@@ -26,7 +26,7 @@ const reportRunSchema = new mongoose.Schema({
   },
   completedAt: Date,
   duration: Number,
-  
+
   parameters: {
     filters: mongoose.Schema.Types.Mixed,
     dateRange: {
@@ -38,24 +38,24 @@ const reportRunSchema = new mongoose.Schema({
       enum: ['csv', 'xlsx', 'pdf', 'json']
     }
   },
-  
+
   rowCount: Number,
   fileSize: Number,
   filePath: String,
   downloadUrl: String,
-  
+
   error: {
     message: String,
     stack: String
   },
-  
+
   requestedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true
   },
-  
+
   // Metadata
   metadata: mongoose.Schema.Types.Mixed
 }, {

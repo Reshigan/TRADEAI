@@ -26,7 +26,7 @@ const analyticsEventSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   module: {
     type: String,
     enum: ['budget', 'promotion', 'tradeSpend', 'tradingTerm', 'activityGrid', 'claim', 'deduction', 'kamWallet', 'campaign', 'customer', 'product', 'system'],
@@ -38,7 +38,7 @@ const analyticsEventSchema = new mongoose.Schema({
   entityId: {
     type: mongoose.Schema.Types.ObjectId
   },
-  
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -51,27 +51,27 @@ const analyticsEventSchema = new mongoose.Schema({
   userDepartment: {
     type: String
   },
-  
+
   sessionId: {
     type: String,
     index: true
   },
-  
+
   properties: {
     type: mongoose.Schema.Types.Mixed
   },
-  
+
   // Performance metrics
   duration: {
     type: Number
   },
-  
+
   error: {
     message: String,
     stack: String,
     code: String
   },
-  
+
   // Metadata
   metadata: {
     userAgent: String,
@@ -81,7 +81,7 @@ const analyticsEventSchema = new mongoose.Schema({
     method: String,
     statusCode: Number
   },
-  
+
   // Timestamps
   timestamp: {
     type: Date,
@@ -103,7 +103,7 @@ analyticsEventSchema.index({ module: 1, eventType: 1, timestamp: -1 });
 analyticsEventSchema.index({ eventName: 1, timestamp: -1 });
 analyticsEventSchema.index({ sessionId: 1, timestamp: -1 });
 
-analyticsEventSchema.statics.logEvent = async function(eventData) {
+analyticsEventSchema.statics.logEvent = async function (eventData) {
   try {
     const event = await this.create({
       eventId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -117,7 +117,7 @@ analyticsEventSchema.statics.logEvent = async function(eventData) {
   }
 };
 
-analyticsEventSchema.statics.getSummary = async function(filters = {}, startDate, endDate) {
+analyticsEventSchema.statics.getSummary = async function (filters = {}, startDate, endDate) {
   const matchStage = {
     ...filters,
     timestamp: {
@@ -125,7 +125,7 @@ analyticsEventSchema.statics.getSummary = async function(filters = {}, startDate
       $lte: endDate || new Date()
     }
   };
-  
+
   const pipeline = [
     { $match: matchStage },
     {
@@ -145,11 +145,11 @@ analyticsEventSchema.statics.getSummary = async function(filters = {}, startDate
       $sort: { count: -1 }
     }
   ];
-  
+
   return this.aggregate(pipeline);
 };
 
-analyticsEventSchema.statics.getUserActivity = async function(userId, startDate, endDate) {
+analyticsEventSchema.statics.getUserActivity = async function (userId, startDate, endDate) {
   return this.find({
     userId,
     timestamp: {

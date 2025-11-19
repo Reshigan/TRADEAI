@@ -14,7 +14,7 @@ describe('Budget API Tests', () => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/tradeai_test', {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
       });
     }
 
@@ -145,7 +145,7 @@ describe('Budget API Tests', () => {
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
-      res.body.forEach(budget => {
+      res.body.forEach((budget) => {
         expect(budget.budgetCategory).toBe('marketing');
       });
     });

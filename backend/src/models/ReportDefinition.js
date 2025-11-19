@@ -20,7 +20,7 @@ const reportDefinitionSchema = new mongoose.Schema({
     enum: ['financial', 'operational', 'performance', 'compliance', 'custom'],
     index: true
   },
-  
+
   module: {
     type: String,
     required: true,
@@ -32,7 +32,7 @@ const reportDefinitionSchema = new mongoose.Schema({
     query: mongoose.Schema.Types.Mixed,
     aggregation: [mongoose.Schema.Types.Mixed]
   },
-  
+
   columns: [{
     field: String,
     header: String,
@@ -43,7 +43,7 @@ const reportDefinitionSchema = new mongoose.Schema({
     format: String,
     width: Number
   }],
-  
+
   // Filters
   filters: [{
     field: String,
@@ -55,7 +55,7 @@ const reportDefinitionSchema = new mongoose.Schema({
     options: [mongoose.Schema.Types.Mixed],
     required: Boolean
   }],
-  
+
   defaultSort: {
     field: String,
     order: {
@@ -64,12 +64,12 @@ const reportDefinitionSchema = new mongoose.Schema({
     }
   },
   groupBy: [String],
-  
+
   outputFormats: [{
     type: String,
     enum: ['csv', 'xlsx', 'pdf', 'json']
   }],
-  
+
   // Scheduling
   schedule: {
     enabled: Boolean,
@@ -81,7 +81,7 @@ const reportDefinitionSchema = new mongoose.Schema({
     dayOfMonth: Number,
     time: String
   },
-  
+
   isPublic: {
     type: Boolean,
     default: false
@@ -95,7 +95,7 @@ const reportDefinitionSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  
+
   // Metadata
   tags: [String],
   isActive: {

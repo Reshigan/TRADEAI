@@ -1,6 +1,6 @@
 /**
  * MetricsService
- * 
+ *
  * Service for calculating and materializing metrics snapshots
  * to avoid recomputing on every page load.
  */
@@ -243,18 +243,18 @@ class MetricsService {
   async getMetricsWithCache(module, entityId, Model, context = {}) {
     const cacheKey = `${module}-${entityId}`;
     const cached = this.snapshotCache.get(cacheKey);
-    
+
     if (cached && (Date.now() - cached.timestamp) < this.cacheTimeout) {
       return cached.data;
     }
-    
+
     const metrics = await this.calculateMetrics(module, entityId, Model, context);
-    
+
     this.snapshotCache.set(cacheKey, {
       data: metrics,
       timestamp: Date.now()
     });
-    
+
     return metrics;
   }
 
@@ -267,7 +267,7 @@ class MetricsService {
       data: metrics,
       timestamp: Date.now()
     });
-    
+
     return metrics;
   }
 

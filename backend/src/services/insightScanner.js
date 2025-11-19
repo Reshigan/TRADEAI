@@ -1,6 +1,6 @@
 /**
  * InsightScanner Service
- * 
+ *
  * Background service that scans entities and generates insights
  * based on InsightRulesRegistry rules
  */
@@ -156,7 +156,7 @@ class InsightScanner {
             year: { $lt: entity.year },
             status: { $in: ['approved', 'locked'] }
           }).limit(3).lean();
-          
+
           if (historicalBudgets.length > 0) {
             const totalBurnRate = historicalBudgets.reduce((sum, budget) => {
               const spent = budget.spent || 0;
@@ -195,7 +195,7 @@ class InsightScanner {
               customer: entity.customer,
               status: { $in: ['approved', 'paid'] }
             }).lean();
-            
+
             if (customerClaims.length > 0) {
               const totalAmount = customerClaims.reduce((sum, claim) => sum + (claim.claimAmount || 0), 0);
               context.customerClaimHistory = {
@@ -217,8 +217,8 @@ class InsightScanner {
             const customerDeductions = await DeductionModel.find({
               customer: entity.customer
             }).lean();
-            
-            const invalidCount = customerDeductions.filter(d => d.resolution === 'invalid').length;
+
+            const invalidCount = customerDeductions.filter((d) => d.resolution === 'invalid').length;
             context.customerDeductionHistory = {
               invalidCount,
               totalCount: customerDeductions.length
@@ -301,7 +301,7 @@ class InsightScanner {
 
       return await this.scanEntity(module, entity, Model);
     } catch (error) {
-      console.error(`Error scanning entity on-demand:`, error);
+      console.error('Error scanning entity on-demand:', error);
       throw error;
     }
   }

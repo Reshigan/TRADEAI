@@ -12,7 +12,7 @@ const insightSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   module: {
     type: String,
     required: true,
@@ -31,7 +31,7 @@ const insightSchema = new mongoose.Schema({
   entityName: {
     type: String
   },
-  
+
   title: {
     type: String,
     required: true
@@ -52,7 +52,7 @@ const insightSchema = new mongoose.Schema({
     enum: ['performance', 'financial', 'compliance', 'operational', 'anomaly'],
     index: true
   },
-  
+
   metricId: {
     type: String
   },
@@ -68,7 +68,7 @@ const insightSchema = new mongoose.Schema({
   variance: {
     type: Number
   },
-  
+
   recommendedActions: [{
     action: String,
     description: String,
@@ -77,7 +77,7 @@ const insightSchema = new mongoose.Schema({
       enum: ['low', 'medium', 'high', 'critical']
     }
   }],
-  
+
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -94,7 +94,7 @@ const insightSchema = new mongoose.Schema({
     default: 'new',
     index: true
   },
-  
+
   resolvedAt: {
     type: Date
   },
@@ -105,7 +105,7 @@ const insightSchema = new mongoose.Schema({
   resolutionNotes: {
     type: String
   },
-  
+
   fingerprint: {
     type: String,
     required: true,
@@ -125,7 +125,7 @@ const insightSchema = new mongoose.Schema({
     type: Number,
     default: 1
   },
-  
+
   // Metadata
   metadata: {
     type: mongoose.Schema.Types.Mixed
@@ -134,7 +134,7 @@ const insightSchema = new mongoose.Schema({
     type: String,
     index: true
   }],
-  
+
   mlScore: {
     type: Number,
     min: 0,
@@ -143,7 +143,7 @@ const insightSchema = new mongoose.Schema({
   llmSummary: {
     type: String
   },
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -163,28 +163,28 @@ insightSchema.index({ fingerprint: 1, status: 1 });
 insightSchema.index({ owner: 1, status: 1, createdAt: -1 });
 insightSchema.index({ assignedTo: 1, status: 1, createdAt: -1 });
 
-insightSchema.virtual('ageInDays').get(function() {
+insightSchema.virtual('ageInDays').get(function () {
   return Math.floor((Date.now() - this.createdAt) / (1000 * 60 * 60 * 24));
 });
 
-insightSchema.virtual('isStale').get(function() {
+insightSchema.virtual('isStale').get(function () {
   return this.status !== 'resolved' && this.ageInDays > 7;
 });
 
-insightSchema.methods.acknowledge = function(userId) {
+insightSchema.methods.acknowledge = function (userId) {
   this.status = 'acknowledged';
   this.updatedBy = userId;
   return this.save();
 };
 
-insightSchema.methods.assign = function(userId, assignedToId) {
+insightSchema.methods.assign = function (userId, assignedToId) {
   this.assignedTo = assignedToId;
   this.status = 'in_progress';
   this.updatedBy = userId;
   return this.save();
 };
 
-insightSchema.methods.resolve = function(userId, notes) {
+insightSchema.methods.resolve = function (userId, notes) {
   this.status = 'resolved';
   this.resolvedAt = new Date();
   this.resolvedBy = userId;
@@ -193,7 +193,7 @@ insightSchema.methods.resolve = function(userId, notes) {
   return this.save();
 };
 
-insightSchema.methods.dismiss = function(userId, notes) {
+insightSchema.methods.dismiss = function (userId, notes) {
   this.status = 'dismissed';
   this.resolvedAt = new Date();
   this.resolvedBy = userId;
@@ -202,12 +202,12 @@ insightSchema.methods.dismiss = function(userId, notes) {
   return this.save();
 };
 
-insightSchema.statics.findOrUpdateByFingerprint = async function(fingerprint, insightData) {
-  const existing = await this.findOne({ 
-    fingerprint, 
-    status: { $in: ['new', 'acknowledged', 'in_progress'] } 
+insightSchema.statics.findOrUpdateByFingerprint = async function (fingerprint, insightData) {
+  const existing = await this.findOne({
+    fingerprint,
+    status: { $in: ['new', 'acknowledged', 'in_progress'] }
   });
-  
+
   if (existing) {
     existing.lastSeenAt = new Date();
     existing.occurrenceCount += 1;
@@ -221,7 +221,7 @@ insightSchema.statics.findOrUpdateByFingerprint = async function(fingerprint, in
   }
 };
 
-insightSchema.statics.getSummary = async function(filters = {}) {
+insightSchema.statics.getSummary = async function (filters = {}) {
   const pipeline = [
     { $match: filters },
     {
@@ -246,11 +246,11 @@ insightSchema.statics.getSummary = async function(filters = {}) {
       }
     }
   ];
-  
+
   return this.aggregate(pipeline);
 };
 
-insightSchema.statics.getTopByModule = async function(module, limit = 10) {
+insightSchema.statics.getTopByModule = async function (module, limit = 10) {
   return this.find({
     module,
     status: { $in: ['new', 'acknowledged', 'in_progress'] }

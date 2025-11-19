@@ -5,29 +5,29 @@ const { validationResult } = require('express-validator');
 exports.getWallets = async (req, res) => {
   try {
     const { userId, status, startDate, endDate } = req.query;
-    
+
     const query = { tenantId: req.user.company };
-    
+
     if (userId) {
       query.userId = userId;
     } else if (req.user.role === 'key_account_manager') {
       query.userId = req.user._id;
     }
-    
+
     if (status) {
       query.status = status;
     }
-    
+
     if (startDate && endDate) {
       query['period.startDate'] = { $lte: new Date(endDate) };
       query['period.endDate'] = { $gte: new Date(startDate) };
     }
-    
+
     const wallets = await KAMWallet.find(query)
       .populate('userId', 'name email')
       .populate('allocations.customerId', 'name code')
       .sort({ 'period.startDate': -1 });
-    
+
     res.json(wallets);
   } catch (error) {
     console.error('Error fetching KAM wallets:', error);
@@ -44,11 +44,11 @@ exports.getWallet = async (req, res) => {
     })
       .populate('userId', 'name email role')
       .populate('allocations.customerId', 'name code');
-    
+
     if (!wallet) {
       return res.status(404).json({ message: 'Wallet not found' });
     }
-    
+
     res.json(wallet);
   } catch (error) {
     console.error('Error fetching wallet:', error);
@@ -63,9 +63,9 @@ exports.createWallet = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const { userId, period, totalAllocation, currency } = req.body;
-    
+
     const wallet = new KAMWallet({
       tenantId: req.user.company,
       userId,
@@ -75,9 +75,9 @@ exports.createWallet = async (req, res) => {
       allocations: [],
       status: 'active'
     });
-    
+
     await wallet.save();
-    
+
     res.status(201).json(wallet);
   } catch (error) {
     console.error('Error creating wallet:', error);
@@ -89,33 +89,33 @@ exports.createWallet = async (req, res) => {
 exports.allocateToCustomer = async (req, res) => {
   try {
     const { customerId, amount, notes } = req.body;
-    
+
     const wallet = await KAMWallet.findOne({
       _id: req.params.id,
       tenantId: req.user.company
     });
-    
+
     if (!wallet) {
       return res.status(404).json({ message: 'Wallet not found' });
     }
-    
+
     // Check if KAM is authorized
     if (req.user.role === 'key_account_manager' && wallet.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to allocate from this wallet' });
     }
-    
+
     if (!wallet.canAllocate(amount)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Insufficient wallet balance',
         remainingBalance: wallet.remainingBalance,
         requestedAmount: amount
       });
     }
-    
+
     await wallet.allocateToCustomer(customerId, amount, notes);
-    
+
     await wallet.populate('allocations.customerId', 'name code');
-    
+
     res.json(wallet);
   } catch (error) {
     console.error('Error allocating to customer:', error);
@@ -127,20 +127,20 @@ exports.allocateToCustomer = async (req, res) => {
 exports.recordUsage = async (req, res) => {
   try {
     const { customerId, amount } = req.body;
-    
+
     const wallet = await KAMWallet.findOne({
       _id: req.params.id,
       tenantId: req.user.company
     });
-    
+
     if (!wallet) {
       return res.status(404).json({ message: 'Wallet not found' });
     }
-    
+
     await wallet.recordUsage(customerId, amount);
-    
+
     await wallet.populate('allocations.customerId', 'name code');
-    
+
     res.json(wallet);
   } catch (error) {
     console.error('Error recording usage:', error);
@@ -155,11 +155,11 @@ exports.getBalance = async (req, res) => {
       _id: req.params.id,
       tenantId: req.user.company
     });
-    
+
     if (!wallet) {
       return res.status(404).json({ message: 'Wallet not found' });
     }
-    
+
     res.json({
       totalAllocation: wallet.totalAllocation,
       totalUsed: wallet.totalUsed,
@@ -177,7 +177,7 @@ exports.getBalance = async (req, res) => {
 exports.getCustomerAllocations = async (req, res) => {
   try {
     const { customerId } = req.params;
-    
+
     const wallets = await KAMWallet.find({
       tenantId: req.user.company,
       'allocations.customerId': customerId,
@@ -185,11 +185,11 @@ exports.getCustomerAllocations = async (req, res) => {
     })
       .populate('userId', 'name email')
       .populate('allocations.customerId', 'name code');
-    
-    const allocations = wallets.flatMap(wallet => 
+
+    const allocations = wallets.flatMap((wallet) =>
       wallet.allocations
-        .filter(alloc => alloc.customerId._id.toString() === customerId)
-        .map(alloc => ({
+        .filter((alloc) => alloc.customerId._id.toString() === customerId)
+        .map((alloc) => ({
           walletId: wallet._id,
           kam: wallet.userId,
           allocatedAmount: alloc.allocatedAmount,
@@ -200,7 +200,7 @@ exports.getCustomerAllocations = async (req, res) => {
           currency: wallet.currency
         }))
     );
-    
+
     res.json(allocations);
   } catch (error) {
     console.error('Error fetching customer allocations:', error);
@@ -212,7 +212,7 @@ exports.getCustomerAllocations = async (req, res) => {
 exports.updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    
+
     const wallet = await KAMWallet.findOneAndUpdate(
       { _id: req.params.id, tenantId: req.user.company },
       { status },
@@ -220,11 +220,11 @@ exports.updateStatus = async (req, res) => {
     )
       .populate('userId', 'name email')
       .populate('allocations.customerId', 'name code');
-    
+
     if (!wallet) {
       return res.status(404).json({ message: 'Wallet not found' });
     }
-    
+
     res.json(wallet);
   } catch (error) {
     console.error('Error updating wallet status:', error);

@@ -7,7 +7,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
   try {
     const { module, entityId } = req.params;
     const { refresh } = req.query;
-    
+
     const modelMap = {
       budget: require('../models/Budget'),
       promotion: require('../models/Promotion'),
@@ -21,7 +21,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
       customer: require('../models/Customer'),
       product: require('../models/Product')
     };
-    
+
     const Model = modelMap[module];
     if (!Model) {
       return res.status(400).json({
@@ -29,7 +29,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
         message: `Invalid module: ${module}`
       });
     }
-    
+
     const entity = await Model.findById(entityId);
     if (!entity) {
       return res.status(404).json({
@@ -37,11 +37,11 @@ router.get('/:module/:entityId', protect, async (req, res) => {
         message: 'Entity not found'
       });
     }
-    
+
     const context = {
       currency: entity.currency || 'ZAR'
     };
-    
+
     let metrics;
     if (refresh === 'true') {
       metricsService.clearCache(module, entityId);
@@ -49,7 +49,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
     } else {
       metrics = await metricsService.getMetricsWithCache(module, entityId, Model, context);
     }
-    
+
     res.json({
       success: true,
       data: metrics,
@@ -69,7 +69,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
 router.get('/cache/stats', protect, async (req, res) => {
   try {
     const stats = metricsService.getCacheStats();
-    
+
     res.json({
       success: true,
       data: stats
@@ -87,9 +87,9 @@ router.get('/cache/stats', protect, async (req, res) => {
 router.delete('/cache/:module/:entityId', protect, async (req, res) => {
   try {
     const { module, entityId } = req.params;
-    
+
     metricsService.clearCache(module, entityId);
-    
+
     res.json({
       success: true,
       message: 'Cache cleared'
@@ -107,7 +107,7 @@ router.delete('/cache/:module/:entityId', protect, async (req, res) => {
 router.delete('/cache', protect, async (req, res) => {
   try {
     metricsService.clearAllCache();
-    
+
     res.json({
       success: true,
       message: 'All cache cleared'
