@@ -19,7 +19,7 @@ const upload = multer({
       'text/xml',
       'application/xml'
     ];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -70,13 +70,13 @@ router.post('/:module', protect, upload.single('file'), async (req, res) => {
     let data;
     try {
       if (format === 'csv' || file.mimetype === 'text/csv') {
-        data = await parseCSV(file.buffer);
+        data = parseCSV(file.buffer);
       } else if (format === 'json' || file.mimetype === 'application/json') {
         data = JSON.parse(file.buffer.toString());
       } else if (format === 'xml' || file.mimetype.includes('xml')) {
-        data = await parseXML(file.buffer);
+        data = parseXML(file.buffer);
       } else if (file.mimetype.includes('spreadsheet') || file.mimetype.includes('excel')) {
-        data = await parseExcel(file.buffer);
+        data = parseExcel(file.buffer);
       } else {
         return res.status(400).json({
           success: false,
@@ -210,7 +210,7 @@ router.get('/templates/:module', protect, (req, res) => {
 });
 
 // Helper functions
-async function parseCSV(buffer) {
+function parseCSV(buffer) {
   const csv = require('csv-parse/sync');
   const records = csv.parse(buffer, {
     columns: true,
@@ -220,13 +220,13 @@ async function parseCSV(buffer) {
   return records;
 }
 
-async function parseXML(buffer) {
+function parseXML(buffer) {
   const xml = buffer.toString();
-  logger.warn('XML parsing not fully implemented');
+  logger.warn('XML parsing not fully implemented', { xmlLength: xml.length });
   return [];
 }
 
-async function parseExcel(buffer) {
+function parseExcel(buffer) {
   const XLSX = require('xlsx');
   const workbook = XLSX.read(buffer, { type: 'buffer' });
   const sheetName = workbook.SheetNames[0];
@@ -276,10 +276,10 @@ async function processImport(module, data, user, options) {
   for (let i = 0; i < data.length; i++) {
     try {
       const row = data[i];
-      
+
       row.company = user.company;
       row.createdBy = user._id;
-      
+
       const record = await Model.create(row);
       results.successCount++;
       results.created.push(record._id);
@@ -289,7 +289,7 @@ async function processImport(module, data, user, options) {
         row: i + 1,
         error: error.message
       });
-      
+
       if (options.strict) {
         break;
       }
