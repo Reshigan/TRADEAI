@@ -1,4 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  Grid,
+  Paper,
+  CircularProgress,
+  Chip
+} from '@mui/material';
+import {
+  FileDownload as DownloadIcon,
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
+  TrendingFlat as TrendingFlatIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -94,32 +112,35 @@ const ExecutiveDashboard = () => {
   const formatNumber = (num) => new Intl.NumberFormat('en-ZA').format(num || 0);
 
   const getGrowthColor = (growth) => {
-    if (growth > 0) return '#10b981';
-    if (growth < 0) return '#ef4444';
-    return '#6b7280';
+    if (growth > 0) return 'success';
+    if (growth < 0) return 'error';
+    return 'default';
   };
 
   const getGrowthIcon = (growth) => {
-    if (growth > 0) return '📈';
-    if (growth < 0) return '📉';
-    return '➡️';
+    if (growth > 0) return <TrendingUpIcon fontSize="small" />;
+    if (growth < 0) return <TrendingDownIcon fontSize="small" />;
+    return <TrendingFlatIcon fontSize="small" />;
   };
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <div style={{ fontSize: '24px', marginBottom: '10px' }}>⏳</div>
-        <div>Loading Executive Dashboard...</div>
-      </div>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
   if (!dashboardData) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <div style={{ fontSize: '24px', marginBottom: '10px' }}>⚠️</div>
-        <div>Failed to load dashboard data</div>
-      </div>
+      <Box sx={{ p: 3, textAlign: 'center' }}>
+        <Typography variant="h6" color="error" mb={2}>
+          Failed to load dashboard data
+        </Typography>
+        <Button variant="contained" onClick={fetchDashboard}>
+          Retry
+        </Button>
+      </Box>
     );
   }
 
@@ -235,161 +256,277 @@ const ExecutiveDashboard = () => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
+    <Box sx={{ p: 3, maxWidth: 1600, mx: 'auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <div>
-          <h1 style={{ margin: 0 }}>📊 Executive Dashboard</h1>
-          <p style={{ color: '#6b7280', margin: '5px 0 0 0' }}>Year-to-Date Performance Overview</p>
-        </div>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '8px',
-              border: '1px solid #e5e7eb',
-              fontSize: '14px',
-              cursor: 'pointer'
-            }}
-          >
-            {[2024, 2023, 2022, 2021, 2020].map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-          <button
-            onClick={() => exportDashboard('excel')}
-            disabled={exporting}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#10b981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: exporting ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              opacity: exporting ? 0.6 : 1
-            }}
-          >
-            📊 Export Excel
-          </button>
-          <button
-            onClick={() => exportDashboard('pdf')}
-            disabled={exporting}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#ef4444',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: exporting ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              opacity: exporting ? 0.6 : 1
-            }}
-          >
-            📄 Export PDF
-          </button>
-        </div>
-      </div>
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Box>
+            <Typography variant="h4" fontWeight={700} color="text.primary">
+              Executive Dashboard
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Year-to-Date Performance Overview
+            </Typography>
+          </Box>
+          <Box display="flex" gap={2} alignItems="center">
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                sx={{ borderRadius: 2 }}
+              >
+                {[2024, 2023, 2022, 2021, 2020].map(year => (
+                  <MenuItem key={year} value={year}>{year}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<DownloadIcon />}
+              onClick={() => exportDashboard('excel')}
+              disabled={exporting}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Export Excel
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<DownloadIcon />}
+              onClick={() => exportDashboard('pdf')}
+              disabled={exporting}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Export PDF
+            </Button>
+          </Box>
+        </Box>
+      </Box>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '12px', padding: '25px', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Revenue (YTD)</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{formatCurrency(kpis.revenue.ytd)}</div>
-          <div style={{ fontSize: '14px', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span>{getGrowthIcon(kpis.revenue.growth)}</span>
-            <span style={{ color: kpis.revenue.growth >= 0 ? '#d1fae5' : '#fecaca' }}>
-              {kpis.revenue.growth.toFixed(1)}% vs last year
-            </span>
-          </div>
-        </div>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Revenue (YTD)
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ my: 1.5 }}>
+              {formatCurrency(kpis.revenue.ytd)}
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              {getGrowthIcon(kpis.revenue.growth)}
+              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                {kpis.revenue.growth.toFixed(1)}% vs last year
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '12px', padding: '25px', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Volume (YTD)</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{formatNumber(kpis.volume.ytd)} units</div>
-          <div style={{ fontSize: '14px', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span>{getGrowthIcon(kpis.volume.growth)}</span>
-            <span style={{ color: kpis.volume.growth >= 0 ? '#d1fae5' : '#fecaca' }}>
-              {kpis.volume.growth.toFixed(1)}% vs last year
-            </span>
-          </div>
-        </div>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Volume (YTD)
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ my: 1.5 }}>
+              {formatNumber(kpis.volume.ytd)} units
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              {getGrowthIcon(kpis.volume.growth)}
+              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                {kpis.volume.growth.toFixed(1)}% vs last year
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', borderRadius: '12px', padding: '25px', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Gross Margin</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{formatCurrency(kpis.margin.amount)}</div>
-          <div style={{ fontSize: '14px', marginTop: '10px' }}>
-            Margin: {kpis.margin.percentage.toFixed(1)}%
-          </div>
-        </div>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Gross Margin
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ my: 1.5 }}>
+              {formatCurrency(kpis.margin.amount)}
+            </Typography>
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Margin: {kpis.margin.percentage.toFixed(1)}%
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', borderRadius: '12px', padding: '25px', color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Trade Spend</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{formatCurrency(kpis.tradeSpend.total)}</div>
-          <div style={{ fontSize: '14px', marginTop: '10px' }}>
-            Utilization: {kpis.tradeSpend.utilization.toFixed(1)}% | ROI: {kpis.tradeSpend.roi.toFixed(1)}%
-          </div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} lg={3}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Trade Spend
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ my: 1.5 }}>
+              {formatCurrency(kpis.tradeSpend.total)}
+            </Typography>
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Utilization: {kpis.tradeSpend.utilization.toFixed(1)}% | ROI: {kpis.tradeSpend.roi.toFixed(1)}%
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
       {/* Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ height: '300px' }}>
-            <Line data={monthlyChartData} options={monthlyChartOptions} />
-          </div>
-        </div>
-        <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <div style={{ height: '300px' }}>
-            <Bar data={tradeSpendChartData} options={tradeSpendChartOptions} />
-          </div>
-        </div>
-      </div>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} lg={8}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%' }}>
+            <Box sx={{ height: 350 }}>
+              <Line data={monthlyChartData} options={monthlyChartOptions} />
+            </Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} lg={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%' }}>
+            <Box sx={{ height: 350 }}>
+              <Bar data={tradeSpendChartData} options={tradeSpendChartOptions} />
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
 
       {/* Top Performers */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <h3 style={{ margin: '0 0 15px 0' }}>🏆 Top Customers</h3>
-          {topPerformers.customers.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {topPerformers.customers.slice(0, 5).map((customer, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: '#f9fafb', borderRadius: '8px' }}>
-                  <span style={{ fontWeight: '500' }}>{customer.name}</span>
-                  <span style={{ color: '#667eea', fontWeight: 'bold' }}>{formatCurrency(customer.revenue)}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#9ca3af' }}>No customer data available</p>
-          )}
-        </div>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Top Customers
+            </Typography>
+            {topPerformers.customers.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={1.5}>
+                {topPerformers.customers.slice(0, 5).map((customer, idx) => (
+                  <Paper
+                    key={idx}
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: 'grey.50',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight={600}>
+                      {customer.name}
+                    </Typography>
+                    <Typography variant="body2" fontWeight={700} color="primary.main">
+                      {formatCurrency(customer.revenue)}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No customer data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-          <h3 style={{ margin: '0 0 15px 0' }}>🎯 Top Products</h3>
-          {topPerformers.products.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {topPerformers.products.slice(0, 5).map((product, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: '#f9fafb', borderRadius: '8px' }}>
-                  <span style={{ fontWeight: '500' }}>{product.name}</span>
-                  <span style={{ color: '#f5576c', fontWeight: 'bold' }}>{formatCurrency(product.revenue)}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#9ca3af' }}>No product data available</p>
-          )}
-        </div>
-      </div>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Top Products
+            </Typography>
+            {topPerformers.products.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={1.5}>
+                {topPerformers.products.slice(0, 5).map((product, idx) => (
+                  <Paper
+                    key={idx}
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: 'grey.50',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight={600}>
+                      {product.name}
+                    </Typography>
+                    <Typography variant="body2" fontWeight={700} color="error.main">
+                      {formatCurrency(product.revenue)}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No product data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
 
       {/* Active Promotions Indicator */}
-      <div style={{ marginTop: '20px', padding: '15px', background: '#fffbeb', borderRadius: '8px', border: '1px solid #fcd34d' }}>
-        <span style={{ fontSize: '16px', fontWeight: '500' }}>
-          🎉 Active Promotions: <strong>{activePromotions}</strong>
-        </span>
-      </div>
-    </div>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          bgcolor: 'warning.lighter',
+          border: '1px solid',
+          borderColor: 'warning.main'
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="body1" fontWeight={600}>
+            Active Promotions:
+          </Typography>
+          <Chip
+            label={activePromotions}
+            color="warning"
+            sx={{ fontWeight: 700 }}
+          />
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
