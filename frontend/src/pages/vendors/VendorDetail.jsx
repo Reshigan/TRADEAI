@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Skeleton } from '@mui/material';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import ProcessShell from '../../components/ProcessShell';
 import './VendorDetail.css';

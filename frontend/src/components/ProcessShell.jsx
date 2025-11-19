@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Badge, Button, ProgressBar } from 'react-bootstrap';
+import { Card, Row, Col, Badge, ProgressBar } from 'react-bootstrap';
 import { FaChartLine, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import InsightBanner from './InsightBanner';
 import apiClient from '../services/apiClient';
