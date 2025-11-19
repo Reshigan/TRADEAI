@@ -137,6 +137,9 @@ import FundingOverview from './pages/funding/FundingOverview';
 import VendorManagement from './pages/vendors/VendorManagement';
 
 import { CompanyTypeProvider } from './contexts/CompanyTypeContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
+import { UserSkillProvider } from './hooks/useUserSkillContext';
 
 // Enterprise Components
 import EnterpriseDashboard from './components/enterprise/EnterpriseDashboard';
@@ -240,8 +243,11 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <CompanyTypeProvider user={user}>
-          <Router>
+        <AuthProvider>
+          <CurrencyProvider>
+            <CompanyTypeProvider user={user}>
+              <Router>
+                <UserSkillProvider>
           {/* Global Command Bar */}
           {isAuthenticated && (
             <>
@@ -1577,8 +1583,11 @@ function App() {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-          </Router>
-        </CompanyTypeProvider>
+                </UserSkillProvider>
+              </Router>
+            </CompanyTypeProvider>
+          </CurrencyProvider>
+        </AuthProvider>
       </ToastProvider>
     </ErrorBoundary>
   );
