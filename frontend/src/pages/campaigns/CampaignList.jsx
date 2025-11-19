@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Paper,
+  Chip,
+  CircularProgress,
+  InputAdornment
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  Campaign as CampaignIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -39,88 +59,239 @@ const CampaignList = () => {
   const formatDate = (date) => new Date(date).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
 
   const getStatusColor = (status) => {
-    const colors = {
-      'Active': '#10b981',
-      'Planned': '#3b82f6',
-      'Completed': '#6b7280',
-      'Paused': '#f59e0b'
+    const statusMap = {
+      'Active': 'success',
+      'Planned': 'primary',
+      'Completed': 'default',
+      'Paused': 'warning'
     };
-    return colors[status] || '#6b7280';
+    return statusMap[status] || 'default';
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading campaigns...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div>
-          <h1>📢 Campaigns</h1>
-          <p>{campaigns.length} campaigns</p>
-        </div>
-        <button onClick={() => navigate('/campaigns/new')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-          + New Campaign
-        </button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            Campaigns
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/campaigns/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3
+            }}
+          >
+            New Campaign
+          </Button>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''}
+        </Typography>
+      </Box>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search campaigns..."
-          value={filters.search}
-          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-          style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}
-        />
-        <select value={filters.status} onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="all">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Planned">Planned</option>
-          <option value="Completed">Completed</option>
-          <option value="Paused">Paused</option>
-        </select>
-      </div>
+      {/* Filters */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          p: 2.5, 
+          mb: 3,
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <TextField
+              fullWidth
+              placeholder="Search campaigns..."
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={filters.status}
+                label="Status"
+                onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="Active">Active</MenuItem>
+                <MenuItem value="Planned">Planned</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="Paused">Paused</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
-        {campaigns.map(campaign => (
-          <div key={campaign._id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white', cursor: 'pointer' }} onClick={() => navigate(`/campaigns/${campaign._id}`)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0 }}>{campaign.campaignName}</h3>
-              <span style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '4px', backgroundColor: getStatusColor(campaign.status), color: 'white' }}>
-                {campaign.status}
-              </span>
-            </div>
-            <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>{campaign.description}</p>
-            <div style={{ marginBottom: '10px' }}>
-              <strong>Objective:</strong> {campaign.campaignObjective}
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <strong>Budget:</strong> {formatCurrency(campaign.budget)}
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <strong>Duration:</strong> {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
-            </div>
-            {campaign.targetMetrics && (
-              <div style={{ padding: '10px', backgroundColor: '#fef3c7', borderRadius: '5px', marginTop: '10px' }}>
-                <strong>Target:</strong> {JSON.stringify(campaign.targetMetrics)}
-              </div>
-            )}
-            {campaign.promotions && campaign.promotions.length > 0 && (
-              <div style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
-                <strong>Promotions:</strong> {campaign.promotions.length}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {/* Campaigns Grid */}
+      {campaigns.length === 0 ? (
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 8,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" mb={2}>
+            No campaigns found
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/campaigns/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600
+            }}
+          >
+            Create Campaign
+          </Button>
+        </Paper>
+      ) : (
+        <Grid container spacing={3}>
+          {campaigns.map(campaign => (
+            <Grid item xs={12} sm={6} lg={4} key={campaign._id}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                    borderColor: 'primary.main'
+                  }
+                }}
+                onClick={() => navigate(`/campaigns/${campaign._id}`)}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
+                  <Box display="flex" alignItems="center" gap={1.5} sx={{ flex: 1, mr: 1 }}>
+                    <Box 
+                      sx={{ 
+                        p: 1, 
+                        borderRadius: 2, 
+                        bgcolor: 'warning.lighter',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <CampaignIcon sx={{ color: 'warning.main', fontSize: 20 }} />
+                    </Box>
+                    <Typography variant="h6" fontWeight={700} color="text.primary">
+                      {campaign.campaignName}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={campaign.status}
+                    color={getStatusColor(campaign.status)}
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
 
-      {campaigns.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <h3>No campaigns found</h3>
-          <button onClick={() => navigate('/campaigns/new')} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            + Create Campaign
-          </button>
-        </div>
+                <Typography variant="body2" color="text.secondary" mb={2} sx={{ flex: 1 }}>
+                  {campaign.description}
+                </Typography>
+
+                <Box sx={{ mt: 'auto' }}>
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Objective
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {campaign.campaignObjective}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Budget
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {formatCurrency(campaign.budget)}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={2}>
+                    <Typography variant="caption" color="text.secondary">
+                      Duration
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
+                    </Typography>
+                  </Box>
+
+                  {campaign.promotions && campaign.promotions.length > 0 && (
+                    <Box 
+                      sx={{ 
+                        p: 1.5,
+                        bgcolor: 'primary.lighter',
+                        borderRadius: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <Typography variant="caption" fontWeight={600} color="primary.main">
+                        Promotions
+                      </Typography>
+                      <Chip 
+                        label={campaign.promotions.length} 
+                        size="small" 
+                        color="primary"
+                        sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700 }}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 };
 

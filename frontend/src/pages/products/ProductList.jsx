@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Paper,
+  Chip,
+  CircularProgress,
+  InputAdornment
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  Inventory as InventoryIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -37,74 +57,230 @@ const ProductList = () => {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount || 0);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading products...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div>
-          <h1>📦 Products</h1>
-          <p>{products.length} products</p>
-        </div>
-        <button onClick={() => navigate('/products/new')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-          + New Product
-        </button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            Products
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/products/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3
+            }}
+          >
+            New Product
+          </Button>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {products.length} product{products.length !== 1 ? 's' : ''}
+        </Typography>
+      </Box>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={filters.search}
-          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-          style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}
-        />
-        <select value={filters.category} onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px', minWidth: '150px' }}>
-          <option value="all">All Categories</option>
-          <option value="Beverages">Beverages</option>
-          <option value="Snacks">Snacks</option>
-          <option value="Dairy">Dairy</option>
-          <option value="Bakery">Bakery</option>
-          <option value="Frozen">Frozen</option>
-        </select>
-      </div>
+      {/* Filters */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          p: 2.5, 
+          mb: 3,
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <TextField
+              fullWidth
+              placeholder="Search products..."
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={filters.category}
+                label="Category"
+                onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Categories</MenuItem>
+                <MenuItem value="Beverages">Beverages</MenuItem>
+                <MenuItem value="Snacks">Snacks</MenuItem>
+                <MenuItem value="Dairy">Dairy</MenuItem>
+                <MenuItem value="Bakery">Bakery</MenuItem>
+                <MenuItem value="Frozen">Frozen</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-        {products.map(product => (
-          <div key={product._id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white', cursor: 'pointer' }} onClick={() => navigate(`/products/${product._id}`)}>
-            <h3 style={{ marginBottom: '10px' }}>{product.productName}</h3>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
-              <strong>SKU:</strong> {product.productCode}
-            </div>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
-              <strong>Category:</strong> {product.category}
-            </div>
-            {product.brand && (
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
-                <strong>Brand:</strong> {product.brand}
-              </div>
-            )}
-            <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f0fdf4', borderRadius: '5px' }}>
-              <strong style={{ color: '#10b981' }}>Price:</strong> {formatCurrency(product.unitPrice)}
-            </div>
-            {product.inventory && (
-              <div style={{ marginTop: '10px', fontSize: '14px' }}>
-                <strong>Stock:</strong> {product.inventory.availableQuantity || 0} units
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {/* Products Grid */}
+      {products.length === 0 ? (
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 8,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" mb={2}>
+            No products found
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/products/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600
+            }}
+          >
+            Add Product
+          </Button>
+        </Paper>
+      ) : (
+        <Grid container spacing={3}>
+          {products.map(product => (
+            <Grid item xs={12} sm={6} md={4} key={product._id}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                    borderColor: 'primary.main'
+                  }
+                }}
+                onClick={() => navigate(`/products/${product._id}`)}
+              >
+                <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+                  <Box 
+                    sx={{ 
+                      p: 1, 
+                      borderRadius: 2, 
+                      bgcolor: 'success.lighter',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <InventoryIcon sx={{ color: 'success.main', fontSize: 20 }} />
+                  </Box>
+                  <Typography variant="h6" fontWeight={700} color="text.primary">
+                    {product.productName}
+                  </Typography>
+                </Box>
 
-      {products.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <h3>No products found</h3>
-          <button onClick={() => navigate('/products/new')} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            + Add Product
-          </button>
-        </div>
+                <Box sx={{ flex: 1 }}>
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      SKU
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {product.productCode}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Category
+                    </Typography>
+                    <Chip 
+                      label={product.category} 
+                      size="small" 
+                      sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }}
+                    />
+                  </Box>
+
+                  {product.brand && (
+                    <Box display="flex" justifyContent="space-between" mb={2}>
+                      <Typography variant="caption" color="text.secondary">
+                        Brand
+                      </Typography>
+                      <Typography variant="caption" fontWeight={600}>
+                        {product.brand}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Box 
+                    sx={{ 
+                      p: 1.5,
+                      bgcolor: 'success.lighter',
+                      borderRadius: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      mb: product.inventory ? 1.5 : 0
+                    }}
+                  >
+                    <Typography variant="caption" fontWeight={600} color="success.main">
+                      Price
+                    </Typography>
+                    <Typography variant="caption" fontWeight={700} color="success.main">
+                      {formatCurrency(product.unitPrice)}
+                    </Typography>
+                  </Box>
+
+                  {product.inventory && (
+                    <Box display="flex" justifyContent="space-between">
+                      <Typography variant="caption" color="text.secondary">
+                        Stock
+                      </Typography>
+                      <Typography variant="caption" fontWeight={600}>
+                        {product.inventory.availableQuantity || 0} units
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 };
 

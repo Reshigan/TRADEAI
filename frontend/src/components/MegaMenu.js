@@ -190,8 +190,11 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
       position="fixed" 
       sx={{ 
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        boxShadow: '0 4px 20px 0 rgba(0,0,0,0.1)'
+        bgcolor: 'background.paper',
+        color: 'text.primary',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px 0 rgba(15, 23, 42, 0.06)'
       }}
     >
       <Toolbar>
@@ -211,7 +214,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
             to="/dashboard"
             sx={{
               textDecoration: 'none',
-              color: 'white',
+              color: 'text.primary',
               fontWeight: 700,
               display: 'flex',
               alignItems: 'center',
@@ -226,12 +229,16 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           component={RouterLink}
           to="/dashboard"
           sx={{
-            color: 'white',
+            color: 'text.primary',
             mx: 0.5,
+            fontWeight: 600,
             display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
             gap: 0.5,
-            '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+            '&:hover': { 
+              backgroundColor: 'action.hover',
+              color: 'primary.main'
+            }
           }}
         >
           <DashboardIcon fontSize="small" />
@@ -243,12 +250,16 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
             <Button
               onMouseEnter={(e) => handleMenuOpen(e, menuItem.key)}
               sx={{
-                color: 'white',
+                color: 'text.primary',
                 mx: 0.5,
+                fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 0.5,
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+                '&:hover': { 
+                  backgroundColor: 'action.hover',
+                  color: 'primary.main'
+                }
               }}
             >
               {menuItem.icon}
@@ -348,7 +359,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           onClick={handleUserMenuOpen}
           sx={{ ml: 1 }}
         >
-          <Avatar sx={{ width: 32, height: 32, bgcolor: 'white', color: 'primary.main' }}>
+          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', color: 'white' }}>
             {user?.name?.charAt(0) || 'U'}
           </Avatar>
         </IconButton>

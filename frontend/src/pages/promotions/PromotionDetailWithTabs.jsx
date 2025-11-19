@@ -128,56 +128,95 @@ const PromotionDetailWithTabs = () => {
   return (
     <ProcessShell module="promotion" entityId={id} entity={promotion}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button
-              startIcon={<BackIcon />}
-              onClick={() => navigate('/promotions')}
-            >
-              Back
-            </Button>
+        {/* Modern Header */}
+        <Box sx={{ mb: 4 }}>
+          <Button
+            startIcon={<BackIcon />}
+            onClick={() => navigate('/promotions')}
+            sx={{ 
+              mb: 2,
+              color: 'text.secondary',
+              '&:hover': { color: 'primary.main' }
+            }}
+          >
+            Back to Promotions
+          </Button>
+          
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
             <Box>
-              <Typography variant="h4">{promotion.name}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                <Typography variant="h4" fontWeight={700} color="text.primary">
+                  {promotion.name}
+                </Typography>
+                <Chip
+                  label={promotion.status}
+                  color={
+                    promotion.status === 'active' ? 'success' :
+                    promotion.status === 'approved' ? 'primary' :
+                    promotion.status === 'draft' ? 'default' :
+                    'warning'
+                  }
+                  sx={{ fontWeight: 600 }}
+                />
+              </Box>
               <Typography variant="body2" color="text.secondary">
-                {promotion.promotionId}
+                ID: {promotion.promotionId}
               </Typography>
             </Box>
-            <Chip
-              label={promotion.status}
-              color={
-                promotion.status === 'active' ? 'success' :
-                promotion.status === 'approved' ? 'primary' :
-                promotion.status === 'draft' ? 'default' :
-                'warning'
-              }
-              size="small"
-            />
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={handleEdit}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1.5 }}>
+              <Button
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={handleEdit}
+                sx={{ 
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleDelete}
+                sx={{ 
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600
+                }}
+              >
+                Delete
+              </Button>
+            </Box>
           </Box>
         </Box>
 
-        <Paper sx={{ mb: 3 }}>
+        {/* Modern Tabs */}
+        <Paper 
+          elevation={0}
+          sx={{ 
+            mb: 3,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            overflow: 'hidden'
+          }}
+        >
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
+            sx={{
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: '0.9375rem',
+                minHeight: 56
+              }
+            }}
           >
             {tabs.map((tab) => (
               <Tab key={tab.id} value={tab.path} label={tab.label} />
@@ -185,7 +224,8 @@ const PromotionDetailWithTabs = () => {
           </Tabs>
         </Paper>
 
-        <Box sx={{ mt: 3 }}>
+        {/* Tab Content */}
+        <Box>
           {activeTab === 'overview' && <PromotionOverview promotion={promotion} onUpdate={loadPromotion} />}
           {activeTab === 'products' && <PromotionProducts promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
           {activeTab === 'customers' && <PromotionCustomers promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}

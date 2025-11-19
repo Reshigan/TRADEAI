@@ -43,16 +43,16 @@ const FundingOverview = () => {
     try {
       setLoading(true);
       
-      const [budgetsRes, walletsRes, termsRes] = await Promise.all([
+      const [budgetsRes, walletsRes, termsRes] = await Promise.allSettled([
         apiClient.get('/budgets'),
         apiClient.get('/kam-wallets'),
         apiClient.get('/trading-terms'),
       ]);
 
       setFundingSources({
-        budgets: budgetsRes.data || [],
-        wallets: walletsRes.data || [],
-        terms: termsRes.data || [],
+        budgets: budgetsRes.status === 'fulfilled' ? (budgetsRes.value.data || []) : [],
+        wallets: walletsRes.status === 'fulfilled' ? (walletsRes.value.data || []) : [],
+        terms: termsRes.status === 'fulfilled' ? (termsRes.value.data || []) : [],
       });
     } catch (error) {
       console.error('Error fetching funding data:', error);
