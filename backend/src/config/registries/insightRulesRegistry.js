@@ -7,6 +7,8 @@
  * Structure: INSIGHT_RULES[module] = { ruleId: { definition } }
  */
 
+const logger = require('../../utils/logger');
+
 const INSIGHT_RULES = {
   budget: {
     budgetOverspend: {
