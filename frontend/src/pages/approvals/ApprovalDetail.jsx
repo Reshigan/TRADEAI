@@ -20,7 +20,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  Container,
+  Skeleton
 } from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
@@ -32,6 +34,7 @@ import approvalService from '../../services/approval/approvalService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import ProcessShell from '../../components/ProcessShell';
 
 const ApprovalDetail = () => {
   const { id } = useParams();
@@ -131,7 +134,15 @@ const ApprovalDetail = () => {
   };
 
   if (loading) {
-    return <SkeletonLoader type="detail" />;
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
+    );
   }
 
   if (error || !approval) {
@@ -152,9 +163,10 @@ const ApprovalDetail = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <ProcessShell module="approval" entityId={id} entity={approval}>
+      <Box sx={{ p: 3 }}>
+        {/* Header */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Button
             startIcon={<BackIcon />}
@@ -392,7 +404,8 @@ const ApprovalDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+      </Box>
+    </ProcessShell>
   );
 };
 
