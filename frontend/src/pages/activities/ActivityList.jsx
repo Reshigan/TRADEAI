@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Paper,
+  Chip,
+  CircularProgress,
+  InputAdornment
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  CalendarToday as CalendarIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -45,14 +65,14 @@ const ActivityList = () => {
   };
 
   const getStatusColor = (status) => {
-    const colors = {
-      'Planned': '#3b82f6',
-      'In Progress': '#f59e0b',
-      'Completed': '#10b981',
-      'Cancelled': '#ef4444',
-      'On Hold': '#6b7280'
+    const statusMap = {
+      'Planned': 'primary',
+      'In Progress': 'warning',
+      'Completed': 'success',
+      'Cancelled': 'error',
+      'On Hold': 'default'
     };
-    return colors[status] || '#6b7280';
+    return statusMap[status] || 'default';
   };
 
   const formatCurrency = (amount) => {
@@ -63,64 +83,241 @@ const ActivityList = () => {
     return new Date(date).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
-  if (loading) return <div className="loading">Loading activities...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="activity-list-container" style={{ padding: '20px' }}>
-      <div className="list-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div>
-          <h1>🎯 Activities</h1>
-          <p>{activities.length} activities found</p>
-        </div>
-        <button onClick={() => navigate('/activities/new')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-          + New Activity
-        </button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            Activities
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/activities/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3
+            }}
+          >
+            New Activity
+          </Button>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {activities.length} activit{activities.length !== 1 ? 'ies' : 'y'} found
+        </Typography>
+      </Box>
 
-      <div className="filters-section" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search activities..."
-          value={filters.search}
-          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-          style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}
-        />
-        <select value={filters.status} onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="all">All Status</option>
-          <option value="Planned">Planned</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
+      {/* Filters */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          p: 2.5, 
+          mb: 3,
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              placeholder="Search activities..."
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={filters.status}
+                label="Status"
+                onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="Planned">Planned</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="Cancelled">Cancelled</MenuItem>
+                <MenuItem value="On Hold">On Hold</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={filters.activityType}
+                label="Type"
+                onChange={(e) => setFilters(prev => ({ ...prev, activityType: e.target.value }))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Types</MenuItem>
+                <MenuItem value="Store Visit">Store Visit</MenuItem>
+                <MenuItem value="Merchandising">Merchandising</MenuItem>
+                <MenuItem value="Training">Training</MenuItem>
+                <MenuItem value="Promotion">Promotion</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-
-      <div className="activities-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
-        {activities.map(activity => (
-          <div key={activity._id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '15px', cursor: 'pointer', backgroundColor: 'white' }} onClick={() => navigate(`/activities/${activity._id}`)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <h3>{activity.activityName}</h3>
-              <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', backgroundColor: getStatusColor(activity.status), color: 'white' }}>
-                {activity.status}
-              </span>
-            </div>
-            <p><strong>Type:</strong> {activity.activityType}</p>
-            <p><strong>Customer:</strong> {activity.customerName}</p>
-            <p><strong>Duration:</strong> {formatDate(activity.startDate)} - {formatDate(activity.endDate)}</p>
-            <p><strong>Budget:</strong> {formatCurrency(activity.budget?.allocated)}</p>
-          </div>
-        ))}
-      </div>
-
-      {activities.length === 0 && !loading && (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <h3>No activities found</h3>
-          <button onClick={() => navigate('/activities/new')} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            + Create Activity
-          </button>
-        </div>
+      {error && (
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 2,
+            mb: 3,
+            borderRadius: 2,
+            bgcolor: 'error.lighter',
+            border: '1px solid',
+            borderColor: 'error.main'
+          }}
+        >
+          <Typography color="error.main">{error}</Typography>
+        </Paper>
       )}
-    </div>
+
+      {/* Activities Grid */}
+      {activities.length === 0 ? (
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 8,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" mb={2}>
+            No activities found
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/activities/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600
+            }}
+          >
+            Create Activity
+          </Button>
+        </Paper>
+      ) : (
+        <Grid container spacing={3}>
+          {activities.map(activity => (
+            <Grid item xs={12} sm={6} lg={4} key={activity._id}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                    borderColor: 'primary.main'
+                  }
+                }}
+                onClick={() => navigate(`/activities/${activity._id}`)}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
+                  <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1, mr: 1 }}>
+                    {activity.activityName}
+                  </Typography>
+                  <Chip
+                    label={activity.status}
+                    color={getStatusColor(activity.status)}
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
+
+                <Box sx={{ mt: 'auto' }}>
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Type
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {activity.activityType}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Customer
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {activity.customerName}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Budget
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {formatCurrency(activity.budget?.allocated)}
+                    </Typography>
+                  </Box>
+
+                  <Box 
+                    sx={{ 
+                      mt: 2,
+                      p: 1.5,
+                      bgcolor: 'primary.lighter',
+                      borderRadius: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
+                    }}
+                  >
+                    <CalendarIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                    <Typography variant="caption" color="primary.main">
+                      {formatDate(activity.startDate)} - {formatDate(activity.endDate)}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </Box>
   );
 };
 
