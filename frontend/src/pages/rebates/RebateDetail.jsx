@@ -27,7 +27,6 @@ import {
   AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
-import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import ProcessShell from '../../components/ProcessShell';

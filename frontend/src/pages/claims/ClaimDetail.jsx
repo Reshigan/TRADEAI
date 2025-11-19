@@ -31,7 +31,6 @@ import {
   ArrowBack as BackIcon
 } from '@mui/icons-material';
 import claimService from '../../services/claim/claimService';
-import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import ProcessShell from '../../components/ProcessShell';
