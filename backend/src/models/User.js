@@ -237,12 +237,4 @@ addTenantSupport(userSchema);
 // Prevent model overwrite error in hot-reload scenarios
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Check if we should use mock database
-const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true' || process.env.NODE_ENV === 'mock';
-
-if (USE_MOCK_DB) {
-  const { MockUser } = require('../services/mockDatabase');
-  module.exports = MockUser;
-} else {
-  module.exports = User;
-}
+module.exports = User;

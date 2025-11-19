@@ -421,10 +421,4 @@ tradeSpendSchema.statics.calculateTotalSpend = async function (filters) {
 
 const TradeSpend = mongoose.model('TradeSpend', tradeSpendSchema);
 
-// Use mock when USE_MOCK_DB is enabled
-if (process.env.USE_MOCK_DB === 'true') {
-  const { MockTradeSpend } = require('../services/mockDatabase');
-  module.exports = MockTradeSpend;
-} else {
-  module.exports = TradeSpend;
-}
+module.exports = TradeSpend;

@@ -610,10 +610,4 @@ addTenantSupport(promotionSchema);
 
 const Promotion = mongoose.model('Promotion', promotionSchema);
 
-// Use mock in development mode if USE_MOCK_DB is enabled
-if (process.env.USE_MOCK_DB === 'true') {
-  const { MockPromotion } = require('../services/mockDatabase');
-  module.exports = MockPromotion;
-} else {
-  module.exports = Promotion;
-}
+module.exports = Promotion;
