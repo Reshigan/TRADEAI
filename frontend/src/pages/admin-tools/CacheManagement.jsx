@@ -1,4 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  Alert,
+  CircularProgress
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon,
+  Delete as DeleteIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -47,87 +60,166 @@ const CacheManagement = () => {
     ? ((cacheStats.hits / (cacheStats.hits + cacheStats.misses)) * 100).toFixed(1) 
     : 0;
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading cache management...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>🗄️ Cache Management</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Monitor and manage application caching</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        🗄️ Cache Management
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        Monitor and manage application caching
+      </Typography>
 
       {message && (
-        <div style={{ padding: '10px 15px', marginBottom: '20px', borderRadius: '5px', backgroundColor: message.includes('Failed') ? '#fee2e2' : '#d1fae5', color: message.includes('Failed') ? '#991b1b' : '#065f46' }}>
+        <Alert 
+          severity={message.includes('Failed') ? 'error' : 'success'} 
+          onClose={() => setMessage('')}
+          sx={{ mb: 3 }}
+        >
           {message}
-        </div>
+        </Alert>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Cache Hits</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{cacheStats.hits.toLocaleString()}</div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Cache Hits
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color="success.main">
+              {cacheStats.hits.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Cache Misses</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ef4444' }}>{cacheStats.misses.toLocaleString()}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Cache Misses
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color="error.main">
+              {cacheStats.misses.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Hit Rate</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#3b82f6' }}>{hitRate}%</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Hit Rate
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color="primary.main">
+              {hitRate}%
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Cached Keys</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{cacheStats.keys.toLocaleString()}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Cached Keys
+            </Typography>
+            <Typography variant="h4" fontWeight={700}>
+              {cacheStats.keys.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-        <h3 style={{ marginBottom: '20px' }}>Cache Operations</h3>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Cache Operations
+        </Typography>
         
-        <div style={{ display: 'grid', gap: '15px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '5px' }}>
-            <div>
-              <div style={{ fontWeight: 'bold' }}>Clear All Cache</div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>Remove all cached data</div>
-            </div>
-            <button onClick={() => clearCache('*')} style={{ padding: '8px 16px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Clear All Cache
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Remove all cached data
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => clearCache('*')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
               Clear All
-            </button>
-          </div>
+            </Button>
+          </Paper>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '5px' }}>
-            <div>
-              <div style={{ fontWeight: 'bold' }}>Clear Analytics Cache</div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>Remove analytics-related cached data</div>
-            </div>
-            <button onClick={() => clearCache('analytics:*')} style={{ padding: '8px 16px', backgroundColor: '#f59e0b', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Clear Analytics Cache
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Remove analytics-related cached data
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<DeleteIcon />}
+              onClick={() => clearCache('analytics:*')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
               Clear
-            </button>
-          </div>
+            </Button>
+          </Paper>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '5px' }}>
-            <div>
-              <div style={{ fontWeight: 'bold' }}>Clear User Cache</div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>Remove user session cached data</div>
-            </div>
-            <button onClick={() => clearCache('user:*')} style={{ padding: '8px 16px', backgroundColor: '#f59e0b', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Clear User Cache
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Remove user session cached data
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<DeleteIcon />}
+              onClick={() => clearCache('user:*')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
               Clear
-            </button>
-          </div>
+            </Button>
+          </Paper>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '5px' }}>
-            <div>
-              <div style={{ fontWeight: 'bold' }}>Refresh Stats</div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>Reload cache statistics</div>
-            </div>
-            <button onClick={fetchCacheStats} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+          <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Refresh Stats
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Reload cache statistics
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<RefreshIcon />}
+              onClick={fetchCacheStats}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
               Refresh
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Button>
+          </Paper>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
