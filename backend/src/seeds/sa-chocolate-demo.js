@@ -23,6 +23,7 @@ const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Budget = require('../models/Budget');
+const logger = require('../utils/logger');
 
 // Configuration
 const START_DATE = new Date('2025-05-01'); // 6 months ago from now
@@ -137,7 +138,7 @@ function weightedRandomChoice(items, weightKey = 'weight') {
 }
 
 async function seedTenant() {
-  console.log('🏢 Creating Default tenant...');
+  logger.info('🏢 Creating Default tenant...');
 
   let tenant = await Tenant.findOne({ slug: 'default' });
 
@@ -153,23 +154,23 @@ async function seedTenant() {
         locale: 'en-ZA'
       }
     });
-    console.log(`✅ Created tenant: ${tenant.name} (${tenant._id})`);
+    logger.info(`✅ Created tenant: ${tenant.name} (${tenant._id})`);
   } else {
-    console.log(`✅ Tenant already exists: ${tenant.name} (${tenant._id})`);
+    logger.info(`✅ Tenant already exists: ${tenant.name} (${tenant._id})`);
   }
 
   return tenant;
 }
 
 async function seedUsers(tenantId) {
-  console.log('👥 Creating users...');
+  logger.info('👥 Creating users...');
 
   const users = [];
 
   const admin = await User.findOne({ email: 'admin@tradeai.com' });
   if (admin) {
     users.push(admin);
-    console.log(`✅ Admin user exists: ${admin.email}`);
+    logger.info(`✅ Admin user exists: ${admin.email}`);
   }
 
   const managers = [
@@ -194,7 +195,7 @@ async function seedUsers(tenantId) {
         isActive: true,
         customFields: { region: mgr.region }
       });
-      console.log(`✅ Created manager: ${user.email}`);
+      logger.info(`✅ Created manager: ${user.email}`);
     }
     users.push(user);
   }
@@ -222,7 +223,7 @@ async function seedUsers(tenantId) {
         department: 'sales',
         isActive: true
       });
-      console.log(`✅ Created KAM: ${user.email}`);
+      logger.info(`✅ Created KAM: ${user.email}`);
     }
     users.push(user);
   }
@@ -246,17 +247,17 @@ async function seedUsers(tenantId) {
         department: 'finance',
         isActive: true
       });
-      console.log(`✅ Created analyst: ${user.email}`);
+      logger.info(`✅ Created analyst: ${user.email}`);
     }
     users.push(user);
   }
 
-  console.log(`✅ Total users: ${users.length}`);
+  logger.info(`✅ Total users: ${users.length}`);
   return users;
 }
 
 async function seedCustomers(tenantId, companyId, users) {
-  console.log('🏪 Creating customers (stores)...');
+  logger.info('🏪 Creating customers (stores)...');
 
   const customers = [];
   const kams = users.filter((u) => u.role === 'kam');
@@ -310,12 +311,12 @@ async function seedCustomers(tenantId, companyId, users) {
     }
   }
 
-  console.log(`✅ Created ${customers.length} customers`);
+  logger.info(`✅ Created ${customers.length} customers`);
   return customers;
 }
 
 async function seedProducts(tenantId, companyId) {
-  console.log('🍫 Creating chocolate products...');
+  logger.info('🍫 Creating chocolate products...');
 
   const products = [];
 
@@ -373,12 +374,12 @@ async function seedProducts(tenantId, companyId) {
     }
   }
 
-  console.log(`✅ Created ${products.length} products`);
+  logger.info(`✅ Created ${products.length} products`);
   return products;
 }
 
 async function seedBudgets(tenantId, companyId, users) {
-  console.log('💰 Creating budgets...');
+  logger.info('💰 Creating budgets...');
 
   const budgets = [];
   const year = START_DATE.getFullYear();
@@ -445,7 +446,7 @@ async function seedBudgets(tenantId, companyId, users) {
     budgets.push(budget);
   }
 
-  console.log(`✅ Created ${budgets.length} budgets`);
+  logger.info(`✅ Created ${budgets.length} budgets`);
   return budgets;
 }
 
