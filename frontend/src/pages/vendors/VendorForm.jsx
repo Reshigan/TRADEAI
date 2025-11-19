@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  CircularProgress,
+  Alert,
+  Grid
+} from '@mui/material';
+import {
+  Save as SaveIcon,
+  Cancel as CancelIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-import './VendorForm.css';
 
 const VendorForm = () => {
   const { id } = useParams();
@@ -74,73 +89,161 @@ const VendorForm = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="vendor-form-container">
-      <div className="form-header">
-        <h1>{isEditMode ? 'Edit Vendor' : 'Create New Vendor'}</h1>
-        <button onClick={() => navigate('/vendors')} className="btn-secondary">Cancel</button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            {isEditMode ? 'Edit Vendor' : 'Create New Vendor'}
+          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            onClick={() => navigate('/vendors')}
+            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
 
-      {error && <ErrorMessage message={error} />}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      <form onSubmit={handleSubmit} className="vendor-form">
-        <div className="form-section">
-          <h2>Basic Information</h2>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="name">Vendor Name *</label>
-              <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required placeholder="Enter vendor name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="contactPerson">Contact Person</label>
-              <input type="text" id="contactPerson" name="contactPerson" value={formData.contactPerson} onChange={handleChange} placeholder="Contact person name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email *</label>
-              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required placeholder="vendor@example.com" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="phone">Phone</label>
-              <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="+27 123 456 7890" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="rating">Rating</label>
-              <select id="rating" name="rating" value={formData.rating} onChange={handleChange}>
-                <option value="1">⭐ (1 - Poor)</option>
-                <option value="2">⭐⭐ (2 - Fair)</option>
-                <option value="3">⭐⭐⭐ (3 - Good)</option>
-                <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
-                <option value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="status">Status *</label>
-              <select id="status" name="status" value={formData.status} onChange={handleChange} required>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="blacklisted">Blacklisted</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Basic Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Vendor Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter vendor name"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Contact Person"
+                  name="contactPerson"
+                  value={formData.contactPerson}
+                  onChange={handleChange}
+                  placeholder="Contact person name"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="vendor@example.com"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+27 123 456 7890"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Rating</InputLabel>
+                  <Select
+                    name="rating"
+                    value={formData.rating}
+                    onChange={handleChange}
+                    label="Rating"
+                  >
+                    <MenuItem value="1">⭐ (1 - Poor)</MenuItem>
+                    <MenuItem value="2">⭐⭐ (2 - Fair)</MenuItem>
+                    <MenuItem value="3">⭐⭐⭐ (3 - Good)</MenuItem>
+                    <MenuItem value="4">⭐⭐⭐⭐ (4 - Very Good)</MenuItem>
+                    <MenuItem value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    label="Status"
+                  >
+                    <MenuItem value="active">Active</MenuItem>
+                    <MenuItem value="inactive">Inactive</MenuItem>
+                    <MenuItem value="blacklisted">Blacklisted</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
 
-        <div className="form-section">
-          <h2>Address</h2>
-          <div className="form-group">
-            <textarea id="address" name="address" value={formData.address} onChange={handleChange} rows="3" placeholder="Enter vendor address..." />
-          </div>
-        </div>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Address
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Enter vendor address..."
+            />
+          </Box>
 
-        <div className="form-actions">
-          <button type="button" onClick={() => navigate('/vendors')} className="btn-secondary">Cancel</button>
-          <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : isEditMode ? 'Update Vendor' : 'Create Vendor'}
-          </button>
-        </div>
-      </form>
-    </div>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={() => navigate('/vendors')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              disabled={saving}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              {saving ? 'Saving...' : isEditMode ? 'Update Vendor' : 'Create Vendor'}
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 
