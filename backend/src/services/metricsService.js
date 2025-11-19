@@ -56,28 +56,185 @@ class MetricsService {
    * Calculate a single metric
    */
   async calculateMetric(metric, entityId, Model, context = {}) {
-    
-    if (metric.calculation.includes('COUNT')) {
-      return Math.floor(Math.random() * 100);
+    try {
+      const entity = await Model.findById(entityId);
+      if (!entity) {
+        return null;
+      }
+
+      const calculator = this.getCalculatorForMetric(metric.id, context.module);
+      if (calculator) {
+        return await calculator(entity, Model, context);
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Error calculating metric ${metric.id}:`, error);
+      return null;
     }
-    
-    if (metric.calculation.includes('SUM')) {
-      return Math.floor(Math.random() * 1000000);
-    }
-    
-    if (metric.calculation.includes('AVG')) {
-      return Math.floor(Math.random() * 100);
-    }
-    
-    if (metric.format === 'percentage') {
-      return Math.floor(Math.random() * 100);
-    }
-    
-    if (metric.format === 'currency') {
-      return Math.floor(Math.random() * 1000000);
-    }
-    
-    return Math.floor(Math.random() * 100);
+  }
+
+  /**
+   * Get calculator function for a specific metric
+   */
+  getCalculatorForMetric(metricId, module) {
+    const calculators = {
+      budget: {
+        totalBudget: async (entity) => entity.annualTotals?.tradeSpend?.total || 0,
+        budgetUtilization: async (entity) => {
+          const total = entity.annualTotals?.tradeSpend?.total || 0;
+          const spent = entity.spent || 0;
+          return total > 0 ? (spent / total) * 100 : 0;
+        },
+        budgetRemaining: async (entity) => {
+          const total = entity.annualTotals?.tradeSpend?.total || 0;
+          const spent = entity.spent || 0;
+          return total - spent;
+        },
+        budgetBurnRate: async (entity) => {
+          const spent = entity.spent || 0;
+          const startDate = new Date(entity.year, 0, 1);
+          const now = new Date();
+          const daysElapsed = Math.max(1, Math.floor((now - startDate) / (1000 * 60 * 60 * 24)));
+          return spent / daysElapsed;
+        },
+        projectedSpend: async (entity) => {
+          const spent = entity.spent || 0;
+          const startDate = new Date(entity.year, 0, 1);
+          const endDate = new Date(entity.year, 11, 31);
+          const now = new Date();
+          const daysElapsed = Math.max(1, Math.floor((now - startDate) / (1000 * 60 * 60 * 24)));
+          const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+          return (spent / daysElapsed) * totalDays;
+        }
+      },
+      promotion: {
+        totalPromotions: async (entity, Model) => {
+          return await Model.countDocuments({ company: entity.company });
+        },
+        activePromotions: async (entity, Model) => {
+          return await Model.countDocuments({ company: entity.company, status: 'active' });
+        },
+        promotionROI: async (entity) => {
+          const incrementalRevenue = entity.financial?.actual?.incrementalRevenue || 0;
+          const totalCost = entity.financial?.costs?.totalCost || 0;
+          return totalCost > 0 ? ((incrementalRevenue - totalCost) / totalCost) * 100 : 0;
+        },
+        incrementalSales: async (entity) => {
+          return entity.financial?.actual?.incrementalRevenue || 0;
+        },
+        promotionLift: async (entity) => {
+          const actual = entity.financial?.actual?.promotionalVolume || 0;
+          const baseline = entity.financial?.actual?.baselineVolume || 0;
+          return baseline > 0 ? ((actual - baseline) / baseline) * 100 : 0;
+        },
+        promotionCost: async (entity) => {
+          return entity.financial?.costs?.totalCost || 0;
+        }
+      },
+      tradeSpend: {
+        totalTradeSpend: async (entity, Model) => {
+          const result = await Model.aggregate([
+            { $match: { company: entity.company } },
+            { $group: { _id: null, total: { $sum: '$amount.requested' } } }
+          ]);
+          return result[0]?.total || 0;
+        },
+        tradeSpendAccruals: async (entity, Model) => {
+          const result = await Model.aggregate([
+            { $match: { company: entity.company } },
+            { $unwind: { path: '$accruals', preserveNullAndEmptyArrays: true } },
+            { $group: { _id: null, total: { $sum: '$accruals.amount' } } }
+          ]);
+          return result[0]?.total || 0;
+        },
+        tradeSpendAsPercentOfSales: async (entity, Model, context) => {
+          const accruals = await Model.aggregate([
+            { $match: { company: entity.company } },
+            { $unwind: { path: '$accruals', preserveNullAndEmptyArrays: true } },
+            { $group: { _id: null, total: { $sum: '$accruals.amount' } } }
+          ]);
+          const totalAccruals = accruals[0]?.total || 0;
+          const netSales = context.netSales || 1;
+          return netSales > 0 ? (totalAccruals / netSales) * 100 : 0;
+        },
+        tradeSpendROI: async (entity) => {
+          const incrementalRevenue = entity.performance?.actualValue || 0;
+          const spent = entity.amount?.spent || 0;
+          return spent > 0 ? ((incrementalRevenue - spent) / spent) * 100 : 0;
+        }
+      },
+      claim: {
+        totalClaims: async (entity, Model) => {
+          return await Model.countDocuments({ company: entity.company });
+        },
+        claimAmount: async (entity, Model) => {
+          const result = await Model.aggregate([
+            { $match: { company: entity.company } },
+            { $group: { _id: null, total: { $sum: '$claimAmount' } } }
+          ]);
+          return result[0]?.total || 0;
+        },
+        claimApprovalRate: async (entity, Model) => {
+          const total = await Model.countDocuments({ company: entity.company });
+          const approved = await Model.countDocuments({ company: entity.company, status: 'approved' });
+          return total > 0 ? (approved / total) * 100 : 0;
+        },
+        averageClaimProcessingTime: async (entity, Model) => {
+          const claims = await Model.find({
+            company: entity.company,
+            submittedAt: { $exists: true },
+            reviewedAt: { $exists: true }
+          }).lean();
+          if (claims.length === 0) return 0;
+          const totalDays = claims.reduce((sum, claim) => {
+            const days = Math.floor((new Date(claim.reviewedAt) - new Date(claim.submittedAt)) / (1000 * 60 * 60 * 24));
+            return sum + days;
+          }, 0);
+          return totalDays / claims.length;
+        },
+        pendingClaims: async (entity, Model) => {
+          return await Model.countDocuments({ company: entity.company, status: { $in: ['submitted', 'under_review'] } });
+        }
+      },
+      deduction: {
+        totalDeductions: async (entity, Model) => {
+          return await Model.countDocuments({ company: entity.company });
+        },
+        deductionAmount: async (entity, Model) => {
+          const result = await Model.aggregate([
+            { $match: { company: entity.company } },
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+          ]);
+          return result[0]?.total || 0;
+        },
+        deductionResolutionRate: async (entity, Model) => {
+          const total = await Model.countDocuments({ company: entity.company });
+          const resolved = await Model.countDocuments({ company: entity.company, status: 'resolved' });
+          return total > 0 ? (resolved / total) * 100 : 0;
+        },
+        averageResolutionTime: async (entity, Model) => {
+          const deductions = await Model.find({
+            company: entity.company,
+            identificationDate: { $exists: true },
+            resolutionDate: { $exists: true }
+          }).lean();
+          if (deductions.length === 0) return 0;
+          const totalDays = deductions.reduce((sum, deduction) => {
+            const days = Math.floor((new Date(deduction.resolutionDate) - new Date(deduction.identificationDate)) / (1000 * 60 * 60 * 24));
+            return sum + days;
+          }, 0);
+          return totalDays / deductions.length;
+        },
+        validDeductionRate: async (entity, Model) => {
+          const total = await Model.countDocuments({ company: entity.company });
+          const valid = await Model.countDocuments({ company: entity.company, resolution: 'valid' });
+          return total > 0 ? (valid / total) * 100 : 0;
+        }
+      }
+    };
+
+    return calculators[module]?.[metricId] || null;
   }
 
   /**
