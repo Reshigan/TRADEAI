@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  CircularProgress
+} from '@mui/material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -43,91 +50,125 @@ const SalesAnalytics = () => {
     return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount || 0);
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading analytics...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>📊 Sales Analytics</h1>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={4}>
+        📊 Sales Analytics
+      </Typography>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <h3>💰 Revenue by Period</h3>
-          {data.revenueByPeriod.length > 0 ? (
-            <div style={{ marginTop: '15px' }}>
-              {data.revenueByPeriod.map((item, index) => (
-                <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{item._id?.year}/{item._id?.month}</span>
-                    <strong>{formatCurrency(item.totalRevenue)}</strong>
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                    {item.transactionCount} transactions | {item.totalQuantity} units
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#666', marginTop: '10px' }}>No revenue data available</p>
-          )}
-        </div>
+      <Grid container spacing={3}>
+        <Grid item xs={12} lg={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              💰 Revenue by Period
+            </Typography>
+            {data.revenueByPeriod.length > 0 ? (
+              <Box>
+                {data.revenueByPeriod.map((item, index) => (
+                  <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                    <Box display="flex" justifyContent="space-between" mb={0.5}>
+                      <Typography variant="body2">{item._id?.year}/{item._id?.month}</Typography>
+                      <Typography variant="body2" fontWeight={600}>{formatCurrency(item.totalRevenue)}</Typography>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {item.transactionCount} transactions | {item.totalQuantity} units
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No revenue data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <h3>👥 Top Customers</h3>
-          {data.topCustomers.length > 0 ? (
-            <div style={{ marginTop: '15px' }}>
-              {data.topCustomers.slice(0, 10).map((item, index) => (
-                <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontWeight: 'bold' }}>#{index + 1} {item.customer?.name || 'Unknown'}</div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
-                        {item.transactionCount} transactions
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 'bold' }}>{formatCurrency(item.totalRevenue)}</div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
-                        Avg: {formatCurrency(item.avgTransactionValue)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#666', marginTop: '10px' }}>No customer data available</p>
-          )}
-        </div>
+        <Grid item xs={12} lg={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              👥 Top Customers
+            </Typography>
+            {data.topCustomers.length > 0 ? (
+              <Box>
+                {data.topCustomers.slice(0, 10).map((item, index) => (
+                  <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          #{index + 1} {item.customer?.name || 'Unknown'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {item.transactionCount} transactions
+                        </Typography>
+                      </Box>
+                      <Box textAlign="right">
+                        <Typography variant="body2" fontWeight={600}>
+                          {formatCurrency(item.totalRevenue)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Avg: {formatCurrency(item.avgTransactionValue)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No customer data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <h3>📦 Top Products</h3>
-          {data.topProducts.length > 0 ? (
-            <div style={{ marginTop: '15px' }}>
-              {data.topProducts.slice(0, 10).map((item, index) => (
-                <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontWeight: 'bold' }}>#{index + 1} {item.product?.name || 'Unknown'}</div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
-                        {item.totalQuantity} units sold
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 'bold' }}>{formatCurrency(item.totalRevenue)}</div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
-                        Avg: {formatCurrency(item.avgPrice)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#666', marginTop: '10px' }}>No product data available</p>
-          )}
-        </div>
-      </div>
-    </div>
+        <Grid item xs={12} lg={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              📦 Top Products
+            </Typography>
+            {data.topProducts.length > 0 ? (
+              <Box>
+                {data.topProducts.slice(0, 10).map((item, index) => (
+                  <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          #{index + 1} {item.product?.name || 'Unknown'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {item.totalQuantity} units sold
+                        </Typography>
+                      </Box>
+                      <Box textAlign="right">
+                        <Typography variant="body2" fontWeight={600}>
+                          {formatCurrency(item.totalRevenue)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Avg: {formatCurrency(item.avgPrice)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No product data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
