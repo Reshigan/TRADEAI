@@ -190,8 +190,8 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
       position="fixed" 
       sx={{ 
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        boxShadow: '0 4px 20px 0 rgba(0,0,0,0.1)'
+        background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+        boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px 0 rgba(15, 23, 42, 0.06)'
       }}
     >
       <Toolbar>
