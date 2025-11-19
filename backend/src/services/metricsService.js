@@ -109,10 +109,10 @@ class MetricsService {
         }
       },
       promotion: {
-        totalPromotions: async (entity, Model) => {
+        totalPromotions: (entity, Model) => {
           return Model.countDocuments({ company: entity.company });
         },
-        activePromotions: async (entity, Model) => {
+        activePromotions: (entity, Model) => {
           return Model.countDocuments({ company: entity.company, status: 'active' });
         },
         promotionROI: (entity) => {
@@ -165,7 +165,7 @@ class MetricsService {
         }
       },
       claim: {
-        totalClaims: async (entity, Model) => {
+        totalClaims: (entity, Model) => {
           return Model.countDocuments({ company: entity.company });
         },
         claimAmount: async (entity, Model) => {
@@ -193,12 +193,12 @@ class MetricsService {
           }, 0);
           return totalDays / claims.length;
         },
-        pendingClaims: async (entity, Model) => {
+        pendingClaims: (entity, Model) => {
           return Model.countDocuments({ company: entity.company, status: { $in: ['submitted', 'under_review'] } });
         }
       },
       deduction: {
-        totalDeductions: async (entity, Model) => {
+        totalDeductions: (entity, Model) => {
           return Model.countDocuments({ company: entity.company });
         },
         deductionAmount: async (entity, Model) => {
@@ -261,7 +261,7 @@ class MetricsService {
   /**
    * Materialize metrics snapshot to database
    */
-  async materializeSnapshot(module, entityId, metrics) {
+  materializeSnapshot(module, entityId, metrics) {
     const cacheKey = `${module}-${entityId}`;
     this.snapshotCache.set(cacheKey, {
       data: metrics,

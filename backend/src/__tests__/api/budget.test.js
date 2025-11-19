@@ -8,7 +8,6 @@ const Company = require('../../models/Company');
 describe('Budget API Tests', () => {
   let authToken;
   let testCompany;
-  let testUser;
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
@@ -25,7 +24,7 @@ describe('Budget API Tests', () => {
       status: 'active'
     });
 
-    testUser = await User.create({
+    await User.create({
       email: 'budget.test@test.com',
       password: 'Test@123456',
       name: 'Budget Test User',

@@ -9,7 +9,6 @@ const Customer = require('../../models/Customer');
 describe('TradeSpend API Tests', () => {
   let authToken;
   let testCompany;
-  let testUser;
   let testCustomer;
 
   beforeAll(async () => {
@@ -34,7 +33,7 @@ describe('TradeSpend API Tests', () => {
       status: 'active'
     });
 
-    testUser = await User.create({
+    await User.create({
       email: 'tradespend.test@test.com',
       password: 'Test@123456',
       name: 'TradeSpend Test User',
