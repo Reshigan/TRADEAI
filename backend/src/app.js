@@ -76,6 +76,7 @@ const deductionsRoutes = require('./routes/deductions');
 const hierarchyRoutes = require('./routes/hierarchy');
 const insightsRoutes = require('./routes/insights');
 const metricsRoutes = require('./routes/metrics');
+const processModelRoutes = require('./routes/processModel');
 
 // Create Express app
 const app = express();
