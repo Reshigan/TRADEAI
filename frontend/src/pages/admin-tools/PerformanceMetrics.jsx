@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  CircularProgress,
+  Chip
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -49,92 +61,158 @@ const PerformanceMetrics = () => {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading performance metrics...</div>;
+  const getResponseTimeColor = (time) => {
+    if (time < 200) return 'success.main';
+    if (time < 500) return 'warning.main';
+    return 'error.main';
+  };
+
+  const getErrorRateColor = (rate) => {
+    if (rate < 1) return 'success.main';
+    if (rate < 5) return 'warning.main';
+    return 'error.main';
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>⚡ Performance Metrics</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>System performance and monitoring</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        ⚡ Performance Metrics
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        System performance and monitoring
+      </Typography>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Avg Response Time</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: metrics.avgResponseTime < 200 ? '#10b981' : metrics.avgResponseTime < 500 ? '#f59e0b' : '#ef4444' }}>
-            {metrics.avgResponseTime}ms
-          </div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Avg Response Time
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color={getResponseTimeColor(metrics.avgResponseTime)}>
+              {metrics.avgResponseTime}ms
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Requests/Min</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{metrics.requestsPerMinute.toLocaleString()}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Requests/Min
+            </Typography>
+            <Typography variant="h4" fontWeight={700}>
+              {metrics.requestsPerMinute.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Error Rate</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: metrics.errorRate < 1 ? '#10b981' : metrics.errorRate < 5 ? '#f59e0b' : '#ef4444' }}>
-            {metrics.errorRate.toFixed(2)}%
-          </div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Error Rate
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color={getErrorRateColor(metrics.errorRate)}>
+              {metrics.errorRate.toFixed(2)}%
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>System Uptime</div>
-          <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>{formatUptime(metrics.uptime)}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              System Uptime
+            </Typography>
+            <Typography variant="h5" fontWeight={700} color="success.main">
+              {formatUptime(metrics.uptime)}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0 }}>🐌 Slowest Endpoints</h3>
-            <button onClick={fetchMetrics} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '12px' }}>
-              Refresh
-            </button>
-          </div>
-          
-          <div>
-            {metrics.slowestEndpoints.map((endpoint, index) => (
-              <div key={index} style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: '14px' }}>{endpoint.method} {endpoint.path}</span>
-                  <strong style={{ color: endpoint.avgTime > 1000 ? '#ef4444' : endpoint.avgTime > 500 ? '#f59e0b' : '#10b981' }}>
-                    {endpoint.avgTime}ms
-                  </strong>
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  Requests: {endpoint.count} | Max: {endpoint.maxTime}ms
-                </div>
-              </div>
-            ))}
-            {metrics.slowestEndpoints.length === 0 && <p style={{ color: '#666', textAlign: 'center' }}>No data available</p>}
-          </div>
-        </div>
+      <Grid container spacing={3}>
+        <Grid item xs={12} lg={6}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+              <Typography variant="h6" fontWeight={600}>
+                🐌 Slowest Endpoints
+              </Typography>
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<RefreshIcon />}
+                onClick={fetchMetrics}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
+                Refresh
+              </Button>
+            </Box>
+            
+            <Box>
+              {metrics.slowestEndpoints.map((endpoint, index) => (
+                <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
+                    <Typography variant="body2" fontFamily="monospace">
+                      {endpoint.method} {endpoint.path}
+                    </Typography>
+                    <Chip 
+                      label={`${endpoint.avgTime}ms`}
+                      size="small"
+                      color={endpoint.avgTime > 1000 ? 'error' : endpoint.avgTime > 500 ? 'warning' : 'success'}
+                    />
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
+                    Requests: {endpoint.count} | Max: {endpoint.maxTime}ms
+                  </Typography>
+                </Box>
+              ))}
+              {metrics.slowestEndpoints.length === 0 && (
+                <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>
+                  No data available
+                </Typography>
+              )}
+            </Box>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '20px' }}>❌ Recent Errors</h3>
-          
-          <div>
-            {metrics.recentErrors.map((error, index) => (
-              <div key={index} style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span style={{ fontWeight: 'bold', color: '#ef4444' }}>{error.statusCode} - {error.message}</span>
-                </div>
-                <div style={{ fontSize: '12px', color: '#666', fontFamily: 'monospace' }}>
-                  {error.method} {error.path}
-                </div>
-                <div style={{ fontSize: '11px', color: '#999', marginTop: '5px' }}>
-                  {new Date(error.timestamp).toLocaleString()}
-                </div>
-              </div>
-            ))}
-            {metrics.recentErrors.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#10b981' }}>
-                ✅ No recent errors
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+        <Grid item xs={12} lg={6}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              ❌ Recent Errors
+            </Typography>
+            
+            <Box>
+              {metrics.recentErrors.map((error, index) => (
+                <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="subtitle2" fontWeight={600} color="error.main" mb={0.5}>
+                    {error.statusCode} - {error.message}
+                  </Typography>
+                  <Typography variant="body2" fontFamily="monospace" color="text.secondary" mb={0.5}>
+                    {error.method} {error.path}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {new Date(error.timestamp).toLocaleString()}
+                  </Typography>
+                </Box>
+              ))}
+              {metrics.recentErrors.length === 0 && (
+                <Box textAlign="center" py={3}>
+                  <Typography variant="body1" color="success.main">
+                    ✅ No recent errors
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

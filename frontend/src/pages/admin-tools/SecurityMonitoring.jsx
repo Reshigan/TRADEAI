@@ -1,4 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  CircularProgress,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -45,79 +63,134 @@ const SecurityMonitoring = () => {
     return new Date(date).toLocaleString('en-ZA');
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading security monitoring...</div>;
+  const getSeverityChipColor = (severity) => {
+    switch (severity?.toLowerCase()) {
+      case 'critical': return 'error';
+      case 'high': return 'warning';
+      case 'medium': return 'info';
+      case 'low': return 'success';
+      default: return 'default';
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>🔒 Security Monitoring</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>System security events and monitoring</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        🔒 Security Monitoring
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        System security events and monitoring
+      </Typography>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Total Events</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{stats.totalEvents.toLocaleString()}</div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Total Events
+            </Typography>
+            <Typography variant="h4" fontWeight={700}>
+              {stats.totalEvents.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Critical Events</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ef4444' }}>{stats.criticalEvents.toLocaleString()}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Critical Events
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color="error.main">
+              {stats.criticalEvents.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Blocked IPs</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{stats.blockedIPs.toLocaleString()}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Blocked IPs
+            </Typography>
+            <Typography variant="h4" fontWeight={700}>
+              {stats.blockedIPs.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Active Users</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{stats.activeUsers.toLocaleString()}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Active Users
+            </Typography>
+            <Typography variant="h4" fontWeight={700} color="success.main">
+              {stats.activeUsers.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h3 style={{ margin: 0 }}>Recent Security Events</h3>
-          <button onClick={fetchSecurityData} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h6" fontWeight={600}>
+            Recent Security Events
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<RefreshIcon />}
+            onClick={fetchSecurityData}
+            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+          >
             Refresh
-          </button>
-        </div>
+          </Button>
+        </Box>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f3f4f6', borderBottom: '2px solid #ddd' }}>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Timestamp</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Type</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Severity</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>IP Address</th>
-                <th style={{ padding: '12px', textAlign: 'left' }}>Description</th>
-              </tr>
-            </thead>
-            <tbody>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: 'grey.50' }}>
+                <TableCell>Timestamp</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Severity</TableCell>
+                <TableCell>IP Address</TableCell>
+                <TableCell>Description</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {securityEvents.map((event, index) => (
-                <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '12px' }}>{formatDate(event.timestamp)}</td>
-                  <td style={{ padding: '12px' }}>{event.eventType}</td>
-                  <td style={{ padding: '12px' }}>
-                    <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', backgroundColor: getSeverityColor(event.severity), color: 'white' }}>
-                      {event.severity}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px' }}>{event.ipAddress}</td>
-                  <td style={{ padding: '12px' }}>{event.description}</td>
-                </tr>
+                <TableRow key={index}>
+                  <TableCell>{formatDate(event.timestamp)}</TableCell>
+                  <TableCell>{event.eventType}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={event.severity}
+                      size="small"
+                      color={getSeverityChipColor(event.severity)}
+                    />
+                  </TableCell>
+                  <TableCell>{event.ipAddress}</TableCell>
+                  <TableCell>{event.description}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
 
           {securityEvents.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-              No security events found
-            </div>
+            <Box textAlign="center" py={5}>
+              <Typography variant="body2" color="text.secondary">
+                No security events found
+              </Typography>
+            </Box>
           )}
-        </div>
-      </div>
-    </div>
+        </TableContainer>
+      </Paper>
+    </Box>
   );
 };
 
