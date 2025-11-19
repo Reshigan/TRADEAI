@@ -150,33 +150,16 @@ const AIRecommendations = () => {
       setLoading(true);
       setError(null);
 
-              },
-        {
-          id: 'PROD002',
-          name: 'Smart Watch',
-          category: 'Electronics',
-          price: 399.99,
-          rating: 4.3,
-          reviews: 89,
-          score: 0.82,
-          reasons: ['Complements your fitness goals', 'Trending product', 'Price match']
-        },
-        {
-          id: 'PROD003',
-          name: 'Coffee Maker',
-          category: 'Home',
-          price: 149.99,
-          rating: 4.7,
-          reviews: 203,
-          score: 0.76,
-          reasons: ['Morning routine optimization', 'Energy efficiency', 'Brand preference']
-        }
-      ];
+      const response = await api.post('/ai/recommendations/products', {
+        userId: selectedUserId,
+        filters: recommendationFilters
+      });
 
-      setProductRecommendations(mockRecommendations);
+      setProductRecommendations(response.data.recommendations || []);
     } catch (error) {
       setError('Failed to get product recommendations');
       console.error('Error getting product recommendations:', error);
+      setProductRecommendations([]);
     } finally {
       setLoading(false);
     }
@@ -188,11 +171,16 @@ const AIRecommendations = () => {
       setLoading(true);
       setError(null);
 
-      
-      setPersonalizedPromotions(mockPromotions);
+      const response = await api.post('/ai/recommendations/promotions', {
+        userId: selectedUserId,
+        filters: promotionFilters
+      });
+
+      setPersonalizedPromotions(response.data.promotions || []);
     } catch (error) {
       setError('Failed to get personalized promotions');
       console.error('Error getting personalized promotions:', error);
+      setPersonalizedPromotions([]);
     } finally {
       setLoading(false);
     }
@@ -204,19 +192,15 @@ const AIRecommendations = () => {
       setLoading(true);
       setError(null);
 
-      // Mock segmentation data
-              ],
-        recommendations: [
-          'Offer premium products',
-          'Provide exclusive deals',
-          'Invite to VIP program'
-        ]
-      };
+      const response = await api.post('/ai/segmentation/customer', {
+        customerData
+      });
 
-      setCustomerSegmentation(mockSegmentation);
+      setCustomerSegmentation(response.data.segmentation || null);
     } catch (error) {
       setError('Failed to segment customer');
       console.error('Error segmenting customer:', error);
+      setCustomerSegmentation(null);
     } finally {
       setLoading(false);
     }

@@ -50,7 +50,7 @@ const AIModelHealthWidget = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/health`,
+        `${process.env.REACT_APP_API_URL || '/api'}/ai/health`,
         {
           headers: {
             'Authorization': `Bearer ${token}`

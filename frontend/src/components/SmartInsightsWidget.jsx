@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * Smart Insights Widget - Proactive Intelligence
@@ -52,71 +52,9 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
         setInsights(response.data.insights || []);
         setUnreadCount(response.data.unreadCount || 0);
       } catch (error) {
-        // Fallback: Generate sample insights
-        const sampleInsights = [
-          {
-            id: 1,
-            type: 'opportunity',
-            priority: 'high',
-            title: '📈 Revenue Opportunity Detected',
-            message: 'Customer "ABC Retailers" shows 45% higher purchase frequency. Consider increasing their credit limit by R50,000.',
-            action: 'Increase Credit Limit',
-            actionUrl: '/customers/123',
-            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-            impact: '+R180,000 potential revenue',
-            confidence: 87
-          },
-          {
-            id: 2,
-            type: 'warning',
-            priority: 'medium',
-            title: '⚠️ Stock Alert',
-            message: '3 products running low on inventory. Reorder recommended within 7 days to avoid stockouts.',
-            action: 'View Products',
-            actionUrl: '/products?filter=low-stock',
-            timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
-            impact: 'Potential loss: R45,000',
-            confidence: 92
-          },
-          {
-            id: 3,
-            type: 'trend',
-            priority: 'medium',
-            title: '📊 Trend Alert',
-            message: 'Beverage category showing 18% growth vs last month. Seasonal peak expected in 2 weeks.',
-            action: 'Adjust Inventory',
-            actionUrl: '/products?category=beverages',
-            timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
-            impact: 'Opportunity: +R120,000',
-            confidence: 78
-          },
-          {
-            id: 4,
-            type: 'success',
-            priority: 'low',
-            title: '✅ Budget Performance',
-            message: 'Q4 Marketing budget on track. Currently at 95% efficiency vs target of 85%.',
-            action: 'View Details',
-            actionUrl: '/budgets/q4-2024',
-            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-            impact: 'Saved: R25,000',
-            confidence: 95
-          },
-          {
-            id: 5,
-            type: 'anomaly',
-            priority: 'high',
-            title: '🔍 Anomaly Detected',
-            message: 'Trade spend ROI dropped 35% in the last week. Recommend reviewing active campaigns.',
-            action: 'Investigate Now',
-            actionUrl: '/trade-spends?filter=underperforming',
-            timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-            impact: 'At risk: R65,000',
-            confidence: 88
-          }
-        ];
-        setInsights(sampleInsights);
-        setUnreadCount(3);
+        console.error('Error fetching insights:', error);
+        setInsights([]);
+        setUnreadCount(0);
       } finally {
         setIsLoading(false);
       }

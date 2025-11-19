@@ -27,31 +27,23 @@ const SuccessTracker = ({ userId }) => {
   const [recentWins, setRecentWins] = useState([]);
 
   useEffect(() => {
-    // Simulate fetching user stats
-    const mockStats = {
-      level: 12,
-      xp: 2450,
-      xpToNext: 3000,
-      streak: 7,
-      totalActions: 156,
-      aiSuggestionsApplied: 89,
-      successRate: 87,
-      impactGenerated: 450000,
-      badges: [
-        { id: 1, name: 'Quick Starter', icon: '⚡', unlocked: true, description: 'Complete 10 actions' },
-        { id: 2, name: 'AI Explorer', icon: '🤖', unlocked: true, description: 'Use AI suggestions 25 times' },
-        { id: 3, name: 'Revenue Hero', icon: '💰', unlocked: true, description: 'Generate R100k+ impact' },
-        { id: 4, name: 'Streak Master', icon: '🔥', unlocked: false, description: 'Maintain 30-day streak' }
-      ],
-      recentWins: [
-        { text: 'Optimized Q4 budget (+R25k saved)', time: '2h ago', impact: 'high' },
-        { text: 'Applied AI pricing suggestion (3.2x ROI)', time: '1d ago', impact: 'medium' },
-        { text: 'Onboarded 3 high-value customers', time: '2d ago', impact: 'high' }
-      ]
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`/api/users/${userId}/stats`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
+        const data = await response.json();
+        setStats(data);
+        setRecentWins(data.recentWins || []);
+      } catch (error) {
+        console.error('Error fetching user stats:', error);
+        setStats(null);
+        setRecentWins([]);
+      }
     };
 
-    setStats(mockStats);
-    setRecentWins(mockStats.recentWins);
+    if (userId) {
+      fetchStats();
+    }
   }, [userId]);
 
   const handleShare = () => {

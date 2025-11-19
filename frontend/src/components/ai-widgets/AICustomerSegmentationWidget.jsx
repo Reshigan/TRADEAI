@@ -56,7 +56,7 @@ const AICustomerSegmentationWidget = ({ companyId }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/ai/segment/customers`,
+        `${process.env.REACT_APP_API_URL || '/api'}/ai/segment/customers`,
         {
           method: 'rfm',
           tenantId: companyId

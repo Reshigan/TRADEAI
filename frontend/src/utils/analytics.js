@@ -1,5 +1,5 @@
 const ANALYTICS_ENABLED = process.env.REACT_APP_ANALYTICS_ENABLED === 'true';
-const ANALYTICS_ENDPOINT = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+const ANALYTICS_ENDPOINT = process.env.REACT_APP_API_BASE_URL || '/api';
 
 class Analytics {
   constructor() {

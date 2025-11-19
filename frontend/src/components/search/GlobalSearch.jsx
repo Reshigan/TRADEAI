@@ -23,7 +23,7 @@ const GlobalSearch = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/search?q=${query}`
+        `${process.env.REACT_APP_API_BASE_URL || '/api'}/search?q=${query}`
       );
       setResults(response.data.results || []);
       setShowResults(true);
