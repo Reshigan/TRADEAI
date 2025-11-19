@@ -9,14 +9,13 @@ const Customer = require('../../models/Customer');
 describe('TradeSpend API Tests', () => {
   let authToken;
   let testCompany;
-  let testUser;
   let testCustomer;
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/tradeai_test', {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
       });
     }
 
@@ -34,7 +33,7 @@ describe('TradeSpend API Tests', () => {
       status: 'active'
     });
 
-    testUser = await User.create({
+    await User.create({
       email: 'tradespend.test@test.com',
       password: 'Test@123456',
       name: 'TradeSpend Test User',
@@ -149,7 +148,7 @@ describe('TradeSpend API Tests', () => {
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
-      res.body.forEach(spend => {
+      res.body.forEach((spend) => {
         expect(spend.activityType).toBe('trade_marketing');
       });
     });

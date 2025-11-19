@@ -1,0 +1,6 @@
+wallet_code,wallet_name,user_id,user_email,period,total_allocation,spent_amount,balance,currency,status,budget_ref
+KAM2025-001,John Smith KAM Wallet Q1,USR001,john.smith@company.com,2025-Q1,500000,125000,375000,ZAR,ACTIVE,BUD2025-001
+KAM2025-002,Jane Doe KAM Wallet Q1,USR002,jane.doe@company.com,2025-Q1,750000,200000,550000,ZAR,ACTIVE,BUD2025-001
+KAM2025-003,Mike Jones KAM Wallet Q1,USR003,mike.jones@company.com,2025-Q1,600000,150000,450000,ZAR,ACTIVE,BUD2025-003
+KAM2025-004,Sarah Williams KAM Wallet Q1,USR004,sarah.williams@company.com,2025-Q1,400000,100000,300000,ZAR,ACTIVE,BUD2025-004
+KAM2025-005,David Brown KAM Wallet Q1,USR005,david.brown@company.com,2025-Q1,300000,75000,225000,ZAR,ACTIVE,BUD2025-005

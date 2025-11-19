@@ -1,0 +1,6 @@
+matnr,sales_org,dist_channel,division,tax_class,item_cat_group,acct_assign_grp,mat_pricing_grp,delivering_plant
+MAT001,1000,10,00,1,NORM,01,01,P001
+MAT002,1000,10,00,1,NORM,01,01,P001
+MAT003,1000,10,00,1,NORM,01,01,P001
+MAT004,1000,10,00,1,NORM,01,01,P001
+MAT005,1000,10,00,1,NORM,01,01,P001

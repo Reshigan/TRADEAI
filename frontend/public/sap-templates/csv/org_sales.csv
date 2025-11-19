@@ -1,0 +1,6 @@
+sales_org,sales_org_name,company_code,currency,country,region,sales_district
+1000,South Africa Sales Org,1000,ZAR,ZA,EMEA,ZA01
+1100,Namibia Sales Org,1100,NAD,NA,EMEA,NA01
+1200,Botswana Sales Org,1200,BWP,BW,EMEA,BW01
+1300,Zimbabwe Sales Org,1300,USD,ZW,EMEA,ZW01
+1400,Mozambique Sales Org,1400,MZN,MZ,EMEA,MZ01

@@ -1,0 +1,6 @@
+budget_code,budget_name,fiscal_year,budget_type,total_amount,currency,start_date,end_date,status,owner,cost_center,gl_account
+BUD2025-001,Annual Trade Marketing Budget 2025,2025,TRADE_MARKETING,50000000,ZAR,2025-01-01,2025-12-31,ACTIVE,john.smith@company.com,CC001,400100
+BUD2025-002,Q1 Promotional Budget,2025,PROMOTIONAL,12500000,ZAR,2025-01-01,2025-03-31,ACTIVE,jane.doe@company.com,CC001,400100
+BUD2025-003,Customer Development Fund,2025,CUSTOMER_DEV,15000000,ZAR,2025-01-01,2025-12-31,ACTIVE,mike.jones@company.com,CC002,400200
+BUD2025-004,Shopper Marketing Budget,2025,SHOPPER_MKT,8000000,ZAR,2025-01-01,2025-12-31,ACTIVE,sarah.williams@company.com,CC003,400300
+BUD2025-005,Digital Marketing Budget,2025,DIGITAL,5000000,ZAR,2025-01-01,2025-12-31,ACTIVE,david.brown@company.com,CC004,400400

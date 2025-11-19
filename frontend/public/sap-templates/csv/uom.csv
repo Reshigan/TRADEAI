@@ -1,0 +1,8 @@
+uom,uom_text,dimension,numerator,denominator,base_uom
+EA,Each,QUANTITY,1,1,EA
+CS,Case,QUANTITY,12,1,EA
+PAL,Pallet,QUANTITY,1200,1,EA
+KG,Kilogram,WEIGHT,1,1,KG
+G,Gram,WEIGHT,1,1000,KG
+L,Liter,VOLUME,1,1,L
+ML,Milliliter,VOLUME,1,1000,L

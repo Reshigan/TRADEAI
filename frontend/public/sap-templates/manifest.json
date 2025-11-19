@@ -1,0 +1,261 @@
+{
+  "version": "1.0.0",
+  "name": "TRADEAI SAP Import Templates",
+  "description": "Comprehensive SAP data import templates for Trade Promotions Management",
+  "templates": [
+    {
+      "id": "customers",
+      "name": "Customer Master Data",
+      "file": "csv/customers.csv",
+      "sapTables": ["KNA1", "KNVV"],
+      "description": "Customer master data including sales org, distribution channel, payment terms",
+      "requiredFields": ["kunnr", "name", "sales_org", "dist_channel"],
+      "category": "master_data"
+    },
+    {
+      "id": "customer_hierarchy",
+      "name": "Customer Hierarchy",
+      "file": "csv/customer_hierarchy.csv",
+      "sapTables": ["KNVH"],
+      "description": "Customer hierarchy relationships and groupings",
+      "requiredFields": ["kunnr", "hierarchy_level", "hierarchy_type"],
+      "category": "master_data"
+    },
+    {
+      "id": "partner_functions",
+      "name": "Partner Functions",
+      "file": "csv/partner_functions.csv",
+      "sapTables": ["KNVP"],
+      "description": "Customer partner functions (sold-to, ship-to, bill-to, payer)",
+      "requiredFields": ["kunnr", "partner_function", "partner_kunnr"],
+      "category": "master_data"
+    },
+    {
+      "id": "products",
+      "name": "Product Master Data",
+      "file": "csv/products.csv",
+      "sapTables": ["MARA", "MAKT"],
+      "description": "Material master data including SKU, pricing, and product attributes",
+      "requiredFields": ["matnr", "sku", "name", "brand", "category"],
+      "category": "master_data"
+    },
+    {
+      "id": "product_hierarchy",
+      "name": "Product Hierarchy",
+      "file": "csv/product_hierarchy.csv",
+      "sapTables": ["T179"],
+      "description": "Product hierarchy structure for reporting and analysis",
+      "requiredFields": ["matnr", "prod_hier", "hier_level"],
+      "category": "master_data"
+    },
+    {
+      "id": "product_sales_data",
+      "name": "Product Sales Data",
+      "file": "csv/product_sales_data.csv",
+      "sapTables": ["MVKE"],
+      "description": "Product sales organization data including tax class and pricing group",
+      "requiredFields": ["matnr", "sales_org", "dist_channel"],
+      "category": "master_data"
+    },
+    {
+      "id": "sales_actuals",
+      "name": "Sales Actuals",
+      "file": "csv/sales_actuals.csv",
+      "sapTables": ["VBRK", "VBRP"],
+      "description": "Billing documents with actual sales transactions",
+      "requiredFields": ["billing_doc", "billing_item", "bill_date", "kunnr", "matnr", "qty", "net_value"],
+      "category": "transactional"
+    },
+    {
+      "id": "pricing_conditions",
+      "name": "Pricing Conditions",
+      "file": "csv/pricing_conditions.csv",
+      "sapTables": ["KONH", "KONP"],
+      "description": "Pricing condition records including discounts, rebates, and surcharges",
+      "requiredFields": ["cond_type", "valid_from", "valid_to", "cond_value"],
+      "category": "transactional"
+    },
+    {
+      "id": "ar_deductions",
+      "name": "AR Deductions",
+      "file": "csv/ar_deductions.csv",
+      "sapTables": ["BSID", "BSAD"],
+      "description": "Accounts receivable deductions and short payments",
+      "requiredFields": ["ar_doc_no", "posting_date", "kunnr", "amount", "reason_code"],
+      "category": "transactional"
+    },
+    {
+      "id": "claims",
+      "name": "Claims",
+      "file": "csv/claims.csv",
+      "sapTables": ["Custom"],
+      "description": "Customer claims for promotions, rebates, and trade spend",
+      "requiredFields": ["claim_number", "claim_date", "kunnr", "claim_type", "claim_amount"],
+      "category": "transactional"
+    },
+    {
+      "id": "deductions",
+      "name": "Deductions",
+      "file": "csv/deductions.csv",
+      "sapTables": ["BSID", "BSAD"],
+      "description": "Customer deductions requiring research and resolution",
+      "requiredFields": ["ar_doc_no", "posting_date", "kunnr", "amount"],
+      "category": "transactional"
+    },
+    {
+      "id": "trading_terms",
+      "name": "Trading Terms",
+      "file": "csv/trading_terms.csv",
+      "sapTables": ["Custom"],
+      "description": "Trading term agreements including rebates and allowances",
+      "requiredFields": ["term_code", "cond_type", "kunnr", "start_date", "end_date", "rate"],
+      "category": "planning"
+    },
+    {
+      "id": "budgets",
+      "name": "Budgets",
+      "file": "csv/budgets.csv",
+      "sapTables": ["Custom"],
+      "description": "Trade marketing and promotional budgets",
+      "requiredFields": ["budget_code", "budget_name", "fiscal_year", "total_amount"],
+      "category": "planning"
+    },
+    {
+      "id": "kam_wallets",
+      "name": "KAM Wallets",
+      "file": "csv/kam_wallets.csv",
+      "sapTables": ["Custom"],
+      "description": "Key Account Manager discretionary spend wallets",
+      "requiredFields": ["wallet_code", "user_id", "period", "total_allocation"],
+      "category": "planning"
+    },
+    {
+      "id": "tradespends",
+      "name": "Trade Spends",
+      "file": "csv/tradespends.csv",
+      "sapTables": ["Custom"],
+      "description": "Trade spend agreements and accruals",
+      "requiredFields": ["tradespend_code", "kunnr", "spend_type", "start_date", "end_date"],
+      "category": "planning"
+    },
+    {
+      "id": "promotions",
+      "name": "Promotions",
+      "file": "csv/promotions.csv",
+      "sapTables": ["Custom"],
+      "description": "Promotional programs and campaigns",
+      "requiredFields": ["promo_code", "name", "start_date", "end_date"],
+      "category": "planning"
+    },
+    {
+      "id": "campaigns",
+      "name": "Campaigns",
+      "file": "csv/campaigns.csv",
+      "sapTables": ["Custom"],
+      "description": "Marketing campaigns spanning multiple promotions",
+      "requiredFields": ["campaign_code", "campaign_name", "start_date", "end_date"],
+      "category": "planning"
+    },
+    {
+      "id": "activity_grid",
+      "name": "Activity Grid",
+      "file": "csv/activity_grid.csv",
+      "sapTables": ["Custom"],
+      "description": "Marketing calendar activities and execution tracking",
+      "requiredFields": ["activity_code", "activity_name", "activity_type", "start_date", "end_date"],
+      "category": "planning"
+    },
+    {
+      "id": "org_sales",
+      "name": "Sales Organizations",
+      "file": "csv/org_sales.csv",
+      "sapTables": ["TVKO"],
+      "description": "Sales organization master data",
+      "requiredFields": ["sales_org", "sales_org_name", "company_code"],
+      "category": "reference"
+    },
+    {
+      "id": "company_codes",
+      "name": "Company Codes",
+      "file": "csv/company_codes.csv",
+      "sapTables": ["T001"],
+      "description": "Company code master data",
+      "requiredFields": ["company_code", "company_name", "country", "currency"],
+      "category": "reference"
+    },
+    {
+      "id": "plants",
+      "name": "Plants",
+      "file": "csv/plants.csv",
+      "sapTables": ["T001W"],
+      "description": "Plant and distribution center master data",
+      "requiredFields": ["plant", "plant_name", "company_code"],
+      "category": "reference"
+    },
+    {
+      "id": "exchange_rates",
+      "name": "Exchange Rates",
+      "file": "csv/exchange_rates.csv",
+      "sapTables": ["TCURR"],
+      "description": "Currency exchange rates for multi-currency reporting",
+      "requiredFields": ["from_currency", "to_currency", "valid_from", "exchange_rate"],
+      "category": "reference"
+    },
+    {
+      "id": "uom",
+      "name": "Units of Measure",
+      "file": "csv/uom.csv",
+      "sapTables": ["T006"],
+      "description": "Unit of measure conversions",
+      "requiredFields": ["uom", "uom_text", "dimension"],
+      "category": "reference"
+    }
+  ],
+  "categories": {
+    "master_data": {
+      "name": "Master Data",
+      "description": "Customer and product master data from SAP",
+      "order": 1
+    },
+    "transactional": {
+      "name": "Transactional Data",
+      "description": "Sales actuals, pricing, AR deductions, and claims",
+      "order": 2
+    },
+    "planning": {
+      "name": "Planning Data",
+      "description": "Budgets, promotions, campaigns, and trade spend agreements",
+      "order": 3
+    },
+    "reference": {
+      "name": "Reference Data",
+      "description": "Organizational structures, exchange rates, and system configuration",
+      "order": 4
+    }
+  },
+  "importOrder": [
+    "company_codes",
+    "org_sales",
+    "plants",
+    "exchange_rates",
+    "uom",
+    "customers",
+    "customer_hierarchy",
+    "partner_functions",
+    "products",
+    "product_hierarchy",
+    "product_sales_data",
+    "budgets",
+    "trading_terms",
+    "tradespends",
+    "kam_wallets",
+    "campaigns",
+    "promotions",
+    "activity_grid",
+    "sales_actuals",
+    "pricing_conditions",
+    "ar_deductions",
+    "deductions",
+    "claims"
+  ]
+}

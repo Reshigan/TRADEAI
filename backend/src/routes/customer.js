@@ -18,13 +18,13 @@ const sanitizeInput = (input) => {
 // Get customer hierarchy tree
 router.get('/hierarchy', authenticateToken, asyncHandler(async (req, res) => {
   const tenantId = req.tenantId || req.user.tenantId;
-  
+
   const buildTree = async (parentId = null) => {
-    const customers = await Customer.find({ 
+    const customers = await Customer.find({
       tenantId,
-      parentId: parentId 
+      parentId
     }).sort({ name: 1 });
-    
+
     const tree = await Promise.all(customers.map(async (customer) => {
       const children = await buildTree(customer._id);
       return {
@@ -32,12 +32,12 @@ router.get('/hierarchy', authenticateToken, asyncHandler(async (req, res) => {
         children
       };
     }));
-    
+
     return tree;
   };
-  
+
   const tree = await buildTree(null);
-  
+
   res.json({
     success: true,
     data: tree

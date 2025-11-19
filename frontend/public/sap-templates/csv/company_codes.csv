@@ -1,0 +1,6 @@
+company_code,company_name,country,currency,city,fiscal_year_variant,chart_of_accounts
+1000,Abie's Chocolates South Africa,ZA,ZAR,Johannesburg,K4,ZACA
+1100,Abie's Chocolates Namibia,NA,NAD,Windhoek,K4,ZACA
+1200,Abie's Chocolates Botswana,BW,BWP,Gaborone,K4,ZACA
+1300,Abie's Chocolates Zimbabwe,ZW,USD,Harare,K4,ZACA
+1400,Abie's Chocolates Mozambique,MZ,MZN,Maputo,K4,ZACA

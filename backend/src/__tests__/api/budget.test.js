@@ -8,13 +8,12 @@ const Company = require('../../models/Company');
 describe('Budget API Tests', () => {
   let authToken;
   let testCompany;
-  let testUser;
 
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/tradeai_test', {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
       });
     }
 
@@ -25,7 +24,7 @@ describe('Budget API Tests', () => {
       status: 'active'
     });
 
-    testUser = await User.create({
+    await User.create({
       email: 'budget.test@test.com',
       password: 'Test@123456',
       name: 'Budget Test User',
@@ -145,7 +144,7 @@ describe('Budget API Tests', () => {
 
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
-      res.body.forEach(budget => {
+      res.body.forEach((budget) => {
         expect(budget.budgetCategory).toBe('marketing');
       });
     });

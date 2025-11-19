@@ -1,0 +1,6 @@
+matnr,prod_hier,hier_level,hier_node,node_desc,parent_node
+MAT001,CHOC-MILK,4,CHOC-MILK-80,Milk Chocolate 80g,CHOC-MILK
+MAT002,CHOC-DARK,4,CHOC-DARK-80,Dark Chocolate 80g,CHOC-DARK
+MAT003,CHOC-WHITE,4,CHOC-WHITE-80,White Chocolate 80g,CHOC-WHITE
+MAT004,CHOC-MILK,4,CHOC-MILK-150,Milk Chocolate 150g,CHOC-MILK
+MAT005,CHOC-ASSORT,4,CHOC-ASSORT-250,Assorted Chocolates 250g,CHOC-ASSORT

@@ -65,25 +65,25 @@ const kamWalletSchema = new mongoose.Schema({
 
 kamWalletSchema.index({ tenantId: 1, userId: 1, 'period.startDate': 1 });
 
-kamWalletSchema.virtual('totalUsed').get(function() {
+kamWalletSchema.virtual('totalUsed').get(function () {
   return this.allocations.reduce((sum, alloc) => sum + alloc.usedAmount, 0);
 });
 
-kamWalletSchema.virtual('remainingBalance').get(function() {
+kamWalletSchema.virtual('remainingBalance').get(function () {
   return this.totalAllocation - this.totalUsed;
 });
 
-kamWalletSchema.methods.canAllocate = function(amount) {
+kamWalletSchema.methods.canAllocate = function (amount) {
   return this.remainingBalance >= amount;
 };
 
-kamWalletSchema.methods.allocateToCustomer = function(customerId, amount, notes = '') {
+kamWalletSchema.methods.allocateToCustomer = function (customerId, amount, notes = '') {
   if (!this.canAllocate(amount)) {
     throw new Error('Insufficient wallet balance');
   }
 
   const existingAllocation = this.allocations.find(
-    alloc => alloc.customerId.toString() === customerId.toString()
+    (alloc) => alloc.customerId.toString() === customerId.toString()
   );
 
   if (existingAllocation) {
@@ -105,9 +105,9 @@ kamWalletSchema.methods.allocateToCustomer = function(customerId, amount, notes 
   return this.save();
 };
 
-kamWalletSchema.methods.recordUsage = function(customerId, amount) {
+kamWalletSchema.methods.recordUsage = function (customerId, amount) {
   const allocation = this.allocations.find(
-    alloc => alloc.customerId.toString() === customerId.toString()
+    (alloc) => alloc.customerId.toString() === customerId.toString()
   );
 
   if (!allocation) {
