@@ -9,7 +9,11 @@ import {
   Button,
   Paper,
   Chip,
-  CircularProgress
+  CircularProgress,
+  Card,
+  CardContent,
+  Grid,
+  Skeleton
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -20,6 +24,7 @@ import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { usePageVariants } from '../../hooks/usePageVariants';
+import ProcessShell from '../../components/ProcessShell';
 
 import PromotionOverview from './tabs/PromotionOverview';
 import PromotionProducts from './tabs/PromotionProducts';
@@ -106,9 +111,13 @@ const PromotionDetailWithTabs = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-        <CircularProgress />
-      </Box>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
     );
   }
 
@@ -121,76 +130,78 @@ const PromotionDetailWithTabs = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/promotions')}
-          >
-            Back
-          </Button>
-          <Box>
-            <Typography variant="h4">{promotion.name}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {promotion.promotionId}
-            </Typography>
+    <ProcessShell module="promotion" entityId={id} entity={promotion}>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button
+              startIcon={<BackIcon />}
+              onClick={() => navigate('/promotions')}
+            >
+              Back
+            </Button>
+            <Box>
+              <Typography variant="h4">{promotion.name}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {promotion.promotionId}
+              </Typography>
+            </Box>
+            <Chip
+              label={promotion.status}
+              color={
+                promotion.status === 'active' ? 'success' :
+                promotion.status === 'approved' ? 'primary' :
+                promotion.status === 'draft' ? 'default' :
+                'warning'
+              }
+              size="small"
+            />
           </Box>
-          <Chip
-            label={promotion.status}
-            color={
-              promotion.status === 'active' ? 'success' :
-              promotion.status === 'approved' ? 'primary' :
-              promotion.status === 'draft' ? 'default' :
-              'warning'
-            }
-            size="small"
-          />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="outlined"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </Box>
         </Box>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            variant="outlined"
-            startIcon={<EditIcon />}
-            onClick={handleEdit}
+
+        <Paper sx={{ mb: 3 }}>
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
           >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={handleDelete}
-          >
-            Delete
-          </Button>
+            {tabs.map((tab) => (
+              <Tab key={tab.id} value={tab.path} label={tab.label} />
+            ))}
+          </Tabs>
+        </Paper>
+
+        <Box sx={{ mt: 3 }}>
+          {activeTab === 'overview' && <PromotionOverview promotion={promotion} onUpdate={loadPromotion} />}
+          {activeTab === 'products' && <PromotionProducts promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
+          {activeTab === 'customers' && <PromotionCustomers promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
+          {activeTab === 'budget' && <PromotionBudget promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
+          {activeTab === 'approvals' && <PromotionApprovals promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
+          {activeTab === 'documents' && <PromotionDocuments promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
+          {activeTab === 'conflicts' && <PromotionConflicts promotionId={id} promotion={promotion} />}
+          {activeTab === 'performance' && <PromotionPerformance promotionId={id} promotion={promotion} />}
+          {activeTab === 'history' && <PromotionHistory promotionId={id} promotion={promotion} />}
         </Box>
-      </Box>
-
-      <Paper sx={{ mb: 3 }}>
-        <Tabs
-          value={activeTab}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          {tabs.map((tab) => (
-            <Tab key={tab.id} value={tab.path} label={tab.label} />
-          ))}
-        </Tabs>
-      </Paper>
-
-      <Box sx={{ mt: 3 }}>
-        {activeTab === 'overview' && <PromotionOverview promotion={promotion} onUpdate={loadPromotion} />}
-        {activeTab === 'products' && <PromotionProducts promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
-        {activeTab === 'customers' && <PromotionCustomers promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
-        {activeTab === 'budget' && <PromotionBudget promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
-        {activeTab === 'approvals' && <PromotionApprovals promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
-        {activeTab === 'documents' && <PromotionDocuments promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
-        {activeTab === 'conflicts' && <PromotionConflicts promotionId={id} promotion={promotion} />}
-        {activeTab === 'performance' && <PromotionPerformance promotionId={id} promotion={promotion} />}
-        {activeTab === 'history' && <PromotionHistory promotionId={id} promotion={promotion} />}
-      </Box>
-    </Container>
+      </Container>
+    </ProcessShell>
   );
 };
 

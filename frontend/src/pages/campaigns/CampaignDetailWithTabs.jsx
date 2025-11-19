@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, CircularProgress } from '@mui/material';
+import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, CircularProgress, Skeleton } from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { usePageVariants } from '../../hooks/usePageVariants';
+import ProcessShell from '../../components/ProcessShell';
 
 import CampaignOverview from './tabs/CampaignOverview';
 import CampaignBudget from './tabs/CampaignBudget';
@@ -57,9 +58,13 @@ const CampaignDetailWithTabs = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-        <CircularProgress />
-      </Box>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
     );
   }
 
@@ -72,34 +77,36 @@ const CampaignDetailWithTabs = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button startIcon={<BackIcon />} onClick={() => navigate('/campaigns')}>Back</Button>
-          <Box>
-            <Typography variant="h4">{campaign.name}</Typography>
-            <Typography variant="body2" color="text.secondary">{campaign.campaignCode}</Typography>
+    <ProcessShell module="campaign" entityId={id} entity={campaign}>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button startIcon={<BackIcon />} onClick={() => navigate('/campaigns')}>Back</Button>
+            <Box>
+              <Typography variant="h4">{campaign.name}</Typography>
+              <Typography variant="body2" color="text.secondary">{campaign.campaignCode}</Typography>
+            </Box>
+            <Chip label={campaign.status} color={campaign.status === 'active' ? 'success' : 'default'} size="small" />
           </Box>
-          <Chip label={campaign.status} color={campaign.status === 'active' ? 'success' : 'default'} size="small" />
+          <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/campaigns/${id}/edit`)}>Edit</Button>
         </Box>
-        <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/campaigns/${id}/edit`)}>Edit</Button>
-      </Box>
 
-      <Paper sx={{ mb: 3 }}>
-        <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
-          {tabs.map((tab) => (
-            <Tab key={tab.id} value={tab.path} label={tab.label} />
-          ))}
-        </Tabs>
-      </Paper>
+        <Paper sx={{ mb: 3 }}>
+          <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
+            {tabs.map((tab) => (
+              <Tab key={tab.id} value={tab.path} label={tab.label} />
+            ))}
+          </Tabs>
+        </Paper>
 
-      <Box sx={{ mt: 3 }}>
-        {activeTab === 'overview' && <CampaignOverview campaign={campaign} onUpdate={loadCampaign} />}
-        {activeTab === 'budget' && <CampaignBudget campaignId={id} campaign={campaign} />}
-        {activeTab === 'performance' && <CampaignPerformance campaignId={id} campaign={campaign} />}
-        {activeTab === 'history' && <CampaignHistory campaignId={id} campaign={campaign} />}
-      </Box>
-    </Container>
+        <Box sx={{ mt: 3 }}>
+          {activeTab === 'overview' && <CampaignOverview campaign={campaign} onUpdate={loadCampaign} />}
+          {activeTab === 'budget' && <CampaignBudget campaignId={id} campaign={campaign} />}
+          {activeTab === 'performance' && <CampaignPerformance campaignId={id} campaign={campaign} />}
+          {activeTab === 'history' && <CampaignHistory campaignId={id} campaign={campaign} />}
+        </Box>
+      </Container>
+    </ProcessShell>
   );
 };
 

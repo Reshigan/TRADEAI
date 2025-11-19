@@ -17,7 +17,9 @@ import {
   TextField,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  Container,
+  Skeleton
 } from '@mui/material';
 import {
   CheckCircle as ValidateIcon,
@@ -30,6 +32,7 @@ import deductionService from '../../services/deduction/deductionService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import ProcessShell from '../../components/ProcessShell';
 
 const DeductionDetail = () => {
   const { id } = useParams();
@@ -153,7 +156,15 @@ const DeductionDetail = () => {
   };
 
   if (loading) {
-    return <SkeletonLoader type="detail" />;
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
+    );
   }
 
   if (error || !deduction) {
@@ -174,9 +185,10 @@ const DeductionDetail = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <ProcessShell module="deduction" entityId={id} entity={deduction}>
+      <Box sx={{ p: 3 }}>
+        {/* Header */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Button
             startIcon={<BackIcon />}
@@ -519,7 +531,8 @@ const DeductionDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+      </Box>
+    </ProcessShell>
   );
 };
 

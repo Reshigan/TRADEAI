@@ -20,7 +20,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  Container,
+  Skeleton
 } from '@mui/material';
 import {
   Send as SubmitIcon,
@@ -32,6 +34,7 @@ import claimService from '../../services/claim/claimService';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import ProcessShell from '../../components/ProcessShell';
 
 const ClaimDetail = () => {
   const { id } = useParams();
@@ -148,7 +151,15 @@ const ClaimDetail = () => {
   };
 
   if (loading) {
-    return <SkeletonLoader type="detail" />;
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
+    );
   }
 
   if (error || !claim) {
@@ -169,9 +180,10 @@ const ClaimDetail = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <ProcessShell module="claim" entityId={id} entity={claim}>
+      <Box sx={{ p: 3 }}>
+        {/* Header */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Button
             startIcon={<BackIcon />}
@@ -439,7 +451,8 @@ const ClaimDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+      </Box>
+    </ProcessShell>
   );
 };
 

@@ -16,7 +16,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Alert
+  Alert,
+  Container,
+  Skeleton
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -28,6 +30,7 @@ import api from '../../services/api';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import ProcessShell from '../../components/ProcessShell';
 
 const RebateDetail = () => {
   const { id } = useParams();
@@ -115,7 +118,15 @@ const RebateDetail = () => {
   };
 
   if (loading) {
-    return <SkeletonLoader type="detail" />;
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
+    );
   }
 
   if (error) {
@@ -149,9 +160,10 @@ const RebateDetail = () => {
   }
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+    <ProcessShell module="rebate" entityId={id} entity={rebate}>
+      <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+        {/* Header */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
             {rebate.name}
@@ -447,7 +459,8 @@ const RebateDetail = () => {
           </Card>
         </Grid>
       </Grid>
-    </Box>
+      </Box>
+    </ProcessShell>
   );
 };
 

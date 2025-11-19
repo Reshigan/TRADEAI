@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Container, Skeleton } from '@mui/material';
 import axios from 'axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ErrorMessage from '../../components/common/ErrorMessage';
+import ProcessShell from '../../components/ProcessShell';
 import './VendorDetail.css';
 
 const VendorDetail = () => {
@@ -44,13 +46,24 @@ const VendorDetail = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
+          <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={400} />
+        </Box>
+      </Container>
+    );
+  }
   if (error) return <ErrorMessage message={error} />;
   if (!data) return <ErrorMessage message="Vendor not found" />;
 
   return (
-    <div className="vendor-detail">
-      <div className="detail-header">
+    <ProcessShell module="vendor" entityId={id} entity={data}>
+      <div className="vendor-detail">
+        <div className="detail-header">
         <div className="header-content">
           <h1>{data.name}</h1>
           {data.status && (
@@ -102,7 +115,8 @@ const VendorDetail = () => {
           </div>
         </section>
       </div>
-    </div>
+      </div>
+    </ProcessShell>
   );
 };
 
