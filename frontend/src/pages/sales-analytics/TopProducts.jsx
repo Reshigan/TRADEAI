@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  MenuItem,
+  TextField,
+  CircularProgress,
+  Avatar,
+  Chip
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -36,125 +51,189 @@ const TopProducts = () => {
   const getTotalRevenue = () => products.reduce((sum, p) => sum + (p.totalRevenue || 0), 0);
   const getTotalQuantity = () => products.reduce((sum, p) => sum + (p.totalQuantity || 0), 0);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading top products...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>📦 Top Products</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Product ranking by revenue and sales volume</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        📦 Top Products
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        Product ranking by revenue and sales volume
+      </Typography>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-        <select value={limit} onChange={(e) => setLimit(parseInt(e.target.value))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="5">Top 5</option>
-          <option value="10">Top 10</option>
-          <option value="20">Top 20</option>
-          <option value="50">Top 50</option>
-        </select>
-        <button onClick={fetchProducts} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+      <Box display="flex" gap={2} mb={4}>
+        <TextField
+          select
+          value={limit}
+          onChange={(e) => setLimit(parseInt(e.target.value))}
+          sx={{ minWidth: 120 }}
+          size="small"
+        >
+          <MenuItem value={5}>Top 5</MenuItem>
+          <MenuItem value={10}>Top 10</MenuItem>
+          <MenuItem value={20}>Top 20</MenuItem>
+          <MenuItem value={50}>Top 50</MenuItem>
+        </TextField>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
+          onClick={fetchProducts}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
           Refresh
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Total Products</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{products.length}</div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Total Products
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {products.length}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Combined Revenue</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(getTotalRevenue())}</div>
-        </div>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Combined Revenue
+            </Typography>
+            <Typography variant="h5" fontWeight={700} color="success.main">
+              {formatCurrency(getTotalRevenue())}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Units Sold</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{getTotalQuantity().toLocaleString()}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Units Sold
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {getTotalQuantity().toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+      <Grid container spacing={3}>
         {products.map((product, index) => (
-          <div 
-            key={index} 
-            style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-            onClick={() => navigate(`/products/${product.product?._id}`)}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-              <div style={{ 
-                width: '50px', 
-                height: '50px', 
-                borderRadius: '10px', 
-                backgroundColor: index < 3 ? '#fbbf24' : '#3b82f6', 
-                color: 'white', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                fontWeight: 'bold',
-                fontSize: '20px'
-              }}>
-                #{index + 1}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{product.product?.name || product.productName || 'Unknown Product'}</div>
-                {product.product?.sku && (
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>SKU: {product.product.sku}</div>
-                )}
-              </div>
-            </div>
+          <Grid item xs={12} md={6} lg={4} key={index}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 3
+                }
+              }}
+              onClick={() => navigate(`/products/${product.product?._id}`)}
+            >
+              <Box display="flex" alignItems="center" gap={2} mb={2}>
+                <Avatar
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    bgcolor: index < 3 ? 'warning.main' : 'primary.main',
+                    fontWeight: 700,
+                    fontSize: '1.25rem',
+                    borderRadius: 2
+                  }}
+                >
+                  #{index + 1}
+                </Avatar>
+                <Box flex={1}>
+                  <Typography variant="h6" fontWeight={600}>
+                    {product.product?.name || product.productName || 'Unknown Product'}
+                  </Typography>
+                  {product.product?.sku && (
+                    <Typography variant="caption" color="text.secondary">
+                      SKU: {product.product.sku}
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
 
-            <div style={{ padding: '15px', backgroundColor: '#f9fafb', borderRadius: '8px', marginBottom: '15px' }}>
-              <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Total Revenue</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(product.totalRevenue)}</div>
-            </div>
+              <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, mb: 2 }}>
+                <Typography variant="caption" color="text.secondary">Total Revenue</Typography>
+                <Typography variant="h5" fontWeight={700} color="success.main">
+                  {formatCurrency(product.totalRevenue)}
+                </Typography>
+              </Paper>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
-              <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>Units Sold</div>
-                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{product.totalQuantity.toLocaleString()}</div>
-              </div>
+              <Grid container spacing={1} mb={2}>
+                <Grid item xs={6}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Units Sold</Typography>
+                    <Typography variant="subtitle2" fontWeight={600}>
+                      {product.totalQuantity.toLocaleString()}
+                    </Typography>
+                  </Paper>
+                </Grid>
 
-              <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>Avg Price</div>
-                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{formatCurrency(product.avgPrice)}</div>
-              </div>
-            </div>
+                <Grid item xs={6}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Avg Price</Typography>
+                    <Typography variant="subtitle2" fontWeight={600}>
+                      {formatCurrency(product.avgPrice)}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>Min Price</div>
-                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{formatCurrency(product.minPrice)}</div>
-              </div>
+              <Grid container spacing={1}>
+                <Grid item xs={6}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Min Price</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {formatCurrency(product.minPrice)}
+                    </Typography>
+                  </Paper>
+                </Grid>
 
-              <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>Max Price</div>
-                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{formatCurrency(product.maxPrice)}</div>
-              </div>
-            </div>
+                <Grid item xs={6}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Max Price</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {formatCurrency(product.maxPrice)}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
 
-            {product.product?.category && (
-              <div style={{ marginTop: '15px', padding: '8px 12px', backgroundColor: '#e5e7eb', borderRadius: '5px', fontSize: '12px', textAlign: 'center' }}>
-                {product.product.category}
-              </div>
-            )}
-          </div>
+              {product.product?.category && (
+                <Box mt={2}>
+                  <Chip label={product.product.category} size="small" sx={{ width: '100%' }} />
+                </Box>
+              )}
+            </Paper>
+          </Grid>
         ))}
-      </div>
+      </Grid>
 
       {products.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 20px', color: '#666' }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>📦</div>
-          <h3>No product data available</h3>
-        </div>
+        <Box textAlign="center" py={8}>
+          <Typography variant="h1" mb={2}>📦</Typography>
+          <Typography variant="h6">No product data available</Typography>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

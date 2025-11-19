@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  MenuItem,
+  TextField,
+  CircularProgress,
+  Avatar
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -39,128 +53,191 @@ const TopCustomers = () => {
   const getTotalRevenue = () => customers.reduce((sum, c) => sum + (c.totalRevenue || 0), 0);
   const getTotalTransactions = () => customers.reduce((sum, c) => sum + (c.transactionCount || 0), 0);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading top customers...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>👥 Top Customers</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Customer ranking by revenue and transactions</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        👥 Top Customers
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        Customer ranking by revenue and transactions
+      </Typography>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', flexWrap: 'wrap' }}>
-        <select value={limit} onChange={(e) => setLimit(parseInt(e.target.value))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="5">Top 5</option>
-          <option value="10">Top 10</option>
-          <option value="20">Top 20</option>
-          <option value="50">Top 50</option>
-          <option value="100">Top 100</option>
-        </select>
+      <Box display="flex" gap={2} mb={4} flexWrap="wrap">
+        <TextField
+          select
+          value={limit}
+          onChange={(e) => setLimit(parseInt(e.target.value))}
+          sx={{ minWidth: 120 }}
+          size="small"
+        >
+          <MenuItem value={5}>Top 5</MenuItem>
+          <MenuItem value={10}>Top 10</MenuItem>
+          <MenuItem value={20}>Top 20</MenuItem>
+          <MenuItem value={50}>Top 50</MenuItem>
+          <MenuItem value={100}>Top 100</MenuItem>
+        </TextField>
 
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="revenue">Sort by Revenue</option>
-          <option value="transactions">Sort by Transactions</option>
-          <option value="quantity">Sort by Quantity</option>
-          <option value="avgValue">Sort by Avg Value</option>
-        </select>
+        <TextField
+          select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          sx={{ minWidth: 180 }}
+          size="small"
+        >
+          <MenuItem value="revenue">Sort by Revenue</MenuItem>
+          <MenuItem value="transactions">Sort by Transactions</MenuItem>
+          <MenuItem value="quantity">Sort by Quantity</MenuItem>
+          <MenuItem value="avgValue">Sort by Avg Value</MenuItem>
+        </TextField>
 
-        <button onClick={fetchCustomers} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
+          onClick={fetchCustomers}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
           Refresh
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Total Customers</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{customers.length}</div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Total Customers
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {customers.length}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Combined Revenue</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(getTotalRevenue())}</div>
-        </div>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Combined Revenue
+            </Typography>
+            <Typography variant="h5" fontWeight={700} color="success.main">
+              {formatCurrency(getTotalRevenue())}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Combined Transactions</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{getTotalTransactions().toLocaleString()}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Combined Transactions
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {getTotalTransactions().toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-        <h3 style={{ marginBottom: '20px' }}>Customer Rankings</h3>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Customer Rankings
+        </Typography>
         
-        <div style={{ overflowX: 'auto' }}>
+        <Box>
           {customers.map((customer, index) => (
-            <div 
-              key={index} 
-              style={{ padding: '20px', borderBottom: '1px solid #eee', cursor: 'pointer', transition: 'background 0.2s' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+            <Paper
+              key={index}
+              elevation={0}
+              sx={{
+                p: 3,
+                mb: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                cursor: 'pointer',
+                '&:hover': { bgcolor: 'grey.50' }
+              }}
               onClick={() => navigate(`/customers/${customer.customer?._id}`)}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <div style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    borderRadius: '50%', 
-                    backgroundColor: index < 3 ? '#fbbf24' : '#3b82f6', 
-                    color: 'white', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    fontWeight: 'bold',
-                    fontSize: '18px'
-                  }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Avatar
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      bgcolor: index < 3 ? 'warning.main' : 'primary.main',
+                      fontWeight: 700,
+                      fontSize: '1.125rem'
+                    }}
+                  >
                     #{index + 1}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{customer.customer?.name || customer.customerName || 'Unknown Customer'}</div>
-                    <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6" fontWeight={600}>
+                      {customer.customer?.name || customer.customerName || 'Unknown Customer'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
                       {customer.transactionCount} transactions | {customer.totalQuantity} units
-                    </div>
-                  </div>
-                </div>
+                    </Typography>
+                  </Box>
+                </Box>
                 
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '24px', color: '#10b981' }}>{formatCurrency(customer.totalRevenue)}</div>
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                <Box textAlign="right">
+                  <Typography variant="h5" fontWeight={700} color="success.main">
+                    {formatCurrency(customer.totalRevenue)}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
                     Avg: {formatCurrency(customer.avgTransactionValue)}
-                  </div>
-                </div>
-              </div>
+                  </Typography>
+                </Box>
+              </Box>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' }}>
-                <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                  <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>First Purchase</div>
-                  <div style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                    {customer.firstPurchase ? new Date(customer.firstPurchase).toLocaleDateString() : 'N/A'}
-                  </div>
-                </div>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">First Purchase</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {customer.firstPurchase ? new Date(customer.firstPurchase).toLocaleDateString() : 'N/A'}
+                    </Typography>
+                  </Paper>
+                </Grid>
 
-                <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                  <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>Last Purchase</div>
-                  <div style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                    {customer.lastPurchase ? new Date(customer.lastPurchase).toLocaleDateString() : 'N/A'}
-                  </div>
-                </div>
+                <Grid item xs={12} sm={4}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Last Purchase</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {customer.lastPurchase ? new Date(customer.lastPurchase).toLocaleDateString() : 'N/A'}
+                    </Typography>
+                  </Paper>
+                </Grid>
 
-                <div style={{ padding: '10px', backgroundColor: '#f9fafb', borderRadius: '5px' }}>
-                  <div style={{ fontSize: '11px', color: '#666', marginBottom: '5px' }}>Avg Order Size</div>
-                  <div style={{ fontSize: '13px', fontWeight: 'bold' }}>
-                    {(customer.totalQuantity / customer.transactionCount).toFixed(1)} units
-                  </div>
-                </div>
-              </div>
-            </div>
+                <Grid item xs={12} sm={4}>
+                  <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary">Avg Order Size</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {(customer.totalQuantity / customer.transactionCount).toFixed(1)} units
+                    </Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Paper>
           ))}
-        </div>
+        </Box>
 
         {customers.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-            No customer data available
-          </div>
+          <Box textAlign="center" py={5}>
+            <Typography variant="body2" color="text.secondary">
+              No customer data available
+            </Typography>
+          </Box>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 
