@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Paper,
+  Chip,
+  CircularProgress,
+  InputAdornment
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  TrendingUp as TrendingUpIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -40,89 +60,242 @@ const PromotionList = () => {
   const formatDate = (date) => new Date(date).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
 
   const getStatusColor = (status) => {
-    const colors = {
-      'Active': '#10b981',
-      'Planned': '#3b82f6',
-      'Completed': '#6b7280',
-      'Cancelled': '#ef4444'
+    const statusMap = {
+      'Active': 'success',
+      'Planned': 'primary',
+      'Completed': 'default',
+      'Cancelled': 'error'
     };
-    return colors[status] || '#6b7280';
+    return statusMap[status] || 'default';
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading promotions...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div>
-          <h1>🎯 Promotions</h1>
-          <p>{promotions.length} promotions found</p>
-        </div>
-        <button onClick={() => navigate('/promotions/new')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-          + New Promotion
-        </button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            Promotions
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/promotions/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3
+            }}
+          >
+            New Promotion
+          </Button>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {promotions.length} promotion{promotions.length !== 1 ? 's' : ''} found
+        </Typography>
+      </Box>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search promotions..."
-          value={filters.search}
-          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-          style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}
-        />
-        <select value={filters.status} onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="all">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Planned">Planned</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-        <select value={filters.type} onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="all">All Types</option>
-          <option value="Trade Promotion">Trade Promotion</option>
-          <option value="Consumer Promotion">Consumer Promotion</option>
-          <option value="Volume Discount">Volume Discount</option>
-        </select>
-      </div>
+      {/* Filters */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          p: 2.5, 
+          mb: 3,
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              placeholder="Search promotions..."
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={filters.status}
+                label="Status"
+                onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="Active">Active</MenuItem>
+                <MenuItem value="Planned">Planned</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="Cancelled">Cancelled</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={filters.type}
+                label="Type"
+                onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Types</MenuItem>
+                <MenuItem value="Trade Promotion">Trade Promotion</MenuItem>
+                <MenuItem value="Consumer Promotion">Consumer Promotion</MenuItem>
+                <MenuItem value="Volume Discount">Volume Discount</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
-        {promotions.map(promo => (
-          <div key={promo._id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white', cursor: 'pointer' }} onClick={() => navigate(`/promotions/${promo._id}`)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0 }}>{promo.promotionName}</h3>
-              <span style={{ padding: '4px 8px', fontSize: '12px', borderRadius: '4px', backgroundColor: getStatusColor(promo.status), color: 'white' }}>
-                {promo.status}
-              </span>
-            </div>
-            <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>{promo.description}</p>
-            <div style={{ marginBottom: '10px' }}>
-              <strong>Type:</strong> {promo.promotionType}
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <strong>Budget:</strong> {formatCurrency(promo.budget)}
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <strong>Duration:</strong> {formatDate(promo.startDate)} - {formatDate(promo.endDate)}
-            </div>
-            {promo.expectedROI && (
-              <div style={{ padding: '10px', backgroundColor: '#f0fdf4', borderRadius: '5px', marginTop: '10px' }}>
-                <strong style={{ color: '#10b981' }}>Expected ROI:</strong> {promo.expectedROI}x
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {/* Promotions Grid */}
+      {promotions.length === 0 ? (
+        <Paper 
+          elevation={0}
+          sx={{ 
+            p: 8,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" mb={2}>
+            No promotions found
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/promotions/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600
+            }}
+          >
+            Create Promotion
+          </Button>
+        </Paper>
+      ) : (
+        <Grid container spacing={3}>
+          {promotions.map(promo => (
+            <Grid item xs={12} sm={6} lg={4} key={promo._id}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                    borderColor: 'primary.main'
+                  }
+                }}
+                onClick={() => navigate(`/promotions/${promo._id}`)}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
+                  <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1, mr: 1 }}>
+                    {promo.promotionName}
+                  </Typography>
+                  <Chip
+                    label={promo.status}
+                    color={getStatusColor(promo.status)}
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
 
-      {promotions.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <h3>No promotions found</h3>
-          <button onClick={() => navigate('/promotions/new')} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            + Create Promotion
-          </button>
-        </div>
+                <Typography variant="body2" color="text.secondary" mb={2} sx={{ flex: 1 }}>
+                  {promo.description}
+                </Typography>
+
+                <Box sx={{ mt: 'auto' }}>
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Type
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {promo.promotionType}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      Budget
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {formatCurrency(promo.budget)}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" justifyContent="space-between" mb={2}>
+                    <Typography variant="caption" color="text.secondary">
+                      Duration
+                    </Typography>
+                    <Typography variant="caption" fontWeight={600}>
+                      {formatDate(promo.startDate)} - {formatDate(promo.endDate)}
+                    </Typography>
+                  </Box>
+
+                  {promo.expectedROI && (
+                    <Box 
+                      sx={{ 
+                        p: 1.5,
+                        bgcolor: 'success.lighter',
+                        borderRadius: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <TrendingUpIcon sx={{ fontSize: 16, color: 'success.main' }} />
+                        <Typography variant="caption" fontWeight={600} color="success.main">
+                          Expected ROI
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" fontWeight={700} color="success.main">
+                        {promo.expectedROI}x
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 };
 
