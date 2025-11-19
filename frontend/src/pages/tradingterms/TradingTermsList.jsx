@@ -44,9 +44,11 @@ const TradingTermsList = () => {
     setLoading(true);
     try {
       const response = await tradingTermsService.getTradingTerms(filters);
-      setTradingTerms(response.tradingTerms || response.data || []);
+      const terms = response.tradingTerms || response.data || response || [];
+      setTradingTerms(Array.isArray(terms) ? terms : []);
     } catch (error) {
       console.error('Failed to load trading terms:', error);
+      setTradingTerms([]);
     } finally {
       setLoading(false);
     }
