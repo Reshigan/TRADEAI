@@ -236,7 +236,7 @@ function parseExcel(buffer) {
 }
 
 function applyMapping(data, mapping) {
-  return data.map(row => {
+  return data.map((row) => {
     const mappedRow = {};
     for (const [targetField, sourceField] of Object.entries(mapping)) {
       mappedRow[targetField] = row[sourceField];
