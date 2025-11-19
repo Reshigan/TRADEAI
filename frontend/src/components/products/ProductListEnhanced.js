@@ -24,7 +24,7 @@ const ProductListEnhanced = () => {
   const theme = useTheme();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [setError] = useState(null);
+  const [error, setError] = useState(null);
   const [openForm, setOpenForm] = useState(false);
 
   useEffect(() => {
