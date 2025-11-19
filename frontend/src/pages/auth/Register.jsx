@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Alert,
+  Link,
+  Grid,
+  MenuItem
+} from '@mui/material';
 import axios from 'axios';
-import ErrorMessage from '../../components/common/ErrorMessage';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
@@ -54,273 +64,176 @@ const Register = () => {
   };
 
   return (
-    <div style={{ 
+    <Box sx={{ 
       minHeight: '100vh', 
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
       background: 'linear-gradient(135deg, #1976D2 0%, #0D47A1 100%)',
-      padding: '20px'
+      p: 3
     }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '500px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+      <Paper elevation={3} sx={{ 
+        maxWidth: 550, 
+        width: '100%', 
+        p: 5, 
+        borderRadius: 3 
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+        <Box textAlign="center" mb={4}>
+          <Typography variant="h4" fontWeight={700} mb={1}>
             🚀 TRADEAI
-          </h1>
-          <p style={{ color: '#666', fontSize: '14px' }}>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             Create your account
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
-        {error && <ErrorMessage message={error} onRetry={() => setError('')} />}
+        {error && (
+          <Alert severity="error" onClose={() => setError('')} sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                First Name
-              </label>
-              <input
-                type="text"
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={2} mb={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="First Name"
                 value={formData.firstName}
                 onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                 required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
               />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Last Name
-              </label>
-              <input
-                type="text"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Last Name"
                 value={formData.lastName}
                 onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                 required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
               />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
-              placeholder="you@example.com"
-            />
-          </div>
+          <TextField
+            fullWidth
+            type="email"
+            label="Email Address"
+            value={formData.email}
+            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            required
+            placeholder="you@example.com"
+            sx={{ mb: 2 }}
+          />
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Password
-              </label>
-              <input
+          <Grid container spacing={2} mb={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
                 type="password"
+                label="Password"
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                 required
-                minLength={8}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
+                inputProps={{ minLength: 8 }}
               />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Confirm
-              </label>
-              <input
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
                 type="password"
+                label="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                 required
-                minLength={8}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
+                inputProps={{ minLength: 8 }}
               />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Employee ID
-              </label>
-              <input
-                type="text"
+          <Grid container spacing={2} mb={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Employee ID"
                 value={formData.employeeId}
                 onChange={(e) => setFormData(prev => ({ ...prev, employeeId: e.target.value }))}
                 required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
                 placeholder="EMP001"
               />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Department
-              </label>
-              <select
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                select
+                label="Department"
                 value={formData.department}
                 onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                 required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
               >
-                <option value="sales">Sales</option>
-                <option value="marketing">Marketing</option>
-                <option value="finance">Finance</option>
-                <option value="operations">Operations</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-          </div>
+                <MenuItem value="sales">Sales</MenuItem>
+                <MenuItem value="marketing">Marketing</MenuItem>
+                <MenuItem value="finance">Finance</MenuItem>
+                <MenuItem value="operations">Operations</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Company ID
-              </label>
-              <input
-                type="text"
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Company ID"
                 value={formData.companyId}
                 onChange={(e) => setFormData(prev => ({ ...prev, companyId: e.target.value }))}
                 required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
                 placeholder="COMP001"
               />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                Tenant ID
-              </label>
-              <input
-                type="text"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Tenant ID"
                 value={formData.tenantId}
                 onChange={(e) => setFormData(prev => ({ ...prev, tenantId: e.target.value }))}
                 required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box'
-                }}
                 placeholder="TEN001"
               />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
 
-          <button
+          <Button
+            fullWidth
             type="submit"
+            variant="contained"
             disabled={loading}
-            style={{
-              width: '100%',
-              padding: '14px',
-              backgroundColor: loading ? '#9ca3af' : '#1976D2',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s'
+            sx={{ 
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '1rem'
             }}
-            onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = '#1565C0')}
-            onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = '#1976D2')}
           >
             {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
+          </Button>
+        </Box>
 
-        <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: '#666' }}>
-          Already have an account?{' '}
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#1976D2',
-              fontWeight: '600',
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
-          >
-            Sign in
-          </button>
-        </div>
-      </div>
-    </div>
+        <Box mt={3} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
+            Already have an account?{' '}
+            <Link
+              component="button"
+              onClick={() => navigate('/login')}
+              sx={{ fontWeight: 600, cursor: 'pointer' }}
+            >
+              Sign in
+            </Link>
+          </Typography>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

@@ -1,7 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Paper,
+  Stepper,
+  Step,
+  StepLabel,
+  Alert,
+  CircularProgress,
+  Chip
+} from '@mui/material';
+import {
+  CheckCircle as CheckIcon,
+  Download as DownloadIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import './TwoFASetup.css';
 
 const TwoFASetup = () => {
   const navigate = useNavigate();
@@ -81,114 +97,195 @@ ${backupCodes.map((code, i) => `${i + 1}. ${code}`).join('\n')}
     navigate('/dashboard');
   };
 
+  const steps = ['Download App', 'Scan QR Code', 'Verify Code'];
+
   return (
-    <div className="twofa-setup-container">
-      <div className="twofa-card">
+    <Box sx={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      p: 3
+    }}>
+      <Paper elevation={3} sx={{ 
+        maxWidth: 600, 
+        width: '100%', 
+        p: 4, 
+        borderRadius: 3 
+      }}>
         {step === 1 && (
           <>
-            <h1>Set Up Two-Factor Authentication</h1>
-            <p className="subtitle">
+            <Typography variant="h4" fontWeight={700} mb={1} textAlign="center">
+              Set Up Two-Factor Authentication
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mb={4} textAlign="center">
               Add an extra layer of security to your account
-            </p>
+            </Typography>
 
-            <div className="setup-steps">
-              <div className="step">
-                <div className="step-number">1</div>
-                <div className="step-content">
-                  <h3>Download an authenticator app</h3>
-                  <p>We recommend Google Authenticator, Authy, or Microsoft Authenticator</p>
-                </div>
-              </div>
+            <Stepper activeStep={0} sx={{ mb: 4 }}>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
 
-              <div className="step">
-                <div className="step-number">2</div>
-                <div className="step-content">
-                  <h3>Scan this QR code</h3>
-                  {loading ? (
-                    <p>Loading QR code...</p>
-                  ) : qrCode ? (
-                    <div className="qr-code-wrapper">
-                      <img src={qrCode} alt="2FA QR Code" />
-                      <p className="manual-entry">
-                        Can't scan? Manual key: <code>{secret}</code>
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="error">Failed to load QR code</p>
-                  )}
-                </div>
-              </div>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" fontWeight={600} mb={1}>
+                1. Download an authenticator app
+              </Typography>
+              <Typography variant="body2" color="text.secondary" mb={3}>
+                We recommend Google Authenticator, Authy, or Microsoft Authenticator
+              </Typography>
 
-              <div className="step">
-                <div className="step-number">3</div>
-                <div className="step-content">
-                  <h3>Enter the 6-digit code</h3>
-                  <input
-                    type="text"
-                    maxLength="6"
-                    placeholder="000000"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                    className="verification-input"
+              <Typography variant="h6" fontWeight={600} mb={1}>
+                2. Scan this QR code
+              </Typography>
+              {loading ? (
+                <Box display="flex" justifyContent="center" py={3}>
+                  <CircularProgress />
+                </Box>
+              ) : qrCode ? (
+                <Box sx={{ textAlign: 'center', mb: 3 }}>
+                  <Box 
+                    component="img" 
+                    src={qrCode} 
+                    alt="2FA QR Code"
+                    sx={{ 
+                      maxWidth: 200, 
+                      height: 'auto',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2,
+                      p: 2,
+                      mb: 2
+                    }}
                   />
-                </div>
-              </div>
-            </div>
+                  <Typography variant="body2" color="text.secondary">
+                    Can't scan? Manual key:
+                  </Typography>
+                  <Chip 
+                    label={secret} 
+                    sx={{ mt: 1, fontFamily: 'monospace' }}
+                  />
+                </Box>
+              ) : (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  Failed to load QR code
+                </Alert>
+              )}
 
-            {error && <div className="error-message">{error}</div>}
+              <Typography variant="h6" fontWeight={600} mb={1}>
+                3. Enter the 6-digit code
+              </Typography>
+              <TextField
+                fullWidth
+                type="text"
+                inputProps={{ maxLength: 6 }}
+                placeholder="000000"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                sx={{ mb: 2 }}
+              />
+            </Box>
 
-            <div className="actions">
-              <button onClick={() => navigate(-1)} className="btn-secondary">
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                {error}
+              </Alert>
+            )}
+
+            <Box display="flex" gap={2} justifyContent="flex-end">
+              <Button 
+                variant="outlined" 
+                onClick={() => navigate(-1)}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="contained"
                 onClick={verifyAndEnable}
                 disabled={loading || verificationCode.length !== 6}
-                className="btn-primary"
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
               >
                 {loading ? 'Verifying...' : 'Verify & Enable'}
-              </button>
-            </div>
+              </Button>
+            </Box>
           </>
         )}
 
         {step === 2 && (
           <>
-            <div className="success-icon">✅</div>
-            <h1>Two-Factor Authentication Enabled!</h1>
-            <p className="subtitle">
-              Your account is now more secure
-            </p>
+            <Box textAlign="center" mb={3}>
+              <CheckIcon sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
+              <Typography variant="h4" fontWeight={700} mb={1}>
+                Two-Factor Authentication Enabled!
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Your account is now more secure
+              </Typography>
+            </Box>
 
-            <div className="backup-codes-section">
-              <h3>⚠️ Save Your Backup Codes</h3>
-              <p>
+            <Alert severity="warning" sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" fontWeight={600} mb={1}>
+                ⚠️ Save Your Backup Codes
+              </Typography>
+              <Typography variant="body2">
                 These codes can be used to access your account if you lose your authenticator device.
                 Each code can only be used once.
-              </p>
+              </Typography>
+            </Alert>
 
-              <div className="backup-codes">
+            <Paper elevation={0} sx={{ 
+              p: 3, 
+              mb: 3, 
+              bgcolor: 'grey.50',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2
+            }}>
+              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
                 {backupCodes.map((code, index) => (
-                  <div key={index} className="backup-code">
-                    {code}
-                  </div>
+                  <Chip 
+                    key={index} 
+                    label={code}
+                    sx={{ 
+                      fontFamily: 'monospace',
+                      fontSize: '0.9rem',
+                      height: 'auto',
+                      py: 1
+                    }}
+                  />
                 ))}
-              </div>
+              </Box>
+            </Paper>
 
-              <button onClick={downloadBackupCodes} className="btn-secondary download-btn">
-                📥 Download Backup Codes
-              </button>
-            </div>
+            <Box display="flex" gap={2} justifyContent="center" mb={3}>
+              <Button 
+                variant="outlined"
+                startIcon={<DownloadIcon />}
+                onClick={downloadBackupCodes}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
+                Download Backup Codes
+              </Button>
+            </Box>
 
-            <div className="actions">
-              <button onClick={complete} className="btn-primary">
+            <Box display="flex" justifyContent="center">
+              <Button
+                variant="contained"
+                onClick={complete}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
                 Done
-              </button>
-            </div>
+              </Button>
+            </Box>
           </>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 
