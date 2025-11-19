@@ -151,37 +151,101 @@ class InsightScanner {
     try {
       switch (module) {
         case 'budget':
-          context.historicalData = {
-            averageBurnRate: 50000 // Mock value
-          };
-          break;
-
-        case 'promotion':
-          // Check for overlapping promotions
-          context.hasOverlappingPromotions = false;
-          context.conflictCount = 0;
-          break;
-
-        case 'claim':
-          if (entity.customerId) {
-            context.customerClaimHistory = {
-              averageAmount: 25000,
-              totalCount: 10
+          const historicalBudgets = await Model.find({
+            company: entity.company,
+            year: { $lt: entity.year },
+            status: { $in: ['approved', 'locked'] }
+          }).limit(3).lean();
+          
+          if (historicalBudgets.length > 0) {
+            const totalBurnRate = historicalBudgets.reduce((sum, budget) => {
+              const spent = budget.spent || 0;
+              const startDate = new Date(budget.year, 0, 1);
+              const endDate = new Date(budget.year, 11, 31);
+              const days = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+              return sum + (spent / days);
+            }, 0);
+            context.historicalData = {
+              averageBurnRate: totalBurnRate / historicalBudgets.length
+            };
+          } else {
+            context.historicalData = {
+              averageBurnRate: 0
             };
           }
           break;
 
+        case 'promotion':
+          // Check for overlapping promotions using the static method
+          const PromotionModel = require('../models/Promotion');
+          const overlapping = await PromotionModel.findOverlapping(
+            entity.scope?.customers?.[0]?.customer,
+            entity.products?.[0]?.product,
+            entity.period?.startDate,
+            entity.period?.endDate
+          );
+          context.hasOverlappingPromotions = overlapping.length > 0;
+          context.conflictCount = overlapping.length;
+          break;
+
+        case 'claim':
+          if (entity.customer) {
+            const ClaimModel = require('../models/Claim');
+            const customerClaims = await ClaimModel.find({
+              customer: entity.customer,
+              status: { $in: ['approved', 'paid'] }
+            }).lean();
+            
+            if (customerClaims.length > 0) {
+              const totalAmount = customerClaims.reduce((sum, claim) => sum + (claim.claimAmount || 0), 0);
+              context.customerClaimHistory = {
+                averageAmount: totalAmount / customerClaims.length,
+                totalCount: customerClaims.length
+              };
+            } else {
+              context.customerClaimHistory = {
+                averageAmount: 0,
+                totalCount: 0
+              };
+            }
+          }
+          break;
+
         case 'deduction':
-          if (entity.customerId) {
+          if (entity.customer) {
+            const DeductionModel = require('../models/Deduction');
+            const customerDeductions = await DeductionModel.find({
+              customer: entity.customer
+            }).lean();
+            
+            const invalidCount = customerDeductions.filter(d => d.resolution === 'invalid').length;
             context.customerDeductionHistory = {
-              invalidCount: 3,
-              totalCount: 10
+              invalidCount,
+              totalCount: customerDeductions.length
             };
           }
           break;
 
         case 'tradeSpend':
-          context.netSales = 1000000; // Mock value
+          const SalesTransaction = require('../models/SalesTransaction');
+          const salesData = await SalesTransaction.aggregate([
+            {
+              $match: {
+                company: entity.company,
+                date: {
+                  $gte: entity.period?.startDate || new Date(new Date().getFullYear(), 0, 1),
+                  $lte: entity.period?.endDate || new Date()
+                }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                totalSales: { $sum: '$netSales' }
+              }
+            }
+          ]);
+          context.netSales = salesData[0]?.totalSales || 0;
           break;
 
         default:
