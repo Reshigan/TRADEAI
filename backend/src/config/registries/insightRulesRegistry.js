@@ -639,6 +639,7 @@ const evaluateRules = (module, entity, context = {}) => {
         });
       }
     } catch (error) {
+      logger.error(`Error evaluating rule ${ruleId} for module ${module}:`, error);
     }
   }
 
