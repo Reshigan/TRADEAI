@@ -120,10 +120,6 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function randomFloat(min, max, decimals = 2) {
-  return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
-}
-
 function randomChoice(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
@@ -138,24 +134,6 @@ function weightedRandomChoice(items, weightKey = 'weight') {
   }
 
   return items[items.length - 1];
-}
-
-function addDays(date, days) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-function addMonths(date, months) {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-}
-
-function getWeekNumber(date) {
-  const startOfYear = new Date(date.getFullYear(), 0, 1);
-  const days = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000));
-  return Math.ceil((days + startOfYear.getDay() + 1) / 7);
 }
 
 async function seedTenant() {
