@@ -66,7 +66,7 @@ router.get('/:module/:entityId', protect, async (req, res) => {
   }
 });
 
-router.get('/cache/stats', protect, async (req, res) => {
+router.get('/cache/stats', protect, (req, res) => {
   try {
     const stats = metricsService.getCacheStats();
 
@@ -84,7 +84,7 @@ router.get('/cache/stats', protect, async (req, res) => {
   }
 });
 
-router.delete('/cache/:module/:entityId', protect, async (req, res) => {
+router.delete('/cache/:module/:entityId', protect, (req, res) => {
   try {
     const { module, entityId } = req.params;
 
@@ -104,7 +104,7 @@ router.delete('/cache/:module/:entityId', protect, async (req, res) => {
   }
 });
 
-router.delete('/cache', protect, async (req, res) => {
+router.delete('/cache', protect, (req, res) => {
   try {
     metricsService.clearAllCache();
 

@@ -117,7 +117,7 @@ analyticsEventSchema.statics.logEvent = async function (eventData) {
   }
 };
 
-analyticsEventSchema.statics.getSummary = async function (filters = {}, startDate, endDate) {
+analyticsEventSchema.statics.getSummary = function (filters = {}, startDate, endDate) {
   const matchStage = {
     ...filters,
     timestamp: {
@@ -149,7 +149,7 @@ analyticsEventSchema.statics.getSummary = async function (filters = {}, startDat
   return this.aggregate(pipeline);
 };
 
-analyticsEventSchema.statics.getUserActivity = async function (userId, startDate, endDate) {
+analyticsEventSchema.statics.getUserActivity = function (userId, startDate, endDate) {
   return this.find({
     userId,
     timestamp: {

@@ -221,7 +221,7 @@ insightSchema.statics.findOrUpdateByFingerprint = async function (fingerprint, i
   }
 };
 
-insightSchema.statics.getSummary = async function (filters = {}) {
+insightSchema.statics.getSummary = function (filters = {}) {
   const pipeline = [
     { $match: filters },
     {
@@ -250,7 +250,7 @@ insightSchema.statics.getSummary = async function (filters = {}) {
   return this.aggregate(pipeline);
 };
 
-insightSchema.statics.getTopByModule = async function (module, limit = 10) {
+insightSchema.statics.getTopByModule = function (module, limit = 10) {
   return this.find({
     module,
     status: { $in: ['new', 'acknowledged', 'in_progress'] }

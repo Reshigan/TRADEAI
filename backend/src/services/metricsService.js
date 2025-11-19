@@ -110,10 +110,10 @@ class MetricsService {
       },
       promotion: {
         totalPromotions: async (entity, Model) => {
-          return await Model.countDocuments({ company: entity.company });
+          return Model.countDocuments({ company: entity.company });
         },
         activePromotions: async (entity, Model) => {
-          return await Model.countDocuments({ company: entity.company, status: 'active' });
+          return Model.countDocuments({ company: entity.company, status: 'active' });
         },
         promotionROI: (entity) => {
           const incrementalRevenue = entity.financial?.actual?.incrementalRevenue || 0;
@@ -166,7 +166,7 @@ class MetricsService {
       },
       claim: {
         totalClaims: async (entity, Model) => {
-          return await Model.countDocuments({ company: entity.company });
+          return Model.countDocuments({ company: entity.company });
         },
         claimAmount: async (entity, Model) => {
           const result = await Model.aggregate([
@@ -194,12 +194,12 @@ class MetricsService {
           return totalDays / claims.length;
         },
         pendingClaims: async (entity, Model) => {
-          return await Model.countDocuments({ company: entity.company, status: { $in: ['submitted', 'under_review'] } });
+          return Model.countDocuments({ company: entity.company, status: { $in: ['submitted', 'under_review'] } });
         }
       },
       deduction: {
         totalDeductions: async (entity, Model) => {
-          return await Model.countDocuments({ company: entity.company });
+          return Model.countDocuments({ company: entity.company });
         },
         deductionAmount: async (entity, Model) => {
           const result = await Model.aggregate([

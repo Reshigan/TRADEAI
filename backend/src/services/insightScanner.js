@@ -156,7 +156,7 @@ class InsightScanner {
             year: { $lt: entity.year },
             status: { $in: ['approved', 'locked'] }
           }).limit(3).lean();
-          
+
           if (historicalBudgets.length > 0) {
             const totalBurnRate = historicalBudgets.reduce((sum, budget) => {
               const spent = budget.spent || 0;
