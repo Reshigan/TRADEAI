@@ -89,27 +89,35 @@ const CustomerDetailWithTabs = () => {
   return (
     <ProcessShell module="customer" entityId={id} entity={customer}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button startIcon={<BackIcon />} onClick={() => navigate('/customers')}>Back to {labels.customers}</Button>
+        <Box sx={{ mb: 4 }}>
+          <Button
+            startIcon={<BackIcon />}
+            onClick={() => navigate('/customers')}
+            sx={{ mb: 2, color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
+          >
+            Back to {labels.customers}
+          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
             <Box>
-              <Typography variant="h4">{customer.name}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                <Typography variant="h4" fontWeight={700} color="text.primary">{customer.name}</Typography>
+                <Chip label={customer.status} color={customer.status === 'active' ? 'success' : 'default'} sx={{ fontWeight: 600 }} />
+              </Box>
               <Typography variant="body2" color="text.secondary">{customer.code}</Typography>
             </Box>
-            <Chip label={customer.status} color={customer.status === 'active' ? 'success' : 'default'} size="small" />
+            <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/customers/${id}/edit`)} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Edit</Button>
           </Box>
-          <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/customers/${id}/edit`)}>Edit</Button>
         </Box>
 
-        <Paper sx={{ mb: 3 }}>
-          <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
+        <Paper elevation={0} sx={{ mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+          <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto" sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.9375rem', minHeight: 56 } }}>
             {tabs.map((tab) => (
               <Tab key={tab.id} value={tab.path} label={tab.label} />
             ))}
           </Tabs>
         </Paper>
 
-        <Box sx={{ mt: 3 }}>
+        <Box>
           {activeTab === 'overview' && <CustomerOverview customer={customer} onUpdate={loadCustomer} />}
           {activeTab === 'promotions' && <CustomerPromotions customerId={id} customer={customer} />}
           {activeTab === 'trade-spends' && <CustomerTradeSpends customerId={id} customer={customer} />}

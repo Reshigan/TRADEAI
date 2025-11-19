@@ -5,11 +5,16 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Alert
+  Alert,
+  Paper,
+  Chip
 } from '@mui/material';
 import {
-  Refresh,
-  MonetizationOn
+  MonetizationOn,
+  TrendingUp,
+  TrendingDown,
+  ShowChart,
+  AttachMoney
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
@@ -76,24 +81,14 @@ const ManagerDashboard = () => {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <div>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
-            Where to move budget
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            AI-powered budget optimization recommendations
-          </Typography>
-        </div>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={<Refresh />}
-            onClick={loadDashboardData}
-          >
-            Refresh
-          </Button>
-        </Box>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} color="text.primary" mb={1}>
+          Budget Optimization
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          AI-powered recommendations to maximize portfolio performance
+        </Typography>
       </Box>
 
       {loading ? (
@@ -102,20 +97,181 @@ const ManagerDashboard = () => {
         </Box>
       ) : (
         <Box>
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center' }}>
-                <MonetizationOn sx={{ mr: 1, color: 'primary.main' }} />
-                Budget Reallocation Recommendations
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {dashboardData.budgetRecommendations.length} recommendations
-              </Typography>
+          {/* KPI Summary Cards - Insight First */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12} md={3}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                    borderColor: 'primary.main'
+                  }
+                }}
+              >
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Reallocation Opportunity
+                  </Typography>
+                  <MonetizationOn sx={{ color: 'primary.main' }} />
+                </Box>
+                <Typography variant="h3" fontWeight={700} color="text.primary" mb={0.5}>
+                  ${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Available to optimize
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.15)',
+                    borderColor: 'success.main'
+                  }
+                }}
+              >
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Expected Revenue Gain
+                  </Typography>
+                  <AttachMoney sx={{ color: 'success.main' }} />
+                </Box>
+                <Typography variant="h3" fontWeight={700} color="text.primary" mb={0.5}>
+                  ${(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K
+                </Typography>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                  <TrendingUp sx={{ fontSize: 16, color: 'success.main' }} />
+                  <Typography variant="caption" color="success.main" fontWeight={600}>
+                    Projected uplift
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.15)',
+                    borderColor: 'error.main'
+                  }
+                }}
+              >
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Underperforming
+                  </Typography>
+                  <TrendingDown sx={{ color: 'error.main' }} />
+                </Box>
+                <Typography variant="h3" fontWeight={700} color="text.primary" mb={0.5}>
+                  {dashboardData.portfolioKPIs.underperformingCount || 0}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Promotions need attention
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={3}>
+              <Paper 
+                elevation={0}
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.15)',
+                    borderColor: 'success.main'
+                  }
+                }}
+              >
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    High Performing
+                  </Typography>
+                  <ShowChart sx={{ color: 'success.main' }} />
+                </Box>
+                <Typography variant="h3" fontWeight={700} color="text.primary" mb={0.5}>
+                  {dashboardData.portfolioKPIs.highPerformingCount || 0}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Promotions exceeding targets
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+
+          {/* Budget Reallocation Recommendations */}
+          <Paper 
+            elevation={0}
+            sx={{ 
+              p: 3, 
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+              <Box display="flex" alignItems="center" gap={1.5}>
+                <Box 
+                  sx={{ 
+                    p: 1, 
+                    borderRadius: 2, 
+                    bgcolor: 'primary.lighter',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  <MonetizationOn sx={{ color: 'primary.main' }} />
+                </Box>
+                <Box>
+                  <Typography variant="h6" fontWeight={700}>
+                    Budget Reallocation Recommendations
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {dashboardData.budgetRecommendations.length} AI-powered optimization opportunities
+                  </Typography>
+                </Box>
+              </Box>
+              {dashboardData.budgetRecommendations.length > 0 && (
+                <Chip 
+                  label={`${dashboardData.budgetRecommendations.length} opportunities`}
+                  color="primary"
+                  size="small"
+                  sx={{ fontWeight: 600 }}
+                />
+              )}
             </Box>
 
             {dashboardData.budgetRecommendations.length === 0 ? (
-              <Alert severity="info">
-                No budget reallocation recommendations available. All budgets are optimally allocated.
+              <Alert severity="success" sx={{ borderRadius: 2 }}>
+                All budgets are optimally allocated. No reallocation recommendations at this time.
               </Alert>
             ) : (
               <Grid container spacing={3}>
@@ -149,57 +305,7 @@ const ManagerDashboard = () => {
                 ))}
               </Grid>
             )}
-          </Box>
-
-          {dashboardData.portfolioKPIs && Object.keys(dashboardData.portfolioKPIs).length > 0 && (
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Portfolio Summary
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={3}>
-                  <Box sx={{ p: 3, bgcolor: 'primary.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      ${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K
-                    </Typography>
-                    <Typography variant="body2">
-                      Total Reallocation Opportunity
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Box sx={{ p: 3, bgcolor: 'success.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      ${(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K
-                    </Typography>
-                    <Typography variant="body2">
-                      Expected Revenue Gain
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Box sx={{ p: 3, bgcolor: 'warning.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      {dashboardData.portfolioKPIs.underperformingCount || 0}
-                    </Typography>
-                    <Typography variant="body2">
-                      Underperforming Promotions
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Box sx={{ p: 3, bgcolor: 'info.main', color: 'white', borderRadius: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      {dashboardData.portfolioKPIs.highPerformingCount || 0}
-                    </Typography>
-                    <Typography variant="body2">
-                      High Performing Promotions
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
+          </Paper>
         </Box>
       )}
     </Box>
