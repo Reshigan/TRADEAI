@@ -80,25 +80,25 @@ class MetricsService {
   getCalculatorForMetric(metricId, module) {
     const calculators = {
       budget: {
-        totalBudget: async (entity) => entity.annualTotals?.tradeSpend?.total || 0,
-        budgetUtilization: async (entity) => {
+        totalBudget: (entity) => entity.annualTotals?.tradeSpend?.total || 0,
+        budgetUtilization: (entity) => {
           const total = entity.annualTotals?.tradeSpend?.total || 0;
           const spent = entity.spent || 0;
           return total > 0 ? (spent / total) * 100 : 0;
         },
-        budgetRemaining: async (entity) => {
+        budgetRemaining: (entity) => {
           const total = entity.annualTotals?.tradeSpend?.total || 0;
           const spent = entity.spent || 0;
           return total - spent;
         },
-        budgetBurnRate: async (entity) => {
+        budgetBurnRate: (entity) => {
           const spent = entity.spent || 0;
           const startDate = new Date(entity.year, 0, 1);
           const now = new Date();
           const daysElapsed = Math.max(1, Math.floor((now - startDate) / (1000 * 60 * 60 * 24)));
           return spent / daysElapsed;
         },
-        projectedSpend: async (entity) => {
+        projectedSpend: (entity) => {
           const spent = entity.spent || 0;
           const startDate = new Date(entity.year, 0, 1);
           const endDate = new Date(entity.year, 11, 31);
@@ -115,20 +115,20 @@ class MetricsService {
         activePromotions: async (entity, Model) => {
           return await Model.countDocuments({ company: entity.company, status: 'active' });
         },
-        promotionROI: async (entity) => {
+        promotionROI: (entity) => {
           const incrementalRevenue = entity.financial?.actual?.incrementalRevenue || 0;
           const totalCost = entity.financial?.costs?.totalCost || 0;
           return totalCost > 0 ? ((incrementalRevenue - totalCost) / totalCost) * 100 : 0;
         },
-        incrementalSales: async (entity) => {
+        incrementalSales: (entity) => {
           return entity.financial?.actual?.incrementalRevenue || 0;
         },
-        promotionLift: async (entity) => {
+        promotionLift: (entity) => {
           const actual = entity.financial?.actual?.promotionalVolume || 0;
           const baseline = entity.financial?.actual?.baselineVolume || 0;
           return baseline > 0 ? ((actual - baseline) / baseline) * 100 : 0;
         },
-        promotionCost: async (entity) => {
+        promotionCost: (entity) => {
           return entity.financial?.costs?.totalCost || 0;
         }
       },
@@ -158,7 +158,7 @@ class MetricsService {
           const netSales = context.netSales || 1;
           return netSales > 0 ? (totalAccruals / netSales) * 100 : 0;
         },
-        tradeSpendROI: async (entity) => {
+        tradeSpendROI: (entity) => {
           const incrementalRevenue = entity.performance?.actualValue || 0;
           const spent = entity.amount?.spent || 0;
           return spent > 0 ? ((incrementalRevenue - spent) / spent) * 100 : 0;
