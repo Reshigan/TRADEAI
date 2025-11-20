@@ -54,7 +54,7 @@ api.interceptors.request.use(
         
         try {
           const response = await axios.post(
-            `${api.defaults.baseURL}/auth/refresh`,
+            `${api.defaults.baseURL}/auth/refresh-token`,
             { refreshToken }
           );
           
@@ -106,12 +106,13 @@ api.interceptors.response.use(
         
         try {
           const response = await axios.post(
-            `${api.defaults.baseURL}/auth/refresh`,
+            `${api.defaults.baseURL}/auth/refresh-token`,
             { refreshToken }
           );
           
-          const newToken = response.data.token || response.data.accessToken;
+          const newToken = response.data.token || response.data.accessToken || response.data.data?.tokens?.accessToken;
           localStorage.setItem('token', newToken);
+          localStorage.setItem('accessToken', newToken);
           
           isRefreshing = false;
           onTokenRefreshed(newToken);
@@ -123,6 +124,7 @@ api.interceptors.response.use(
           isRefreshing = false;
           // Refresh failed, log out user
           localStorage.removeItem('token');
+          localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('isAuthenticated');
           localStorage.removeItem('user');
@@ -176,6 +178,7 @@ export const authService = {
       
       // Store token, refresh token, and user data
       localStorage.setItem('token', token);
+      localStorage.setItem('accessToken', token);
       if (refreshToken) {
         localStorage.setItem('refreshToken', refreshToken);
       }
@@ -196,6 +199,7 @@ export const authService = {
     try {
       await api.post('/auth/logout');
       localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
@@ -203,6 +207,7 @@ export const authService = {
       console.error('Logout error:', error);
       // Still remove items even if API call fails
       localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');

@@ -1,18 +1,11 @@
-import axios from 'axios';
+import api from '../api';
 
 console.log('[apiClient.js] Module loading...');
-console.log('[apiClient.js] process.env.REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('[apiClient.js] Re-exporting canonical api from ../api');
 
-// Create an axios instance with default config
-const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+const apiClient = api;
 
-console.log('[apiClient.js] Axios instance created with baseURL:', apiClient.defaults.baseURL);
+console.log('[apiClient.js] Axios instance baseURL:', apiClient.defaults.baseURL);
 
 // Request interceptor for adding auth token
 apiClient.interceptors.request.use(

@@ -9,10 +9,8 @@ import {
   Alert,
   Link
 } from '@mui/material';
-import axios from 'axios';
+import { authService } from '../../services/api';
 import newLogo from '../../assets/new_logo.svg';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,16 +24,12 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth-enhanced/login`, formData);
+      const { token, refreshToken, user } = await authService.login(formData);
 
-      if (response.data.success) {
-        localStorage.setItem('token', response.data.tokens.accessToken);
-        localStorage.setItem('refreshToken', response.data.tokens.refreshToken);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
+      if (token && user) {
         navigate('/dashboard');
       } else {
-        setError(response.data.message || 'Login failed');
+        setError('Login failed - invalid response');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
