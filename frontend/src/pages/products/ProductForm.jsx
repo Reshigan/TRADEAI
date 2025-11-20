@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  CircularProgress,
+  Alert,
+  Grid
+} from '@mui/material';
+import {
+  Save as SaveIcon,
+  Cancel as CancelIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-import './ProductForm.css';
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -32,7 +47,10 @@ const ProductForm = () => {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const product = response.data.data || response.data;
       setFormData({
         name: product.name || '',
@@ -64,6 +82,7 @@ const ProductForm = () => {
 
     try {
       setSaving(true);
+      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
@@ -71,7 +90,9 @@ const ProductForm = () => {
         stock: formData.stock ? parseInt(formData.stock) : 0
       };
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/products${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, payload);
+      await axios[isEditMode ? 'put' : 'post'](url, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       navigate('/products');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save product');
@@ -80,85 +101,186 @@ const ProductForm = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="product-form-container">
-      <div className="form-header">
-        <h1>{isEditMode ? 'Edit Product' : 'Create New Product'}</h1>
-        <button onClick={() => navigate('/products')} className="btn-secondary">Cancel</button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            {isEditMode ? 'Edit Product' : 'Create New Product'}
+          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            onClick={() => navigate('/products')}
+            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
 
-      {error && <ErrorMessage message={error} />}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      <form onSubmit={handleSubmit} className="product-form">
-        <div className="form-section">
-          <h2>Basic Information</h2>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="name">Product Name *</label>
-              <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required placeholder="Enter product name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="sku">SKU *</label>
-              <input type="text" id="sku" name="sku" value={formData.sku} onChange={handleChange} required placeholder="Product SKU" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="category">Category</label>
-              <select id="category" name="category" value={formData.category} onChange={handleChange}>
-                <option value="">Select category</option>
-                <option value="beverages">Beverages</option>
-                <option value="snacks">Snacks</option>
-                <option value="dairy">Dairy</option>
-                <option value="bakery">Bakery</option>
-                <option value="frozen">Frozen</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="status">Status *</label>
-              <select id="status" name="status" value={formData.status} onChange={handleChange} required>
-                <option value="active">Active</option>
-                <option value="discontinued">Discontinued</option>
-                <option value="out_of_stock">Out of Stock</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Basic Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Product Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter product name"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="SKU"
+                  name="sku"
+                  value={formData.sku}
+                  onChange={handleChange}
+                  required
+                  placeholder="Product SKU"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    label="Category"
+                  >
+                    <MenuItem value="">Select category</MenuItem>
+                    <MenuItem value="beverages">Beverages</MenuItem>
+                    <MenuItem value="snacks">Snacks</MenuItem>
+                    <MenuItem value="dairy">Dairy</MenuItem>
+                    <MenuItem value="bakery">Bakery</MenuItem>
+                    <MenuItem value="frozen">Frozen</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    label="Status"
+                  >
+                    <MenuItem value="active">Active</MenuItem>
+                    <MenuItem value="discontinued">Discontinued</MenuItem>
+                    <MenuItem value="out_of_stock">Out of Stock</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
 
-        <div className="form-section">
-          <h2>Pricing & Inventory</h2>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="price">Price (R) *</label>
-              <input type="number" id="price" name="price" value={formData.price} onChange={handleChange} required min="0" step="0.01" placeholder="0.00" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="cost">Cost (R)</label>
-              <input type="number" id="cost" name="cost" value={formData.cost} onChange={handleChange} min="0" step="0.01" placeholder="0.00" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="stock">Stock Quantity</label>
-              <input type="number" id="stock" name="stock" value={formData.stock} onChange={handleChange} min="0" placeholder="0" />
-            </div>
-          </div>
-        </div>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Pricing & Inventory
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Price (R)"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  inputProps={{ min: 0, step: 0.01 }}
+                  placeholder="0.00"
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Cost (R)"
+                  name="cost"
+                  type="number"
+                  value={formData.cost}
+                  onChange={handleChange}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  placeholder="0.00"
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="Stock Quantity"
+                  name="stock"
+                  type="number"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  inputProps={{ min: 0 }}
+                  placeholder="0"
+                />
+              </Grid>
+            </Grid>
+          </Box>
 
-        <div className="form-section">
-          <h2>Description</h2>
-          <div className="form-group">
-            <textarea id="description" name="description" value={formData.description} onChange={handleChange} rows="5" placeholder="Enter product description..." />
-          </div>
-        </div>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Description
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={5}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Enter product description..."
+            />
+          </Box>
 
-        <div className="form-actions">
-          <button type="button" onClick={() => navigate('/products')} className="btn-secondary">Cancel</button>
-          <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : isEditMode ? 'Update Product' : 'Create Product'}
-          </button>
-        </div>
-      </form>
-    </div>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={() => navigate('/products')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              disabled={saving}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              {saving ? 'Saving...' : isEditMode ? 'Update Product' : 'Create Product'}
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 

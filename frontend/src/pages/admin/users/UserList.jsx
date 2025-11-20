@@ -1,9 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  IconButton,
+  Tooltip,
+  CircularProgress,
+  Alert,
+  InputAdornment
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  Visibility as ViewIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  PersonAdd as PersonAddIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import LoadingSpinner from '../../../components/common/LoadingSpinner';
-import ErrorMessage from '../../../components/common/ErrorMessage';
-import './UserList.css';
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -21,7 +50,10 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setUsers(response.data.data || response.data || []);
       setError(null);
     } catch (err) {
@@ -34,7 +66,10 @@ const UserList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         fetchUsers();
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete user');
@@ -44,8 +79,11 @@ const UserList = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}/status`, {
+      const token = localStorage.getItem('token');
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users/${id}/status`, {
         isActive: !currentStatus
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       fetchUsers();
     } catch (err) {
@@ -63,100 +101,234 @@ const UserList = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  if (loading) return <LoadingSpinner />;
+  const getRoleColor = (role) => {
+    const roleMap = {
+      'admin': 'error',
+      'manager': 'primary',
+      'user': 'default',
+      'jam': 'success'
+    };
+    return roleMap[role] || 'default';
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="user-list-container">
-      <div className="list-header">
-        <h1>User Management</h1>
-        <button onClick={() => navigate('/admin/users/new')} className="btn-primary">
-          Add New User
-        </button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1600, mx: 'auto' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            User Management
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/admin/users/new')}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3
+            }}
+          >
+            Add New User
+          </Button>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          Manage user accounts and permissions
+        </Typography>
+      </Box>
 
-      {error && <ErrorMessage message={error} />}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
-      <div className="filters">
-        <input
-          type="text"
-          placeholder="Search users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="filter-select">
-          <option value="all">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="manager">Manager</option>
-          <option value="user">User</option>
-        </select>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="filter-select">
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
+      {/* Filters */}
+      <Paper 
+        elevation={0}
+        sx={{ 
+          p: 2.5, 
+          mb: 3,
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Role</InputLabel>
+              <Select
+                value={filterRole}
+                label="Role"
+                onChange={(e) => setFilterRole(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Roles</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="manager">Manager</MenuItem>
+                <MenuItem value="jam">JAM</MenuItem>
+                <MenuItem value="user">User</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={filterStatus}
+                label="Status"
+                onChange={(e) => setFilterStatus(e.target.value)}
+                sx={{ borderRadius: 2 }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      <div className="users-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Organization</th>
-              <th>Status</th>
-              <th>Last Login</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map(user => (
-              <tr key={user._id}>
-                <td>{user.firstName} {user.lastName}</td>
-                <td>{user.email}</td>
-                <td>
-                  <span className={`role-badge role-${user.role}`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td>{user.organization || 'N/A'}</td>
-                <td>
-                  <button
-                    onClick={() => handleToggleStatus(user._id, user.isActive)}
-                    className={`status-toggle ${user.isActive ? 'active' : 'inactive'}`}
-                  >
-                    {user.isActive ? 'Active' : 'Inactive'}
-                  </button>
-                </td>
-                <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
-                <td className="actions">
-                  <button onClick={() => navigate(`/admin/users/${user._id}`)} className="btn-view">
-                    View
-                  </button>
-                  <button onClick={() => navigate(`/admin/users/${user._id}/edit`)} className="btn-edit">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(user._id)} className="btn-delete">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Users Table */}
+      <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: 'grey.50' }}>
+              <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Organization</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Last Login</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredUsers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                  <PersonAddIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" mb={1}>
+                    No users found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Try adjusting your search or filters
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredUsers.map(user => (
+                <TableRow key={user._id} hover>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight={600}>
+                      {user.firstName} {user.lastName}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {user.email}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={user.role?.toUpperCase()}
+                      color={getRoleColor(user.role)}
+                      size="small"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {user.organization || 'N/A'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={user.isActive ? 'Active' : 'Inactive'}
+                      color={user.isActive ? 'success' : 'default'}
+                      size="small"
+                      onClick={() => handleToggleStatus(user._id, user.isActive)}
+                      sx={{ cursor: 'pointer', fontWeight: 600 }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                      <Tooltip title="View">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/admin/users/${user._id}`)}
+                        >
+                          <ViewIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/admin/users/${user._id}/edit`)}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(user._id)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-        {filteredUsers.length === 0 && (
-          <div className="no-results">
-            <p>No users found</p>
-          </div>
-        )}
-      </div>
-
-      <div className="list-footer">
-        <p>Showing {filteredUsers.length} of {users.length} users</p>
-      </div>
-    </div>
+      {/* Footer */}
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Showing {filteredUsers.length} of {users.length} users
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 

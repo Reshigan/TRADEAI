@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  CircularProgress,
+  Alert,
+  Grid
+} from '@mui/material';
+import {
+  Save as SaveIcon,
+  Cancel as CancelIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-import './PromotionForm.css';
 
 const PromotionForm = () => {
   const { id } = useParams();
@@ -51,7 +66,10 @@ const PromotionForm = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/products`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const productsData = response.data.data || response.data;
       setProducts(productsData);
       
@@ -76,7 +94,10 @@ const PromotionForm = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/customers`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const customersData = response.data.data || response.data;
       setCustomers(customersData);
       
@@ -102,7 +123,10 @@ const PromotionForm = () => {
   const fetchPromotion = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const promotion = response.data.data || response.data;
       
       setFormData({
@@ -161,6 +185,7 @@ const PromotionForm = () => {
       setSaving(true);
       setError(null);
 
+      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         budget: formData.budget ? parseFloat(formData.budget) : 0
@@ -168,13 +193,15 @@ const PromotionForm = () => {
 
       if (isEditMode) {
         await axios.put(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions/${id}`,
-          payload
+          `${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/promotions`,
-          payload
+          `${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       }
 
@@ -186,20 +213,40 @@ const PromotionForm = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="promotion-form-container">
-      <div className="form-header">
-        <h1>{isEditMode ? 'Edit Promotion' : 'Create New Promotion'}</h1>
-        <button onClick={() => navigate('/promotions')} className="btn-secondary">
-          Cancel
-        </button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            {isEditMode ? 'Edit Promotion' : 'Create New Promotion'}
+          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            onClick={() => navigate('/promotions')}
+            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
 
-      {error && <ErrorMessage message={error} />}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      <form onSubmit={handleSubmit} className="promotion-form">
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+        <form onSubmit={handleSubmit}>
         <div className="form-section">
           <h2>Basic Information</h2>
           <div className="form-grid">

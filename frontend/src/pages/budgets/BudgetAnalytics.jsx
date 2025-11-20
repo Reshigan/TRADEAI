@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  CircularProgress,
+  LinearProgress
+} from '@mui/material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -35,92 +43,151 @@ const BudgetAnalytics = () => {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount || 0);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading analytics...</div>;
+  const getUtilizationColor = (utilization) => {
+    if (utilization > 90) return 'error';
+    if (utilization > 75) return 'warning';
+    return 'success';
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>📊 Budget Analytics</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Detailed budget analysis and insights</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        📊 Budget Analytics
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        Detailed budget analysis and insights
+      </Typography>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>📈 Utilization Trend</h3>
-          {analytics.utilizationTrend.map((item, index) => (
-            <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>{item.month}</span>
-                <strong>{item.utilization}%</strong>
-              </div>
-              <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: `${item.utilization}%`, height: '100%', backgroundColor: item.utilization > 90 ? '#ef4444' : item.utilization > 75 ? '#f59e0b' : '#10b981' }} />
-              </div>
-            </div>
-          ))}
-          {analytics.utilizationTrend.length === 0 && <p style={{ color: '#666' }}>No trend data available</p>}
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} lg={6}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              📈 Utilization Trend
+            </Typography>
+            {analytics.utilizationTrend.map((item, index) => (
+              <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography variant="body2">{item.month}</Typography>
+                  <Typography variant="body2" fontWeight={600}>{item.utilization}%</Typography>
+                </Box>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={item.utilization} 
+                  color={getUtilizationColor(item.utilization)}
+                  sx={{ height: 8, borderRadius: 1 }}
+                />
+              </Box>
+            ))}
+            {analytics.utilizationTrend.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                No trend data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>💰 Top Spending Categories</h3>
-          {analytics.topSpendingCategories.map((item, index) => (
-            <div key={index} style={{ padding: '12px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontWeight: 'bold' }}>#{index + 1} {item.category}</div>
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>{item.percentage}% of total</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontWeight: 'bold' }}>{formatCurrency(item.amount)}</div>
-              </div>
-            </div>
-          ))}
-          {analytics.topSpendingCategories.length === 0 && <p style={{ color: '#666' }}>No spending data available</p>}
-        </div>
-      </div>
+        <Grid item xs={12} lg={6}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              💰 Top Spending Categories
+            </Typography>
+            {analytics.topSpendingCategories.map((item, index) => (
+              <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    #{index + 1} {item.category}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {item.percentage}% of total
+                  </Typography>
+                </Box>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  {formatCurrency(item.amount)}
+                </Typography>
+              </Box>
+            ))}
+            {analytics.topSpendingCategories.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                No spending data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>🏢 Department Allocation</h3>
-          {analytics.departmentAllocation.map((dept, index) => (
-            <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>{dept.department}</span>
-                <span>{formatCurrency(dept.allocated)}</span>
-              </div>
-              <div style={{ width: '100%', height: '6px', backgroundColor: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${(dept.spent / dept.allocated * 100)}%`, height: '100%', backgroundColor: '#3b82f6' }} />
-              </div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                Spent: {formatCurrency(dept.spent)} ({((dept.spent / dept.allocated) * 100).toFixed(1)}%)
-              </div>
-            </div>
-          ))}
-          {analytics.departmentAllocation.length === 0 && <p style={{ color: '#666' }}>No allocation data available</p>}
-        </div>
+      <Grid container spacing={3}>
+        <Grid item xs={12} lg={6}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              🏢 Department Allocation
+            </Typography>
+            {analytics.departmentAllocation.map((dept, index) => (
+              <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Box display="flex" justifyContent="space-between" mb={1}>
+                  <Typography variant="body2">{dept.department}</Typography>
+                  <Typography variant="body2">{formatCurrency(dept.allocated)}</Typography>
+                </Box>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(dept.spent / dept.allocated) * 100} 
+                  sx={{ height: 6, borderRadius: 1, mb: 0.5 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  Spent: {formatCurrency(dept.spent)} ({((dept.spent / dept.allocated) * 100).toFixed(1)}%)
+                </Typography>
+              </Box>
+            ))}
+            {analytics.departmentAllocation.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                No allocation data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>🎯 Forecast vs Actual</h3>
-          {analytics.forecastVsActual.map((item, index) => (
-            <div key={index} style={{ padding: '12px', borderBottom: '1px solid #eee' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>{item.period}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '5px' }}>
-                <span style={{ color: '#666' }}>Forecast:</span>
-                <span>{formatCurrency(item.forecast)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '5px' }}>
-                <span style={{ color: '#666' }}>Actual:</span>
-                <span>{formatCurrency(item.actual)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                <span style={{ color: '#666' }}>Variance:</span>
-                <span style={{ color: item.variance >= 0 ? '#10b981' : '#ef4444' }}>
-                  {item.variance >= 0 ? '+' : ''}{item.variance}%
-                </span>
-              </div>
-            </div>
-          ))}
-          {analytics.forecastVsActual.length === 0 && <p style={{ color: '#666' }}>No forecast data available</p>}
-        </div>
-      </div>
-    </div>
+        <Grid item xs={12} lg={6}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              🎯 Forecast vs Actual
+            </Typography>
+            {analytics.forecastVsActual.map((item, index) => (
+              <Box key={index} sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Typography variant="subtitle2" fontWeight={600} mb={1.5}>
+                  {item.period}
+                </Typography>
+                <Box display="flex" justifyContent="space-between" mb={0.5}>
+                  <Typography variant="body2" color="text.secondary">Forecast:</Typography>
+                  <Typography variant="body2">{formatCurrency(item.forecast)}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={0.5}>
+                  <Typography variant="body2" color="text.secondary">Actual:</Typography>
+                  <Typography variant="body2">{formatCurrency(item.actual)}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="body2" color="text.secondary">Variance:</Typography>
+                  <Typography variant="body2" color={item.variance >= 0 ? 'success.main' : 'error.main'}>
+                    {item.variance >= 0 ? '+' : ''}{item.variance}%
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+            {analytics.forecastVsActual.length === 0 && (
+              <Typography variant="body2" color="text.secondary">
+                No forecast data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

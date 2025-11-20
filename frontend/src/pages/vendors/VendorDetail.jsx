@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Skeleton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  Chip,
+  Alert,
+  Container,
+  Skeleton
+} from '@mui/material';
+import {
+  ArrowBack as BackIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  AccountBalance as TradeSpendIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import ErrorMessage from '../../components/common/ErrorMessage';
 import ProcessShell from '../../components/ProcessShell';
-import './VendorDetail.css';
 
 const VendorDetail = () => {
   const { id } = useParams();
@@ -17,7 +31,10 @@ const VendorDetail = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setData(response.data.data || response.data);
         setError(null);
       } catch (err) {
@@ -37,7 +54,10 @@ const VendorDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         navigate('/vendors');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete vendor');
@@ -56,65 +76,129 @@ const VendorDetail = () => {
       </Container>
     );
   }
-  if (error) return <ErrorMessage message={error} />;
-  if (!data) return <ErrorMessage message="Vendor not found" />;
+  
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+  
+  if (!data) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">Vendor not found</Alert>
+      </Box>
+    );
+  }
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active': return 'success';
+      case 'inactive': return 'default';
+      case 'blacklisted': return 'error';
+      default: return 'default';
+    }
+  };
 
   return (
     <ProcessShell module="vendor" entityId={id} entity={data}>
-      <div className="vendor-detail">
-        <div className="detail-header">
-        <div className="header-content">
-          <h1>{data.name}</h1>
-          {data.status && (
-            <span className={`status-badge status-${data.status}`}>
-              {data.status}
-            </span>
-          )}
-        </div>
-        <div className="header-actions">
-          <button onClick={() => navigate('/vendors')} className="btn-secondary">
-            Back to List
-          </button>
-          <button onClick={() => navigate(`/trade-spends?vendorId=${id}`)} className="btn-secondary">
-            View Trade Spends
-          </button>
-          <button onClick={handleEdit} className="btn-primary">
-            Edit
-          </button>
-          <button onClick={handleDelete} className="btn-danger">
-            Delete
-          </button>
-        </div>
-      </div>
+      <Box sx={{ p: 3 }}>
+        <Box sx={{ mb: 4 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+            <Box>
+              <Typography variant="h4" fontWeight={700} color="text.primary" mb={1}>
+                {data.name}
+              </Typography>
+              {data.status && (
+                <Chip 
+                  label={data.status} 
+                  color={getStatusColor(data.status)}
+                  size="small"
+                />
+              )}
+            </Box>
+            <Box display="flex" gap={1}>
+              <Button
+                variant="outlined"
+                startIcon={<BackIcon />}
+                onClick={() => navigate('/vendors')}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<TradeSpendIcon />}
+                onClick={() => navigate(`/trade-spends?vendorId=${id}`)}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
+                Trade Spends
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={handleEdit}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleDelete}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+              >
+                Delete
+              </Button>
+            </Box>
+          </Box>
+        </Box>
 
-      <div className="detail-content">
-        <section className="detail-section">
-          <h2>Information</h2>
-          <div className="detail-grid">
+        <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
+          <Typography variant="h6" fontWeight={600} mb={3}>
+            Information
+          </Typography>
+          <Grid container spacing={3}>
             {Object.keys(data).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(key => (
-              <div key={key} className="detail-item">
-                <label>{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</label>
-                <p>{typeof data[key] === 'object' ? JSON.stringify(data[key]) : (data[key] || 'N/A')}</p>
-              </div>
+              <Grid item xs={12} sm={6} md={4} key={key}>
+                <Typography variant="body2" color="text.secondary" mb={0.5}>
+                  {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                </Typography>
+                <Typography variant="body1" fontWeight={500}>
+                  {typeof data[key] === 'object' ? JSON.stringify(data[key]) : (data[key] || 'N/A')}
+                </Typography>
+              </Grid>
             ))}
-          </div>
-        </section>
+          </Grid>
+        </Paper>
 
-        <section className="detail-section">
-          <h2>Metadata</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <label>Created At</label>
-              <p>{data.createdAt ? new Date(data.createdAt).toLocaleString() : 'N/A'}</p>
-            </div>
-            <div className="detail-item">
-              <label>Last Updated</label>
-              <p>{data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'N/A'}</p>
-            </div>
-          </div>
-        </section>
-      </div>
-      </div>
+        <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="h6" fontWeight={600} mb={3}>
+            Metadata
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" color="text.secondary" mb={0.5}>
+                Created At
+              </Typography>
+              <Typography variant="body1" fontWeight={500}>
+                {data.createdAt ? new Date(data.createdAt).toLocaleString() : 'N/A'}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="body2" color="text.secondary" mb={0.5}>
+                Last Updated
+              </Typography>
+              <Typography variant="body1" fontWeight={500}>
+                {data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'N/A'}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Box>
     </ProcessShell>
   );
 };

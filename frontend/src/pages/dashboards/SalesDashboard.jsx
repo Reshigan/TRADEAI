@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  CircularProgress
+} from '@mui/material';
+import {
+  TrendingUp as TrendingUpIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -38,66 +48,205 @@ const SalesDashboard = () => {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0 }).format(amount || 0);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading dashboard...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>📈 Sales Dashboard</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Sales team performance and territory analysis</p>
+    <Box sx={{ p: 3, maxWidth: 1600, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} color="text.primary" mb={1}>
+          Sales Dashboard
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Sales team performance and territory analysis
+        </Typography>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Total Sales</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{formatCurrency(metrics.totalSales)}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '10px' }}>↑ {metrics.salesGrowth}% growth</div>
-        </div>
+      {/* KPI Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} lg={4}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Total Sales
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ my: 1.5 }}>
+              {formatCurrency(metrics.totalSales)}
+            </Typography>
+            <Box display="flex" alignItems="center" gap={0.5}>
+              <TrendingUpIcon fontSize="small" />
+              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                {metrics.salesGrowth}% growth
+              </Typography>
+            </Box>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Top Territory</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', marginTop: '10px' }}>{metrics.topTerritory || 'N/A'}</div>
-        </div>
+        <Grid item xs={12} sm={6} lg={4}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Top Territory
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ mt: 1.5 }}>
+              {metrics.topTerritory || 'N/A'}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Avg Deal Size</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{formatCurrency(metrics.avgDealSize)}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} lg={4}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Avg Deal Size
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ mt: 1.5 }}>
+              {formatCurrency(metrics.avgDealSize)}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>👥 Sales by Team</h3>
-          {metrics.salesByTeam.map((item, index) => (
-            <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
-              <span>{item.team}</span>
-              <strong>{formatCurrency(item.amount)}</strong>
-            </div>
-          ))}
-          {metrics.salesByTeam.length === 0 && <p style={{ color: '#666' }}>No data available</p>}
-        </div>
+      {/* Data Sections */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Sales by Team
+            </Typography>
+            {metrics.salesByTeam.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={1.5}>
+                {metrics.salesByTeam.map((item, index) => (
+                  <Paper
+                    key={index}
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: 'grey.50',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography variant="body2">{item.team}</Typography>
+                    <Typography variant="body2" fontWeight={700}>
+                      {formatCurrency(item.amount)}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>📦 Sales by Product</h3>
-          {metrics.salesByProduct.map((item, index) => (
-            <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
-              <span>{item.product}</span>
-              <strong>{formatCurrency(item.amount)}</strong>
-            </div>
-          ))}
-          {metrics.salesByProduct.length === 0 && <p style={{ color: '#666' }}>No data available</p>}
-        </div>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Sales by Product
+            </Typography>
+            {metrics.salesByProduct.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={1.5}>
+                {metrics.salesByProduct.map((item, index) => (
+                  <Paper
+                    key={index}
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: 'grey.50',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography variant="body2">{item.product}</Typography>
+                    <Typography variant="body2" fontWeight={700}>
+                      {formatCurrency(item.amount)}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>🌐 Sales by Channel</h3>
-          {metrics.salesByChannel.map((item, index) => (
-            <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
-              <span>{item.channel}</span>
-              <strong>{formatCurrency(item.amount)}</strong>
-            </div>
-          ))}
-          {metrics.salesByChannel.length === 0 && <p style={{ color: '#666' }}>No data available</p>}
-        </div>
-      </div>
-    </div>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Sales by Channel
+            </Typography>
+            {metrics.salesByChannel.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={1.5}>
+                {metrics.salesByChannel.map((item, index) => (
+                  <Paper
+                    key={index}
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: 'grey.50',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography variant="body2">{item.channel}</Typography>
+                    <Typography variant="body2" fontWeight={700}>
+                      {formatCurrency(item.amount)}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Alert,
+  Link
+} from '@mui/material';
 import axios from 'axios';
-import ErrorMessage from '../../components/common/ErrorMessage';
 import newLogo from '../../assets/new_logo.svg';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -37,121 +45,95 @@ const Login = () => {
   };
 
   return (
-    <div style={{ 
+    <Box sx={{ 
       minHeight: '100vh', 
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px'
+      p: 3
     }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '450px',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+      <Paper elevation={3} sx={{ 
+        maxWidth: 450, 
+        width: '100%', 
+        p: 5, 
+        borderRadius: 3 
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <img 
+        <Box textAlign="center" mb={4}>
+          <Box 
+            component="img" 
             src={newLogo} 
             alt="Trade AI Logo"
-            style={{ height: '50px', marginBottom: '15px' }}
+            sx={{ height: 50, mb: 2 }}
           />
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+          <Typography variant="h4" fontWeight={700} mb={1}>
             TRADEAI
-          </h1>
-          <p style={{ color: '#666', fontSize: '14px' }}>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             Sign in to your account
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
-        {error && <ErrorMessage message={error} onRetry={() => setError('')} />}
+        {error && (
+          <Alert severity="error" onClose={() => setError('')} sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
-              placeholder="you@example.com"
-            />
-          </div>
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            type="email"
+            label="Email Address"
+            value={formData.email}
+            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            required
+            placeholder="you@example.com"
+            sx={{ mb: 3 }}
+          />
 
-          <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-              Password
-            </label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
-              placeholder="••••••••"
-            />
-          </div>
+          <TextField
+            fullWidth
+            type="password"
+            label="Password"
+            value={formData.password}
+            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            required
+            placeholder="••••••••"
+            sx={{ mb: 4 }}
+          />
 
-          <button
+          <Button
+            fullWidth
             type="submit"
+            variant="contained"
             disabled={loading}
-            style={{
-              width: '100%',
-              padding: '14px',
-              backgroundColor: loading ? '#9ca3af' : '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s'
+            sx={{ 
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '1rem'
             }}
-            onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = '#5568d3')}
-            onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = '#667eea')}
           >
             {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+          </Button>
+        </Box>
 
-        <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: '#666' }}>
-          Don't have an account?{' '}
-          <button
-            onClick={() => navigate('/register')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#667eea',
-              fontWeight: '600',
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
-          >
-            Sign up
-          </button>
-        </div>
-      </div>
-    </div>
+        <Box mt={3} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
+            Don't have an account?{' '}
+            <Link
+              component="button"
+              onClick={() => navigate('/register')}
+              sx={{ fontWeight: 600, cursor: 'pointer' }}
+            >
+              Sign up
+            </Link>
+          </Typography>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

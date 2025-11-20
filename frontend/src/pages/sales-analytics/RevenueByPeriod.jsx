@@ -1,4 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  MenuItem,
+  TextField,
+  CircularProgress,
+  LinearProgress
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -43,106 +57,155 @@ const RevenueByPeriod = () => {
     return total > 0 ? getTotalRevenue() / total : 0;
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading revenue data...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>💰 Revenue by Period</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Time-series revenue analysis</p>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        💰 Revenue by Period
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        Time-series revenue analysis
+      </Typography>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', flexWrap: 'wrap' }}>
-        <select value={period} onChange={(e) => setPeriod(e.target.value)} style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}>
-          <option value="day">Daily</option>
-          <option value="week">Weekly</option>
-          <option value="month">Monthly</option>
-          <option value="quarter">Quarterly</option>
-          <option value="year">Yearly</option>
-        </select>
+      <Box display="flex" gap={2} mb={4} flexWrap="wrap">
+        <TextField
+          select
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
+          sx={{ minWidth: 150 }}
+          size="small"
+        >
+          <MenuItem value="day">Daily</MenuItem>
+          <MenuItem value="week">Weekly</MenuItem>
+          <MenuItem value="month">Monthly</MenuItem>
+          <MenuItem value="quarter">Quarterly</MenuItem>
+          <MenuItem value="year">Yearly</MenuItem>
+        </TextField>
 
-        <input
+        <TextField
           type="date"
           value={dateRange.startDate}
           onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}
-          placeholder="Start Date"
+          InputLabelProps={{ shrink: true }}
+          size="small"
+          label="Start Date"
         />
 
-        <input
+        <TextField
           type="date"
           value={dateRange.endDate}
           onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-          style={{ padding: '8px', border: '1px solid #ddd', borderRadius: '5px' }}
-          placeholder="End Date"
+          InputLabelProps={{ shrink: true }}
+          size="small"
+          label="End Date"
         />
 
-        <button onClick={fetchData} style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
+          onClick={fetchData}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
           Apply
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Total Revenue</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#10b981' }}>{formatCurrency(getTotalRevenue())}</div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Total Revenue
+            </Typography>
+            <Typography variant="h5" fontWeight={700} color="success.main">
+              {formatCurrency(getTotalRevenue())}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Total Transactions</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{getTotalTransactions().toLocaleString()}</div>
-        </div>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Total Transactions
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {getTotalTransactions().toLocaleString()}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>Avg Transaction</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold' }}>{formatCurrency(getAvgTransaction())}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" mb={1}>
+              Avg Transaction
+            </Typography>
+            <Typography variant="h5" fontWeight={700}>
+              {formatCurrency(getAvgTransaction())}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-        <h3 style={{ marginBottom: '20px' }}>Revenue Trend</h3>
+      <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Revenue Trend
+        </Typography>
         
-        <div>
+        <Box>
           {data.map((item, index) => {
             const maxRevenue = Math.max(...data.map(d => d.totalRevenue));
             const barWidth = (item.totalRevenue / maxRevenue * 100);
             
             return (
-              <div key={index} style={{ padding: '15px', borderBottom: '1px solid #eee' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <div>
-                    <div style={{ fontWeight: 'bold' }}>
+              <Box key={index} sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Box display="flex" justifyContent="space-between" mb={1.5}>
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={600}>
                       {period === 'month' && `${item._id?.year}-${String(item._id?.month).padStart(2, '0')}`}
                       {period === 'quarter' && `Q${item._id?.quarter} ${item._id?.year}`}
                       {period === 'year' && item._id?.year}
                       {period === 'week' && `Week ${item._id?.week} ${item._id?.year}`}
                       {period === 'day' && `${item._id?.year}-${String(item._id?.month).padStart(2, '0')}-${String(item._id?.day).padStart(2, '0')}`}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
                       {item.transactionCount} transactions | {item.totalQuantity} units
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '18px' }}>{formatCurrency(item.totalRevenue)}</div>
-                    <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                    </Typography>
+                  </Box>
+                  <Box textAlign="right">
+                    <Typography variant="h6" fontWeight={600}>
+                      {formatCurrency(item.totalRevenue)}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
                       Avg: {formatCurrency(item.avgTransactionValue)}
-                    </div>
-                  </div>
-                </div>
+                    </Typography>
+                  </Box>
+                </Box>
                 
-                <div style={{ width: '100%', height: '10px', backgroundColor: '#e5e7eb', borderRadius: '5px', overflow: 'hidden' }}>
-                  <div style={{ width: `${barWidth}%`, height: '100%', backgroundColor: '#10b981', transition: 'width 0.3s' }} />
-                </div>
-              </div>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={barWidth} 
+                  sx={{ height: 10, borderRadius: 1, bgcolor: 'grey.200', '& .MuiLinearProgress-bar': { bgcolor: 'success.main' } }}
+                />
+              </Box>
             );
           })}
-        </div>
+        </Box>
 
         {data.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-            No revenue data available for the selected period
-          </div>
+          <Box textAlign="center" py={5}>
+            <Typography variant="body2" color="text.secondary">
+              No revenue data available for the selected period
+            </Typography>
+          </Box>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 

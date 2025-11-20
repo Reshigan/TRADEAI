@@ -88,7 +88,13 @@
           "args": "after-used",
           "argsIgnorePattern": "^_"
         }
-      ]
+      ],
+      "testing-library/no-wait-for-multiple-assertions": "warn",
+      "testing-library/no-wait-for-side-effects": "warn",
+      "testing-library/await-async-utils": "warn",
+      "testing-library/no-container": "warn",
+      "testing-library/no-node-access": "warn",
+      "jest/no-conditional-expect": "warn"
     }
   },
   "proxy": "http://localhost:5000",

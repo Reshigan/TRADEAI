@@ -1,4 +1,22 @@
 import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  TextField,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Alert,
+  CircularProgress
+} from '@mui/material';
+import {
+  Download as DownloadIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -52,105 +70,102 @@ const ReportBuilder = () => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>📊 Report Builder</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Create custom reports with flexible filters and export options</p>
+    <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
+      <Typography variant="h4" fontWeight={700} mb={1}>
+        📊 Report Builder
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={4}>
+        Create custom reports with flexible filters and export options
+      </Typography>
 
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '30px', border: '1px solid #ddd' }}>
-        <div style={{ marginBottom: '25px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Report Type</label>
-          <select
+      <Paper elevation={0} sx={{ p: 4, border: '1px solid', borderColor: 'divider', borderRadius: 2, mb: 4 }}>
+        <Box mb={3}>
+          <TextField
+            select
+            fullWidth
+            label="Report Type"
             value={reportConfig.reportType}
             onChange={(e) => setReportConfig(prev => ({ ...prev, reportType: e.target.value }))}
-            style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '5px' }}
           >
             {reportTypes.map(type => (
-              <option key={type.value} value={type.value}>{type.label}</option>
+              <MenuItem key={type.value} value={type.value}>{type.label}</MenuItem>
             ))}
-          </select>
-        </div>
+          </TextField>
+        </Box>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Start Date</label>
-            <input
-              type="date"
-              value={reportConfig.dateRange.start}
-              onChange={(e) => setReportConfig(prev => ({
-                ...prev,
-                dateRange: { ...prev.dateRange, start: e.target.value }
-              }))}
-              style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '5px' }}
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>End Date</label>
-            <input
-              type="date"
-              value={reportConfig.dateRange.end}
-              onChange={(e) => setReportConfig(prev => ({
-                ...prev,
-                dateRange: { ...prev.dateRange, end: e.target.value }
-              }))}
-              style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '5px' }}
-            />
-          </div>
-        </div>
+        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2} mb={3}>
+          <TextField
+            type="date"
+            label="Start Date"
+            value={reportConfig.dateRange.start}
+            onChange={(e) => setReportConfig(prev => ({
+              ...prev,
+              dateRange: { ...prev.dateRange, start: e.target.value }
+            }))}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            type="date"
+            label="End Date"
+            value={reportConfig.dateRange.end}
+            onChange={(e) => setReportConfig(prev => ({
+              ...prev,
+              dateRange: { ...prev.dateRange, end: e.target.value }
+            }))}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
 
-        <div style={{ marginBottom: '25px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Export Format</label>
-          <div style={{ display: 'flex', gap: '15px' }}>
+        <FormControl component="fieldset" sx={{ mb: 3 }}>
+          <FormLabel component="legend">Export Format</FormLabel>
+          <RadioGroup
+            row
+            value={reportConfig.format}
+            onChange={(e) => setReportConfig(prev => ({ ...prev, format: e.target.value }))}
+          >
             {['pdf', 'excel', 'csv'].map(format => (
-              <label key={format} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                <input
-                  type="radio"
-                  value={format}
-                  checked={reportConfig.format === format}
-                  onChange={(e) => setReportConfig(prev => ({ ...prev, format: e.target.value }))}
-                  style={{ marginRight: '8px' }}
-                />
-                {format.toUpperCase()}
-              </label>
+              <FormControlLabel 
+                key={format} 
+                value={format} 
+                control={<Radio />} 
+                label={format.toUpperCase()} 
+              />
             ))}
-          </div>
-        </div>
+          </RadioGroup>
+        </FormControl>
 
         {error && (
-          <div style={{ padding: '15px', backgroundColor: '#fee2e2', color: '#dc2626', borderRadius: '5px', marginBottom: '20px' }}>
+          <Alert severity="error" sx={{ mb: 3 }}>
             {error}
-          </div>
+          </Alert>
         )}
 
-        <button
+        <Button
+          fullWidth
+          variant="contained"
+          size="large"
+          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <DownloadIcon />}
           onClick={generateReport}
           disabled={loading || !reportConfig.dateRange.start || !reportConfig.dateRange.end}
-          style={{
-            width: '100%',
-            padding: '15px',
-            backgroundColor: loading ? '#9ca3af' : '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: loading ? 'not-allowed' : 'pointer'
-          }}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, py: 1.5 }}
         >
-          {loading ? 'Generating...' : '📥 Generate Report'}
-        </button>
-      </div>
+          {loading ? 'Generating...' : 'Generate Report'}
+        </Button>
+      </Paper>
 
-      <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f0f9ff', borderRadius: '8px' }}>
-        <h3 style={{ marginBottom: '10px' }}>📝 Report Features</h3>
-        <ul style={{ color: '#666', lineHeight: '1.8' }}>
+      <Paper elevation={0} sx={{ p: 3, bgcolor: 'primary.50', border: '1px solid', borderColor: 'primary.100', borderRadius: 2 }}>
+        <Typography variant="h6" fontWeight={600} mb={2}>
+          📝 Report Features
+        </Typography>
+        <Box component="ul" sx={{ color: 'text.secondary', lineHeight: 1.8, pl: 3 }}>
           <li>Export to PDF, Excel, or CSV formats</li>
           <li>Flexible date range selection</li>
           <li>Multiple report types available</li>
           <li>Real-time data analysis</li>
           <li>Customizable filters and metrics</li>
-        </ul>
-      </div>
-    </div>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

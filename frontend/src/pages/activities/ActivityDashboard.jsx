@@ -1,4 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  CircularProgress,
+  LinearProgress
+} from '@mui/material';
+import {
+  CheckCircle as CheckIcon,
+  Warning as WarningIcon,
+  Schedule as ScheduleIcon,
+  Pause as PauseIcon,
+  Celebration as CelebrationIcon
+} from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
@@ -40,83 +55,227 @@ const ActivityDashboard = () => {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount || 0);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading dashboard...</div>;
+  const getPerformanceIcon = (performance) => {
+    switch (performance) {
+      case 'On Track': return <CheckIcon color="success" />;
+      case 'At Risk': return <WarningIcon color="warning" />;
+      case 'Delayed': return <ScheduleIcon color="error" />;
+      case 'Not Started': return <PauseIcon color="disabled" />;
+      case 'Completed': return <CelebrationIcon color="success" />;
+      default: return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>🎯 Activity Dashboard</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Activity performance tracking and ROI analysis</p>
+    <Box sx={{ p: 3, maxWidth: 1600, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} color="text.primary" mb={1}>
+          Activity Dashboard
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Activity performance tracking and ROI analysis
+        </Typography>
+      </Box>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Total Activities</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{metrics.totalActivities}</div>
-        </div>
+      {/* KPI Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Total Activities
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ mt: 1.5 }}>
+              {metrics.totalActivities}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Active Now</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{metrics.activeActivities}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Active Now
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ mt: 1.5 }}>
+              {metrics.activeActivities}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Completed</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{metrics.completedActivities}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Completed
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ mt: 1.5 }}>
+              {metrics.completedActivities}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', borderRadius: '12px', padding: '25px', color: 'white' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Average ROI</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '10px' }}>{metrics.avgROI.toFixed(2)}x</div>
-        </div>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              color: 'white',
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+              Average ROI
+            </Typography>
+            <Typography variant="h4" fontWeight={700} sx={{ mt: 1.5 }}>
+              {metrics.avgROI.toFixed(2)}x
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '25px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '14px', color: '#666' }}>Total Budget</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', marginTop: '10px' }}>{formatCurrency(metrics.totalBudget)}</div>
-        </div>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="caption" color="text.secondary">
+              Total Budget
+            </Typography>
+            <Typography variant="h5" fontWeight={700} sx={{ mt: 1.5 }}>
+              {formatCurrency(metrics.totalBudget)}
+            </Typography>
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '25px', backgroundColor: 'white' }}>
-          <div style={{ fontSize: '14px', color: '#666' }}>Total Spent</div>
-          <div style={{ fontSize: '28px', fontWeight: 'bold', marginTop: '10px', color: '#ef4444' }}>{formatCurrency(metrics.totalSpent)}</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} md={4} lg={2}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="caption" color="text.secondary">
+              Total Spent
+            </Typography>
+            <Typography variant="h5" fontWeight={700} color="error.main" sx={{ mt: 1.5 }}>
+              {formatCurrency(metrics.totalSpent)}
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>📊 Activities by Type</h3>
-          {metrics.activitiesByType.map((item, index) => (
-            <div key={index} style={{ padding: '10px', borderBottom: '1px solid #eee' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>{item.type}</span>
-                <strong>{item.count}</strong>
-              </div>
-              <div style={{ width: '100%', height: '6px', backgroundColor: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${(item.count / metrics.totalActivities * 100)}%`, height: '100%', backgroundColor: '#3b82f6' }} />
-              </div>
-            </div>
-          ))}
-          {metrics.activitiesByType.length === 0 && <p style={{ color: '#666' }}>No data available</p>}
-        </div>
+      {/* Data Sections */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Activities by Type
+            </Typography>
+            {metrics.activitiesByType.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={2}>
+                {metrics.activitiesByType.map((item, index) => (
+                  <Box key={index}>
+                    <Box display="flex" justifyContent="space-between" mb={0.5}>
+                      <Typography variant="body2">{item.type}</Typography>
+                      <Typography variant="body2" fontWeight={600}>{item.count}</Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={(item.count / metrics.totalActivities * 100)}
+                      sx={{
+                        height: 8,
+                        borderRadius: 1,
+                        bgcolor: 'grey.200',
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 1,
+                          bgcolor: 'primary.main'
+                        }
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', backgroundColor: 'white' }}>
-          <h3 style={{ marginBottom: '15px' }}>📈 Performance Metrics</h3>
-          {metrics.performanceMetrics.map((item, index) => (
-            <div key={index} style={{ padding: '12px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontWeight: 'bold' }}>{item.performance}</div>
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>{item.count} activities</div>
-              </div>
-              <div style={{ fontSize: '24px' }}>
-                {item.performance === 'On Track' && '✅'}
-                {item.performance === 'At Risk' && '⚠️'}
-                {item.performance === 'Delayed' && '⏰'}
-                {item.performance === 'Not Started' && '⏸️'}
-                {item.performance === 'Completed' && '🎉'}
-              </div>
-            </div>
-          ))}
-          {metrics.performanceMetrics.length === 0 && <p style={{ color: '#666' }}>No data available</p>}
-        </div>
-      </div>
-    </div>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={700} mb={2}>
+              Performance Metrics
+            </Typography>
+            {metrics.performanceMetrics.length > 0 ? (
+              <Box display="flex" flexDirection="column" gap={1.5}>
+                {metrics.performanceMetrics.map((item, index) => (
+                  <Paper
+                    key={index}
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: 'grey.50',
+                      borderRadius: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="body2" fontWeight={600}>
+                        {item.performance}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {item.count} activities
+                      </Typography>
+                    </Box>
+                    <Box sx={{ fontSize: 28 }}>
+                      {getPerformanceIcon(item.performance)}
+                    </Box>
+                  </Paper>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No data available
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  Chip,
+  CircularProgress,
+  Alert
+} from '@mui/material';
+import {
+  ArrowBack as BackIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as ViewIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-import './CampaignDetail.css';
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -19,7 +32,10 @@ const CampaignDetail = () => {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setCampaign(response.data.data || response.data);
       setError(null);
     } catch (err) {
@@ -36,7 +52,10 @@ const CampaignDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this campaign?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         navigate('/campaigns');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete campaign');
@@ -44,110 +63,212 @@ const CampaignDetail = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage message={error} />;
-  if (!campaign) return <ErrorMessage message="Campaign not found" />;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+  
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+  
+  if (!campaign) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">Campaign not found</Alert>
+      </Box>
+    );
+  }
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active': return 'success';
+      case 'planned': return 'info';
+      case 'paused': return 'warning';
+      case 'completed': return 'default';
+      case 'cancelled': return 'error';
+      default: return 'default';
+    }
+  };
 
   return (
-    <div className="campaign-detail">
-      <div className="detail-header">
-        <div className="header-content">
-          <h1>{campaign.name}</h1>
-          {campaign.status && (
-            <span className={`status-badge status-${campaign.status}`}>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+          <Box>
+            <Typography variant="h4" fontWeight={700} color="text.primary" mb={1}>
+              {campaign.name}
+            </Typography>
+            {campaign.status && (
+              <Chip 
+                label={campaign.status} 
+                color={getStatusColor(campaign.status)}
+                size="small"
+              />
+            )}
+          </Box>
+          <Box display="flex" gap={1}>
+            <Button
+              variant="outlined"
+              startIcon={<BackIcon />}
+              onClick={() => navigate('/campaigns')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Back
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ViewIcon />}
+              onClick={() => navigate(`/promotions?campaignId=${id}`)}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Promotions
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Delete
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Basic Information
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Campaign Name
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.name}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Type
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.type || 'N/A'}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Status
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
               {campaign.status}
-            </span>
-          )}
-        </div>
-        <div className="header-actions">
-          <button onClick={() => navigate('/campaigns')} className="btn-secondary">
-            Back to List
-          </button>
-          <button onClick={() => navigate(`/promotions?campaignId=${id}`)} className="btn-secondary">
-            View Promotions
-          </button>
-          <button onClick={handleEdit} className="btn-primary">
-            Edit
-          </button>
-          <button onClick={handleDelete} className="btn-danger">
-            Delete
-          </button>
-        </div>
-      </div>
+            </Typography>
+          </Grid>
+        </Grid>
+      </Paper>
 
-      <div className="detail-content">
-        <section className="detail-section">
-          <h2>Basic Information</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <label>Campaign Name</label>
-              <p>{campaign.name}</p>
-            </div>
-            <div className="detail-item">
-              <label>Type</label>
-              <p>{campaign.type || 'N/A'}</p>
-            </div>
-            <div className="detail-item">
-              <label>Status</label>
-              <p>{campaign.status}</p>
-            </div>
-          </div>
-        </section>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Timeline
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Start Date
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.startDate ? new Date(campaign.startDate).toLocaleDateString() : 'N/A'}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              End Date
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.endDate ? new Date(campaign.endDate).toLocaleDateString() : 'N/A'}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Duration
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.startDate && campaign.endDate
+                ? `${Math.ceil((new Date(campaign.endDate) - new Date(campaign.startDate)) / (1000 * 60 * 60 * 24))} days`
+                : 'N/A'}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Paper>
 
-        <section className="detail-section">
-          <h2>Timeline</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <label>Start Date</label>
-              <p>{campaign.startDate ? new Date(campaign.startDate).toLocaleDateString() : 'N/A'}</p>
-            </div>
-            <div className="detail-item">
-              <label>End Date</label>
-              <p>{campaign.endDate ? new Date(campaign.endDate).toLocaleDateString() : 'N/A'}</p>
-            </div>
-            <div className="detail-item">
-              <label>Duration</label>
-              <p>
-                {campaign.startDate && campaign.endDate
-                  ? `${Math.ceil((new Date(campaign.endDate) - new Date(campaign.startDate)) / (1000 * 60 * 60 * 24))} days`
-                  : 'N/A'}
-              </p>
-            </div>
-          </div>
-        </section>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Budget
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Total Budget
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              R {campaign.budget ? campaign.budget.toLocaleString() : '0'}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Paper>
 
-        <section className="detail-section">
-          <h2>Budget</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <label>Total Budget</label>
-              <p>R {campaign.budget ? campaign.budget.toLocaleString() : '0'}</p>
-            </div>
-          </div>
-        </section>
+      {campaign.description && (
+        <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
+          <Typography variant="h6" fontWeight={600} mb={3}>
+            Description
+          </Typography>
+          <Typography variant="body1">
+            {campaign.description}
+          </Typography>
+        </Paper>
+      )}
 
-        {campaign.description && (
-          <section className="detail-section">
-            <h2>Description</h2>
-            <p className="description-text">{campaign.description}</p>
-          </section>
-        )}
-
-        <section className="detail-section">
-          <h2>Metadata</h2>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <label>Created At</label>
-              <p>{campaign.createdAt ? new Date(campaign.createdAt).toLocaleString() : 'N/A'}</p>
-            </div>
-            <div className="detail-item">
-              <label>Last Updated</label>
-              <p>{campaign.updatedAt ? new Date(campaign.updatedAt).toLocaleString() : 'N/A'}</p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+        <Typography variant="h6" fontWeight={600} mb={3}>
+          Metadata
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Created At
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.createdAt ? new Date(campaign.createdAt).toLocaleString() : 'N/A'}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="body2" color="text.secondary" mb={0.5}>
+              Last Updated
+            </Typography>
+            <Typography variant="body1" fontWeight={500}>
+              {campaign.updatedAt ? new Date(campaign.updatedAt).toLocaleString() : 'N/A'}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Box>
   );
 };
 

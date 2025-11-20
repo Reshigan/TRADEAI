@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  CircularProgress,
+  Alert,
+  Grid
+} from '@mui/material';
+import {
+  Save as SaveIcon,
+  Cancel as CancelIcon
+} from '@mui/icons-material';
 import axios from 'axios';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import ErrorMessage from '../../components/common/ErrorMessage';
-import './CustomerForm.css';
 
 const CustomerForm = () => {
   const { id } = useParams();
@@ -31,7 +46,10 @@ const CustomerForm = () => {
   const fetchCustomer = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const customer = response.data.data || response.data;
       setFormData({
         name: customer.name || '',
@@ -62,8 +80,11 @@ const CustomerForm = () => {
 
     try {
       setSaving(true);
+      const token = localStorage.getItem('token');
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/customers${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, formData);
+      await axios[isEditMode ? 'put' : 'post'](url, formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       navigate('/customers');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save customer');
@@ -72,72 +93,160 @@ const CustomerForm = () => {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="customer-form-container">
-      <div className="form-header">
-        <h1>{isEditMode ? 'Edit Customer' : 'Create New Customer'}</h1>
-        <button onClick={() => navigate('/customers')} className="btn-secondary">Cancel</button>
-      </div>
+    <Box sx={{ p: 3, maxWidth: 1000, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
+            {isEditMode ? 'Edit Customer' : 'Create New Customer'}
+          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            onClick={() => navigate('/customers')}
+            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
 
-      {error && <ErrorMessage message={error} />}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      <form onSubmit={handleSubmit} className="customer-form">
-        <div className="form-section">
-          <h2>Basic Information</h2>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="name">Customer Name *</label>
-              <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required placeholder="Enter customer name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email *</label>
-              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required placeholder="customer@example.com" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="phone">Phone</label>
-              <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="+27 123 456 7890" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="company">Company</label>
-              <input type="text" id="company" name="company" value={formData.company} onChange={handleChange} placeholder="Company name" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="tier">Tier</label>
-              <select id="tier" name="tier" value={formData.tier} onChange={handleChange}>
-                <option value="bronze">Bronze</option>
-                <option value="silver">Silver</option>
-                <option value="gold">Gold</option>
-                <option value="platinum">Platinum</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="status">Status *</label>
-              <select id="status" name="status" value={formData.status} onChange={handleChange} required>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
-              </select>
-            </div>
-          </div>
-        </div>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Basic Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Customer Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter customer name"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="customer@example.com"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+27 123 456 7890"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Company"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleChange}
+                  placeholder="Company name"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Tier</InputLabel>
+                  <Select
+                    name="tier"
+                    value={formData.tier}
+                    onChange={handleChange}
+                    label="Tier"
+                  >
+                    <MenuItem value="bronze">Bronze</MenuItem>
+                    <MenuItem value="silver">Silver</MenuItem>
+                    <MenuItem value="gold">Gold</MenuItem>
+                    <MenuItem value="platinum">Platinum</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    label="Status"
+                  >
+                    <MenuItem value="active">Active</MenuItem>
+                    <MenuItem value="inactive">Inactive</MenuItem>
+                    <MenuItem value="suspended">Suspended</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
 
-        <div className="form-section">
-          <h2>Address</h2>
-          <div className="form-group">
-            <textarea id="address" name="address" value={formData.address} onChange={handleChange} rows="3" placeholder="Enter address..." />
-          </div>
-        </div>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Address
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Enter address..."
+            />
+          </Box>
 
-        <div className="form-actions">
-          <button type="button" onClick={() => navigate('/customers')} className="btn-secondary">Cancel</button>
-          <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : isEditMode ? 'Update Customer' : 'Create Customer'}
-          </button>
-        </div>
-      </form>
-    </div>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={() => navigate('/customers')}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              disabled={saving}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              {saving ? 'Saving...' : isEditMode ? 'Update Customer' : 'Create Customer'}
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 
