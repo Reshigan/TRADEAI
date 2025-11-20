@@ -281,6 +281,16 @@ function App() {
           } 
         />
         <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )
+          } 
+        />
+        <Route 
           path="/dashboard" 
           element={
             isAuthenticated ? (
