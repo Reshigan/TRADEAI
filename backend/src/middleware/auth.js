@@ -735,6 +735,7 @@ const logout = async (req, res) => {
 module.exports = {
   authenticateToken,
   authenticate: authenticateToken, // Alias for consistency
+  protect: authenticateToken, // Alias for route protection
   authorize,
   checkPermission,
   authorizeCustomer,
