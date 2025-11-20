@@ -14,11 +14,14 @@ export const UserSkillProvider = ({ children }) => {
   const loadUserSkillLevel = async () => {
     try {
       const response = await apiClient.get('/auth/me');
-      if (response.data.success && response.data.data.skillLevel) {
-        setSkillLevel(response.data.data.skillLevel);
-      }
+      const skillLevelValue = response.data?.data?.skillLevel || 
+                              response.data?.user?.skillLevel || 
+                              response.data?.skillLevel || 
+                              'standard';
+      setSkillLevel(skillLevelValue);
     } catch (error) {
       console.error('Error loading user skill level:', error);
+      setSkillLevel('standard');
     } finally {
       setLoading(false);
     }

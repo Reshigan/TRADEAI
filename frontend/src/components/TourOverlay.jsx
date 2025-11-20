@@ -16,7 +16,7 @@ const TourOverlay = ({ module, onComplete }) => {
   const checkTourStatus = async () => {
     try {
       const response = await apiClient.get('/auth/me');
-      const user = response.data.data;
+      const user = response.data?.data || response.data?.user || response.data || {};
       
       const completedTours = user.preferences?.completedTours || [];
       if (!completedTours.includes(module)) {
