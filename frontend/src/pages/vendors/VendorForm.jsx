@@ -45,7 +45,10 @@ const VendorForm = () => {
     const fetchVendor = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/vendors/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const vendor = response.data.data || response.data;
         setFormData({
           name: vendor.name || '',
@@ -79,8 +82,11 @@ const VendorForm = () => {
 
     try {
       setSaving(true);
-      const url = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/vendors${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, formData);
+      const token = localStorage.getItem('token');
+      const url = `${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/vendors${isEditMode ? `/${id}` : ''}`;
+      await axios[isEditMode ? 'put' : 'post'](url, formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       navigate('/vendors');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save vendor');

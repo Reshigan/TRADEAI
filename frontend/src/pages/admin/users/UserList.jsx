@@ -50,7 +50,10 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setUsers(response.data.data || response.data || []);
       setError(null);
     } catch (err) {
@@ -63,7 +66,10 @@ const UserList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         fetchUsers();
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete user');
@@ -73,8 +79,11 @@ const UserList = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'}/users/${id}/status`, {
+      const token = localStorage.getItem('token');
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users/${id}/status`, {
         isActive: !currentStatus
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       fetchUsers();
     } catch (err) {
