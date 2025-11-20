@@ -47,7 +47,10 @@ const ProductForm = () => {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const product = response.data.data || response.data;
       setFormData({
         name: product.name || '',
@@ -79,6 +82,7 @@ const ProductForm = () => {
 
     try {
       setSaving(true);
+      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
@@ -86,7 +90,9 @@ const ProductForm = () => {
         stock: formData.stock ? parseInt(formData.stock) : 0
       };
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/products${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, payload);
+      await axios[isEditMode ? 'put' : 'post'](url, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       navigate('/products');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save product');

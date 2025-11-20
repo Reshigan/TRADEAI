@@ -31,7 +31,10 @@ const VendorDetail = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setData(response.data.data || response.data);
         setError(null);
       } catch (err) {
@@ -51,7 +54,10 @@ const VendorDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         navigate('/vendors');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete vendor');

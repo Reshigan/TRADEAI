@@ -39,7 +39,10 @@ const CustomerDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setData(response.data.data || response.data);
       setError(null);
       
@@ -64,7 +67,10 @@ const CustomerDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         analytics.trackEvent('customer_deleted', { customerId: id });
         toast.success('Customer deleted successfully!');
         navigate('/customers');

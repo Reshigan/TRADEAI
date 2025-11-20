@@ -37,7 +37,10 @@ const PromotionDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setPromotion(response.data.data || response.data);
       setError(null);
       
@@ -62,7 +65,10 @@ const PromotionDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this promotion?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         analytics.trackEvent('promotion_deleted', { promotionId: id });
         toast.success('Promotion deleted successfully!');
         navigate('/promotions');

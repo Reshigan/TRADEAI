@@ -66,7 +66,10 @@ const PromotionForm = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const productsData = response.data.data || response.data;
       setProducts(productsData);
       
@@ -91,7 +94,10 @@ const PromotionForm = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const customersData = response.data.data || response.data;
       setCustomers(customersData);
       
@@ -117,7 +123,10 @@ const PromotionForm = () => {
   const fetchPromotion = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const promotion = response.data.data || response.data;
       
       setFormData({
@@ -176,6 +185,7 @@ const PromotionForm = () => {
       setSaving(true);
       setError(null);
 
+      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         budget: formData.budget ? parseFloat(formData.budget) : 0
@@ -184,12 +194,14 @@ const PromotionForm = () => {
       if (isEditMode) {
         await axios.put(
           `${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`,
-          payload
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
           `${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions`,
-          payload
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       }
 

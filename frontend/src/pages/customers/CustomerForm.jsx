@@ -46,7 +46,10 @@ const CustomerForm = () => {
   const fetchCustomer = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const customer = response.data.data || response.data;
       setFormData({
         name: customer.name || '',
@@ -77,8 +80,11 @@ const CustomerForm = () => {
 
     try {
       setSaving(true);
+      const token = localStorage.getItem('token');
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/customers${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, formData);
+      await axios[isEditMode ? 'put' : 'post'](url, formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       navigate('/customers');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save customer');

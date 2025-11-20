@@ -37,7 +37,10 @@ const ProductDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setData(response.data.data || response.data);
       setError(null);
       
@@ -62,7 +65,10 @@ const ProductDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         analytics.trackEvent('product_deleted', { productId: id });
         toast.success('Product deleted successfully!');
         navigate('/products');

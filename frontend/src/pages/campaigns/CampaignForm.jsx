@@ -48,7 +48,10 @@ const CampaignForm = () => {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const campaign = response.data.data || response.data;
       
       setFormData({
@@ -88,6 +91,7 @@ const CampaignForm = () => {
       setSaving(true);
       setError(null);
 
+      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         budget: formData.budget ? parseFloat(formData.budget) : 0
@@ -96,12 +100,14 @@ const CampaignForm = () => {
       if (isEditMode) {
         await axios.put(
           `${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`,
-          payload
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
           `${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns`,
-          payload
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       }
 
