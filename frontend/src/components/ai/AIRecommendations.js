@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -16,14 +16,7 @@ import {
   Tabs,
   Tab,
   Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  ListItemSecondaryAction,
-  Avatar,
   IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -32,37 +25,21 @@ import {
   Slider,
   Switch,
   FormControlLabel,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Badge,
-  Divider,
   LinearProgress
 } from '@mui/material';
 import {
-  Recommend,
-  Person,
   ShoppingCart,
   LocalOffer,
-  TrendingUp,
-  Star,
-  Favorite,
   Share,
-  ExpandMore,
   Refresh,
-  Settings,
   FilterList,
   ViewList,
   ViewModule,
   Psychology,
   Group,
-  Category,
-  AttachMoney,
-  Schedule,
-  Insights
+  Schedule
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { format } from 'date-fns';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import api from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 

@@ -11,8 +11,6 @@ import '@testing-library/jest-dom';
 // Import components
 import Login from '../../components/Login';
 import BudgetForm from '../../components/budgets/BudgetForm';
-import BudgetEdit from '../../components/budgets/BudgetEdit';
-import TradeSpendEdit from '../../components/tradeSpends/TradeSpendEdit';
 import KAMWalletManagement from '../../pages/kamwallet/KAMWalletManagement';
 import KAMWalletAllocate from '../../pages/kamwallet/KAMWalletAllocate';
 

@@ -29,12 +29,10 @@ import {
   Tab,
   CircularProgress,
   LinearProgress,
-  Tooltip,
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-  Divider
+  ListItemIcon
 } from '@mui/material';
 import {
   Api,
@@ -49,16 +47,12 @@ import {
   VisibilityOff,
   ContentCopy,
   CheckCircle,
-  Error as ErrorIcon,
-  Warning,
   TrendingUp,
-  TrendingDown,
-  AccessTime,
   Storage,
   NetworkCheck
 } from '@mui/icons-material';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { format, subDays } from 'date-fns';
+import { LineChart, Line, AreaChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { format } from 'date-fns';
 import api from '../../services/api';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
