@@ -86,6 +86,10 @@ api.interceptors.response.use(
     
     // Handle 401 Unauthorized errors
     if (error.response && error.response.status === 401) {
+      console.log('[api.js] 401 interceptor triggered for:', originalRequest.url);
+      console.log('[api.js] Has refreshToken:', !!localStorage.getItem('refreshToken'));
+      console.log('[api.js] Already retried:', !!originalRequest._retry);
+      
       // If token expired and we have refresh token, try to refresh
       const refreshToken = localStorage.getItem('refreshToken');
       
@@ -93,6 +97,7 @@ api.interceptors.response.use(
         originalRequest._retry = true;
         
         if (isRefreshing) {
+          console.log('[api.js] Already refreshing, queuing request');
           // If already refreshing, wait for it to complete
           return new Promise((resolve) => {
             subscribeTokenRefresh((token) => {
@@ -103,6 +108,7 @@ api.interceptors.response.use(
         }
         
         isRefreshing = true;
+        console.log('[api.js] Attempting token refresh...');
         
         try {
           const response = await axios.post(
@@ -117,11 +123,13 @@ api.interceptors.response.use(
           isRefreshing = false;
           onTokenRefreshed(newToken);
           
+          console.log('[api.js] Token refresh successful, retrying request');
           // Retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return axios(originalRequest);
         } catch (refreshError) {
           isRefreshing = false;
+          console.error('[api.js] Token refresh failed, logging out:', refreshError);
           // Refresh failed, log out user
           localStorage.removeItem('token');
           localStorage.removeItem('accessToken');
@@ -132,6 +140,7 @@ api.interceptors.response.use(
           return Promise.reject(refreshError);
         }
       } else {
+        console.log('[api.js] No refresh token or already retried, logging out');
         // No refresh token or already tried refresh, log out
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
