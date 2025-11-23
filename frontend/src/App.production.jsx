@@ -53,7 +53,7 @@ import PerformanceMetrics from './pages/admin-tools/PerformanceMetrics';
 // Common Components
 import LoadingSpinner from './components/common/LoadingSpinner';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 // Configure axios defaults
 axios.defaults.baseURL = API_BASE_URL;
@@ -108,7 +108,7 @@ function AppProduction() {
         return;
       }
 
-      const response = await axios.get('/auth-enhanced/verify');
+      const response = await axios.get('/auth/me');
       
       if (response.data.success) {
         setAuthenticated(true);

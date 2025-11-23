@@ -14,7 +14,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const CacheManagement = () => {
   const [cacheStats, setCacheStats] = useState({ hits: 0, misses: 0, keys: 0, memory: 0 });

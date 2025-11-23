@@ -46,7 +46,7 @@ const VendorForm = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/vendors/${id}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const vendor = response.data.data || response.data;
@@ -83,7 +83,7 @@ const VendorForm = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
-      const url = `${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/vendors${isEditMode ? `/${id}` : ''}`;
+      const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors${isEditMode ? `/${id}` : ''}`;
       await axios[isEditMode ? 'put' : 'post'](url, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
