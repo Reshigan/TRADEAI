@@ -51,7 +51,7 @@ const UserList = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/users`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(response.data.data || response.data || []);
@@ -67,7 +67,7 @@ const UserList = () => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users/${id}`, {
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/users/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         fetchUsers();
@@ -80,7 +80,7 @@ const UserList = () => {
   const handleToggleStatus = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || 'https://tradeai.gonxt.tech/api'}/users/${id}/status`, {
+      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || '/api'}/users/${id}/status`, {
         isActive: !currentStatus
       }, {
         headers: { Authorization: `Bearer ${token}` }

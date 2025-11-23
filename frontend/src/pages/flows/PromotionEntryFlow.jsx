@@ -22,7 +22,7 @@ import PromotionAIInsights from '../../components/ai/promotions/PromotionAIInsig
 import axios from 'axios';
 import { preFlightCheck } from '../../utils/apiHealth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://tradeai.gonxt.tech/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * AI-Powered Promotion Entry Flow

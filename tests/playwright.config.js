@@ -80,16 +80,16 @@ module.exports = defineConfig({
     },
   ],
 
-  // Global setup and teardown
-  globalSetup: require.resolve('./globalSetup.js'),
-  globalTeardown: require.resolve('./globalTeardown.js'),
+  // Global setup and teardown (optional - comment out if files don't exist)
+  // globalSetup: require.resolve('./globalSetup.js'),
+  // globalTeardown: require.resolve('./globalTeardown.js'),
   
-  // Run your local dev server before starting the tests
-  webServer: process.env.CI ? undefined : {
-    command: 'npm run dev',
-    port: 3000,
-    reuseExistingServer: !process.env.CI,
-  },
+  // Run your local dev server before starting the tests (disabled for production testing)
+  // webServer: process.env.CI ? undefined : {
+  //   command: 'npm run dev',
+  //   port: 3000,
+  //   reuseExistingServer: !process.env.CI,
+  // },
   
   // Test timeout
   timeout: 30000,
