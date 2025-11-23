@@ -1,0 +1,277 @@
+<testsuites id="" name="" tests="35" failures="0" skipped="0" errors="0" time="257.211005">
+<testsuite name="comprehensive-all-features.spec.js" timestamp="2025-11-23T06:08:31.081Z" hostname="chromium" tests="35" failures="0" skipped="0" time="255.76" errors="0">
+<testcase name="🔐 Authentication &amp; Security › Login works correctly" classname="comprehensive-all-features.spec.js" time="6.874">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+]]>
+</system-out>
+</testcase>
+<testcase name="🔐 Authentication &amp; Security › Unauthorized access redirects to login" classname="comprehensive-all-features.spec.js" time="3.102">
+</testcase>
+<testcase name="📦 Core Modules - Products › Products page loads" classname="comprehensive-all-features.spec.js" time="7.081">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Products page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="📦 Core Modules - Products › Can navigate to product detail" classname="comprehensive-all-features.spec.js" time="6.669">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  No products to click
+]]>
+</system-out>
+</testcase>
+<testcase name="👥 Core Modules - Customers › Customers page loads" classname="comprehensive-all-features.spec.js" time="8.534">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Customers page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="👥 Core Modules - Customers › Can navigate to customer detail" classname="comprehensive-all-features.spec.js" time="7.762">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  No customers to click
+]]>
+</system-out>
+</testcase>
+<testcase name="🎯 Core Modules - Promotions › Promotions page loads" classname="comprehensive-all-features.spec.js" time="8.149">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Promotions page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="🎯 Core Modules - Promotions › Can navigate to promotion detail" classname="comprehensive-all-features.spec.js" time="9.267">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  No promotions to click
+]]>
+</system-out>
+</testcase>
+<testcase name="💰 Core Modules - Budgets › Budgets page loads" classname="comprehensive-all-features.spec.js" time="6.502">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Budgets page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="💰 Core Modules - Budgets › Can navigate to budget detail" classname="comprehensive-all-features.spec.js" time="6.574">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  No budgets to click
+]]>
+</system-out>
+</testcase>
+<testcase name="🚚 Core Modules - Vendors › Vendors page loads" classname="comprehensive-all-features.spec.js" time="8.7">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Vendors page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="💸 Core Modules - Trade Spends › Trade Spends page loads" classname="comprehensive-all-features.spec.js" time="6.55">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Trade Spends page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="📜 Core Modules - Trading Terms › Trading Terms page loads" classname="comprehensive-all-features.spec.js" time="6.734">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Trading Terms page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="🔄 Flows - Customer Entry › Customer entry flow accessible" classname="comprehensive-all-features.spec.js" time="7.113">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Add button not found
+]]>
+</system-out>
+</testcase>
+<testcase name="🔄 Flows - Product Entry › Product entry flow accessible" classname="comprehensive-all-features.spec.js" time="6.781">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Add button not found
+]]>
+</system-out>
+</testcase>
+<testcase name="🔄 Flows - Promotion Flow › Promotion flow accessible" classname="comprehensive-all-features.spec.js" time="6.864">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Add button not found
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Reports › Reports page loads" classname="comprehensive-all-features.spec.js" time="6.706">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Reports page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Reports › Budget reports accessible" classname="comprehensive-all-features.spec.js" time="7.605">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Budget reports link not found
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Reports › Customer reports accessible" classname="comprehensive-all-features.spec.js" time="7.027">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Customer reports link not found
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Reports › Product reports accessible" classname="comprehensive-all-features.spec.js" time="8.557">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Product reports link not found
+]]>
+</system-out>
+</testcase>
+<testcase name="📊 Reports › Promotion reports accessible" classname="comprehensive-all-features.spec.js" time="6.538">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Promotion reports link not found
+]]>
+</system-out>
+</testcase>
+<testcase name="⚙️ Config &amp; Admin - Users › Users page loads" classname="comprehensive-all-features.spec.js" time="6.474">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Users page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="⚙️ Config &amp; Admin - Users › Can view user list" classname="comprehensive-all-features.spec.js" time="6.404">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ User list visible
+]]>
+</system-out>
+</testcase>
+<testcase name="⚙️ Config &amp; Admin - Companies › Companies page loads" classname="comprehensive-all-features.spec.js" time="8.68">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Companies page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="⚙️ Config &amp; Admin - Companies › Can view company list" classname="comprehensive-all-features.spec.js" time="8.711">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Company list not found
+]]>
+</system-out>
+</testcase>
+<testcase name="⚙️ Config &amp; Admin - Settings › Settings page loads" classname="comprehensive-all-features.spec.js" time="6.931">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Settings page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="⚙️ Config &amp; Admin - Settings › Can access settings sections" classname="comprehensive-all-features.spec.js" time="8.104">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Settings content visible
+]]>
+</system-out>
+</testcase>
+<testcase name="🤖 ML &amp; AI Features - Forecasting › Forecasting page loads" classname="comprehensive-all-features.spec.js" time="8.763">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Forecasting page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="🤖 ML &amp; AI Features - Forecasting › Forecasting dashboard visible" classname="comprehensive-all-features.spec.js" time="8.327">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Forecasting dashboard not found
+]]>
+</system-out>
+</testcase>
+<testcase name="🤖 ML &amp; AI Features - Analytics › Analytics page loads" classname="comprehensive-all-features.spec.js" time="8.303">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ Analytics page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="🤖 ML &amp; AI Features - Analytics › Analytics dashboard visible" classname="comprehensive-all-features.spec.js" time="6.805">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  Analytics dashboard not found
+]]>
+</system-out>
+</testcase>
+<testcase name="🤖 ML &amp; AI Features - AI Dashboard › AI Dashboard page loads" classname="comprehensive-all-features.spec.js" time="6.944">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ✅ AI Dashboard page loaded: Trade AI Platform | Enterprise Trade Intelligence
+]]>
+</system-out>
+</testcase>
+<testcase name="🤖 ML &amp; AI Features - AI Dashboard › AI features accessible" classname="comprehensive-all-features.spec.js" time="6.865">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  ⚠️  AI Dashboard content not found
+]]>
+</system-out>
+</testcase>
+<testcase name="⚡ Performance › Dashboard loads within 10 seconds" classname="comprehensive-all-features.spec.js" time="8.047">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  Load time: 3278ms
+]]>
+</system-out>
+</testcase>
+<testcase name="⚡ Performance › Products page loads within 10 seconds" classname="comprehensive-all-features.spec.js" time="6.713">
+<system-out>
+<![CDATA[🔐 Setting up authentication...
+✅ Authentication successful
+  Load time: 3455ms
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
