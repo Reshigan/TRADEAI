@@ -130,23 +130,42 @@ api.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false;
           console.error('[api.js] Token refresh failed, logging out:', refreshError);
-          // Refresh failed, log out user
           localStorage.removeItem('token');
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('isAuthenticated');
           localStorage.removeItem('user');
-          window.location.href = '/';
+          
+          const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+          const isOnLoginPage = window.location.pathname === '/' || window.location.pathname === '/login';
+          
+          if (!isOnLoginPage && !isAuthEndpoint) {
+            console.log('[api.js] Redirecting to login page');
+            window.location.href = '/';
+          } else {
+            console.log('[api.js] Already on login page or auth endpoint, not redirecting');
+          }
+          
           return Promise.reject(refreshError);
         }
       } else {
         console.log('[api.js] No refresh token or already retried, logging out');
         // No refresh token or already tried refresh, log out
         localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('user');
-        window.location.href = '/';
+        
+        const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+        const isOnLoginPage = window.location.pathname === '/' || window.location.pathname === '/login';
+        
+        if (!isOnLoginPage && !isAuthEndpoint) {
+          console.log('[api.js] Redirecting to login page');
+          window.location.href = '/';
+        } else {
+          console.log('[api.js] Already on login page or auth endpoint, not redirecting');
+        }
       }
     }
     
