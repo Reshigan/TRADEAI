@@ -15,8 +15,8 @@ const { test, expect } = require('@playwright/test');
 const BASE_URL = process.env.REACT_APP_API_URL || 'https://tradeai.gonxt.tech';
 
 const TEST_USER = {
-  email: 'admin@saconfectionary.com',
-  password: 'Admin@123'
+  email: 'admin@pomades.demo',
+  password: 'Demo@123'
 };
 
 test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
