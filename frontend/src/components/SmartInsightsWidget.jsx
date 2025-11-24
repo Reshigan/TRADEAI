@@ -132,7 +132,7 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
     // Compact mode for dashboard header
     return (
       <Tooltip title="View all insights">
-        <IconButton onClick={() => setExpanded(true)}>
+        <IconButton onClick={() => setExpanded(true)} aria-label="View all insights">
           <Badge badgeContent={unreadCount} color="error">
             <NotificationsIcon />
           </Badge>
@@ -205,6 +205,7 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
                     size="small" 
                     onClick={() => handleDismiss(insight.id)}
                     sx={{ ml: 1 }}
+                    aria-label="Dismiss insight"
                   >
                     <CloseIcon fontSize="small" />
                   </IconButton>

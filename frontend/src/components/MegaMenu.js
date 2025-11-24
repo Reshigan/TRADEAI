@@ -187,7 +187,8 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
 
   return (
     <AppBar 
-      position="fixed" 
+      position="fixed"
+      data-testid="mega-menu"
       sx={{ 
         zIndex: (theme) => theme.zIndex.drawer + 1,
         bgcolor: 'background.paper',
@@ -203,6 +204,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           edge="start"
           onClick={onMobileMenuToggle}
           sx={{ mr: 2, display: { md: 'none' } }}
+          aria-label="Open mobile menu"
         >
           <MenuIcon />
         </IconButton>
@@ -349,6 +351,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           color="inherit"
           onClick={handleNotificationsOpen}
           sx={{ mr: 1 }}
+          aria-label="View notifications"
         >
           <Badge badgeContent={3} color="error">
             <NotificationsIcon />
@@ -358,6 +361,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
         <IconButton
           onClick={handleUserMenuOpen}
           sx={{ ml: 1 }}
+          aria-label="Open user menu"
         >
           <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', color: 'white' }}>
             {user?.name?.charAt(0) || 'U'}
