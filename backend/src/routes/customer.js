@@ -48,7 +48,9 @@ router.get('/hierarchy', authenticateToken, asyncHandler(async (req, res) => {
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { page = 1, limit = 20, search, status, channel } = req.query;
 
-  const query = {};
+  const tenantId = req.tenantId || req.user.tenantId;
+  const query = { tenantId };
+  
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
