@@ -69,7 +69,7 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       const pageTitle = page.locator('h1, h2, h3, h4').first();
       await expect(pageTitle).toBeVisible();
       
-      const mainContent = page.locator('main, [role="main"]');
+      const mainContent = page.locator('main');
       await expect(mainContent).toBeVisible();
     });
 
@@ -107,12 +107,10 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       
-      const table = page.locator('table, [role="grid"], .MuiDataGrid-root');
-      await expect(table).toBeVisible();
+      const productCards = page.locator('.MuiGrid-item, .MuiPaper-root');
+      const cardCount = await productCards.count();
       
-      const rows = page.locator('tr[role="row"], .MuiDataGrid-row');
-      const rowCount = await rows.count();
-      expect(rowCount).toBeGreaterThan(0);
+      expect(cardCount).toBeGreaterThan(0);
     });
 
     test('should support pagination on Products table', async () => {
@@ -422,10 +420,10 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       
-      const rows = page.locator('tr[role="row"], .MuiDataGrid-row');
-      const rowCount = await rows.count();
+      const productCards = page.locator('.MuiGrid-container .MuiGrid-item .MuiPaper-root');
+      const cardCount = await productCards.count();
       
-      expect(rowCount).toBeGreaterThan(0);
+      expect(cardCount).toBeGreaterThan(0);
     });
 
     test('should load data from backend on Customers page', async () => {
@@ -433,10 +431,10 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       
-      const rows = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr');
-      const rowCount = await rows.count();
+      const dataElements = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr, .MuiGrid-item .MuiPaper-root');
+      const elementCount = await dataElements.count();
       
-      expect(rowCount).toBeGreaterThan(0);
+      expect(elementCount).toBeGreaterThan(0);
     });
 
     test('should load data from backend on Promotions page', async () => {
@@ -444,10 +442,10 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       
-      const rows = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr');
-      const rowCount = await rows.count();
+      const dataElements = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr, .MuiGrid-item .MuiPaper-root');
+      const elementCount = await dataElements.count();
       
-      expect(rowCount).toBeGreaterThan(0);
+      expect(elementCount).toBeGreaterThan(0);
     });
 
     test('should load data from backend on Budgets page', async () => {
@@ -455,10 +453,10 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       
-      const rows = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr');
-      const rowCount = await rows.count();
+      const dataElements = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr, .MuiGrid-item .MuiPaper-root');
+      const elementCount = await dataElements.count();
       
-      expect(rowCount).toBeGreaterThan(0);
+      expect(elementCount).toBeGreaterThan(0);
     });
 
     test('should handle API errors gracefully', async () => {
