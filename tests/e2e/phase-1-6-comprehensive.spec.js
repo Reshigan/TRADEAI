@@ -241,17 +241,29 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
     test('should have proper ARIA labels on interactive elements', async () => {
       await page.goto(`${BASE_URL}/products`);
       await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(3000);
       
-      const buttons = page.locator('button');
+      const buttons = page.locator('button:visible');
       const buttonCount = await buttons.count();
       
       if (buttonCount > 0) {
-        for (let i = 0; i < Math.min(buttonCount, 5); i++) {
+        for (let i = 0; i < Math.min(buttonCount, 10); i++) {
           const button = buttons.nth(i);
+          const isVisible = await button.isVisible();
+          
+          if (!isVisible) continue;
+          
           const text = await button.textContent();
           const ariaLabel = await button.getAttribute('aria-label');
+          const role = await button.getAttribute('role');
           
-          expect(text || ariaLabel).toBeTruthy();
+          const hasAccessibleName = (text && text.trim().length > 0) || ariaLabel;
+          
+          if (!hasAccessibleName) {
+            console.log(`Button ${i}: text="${text}", aria-label="${ariaLabel}", role="${role}"`);
+          }
+          
+          expect(hasAccessibleName, `Button ${i} should have text or aria-label`).toBeTruthy();
         }
       }
     });
