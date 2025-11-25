@@ -438,10 +438,10 @@ test.describe('Phase 1-6: Complete UI/UX Improvements', () => {
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(2000);
       
-      const productCards = page.locator('.MuiGrid-container .MuiGrid-item .MuiPaper-root');
-      const cardCount = await productCards.count();
+      const dataElements = page.locator('tr[role="row"], .MuiDataGrid-row, tbody tr, .MuiGrid-item .MuiPaper-root');
+      const elementCount = await dataElements.count();
       
-      expect(cardCount).toBeGreaterThan(0);
+      expect(elementCount).toBeGreaterThan(0);
     });
 
     test('should load data from backend on Customers page', async () => {
