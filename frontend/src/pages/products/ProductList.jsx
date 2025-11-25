@@ -46,7 +46,12 @@ const ProductList = () => {
       });
 
       if (response.data.success) {
-        setProducts(response.data.data);
+        const normalizedProducts = response.data.data.map(product => ({
+          ...product,
+          category: typeof product.category === 'object' ? (product.category?.primary || 'Uncategorized') : product.category,
+          brand: typeof product.brand === 'object' ? (product.brand?.name || 'Unknown') : product.brand
+        }));
+        setProducts(normalizedProducts);
       }
     } catch (err) {
       console.error('Failed to fetch products:', err);
@@ -201,7 +206,7 @@ const ProductList = () => {
                     sx={{ 
                       p: 1, 
                       borderRadius: 2, 
-                      bgcolor: 'success.lighter',
+                      bgcolor: 'success.light',
                       display: 'flex',
                       alignItems: 'center'
                     }}
@@ -248,7 +253,7 @@ const ProductList = () => {
                   <Box 
                     sx={{ 
                       p: 1.5,
-                      bgcolor: 'success.lighter',
+                      bgcolor: 'success.light',
                       borderRadius: 2,
                       display: 'flex',
                       alignItems: 'center',
