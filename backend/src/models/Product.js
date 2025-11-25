@@ -114,18 +114,8 @@ const productSchema = new mongoose.Schema({
     enum: ['own_brand', 'distributed', 'private_label', 'consignment'],
     required: true
   },
-  category: {
-    primary: String,
-    secondary: [String]
-  },
-  brand: {
-    id: String,
-    name: String,
-    owner: {
-      type: String,
-      enum: ['company', 'principal', 'customer']
-    }
-  },
+  category: String,
+  brand: String,
 
   // Vendor/Principal Information
   vendor: {
