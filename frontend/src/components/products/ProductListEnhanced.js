@@ -38,7 +38,14 @@ const ProductListEnhanced = () => {
     try {
       const response = await productService.getAll();
       const productData = response.data || response || [];
-      setProducts(productData);
+      
+      const normalizedProducts = productData.map(product => ({
+        ...product,
+        category: typeof product.category === 'object' ? (product.category?.primary || 'Uncategorized') : product.category,
+        brand: typeof product.brand === 'object' ? (product.brand?.name || 'Unknown') : product.brand
+      }));
+      
+      setProducts(normalizedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
       setError(error.message || "Failed to load products");
