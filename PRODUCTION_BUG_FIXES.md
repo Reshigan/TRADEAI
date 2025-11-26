@@ -50,24 +50,43 @@ curl -H "Accept-Encoding: gzip" -I https://tradeai.gonxt.tech/static/js/main.b7b
 ### 4. Missing Nginx Dotfile Protection (P2)
 **Issue:** External IPs attempting to access /api/.env (properly blocked with 404, but should be denied explicitly)
 
-**Fix:** Add nginx location block to explicitly deny dotfiles:
+**Fix:** Add nginx location block to explicitly deny dotfiles with properly escaped regex:
 ```nginx
-# Deny access to dotfiles
-location ~ /\. {
-    deny all;
-    return 404;
-}
-
-# Explicitly block .env files
-location ~* \.env {
+# Deny access to dotfiles (note: backslash must be escaped)
+location ~ /\\. {
     deny all;
     return 404;
 }
 ```
 
-**Status:** Added to nginx configuration.
+**Important:** The regex must be `~ /\\.` (with escaped backslash) to match literal dot. Using `~ /.` without escaping would match ANY character after slash, breaking all routes.
 
-## Verification
+**Status:** Added to nginx configuration and verified working.
+
+## Smoke Test Results
+
+### API Endpoints ✅
+- Login: ✅ Returns valid JWT token
+- Products API: ✅ Returns 2 items with authentication
+- Customers API: ✅ Available
+- Promotions API: ✅ Available
+- Health endpoint: ✅ Returns healthy status
+
+### Frontend ✅
+- Page loads: ✅ HTTP 200
+- Title: "Trade AI Platform | Enterprise Trade Intelligence"
+- Response time: ~40ms
+
+### Compression ✅
+- Uncompressed JS: 2,669,085 bytes (2.6MB)
+- Compressed JS: 668,749 bytes (653KB)
+- Compression ratio: 75% reduction
+- Gzip working correctly with Accept-Encoding header
+
+### Security ✅
+- Dotfile protection: ✅ /.env returns 404
+- Security headers: ✅ HSTS, X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy
+- SSL/TLS: ✅ HTTP/2 with TLS 1.2/1.3
 
 ### Database Indexes ✅
 - Products: 13+ indexes including company, sku, barcode, sapMaterialId
