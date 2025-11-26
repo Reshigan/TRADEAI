@@ -32,7 +32,7 @@ jobs:
 
       - name: Run ESLint (Backend)
         working-directory: ./backend
-        run: npm run lint || true
+        run: npm run lint
 
       - name: Install dependencies (Frontend)
         working-directory: ./frontend
@@ -40,7 +40,7 @@ jobs:
 
       - name: Run ESLint (Frontend)
         working-directory: ./frontend
-        run: npm run lint || true
+        run: npm run lint
 
   # Backend Tests
   test-backend:
@@ -81,14 +81,16 @@ jobs:
 
       - name: Run integration tests
         working-directory: ./backend
-        run: npm run test:integration || true
+        run: npm run test:integration
+        continue-on-error: true
         env:
           NODE_ENV: test
           MONGODB_URI: mongodb://localhost:27017/tradeai_test
 
       - name: Generate coverage report
         working-directory: ./backend
-        run: npm test -- --coverage || true
+        run: npm test -- --coverage
+        continue-on-error: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -119,7 +121,8 @@ jobs:
 
       - name: Run tests
         working-directory: ./frontend
-        run: npm test -- --watchAll=false || true
+        run: npm test -- --watchAll=false
+        continue-on-error: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -178,7 +181,7 @@ jobs:
 
       - name: Run E2E tests
         working-directory: ./backend
-        run: npx playwright test || true
+        run: npx playwright test
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v3
@@ -208,7 +211,8 @@ jobs:
 
       - name: Run npm audit (Backend)
         working-directory: ./backend
-        run: npm audit --audit-level=moderate || true
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
 
       - name: Install dependencies (Frontend)
         working-directory: ./frontend
@@ -216,7 +220,8 @@ jobs:
 
       - name: Run npm audit (Frontend)
         working-directory: ./frontend
-        run: npm audit --audit-level=moderate || true
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
 
       - name: Run Snyk security scan
         uses: snyk/actions/node@master
