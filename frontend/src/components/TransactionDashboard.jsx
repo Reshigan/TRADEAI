@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../services/api/apiClient';
 import './TransactionDashboard.css';
 
 const TransactionDashboard = () => {
@@ -22,11 +22,7 @@ const TransactionDashboard = () => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/transactions?status=${filter}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await apiClient.get(`/transactions?status=${filter}`);
       setTransactions(response.data.data);
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -38,12 +34,7 @@ const TransactionDashboard = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/transactions`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await apiClient.post('/transactions', formData);
       setShowCreateModal(false);
       fetchTransactions();
       setFormData({ type: 'accrual', amount: '', customerId: '', productId: '', description: '' });
@@ -55,12 +46,7 @@ const TransactionDashboard = () => {
 
   const handleApprove = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/transactions/${id}/approve`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await apiClient.post(`/transactions/${id}/approve`, {});
       fetchTransactions();
     } catch (error) {
       console.error('Error approving transaction:', error);
@@ -73,12 +59,7 @@ const TransactionDashboard = () => {
     if (!reason) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/transactions/${id}/reject`,
-        { reason },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await apiClient.post(`/transactions/${id}/reject`, { reason });
       fetchTransactions();
     } catch (error) {
       console.error('Error rejecting transaction:', error);
@@ -91,12 +72,7 @@ const TransactionDashboard = () => {
     if (!reference) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/transactions/${id}/settle`,
-        { paymentReference: reference },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await apiClient.post(`/transactions/${id}/settle`, { paymentReference: reference });
       fetchTransactions();
     } catch (error) {
       console.error('Error settling transaction:', error);

@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../../services/api/apiClient';
 import './AIAssistant.css';
-
-const AI_SERVICE_URL = process.env.REACT_APP_AI_SERVICE_URL || 'http://3.10.212.143:5001';
 
 const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +37,7 @@ const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${AI_SERVICE_URL}/api/chat`, {
+      const response = await apiClient.post('/ai-chatbot/chat', {
         message: inputMessage
       });
 
