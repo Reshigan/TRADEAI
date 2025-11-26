@@ -50,7 +50,7 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 
   const tenantId = req.tenantId || req.user.tenantId;
   const query = { tenantId };
-  
+
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
