@@ -263,10 +263,14 @@ const budgetSchema = new mongoose.Schema({
 
 // Indexes
 budgetSchema.index({ code: 1 });
+budgetSchema.index({ name: 1 });
 budgetSchema.index({ year: 1 });
 budgetSchema.index({ budgetType: 1 });
 budgetSchema.index({ status: 1 });
 budgetSchema.index({ 'scope.level': 1 });
+budgetSchema.index({ createdBy: 1 });
+budgetSchema.index({ company: 1, year: 1 });
+budgetSchema.index({ company: 1, status: 1 });
 budgetSchema.index({ year: 1, budgetType: 1, status: 1 });
 
 // Pre-save middleware to calculate annual totals
