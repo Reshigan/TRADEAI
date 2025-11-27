@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../services/api/apiClient';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './AnalyticsDashboard.css';
 
@@ -39,12 +39,7 @@ const AnalyticsDashboard = () => {
   const calculateBaseline = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/baseline/calculate`,
-        baselineForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await apiClient.post('/baseline/calculate', baselineForm);
       setResults(response.data.data);
     } catch (error) {
       console.error('Error calculating baseline:', error);
@@ -57,12 +52,7 @@ const AnalyticsDashboard = () => {
   const analyzeCannibalization = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/cannibalization/analyze-promotion`,
-        cannForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await apiClient.post('/cannibalization/analyze-promotion', cannForm);
       setResults(response.data.data);
     } catch (error) {
       console.error('Error analyzing cannibalization:', error);
@@ -75,12 +65,7 @@ const AnalyticsDashboard = () => {
   const detectForwardBuy = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/forward-buy/detect`,
-        fbForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await apiClient.post('/forward-buy/detect', fbForm);
       setResults(response.data.data);
     } catch (error) {
       console.error('Error detecting forward buy:', error);
