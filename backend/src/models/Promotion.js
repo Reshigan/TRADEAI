@@ -468,12 +468,16 @@ const promotionSchema = new mongoose.Schema({
 
 // Indexes
 promotionSchema.index({ promotionId: 1 });
+promotionSchema.index({ name: 1 });
 promotionSchema.index({ 'period.startDate': 1, 'period.endDate': 1 });
 promotionSchema.index({ status: 1 });
 promotionSchema.index({ promotionType: 1 });
 promotionSchema.index({ 'scope.customers.customer': 1 });
 promotionSchema.index({ 'products.product': 1 });
 promotionSchema.index({ campaign: 1 });
+promotionSchema.index({ createdBy: 1 });
+promotionSchema.index({ company: 1, status: 1 });
+promotionSchema.index({ company: 1, 'period.startDate': 1, 'period.endDate': 1 });
 
 // Pre-save middleware
 promotionSchema.pre('save', function (next) {
