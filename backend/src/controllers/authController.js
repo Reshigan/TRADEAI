@@ -41,6 +41,8 @@ exports.register = asyncHandler(async (req, res, _next) => {
   }
 
   // Create new user
+  console.log("DEBUG: About to create user with data:", { email, role, department, employeeId });
+  try {
   const user = await User.create({
     email,
     password,
@@ -48,9 +50,9 @@ exports.register = asyncHandler(async (req, res, _next) => {
     lastName,
     employeeId,
     role,
-    department
+    department,
+    tenantId: req.body.tenantId || "6922a385aaa506dfbfb04f8b"
   });
-
   // Generate tokens
   const { accessToken, refreshToken } = generateTokens(user);
 
@@ -58,7 +60,11 @@ exports.register = asyncHandler(async (req, res, _next) => {
   await cacheService.cacheUser(user._id.toString(), user);
 
   // Send welcome email
-  await emailService.sendWelcomeEmail(user);
+  try {
+    await emailService.sendWelcomeEmail(user);
+  } catch (emailError) {
+    console.log("Email sending failed (non-blocking):", emailError.message);
+  }
 
   // Log registration
   logger.logAudit('user_registered', user._id, {
@@ -82,7 +88,10 @@ exports.register = asyncHandler(async (req, res, _next) => {
         refreshToken
       }
     }
-  });
+  });  } catch (error) {
+    console.error("DEBUG: Register error:", error.message, error.stack);
+    throw error;
+  }
 });
 
 // Quick login for demo
@@ -207,6 +216,7 @@ exports.login = asyncHandler(async (req, res, _next) => {
       success: true,
       message: 'Login successful',
       token: accessToken,
+      refreshToken,
       data: {
         user: {
           id: user._id,
@@ -216,6 +226,7 @@ exports.login = asyncHandler(async (req, res, _next) => {
           role: user.role,
           department: user.department,
           tenantId: user.tenantId,
+    company: user.company,
           company: user.companyId ? {
             id: user.companyId._id,
             name: user.companyId.name,
