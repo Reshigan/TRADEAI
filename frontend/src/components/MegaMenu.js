@@ -24,7 +24,6 @@ import {
   Assignment as AssignmentIcon,
   Receipt as ReceiptIcon,
   Storage as DataIcon,
-  Business as BusinessIcon,
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,
   Menu as MenuIcon
@@ -64,44 +63,75 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
     onLogout();
   };
 
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isManager = user?.role === 'manager' || isAdmin;
+  const isKAM = user?.role === 'kam' || isManager;
+
   const megaMenuItems = [
     {
-      key: 'plan',
-      label: 'Plan',
-      icon: <LightbulbIcon fontSize="small" />,
+      key: 'mywork',
+      label: 'My Work',
+      icon: <DashboardIcon fontSize="small" />,
       sections: [
         {
-          title: 'AI-Powered Planning',
+          title: 'Daily Tasks',
           items: [
-            { text: 'Promotion Planner', path: '/promotion-planner', badge: 'AI', description: 'AI-guided promotion planning' },
-            { text: 'Budget Console', path: '/budget-console', badge: 'AI', description: 'Hierarchical budget allocation' },
-            { text: 'Simulation Studio', path: '/simulation-studio', badge: 'AI', description: 'What-if scenario analysis' },
-          ]
+            isKAM && { text: 'My Dashboard', path: '/dashboard', description: 'Your personalized command center' },
+            isKAM && { text: 'My Customers', path: '/customers', description: 'Customers assigned to you' },
+            isKAM && { text: 'My Promotions', path: '/promotions', description: 'Promotions you manage' },
+            isKAM && { text: 'My Wallet', path: '/kamwallet', badge: 'NEW', description: 'Your discretionary spend budget' },
+          ].filter(Boolean)
         },
         {
-          title: 'Traditional Planning',
+          title: 'Quick Actions',
           items: [
-            { text: 'Annual Planning', path: '/budgets/new-flow', description: 'Annual budget planning flow' },
-            { text: 'All Budgets', path: '/budgets', description: 'View and manage all budgets' },
-          ]
+            isKAM && { text: 'Create Promotion', path: '/promotions/new', description: 'Start a new promotion' },
+            isKAM && { text: 'Submit Claim', path: '/claims/new', description: 'Submit a customer claim' },
+            isManager && { text: 'Pending Approvals', path: '/approvals', badge: String(3), description: 'Items awaiting your approval' },
+          ].filter(Boolean)
         }
-      ]
+      ].filter(section => section.items.length > 0)
     },
+
     {
-      key: 'execute',
-      label: 'Execute',
-      icon: <RocketIcon fontSize="small" />,
+      key: 'promotions',
+      label: 'Promotions',
+      icon: <LightbulbIcon fontSize="small" />,
       sections: [
         {
           title: 'Promotion Management',
           items: [
-            { text: 'Promotions Timeline', path: '/promotions-timeline', badge: 'NEW', description: 'Visual promotion timeline' },
+            { text: 'All Promotions', path: '/promotions', description: 'View and manage all promotions' },
+            { text: 'Promotions Timeline', path: '/promotions-timeline', badge: 'NEW', description: 'Visual timeline view' },
             { text: 'Activity Calendar', path: '/activity-grid', description: 'Calendar view of activities' },
-            { text: 'All Promotions', path: '/promotions', description: 'View and manage promotions' },
+            { text: 'Create Promotion', path: '/promotions/new', description: 'Start a new promotion' },
           ]
         },
         {
-          title: 'Trade Management',
+          title: 'AI-Powered Tools',
+          items: [
+            { text: 'Promotion Planner', path: '/promotion-planner', badge: 'AI', description: 'AI-guided promotion planning' },
+            { text: 'Performance Insights', path: '/analytics', badge: 'AI', description: 'AI-powered promotion insights' },
+          ]
+        }
+      ]
+    },
+
+    {
+      key: 'budgets',
+      label: 'Budgets',
+      icon: <RocketIcon fontSize="small" />,
+      sections: [
+        {
+          title: 'Budget Management',
+          items: [
+            { text: 'All Budgets', path: '/budgets', description: 'View and manage all budgets' },
+            { text: 'Budget Console', path: '/budget-console', badge: 'AI', description: 'Hierarchical budget allocation' },
+            { text: 'Annual Planning', path: '/budgets/new-flow', description: 'Annual budget planning flow' },
+          ]
+        },
+        {
+          title: 'Trade Spend',
           items: [
             { text: 'Trade Spends', path: '/trade-spends', description: 'Manage trade spend activities' },
             { text: 'Trading Terms', path: '/trading-terms', description: 'Configure trading terms' },
@@ -109,81 +139,144 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
         }
       ]
     },
+
     {
-      key: 'analyze',
-      label: 'Analyze',
+      key: 'insights',
+      label: 'Insights',
       icon: <AnalyticsIcon fontSize="small" />,
       sections: [
         {
           title: 'Performance Analytics',
           items: [
-            { text: 'Live Performance', path: '/realtime-dashboard', badge: 'LIVE', description: 'Real-time performance metrics' },
-            { text: 'AI Insights', path: '/analytics', description: 'AI-powered insights and recommendations' },
-            { text: 'Reports', path: '/reports', description: 'Comprehensive reporting' },
-            { text: 'Forecasting', path: '/forecasting', description: 'Predictive analytics and forecasting' },
+            { text: 'Live Performance', path: '/realtime-dashboard', badge: 'LIVE', description: 'Real-time metrics dashboard' },
+            { text: 'AI Insights', path: '/analytics', badge: 'AI', description: 'AI-powered insights & recommendations' },
+            { text: 'Promotion Analytics', path: '/performance-analytics/promotion-effectiveness', badge: 'NEW', description: 'Promotion ROI & effectiveness' },
+            { text: 'Budget Analytics', path: '/performance-analytics/budget-variance', badge: 'NEW', description: 'Budget utilization & variance' },
           ]
-        }
-      ]
-    },
-    {
-      key: 'optimize',
-      label: 'Optimize',
-      icon: <MonitorIcon fontSize="small" />,
-      sections: [
+        },
         {
-          title: 'Optimization Tools',
+          title: 'Reports & Forecasting',
           items: [
-            { text: 'Simulation Studio', path: '/simulation-studio', badge: 'AI', description: 'Scenario simulation and optimization' },
-            { text: 'Budget Reallocation', path: '/budget-console', description: 'AI-powered budget reallocation' },
-            { text: 'Scenario Planning', path: '/simulations', description: 'Multi-scenario planning' },
+            { text: 'Reports', path: '/reports', description: 'Comprehensive reporting' },
+            { text: 'Forecasting', path: '/forecasting', description: 'Predictive analytics' },
+            { text: 'Customer Segmentation', path: '/performance-analytics/customer-segmentation', badge: 'NEW', description: 'ABC customer analysis' },
           ]
         }
       ]
     },
-    {
+
+    isManager && {
       key: 'approvals',
       label: 'Approvals',
       icon: <AssignmentIcon fontSize="small" />,
       sections: [
         {
-          title: 'Approval Management',
+          title: 'Approval Workflows',
           items: [
-            { text: 'Pending Approvals', path: '/approvals', badge: 'NEW', description: 'Review and approve requests' },
+            { text: 'Pending Approvals', path: '/approvals', badge: String(3), description: 'Review and approve requests' },
+            { text: 'Promotion Approvals', path: '/approvals?type=promotion', description: 'Approve promotions' },
+            { text: 'Trade Spend Approvals', path: '/approvals?type=tradespend', description: 'Approve trade spends' },
+            { text: 'Claim Approvals', path: '/approvals?type=claim', description: 'Approve customer claims' },
+          ]
+        },
+        {
+          title: 'History & Audit',
+          items: [
+            { text: 'Approval History', path: '/approvals/history', description: 'View approval history' },
           ]
         }
       ]
     },
+
     {
       key: 'claims',
-      label: 'Claims & Deductions',
+      label: 'Claims',
       icon: <ReceiptIcon fontSize="small" />,
       sections: [
         {
-          title: 'Financial Management',
+          title: 'Claims Management',
           items: [
-            { text: 'Claims', path: '/claims', badge: 'NEW', description: 'Manage customer claims' },
-            { text: 'Deductions', path: '/deductions', badge: 'NEW', description: 'Track and manage deductions' },
-            { text: 'Reconciliation', path: '/deductions/reconciliation', badge: 'NEW', description: 'Reconcile claims and deductions' },
-            { text: 'KAM Wallet', path: '/kamwallet', badge: 'NEW', description: 'Manage KAM discretionary spend' },
+            { text: 'All Claims', path: '/claims', description: 'Manage customer claims' },
+            { text: 'Deductions', path: '/deductions', description: 'Track and manage deductions' },
+            { text: 'Reconciliation', path: '/deductions/reconciliation', description: 'Reconcile claims & deductions' },
+          ]
+        },
+        {
+          title: 'KAM Tools',
+          items: [
+            isKAM && { text: 'My Wallet', path: '/kamwallet', badge: 'NEW', description: 'Your discretionary spend budget' },
+            isKAM && { text: 'Submit Claim', path: '/claims/new', description: 'Submit a new claim' },
+          ].filter(Boolean)
+        }
+      ]
+    },
+
+    {
+      key: 'planning',
+      label: 'Planning',
+      icon: <MonitorIcon fontSize="small" />,
+      sections: [
+        {
+          title: 'AI-Powered Planning',
+          items: [
+            { text: 'Simulation Studio', path: '/simulation-studio', badge: 'AI', description: 'What-if scenario analysis' },
+            { text: 'Scenario Planning', path: '/simulations', description: 'Multi-scenario planning' },
+            { text: 'Predictive Analytics', path: '/predictive-analytics', badge: 'AI', description: 'Sales & ROI forecasting' },
+          ]
+        },
+        {
+          title: 'Optimization',
+          items: [
+            { text: 'Budget Optimization', path: '/budget-console', badge: 'AI', description: 'AI-powered budget reallocation' },
           ]
         }
       ]
     },
+
     {
       key: 'data',
-      label: 'Master Data',
+      label: 'Data',
       icon: <DataIcon fontSize="small" />,
       sections: [
         {
-          title: 'Master Files',
+          title: 'Master Data',
           items: [
             { text: 'Customers', path: '/customers', description: 'Manage customer master data' },
             { text: 'Products', path: '/products', description: 'Manage product master data' },
           ]
+        },
+        {
+          title: 'Bulk Operations',
+          items: [
+            isAdmin && { text: 'Import Data', path: '/bulk-operations/import', badge: 'NEW', description: 'Bulk import customers/products' },
+            isAdmin && { text: 'Export Data', path: '/bulk-operations/export', badge: 'NEW', description: 'Bulk export data' },
+          ].filter(Boolean)
         }
       ]
     },
-  ];
+
+    isAdmin && {
+      key: 'admin',
+      label: 'Admin',
+      icon: <SettingsIcon fontSize="small" />,
+      sections: [
+        {
+          title: 'User Management',
+          items: [
+            { text: 'Users', path: '/users', description: 'Manage users and roles' },
+            { text: 'Customer Assignment', path: '/customer-assignment', badge: 'NEW', description: 'Assign customers to KAMs' },
+          ]
+        },
+        {
+          title: 'System',
+          items: [
+            { text: 'Settings', path: '/settings', description: 'System configuration' },
+            { text: 'Alerts', path: '/alerts', badge: 'NEW', description: 'System alerts & notifications' },
+          ]
+        }
+      ]
+    },
+  ].filter(Boolean);
 
   return (
     <AppBar 
@@ -244,7 +337,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           }}
         >
           <DashboardIcon fontSize="small" />
-          Command Center
+          Home
         </Button>
 
         {megaMenuItems.map((menuItem) => (
@@ -325,7 +418,9 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
                                     height: 18,
                                     fontSize: '0.65rem',
                                     fontWeight: 700,
-                                    backgroundColor: item.badge === 'AI' ? '#667eea' : '#f59e0b',
+                                    backgroundColor: item.badge === 'AI' ? '#667eea' : 
+                                                     item.badge === 'NEW' ? '#10b981' :
+                                                     item.badge === 'LIVE' ? '#ef4444' : '#f59e0b',
                                     color: 'white'
                                   }}
                                 />
@@ -383,18 +478,21 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {user?.email}
             </Typography>
+            <Chip 
+              label={user?.role?.toUpperCase() || 'USER'} 
+              size="small" 
+              sx={{ mt: 0.5, height: 20, fontSize: '0.65rem' }}
+            />
           </Box>
           <Divider />
-          {(user?.role === 'admin' || user?.role === 'super_admin') && (
+          <MenuItem component={RouterLink} to="/dashboard" onClick={handleUserMenuClose}>
+            <DashboardIcon fontSize="small" sx={{ mr: 1 }} />
+            My Dashboard
+          </MenuItem>
+          {isAdmin && (
             <MenuItem component={RouterLink} to="/settings" onClick={handleUserMenuClose}>
               <SettingsIcon fontSize="small" sx={{ mr: 1 }} />
               Settings
-            </MenuItem>
-          )}
-          {user?.role === 'super_admin' && (
-            <MenuItem component={RouterLink} to="/companies" onClick={handleUserMenuClose}>
-              <BusinessIcon fontSize="small" sx={{ mr: 1 }} />
-              Companies
             </MenuItem>
           )}
           <Divider />
@@ -411,35 +509,64 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
             sx: { mt: 1, minWidth: 320, maxHeight: 400 }
           }}
         >
-          <Box sx={{ px: 2, py: 1 }}>
+          <Box sx={{ px: 2, py: 1.5 }}>
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
               Notifications
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              You have 3 unread notifications
             </Typography>
           </Box>
           <Divider />
           <MenuItem onClick={handleNotificationsClose}>
             <Box>
-              <Typography variant="body2">New approval request</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                🔴 Budget Alert
+              </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Q4 Marketing budget at 95% utilization
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
                 2 minutes ago
               </Typography>
             </Box>
           </MenuItem>
+          <Divider />
           <MenuItem onClick={handleNotificationsClose}>
             <Box>
-              <Typography variant="body2">Budget reallocation complete</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                ✅ Approval Required
+              </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                3 trade spends awaiting your approval
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
                 1 hour ago
               </Typography>
             </Box>
           </MenuItem>
+          <Divider />
           <MenuItem onClick={handleNotificationsClose}>
             <Box>
-              <Typography variant="body2">Promotion performance alert</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                📊 Performance Alert
+              </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                "Summer Sale" promotion underperforming
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
                 3 hours ago
               </Typography>
             </Box>
+          </MenuItem>
+          <Divider />
+          <MenuItem 
+            component={RouterLink} 
+            to="/alerts" 
+            onClick={handleNotificationsClose}
+            sx={{ justifyContent: 'center', color: 'primary.main', fontWeight: 600 }}
+          >
+            View All Alerts
           </MenuItem>
         </Menu>
       </Toolbar>
