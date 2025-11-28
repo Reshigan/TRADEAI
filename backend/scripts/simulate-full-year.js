@@ -405,11 +405,25 @@ class TPMSimulation {
           const revenue = volume * unitPrice;
           const cost = volume * product.pricing.costPrice;
 
+          const saleDate = new Date(currentDate);
+          const year = saleDate.getFullYear();
+          const month = saleDate.getMonth() + 1;
+          const dayOfWeek = saleDate.getDay();
+          const quarter = Math.ceil(month / 3);
+          const startOfYear = new Date(year, 0, 1);
+          const days = Math.floor((saleDate - startOfYear) / (24 * 60 * 60 * 1000));
+          const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+
           const sale = {
             tenantId: this.tenant._id,
             company: this.tenant._id,
             transactionId: `TXN-${Date.now()}-${transactionCount}`,
-            date: new Date(currentDate),
+            date: saleDate,
+            year: year,
+            month: month,
+            week: week,
+            dayOfWeek: dayOfWeek,
+            quarter: quarter,
             customer: customer._id,
             product: product._id,
             quantity: volume,
