@@ -308,18 +308,26 @@ class TPMSimulation {
         const monthStart = addMonths(startDate, month);
         const monthEnd = addMonths(monthStart, 1);
 
+        const totalBudget = categoryBudget * monthlyAllocation;
+        const allocated = totalBudget * this.rng.nextFloat(0.7, 0.95);
+        const spent = totalBudget * this.rng.nextFloat(0.6, 0.9);
+        
         const budget = new Budget({
           tenantId: this.tenant._id,
+          company: this.tenant._id,
           name: `${category} - ${monthStart.toLocaleString('default', { month: 'long', year: 'numeric' })}`,
-          category: category,
-          fiscalYear: 2025,
-          period: `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, '0')}`,
-          startDate: monthStart,
-          endDate: monthEnd,
-          totalBudget: categoryBudget * monthlyAllocation,
-          allocatedBudget: categoryBudget * monthlyAllocation * this.rng.nextFloat(0.7, 0.95),
-          spentBudget: categoryBudget * monthlyAllocation * this.rng.nextFloat(0.6, 0.9),
-          status: monthEnd < new Date() ? 'Closed' : 'Active',
+          code: `BUD-${category.substring(0, 3).toUpperCase()}-${2025}-${String(month + 1).padStart(2, '0')}-${Date.now()}`,
+          year: 2025,
+          budgetType: 'budget',
+          budgetCategory: category === 'Marketing' ? 'marketing' : 'trade_marketing',
+          scope: {
+            level: 'company'
+          },
+          allocated: allocated,
+          spent: spent,
+          remaining: allocated - spent,
+          status: monthEnd < new Date() ? 'locked' : 'draft',
+          createdBy: this.users[0]._id,
           simTag: this.simTag
         });
 
