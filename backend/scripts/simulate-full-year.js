@@ -194,11 +194,17 @@ class TPMSimulation {
           90: 'NET90'
         };
         
+        const customerTypeMap = {
+          'Retail Chain': 'chain',
+          'Distributor': 'distributor',
+          'Wholesaler': 'wholesaler'
+        };
+        
         const customer = new Customer({
           tenantId: this.tenant._id,
           name: names[i],
           code: `CUST-${customerType.type.substring(0, 3).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
-          customerType: customerType.type.toLowerCase(),
+          customerType: customerTypeMap[customerType.type] || 'retailer',
           tier: this.rng.choice(['platinum', 'gold', 'silver', 'bronze']),
           paymentTerms: paymentTermsMap[customerType.paymentTerms] || 'NET30',
           creditLimit: this.rng.nextInt(500000, 2000000),
