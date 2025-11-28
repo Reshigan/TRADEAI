@@ -242,19 +242,41 @@ class TPMSimulation {
           const selectedProducts = this.rng.shuffle(this.products).slice(0, this.rng.nextInt(2, 5));
           const selectedCustomers = this.rng.shuffle(this.customers).slice(0, this.rng.nextInt(1, 3));
 
+          const promoTypeMap = {
+            'Volume Discount': 'volume_discount',
+            'Trade Allowance': 'price_discount',
+            'Co-op Marketing': 'feature',
+            'Display Fee': 'display',
+            'BOGO': 'bogo'
+          };
+
           const promotion = new Promotion({
             tenantId: this.tenant._id,
+            promotionId: `PROMO-${Date.now()}-${promotionCount}`,
             name: `${promoType.type} - ${formatDate(promoStart)}`,
-            type: promoType.type,
-            status: promoEnd < new Date() ? 'Completed' : 'Active',
-            startDate: promoStart,
-            endDate: promoEnd,
-            products: selectedProducts.map(p => p._id),
-            customers: selectedCustomers.map(c => c._id),
-            discountType: 'percentage',
-            discountValue: promoType.avgDiscount * 100 * this.rng.nextFloat(0.8, 1.2),
-            budget: this.rng.nextInt(50000, 200000),
-            expectedLift: promoType.avgLift,
+            promotionType: promoTypeMap[promoType.type] || 'price_discount',
+            period: {
+              startDate: promoStart,
+              endDate: promoEnd
+            },
+            products: selectedProducts.map(p => ({ product: p._id })),
+            scope: {
+              customers: selectedCustomers.map(c => ({ customer: c._id }))
+            },
+            mechanics: {
+              discountType: 'percentage',
+              discountValue: promoType.avgDiscount * 100 * this.rng.nextFloat(0.8, 1.2)
+            },
+            financial: {
+              planned: {
+                volumeLift: promoType.avgLift
+              },
+              costs: {
+                totalCost: this.rng.nextInt(50000, 200000)
+              }
+            },
+            status: promoEnd < new Date() ? 'completed' : 'active',
+            createdBy: this.users[0]._id,
             description: `${promoType.type} promotion for ${selectedProducts[0].category}`,
             simTag: this.simTag
           });
@@ -350,10 +372,10 @@ class TPMSimulation {
           let activePromotion = null;
           
           for (const promo of this.promotions) {
-            if (currentDate >= promo.startDate && currentDate <= promo.endDate &&
-                promo.products.some(p => p.toString() === product._id.toString()) &&
-                promo.customers.some(c => c.toString() === customer._id.toString())) {
-              promotionalLift = promo.expectedLift;
+            if (currentDate >= promo.period.startDate && currentDate <= promo.period.endDate &&
+                promo.products.some(p => p.product && p.product.toString() === product._id.toString()) &&
+                promo.scope.customers.some(c => c.customer && c.customer.toString() === customer._id.toString())) {
+              promotionalLift = promo.financial.planned.volumeLift || 1.2;
               activePromotion = promo;
               break;
             }
@@ -363,7 +385,7 @@ class TPMSimulation {
           if (volume === 0) continue;
 
           const unitPrice = activePromotion 
-            ? product.pricing.listPrice * (1 - activePromotion.discountValue / 100)
+            ? product.pricing.listPrice * (1 - (activePromotion.mechanics.discountValue || 0) / 100)
             : product.pricing.listPrice;
 
           const revenue = volume * unitPrice;
@@ -413,27 +435,27 @@ class TPMSimulation {
       const promoSales = await SalesHistory.find({
         tenantId: this.tenant._id,
         promotion: promotion._id,
-        date: { $gte: promotion.startDate, $lte: promotion.endDate }
+        date: { $gte: promotion.period.startDate, $lte: promotion.period.endDate }
       });
 
       const totalRevenue = promoSales.reduce((sum, sale) => sum + sale.totalRevenue, 0);
       const totalVolume = promoSales.reduce((sum, sale) => sum + sale.quantity, 0);
       
-      const actualSpend = totalRevenue * (promotion.discountValue / 100);
+      const actualSpend = totalRevenue * ((promotion.mechanics.discountValue || 0) / 100);
 
       const tradeSpend = new TradeSpend({
         tenantId: this.tenant._id,
         promotion: promotion._id,
-        customer: promotion.customers[0],
-        type: promotion.type,
+        customer: promotion.scope.customers[0]?.customer,
+        type: promotion.promotionType,
         amount: actualSpend,
-        plannedAmount: promotion.budget,
+        plannedAmount: promotion.financial.costs.totalCost || 0,
         actualAmount: actualSpend,
-        startDate: promotion.startDate,
-        endDate: promotion.endDate,
-        status: promotion.status === 'Completed' ? 'Settled' : 'Accrued',
+        startDate: promotion.period.startDate,
+        endDate: promotion.period.endDate,
+        status: promotion.status === 'completed' ? 'Settled' : 'Accrued',
         accrualAmount: actualSpend * 0.9,
-        settledAmount: promotion.status === 'Completed' ? actualSpend : 0,
+        settledAmount: promotion.status === 'completed' ? actualSpend : 0,
         description: `Trade spend for ${promotion.name}`,
         simTag: this.simTag
       });
