@@ -447,7 +447,8 @@ class TPMSimulation {
               liftFactor: promotionalLift
             }] : [],
             channel: customer.customerType || 'retailer',
-            simTag: this.simTag
+            importBatch: this.simTag,
+            source: 'manual'
           };
 
           batch.push(sale);
@@ -534,10 +535,10 @@ class TPMSimulation {
     console.log(`Budgets: ${this.budgets.length}`);
     console.log(`Trade Spends: ${this.tradeSpends.length}`);
     
-    const salesCount = await SalesHistory.countDocuments({ simTag: this.simTag });
+    const salesCount = await SalesHistory.countDocuments({ importBatch: this.simTag });
     const totalRevenue = await SalesHistory.aggregate([
-      { $match: { simTag: this.simTag } },
-      { $group: { _id: null, total: { $sum: '$totalRevenue' } } }
+      { $match: { importBatch: this.simTag } },
+      { $group: { _id: null, total: { $sum: '$revenue.gross' } } }
     ]);
     
     console.log(`Sales Transactions: ${salesCount}`);
