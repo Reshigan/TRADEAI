@@ -407,15 +407,31 @@ class TPMSimulation {
 
           const sale = {
             tenantId: this.tenant._id,
+            company: this.tenant._id,
+            transactionId: `TXN-${Date.now()}-${transactionCount}`,
             date: new Date(currentDate),
             customer: customer._id,
             product: product._id,
-            promotion: activePromotion ? activePromotion._id : null,
             quantity: volume,
-            unitPrice: unitPrice,
-            totalRevenue: revenue,
-            totalCost: cost,
-            grossProfit: revenue - cost,
+            revenue: {
+              gross: revenue,
+              net: revenue,
+              currency: 'ZAR'
+            },
+            pricing: {
+              listPrice: product.pricing.listPrice,
+              invoicePrice: unitPrice,
+              netPrice: unitPrice
+            },
+            costs: {
+              productCost: cost,
+              totalCost: cost
+            },
+            promotions: activePromotion ? [{
+              promotion: activePromotion._id,
+              discountApplied: product.pricing.listPrice - unitPrice,
+              liftFactor: promotionalLift
+            }] : [],
             channel: customer.customerType || 'retailer',
             simTag: this.simTag
           };
