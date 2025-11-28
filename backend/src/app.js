@@ -43,6 +43,7 @@ const authEnhancedRoutes = require('./routes/auth-enhanced');
 const salesHistoryRoutes = require('./routes/salesHistory');
 const masterDataRoutes = require('./routes/masterData');
 const dashboardRoutes = require('./routes/dashboard');
+const roleDashboardRoutes = require('./routes/dashboards');
 const reportRoutes = require('./routes/report');
 const analyticsRoutes = require('./routes/analytics');
 const advancedAnalyticsRoutes = require('./routes/advancedAnalytics');
@@ -296,6 +297,7 @@ app.use('/api/auth-enhanced', authEnhancedRoutes);
 app.use('/api/sales-history', authenticateToken, salesHistoryRoutes);
 app.use('/api/master-data', authenticateToken, masterDataRoutes);
 app.use('/api/dashboards', authenticateToken, dashboardRoutes);
+app.use('/api/dashboards/role', authenticateToken, roleDashboardRoutes);
 
 // Reports with export rate limiting (prevent data scraping)
 app.use('/api/reports', authenticateToken, exportLimiter, reportRoutes);
