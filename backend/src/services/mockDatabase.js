@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const _logger = require('../utils/_logger');
+const _logger = require('../utils/logger');
 
 // Mock roles data
 const mockRoles = [

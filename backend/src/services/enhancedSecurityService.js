@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const _crypto = require('_crypto');
+const crypto = require('crypto');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const rateLimit = require('express-rate-limit');
@@ -9,7 +9,7 @@ const helmet = require('helmet');
 // Models
 const User = require('../models/User');
 const Role = require('../models/Role');
-const _Permission = require('../models/_Permission');
+const _Permission = require('../models/Permission');
 const SecurityEvent = require('../models/SecurityEvent');
 const AuditLog = require('../models/AuditLog');
 

@@ -7,7 +7,7 @@ const logger = require('../utils/logger');
 // Models
 const User = require('../models/User');
 const Role = require('../models/Role');
-const _Permission = require('../models/_Permission');
+const Permission = require('../models/Permission');
 const AuditLog = require('../models/AuditLog');
 const SecurityEvent = require('../models/SecurityEvent');
 

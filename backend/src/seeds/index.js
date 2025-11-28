@@ -13,7 +13,7 @@ const Campaign = require('../models/Campaign');
 const ActivityGrid = require('../models/ActivityGrid');
 const MasterData = require('../models/MasterData');
 const config = require('../config');
-const _logger = require('../utils/_logger');
+const _logger = require('../utils/logger');
 
 // Connect to MongoDB
 const connectDB = async () => {
