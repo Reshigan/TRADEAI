@@ -79,6 +79,8 @@ const insightsRoutes = require('./routes/insights');
 const metricsRoutes = require('./routes/metrics');
 const processModelRoutes = require('./routes/processModel');
 const importRoutes = require('./routes/import');
+const customerAssignmentRoutes = require('./routes/customerAssignment');
+const alertsRoutes = require('./routes/alerts');
 
 // Create Express app
 const app = express();
@@ -345,6 +347,8 @@ app.use('/api/insights', authenticateToken, insightsRoutes);
 app.use('/api/metrics', authenticateToken, metricsRoutes);
 app.use('/api/process-model', authenticateToken, processModelRoutes);
 app.use('/api/import', authenticateToken, importRoutes);
+app.use('/api/customer-assignment', authenticateToken, customerAssignmentRoutes);
+app.use('/api/alerts', authenticateToken, alertsRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
