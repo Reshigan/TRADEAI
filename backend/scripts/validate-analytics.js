@@ -80,8 +80,8 @@ class AnalyticsValidator {
     console.log('\n📊 Validating Total Revenue...');
 
     const salesData = await SalesHistory.aggregate([
-      { $match: { tenantId: this.tenant._id, simTag: this.simTag } },
-      { $group: { _id: null, total: { $sum: '$totalRevenue' } } }
+      { $match: { tenantId: this.tenant._id, importBatch: this.simTag } },
+      { $group: { _id: null, total: { $sum: '$revenue.gross' } } }
     ]);
 
     const expected = salesData[0]?.total || 0;
@@ -100,7 +100,7 @@ class AnalyticsValidator {
     console.log('\n📦 Validating Total Volume...');
 
     const volumeData = await SalesHistory.aggregate([
-      { $match: { tenantId: this.tenant._id, simTag: this.simTag } },
+      { $match: { tenantId: this.tenant._id, importBatch: this.simTag } },
       { $group: { _id: null, total: { $sum: '$quantity' } } }
     ]);
 
@@ -119,11 +119,17 @@ class AnalyticsValidator {
     console.log('\n💰 Validating Gross Profit...');
 
     const profitData = await SalesHistory.aggregate([
-      { $match: { tenantId: this.tenant._id, simTag: this.simTag } },
-      { $group: { _id: null, total: { $sum: '$grossProfit' } } }
+      { $match: { tenantId: this.tenant._id, importBatch: this.simTag } },
+      { 
+        $group: { 
+          _id: null, 
+          totalRevenue: { $sum: '$revenue.gross' },
+          totalCost: { $sum: '$costs.totalCost' }
+        } 
+      }
     ]);
 
-    const expected = profitData[0]?.total || 0;
+    const expected = (profitData[0]?.totalRevenue || 0) - (profitData[0]?.totalCost || 0);
     const actual = expected;
 
     const result = this.compareValues(expected, actual, 'Gross Profit');
@@ -139,7 +145,7 @@ class AnalyticsValidator {
 
     const expected = await Promotion.countDocuments({ 
       tenantId: this.tenant._id, 
-      simTag: this.simTag 
+      promotionId: { $regex: /^PROMO-/ }
     });
     const actual = expected;
 
@@ -155,8 +161,8 @@ class AnalyticsValidator {
     console.log('\n💸 Validating Trade Spend...');
 
     const spendData = await TradeSpend.aggregate([
-      { $match: { tenantId: this.tenant._id, simTag: this.simTag } },
-      { $group: { _id: null, total: { $sum: '$actualAmount' } } }
+      { $match: { tenantId: this.tenant._id, spendId: { $regex: /^SPEND-/ } } },
+      { $group: { _id: null, total: { $sum: '$amount.approved' } } }
     ]);
 
     const expected = spendData[0]?.total || 0;
@@ -174,12 +180,12 @@ class AnalyticsValidator {
     console.log('\n📈 Validating Budget Utilization...');
 
     const budgetData = await Budget.aggregate([
-      { $match: { tenantId: this.tenant._id, simTag: this.simTag } },
+      { $match: { tenantId: this.tenant._id, code: { $regex: /^BUD-/ } } },
       { 
         $group: { 
           _id: null, 
-          totalBudget: { $sum: '$totalBudget' },
-          spentBudget: { $sum: '$spentBudget' }
+          totalBudget: { $sum: '$allocated' },
+          spentBudget: { $sum: '$spent' }
         } 
       }
     ]);
@@ -204,22 +210,22 @@ class AnalyticsValidator {
       { 
         $match: { 
           tenantId: this.tenant._id, 
-          simTag: this.simTag,
-          promotion: { $ne: null }
+          importBatch: this.simTag,
+          'promotions.0': { $exists: true }
         } 
       },
-      { $group: { _id: null, total: { $sum: '$totalRevenue' } } }
+      { $group: { _id: null, total: { $sum: '$revenue.gross' } } }
     ]);
 
     const nonPromoSales = await SalesHistory.aggregate([
       { 
         $match: { 
           tenantId: this.tenant._id, 
-          simTag: this.simTag,
-          promotion: null
+          importBatch: this.simTag,
+          'promotions.0': { $exists: false }
         } 
       },
-      { $group: { _id: null, total: { $sum: '$totalRevenue' } } }
+      { $group: { _id: null, total: { $sum: '$revenue.gross' } } }
     ]);
 
     const promoRevenue = promoSales[0]?.total || 0;
@@ -242,28 +248,36 @@ class AnalyticsValidator {
     console.log('\n💹 Validating ROI...');
 
     const spendData = await TradeSpend.aggregate([
-      { $match: { tenantId: this.tenant._id, simTag: this.simTag } },
-      { $group: { _id: null, total: { $sum: '$actualAmount' } } }
+      { $match: { tenantId: this.tenant._id, spendId: { $regex: /^SPEND-/ } } },
+      { $group: { _id: null, total: { $sum: '$amount.approved' } } }
     ]);
 
     const promoSales = await SalesHistory.aggregate([
       { 
         $match: { 
           tenantId: this.tenant._id, 
-          simTag: this.simTag,
-          promotion: { $ne: null }
+          importBatch: this.simTag,
+          'promotions.0': { $exists: true }
         } 
       },
-      { $group: { _id: null, total: { $sum: '$grossProfit' } } }
+      { 
+        $group: { 
+          _id: null, 
+          totalRevenue: { $sum: '$revenue.gross' },
+          totalCost: { $sum: '$costs.totalCost' }
+        } 
+      }
     ]);
 
     const tradeSpend = spendData[0]?.total || 1;
-    const promoProfit = promoSales[0]?.total || 0;
+    const promoRevenue = promoSales[0]?.totalRevenue || 0;
+    const promoCost = promoSales[0]?.totalCost || 0;
+    const promoProfit = promoRevenue - promoCost;
     
     const expected = ((promoProfit - tradeSpend) / tradeSpend) * 100;
     const actual = expected;
 
-    const result = this.compareValues(expected, actual, 'ROI %', 0.05); // 5% tolerance for ROI
+    const result = this.compareValues(expected, actual, 'ROI %', 0.05);
     console.log(`  Trade Spend: R ${tradeSpend.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`);
     console.log(`  Promo Profit: R ${promoProfit.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`);
     console.log(`  Expected ROI: ${expected.toFixed(2)}%`);
