@@ -143,16 +143,25 @@ class TPMSimulation {
       const names = productNames[categoryConfig.name] || [];
       
       for (let i = 0; i < names.length; i++) {
+        const listPrice = this.rng.nextFloat(categoryConfig.avgPrice * 0.8, categoryConfig.avgPrice * 1.2);
+        const costPrice = categoryConfig.avgPrice * (1 - categoryConfig.margin);
+        
         const product = new Product({
           tenantId: this.tenant._id,
           name: names[i],
           sku: `${categoryConfig.name.substring(0, 3).toUpperCase()}-${String(i + 1).padStart(4, '0')}`,
+          sapMaterialId: `SAP-${categoryConfig.name.substring(0, 3).toUpperCase()}-${String(i + 1).padStart(6, '0')}`,
           category: categoryConfig.name,
           brand: `${categoryConfig.name} Brand`,
-          price: this.rng.nextFloat(categoryConfig.avgPrice * 0.8, categoryConfig.avgPrice * 1.2),
-          cost: categoryConfig.avgPrice * (1 - categoryConfig.margin),
+          productType: 'own_brand',
+          pricing: {
+            listPrice: listPrice,
+            currency: 'ZAR',
+            costPrice: costPrice,
+            marginPercentage: categoryConfig.margin * 100
+          },
           description: `Premium ${names[i]} for South African market`,
-          isActive: true,
+          status: 'active',
           simTag: this.simTag
         });
 
@@ -340,11 +349,11 @@ class TPMSimulation {
           if (volume === 0) continue;
 
           const unitPrice = activePromotion 
-            ? product.price * (1 - activePromotion.discountValue / 100)
-            : product.price;
+            ? product.pricing.listPrice * (1 - activePromotion.discountValue / 100)
+            : product.pricing.listPrice;
 
           const revenue = volume * unitPrice;
-          const cost = volume * product.cost;
+          const cost = volume * product.pricing.costPrice;
 
           const sale = {
             tenantId: this.tenant._id,
