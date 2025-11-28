@@ -82,6 +82,8 @@ const importRoutes = require('./routes/import');
 const customerAssignmentRoutes = require('./routes/customerAssignment');
 const alertsRoutes = require('./routes/alerts');
 const performanceAnalyticsRoutes = require('./routes/performanceAnalytics');
+const bulkOperationsRoutes = require('./routes/bulkOperations');
+const predictiveAnalyticsRoutes = require('./routes/predictiveAnalytics');
 
 // Create Express app
 const app = express();
@@ -351,6 +353,8 @@ app.use('/api/import', authenticateToken, importRoutes);
 app.use('/api/customer-assignment', authenticateToken, customerAssignmentRoutes);
 app.use('/api/alerts', authenticateToken, alertsRoutes);
 app.use('/api/performance-analytics', authenticateToken, performanceAnalyticsRoutes);
+app.use('/api/bulk-operations', authenticateToken, bulkOperationsRoutes);
+app.use('/api/predictive-analytics', authenticateToken, predictiveAnalyticsRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
