@@ -1,6 +1,6 @@
 {
   "name": "trade-ai-backend",
-  "version": "2.1.3",
+  "version": "2.2.0",
   "description": "Trade AI - Intelligent Trade Spend Management Platform Backend - South African Edition",
   "main": "src/server.js",
   "scripts": {

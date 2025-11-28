@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
+const packageJson = require('../../package.json');
 
 // Metrics collection for Prometheus
 let requestCount = 0;
@@ -35,7 +36,7 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
     environment: process.env.NODE_ENV || 'development',
-    version: process.env.npm_package_version || '1.0.0'
+    version: process.env.APP_VERSION || packageJson.version
   };
 
   res.status(200).json(health);
@@ -50,7 +51,7 @@ router.get('/health/detailed', async (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
     environment: process.env.NODE_ENV || 'development',
-    version: process.env.npm_package_version || '1.0.0',
+    version: process.env.APP_VERSION || packageJson.version,
     checks: {}
   };
 
