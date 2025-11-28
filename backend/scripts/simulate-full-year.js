@@ -204,6 +204,7 @@ class TPMSimulation {
           tenantId: this.tenant._id,
           name: names[i],
           code: `CUST-${customerType.type.substring(0, 3).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
+          sapCustomerId: `SAP-CUST-${customerType.type.substring(0, 3).toUpperCase()}-${String(i + 1).padStart(6, '0')}`,
           customerType: customerTypeMap[customerType.type] || 'retailer',
           tier: this.rng.choice(['platinum', 'gold', 'silver', 'bronze']),
           paymentTerms: paymentTermsMap[customerType.paymentTerms] || 'NET30',
