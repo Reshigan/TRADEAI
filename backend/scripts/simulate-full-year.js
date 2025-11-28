@@ -358,7 +358,13 @@ class TPMSimulation {
       const weekendMultiplier = isWeekend ? this.config.salesPatterns.weekendMultiplier : 1.0;
 
       for (const customer of this.customers) {
-        const customerType = this.config.customerTypes.find(ct => ct.type === customer.type);
+        const customerTypeMap = {
+          'chain': 'Retail Chain',
+          'distributor': 'Distributor',
+          'wholesaler': 'Wholesaler'
+        };
+        const configType = customerTypeMap[customer.customerType] || 'Retail Chain';
+        const customerType = this.config.customerTypes.find(ct => ct.type === configType);
         if (!customerType) continue;
 
         const numProducts = this.rng.nextInt(1, 3);
@@ -453,18 +459,26 @@ class TPMSimulation {
 
       const tradeSpend = new TradeSpend({
         tenantId: this.tenant._id,
-        promotion: promotion._id,
+        company: this.tenant._id,
+        spendId: `SPEND-${Date.now()}-${promotion._id}`,
+        spendType: 'promotion',
+        activityType: 'trade_marketing',
+        category: 'Promotional Discount',
+        amount: {
+          requested: promotion.financial.costs.totalCost || actualSpend,
+          approved: actualSpend,
+          spent: promotion.status === 'completed' ? actualSpend : 0,
+          currency: 'ZAR'
+        },
+        period: {
+          startDate: promotion.period.startDate,
+          endDate: promotion.period.endDate
+        },
         customer: promotion.scope.customers[0]?.customer,
-        type: promotion.promotionType,
-        amount: actualSpend,
-        plannedAmount: promotion.financial.costs.totalCost || 0,
-        actualAmount: actualSpend,
-        startDate: promotion.period.startDate,
-        endDate: promotion.period.endDate,
-        status: promotion.status === 'completed' ? 'Settled' : 'Accrued',
-        accrualAmount: actualSpend * 0.9,
-        settledAmount: promotion.status === 'completed' ? actualSpend : 0,
-        description: `Trade spend for ${promotion.name}`,
+        promotion: promotion._id,
+        status: promotion.status === 'completed' ? 'completed' : 'active',
+        notes: `Trade spend for ${promotion.name}`,
+        createdBy: this.users[0]._id,
         simTag: this.simTag
       });
 
