@@ -1,7 +1,7 @@
 const tf = require('@tensorflow/tfjs');
 const SalesHistory = require('../models/SalesHistory');
 const logger = require('../utils/logger');
-const _config = require('../_config');
+const _config = require('../config');
 
 class MLService {
   constructor() {

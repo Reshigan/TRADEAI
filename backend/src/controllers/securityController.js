@@ -5,7 +5,7 @@ const Permission = require('../models/Permission');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const SecurityEvent = require('../models/SecurityEvent');
-const _logger = require('../utils/_logger');
+const _logger = require('../utils/logger');
 
 /**
  * Security Controller

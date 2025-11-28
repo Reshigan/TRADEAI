@@ -1,6 +1,6 @@
 const EventEmitter = require('events');
-const _fs = require('_fs').promises;
-const _path = require('_path');
+const _fs = require('fs').promises;
+const _path = require('path');
 
 /**
  * Comprehensive Testing Service
