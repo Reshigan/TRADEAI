@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Region, District, Store } = require('../models/StoreHierarchy');
 const { protect } = require('../middleware/auth');
-const asyncHandler = require('express-async-handler');
+const { asyncHandler } = require('../middleware/errorHandler');
 
 router.get('/regions', protect, asyncHandler(async (req, res) => {
   const { page = 1, limit = 100, search, isActive } = req.query;
