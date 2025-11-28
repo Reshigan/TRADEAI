@@ -81,6 +81,7 @@ const processModelRoutes = require('./routes/processModel');
 const importRoutes = require('./routes/import');
 const customerAssignmentRoutes = require('./routes/customerAssignment');
 const alertsRoutes = require('./routes/alerts');
+const performanceAnalyticsRoutes = require('./routes/performanceAnalytics');
 
 // Create Express app
 const app = express();
@@ -349,6 +350,7 @@ app.use('/api/process-model', authenticateToken, processModelRoutes);
 app.use('/api/import', authenticateToken, importRoutes);
 app.use('/api/customer-assignment', authenticateToken, customerAssignmentRoutes);
 app.use('/api/alerts', authenticateToken, alertsRoutes);
+app.use('/api/performance-analytics', authenticateToken, performanceAnalyticsRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
