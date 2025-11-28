@@ -11,7 +11,7 @@
 
 const Budget = require('../models/Budget');
 const TradeSpend = require('../models/TradeSpend');
-const _Accrual = require('../models/_Accrual');
+const _Accrual = require('../models/Accrual');
 const logger = require('../../utils/logger');
 const { safeNumber, calculatePercentage } = require('../../utils/safeNumbers');
 

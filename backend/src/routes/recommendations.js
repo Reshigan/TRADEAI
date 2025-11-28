@@ -5,7 +5,7 @@ const { authenticate } = require('../middleware/auth');
 const revenueImpactService = require('../services/revenueImpactService');
 const Customer = require('../models/Customer');
 // const Product = require('../models/Product');
-const _Promotion = require('../models/_Promotion');
+const _Promotion = require('../models/Promotion');
 const logger = require('../utils/logger');
 
 router.use(authenticate);

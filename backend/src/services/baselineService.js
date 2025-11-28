@@ -4,8 +4,8 @@
  */
 
 const SalesHistory = require('../models/SalesHistory');
-const _Transaction = require('../models/_Transaction');
-const _Promotion = require('../models/_Promotion');
+const _Transaction = require('../models/Transaction');
+const _Promotion = require('../models/Promotion');
 
 class BaselineService {
   /**

@@ -1,5 +1,5 @@
 const Claim = require('../models/Claim');
-const _Deduction = require('../models/_Deduction');
+const _Deduction = require('../models/Deduction');
 const Invoice = require('../models/Invoice');
 
 class ClaimService {

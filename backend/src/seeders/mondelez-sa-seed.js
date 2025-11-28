@@ -19,7 +19,7 @@ require('dotenv').config();
 const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
-const _Vendor = require('../models/_Vendor');
+const _Vendor = require('../models/Vendor');
 const Promotion = require('../models/Promotion');
 const Campaign = require('../models/Campaign');
 const Budget = require('../models/Budget');

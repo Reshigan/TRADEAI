@@ -1,6 +1,6 @@
 const Deduction = require('../models/Deduction');
 const Claim = require('../models/Claim');
-const _Invoice = require('../models/_Invoice');
+const _Invoice = require('../models/Invoice');
 
 class DeductionService {
   async createDeduction(tenantId, deductionData, userId) {
