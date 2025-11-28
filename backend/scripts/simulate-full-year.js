@@ -478,12 +478,13 @@ class TPMSimulation {
 
     for (const promotion of this.promotions) {
       const promoSales = await SalesHistory.find({
-        tenantId: this.tenant._id,
-        promotion: promotion._id,
+        company: this.tenant._id,
+        importBatch: this.simTag,
+        'promotions.promotion': promotion._id,
         date: { $gte: promotion.period.startDate, $lte: promotion.period.endDate }
       });
 
-      const totalRevenue = promoSales.reduce((sum, sale) => sum + sale.totalRevenue, 0);
+      const totalRevenue = promoSales.reduce((sum, sale) => sum + (sale.revenue?.gross || 0), 0);
       const totalVolume = promoSales.reduce((sum, sale) => sum + sale.quantity, 0);
       
       const actualSpend = totalRevenue * ((promotion.mechanics.discountValue || 0) / 100);
@@ -497,7 +498,7 @@ class TPMSimulation {
         category: 'Promotional Discount',
         amount: {
           requested: promotion.financial.costs.totalCost || actualSpend,
-          approved: actualSpend,
+          approved: actualSpend > 0 ? actualSpend : promotion.financial.costs.totalCost || 10000,
           spent: promotion.status === 'completed' ? actualSpend : 0,
           currency: 'ZAR'
         },
@@ -508,7 +509,7 @@ class TPMSimulation {
         customer: promotion.scope.customers[0]?.customer,
         promotion: promotion._id,
         status: promotion.status === 'completed' ? 'completed' : 'active',
-        notes: `Trade spend for ${promotion.name}`,
+        notes: `Trade spend for ${promotion.name} (${totalVolume} units, R${totalRevenue.toFixed(2)} revenue)`,
         createdBy: this.users[0]._id,
         simTag: this.simTag
       });
