@@ -1,6 +1,6 @@
 const TradeSpend = require('../models/TradeSpend');
 const Budget = require('../models/Budget');
-const _SalesHistory = require('../models/_SalesHistory');
+const _SalesHistory = require('../models/SalesHistory');
 const logger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 

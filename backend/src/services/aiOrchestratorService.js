@@ -6,7 +6,7 @@
  */
 
 const axios = require('axios');
-const _ollamaService = require('../../services/_ollamaService');
+const _ollamaService = require('../../services/ollamaService');
 const mlIntegrationService = require('./mlIntegrationService');
 const revenueImpactService = require('./revenueImpactService');
 const logger = require('../utils/logger');

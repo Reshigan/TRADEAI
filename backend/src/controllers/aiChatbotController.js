@@ -3,8 +3,8 @@ const Promotion = require('../models/Promotion');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Budget = require('../models/Budget');
-const _TradeSpend = require('../models/_TradeSpend');
-const _mlService = require('../services/_mlService');
+const _TradeSpend = require('../models/TradeSpend');
+const _mlService = require('../services/mlService');
 
 /**
  * AI Chatbot Controller - Works with MongoDB data and local ML models

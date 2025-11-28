@@ -1,6 +1,6 @@
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
-const _Vendor = require('../models/_Vendor');
+const _Vendor = require('../models/Vendor');
 const SalesHistory = require('../models/SalesHistory');
 const TradeSpend = require('../models/TradeSpend');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');

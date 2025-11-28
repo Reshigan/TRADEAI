@@ -121,7 +121,7 @@ class AnalyticsController {
       const Customer = require('../models/Customer');
       const Promotion = require('../models/Promotion');
       const Budget = require('../models/Budget');
-      const _TradeSpend = require('../models/_TradeSpend');
+      const _TradeSpend = require('../models/TradeSpend');
 
       // Query real data from database
       // Check for both 'active' and 'completed' promotions for stats

@@ -5,12 +5,12 @@ const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const Campaign = require('../models/Campaign');
-const _TradingTerm = require('../models/_TradingTerm');
-const _Report = require('../models/_Report');
-const _AIChat = require('../models/_AIChat');
-const _PromotionAnalysis = require('../models/_PromotionAnalysis');
-const _MarketingBudgetAllocation = require('../models/_MarketingBudgetAllocation');
-const _CombinationAnalysis = require('../models/_CombinationAnalysis');
+const _TradingTerm = require('../models/TradingTerm');
+const _Report = require('../models/Report');
+const _AIChat = require('../models/AIChat');
+const _PromotionAnalysis = require('../models/PromotionAnalysis');
+const _MarketingBudgetAllocation = require('../models/MarketingBudgetAllocation');
+const _CombinationAnalysis = require('../models/CombinationAnalysis');
 const { connectDB } = require('../config/database');
 
 // Helper function to generate random values

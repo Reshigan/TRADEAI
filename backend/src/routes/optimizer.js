@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
-const _revenueImpactService = require('../services/_revenueImpactService');
-const _Budget = require('../models/_Budget');
+const _revenueImpactService = require('../services/revenueImpactService');
+const _Budget = require('../models/Budget');
 const Promotion = require('../models/Promotion');
 const logger = require('../utils/logger');
 

@@ -2,7 +2,7 @@ const tf = require('@tensorflow/tfjs-node');
 // const mongoose = require('mongoose');
 const Customer = require('../models/Customer');
 const Product = require('../models/Product');
-const _Promotion = require('../models/_Promotion');
+const _Promotion = require('../models/Promotion');
 
 /**
  * Machine Learning Integration Service

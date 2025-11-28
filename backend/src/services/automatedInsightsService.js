@@ -1,7 +1,7 @@
 const ss = require('simple-statistics');
 const _math = require('mathjs');
-const _mlPredictionService = require('./_mlPredictionService');
-const _aiRecommendationEngine = require('./_aiRecommendationEngine');
+const _mlPredictionService = require('./mlPredictionService');
+const _aiRecommendationEngine = require('./aiRecommendationEngine');
 
 class AutomatedInsightsService {
   constructor() {

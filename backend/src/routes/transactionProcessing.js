@@ -4,9 +4,9 @@ const router = express.Router();
 const PurchaseOrder = require('../models/PurchaseOrder');
 const Invoice = require('../models/Invoice');
 const Payment = require('../models/Payment');
-const _Settlement = require('../models/_Settlement');
-const _Dispute = require('../models/_Dispute');
-const _Accrual = require('../models/_Accrual');
+const _Settlement = require('../models/Settlement');
+const _Dispute = require('../models/Dispute');
+const _Accrual = require('../models/Accrual');
 
 const threeWayMatchingService = require('../services/threeWayMatchingService');
 const accrualManagementService = require('../services/accrualManagementService');

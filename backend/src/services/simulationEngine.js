@@ -1,8 +1,8 @@
 const { AppError } = require('../middleware/errorHandler');
 const mlService = require('./mlService');
-const _Budget = require('../models/_Budget');
+const _Budget = require('../models/Budget');
 const Promotion = require('../models/Promotion');
-const _SalesHistory = require('../models/_SalesHistory');
+const _SalesHistory = require('../models/SalesHistory');
 // const Product = require('../models/Product');
 
 /**

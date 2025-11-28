@@ -7,7 +7,7 @@ const Customer = require('../models/Customer');
 const Product = require('../models/Product');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const { cacheService } = require('../services/cacheService');
-const _mlService = require('../services/_mlService');
+const _mlService = require('../services/mlService');
 
 /**
  * ENTERPRISE DASHBOARD CONTROLLER
