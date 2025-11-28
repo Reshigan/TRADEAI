@@ -80,7 +80,7 @@ class AnalyticsValidator {
     console.log('\n📊 Validating Total Revenue...');
 
     const salesData = await SalesHistory.aggregate([
-      { $match: { tenantId: this.tenant._id, importBatch: this.simTag } },
+      { $match: { company: this.tenant._id, importBatch: this.simTag } },
       { $group: { _id: null, total: { $sum: '$revenue.gross' } } }
     ]);
 
@@ -100,7 +100,7 @@ class AnalyticsValidator {
     console.log('\n📦 Validating Total Volume...');
 
     const volumeData = await SalesHistory.aggregate([
-      { $match: { tenantId: this.tenant._id, importBatch: this.simTag } },
+      { $match: { company: this.tenant._id, importBatch: this.simTag } },
       { $group: { _id: null, total: { $sum: '$quantity' } } }
     ]);
 
@@ -119,7 +119,7 @@ class AnalyticsValidator {
     console.log('\n💰 Validating Gross Profit...');
 
     const profitData = await SalesHistory.aggregate([
-      { $match: { tenantId: this.tenant._id, importBatch: this.simTag } },
+      { $match: { company: this.tenant._id, importBatch: this.simTag } },
       { 
         $group: { 
           _id: null, 
@@ -209,7 +209,7 @@ class AnalyticsValidator {
     const promoSales = await SalesHistory.aggregate([
       { 
         $match: { 
-          tenantId: this.tenant._id, 
+          company: this.tenant._id, 
           importBatch: this.simTag,
           'promotions.0': { $exists: true }
         } 
@@ -220,7 +220,7 @@ class AnalyticsValidator {
     const nonPromoSales = await SalesHistory.aggregate([
       { 
         $match: { 
-          tenantId: this.tenant._id, 
+          company: this.tenant._id, 
           importBatch: this.simTag,
           'promotions.0': { $exists: false }
         } 
@@ -255,7 +255,7 @@ class AnalyticsValidator {
     const promoSales = await SalesHistory.aggregate([
       { 
         $match: { 
-          tenantId: this.tenant._id, 
+          company: this.tenant._id, 
           importBatch: this.simTag,
           'promotions.0': { $exists: true }
         } 
