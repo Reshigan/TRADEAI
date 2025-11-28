@@ -187,16 +187,23 @@ class TPMSimulation {
       const names = customerNames[customerType.type] || [];
       
       for (let i = 0; i < Math.min(customerType.count, names.length); i++) {
+        const paymentTermsMap = {
+          30: 'NET30',
+          45: 'NET45',
+          60: 'NET60',
+          90: 'NET90'
+        };
+        
         const customer = new Customer({
           tenantId: this.tenant._id,
           name: names[i],
           code: `CUST-${customerType.type.substring(0, 3).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
-          type: customerType.type,
-          tier: this.rng.choice(['Platinum', 'Gold', 'Silver']),
-          region: this.rng.choice(['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape']),
-          paymentTerms: customerType.paymentTerms,
+          customerType: customerType.type.toLowerCase(),
+          tier: this.rng.choice(['platinum', 'gold', 'silver', 'bronze']),
+          paymentTerms: paymentTermsMap[customerType.paymentTerms] || 'NET30',
           creditLimit: this.rng.nextInt(500000, 2000000),
-          isActive: true,
+          currency: 'ZAR',
+          status: 'active',
           simTag: this.simTag
         });
 
@@ -366,8 +373,7 @@ class TPMSimulation {
             totalRevenue: revenue,
             totalCost: cost,
             grossProfit: revenue - cost,
-            channel: customer.type,
-            region: customer.region,
+            channel: customer.customerType || 'retailer',
             simTag: this.simTag
           };
 
