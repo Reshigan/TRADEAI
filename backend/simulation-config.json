@@ -61,37 +61,37 @@
     {
       "type": "Volume Discount",
       "frequency": 0.3,
-      "avgLift": 1.25,
+      "avgLift": 1.35,
       "avgDiscount": 0.10,
-      "duration": 30
+      "duration": 45
     },
     {
       "type": "Trade Allowance",
       "frequency": 0.25,
-      "avgLift": 1.15,
+      "avgLift": 1.25,
       "avgDiscount": 0.08,
-      "duration": 60
+      "duration": 75
     },
     {
       "type": "Co-op Marketing",
       "frequency": 0.20,
-      "avgLift": 1.35,
+      "avgLift": 1.45,
       "avgDiscount": 0.12,
-      "duration": 45
+      "duration": 60
     },
     {
       "type": "Display Fee",
       "frequency": 0.15,
-      "avgLift": 1.20,
+      "avgLift": 1.30,
       "avgDiscount": 0.05,
-      "duration": 21
+      "duration": 30
     },
     {
       "type": "BOGO",
       "frequency": 0.10,
-      "avgLift": 1.50,
+      "avgLift": 1.80,
       "avgDiscount": 0.50,
-      "duration": 14
+      "duration": 21
     }
   ],
   "budgets": {
