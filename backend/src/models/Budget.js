@@ -261,6 +261,18 @@ const budgetSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
+budgetSchema.virtual('utilization').get(function () {
+  const allocated = Number(this.allocated) || 0;
+  const spent = Number(this.spent) || 0;
+  return allocated > 0 ? (spent / allocated) * 100 : 0;
+});
+
+budgetSchema.virtual('available').get(function () {
+  const allocated = Number(this.allocated) || 0;
+  const spent = Number(this.spent) || 0;
+  return allocated - spent;
+});
+
 // Indexes
 budgetSchema.index({ code: 1 });
 budgetSchema.index({ name: 1 });
