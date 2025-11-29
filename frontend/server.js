@@ -36,5 +36,4 @@ const port = process.env.PORT || 3001;
 app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 TRADEAI React Application running on port ${port}`);
   console.log('⚛️  Serving React build with Material-UI');
-  console.log('🔐 Demo: admin@mondelez.co.za / admin123');
 });
