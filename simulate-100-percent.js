@@ -38,9 +38,16 @@ class ComprehensiveSimulation {
   async authenticate() {
     console.log('🔐 Authenticating...');
     try {
+      const email = process.env.TEST_USER_EMAIL || 'admin@trade-ai.com';
+      const password = process.env.TEST_USER_PASSWORD;
+      
+      if (!password) {
+        throw new Error('TEST_USER_PASSWORD environment variable is required');
+      }
+      
       const response = await axios.post(`${BASE_URL}/auth/login`, {
-        email: 'admin@trade-ai.com',
-        password: 'admin123'
+        email,
+        password
       });
       
       if (response.data.token) {
