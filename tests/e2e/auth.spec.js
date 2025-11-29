@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { login } = require('./helpers/login');
 
 /**
  * Authentication E2E Tests
@@ -39,37 +40,37 @@ test.describe('Authentication', () => {
   });
   
   test('should successfully login with valid credentials', async ({ page }) => {
-    await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-    await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
+    const email = process.env.TEST_USER_EMAIL || 'admin@testdistributor.com';
+    const password = process.env.TEST_USER_PASSWORD || 'Admin@123';
     
-    // Submit form
-    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
+    await page.locator('input[type="email"], input[name="email"]').fill(email);
+    await page.locator('input[type="password"], input[name="password"]').fill(password);
     
-    await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
+    // Submit form and wait for navigation to dashboard
+    await Promise.all([
+      page.waitForURL(url => {
+        const pathname = new URL(url).pathname;
+        return pathname.includes('/dashboard') || pathname.includes('/home');
+      }, { timeout: 15000 }),
+      page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click()
+    ]);
     
-    expect(page.url()).not.toContain('login');
-    
-    const hasDashboard = await page.locator('text=/dashboard|welcome|overview/i').isVisible({ timeout: 5000 }).catch(() => false);
-    expect(hasDashboard).toBeTruthy();
+    expect(page.url()).not.toContain('/login');
+    expect(page.url()).toMatch(/\/(dashboard|home)/);
   });
   
   test('should maintain session after page reload', async ({ page }) => {
-    await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-    await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
-    await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
+    await login(page);
     
     await page.reload();
-    
     await page.waitForTimeout(2000);
-    expect(page.url()).not.toContain('login');
+    
+    expect(page.url()).not.toContain('/login');
+    expect(page.url()).toMatch(/\/(dashboard|home)/);
   });
   
   test('should successfully logout', async ({ page }) => {
-    await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-    await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
-    await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
+    await login(page);
     
     const logoutButton = page.locator('button:has-text("Logout"), button:has-text("Sign Out"), a:has-text("Logout"), a:has-text("Sign Out")').first();
     

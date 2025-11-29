@@ -10,10 +10,12 @@ module.exports = defineConfig({
   
   timeout: 60 * 1000,
   
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
+  
+  globalSetup: require.resolve('./tests/e2e-global-setup.js'),
   
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
@@ -23,6 +25,8 @@ module.exports = defineConfig({
   
   use: {
     baseURL: process.env.BASE_URL || 'https://tradeai.gonxt.tech',
+    
+    storageState: '.auth/user.json',
     
     trace: 'on-first-retry',
     

@@ -1,28 +1,11 @@
 const { test, expect } = require('@playwright/test');
-
-/**
- * Products E2E Tests
- * 
- * Tests product management functionality
- */
-
-async function login(page) {
-  await page.goto('/');
-  await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-  await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-  await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
-  await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
-}
+const { login } = require('./helpers/login');
 
 test.describe('Products', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    
-    const productsLink = page.locator('a:has-text("Product"), button:has-text("Product")').first();
-    if (await productsLink.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await productsLink.click();
-      await page.waitForTimeout(2000);
-    }
+    await page.goto('/products');
+    await page.waitForTimeout(2000);
   });
   
   test('should display products list', async ({ page }) => {

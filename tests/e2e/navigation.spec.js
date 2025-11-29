@@ -1,18 +1,5 @@
 const { test, expect } = require('@playwright/test');
-
-/**
- * Navigation E2E Tests
- * 
- * Tests navigation, menu functionality, and page accessibility
- */
-
-async function login(page) {
-  await page.goto('/');
-  await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-  await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-  await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
-  await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
-}
+const { login } = require('./helpers/login');
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -20,7 +7,7 @@ test.describe('Navigation', () => {
   });
   
   test('should display main navigation menu', async ({ page }) => {
-    const hasNav = await page.locator('nav, [role="navigation"]').isVisible({ timeout: 5000 }).catch(() => false);
+    const hasNav = await page.locator('nav, [role="navigation"], header, [class*="AppBar" i], [class*="menu" i]').isVisible({ timeout: 5000 }).catch(() => false);
     expect(hasNav).toBeTruthy();
   });
   

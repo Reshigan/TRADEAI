@@ -1,28 +1,11 @@
 const { test, expect } = require('@playwright/test');
-
-/**
- * Budgets E2E Tests
- * 
- * Tests budget management functionality
- */
-
-async function login(page) {
-  await page.goto('/');
-  await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-  await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-  await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
-  await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
-}
+const { login } = require('./helpers/login');
 
 test.describe('Budgets', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    
-    const budgetsLink = page.locator('a:has-text("Budget"), button:has-text("Budget")').first();
-    if (await budgetsLink.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await budgetsLink.click();
-      await page.waitForTimeout(2000);
-    }
+    await page.goto('/budgets');
+    await page.waitForTimeout(2000);
   });
   
   test('should display budgets list', async ({ page }) => {

@@ -1,18 +1,5 @@
 const { test, expect } = require('@playwright/test');
-
-/**
- * Dashboard E2E Tests
- * 
- * Tests dashboard functionality and metrics display
- */
-
-async function login(page) {
-  await page.goto('/');
-  await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
-  await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-  await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
-  await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
-}
+const { login } = require('./helpers/login');
 
 test.describe('Dashboard', () => {
   test.beforeEach(async ({ page }) => {
