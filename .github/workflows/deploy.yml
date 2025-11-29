@@ -38,7 +38,7 @@ jobs:
         username: ${{ secrets.AWS_USERNAME }}
         key: ${{ secrets.AWS_PRIVATE_KEY }}
         script: |
-          cd /opt/tradeai-git/TRADEAI
+          cd /opt/tradeai
           git pull origin main
           chmod +x scripts/production-deploy.sh
           ./scripts/production-deploy.sh
