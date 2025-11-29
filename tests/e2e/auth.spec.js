@@ -14,11 +14,11 @@ test.describe('Authentication', () => {
   test('should display login page', async ({ page }) => {
     await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"], input[name="password"]')).toBeVisible();
-    await expect(page.locator('button:has-text("Login"), button:has-text("Sign In")')).toBeVisible();
+    await expect(page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]')).toBeVisible();
   });
   
   test('should show validation errors for empty form', async ({ page }) => {
-    await page.locator('button:has-text("Login"), button:has-text("Sign In")').click();
+    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
     
     await expect(page).toHaveURL(/\/(login)?$/);
   });
@@ -28,7 +28,7 @@ test.describe('Authentication', () => {
     await page.locator('input[type="password"], input[name="password"]').fill('wrongpassword');
     
     // Submit form
-    await page.locator('button:has-text("Login"), button:has-text("Sign In")').click();
+    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
     
     await page.waitForTimeout(2000);
     
@@ -43,7 +43,7 @@ test.describe('Authentication', () => {
     await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
     
     // Submit form
-    await page.locator('button:has-text("Login"), button:has-text("Sign In")').click();
+    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
     
     await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
     
@@ -56,7 +56,7 @@ test.describe('Authentication', () => {
   test('should maintain session after page reload', async ({ page }) => {
     await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
     await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-    await page.locator('button:has-text("Login"), button:has-text("Sign In")').click();
+    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
     await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
     
     await page.reload();
@@ -68,7 +68,7 @@ test.describe('Authentication', () => {
   test('should successfully logout', async ({ page }) => {
     await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
     await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-    await page.locator('button:has-text("Login"), button:has-text("Sign In")').click();
+    await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
     await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
     
     const logoutButton = page.locator('button:has-text("Logout"), button:has-text("Sign Out"), a:has-text("Logout"), a:has-text("Sign Out")').first();

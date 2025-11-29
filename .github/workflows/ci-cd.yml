@@ -8,6 +8,7 @@ on:
 
 env:
   NODE_VERSION: '18.x'
+  REACT_APP_API_BASE_URL: https://tradeai.gonxt.tech/api
   MONGODB_VERSION: '6.0'
 
 jobs:

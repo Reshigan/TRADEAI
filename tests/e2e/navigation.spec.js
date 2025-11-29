@@ -10,7 +10,7 @@ async function login(page) {
   await page.goto('/');
   await page.locator('input[type="email"], input[name="email"]').fill('admin@testdistributor.com');
   await page.locator('input[type="password"], input[name="password"]').fill('Admin@123');
-  await page.locator('button:has-text("Login"), button:has-text("Sign In")').click();
+  await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
   await page.waitForURL(/\/(dashboard|home)?/, { timeout: 10000 });
 }
 
