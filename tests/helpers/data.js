@@ -3,7 +3,7 @@
  * Idempotent data creators for test entities
  */
 
-const { RUN_ID, TENANT_ID } = require('./api');
+const { RUN_ID, TENANT_ID, pickEntity, pickList } = require('./api');
 
 /**
  * Seeded random number generator for deterministic tests
@@ -36,29 +36,34 @@ class SeededRandom {
  */
 async function createProduct(api, options = {}) {
   const rng = new SeededRandom(options.seed || 42);
-  const sku = options.sku || `SKU-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`;
+  const sku = options.sku || `SKU-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`.toUpperCase();
   
-  const existing = await api.get(`/api/products?sku=${sku}`);
-  if (existing.ok && existing.data?.products?.length > 0) {
-    return existing.data.products[0];
+  const listResponse = await api.getProducts({ limit: 100 });
+  const existingList = pickList(listResponse.data);
+  const existing = existingList.find(p => p.sku === sku);
+  if (existing) {
+    return existing;
   }
 
-  // Create new product
+  // Create new product with required fields from Product.js schema
   const productData = {
-    sku,
+    sku: sku.toUpperCase(),
     name: options.name || `Test Product ${sku}`,
+    sapMaterialId: options.sapMaterialId || `SAP-${rng.randomInt(100000, 999999)}`,
+    productType: options.productType || rng.randomChoice(['own_brand', 'distributed', 'private_label', 'consignment']),
     category: options.category || rng.randomChoice(['Snacks', 'Beverages', 'Confectionery', 'Dairy']),
+    brand: options.brand || 'Test Brand',
     pricing: {
-      cost: options.cost || rng.randomFloat(2, 25),
-      price: options.price || rng.randomFloat(5, 50),
+      listPrice: options.listPrice || rng.randomFloat(5, 50),
+      costPrice: options.costPrice || rng.randomFloat(2, 25),
       currency: 'USD'
     },
-    isActive: options.isActive !== undefined ? options.isActive : true,
+    status: options.status || 'active',
     ...options.extra
   };
 
   const response = await api.createProduct(productData);
-  return response.data;
+  return pickEntity(response.data) || pickEntity(response.body);
 }
 
 /**
@@ -66,26 +71,28 @@ async function createProduct(api, options = {}) {
  */
 async function createCustomer(api, options = {}) {
   const rng = new SeededRandom(options.seed || 42);
-  const code = options.code || `CUST-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`;
+  const code = options.code || `CUST-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`.toUpperCase();
   
-  const existing = await api.get(`/api/customers?code=${code}`);
-  if (existing.ok && existing.data?.customers?.length > 0) {
-    return existing.data.customers[0];
+  const listResponse = await api.getCustomers({ limit: 100 });
+  const existingList = pickList(listResponse.data);
+  const existing = existingList.find(c => c.code === code);
+  if (existing) {
+    return existing;
   }
 
-  // Create new customer
+  // Create new customer with required fields from Customer.js schema
   const customerData = {
-    code,
+    code: code.toUpperCase(),
     name: options.name || `Test Customer ${code}`,
-    type: options.type || rng.randomChoice(['National Retailer', 'Regional Chain', 'Independent Store']),
-    email: options.email || `${code.toLowerCase()}@test.com`,
-    phone: options.phone || `+1-555-${rng.randomInt(1000, 9999)}`,
-    isActive: options.isActive !== undefined ? options.isActive : true,
+    customerType: options.customerType || rng.randomChoice(['retailer', 'wholesaler', 'distributor', 'chain', 'independent', 'online']),
+    channel: options.channel || rng.randomChoice(['modern_trade', 'traditional_trade', 'horeca', 'ecommerce', 'b2b', 'export']),
+    tier: options.tier || 'standard',
+    status: options.status || 'active',
     ...options.extra
   };
 
   const response = await api.createCustomer(customerData);
-  return response.data;
+  return pickEntity(response.data) || pickEntity(response.body);
 }
 
 /**
@@ -95,23 +102,33 @@ async function createBudget(api, options = {}) {
   const rng = new SeededRandom(options.seed || 42);
   const year = options.year || new Date().getFullYear();
   
+  let createdBy = options.createdBy;
+  if (!createdBy) {
+    const identity = await api.getIdentity();
+    const user = pickEntity(identity.data);
+    createdBy = user?._id || user?.id;
+  }
+  
+  // Create budget with required fields from Budget.js schema
   const budgetData = {
+    code: options.code || `BUD-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`,
     name: options.name || `Test Budget ${RUN_ID}`,
-    category: options.category || rng.randomChoice(['Marketing', 'Promotions', 'Trade Spend', 'Advertising']),
-    fiscalYear: year,
-    startDate: options.startDate || new Date(`${year}-01-01`),
-    endDate: options.endDate || new Date(`${year}-12-31`),
-    totalBudget: options.totalBudget || rng.randomFloat(100000, 1000000),
+    year: year,
+    budgetType: options.budgetType || rng.randomChoice(['forecast', 'budget', 'revised_budget', 'scenario']),
+    budgetCategory: options.budgetCategory || 'marketing',
+    scope: {
+      level: options.scopeLevel || rng.randomChoice(['company', 'vendor', 'customer', 'product', 'mixed'])
+    },
+    status: options.status || 'draft',
+    createdBy: createdBy,
     allocated: options.allocated || 0,
     spent: options.spent || 0,
-    remaining: options.remaining || options.totalBudget || rng.randomFloat(100000, 1000000),
-    currency: 'USD',
-    status: options.status || 'active',
+    remaining: options.remaining || 0,
     ...options.extra
   };
 
   const response = await api.createBudget(budgetData);
-  return response.data;
+  return pickEntity(response.data) || pickEntity(response.body);
 }
 
 /**
@@ -143,7 +160,7 @@ async function createPromotion(api, options = {}) {
   };
 
   const response = await api.createPromotion(promotionData);
-  return response.data;
+  return pickEntity(response.data) || pickEntity(response.body);
 }
 
 /**
@@ -177,7 +194,7 @@ async function createTransaction(api, options = {}) {
   }
 
   const response = await api.createTransaction(transactionData);
-  return response.data;
+  return pickEntity(response.data) || pickEntity(response.body);
 }
 
 /**
@@ -202,7 +219,7 @@ async function createTradingTerm(api, options = {}) {
   };
 
   const response = await api.createTradingTerm(termData);
-  return response.data;
+  return pickEntity(response.data) || pickEntity(response.body);
 }
 
 /**
