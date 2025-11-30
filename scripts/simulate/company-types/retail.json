@@ -1,0 +1,72 @@
+{
+  "name": "Retail Chain",
+  "code": "RETAIL-TEST",
+  "description": "Multi-store retail chain with frequent promotions and price changes",
+  "characteristics": {
+    "product_count": 12000,
+    "customer_count": 500,
+    "store_count": 250,
+    "user_count": 15,
+    "promotion_rate_per_week": 60,
+    "claim_rate_per_week": 30,
+    "order_rate_per_day": 150,
+    "price_change_rate_per_week": 100
+  },
+  "approval_chain": {
+    "depth": 3,
+    "levels": [
+      {"role": "manager", "title": "Category Manager"},
+      {"role": "manager", "title": "Merchandising Director"},
+      {"role": "admin", "title": "VP Merchandising"}
+    ]
+  },
+  "budget_model": {
+    "granularity": "category_region",
+    "total_annual": 25000000,
+    "categories": [
+      "Promotional Markdowns",
+      "Vendor Allowances",
+      "Display Programs",
+      "Advertising Co-op",
+      "Loyalty Programs"
+    ],
+    "carryover_allowed": false,
+    "carryover_max_percent": 0
+  },
+  "claim_profile": {
+    "types": [
+      "Vendor Allowance",
+      "Display Compliance",
+      "Co-op Advertising",
+      "Volume Rebate",
+      "Markdown Support"
+    ],
+    "approval_rate_target": 0.94,
+    "avg_processing_days": 4,
+    "sla_days": 7
+  },
+  "kpi_expectations": {
+    "budget_utilization_target": 0.98,
+    "promotion_roi_min": 1.3,
+    "claim_approval_rate_min": 0.90,
+    "forecast_mape_max": 0.18,
+    "oos_rate_max": 0.05
+  },
+  "users": [
+    {"role": "admin", "name": "Patricia Wilson", "email": "patricia.wilson@retail-test.com", "dept": "Merchandising", "title": "VP Merchandising"},
+    {"role": "admin", "name": "Richard Brown", "email": "richard.brown@retail-test.com", "dept": "Finance", "title": "CFO"},
+    {"role": "manager", "name": "Jennifer Taylor", "email": "jennifer.taylor@retail-test.com", "dept": "Merchandising", "title": "Merchandising Director"},
+    {"role": "manager", "name": "Michael Anderson", "email": "michael.anderson@retail-test.com", "dept": "Merchandising", "title": "Category Manager - Grocery"},
+    {"role": "manager", "name": "Susan Martinez", "email": "susan.martinez@retail-test.com", "dept": "Merchandising", "title": "Category Manager - Fresh"},
+    {"role": "manager", "name": "Thomas Garcia", "email": "thomas.garcia@retail-test.com", "dept": "Operations", "title": "Operations Manager"},
+    {"role": "analyst", "name": "Karen Lee", "email": "karen.lee@retail-test.com", "dept": "Analytics", "title": "Pricing Analyst"},
+    {"role": "analyst", "name": "Joseph Kim", "email": "joseph.kim@retail-test.com", "dept": "Analytics", "title": "Merchandising Analyst"},
+    {"role": "user", "name": "Nancy White", "email": "nancy.white@retail-test.com", "dept": "Merchandising", "title": "Buyer - Snacks"},
+    {"role": "user", "name": "Christopher Davis", "email": "christopher.davis@retail-test.com", "dept": "Merchandising", "title": "Buyer - Beverages"},
+    {"role": "user", "name": "Linda Johnson", "email": "linda.johnson@retail-test.com", "dept": "Marketing", "title": "Marketing Manager"},
+    {"role": "user", "name": "Paul Rodriguez", "email": "paul.rodriguez@retail-test.com", "dept": "Operations", "title": "Supply Chain Manager"},
+    {"role": "user", "name": "Barbara Miller", "email": "barbara.miller@retail-test.com", "dept": "Finance", "title": "Financial Analyst"},
+    {"role": "user", "name": "George Wilson", "email": "george.wilson@retail-test.com", "dept": "Merchandising", "title": "Promotion Coordinator"},
+    {"role": "user", "name": "Sandra Moore", "email": "sandra.moore@retail-test.com", "dept": "Analytics", "title": "Data Analyst"}
+  ]
+}
