@@ -3,6 +3,9 @@
  * Provides authenticated API requests with tenant scoping
  */
 
+let cachedToken = null;
+let cachedTenantId = null;
+
 class ApiHelper {
   constructor(request, authToken, tenantId) {
     this.request = request;
@@ -107,6 +110,41 @@ class ApiHelper {
     }
     
     return new ApiHelper(request, token, tenantId);
+  }
+
+  /**
+   * Create API helper from credentials (API-only, no page required)
+   * Uses cached token to avoid repeated logins and rate limiting
+   */
+  static async fromCredentials(request, email, password, forceRefresh = false) {
+    const baseURL = process.env.BASE_URL || 'https://tradeai.gonxt.tech';
+    
+    if (cachedToken && cachedTenantId && !forceRefresh) {
+      return new ApiHelper(request, cachedToken, cachedTenantId);
+    }
+    
+    const response = await request.post(`${baseURL}/api/auth/login`, {
+      data: { email, password }
+    });
+    
+    const loginData = await response.json();
+    
+    if (!loginData.success || !loginData.token) {
+      throw new Error(`Login failed: ${loginData.message || 'Unknown error'}`);
+    }
+    
+    const token = loginData.token;
+    const tenantId = loginData.data?.user?.tenantId;
+    
+    cachedToken = token;
+    cachedTenantId = tenantId;
+    
+    return new ApiHelper(request, token, tenantId);
+  }
+
+  static clearCache() {
+    cachedToken = null;
+    cachedTenantId = null;
   }
 }
 

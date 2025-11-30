@@ -3,10 +3,12 @@ const { ApiHelper } = require('../helpers/api');
 const { MlAssert } = require('../helpers/mlAssert');
 
 test.describe('Performance Analytics Validation @ai @analytics', () => {
-  test('should validate promotion effectiveness analytics', async ({ page, request }) => {
-    await page.goto('/dashboard');
-    await page.waitForTimeout(1000);
-    const api = await ApiHelper.fromPage(page, request);
+  test('should validate promotion effectiveness analytics', async ({ request }) => {
+    const api = await ApiHelper.fromCredentials(
+      request,
+      process.env.TEST_USER_EMAIL || 'admin@testdistributor.com',
+      process.env.TEST_USER_PASSWORD || 'Admin@123'
+    );
     
     const { data: analytics } = await api.get('/api/performance-analytics/promotion-effectiveness');
     
@@ -36,10 +38,12 @@ test.describe('Performance Analytics Validation @ai @analytics', () => {
     }
   });
 
-  test('should validate ROI trending analytics', async ({ page, request }) => {
-    await page.goto('/dashboard');
-    await page.waitForTimeout(1000);
-    const api = await ApiHelper.fromPage(page, request);
+  test('should validate ROI trending analytics', async ({ request }) => {
+    const api = await ApiHelper.fromCredentials(
+      request,
+      process.env.TEST_USER_EMAIL || 'admin@testdistributor.com',
+      process.env.TEST_USER_PASSWORD || 'Admin@123'
+    );
     
     const { data: analytics } = await api.get('/api/performance-analytics/roi-trending');
     
@@ -69,10 +73,12 @@ test.describe('Performance Analytics Validation @ai @analytics', () => {
     }
   });
 
-  test('should validate budget variance analytics', async ({ page, request }) => {
-    await page.goto('/dashboard');
-    await page.waitForTimeout(1000);
-    const api = await ApiHelper.fromPage(page, request);
+  test('should validate budget variance analytics', async ({ request }) => {
+    const api = await ApiHelper.fromCredentials(
+      request,
+      process.env.TEST_USER_EMAIL || 'admin@testdistributor.com',
+      process.env.TEST_USER_PASSWORD || 'Admin@123'
+    );
     
     const { data: analytics } = await api.get('/api/performance-analytics/budget-variance');
     
@@ -110,10 +116,12 @@ test.describe('Performance Analytics Validation @ai @analytics', () => {
     }
   });
 
-  test('should validate customer segmentation analytics', async ({ page, request }) => {
-    await page.goto('/dashboard');
-    await page.waitForTimeout(1000);
-    const api = await ApiHelper.fromPage(page, request);
+  test('should validate customer segmentation analytics', async ({ request }) => {
+    const api = await ApiHelper.fromCredentials(
+      request,
+      process.env.TEST_USER_EMAIL || 'admin@testdistributor.com',
+      process.env.TEST_USER_PASSWORD || 'Admin@123'
+    );
     
     const { data: analytics } = await api.get('/api/performance-analytics/customer-segmentation');
     
@@ -152,6 +160,12 @@ test.describe('Performance Analytics Validation @ai @analytics', () => {
   });
 
   test('should validate analytics data consistency across endpoints', async ({ request }) => {
+    const api = await ApiHelper.fromCredentials(
+      request,
+      process.env.TEST_USER_EMAIL || 'admin@testdistributor.com',
+      process.env.TEST_USER_PASSWORD || 'Admin@123'
+    );
+    
     const [effectiveness, trending, variance, segmentation] = await Promise.all([
       api.get('/api/performance-analytics/promotion-effectiveness').catch(() => ({ data: null })),
       api.get('/api/performance-analytics/roi-trending').catch(() => ({ data: null })),
