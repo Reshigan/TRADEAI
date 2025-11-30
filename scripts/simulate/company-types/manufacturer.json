@@ -1,0 +1,83 @@
+{
+  "name": "Large Manufacturer",
+  "code": "MFG-TEST",
+  "description": "Large CPG manufacturer with extensive product portfolio and complex trade operations",
+  "characteristics": {
+    "product_count": 8000,
+    "customer_count": 2000,
+    "user_count": 25,
+    "promotion_rate_per_week": 40,
+    "claim_rate_per_week": 80,
+    "order_rate_per_day": 200
+  },
+  "approval_chain": {
+    "depth": 4,
+    "levels": [
+      {"role": "manager", "title": "Brand Manager"},
+      {"role": "manager", "title": "Trade Marketing Manager"},
+      {"role": "admin", "title": "VP Trade Marketing"},
+      {"role": "admin", "title": "CFO"}
+    ]
+  },
+  "budget_model": {
+    "granularity": "brand_category_channel",
+    "total_annual": 50000000,
+    "categories": [
+      "Trade Promotions",
+      "Volume Incentives",
+      "Display & Merchandising",
+      "Price Support",
+      "Co-op Advertising",
+      "Listing Fees",
+      "Slotting Allowances"
+    ],
+    "carryover_allowed": true,
+    "carryover_max_percent": 5
+  },
+  "claim_profile": {
+    "types": [
+      "Volume Rebate",
+      "Display Allowance",
+      "Co-op Marketing",
+      "Scan-based Trading",
+      "Slotting Fees",
+      "Early Payment Discount"
+    ],
+    "approval_rate_target": 0.97,
+    "avg_processing_days": 7,
+    "sla_days": 14
+  },
+  "kpi_expectations": {
+    "budget_utilization_target": 0.92,
+    "promotion_roi_min": 1.5,
+    "claim_approval_rate_min": 0.95,
+    "forecast_mape_max": 0.12
+  },
+  "users": [
+    {"role": "admin", "name": "Sarah Chen", "email": "sarah.chen@manufacturer-test.com", "dept": "Executive", "title": "VP Trade Marketing"},
+    {"role": "admin", "name": "Michael Rodriguez", "email": "michael.rodriguez@manufacturer-test.com", "dept": "Finance", "title": "CFO"},
+    {"role": "manager", "name": "Emma Thompson", "email": "emma.thompson@manufacturer-test.com", "dept": "Trade Marketing", "title": "Trade Marketing Manager"},
+    {"role": "manager", "name": "David Kim", "email": "david.kim@manufacturer-test.com", "dept": "Sales", "title": "National Sales Manager"},
+    {"role": "manager", "name": "Lisa Martinez", "email": "lisa.martinez@manufacturer-test.com", "dept": "Marketing", "title": "Brand Manager - Snacks"},
+    {"role": "manager", "name": "James Wilson", "email": "james.wilson@manufacturer-test.com", "dept": "Marketing", "title": "Brand Manager - Beverages"},
+    {"role": "analyst", "name": "Priya Patel", "email": "priya.patel@manufacturer-test.com", "dept": "Analytics", "title": "Senior Trade Analyst"},
+    {"role": "analyst", "name": "Tom Anderson", "email": "tom.anderson@manufacturer-test.com", "dept": "Finance", "title": "Financial Analyst"},
+    {"role": "analyst", "name": "Amy Liu", "email": "amy.liu@manufacturer-test.com", "dept": "Analytics", "title": "Data Scientist"},
+    {"role": "user", "name": "Chris Brown", "email": "chris.brown@manufacturer-test.com", "dept": "Sales", "title": "Regional Sales Manager - East"},
+    {"role": "user", "name": "Rachel Green", "email": "rachel.green@manufacturer-test.com", "dept": "Sales", "title": "Key Account Manager - Retail"},
+    {"role": "user", "name": "Mark Johnson", "email": "mark.johnson@manufacturer-test.com", "dept": "Sales", "title": "Key Account Manager - Wholesale"},
+    {"role": "user", "name": "Jennifer Lee", "email": "jennifer.lee@manufacturer-test.com", "dept": "Trade Marketing", "title": "Trade Marketing Coordinator"},
+    {"role": "user", "name": "Robert Taylor", "email": "robert.taylor@manufacturer-test.com", "dept": "Trade Marketing", "title": "Promotion Specialist"},
+    {"role": "user", "name": "Michelle Wang", "email": "michelle.wang@manufacturer-test.com", "dept": "Finance", "title": "Trade Spend Analyst"},
+    {"role": "user", "name": "Kevin O'Brien", "email": "kevin.obrien@manufacturer-test.com", "dept": "Sales", "title": "Territory Manager - North"},
+    {"role": "user", "name": "Amanda Garcia", "email": "amanda.garcia@manufacturer-test.com", "dept": "Sales", "title": "Territory Manager - South"},
+    {"role": "user", "name": "Daniel Park", "email": "daniel.park@manufacturer-test.com", "dept": "Sales", "title": "Territory Manager - West"},
+    {"role": "user", "name": "Jessica Miller", "email": "jessica.miller@manufacturer-test.com", "dept": "Operations", "title": "Supply Chain Coordinator"},
+    {"role": "user", "name": "Brian Wilson", "email": "brian.wilson@manufacturer-test.com", "dept": "Customer Service", "title": "Customer Service Manager"},
+    {"role": "user", "name": "Nicole Adams", "email": "nicole.adams@manufacturer-test.com", "dept": "Marketing", "title": "Marketing Coordinator"},
+    {"role": "user", "name": "Steven Clark", "email": "steven.clark@manufacturer-test.com", "dept": "Finance", "title": "Accounts Receivable Specialist"},
+    {"role": "user", "name": "Laura Martinez", "email": "laura.martinez@manufacturer-test.com", "dept": "Trade Marketing", "title": "Merchandising Specialist"},
+    {"role": "user", "name": "Andrew Thompson", "email": "andrew.thompson@manufacturer-test.com", "dept": "Sales", "title": "Sales Operations Analyst"},
+    {"role": "user", "name": "Melissa Davis", "email": "melissa.davis@manufacturer-test.com", "dept": "Marketing", "title": "Brand Assistant"}
+  ]
+}

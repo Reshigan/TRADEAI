@@ -1,0 +1,49 @@
+{
+  "name": "Small Distributor",
+  "code": "DIST-TEST",
+  "description": "Small regional distributor with focused product portfolio",
+  "characteristics": {
+    "product_count": 500,
+    "customer_count": 100,
+    "user_count": 8,
+    "promotion_rate_per_week": 3,
+    "claim_rate_per_week": 5,
+    "order_rate_per_day": 15
+  },
+  "approval_chain": {
+    "depth": 2,
+    "levels": [
+      {"role": "manager", "title": "Sales Manager"},
+      {"role": "admin", "title": "Finance Director"}
+    ]
+  },
+  "budget_model": {
+    "granularity": "monthly",
+    "total_annual": 5000000,
+    "categories": ["Trade Marketing", "Volume Incentives", "Display", "Price Support"],
+    "carryover_allowed": true,
+    "carryover_max_percent": 10
+  },
+  "claim_profile": {
+    "types": ["Volume Rebate", "Display Allowance", "Co-op Marketing"],
+    "approval_rate_target": 0.95,
+    "avg_processing_days": 5,
+    "sla_days": 10
+  },
+  "kpi_expectations": {
+    "budget_utilization_target": 0.85,
+    "promotion_roi_min": 1.2,
+    "claim_approval_rate_min": 0.92,
+    "forecast_mape_max": 0.15
+  },
+  "users": [
+    {"role": "admin", "name": "John Smith", "email": "john.smith@distributor-test.com", "dept": "Finance", "title": "Finance Director"},
+    {"role": "manager", "name": "Sarah Johnson", "email": "sarah.johnson@distributor-test.com", "dept": "Sales", "title": "Sales Manager"},
+    {"role": "user", "name": "Mike Davis", "email": "mike.davis@distributor-test.com", "dept": "Sales", "title": "Account Manager"},
+    {"role": "user", "name": "Lisa Chen", "email": "lisa.chen@distributor-test.com", "dept": "Sales", "title": "Territory Rep"},
+    {"role": "analyst", "name": "Tom Wilson", "email": "tom.wilson@distributor-test.com", "dept": "Analytics", "title": "Data Analyst"},
+    {"role": "user", "name": "Emma Brown", "email": "emma.brown@distributor-test.com", "dept": "Operations", "title": "Operations Coordinator"},
+    {"role": "user", "name": "David Lee", "email": "david.lee@distributor-test.com", "dept": "Marketing", "title": "Marketing Specialist"},
+    {"role": "user", "name": "Rachel Green", "email": "rachel.green@distributor-test.com", "dept": "Customer Service", "title": "Customer Service Rep"}
+  ]
+}
