@@ -38,13 +38,6 @@ async function createProduct(api, options = {}) {
   const rng = new SeededRandom(options.seed || 42);
   const sku = options.sku || `SKU-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`.toUpperCase();
   
-  let company = options.company;
-  if (!company) {
-    const identity = await api.getIdentity();
-    const user = pickEntity(identity.data);
-    company = user?.company || user?.tenantId;
-  }
-  
   const listResponse = await api.getProducts({ limit: 100 });
   const existingList = pickList(listResponse.data);
   const existing = existingList.find(p => p.sku === sku);
@@ -66,7 +59,6 @@ async function createProduct(api, options = {}) {
       currency: 'USD'
     },
     status: options.status || 'active',
-    company: company,
     ...options.extra
   };
 
@@ -80,13 +72,6 @@ async function createProduct(api, options = {}) {
 async function createCustomer(api, options = {}) {
   const rng = new SeededRandom(options.seed || 42);
   const code = options.code || `CUST-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`.toUpperCase();
-  
-  let company = options.company;
-  if (!company) {
-    const identity = await api.getIdentity();
-    const user = pickEntity(identity.data);
-    company = user?.company || user?.tenantId;
-  }
   
   const listResponse = await api.getCustomers({ limit: 100 });
   const existingList = pickList(listResponse.data);
@@ -103,7 +88,6 @@ async function createCustomer(api, options = {}) {
     channel: options.channel || rng.randomChoice(['modern_trade', 'traditional_trade', 'horeca', 'ecommerce', 'b2b', 'export']),
     tier: options.tier || 'standard',
     status: options.status || 'active',
-    company: company,
     ...options.extra
   };
 
@@ -136,7 +120,6 @@ async function createBudget(api, options = {}) {
       level: options.scopeLevel || rng.randomChoice(['company', 'vendor', 'customer', 'product', 'mixed'])
     },
     status: options.status || 'draft',
-    company: company,
     createdBy: createdBy,
     allocated: options.allocated || 0,
     spent: options.spent || 0,
