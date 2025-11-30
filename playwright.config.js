@@ -7,7 +7,14 @@ const { defineConfig, devices } = require('@playwright/test');
  */
 module.exports = defineConfig({
   testDir: './tests',
-  testMatch: ['**/e2e/**/*.spec.{ts,js}', '**/regression/**/*.spec.{ts,js}'],
+  testMatch: [
+    '**/e2e/**/*.spec.{ts,js}',
+    '**/regression/**/*.spec.{ts,js}',
+    '**/roles/**/*.spec.{ts,js}',
+    '**/workflows/**/*.spec.{ts,js}',
+    '**/ai/**/*.spec.{ts,js}',
+    '**/ui/**/*.spec.{ts,js}'
+  ],
   
   timeout: 60 * 1000,
   
