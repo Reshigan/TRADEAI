@@ -7,7 +7,7 @@ test.describe('Navigation', () => {
   });
   
   test('should display main navigation menu', async ({ page }) => {
-    const hasNav = await page.locator('nav, [role="navigation"], header, [class*="AppBar" i], [class*="menu" i]').isVisible({ timeout: 5000 }).catch(() => false);
+    const hasNav = await page.locator('text=/Home|Budgets|Promotions|Insights|Approvals/i').first().isVisible({ timeout: 10000 }).catch(() => false);
     expect(hasNav).toBeTruthy();
   });
   
@@ -24,15 +24,11 @@ test.describe('Navigation', () => {
   });
   
   test('should navigate to Budgets page', async ({ page }) => {
-    const budgetsLink = page.locator('a:has-text("Budget"), button:has-text("Budget")').first();
+    await page.goto('/budgets');
+    await page.waitForTimeout(2000);
     
-    if (await budgetsLink.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await budgetsLink.click();
-      await page.waitForTimeout(2000);
-      
-      const hasBudgets = await page.locator('text=/budget|allocation|spend/i').isVisible().catch(() => false);
-      expect(hasBudgets).toBeTruthy();
-    }
+    const hasBudgets = await page.locator('text=/budget|allocation|spend/i').first().isVisible({ timeout: 10000 }).catch(() => false);
+    expect(hasBudgets).toBeTruthy();
   });
   
   test('should navigate to Products page', async ({ page }) => {

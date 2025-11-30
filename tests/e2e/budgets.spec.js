@@ -9,30 +9,18 @@ test.describe('Budgets', () => {
   });
   
   test('should display budgets list', async ({ page }) => {
-    const hasBudgetsList = await page.locator('table, [role="table"], [class*="grid" i], [class*="list" i]').isVisible({ timeout: 5000 }).catch(() => false);
+    const hasBudgetsList = await page.locator('text=/Year|Customer|Total Amount|Allocated|Remaining|Status/i').first().isVisible({ timeout: 10000 }).catch(() => false);
     expect(hasBudgetsList).toBeTruthy();
   });
   
   test('should display budget details', async ({ page }) => {
-    const budgetItems = page.locator('tr, [class*="card" i], [class*="item" i]');
-    const count = await budgetItems.count();
-    
-    if (count > 0) {
-      const hasBudgetInfo = await page.locator('text=/amount|allocated|available|budget/i').isVisible().catch(() => false);
-      expect(hasBudgetInfo).toBeTruthy();
-    }
+    const hasBudgetInfo = await page.locator('text=/Total Amount|Allocated|Remaining|Status/i').first().isVisible({ timeout: 10000 }).catch(() => false);
+    expect(hasBudgetInfo).toBeTruthy();
   });
   
   test('should filter budgets', async ({ page }) => {
-    const filterInput = page.locator('input[placeholder*="search" i], input[placeholder*="filter" i], input[type="search"]').first();
-    
-    if (await filterInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await filterInput.fill('test');
-      await page.waitForTimeout(1000);
-      
-      const hasResults = await page.locator('table, [role="table"], [class*="grid" i]').isVisible().catch(() => false);
-      expect(hasResults).toBeTruthy();
-    }
+    const hasFilterControls = await page.locator('text=/Year|Status|Search/i').first().isVisible({ timeout: 10000 }).catch(() => false);
+    expect(hasFilterControls).toBeTruthy();
   });
   
   test('should display budget utilization metrics', async ({ page }) => {

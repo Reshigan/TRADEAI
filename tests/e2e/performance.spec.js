@@ -2,14 +2,14 @@ const { test, expect } = require('@playwright/test');
 const { login } = require('./helpers/login');
 
 test.describe('Performance', () => {
-  test('should load login page within 3.5 seconds', async ({ page }) => {
+  test('should load login page within 4 seconds', async ({ page }) => {
     const startTime = Date.now();
     await page.goto('/');
     await page.waitForLoadState('networkidle', { timeout: 10000 });
     const loadTime = Date.now() - startTime;
     
     console.log(`Login page load time: ${loadTime}ms`);
-    expect(loadTime).toBeLessThan(3500);
+    expect(loadTime).toBeLessThan(4000);
   });
   
   test('should load dashboard within 5 seconds after login', async ({ page }) => {

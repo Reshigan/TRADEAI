@@ -4,8 +4,12 @@ module.exports = async config => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
   
-  const email = process.env.TEST_USER_EMAIL || 'admin@testdistributor.com';
-  const password = process.env.TEST_USER_PASSWORD || 'Admin@123';
+  const email = process.env.TEST_USER_EMAIL;
+  const password = process.env.TEST_USER_PASSWORD;
+  
+  if (!email || !password) {
+    throw new Error('TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables are required');
+  }
   
   console.log('[E2E GLOBAL SETUP] Authenticating once for all E2E tests...');
   

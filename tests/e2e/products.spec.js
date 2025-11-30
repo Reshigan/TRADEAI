@@ -14,7 +14,7 @@ test.describe('Products', () => {
   });
   
   test('should display product information', async ({ page }) => {
-    const hasProductInfo = await page.locator('text=/product|sku|price|name/i').isVisible({ timeout: 5000 }).catch(() => false);
+    const hasProductInfo = await page.locator('text=/Product Catalog|Product Name|Category|Price|Cost|Margin/i').first().isVisible({ timeout: 10000 }).catch(() => false);
     expect(hasProductInfo).toBeTruthy();
   });
   
