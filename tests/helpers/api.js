@@ -63,13 +63,26 @@ class APIClient {
   async _handleResponse(response) {
     const body = await response.json().catch(() => ({}));
     
-    return {
+    const result = {
       status: response.status(),
       ok: response.ok(),
       body,
       data: body.data || body,
       error: body.error || body.message
     };
+
+    if (process.env.DEBUG_TESTS && (!result.ok || !result.data)) {
+      console.debug('[API]', response.url(), result.status, JSON.stringify(result.body).slice(0, 500));
+    }
+
+    return result;
+  }
+
+  /**
+   * Get user identity (for createdBy fields)
+   */
+  async getIdentity() {
+    return this.get('/api/auth/me');
   }
 
 
@@ -210,11 +223,57 @@ class APIClient {
 }
 
 /**
+ * Normalize response to extract single entity
+ * Handles various response shapes: { product }, { data: { product } }, { data: product }, etc.
+ */
+function pickEntity(obj, keys = ['product', 'customer', 'budget', 'promotion', 'wallet', 'entity', 'item', 'doc', 'user']) {
+  if (!obj) return undefined;
+  
+  if (obj._id || obj.id || obj.sku || obj.code || obj.name) {
+    return obj;
+  }
+  
+  for (const key of keys) {
+    if (obj[key]) return obj[key];
+  }
+  
+  if (obj.data) {
+    return pickEntity(obj.data, keys);
+  }
+  
+  return undefined;
+}
+
+/**
+ * Normalize response to extract list of entities
+ * Handles various response shapes: { products: [] }, { data: [] }, { data: { products: [] } }, etc.
+ */
+function pickList(obj, keys = ['products', 'customers', 'budgets', 'promotions', 'items', 'results', 'data']) {
+  if (!obj) return [];
+  
+  if (Array.isArray(obj)) return obj;
+  
+  for (const key of keys) {
+    if (Array.isArray(obj[key])) return obj[key];
+  }
+  
+  if (obj.data) {
+    return pickList(obj.data, keys);
+  }
+  
+  return [];
+}
+
+/**
  * Assert API response is successful
  */
 function assertSuccess(response, message = 'API request should succeed') {
   expect(response.ok, `${message}: ${response.error || 'Unknown error'}`).toBeTruthy();
   expect(response.status).toBeLessThan(400);
+  
+  if (response.body && response.body.success === false) {
+    throw new Error(`${message}: API returned success: false - ${response.error || response.body.message || 'Unknown error'}`);
+  }
 }
 
 /**
@@ -244,6 +303,8 @@ module.exports = {
   assertStatus,
   assertForbidden,
   assertUnauthorized,
+  pickEntity,
+  pickList,
   TENANT_ID,
   RUN_ID
 };

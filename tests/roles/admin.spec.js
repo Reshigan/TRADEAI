@@ -29,10 +29,9 @@ test.describe('Admin Role Tests', () => {
     expect(auth.role).toBe('admin');
   });
 
-  test('should access companies endpoint', async () => {
+  test('should NOT access companies endpoint (super_admin only)', async () => {
     const response = await api.getCompanies();
-    assertSuccess(response, 'Admin should access companies');
-    expect(response.data).toBeDefined();
+    assertForbidden(response, 'Admin should not access companies (super_admin only per companyRoutes.js:10)');
   });
 
   test('should create and read products', async () => {

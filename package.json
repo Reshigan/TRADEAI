@@ -78,6 +78,7 @@
   "author": "TRADEAI Team",
   "license": "MIT",
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.23.0",
     "@babel/preset-react": "^7.22.0",
