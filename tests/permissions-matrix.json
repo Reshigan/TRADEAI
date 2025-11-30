@@ -1,0 +1,4489 @@
+[
+  {
+    "file": "activities.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activities.js",
+    "method": "GET",
+    "path": "/metrics",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activities.js",
+    "method": "GET",
+    "path": "/count",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activities.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activities.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activities.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activities.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "GET",
+    "path": "/list",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "GET",
+    "path": "/heat-map",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "GET",
+    "path": "/conflicts",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "activityGrid.js",
+    "method": "POST",
+    "path": "/sync",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/accruals/calculate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/accruals/:id/reconcile",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "GET",
+    "path": "/accruals/:id/journal-entries",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/accruals/:id/post",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/accruals/variance-report",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/budgets/variance-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/budgets/hierarchy",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/budgets/scenario-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "GET",
+    "path": "/promotions/:id/roi",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/promotions/compare",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/promotions/:id/create-template",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/customers/abc-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/customers/rfm-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "GET",
+    "path": "/customers/:id/ltv",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "POST",
+    "path": "/customers/churn-prediction",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "GET",
+    "path": "/health",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "advancedAnalytics.js",
+    "method": "GET",
+    "path": "/docs",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "GET",
+    "path": "/health",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "POST",
+    "path": "/forecast/demand",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "POST",
+    "path": "/optimize/price",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "POST",
+    "path": "/analyze/promotion-lift",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "POST",
+    "path": "/recommend/products",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "POST",
+    "path": "/segment/customers",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "GET",
+    "path": "/segment/customers/:customerId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ai.js",
+    "method": "POST",
+    "path": "/detect/anomalies",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "GET",
+    "path": "/initialize",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "POST",
+    "path": "/message",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "POST",
+    "path": "/data-query",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "POST",
+    "path": "/insights",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "POST",
+    "path": "/generate-report",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "POST",
+    "path": "/suggested-questions",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiChatbot.js",
+    "method": "POST",
+    "path": "/search",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiOrchestrator.js",
+    "method": "POST",
+    "path": "/orchestrate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiOrchestrator.js",
+    "method": "POST",
+    "path": "/explain",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiOrchestrator.js",
+    "method": "GET",
+    "path": "/tools",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiOrchestrator.js",
+    "method": "GET",
+    "path": "/health",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiOrchestrator.js",
+    "method": "POST",
+    "path": "/cache/clear",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiPromotion.js",
+    "method": "POST",
+    "path": "/validate-uplift",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiPromotion.js",
+    "method": "POST",
+    "path": "/generate-suggestions",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiPromotion.js",
+    "method": "POST",
+    "path": "/run-simulation",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiPromotion.js",
+    "method": "GET",
+    "path": "/model-status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "aiPromotion.js",
+    "method": "POST",
+    "path": "/batch-validate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "alerts.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "alerts.js",
+    "method": "POST",
+    "path": "/:id/read",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/dashboard",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/currencies",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/sales",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/promotions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/budgets",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/trade-spend",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/customers",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/products",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/predictions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/roi/:promotionId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/bulk-roi",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/lift/:promotionId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/bulk-lift",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/predict",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/optimize-spend",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/insights",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/export",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/performance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "DELETE",
+    "path": "/cache",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/advanced/performance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/advanced/predict",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/advanced/recommendations",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/advanced/bulk-roi",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "POST",
+    "path": "/advanced/bulk-lift",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/spend-trends",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/roi",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "analytics.js",
+    "method": "GET",
+    "path": "/vendor-performance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "GET",
+    "path": "/pending",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "GET",
+    "path": "/overdue",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "GET",
+    "path": "/entity/:entityType/:entityId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "POST",
+    "path": "/:id/reject",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "POST",
+    "path": "/:id/cancel",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "approvals.js",
+    "method": "GET",
+    "path": "/:id/sla",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "POST",
+    "path": "/login",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "POST",
+    "path": "/register",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "POST",
+    "path": "/refresh",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "POST",
+    "path": "/logout",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "GET",
+    "path": "/verify",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "POST",
+    "path": "/change-password",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth-enhanced.js",
+    "method": "GET",
+    "path": "/me",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/register",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/login",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/quick-login",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/logout",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/refresh-token",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/forgot-password",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/reset-password",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/change-password",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "GET",
+    "path": "/me",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "PUT",
+    "path": "/me",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/verify-2fa",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/enable-2fa",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "auth.js",
+    "method": "POST",
+    "path": "/disable-2fa",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "baseline.js",
+    "method": "GET",
+    "path": "/methods",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "baseline.js",
+    "method": "POST",
+    "path": "/calculate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "baseline.js",
+    "method": "POST",
+    "path": "/incremental",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/:id/submit",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/generate-forecast",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/compare",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/performance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/:id/new-version",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/:id/lock",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/allocations",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/allocations/:month",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "PUT",
+    "path": "/:id/allocations/:month",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/spending",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "POST",
+    "path": "/:id/transfers",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/approvals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/scenarios",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/forecast",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "budget.js",
+    "method": "GET",
+    "path": "/:id/history",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "bulkOperations.js",
+    "method": "POST",
+    "path": "/import/customers",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "bulkOperations.js",
+    "method": "POST",
+    "path": "/import/products",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "bulkOperations.js",
+    "method": "GET",
+    "path": "/export/customers",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "bulkOperations.js",
+    "method": "GET",
+    "path": "/export/products",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "bulkOperations.js",
+    "method": "POST",
+    "path": "/update/status",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "bulkOperations.js",
+    "method": "POST",
+    "path": "/delete",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "POST",
+    "path": "/:id/promotions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "DELETE",
+    "path": "/:id/promotions/:promotionId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "GET",
+    "path": "/:id/budget",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "GET",
+    "path": "/:id/performance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "campaign.js",
+    "method": "GET",
+    "path": "/:id/history",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "cannibalization.js",
+    "method": "POST",
+    "path": "/analyze-promotion",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "cannibalization.js",
+    "method": "POST",
+    "path": "/substitution-matrix",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "cannibalization.js",
+    "method": "POST",
+    "path": "/category-impact",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "cannibalization.js",
+    "method": "POST",
+    "path": "/net-incremental",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "cannibalization.js",
+    "method": "POST",
+    "path": "/predict",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "POST",
+    "path": "/:id/submit",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "POST",
+    "path": "/:id/reject",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "POST",
+    "path": "/:id/match-invoice",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "POST",
+    "path": "/auto-match",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "GET",
+    "path": "/unmatched",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "GET",
+    "path": "/pending-approval",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "GET",
+    "path": "/customer/:customerId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "claims.js",
+    "method": "GET",
+    "path": "/statistics",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "GET",
+    "path": "/stats",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "PATCH",
+    "path": "/:id/toggle-status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "companyRoutes.js",
+    "method": "POST",
+    "path": "/:id/admin",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "conflicts.js",
+    "method": "POST",
+    "path": "/preview",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "currency.js",
+    "method": "GET",
+    "path": "/analytics/currencies",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "currency.js",
+    "method": "GET",
+    "path": "/currencies/convert",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "currency.js",
+    "method": "GET",
+    "path": "/currencies",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/hierarchy",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/hierarchy",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/promotions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/trade-spends",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/trading-terms",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/budgets",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/claims",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/deductions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customer.js",
+    "method": "GET",
+    "path": "/:id/sales-history",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customerAssignment.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customerAssignment.js",
+    "method": "POST",
+    "path": "/assign",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customerAssignment.js",
+    "method": "POST",
+    "path": "/unassign",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "customerAssignment.js",
+    "method": "GET",
+    "path": "/unassigned",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/stats",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/activity",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/charts/:type",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/executive",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/kam",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "GET",
+    "path": "/analytics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboard.js",
+    "method": "POST",
+    "path": "/subscribe/:dashboardType",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "dashboards.js",
+    "method": "GET",
+    "path": "/admin",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "dashboards.js",
+    "method": "GET",
+    "path": "/manager",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "dashboards.js",
+    "method": "GET",
+    "path": "/kam",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "POST",
+    "path": "/:id/validate",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "POST",
+    "path": "/:id/dispute",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "POST",
+    "path": "/:id/resolve",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "POST",
+    "path": "/:id/match-claim",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "POST",
+    "path": "/auto-match",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "GET",
+    "path": "/unmatched",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "GET",
+    "path": "/disputed",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "GET",
+    "path": "/customer/:customerId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "GET",
+    "path": "/statistics",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "deductions.js",
+    "method": "GET",
+    "path": "/reconcile/:customerId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/scenarios",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/scenarios/compare",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/:budgetId/variance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/multi-year-plan",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/optimize",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/:budgetId/workflow",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/consolidate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "GET",
+    "path": "/dashboard",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/bulk/create",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "PUT",
+    "path": "/bulk/update",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "DELETE",
+    "path": "/bulk/delete",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "GET",
+    "path": "/export",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/import",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "enterpriseBudget.js",
+    "method": "POST",
+    "path": "/simulate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "export.js",
+    "method": "GET",
+    "path": "/customers",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "export.js",
+    "method": "GET",
+    "path": "/products",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "export.js",
+    "method": "GET",
+    "path": "/promotions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "export.js",
+    "method": "GET",
+    "path": "/budgets",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "export.js",
+    "method": "GET",
+    "path": "/transactions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "export.js",
+    "method": "GET",
+    "path": "/template/:type",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "forwardBuy.js",
+    "method": "POST",
+    "path": "/detect",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "forwardBuy.js",
+    "method": "POST",
+    "path": "/net-impact",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "forwardBuy.js",
+    "method": "POST",
+    "path": "/predict-risk",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "forwardBuy.js",
+    "method": "POST",
+    "path": "/category-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/detailed",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/live",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/liveness",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/ready",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/readiness",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/startup",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/health/test-tenant/:tenantId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "health.js",
+    "method": "GET",
+    "path": "/metrics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/regions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/regions/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "POST",
+    "path": "/regions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "PUT",
+    "path": "/regions/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "DELETE",
+    "path": "/regions/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/districts",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/districts/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "POST",
+    "path": "/districts",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "PUT",
+    "path": "/districts/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "DELETE",
+    "path": "/districts/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/stores",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/stores/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "POST",
+    "path": "/stores",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "PUT",
+    "path": "/stores/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "DELETE",
+    "path": "/stores/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "hierarchy.js",
+    "method": "GET",
+    "path": "/tree",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "import.js",
+    "method": "POST",
+    "path": "/:module",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "import.js",
+    "method": "GET",
+    "path": "/templates/:module",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "index.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "GET",
+    "path": "/summary",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "GET",
+    "path": "/top/:module",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "POST",
+    "path": "/:id/acknowledge",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "POST",
+    "path": "/:id/assign",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "POST",
+    "path": "/:id/resolve",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "POST",
+    "path": "/:id/dismiss",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "insights.js",
+    "method": "POST",
+    "path": "/scan/:module/:entityId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "integration.js",
+    "method": "GET",
+    "path": "/status",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "integration.js",
+    "method": "POST",
+    "path": "/sap/test",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "integration.js",
+    "method": "POST",
+    "path": "/webhooks/:service",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integration.js",
+    "method": "PUT",
+    "path": "/configure/:service",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/external",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/external/:integrationId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/external/:integrationId/connect",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/external/:integrationId/disconnect",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/external/:integrationId/sync",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/external/metrics/overview",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/external/bulk/sync",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/webhooks",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/webhooks",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/webhooks/:webhookId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "PUT",
+    "path": "/webhooks/:webhookId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "DELETE",
+    "path": "/webhooks/:webhookId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/webhooks/:webhookId/test",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/webhooks/:webhookId/stats",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/webhooks/system/stats",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/webhooks/events/publish",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/webhooks/bulk/update",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/webhooks/receive/:integrationId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "POST",
+    "path": "/api/keys/generate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "DELETE",
+    "path": "/api/keys/:apiKey",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/api/analytics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/api/usage",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/api/health",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "integrations.js",
+    "method": "GET",
+    "path": "/dashboard",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "inventory.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "inventory.js",
+    "method": "GET",
+    "path": "/low-stock",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "POST",
+    "path": "/:id/allocate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "POST",
+    "path": "/:id/record-usage",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "GET",
+    "path": "/:id/balance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "GET",
+    "path": "/customer/:customerId/allocations",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "kamWallet.js",
+    "method": "PATCH",
+    "path": "/:id/status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "masterData.js",
+    "method": "GET",
+    "path": "/types",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "masterData.js",
+    "method": "POST",
+    "path": "/export",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "masterData.js",
+    "method": "POST",
+    "path": "/import",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "masterData.js",
+    "method": "POST",
+    "path": "/sync",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "metrics.js",
+    "method": "GET",
+    "path": "/:module/:entityId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "metrics.js",
+    "method": "GET",
+    "path": "/cache/stats",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "metrics.js",
+    "method": "DELETE",
+    "path": "/cache/:module/:entityId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "metrics.js",
+    "method": "DELETE",
+    "path": "/cache",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/dashboard",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/dashboard/overview",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/dashboard/statistics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/metrics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/insights",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/insights/generate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/forecasting",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "POST",
+    "path": "/forecasting/generate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/forecasting/results/:jobId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/forecasting/sales",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/forecasting/by-period",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/forecasting/by-channel",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "POST",
+    "path": "/forecasting/demand",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "POST",
+    "path": "/forecasting/budget",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "POST",
+    "path": "/forecasting/export/:type",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "missing-routes-fix.js",
+    "method": "GET",
+    "path": "/integrations",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/predict/customer-behavior",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/predict/demand-forecast",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/predict/churn",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/optimize/promotion",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/optimize/price",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/predict/batch",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/recommendations/products/:userId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/recommendations/personalized-promotions/:userId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/recommendations/hybrid/:userId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/recommendations/realtime/:userId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/recommendations/batch",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/segment/customer",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/insights/generate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/alerts/check",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/models/metrics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/models/training-status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/models/retrain",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/ab-test/create",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/ab-test/:testId/results",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/models",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/forecast",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "POST",
+    "path": "/train",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/training/:jobId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "ml.js",
+    "method": "GET",
+    "path": "/insights/:modelId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "notifications.js",
+    "method": "GET",
+    "path": "/stream",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "notifications.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "notifications.js",
+    "method": "POST",
+    "path": "/:id/read",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "notifications.js",
+    "method": "POST",
+    "path": "/read-all",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "notifications.js",
+    "method": "DELETE",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "notifications.js",
+    "method": "GET",
+    "path": "/stats",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "GET",
+    "path": "/status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "POST",
+    "path": "/query",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "POST",
+    "path": "/optimize-budget",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "POST",
+    "path": "/analyze-promotion",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "POST",
+    "path": "/generate-insights",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "POST",
+    "path": "/forecast-demand",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "POST",
+    "path": "/chat",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "ollama.js",
+    "method": "GET",
+    "path": "/models",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "optimizer.js",
+    "method": "POST",
+    "path": "/budget/reallocate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "performanceAnalytics.js",
+    "method": "GET",
+    "path": "/promotion-effectiveness",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "performanceAnalytics.js",
+    "method": "GET",
+    "path": "/roi-trending",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "performanceAnalytics.js",
+    "method": "GET",
+    "path": "/budget-variance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "performanceAnalytics.js",
+    "method": "GET",
+    "path": "/customer-segmentation",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "POST",
+    "path": "/upload",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "POST",
+    "path": "/validate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "POST",
+    "path": "/confirm",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "GET",
+    "path": "/status/:jobId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "GET",
+    "path": "/history",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "GET",
+    "path": "/template",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "posImport.js",
+    "method": "DELETE",
+    "path": "/:jobId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "predictiveAnalytics.js",
+    "method": "POST",
+    "path": "/predict-sales",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "predictiveAnalytics.js",
+    "method": "POST",
+    "path": "/predict-promotion-roi",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "predictiveAnalytics.js",
+    "method": "POST",
+    "path": "/predict-budget-needs",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "predictiveAnalytics.js",
+    "method": "POST",
+    "path": "/what-if",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "processModel.js",
+    "method": "GET",
+    "path": "/:module/:companyType",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "processModel.js",
+    "method": "GET",
+    "path": "/:module/:companyType/stage/:entityId",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "processModel.js",
+    "method": "POST",
+    "path": "/:module/:companyType/validate",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "processModel.js",
+    "method": "GET",
+    "path": "/:module/tabs",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/hierarchy",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/:id/hierarchy",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/category/:category",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/:id/promotions",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/:id/campaigns",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/:id/trading-terms",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "product.js",
+    "method": "GET",
+    "path": "/:id/sales-history",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/calendar",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/submit",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/calculate-performance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/cannibalization",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/clone",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/products",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/products",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "PUT",
+    "path": "/:id/products/:productId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "DELETE",
+    "path": "/:id/products/:productId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/customers",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/customers",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "DELETE",
+    "path": "/:id/customers/:customerId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/budget",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "PUT",
+    "path": "/:id/budget",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/approvals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/approvals/:approvalId/action",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/documents",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "POST",
+    "path": "/:id/documents",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "DELETE",
+    "path": "/:id/documents/:documentId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/conflicts",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/performance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "promotion.js",
+    "method": "GET",
+    "path": "/:id/history",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "GET",
+    "path": "/statistics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "GET",
+    "path": "/accruals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "GET",
+    "path": "/customer/:customerId/history",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "POST",
+    "path": "/calculate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "POST",
+    "path": "/calculate-margin",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "POST",
+    "path": "/accrue",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "rebate.js",
+    "method": "POST",
+    "path": "/:id/deactivate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "recommendations.js",
+    "method": "POST",
+    "path": "/next-best-promotion",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "POST",
+    "path": "/reports",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/reports",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/reports/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "PUT",
+    "path": "/reports/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "DELETE",
+    "path": "/reports/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/promotion-effectiveness",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/budget-utilization",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/customer-performance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/product-performance",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "GET",
+    "path": "/trade-spend-roi",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "POST",
+    "path": "/export",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "report.js",
+    "method": "POST",
+    "path": "/schedule",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/overview",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/by-period",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/top-customers",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/top-products",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/by-channel",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/trends",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sales.js",
+    "method": "GET",
+    "path": "/transactions",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "salesHistory.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "salesHistory.js",
+    "method": "GET",
+    "path": "/aggregate",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "salesHistory.js",
+    "method": "POST",
+    "path": "/import",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "salesHistory.js",
+    "method": "GET",
+    "path": "/trends",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "POST",
+    "path": "/sync/master-data",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "GET",
+    "path": "/sync/status/:jobId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "POST",
+    "path": "/sync/customers",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "POST",
+    "path": "/sync/products",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "POST",
+    "path": "/sync/sales",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "POST",
+    "path": "/post/trade-spend",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "sap.js",
+    "method": "GET",
+    "path": "/status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/authenticate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/session/validate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/logout",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/permissions/check",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/permissions/user/:userId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/roles",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/roles",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/roles/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "PUT",
+    "path": "/roles/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "DELETE",
+    "path": "/roles/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/roles/:roleId/assign",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/permissions",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/permissions/matrix",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/permissions",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/audit-logs",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/audit-logs/summary",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/audit-logs/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/events",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/dashboard",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "PUT",
+    "path": "/events/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/events/:id/assign",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/events/:id/notes",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/events/:id/resolve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/metrics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "POST",
+    "path": "/password/validate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "GET",
+    "path": "/policies",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "security.js",
+    "method": "PUT",
+    "path": "/policies",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "simulations.js",
+    "method": "POST",
+    "path": "/promotion",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "simulations.js",
+    "method": "POST",
+    "path": "/compare",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "POST",
+    "path": "/tenants",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "GET",
+    "path": "/tenants",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "GET",
+    "path": "/tenants/:tenantId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "PATCH",
+    "path": "/tenants/:tenantId/status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "DELETE",
+    "path": "/tenants/:tenantId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "POST",
+    "path": "/tenants/bulk",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "POST",
+    "path": "/tenants/:tenantId/license",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "GET",
+    "path": "/tenants/:tenantId/license/usage",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "GET",
+    "path": "/license-plans",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "GET",
+    "path": "/statistics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "superAdmin.js",
+    "method": "GET",
+    "path": "/health",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/current",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/stats",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/:id/users",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "PUT",
+    "path": "/:id/subscription",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/:id/features",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "PUT",
+    "path": "/:id/features",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "GET",
+    "path": "/:id/usage",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tenantRoutes.js",
+    "method": "PUT",
+    "path": "/:id/limits",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/summary",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/wallet/:customerId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/:id/submit",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/:id/reject",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/:id/record-spend",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/:id/accruals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/:id/accruals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/:id/documents",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "POST",
+    "path": "/:id/documents",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/:id/approvals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/:id/performance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpend.js",
+    "method": "GET",
+    "path": "/:id/history",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/dashboard",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/spend-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/campaign-performance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/customer-analytics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/product-performance",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/rebate-effectiveness",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradeSpendAnalytics.js",
+    "method": "GET",
+    "path": "/forecast",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "GET",
+    "path": "/options",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "POST",
+    "path": "/:id/submit",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "POST",
+    "path": "/:id/approve-reject",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "tradingTermsRoutes.js",
+    "method": "POST",
+    "path": "/:id/calculate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "GET",
+    "path": "/pending-approvals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "POST",
+    "path": "/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "POST",
+    "path": "/:id/reject",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "POST",
+    "path": "/:id/settle",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "POST",
+    "path": "/bulk/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "POST",
+    "path": "/bulk/upload",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "GET",
+    "path": "/template",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transaction.js",
+    "method": "GET",
+    "path": "/export",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/purchase-orders",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/purchase-orders",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/purchase-orders/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/invoices",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/invoices",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/invoices/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/payments",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/payments",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/matching/invoice-to-po",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/matching/payment-to-invoice",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/matching/3-way",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/matching/auto-match-payment/:paymentId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/matching/batch-match-invoices",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/matching/unmatched/:customerId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/accruals/calculate",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/accruals/update-actuals",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/accruals/close-period",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/accruals/:id/adjust",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/accruals/variance-analysis",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/disputes/from-deduction",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/disputes/:id/assign",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/disputes/:id/resolve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/disputes/analytics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/settlements",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/settlements/:id/approve",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/settlements/:id/process",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "POST",
+    "path": "/settlements/:id/reconcile",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/settlements/reconciliation-status/:customerId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/audit/entity/:entityType/:entityId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/audit/user/:userId",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "transactionProcessing.js",
+    "method": "GET",
+    "path": "/audit/statistics",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "GET",
+    "path": "/me",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "PUT",
+    "path": "/me",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "user.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "PATCH",
+    "path": "/:id/toggle-status",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "PATCH",
+    "path": "/:id/assign-role",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "userRoutes.js",
+    "method": "GET",
+    "path": "/roles/available",
+    "requiresAuth": false,
+    "roles": null
+  },
+  {
+    "file": "vendor.js",
+    "method": "GET",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "vendor.js",
+    "method": "GET",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "vendor.js",
+    "method": "POST",
+    "path": "/",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "vendor.js",
+    "method": "PUT",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "vendor.js",
+    "method": "DELETE",
+    "path": "/:id",
+    "requiresAuth": true,
+    "roles": null
+  },
+  {
+    "file": "vendor.js",
+    "method": "GET",
+    "path": "/:id/products",
+    "requiresAuth": true,
+    "roles": null
+  }
+]
