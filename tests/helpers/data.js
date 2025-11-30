@@ -84,6 +84,7 @@ async function createCustomer(api, options = {}) {
   const customerData = {
     code: code.toUpperCase(),
     name: options.name || `Test Customer ${code}`,
+    sapCustomerId: options.sapCustomerId || `SAPCUST-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`,
     customerType: options.customerType || rng.randomChoice(['retailer', 'wholesaler', 'distributor', 'chain', 'independent', 'online']),
     channel: options.channel || rng.randomChoice(['modern_trade', 'traditional_trade', 'horeca', 'ecommerce', 'b2b', 'export']),
     tier: options.tier || 'standard',
