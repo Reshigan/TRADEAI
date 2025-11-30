@@ -6,7 +6,7 @@
 const { expect } = require('@playwright/test');
 
 const TENANT_ID = process.env.TENANT_ID || 'DIST-TEST';
-const RUN_ID = process.env.RUN_ID || `test-${Date.now()}`;
+const RUN_ID = process.env.RUN_ID || `test-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
 /**
  * API Client for common operations
