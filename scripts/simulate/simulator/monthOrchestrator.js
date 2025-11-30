@@ -138,7 +138,7 @@ class MonthOrchestrator {
     const categories = ['Snacks', 'Beverages', 'Confectionery', 'Dairy', 'Frozen Foods'];
     const brands = ['Brand A', 'Brand B', 'Brand C', 'Brand D', 'Brand E'];
     
-    const existingProducts = await Product.find({ company: this.createdEntities.company._id });
+    const existingProducts = await Product.find({ companyId: this.createdEntities.company._id });
     
     if (existingProducts.length >= this.config.characteristics.product_count) {
       console.log(`   ✓ Found ${existingProducts.length} existing products`);
@@ -153,14 +153,16 @@ class MonthOrchestrator {
         const sku = `SKU-${this.config.code}-${String(i + 1).padStart(6, '0')}`;
         
         const product = await Product.create({
-          company: this.createdEntities.company._id,
+          companyId: this.createdEntities.company._id,
           sku,
           name: `${brand} ${category} Product ${i + 1}`,
           category,
-          brand,
-          price: this.rng.randomFloat(5, 50),
-          cost: this.rng.randomFloat(2, 25),
-          status: 'active'
+          pricing: {
+            cost: this.rng.randomFloat(2, 25),
+            price: this.rng.randomFloat(5, 50),
+            currency: 'USD'
+          },
+          isActive: true
         });
 
         this.createdEntities.products.push(product);
@@ -181,7 +183,7 @@ class MonthOrchestrator {
         sku: product.sku,
         name: product.name,
         category: product.category,
-        price: product.price
+        price: product.pricing?.price || 0
       });
     }
 
@@ -191,9 +193,9 @@ class MonthOrchestrator {
   async setupCustomers() {
     console.log(`\n🏪 Setting up ${this.config.characteristics.customer_count} customers...`);
     
-    const customerTypes = ['Retailer', 'Wholesaler', 'Distributor', 'Direct'];
+    const customerTypes = ['National Retailer', 'Regional Chain', 'Independent Store', 'Wholesaler', 'Other'];
     
-    const existingCustomers = await Customer.find({ company: this.createdEntities.company._id });
+    const existingCustomers = await Customer.find({ companyId: this.createdEntities.company._id });
     
     if (existingCustomers.length >= this.config.characteristics.customer_count) {
       console.log(`   ✓ Found ${existingCustomers.length} existing customers`);
@@ -207,7 +209,7 @@ class MonthOrchestrator {
         const code = `CUST-${this.config.code}-${String(i + 1).padStart(5, '0')}`;
         
         const customer = await Customer.create({
-          company: this.createdEntities.company._id,
+          companyId: this.createdEntities.company._id,
           code,
           name: `${type} Customer ${i + 1}`,
           type,
@@ -261,10 +263,18 @@ class MonthOrchestrator {
       });
       
       if (!budget) {
+        const categoryMap = {
+          'Trade Marketing': 'Marketing',
+          'Volume Incentives': 'Promotions',
+          'Display': 'Advertising',
+          'Price Support': 'Trade Spend'
+        };
+        const validCategory = categoryMap[category] || 'Other';
+        
         budget = await Budget.create({
           company: this.createdEntities.company._id,
           name: `${category} ${currentYear}`,
-          category,
+          category: validCategory,
           fiscalYear: currentYear,
           startDate,
           endDate,
@@ -274,7 +284,7 @@ class MonthOrchestrator {
           remaining: amount,
           currency: 'USD',
           status: 'active',
-          owner: owner._id
+          createdBy: owner.email
         });
         console.log(`   ✓ Created budget: ${category} - $${amount.toLocaleString()}`);
       } else {
@@ -364,7 +374,7 @@ class MonthOrchestrator {
       
       const discount = this.rng.randomFloat(0.1, 0.3);
       const estimatedUnits = this.rng.randomInt(1000, 10000);
-      const avgPrice = products.reduce((sum, p) => sum + p.price, 0) / products.length;
+      const avgPrice = products.reduce((sum, p) => sum + (p.pricing?.price || 0), 0) / products.length;
       const netSpend = estimatedUnits * avgPrice * discount;
       
       const promotion = await Promotion.create({
@@ -374,21 +384,31 @@ class MonthOrchestrator {
         startDate,
         endDate,
         products: products.map(p => p._id),
-        budget: budget._id,
-        discount,
-        estimatedUnits,
-        netSpend,
+        budget: {
+          allocated: netSpend,
+          spent: 0,
+          currency: 'USD'
+        },
+        terms: {
+          discountPercentage: discount * 100,
+          minimumQuantity: estimatedUnits * 0.1
+        },
         status: 'active',
-        createdBy: creator._id
+        createdBy: creator.email
       });
+
+      await Budget.updateOne(
+        { _id: budget._id },
+        { $inc: { spent: netSpend, allocated: netSpend } }
+      );
 
       this.createdEntities.promotions.push(promotion);
       this.ledger.addEntity('promotions', {
         _id: promotion._id.toString(),
         name: promotion.name,
         type: promotion.type,
-        netSpend: promotion.netSpend,
-        estimatedUnits: promotion.estimatedUnits
+        netSpend: promotion.budget.allocated,
+        estimatedUnits: estimatedUnits
       });
     }
     
@@ -400,16 +420,30 @@ class MonthOrchestrator {
       const customer = this.rng.randomChoice(this.createdEntities.customers);
       const product = this.rng.randomChoice(this.createdEntities.products);
       const quantity = this.rng.randomInt(10, 500);
-      const amount = quantity * product.price;
+      const unitPrice = product.pricing?.price || 0;
+      const amount = quantity * unitPrice;
       
       const transaction = await Transaction.create({
-        company: this.createdEntities.company._id,
-        customer: customer._id,
-        product: product._id,
-        quantity,
-        amount,
+        transactionId: `TXN-${Date.now()}-${this.rng.randomInt(1000, 9999)}`,
+        companyId: this.createdEntities.company._id,
+        customerId: customer._id,
+        customerName: customer.name,
+        products: [{
+          product: product._id,
+          productName: product.name,
+          sku: product.sku,
+          quantity,
+          unitPrice: unitPrice,
+          totalPrice: amount
+        }],
+        totals: {
+          subtotal: amount,
+          tax: 0,
+          total: amount
+        },
         date: new Date(),
-        type: 'sale'
+        type: 'sale',
+        status: 'completed'
       });
 
       this.createdEntities.transactions.push(transaction);
@@ -447,15 +481,23 @@ class MonthOrchestrator {
       const customer = this.rng.randomChoice(this.createdEntities.customers);
       const creator = this.rng.randomChoice(this.createdEntities.users);
       
+      const termType = this.rng.randomChoice(['Volume Discount', 'Growth Incentive', 'Annual Rebate']);
+      const value = this.rng.randomFloat(2, 10);
+      
       const term = await TradingTerm.create({
-        company: this.createdEntities.company._id,
+        termId: `TT-${Date.now()}-${this.rng.randomInt(1000, 9999)}`,
         customer: customer._id,
-        termType: this.rng.randomChoice(['Volume Discount', 'Payment Terms', 'Rebate']),
-        value: this.rng.randomFloat(0.05, 0.15),
+        customerName: customer.name,
+        termType,
+        value,
+        valueType: 'Percentage',
         startDate: new Date(),
         endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-        status: 'active',
-        createdBy: creator._id
+        status: 'Active',
+        currency: 'USD',
+        description: `${termType} for ${customer.name}`,
+        createdBy: creator.email,
+        approvedBy: this.createdEntities.users.find(u => u.role === 'admin')?.email
       });
 
       this.createdEntities.tradingTerms.push(term);
@@ -507,22 +549,22 @@ class MonthOrchestrator {
   calculateKPIs() {
     console.log('\n📊 Calculating KPIs...');
     
-    const totalBudget = this.createdEntities.budgets.reduce((sum, b) => sum + b.totalBudget, 0);
-    const totalSpent = this.createdEntities.budgets.reduce((sum, b) => sum + b.spent, 0);
-    const budgetUtilization = totalSpent / totalBudget;
+    const totalBudget = this.createdEntities.budgets.reduce((sum, b) => sum + (b.totalBudget || 0), 0);
+    const promoAllocated = this.createdEntities.promotions.reduce((sum, p) => sum + (p.budget?.allocated || 0), 0);
+    const budgetUtilization = totalBudget > 0 ? promoAllocated / totalBudget : 0;
     
     this.ledger.addKPI('budget_utilization', budgetUtilization);
     this.ledger.addKPI('total_budget', totalBudget);
-    this.ledger.addKPI('total_spent', totalSpent);
+    this.ledger.addKPI('total_promotion_allocated', promoAllocated);
     
     const totalTransactions = this.createdEntities.transactions.length;
-    const totalRevenue = this.createdEntities.transactions.reduce((sum, t) => sum + t.amount, 0);
+    const totalRevenue = this.createdEntities.transactions.reduce((sum, t) => sum + (t.totals?.total || 0), 0);
     
     this.ledger.addKPI('total_transactions', totalTransactions);
     this.ledger.addKPI('total_revenue', totalRevenue);
     
     const totalPromotions = this.createdEntities.promotions.length;
-    const totalPromotionSpend = this.createdEntities.promotions.reduce((sum, p) => sum + p.netSpend, 0);
+    const totalPromotionSpend = this.createdEntities.promotions.reduce((sum, p) => sum + (p.budget?.allocated || 0), 0);
     
     this.ledger.addKPI('total_promotions', totalPromotions);
     this.ledger.addKPI('total_promotion_spend', totalPromotionSpend);

@@ -6,7 +6,8 @@ const { defineConfig, devices } = require('@playwright/test');
  * Tests run against production: https://tradeai.gonxt.tech
  */
 module.exports = defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests',
+  testMatch: ['**/e2e/**/*.spec.{ts,js}', '**/regression/**/*.spec.{ts,js}'],
   
   timeout: 60 * 1000,
   
