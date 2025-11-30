@@ -49,7 +49,7 @@ async function createProduct(api, options = {}) {
   const productData = {
     sku: sku.toUpperCase(),
     name: options.name || `Test Product ${sku}`,
-    sapMaterialId: options.sapMaterialId || `SAP-${rng.randomInt(100000, 999999)}`,
+    sapMaterialId: options.sapMaterialId || `SAP-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`,
     productType: options.productType || rng.randomChoice(['own_brand', 'distributed', 'private_label', 'consignment']),
     category: options.category || rng.randomChoice(['Snacks', 'Beverages', 'Confectionery', 'Dairy']),
     brand: options.brand || 'Test Brand',
@@ -84,6 +84,7 @@ async function createCustomer(api, options = {}) {
   const customerData = {
     code: code.toUpperCase(),
     name: options.name || `Test Customer ${code}`,
+    sapCustomerId: options.sapCustomerId || `SAPCUST-${TENANT_ID}-${RUN_ID}-${rng.randomInt(1000, 9999)}`,
     customerType: options.customerType || rng.randomChoice(['retailer', 'wholesaler', 'distributor', 'chain', 'independent', 'online']),
     channel: options.channel || rng.randomChoice(['modern_trade', 'traditional_trade', 'horeca', 'ecommerce', 'b2b', 'export']),
     tier: options.tier || 'standard',
