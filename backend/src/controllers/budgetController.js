@@ -9,6 +9,7 @@ const logger = require('../utils/logger');
 exports.createBudget = asyncHandler(async (req, res, _next) => {
   const budgetData = {
     ...req.body,
+    company: req.user.company,
     createdBy: req.user._id,
     status: 'draft'
   };
