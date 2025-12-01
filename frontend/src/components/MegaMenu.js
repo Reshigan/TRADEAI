@@ -306,22 +306,21 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           <MenuIcon />
         </IconButton>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/dashboard"
-            sx={{
-              textDecoration: 'none',
-              color: 'text.primary',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1
-            }}
-          >
-            🚀 TRADE AI
-          </Typography>
+        <Box 
+          component={RouterLink}
+          to="/dashboard"
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            mr: 4,
+            textDecoration: 'none'
+          }}
+        >
+          <img 
+            src="/logo.svg" 
+            alt="TRADEAI" 
+            style={{ height: 36, width: 'auto' }}
+          />
         </Box>
 
         <Button
