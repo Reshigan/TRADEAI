@@ -62,7 +62,7 @@ const SuccessTracker = ({ userId }) => {
       <Paper sx={{ 
         p: 3, 
         mb: 2,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
         color: 'white'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -134,24 +134,24 @@ const SuccessTracker = ({ userId }) => {
           📊 Your Impact
         </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-          <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#1976d2' }}>
+          <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#eff6ff', borderRadius: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
               {stats.totalActions}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Total Actions
             </Typography>
           </Box>
-          <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#f3e5f5', borderRadius: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#7b1fa2' }}>
+          <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#eff6ff', borderRadius: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
               {stats.successRate}%
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Success Rate
             </Typography>
           </Box>
-          <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#e8f5e9', borderRadius: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#2e7d32' }}>
+          <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#ecfdf5', borderRadius: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#059669' }}>
               {stats.aiSuggestionsApplied}
             </Typography>
             <Typography variant="caption" color="text.secondary">

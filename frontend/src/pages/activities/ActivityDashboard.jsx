@@ -93,7 +93,7 @@ const ActivityDashboard = () => {
             sx={{
               p: 3,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
               color: 'white',
               border: '1px solid',
               borderColor: 'divider'
@@ -114,7 +114,7 @@ const ActivityDashboard = () => {
             sx={{
               p: 3,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
               color: 'white',
               border: '1px solid',
               borderColor: 'divider'
@@ -135,7 +135,7 @@ const ActivityDashboard = () => {
             sx={{
               p: 3,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
               color: 'white',
               border: '1px solid',
               borderColor: 'divider'
@@ -156,7 +156,7 @@ const ActivityDashboard = () => {
             sx={{
               p: 3,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
               color: 'white',
               border: '1px solid',
               borderColor: 'divider'

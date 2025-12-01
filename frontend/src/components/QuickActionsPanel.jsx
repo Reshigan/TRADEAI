@@ -41,7 +41,7 @@ const QuickActionsPanel = ({ onAction }) => {
       title: 'New Promotion',
       description: 'Launch promotion in 30 seconds',
       icon: <CampaignIcon />,
-      color: '#9c27b0',
+      color: '#1E40AF',
       url: '/promotions/new-flow',
       badge: 'Popular',
       estimatedTime: '30s'

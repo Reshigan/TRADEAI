@@ -225,10 +225,10 @@ const InteractiveTrendChart = ({
               <Line 
                 type="monotone" 
                 dataKey="predicted" 
-                stroke="#9c27b0" 
+                stroke="#1E40AF" 
                 strokeWidth={2}
                 strokeDasharray="5 5"
-                dot={{ fill: '#9c27b0', r: 4 }}
+                dot={{ fill: '#1E40AF', r: 4 }}
                 name="AI Forecast"
               />
             )}
@@ -271,7 +271,7 @@ const InteractiveTrendChart = ({
               <Area 
                 type="monotone" 
                 dataKey="predicted" 
-                stroke="#9c27b0" 
+                stroke="#1E40AF" 
                 fill="url(#colorPredicted)"
                 strokeWidth={2}
                 strokeDasharray="5 5"
@@ -285,8 +285,8 @@ const InteractiveTrendChart = ({
                 <stop offset="95%" stopColor="#2196f3" stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorPredicted" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#9c27b0" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="#9c27b0" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#1E40AF" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#1E40AF" stopOpacity={0}/>
               </linearGradient>
             </defs>
           </AreaChart>
@@ -319,8 +319,8 @@ const InteractiveTrendChart = ({
       </Box>
 
       {/* Learning Note */}
-      <Box sx={{ mt: 2, p: 1.5, bgcolor: '#f3e5f5', borderRadius: 2 }}>
-        <Typography variant="caption" sx={{ color: '#7b1fa2' }}>
+      <Box sx={{ mt: 2, p: 1.5, bgcolor: '#eff6ff', borderRadius: 2 }}>
+        <Typography variant="caption" sx={{ color: '#1E40AF' }}>
           💡 <strong>Did you know?</strong> This forecast accuracy improves as you use the system more. Current model accuracy: 87%
         </Typography>
       </Box>

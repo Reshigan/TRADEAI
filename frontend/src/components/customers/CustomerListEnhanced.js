@@ -88,25 +88,25 @@ const CustomerListEnhanced = () => {
   // Quick actions for customer management
   const getQuickActions = () => [
     {
-      icon: '📧',
+      icon: '',
       label: 'Create Email Campaign',
       description: 'Send targeted emails to selected customer segments',
       action: () => navigate('/campaigns/new?type=email')
     },
     {
-      icon: '🎯',
+      icon: '',
       label: 'Launch Promotion',
       description: 'Create promotion for high-value customers',
       action: () => navigate('/promotions/new')
     },
     {
-      icon: '📊',
+      icon: '',
       label: 'Generate Customer Report',
       description: 'Detailed analytics and insights report',
       action: () => navigate('/reports/customers')
     },
     {
-      icon: '⚡',
+      icon: '',
       label: 'Bulk Update Status',
       description: 'Update multiple customer statuses at once',
       action: () => console.log('Bulk update')
@@ -140,21 +140,21 @@ const CustomerListEnhanced = () => {
       if (revenue > avgRevenue * 2) {
         insights[customer.id || customer._id] = {
           type: 'opportunity',
-          message: `🌟 VIP Customer - ${Math.round((revenue / avgRevenue - 1) * 100)}% above average revenue`
+          message: `VIP Customer - ${Math.round((revenue / avgRevenue - 1) * 100)}% above average revenue`
         };
       }
       // At-risk
       else if (customer.status === 'inactive' || customer.lastOrderDays > 90) {
         insights[customer.id || customer._id] = {
           type: 'risk',
-          message: '⚠️ At Risk - No recent activity. Recommend re-engagement campaign'
+          message: 'At Risk - No recent activity. Recommend re-engagement campaign'
         };
       }
       // Growth opportunity
       else if (revenue > avgRevenue * 0.7 && revenue < avgRevenue * 1.3) {
         insights[customer.id || customer._id] = {
           type: 'trending',
-          message: '📈 Growth Opportunity - Showing positive purchase trend'
+          message: 'Growth Opportunity - Showing positive purchase trend'
         };
       }
     });

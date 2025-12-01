@@ -44,7 +44,7 @@ const Login = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
       p: 3
     }}>
       <Paper elevation={3} sx={{ 
