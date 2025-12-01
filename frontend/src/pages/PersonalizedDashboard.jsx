@@ -218,8 +218,8 @@ const PersonalizedDashboard = () => {
 
         {/* Contextual Tips */}
         <Paper sx={{ p: 2, mt: 3, bgcolor: '#e8f5e9', border: '2px solid #4caf50' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2e7d32', mb: 1 }}>
-            💡 Smart Tip of the Day
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#059669', mb: 1 }}>
+            Smart Tip of the Day
           </Typography>
           <Typography variant="body2" sx={{ color: '#2e7d32' }}>
             Your high-value customer "ABC Retailers" hasn't placed an order in 14 days (longer than usual). 
@@ -229,8 +229,8 @@ const PersonalizedDashboard = () => {
 
         {/* Learning Progress */}
         <Paper sx={{ p: 2, mt: 2, bgcolor: '#f3e5f5' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7b1fa2', mb: 1 }}>
-            🎓 Your AI is Getting Smarter
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1E40AF', mb: 1 }}>
+            Your AI is Getting Smarter
           </Typography>
           <Typography variant="body2" sx={{ color: '#7b1fa2', mb: 1 }}>
             After analyzing your last 156 decisions, the AI model accuracy has improved to 91% (up from 87% last week).
