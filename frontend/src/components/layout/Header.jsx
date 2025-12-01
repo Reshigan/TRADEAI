@@ -26,18 +26,18 @@ const Header = () => {
       zIndex: 10
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-        <h3 style={{ margin: 0, fontSize: '18px', color: '#1e293b' }}>
-          Welcome back, {user?.firstName || 'User'}! 👋
+        <h3 style={{ margin: 0, fontSize: '18px', color: '#171717' }}>
+          Welcome back, {user?.firstName || 'User'}
         </h3>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <div style={{ 
           padding: '8px 16px', 
-          backgroundColor: '#f0f9ff', 
+          backgroundColor: '#EFF6FF', 
           borderRadius: '20px',
           fontSize: '14px',
-          color: '#0284c7',
+          color: '#1E40AF',
           fontWeight: '500'
         }}>
           {user?.role || 'User'}
@@ -46,7 +46,7 @@ const Header = () => {
           width: '40px', 
           height: '40px', 
           borderRadius: '50%', 
-          backgroundColor: '#3b82f6',
+          backgroundColor: '#1E40AF',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

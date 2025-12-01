@@ -25,7 +25,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+  background: linear-gradient(90deg, #1E40AF, #059669);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -68,9 +68,9 @@
 }
 
 .neon-button:hover {
-  background: rgba(0, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-  text-shadow: 0 0 10px var(--neon-cyan);
+  background: rgba(30, 64, 175, 0.1);
+  box-shadow: 0 0 20px rgba(30, 64, 175, 0.3);
+  text-shadow: none;
 }
 
 .neon-button:hover::before {
@@ -83,9 +83,9 @@
 }
 
 .neon-button.primary:hover {
-  background: rgba(139, 92, 246, 0.1);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-  text-shadow: 0 0 10px var(--neon-purple);
+  background: rgba(5, 150, 105, 0.1);
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.3);
+  text-shadow: none;
 }
 
 .neon-button.danger {
@@ -94,9 +94,9 @@
 }
 
 .neon-button.danger:hover {
-  background: rgba(255, 0, 128, 0.1);
-  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-  text-shadow: 0 0 10px var(--neon-pink);
+  background: rgba(220, 38, 38, 0.1);
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  text-shadow: none;
 }
 
 /* Glitch Text Effect */

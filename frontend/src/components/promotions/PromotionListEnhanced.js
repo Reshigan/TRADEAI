@@ -61,25 +61,25 @@ const PromotionListEnhanced = () => {
 
   const getQuickActions = () => [
     {
-      icon: '🎯',
+      icon: '',
       label: 'Create Smart Promotion',
       description: 'AI-powered promotion builder with recommendations',
       action: () => navigate('/promotions/new')
     },
     {
-      icon: '📊',
+      icon: '',
       label: 'Analyze Performance',
       description: 'Deep dive into promotion metrics and ROI',
       action: () => navigate('/reports/promotions')
     },
     {
-      icon: '🔄',
+      icon: '',
       label: 'Clone Best Performers',
       description: 'Replicate successful promotions',
       action: () => console.log('Clone')
     },
     {
-      icon: '⚡',
+      icon: '',
       label: 'Run Simulation',
       description: 'Forecast promotion impact before launch',
       action: () => navigate('/simulations?type=promotion')
@@ -87,7 +87,7 @@ const PromotionListEnhanced = () => {
   ];
 
   const getTips = () => [
-    'Tip: Promotions marked with 🔥 have ROI above 200%',
+    'Tip: Promotions with ROI above 200% are highlighted for easy identification',
     'Tip: Use AI assistant to optimize discount levels and timing',
     'Tip: A/B test different promotion strategies for best results'
   ];
@@ -99,17 +99,17 @@ const PromotionListEnhanced = () => {
       if (roi > 200) {
         insights[promo.id || promo._id] = {
           type: 'opportunity',
-          message: `🔥 High ROI: ${roi}% - Consider extending or replicating`
+          message: `High ROI: ${roi}% - Consider extending or replicating`
         };
       } else if (roi < 100) {
         insights[promo.id || promo._id] = {
           type: 'risk',
-          message: `⚠️ Low ROI: ${roi}% - Review and optimize`
+          message: `Low ROI: ${roi}% - Review and optimize`
         };
       } else if (promo.status === 'active') {
         insights[promo.id || promo._id] = {
           type: 'trending',
-          message: `✅ Active - Monitoring performance`
+          message: `Active - Monitoring performance`
         };
       }
     });

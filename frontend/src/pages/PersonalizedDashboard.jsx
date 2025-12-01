@@ -72,7 +72,7 @@ const PersonalizedDashboard = () => {
         <Box sx={{ mb: 4 }}>
           <Paper sx={{ 
             p: 3,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
             color: 'white'
           }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -176,7 +176,7 @@ const PersonalizedDashboard = () => {
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid item xs={12} sm={4}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#2196f3' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
                     R1.2M
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -187,7 +187,7 @@ const PersonalizedDashboard = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#4caf50' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#059669' }}>
                     3.2x
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -198,7 +198,7 @@ const PersonalizedDashboard = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#9c27b0' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
                     87%
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -217,29 +217,29 @@ const PersonalizedDashboard = () => {
         </Grid>
 
         {/* Contextual Tips */}
-        <Paper sx={{ p: 2, mt: 3, bgcolor: '#e8f5e9', border: '2px solid #4caf50' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#2e7d32', mb: 1 }}>
-            💡 Smart Tip of the Day
+        <Paper sx={{ p: 2, mt: 3, bgcolor: '#ecfdf5', border: '2px solid #059669' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#059669', mb: 1 }}>
+            Smart Tip of the Day
           </Typography>
-          <Typography variant="body2" sx={{ color: '#2e7d32' }}>
+          <Typography variant="body2" sx={{ color: '#047857' }}>
             Your high-value customer "ABC Retailers" hasn't placed an order in 14 days (longer than usual). 
             Consider reaching out with a personalized offer. <Button size="small" sx={{ ml: 1 }}>Create Offer</Button>
           </Typography>
         </Paper>
 
         {/* Learning Progress */}
-        <Paper sx={{ p: 2, mt: 2, bgcolor: '#f3e5f5' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7b1fa2', mb: 1 }}>
-            🎓 Your AI is Getting Smarter
+        <Paper sx={{ p: 2, mt: 2, bgcolor: '#eff6ff' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1E40AF', mb: 1 }}>
+            Your AI is Getting Smarter
           </Typography>
-          <Typography variant="body2" sx={{ color: '#7b1fa2', mb: 1 }}>
+          <Typography variant="body2" sx={{ color: '#1E40AF', mb: 1 }}>
             After analyzing your last 156 decisions, the AI model accuracy has improved to 91% (up from 87% last week).
             The more you use it, the better it gets at understanding your preferences.
           </Typography>
           <Chip 
             label="Model accuracy: 91%" 
             size="small" 
-            sx={{ bgcolor: '#9c27b0', color: 'white', fontWeight: 600 }}
+            sx={{ bgcolor: '#1E40AF', color: 'white', fontWeight: 600 }}
           />
         </Paper>
 

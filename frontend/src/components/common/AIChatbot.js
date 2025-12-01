@@ -142,7 +142,7 @@ const AIChatbot = ({ pageContext, contextData, open, onClose }) => {
           overflow: 'hidden',
           background: theme.palette.mode === 'dark' 
             ? 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)'
-            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            : 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
         }}
       >
         {/* Header */}
@@ -343,9 +343,9 @@ export const AIChatbotFAB = ({ pageContext, contextData }) => {
             bottom: 24,
             right: 104,
             zIndex: 1200,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
             '&:hover': {
-              background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+              background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%)',
             }
           }}
         >

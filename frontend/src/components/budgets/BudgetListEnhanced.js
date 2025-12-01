@@ -63,25 +63,25 @@ const BudgetListEnhanced = () => {
 
   const getQuickActions = () => [
     {
-      icon: '💰',
+      icon: '',
       label: 'Allocate Budget',
       description: 'Create new budget allocation with AI recommendations',
       action: () => navigate('/budgets/new')
     },
     {
-      icon: '📊',
+      icon: '',
       label: 'Budget Analytics',
       description: 'View spend analysis and utilization trends',
       action: () => navigate('/reports/budget')
     },
     {
-      icon: '🔄',
+      icon: '',
       label: 'Rebalance Budgets',
       description: 'AI-powered budget reallocation optimizer',
       action: () => navigate('/simulations?type=budget')
     },
     {
-      icon: '⚡',
+      icon: '',
       label: 'Forecast Spend',
       description: 'Predict budget needs for upcoming period',
       action: () => navigate('/forecasting?view=budget')
@@ -102,17 +102,17 @@ const BudgetListEnhanced = () => {
       if (utilization > 95) {
         insights[budget.id || budget._id] = {
           type: 'risk',
-          message: `⚠️ ${utilization.toFixed(0)}% spent - Near limit`
+          message: `${utilization.toFixed(0)}% spent - Near limit`
         };
       } else if (utilization < 30 && budget.status === 'active') {
         insights[budget.id || budget._id] = {
           type: 'opportunity',
-          message: `💡 Low utilization - Consider reallocation`
+          message: `Low utilization - Consider reallocation`
         };
       } else if (utilization >= 70 && utilization <= 90) {
         insights[budget.id || budget._id] = {
           type: 'trending',
-          message: `✅ Healthy utilization: ${utilization.toFixed(0)}%`
+          message: `Healthy utilization: ${utilization.toFixed(0)}%`
         };
       }
     });

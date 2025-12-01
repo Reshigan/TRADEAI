@@ -151,7 +151,7 @@ const FlowAIPanel = ({
       <Box
         sx={{
           p: 2,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
           color: 'white',
           borderRadius: '8px 8px 0 0',
           display: 'flex',

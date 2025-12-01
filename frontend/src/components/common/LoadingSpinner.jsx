@@ -20,8 +20,8 @@ const LoadingSpinner = ({ size = 'medium', message = 'Loading...' }) => {
       <div style={{
         width: `${spinner}px`,
         height: `${spinner}px`,
-        border: `${border}px solid #f3f3f3`,
-        borderTop: `${border}px solid #3b82f6`,
+        border: `${border}px solid #E5E5E5`,
+        borderTop: `${border}px solid #1E40AF`,
         borderRadius: '50%',
         animation: 'spin 1s linear infinite'
       }} />

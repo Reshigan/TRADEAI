@@ -142,7 +142,7 @@ export default function EnhancedDashboard({ user }) {
           mb: 4,
           p: 4,
           borderRadius: 4,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
           color: 'white',
           position: 'relative',
           overflow: 'hidden',
@@ -158,7 +158,7 @@ export default function EnhancedDashboard({ user }) {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
-              sx={{ bgcolor: 'white', color: '#667eea', '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}
+              sx={{ bgcolor: 'white', color: '#1E40AF', '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}
               endIcon={<ArrowForward />}
               onClick={() => navigate('/enterprise/budget')}
             >
@@ -220,7 +220,7 @@ export default function EnhancedDashboard({ user }) {
             change={15.2}
             trend="up"
             icon={<Campaign sx={{ fontSize: 32 }} />}
-            color="#9c27b0"
+            color="#1E40AF"
             subtitle="ROI: 245%"
             onClick={() => navigate('/enterprise/promotions')}
           />
@@ -357,7 +357,7 @@ export default function EnhancedDashboard({ user }) {
               <Grid container spacing={2}>
                 {[
                   { title: 'Create Budget', icon: <AccountBalance />, path: '/budgets/new', color: '#1976d2' },
-                  { title: 'New Promotion', icon: <Campaign />, path: '/promotions/new', color: '#9c27b0' },
+                  { title: 'New Promotion', icon: <Campaign />, path: '/promotions/new', color: '#1E40AF' },
                   { title: 'Run Simulation', icon: <Assessment />, path: '/enterprise/promotions', color: '#ed6c02' },
                   { title: 'View Reports', icon: <TrendingUp />, path: '/reports', color: '#2e7d32' },
                 ].map((action) => (

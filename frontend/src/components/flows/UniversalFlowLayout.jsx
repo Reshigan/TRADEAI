@@ -101,7 +101,7 @@ const UniversalFlowLayout = ({
         p: 2, 
         mb: 2, 
         borderRadius: 0,
-        borderBottom: '2px solid #2196f3'
+        borderBottom: '2px solid #1E40AF'
       }}>
         <Box sx={{ 
           display: 'flex', 
@@ -109,7 +109,7 @@ const UniversalFlowLayout = ({
           alignItems: 'center' 
         }}>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a237e' }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1E40AF' }}>
               {title}
             </Typography>
             {subtitle && (
@@ -202,13 +202,13 @@ const UniversalFlowLayout = ({
             right: aiPanelOpen ? 0 : 16,
             top: aiPanelOpen ? '50%' : '50%',
             transform: 'translateY(-50%)',
-            bgcolor: '#9c27b0',
+            bgcolor: '#1E40AF',
             color: 'white',
             '&:hover': {
-              bgcolor: '#7b1fa2'
+              bgcolor: '#1E3A8A'
             },
             zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(156,39,176,0.4)'
+            boxShadow: '0 4px 12px rgba(30,64,175,0.4)'
           }}
         >
           {aiPanelOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -219,7 +219,7 @@ const UniversalFlowLayout = ({
           <Paper sx={{ 
             width: '400px',
             overflow: 'auto',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
             color: 'white',
             p: 3,
             borderRadius: 2,

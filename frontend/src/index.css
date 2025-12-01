@@ -43,10 +43,10 @@
   --border-primary: #e2e8f0;
   --border-accent: #cbd5e1;
   
-  /* Neon Colors for Accents */
-  --neon-cyan: #00ffff;
-  --neon-purple: #8b5cf6;
-  --neon-pink: #ec4899;
+  /* Enterprise Accent Colors */
+  --neon-cyan: #1E40AF;
+  --neon-purple: #059669;
+  --neon-pink: #DC2626;
   
   /* Glass Morphism */
   --glass-border: 1px solid rgba(255, 255, 255, 0.2);

@@ -76,7 +76,7 @@ const AIEnhancedPage = ({
             onClose={() => setShowTips(false)}
           >
             <Typography variant="subtitle2" gutterBottom>
-              💡 Smart Tip
+              Smart Tip
             </Typography>
             <Typography variant="body2">
               {tips[0]}

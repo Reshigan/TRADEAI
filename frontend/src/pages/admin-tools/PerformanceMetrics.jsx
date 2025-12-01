@@ -84,7 +84,7 @@ const PerformanceMetrics = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" fontWeight={700} mb={1}>
-        ⚡ Performance Metrics
+        Performance Metrics
       </Typography>
       <Typography variant="body2" color="text.secondary" mb={4}>
         System performance and monitoring
@@ -141,7 +141,7 @@ const PerformanceMetrics = () => {
           <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight={600}>
-                🐌 Slowest Endpoints
+                Slowest Endpoints
               </Typography>
               <Button
                 variant="contained"
@@ -184,7 +184,7 @@ const PerformanceMetrics = () => {
         <Grid item xs={12} lg={6}>
           <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
             <Typography variant="h6" fontWeight={600} mb={3}>
-              ❌ Recent Errors
+              Recent Errors
             </Typography>
             
             <Box>
@@ -204,7 +204,7 @@ const PerformanceMetrics = () => {
               {metrics.recentErrors.length === 0 && (
                 <Box textAlign="center" py={3}>
                   <Typography variant="body1" color="success.main">
-                    ✅ No recent errors
+                    No recent errors
                   </Typography>
                 </Box>
               )}
