@@ -78,28 +78,32 @@ const MODULES = {
     icon: People,
     description: 'Import/export customer data including contact information and business details',
     fields: ['name', 'code', 'customerType', 'status', 'email', 'phone', 'address'],
-    color: 'primary'
+    color: 'primary',
+    importEndpoint: 'customer' // Backend uses singular names
   },
   products: {
     label: 'Products',
     icon: Inventory,
     description: 'Import/export product catalog with SKUs, pricing, and categories',
     fields: ['name', 'code', 'sku', 'category', 'brand', 'unitPrice', 'status'],
-    color: 'secondary'
+    color: 'secondary',
+    importEndpoint: 'product'
   },
   promotions: {
     label: 'Promotions',
     icon: LocalOffer,
     description: 'Import/export promotion data including dates, mechanics, and targets',
     fields: ['name', 'code', 'promotionType', 'status', 'startDate', 'endDate', 'mechanics'],
-    color: 'success'
+    color: 'success',
+    importEndpoint: 'promotion'
   },
   budgets: {
     label: 'Budgets',
     icon: AccountBalance,
     description: 'Import/export budget allocations and spending data',
     fields: ['name', 'code', 'year', 'budgetType', 'allocated', 'spent', 'status'],
-    color: 'warning'
+    color: 'warning',
+    importEndpoint: 'budget'
   },
   transactions: {
     label: 'Transactions',
@@ -213,7 +217,9 @@ const DataImportExport = () => {
       formData.append('mapping', JSON.stringify(importMapping));
       formData.append('format', 'csv');
       
-      const response = await api.post(`/import/${selectedModule}`, formData, {
+      // Use importEndpoint (singular) for backend API, fall back to module key
+      const endpoint = MODULES[selectedModule]?.importEndpoint || selectedModule;
+      const response = await api.post(`/import/${endpoint}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       

@@ -20,7 +20,8 @@ import {
   Security as SecurityIcon,
   Settings as SettingsIcon,
   Dashboard as DashboardIcon,
-  ArrowBack as BackIcon
+  ArrowBack as BackIcon,
+  AccountTree as TenantsIcon
 } from '@mui/icons-material';
 
 const DRAWER_WIDTH = 240;
@@ -32,6 +33,7 @@ const AdminLayout = ({ user, onLogout }) => {
   const menuItems = [
     { path: '/admin/dashboard', label: 'Admin Dashboard', icon: <DashboardIcon /> },
     { path: '/admin/users', label: 'User Management', icon: <UsersIcon /> },
+    { path: '/admin/tenants', label: 'Tenant Management', icon: <TenantsIcon /> },
     { path: '/admin/companies', label: 'Companies', icon: <CompaniesIcon /> },
     { path: '/admin/security', label: 'Security', icon: <SecurityIcon /> },
     { path: '/admin/settings', label: 'Settings', icon: <SettingsIcon /> }

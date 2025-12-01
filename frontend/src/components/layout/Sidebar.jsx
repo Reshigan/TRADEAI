@@ -32,6 +32,12 @@ const Sidebar = () => {
       ]
     },
     {
+      section: 'Data',
+      items: [
+        { icon: '📥', label: 'Import / Export', path: '/data/import-export' }
+      ]
+    },
+    {
       section: 'Reports & Admin',
       items: [
         { icon: '📊', label: 'Report Builder', path: '/reports' },
