@@ -263,7 +263,7 @@ const CommandCenter = () => {
         }
       >
         <Typography variant="h6" gutterBottom>
-          💡 {dashboardData.aiInsight.title}
+          {dashboardData.aiInsight.title}
         </Typography>
         <Typography variant="body1">
           {dashboardData.aiInsight.message}
@@ -465,7 +465,7 @@ const CommandCenter = () => {
             <Grid item xs={12} md={4}>
               <Box>
                 <Typography variant="body1" fontWeight="medium" gutterBottom>
-                  💰 Budget Optimization
+                  Budget Optimization
                 </Typography>
                 <Typography variant="body2">
                   Reallocate 15% of regional budget to Walmart for +23% ROI improvement
@@ -478,7 +478,7 @@ const CommandCenter = () => {
             <Grid item xs={12} md={4}>
               <Box>
                 <Typography variant="body1" fontWeight="medium" gutterBottom>
-                  🎯 Promotion Opportunity
+                  Promotion Opportunity
                 </Typography>
                 <Typography variant="body2">
                   Create Black Friday promotion for beverages (predicted ROI: 165%)
@@ -491,7 +491,7 @@ const CommandCenter = () => {
             <Grid item xs={12} md={4}>
               <Box>
                 <Typography variant="body1" fontWeight="medium" gutterBottom>
-                  📊 Performance Alert
+                  Performance Alert
                 </Typography>
                 <Typography variant="body2">
                   Target promotions underperforming by 12% - adjust pricing recommended

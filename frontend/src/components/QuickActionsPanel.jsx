@@ -99,14 +99,14 @@ const QuickActionsPanel = ({ onAction }) => {
   const smartSuggestions = [
     {
       id: 'morning-review',
-      title: '☀️ Morning Review',
+      title: 'Morning Review',
       description: 'Check overnight performance',
       action: () => console.log('Morning review'),
       time: 'morning'
     },
     {
       id: 'weekly-planning',
-      title: '📅 Plan Next Week',
+      title: 'Plan Next Week',
       description: 'AI suggests best actions',
       action: () => console.log('Weekly planning'),
       time: 'friday'
@@ -229,7 +229,7 @@ const QuickActionsPanel = ({ onAction }) => {
 
                 {/* Estimated Time */}
                 <Chip
-                  label={`⚡ ${action.estimatedTime}`}
+                  label={action.estimatedTime}
                   size="small"
                   variant="outlined"
                   sx={{ fontSize: '0.75rem' }}
@@ -242,8 +242,8 @@ const QuickActionsPanel = ({ onAction }) => {
 
       {/* Smart Suggestions */}
       <Paper sx={{ p: 2, bgcolor: '#e8f5e9' }}>
-        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: '#2e7d32' }}>
-          💡 Smart Suggestions for You
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: '#059669' }}>
+          Smart Suggestions for You
         </Typography>
         <Grid container spacing={1}>
           {smartSuggestions.map((suggestion) => (
@@ -303,7 +303,7 @@ const QuickActionsPanel = ({ onAction }) => {
           />
           <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
             <Typography variant="caption" color="primary">
-              💡 Based on average historical ROI of 2.8x for similar investments
+              Based on average historical ROI of 2.8x for similar investments
             </Typography>
           </Box>
         </DialogContent>
@@ -323,8 +323,8 @@ const QuickActionsPanel = ({ onAction }) => {
 
       {/* Productivity Tip */}
       <Box sx={{ mt: 2, p: 1.5, bgcolor: '#fff3e0', borderRadius: 2 }}>
-        <Typography variant="caption" sx={{ color: '#e65100' }}>
-          ⚡ <strong>Pro tip:</strong> Use keyboard shortcuts: <code>Ctrl+P</code> for new promotion, <code>Ctrl+K</code> for quick search
+        <Typography variant="caption" sx={{ color: '#1E40AF' }}>
+          <strong>Pro tip:</strong> Use keyboard shortcuts: <code>Ctrl+P</code> for new promotion, <code>Ctrl+K</code> for quick search
         </Typography>
       </Box>
     </Box>
