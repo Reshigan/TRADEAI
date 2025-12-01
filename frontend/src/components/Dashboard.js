@@ -405,7 +405,7 @@ const Dashboard = ({ user }) => {
                       <Card variant="outlined">
                         <CardHeader
                           title={customer.name}
-                          subheader={`${customer.totalSpend ? `${dashboardData.summary?.currencySymbol || '$'}${customer.totalSpend.toLocaleString()}` : 'No spend data'}`}
+                          subheader={`${customer.totalSpend ? `${dashboardData.summary?.currencySymbol || 'R'}${customer.totalSpend.toLocaleString()}` : 'No spend data'}`}
                           titleTypographyProps={{ variant: 'subtitle1' }}
                           subheaderTypographyProps={{ variant: 'body2' }}
                           action={

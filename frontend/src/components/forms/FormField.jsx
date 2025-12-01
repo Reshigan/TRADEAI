@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   TextField,
   Select,
@@ -17,6 +17,24 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
+// Get currency symbol from user's company settings
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      const currencyMap = {
+        'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+        'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹', 'MXN': '$'
+      };
+      return currencyMap[user?.company?.currency] || 'R';
+    }
+  } catch (e) {
+    console.warn('Error getting currency symbol:', e);
+  }
+  return 'R'; // Default to ZAR
+};
 
 const FormField = ({
   type = 'text',
@@ -202,7 +220,7 @@ const FormField = ({
           multiline={multiline}
           rows={rows}
           InputProps={{
-            startAdornment: type === 'currency' ? '$' : undefined,
+            startAdornment: type === 'currency' ? getCurrencySymbol() : undefined,
           }}
           {...props}
         />

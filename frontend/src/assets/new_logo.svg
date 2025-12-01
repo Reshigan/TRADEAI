@@ -1,19 +1,30 @@
-
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="128" height="128" fill="#F0F4F8"/>
-<g clip-path="url(#clip0_101_2)">
-<path d="M48.5 24H32V38H48.5C53.4706 38 57.5 42.0294 57.5 47C57.5 51.9706 53.4706 56 48.5 56H40" stroke="#1E88E5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M40 82V56" stroke="#1E88E5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M80 104L96 72L112 104" stroke="#43A047" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M84 96H108" stroke="#43A047" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M64 48L56 56L64 64" stroke="#FFC107" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M96 48L104 56L96 64" stroke="#FFC107" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M80 60L72 52" stroke="#FFC107" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_101_2">
-<rect width="96" height="96" fill="white" transform="translate(16 16)"/>
-</clipPath>
-</defs>
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rounded square -->
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="url(#brandGradient)"/>
+  
+  <!-- Logo Mark - Abstract T with upward trend -->
+  <g transform="translate(24, 24)">
+    <!-- Base rectangle (T stem) -->
+    <rect x="28" y="28" width="16" height="40" rx="3" fill="white"/>
+    <!-- Top bar (T crossbar) -->
+    <rect x="12" y="12" width="56" height="16" rx="3" fill="white"/>
+    <!-- Upward trend arrow -->
+    <path d="M 48 52 L 64 36 L 64 44 L 72 44 L 72 28 L 56 28 L 56 36 L 48 44" 
+          fill="url(#accentGradient)"/>
+    <!-- AI sparkle dots -->
+    <circle cx="68" cy="20" r="5" fill="url(#accentGradient)"/>
+    <circle cx="76" cy="12" r="3" fill="url(#accentGradient)" opacity="0.7"/>
+  </g>
 </svg>
 

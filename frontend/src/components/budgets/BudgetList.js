@@ -20,6 +20,7 @@ import {
 import { PageHeader, DataTable, StatusChip } from '../common';
 import { budgetService } from '../../services/api';
 import BudgetForm from './BudgetForm';
+import { formatCurrencyCompact } from '../../utils/formatters';
 
 // No more mock data - using real API calls
 
@@ -148,20 +149,20 @@ const BudgetList = () => {
       numeric: true,
       format: (value, row) => {
         const total = (row?.allocated || 0) + (row?.remaining || 0);
-        return total ? `$${total.toLocaleString()}` : '$0';
+        return formatCurrencyCompact(total);
       }
     },
     { 
       id: 'allocated', 
       label: 'Allocated',
       numeric: true,
-      format: (value) => value ? `$${value.toLocaleString()}` : '$0'
+      format: (value) => formatCurrencyCompact(value)
     },
     { 
       id: 'remaining', 
       label: 'Remaining',
       numeric: true,
-      format: (value) => value ? `$${value.toLocaleString()}` : '$0'
+      format: (value) => formatCurrencyCompact(value)
     },
     { 
       id: 'status', 

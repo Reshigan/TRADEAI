@@ -24,6 +24,23 @@ import {
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
 
+// Get currency symbol from user's company settings
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      const currencyMap = {
+        'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+        'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹', 'MXN': '$'
+      };
+      return currencyMap[user?.company?.currency] || 'R';
+    }
+  } catch (e) {
+    console.warn('Error getting currency symbol:', e);
+  }
+  return 'R'; // Default to ZAR
+};
 
 const TradeSpendEdit = () => {
   const { id } = useParams();
@@ -306,7 +323,7 @@ const TradeSpendEdit = () => {
               value={tradeSpend.amount || 0}
               onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
               InputProps={{
-                startAdornment: '$'
+                startAdornment: getCurrencySymbol()
               }}
             />
           </Grid>
