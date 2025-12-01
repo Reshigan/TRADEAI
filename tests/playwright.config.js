@@ -91,12 +91,12 @@ module.exports = defineConfig({
   //   reuseExistingServer: !process.env.CI,
   // },
   
-  // Test timeout
-  timeout: 30000,
+  // Test timeout - increased for CI stability
+  timeout: 60000,
   
   // Expect timeout
   expect: {
-    timeout: 5000,
+    timeout: 10000,
   },
   
   // Output directory

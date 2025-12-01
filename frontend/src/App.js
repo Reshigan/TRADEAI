@@ -113,6 +113,10 @@ import VendorForm from './pages/vendors/VendorForm';
 import AdminUserList from './pages/admin/users/UserList';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import TenantManagement from './pages/admin/tenants/TenantManagement';
+
+// Data Import/Export
+import DataImportExport from './pages/data/DataImportExport';
 
 // Activity Page Wrappers
 import ActivityDetailPage from './pages/activities/ActivityDetailPage';
@@ -1520,6 +1524,7 @@ function App() {
         >
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<AdminUserList />} />
+          <Route path="tenants" element={<TenantManagement />} />
           <Route path="users/new" element={<UserForm />} />
           <Route path="users/:id" element={<UserDetail />} />
           <Route path="users/:id/edit" element={<UserForm />} />
@@ -1537,6 +1542,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <ImportCenter />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/data/import-export" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DataImportExport />
               </Layout>
             ) : (
               <Navigate to="/" replace />

@@ -30,7 +30,8 @@ import {
   AIPriceOptimizationWidget,
   AICustomerSegmentationWidget,
   AIAnomalyDetectionWidget,
-  AIModelHealthWidget
+  AIModelHealthWidget,
+  AIFeaturesOverview
 } from '../../components/ai-widgets';
 
 const AIDashboard = () => {
@@ -85,8 +86,15 @@ const AIDashboard = () => {
       {/* Tab Content */}
       {activeTab === 0 && (
         <Grid container spacing={3}>
-          {/* Model Health - Full Width */}
-          <Grid item xs={12}>
+          {/* AI Features Status Overview */}
+          <Grid item xs={12} lg={4}>
+            <Paper sx={{ p: 2, height: '100%' }}>
+              <AIFeaturesOverview />
+            </Paper>
+          </Grid>
+
+          {/* Model Health */}
+          <Grid item xs={12} lg={8}>
             <AIModelHealthWidget />
           </Grid>
 
