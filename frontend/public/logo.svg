@@ -1,41 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <!-- Modern gradient background -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
     </linearGradient>
-    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-    </filter>
   </defs>
   
-  <!-- Main circle background -->
-  <circle cx="100" cy="100" r="90" fill="url(#bgGradient)" filter="url(#shadow)"/>
-  
-  <!-- Trade/exchange arrows forming a cycle -->
-  <g transform="translate(100, 100)">
-    <!-- Upward arrow (growth) -->
-    <path d="M -25,-40 L -25,-10 L -40,-10 L -10,20 L 20,-10 L 5,-10 L 5,-40 Z" 
-          fill="white" opacity="0.9"/>
-    
-    <!-- Circular arrows suggesting continuous trade cycle -->
-    <path d="M 30,0 A 30,30 0 0,1 0,30 L 8,35 M -30,0 A 30,30 0 0,0 0,-30 L -8,-35" 
-          stroke="url(#accentGradient)" stroke-width="6" stroke-linecap="round" 
-          fill="none" opacity="0.95"/>
-    
-    <!-- Central AI dot/node -->
-    <circle cx="0" cy="0" r="8" fill="white"/>
-    <circle cx="0" cy="0" r="5" fill="url(#accentGradient)"/>
+  <!-- Logo Mark - Abstract T with upward trend -->
+  <g transform="translate(8, 8)">
+    <!-- Base rectangle (T stem) -->
+    <rect x="16" y="16" width="12" height="28" rx="2" fill="url(#brandGradient)"/>
+    <!-- Top bar (T crossbar) -->
+    <rect x="4" y="8" width="36" height="10" rx="2" fill="url(#brandGradient)"/>
+    <!-- Upward trend arrow -->
+    <path d="M 28 32 L 38 22 L 38 28 L 44 28 L 44 18 L 34 18 L 34 24 L 28 30" 
+          fill="url(#accentGradient)"/>
+    <!-- AI sparkle dots -->
+    <circle cx="42" cy="12" r="3" fill="url(#accentGradient)"/>
+    <circle cx="48" cy="6" r="2" fill="url(#accentGradient)" opacity="0.7"/>
   </g>
   
-  <!-- Brand text -->
-  <text x="100" y="175" font-family="'Segoe UI', Arial, sans-serif" font-size="24" 
-        font-weight="700" text-anchor="middle" fill="white" letter-spacing="2">
-    TRADEAI
+  <!-- Brand Text -->
+  <text x="72" y="40" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" 
+        font-size="28" font-weight="700" fill="#0F172A" letter-spacing="-0.5">
+    TRADE<tspan fill="url(#brandGradient)">AI</tspan>
   </text>
 </svg>

@@ -1,31 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
     </linearGradient>
-    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
     </linearGradient>
   </defs>
   
-  <!-- Background circle -->
-  <circle cx="32" cy="32" r="30" fill="url(#grad1)"/>
+  <!-- Background rounded square -->
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#brandGradient)"/>
   
-  <!-- Simplified trade arrows -->
-  <g transform="translate(32, 32)">
-    <!-- Up arrow -->
-    <path d="M -8,-15 L -8,-3 L -12,-3 L -3,8 L 6,-3 L 2,-3 L 2,-15 Z" 
-          fill="white" opacity="0.95"/>
-    
-    <!-- Circular flow indicator -->
-    <path d="M 12,0 A 12,12 0 0,1 0,12 L 3,14 M -12,0 A 12,12 0 0,0 0,-12 L -3,-14" 
-          stroke="url(#grad2)" stroke-width="2.5" stroke-linecap="round" 
-          fill="none" opacity="0.95"/>
-    
-    <!-- AI node -->
-    <circle cx="0" cy="0" r="3" fill="white"/>
-    <circle cx="0" cy="0" r="2" fill="url(#grad2)"/>
+  <!-- Logo Mark - Abstract T with upward trend -->
+  <g transform="translate(12, 12)">
+    <!-- Base rectangle (T stem) -->
+    <rect x="14" y="14" width="8" height="20" rx="1.5" fill="white"/>
+    <!-- Top bar (T crossbar) -->
+    <rect x="6" y="6" width="28" height="8" rx="1.5" fill="white"/>
+    <!-- Upward trend arrow -->
+    <path d="M 24 26 L 32 18 L 32 22 L 36 22 L 36 14 L 28 14 L 28 18 L 24 22" 
+          fill="url(#accentGradient)"/>
+    <!-- AI sparkle dot -->
+    <circle cx="34" cy="10" r="2.5" fill="url(#accentGradient)"/>
   </g>
 </svg>

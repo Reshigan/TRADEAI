@@ -1,5 +1,16 @@
 import { createTheme } from '@mui/material/styles';
 
+// Custom status colors for badges and indicators
+const statusColors = {
+  ai: '#667EEA',        // Purple for AI features
+  new: '#10B981',       // Green for new features
+  live: '#EF4444',      // Red for live/real-time
+  beta: '#3B82F6',      // Blue for beta features
+  experimental: '#F59E0B', // Amber for experimental
+  degraded: '#EF4444',  // Red for degraded status
+  production: '#10B981', // Green for production ready
+};
+
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -38,6 +49,7 @@ const theme = createTheme({
     background: {
       default: '#F8FAFC', // Light neutral background
       paper: '#FFFFFF',
+      subtle: '#F1F5F9',  // Subtle background for cards
     },
     text: {
       primary: '#0F172A', // Dark slate
@@ -52,6 +64,8 @@ const theme = createTheme({
       disabled: '#CBD5E1',
       disabledBackground: '#F1F5F9',
     },
+    // Custom status colors
+    status: statusColors,
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -195,13 +209,24 @@ const theme = createTheme({
           padding: '8px 16px',
           fontWeight: 600,
           boxShadow: 'none',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
             boxShadow: 'none',
+            transform: 'translateY(-1px)',
+          },
+          '&:active': {
+            transform: 'translateY(0)',
           },
         },
         contained: {
           '&:hover': {
             boxShadow: '0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06)',
+          },
+        },
+        containedPrimary: {
+          background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%)',
           },
         },
         sizeSmall: {
@@ -219,8 +244,12 @@ const theme = createTheme({
         root: {
           borderRadius: 12,
           boxShadow: '0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px 0 rgba(15, 23, 42, 0.06)',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          border: '1px solid rgba(226, 232, 240, 0.8)',
           '&:hover': {
-            boxShadow: '0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06)',
+            boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05)',
+            transform: 'translateY(-2px)',
+            borderColor: 'rgba(59, 130, 246, 0.2)',
           },
         },
       },
