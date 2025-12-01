@@ -438,10 +438,7 @@ class ProductionSeeder {
           barcode: `6${String(randomBetween(100000000000, 999999999999))}`,
           sapMaterialId: `MAT${String(productIndex).padStart(8, '0')}`,
           productType: 'own_brand',
-          category: {
-            primary: category,
-            secondary: [item.brand]
-          },
+          category: category,
           brand: item.brand,
           description: `Premium ${item.name.toLowerCase()} from ${item.brand}`,
           hierarchy: {
