@@ -13,7 +13,9 @@ import {
   IconButton,
   Avatar,
   Divider,
-  Badge
+  Badge,
+  Fade,
+  alpha
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -26,7 +28,9 @@ import {
   Storage as DataIcon,
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  KeyboardArrowDown as ArrowDownIcon,
+  AutoAwesome as AIIcon
 } from '@mui/icons-material';
 
 const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
@@ -326,13 +330,18 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           sx={{
             color: 'text.primary',
             mx: 0.5,
+            px: 2,
+            py: 1,
             fontWeight: 600,
+            borderRadius: 2,
             display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
-            gap: 0.5,
+            gap: 0.75,
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             '&:hover': { 
-              backgroundColor: 'action.hover',
-              color: 'primary.main'
+              backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
+              color: 'primary.main',
+              transform: 'translateY(-1px)',
             }
           }}
         >
@@ -345,50 +354,90 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
             <Button
               onMouseEnter={(e) => handleMenuOpen(e, menuItem.key)}
               sx={{
-                color: 'text.primary',
+                color: Boolean(anchorEl[menuItem.key]) ? 'primary.main' : 'text.primary',
                 mx: 0.5,
+                px: 2,
+                py: 1,
                 fontWeight: 600,
+                borderRadius: 2,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 0.5,
+                gap: 0.75,
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                backgroundColor: Boolean(anchorEl[menuItem.key]) 
+                  ? (theme) => alpha(theme.palette.primary.main, 0.08)
+                  : 'transparent',
                 '&:hover': { 
-                  backgroundColor: 'action.hover',
-                  color: 'primary.main'
+                  backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                  color: 'primary.main',
+                  transform: 'translateY(-1px)',
                 }
               }}
             >
               {menuItem.icon}
               {menuItem.label}
+              <ArrowDownIcon 
+                fontSize="small" 
+                sx={{ 
+                  ml: -0.5,
+                  transition: 'transform 0.2s ease',
+                  transform: Boolean(anchorEl[menuItem.key]) ? 'rotate(180deg)' : 'rotate(0deg)',
+                  opacity: 0.7
+                }} 
+              />
             </Button>
             <Menu
               anchorEl={anchorEl[menuItem.key]}
               open={Boolean(anchorEl[menuItem.key])}
               onClose={() => handleMenuClose(menuItem.key)}
+              TransitionComponent={Fade}
+              transitionDuration={200}
               MenuListProps={{
                 onMouseLeave: () => handleMenuClose(menuItem.key),
               }}
               PaperProps={{
+                elevation: 0,
                 sx: {
-                  mt: 1,
-                  minWidth: 600,
-                  maxWidth: 800,
-                  borderRadius: 2,
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+                  mt: 1.5,
+                  minWidth: 580,
+                  maxWidth: 720,
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: '0 20px 40px -12px rgba(15, 23, 42, 0.15), 0 8px 16px -8px rgba(15, 23, 42, 0.1)',
+                  overflow: 'visible',
+                  '&::before': {
+                    content: '""',
+                    display: 'block',
+                    position: 'absolute',
+                    top: -6,
+                    left: 24,
+                    width: 12,
+                    height: 12,
+                    bgcolor: 'background.paper',
+                    transform: 'rotate(45deg)',
+                    borderLeft: '1px solid',
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                  }
                 }
               }}
             >
-              <Box sx={{ p: 2 }}>
+              <Box sx={{ p: 2.5 }}>
                 <Grid container spacing={3}>
                   {menuItem.sections.map((section, idx) => (
                     <Grid item xs={12} md={6} key={idx}>
                       <Typography
-                        variant="subtitle2"
+                        variant="overline"
                         sx={{
                           fontWeight: 700,
-                          color: 'primary.main',
-                          mb: 1,
-                          textTransform: 'uppercase',
-                          fontSize: '0.75rem'
+                          color: 'text.secondary',
+                          mb: 1.5,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          fontSize: '0.7rem',
+                          letterSpacing: '0.08em'
                         }}
                       >
                         {section.title}
@@ -400,33 +449,62 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
                           to={item.path}
                           onClick={() => handleMenuClose(menuItem.key)}
                           sx={{
-                            borderRadius: 1,
+                            borderRadius: 2,
                             mb: 0.5,
-                            '&:hover': { backgroundColor: 'rgba(102, 126, 234, 0.08)' }
+                            py: 1.25,
+                            px: 1.5,
+                            transition: 'all 0.15s ease',
+                            '&:hover': { 
+                              backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.06),
+                              transform: 'translateX(4px)',
+                              '& .menu-item-text': {
+                                color: 'primary.main',
+                              }
+                            }
                           }}
                         >
                           <Box sx={{ width: '100%' }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              <Typography 
+                                className="menu-item-text"
+                                variant="body2" 
+                                sx={{ 
+                                  fontWeight: 600,
+                                  transition: 'color 0.15s ease'
+                                }}
+                              >
                                 {item.text}
                               </Typography>
                               {item.badge && (
                                 <Chip
                                   label={item.badge}
                                   size="small"
+                                  icon={item.badge === 'AI' ? <AIIcon sx={{ fontSize: '12px !important', color: 'white !important' }} /> : undefined}
                                   sx={{
-                                    height: 18,
+                                    height: 20,
                                     fontSize: '0.65rem',
                                     fontWeight: 700,
+                                    borderRadius: 1,
                                     backgroundColor: item.badge === 'AI' ? '#667eea' : 
                                                      item.badge === 'NEW' ? '#10b981' :
                                                      item.badge === 'LIVE' ? '#ef4444' : '#f59e0b',
-                                    color: 'white'
+                                    color: 'white',
+                                    '& .MuiChip-icon': {
+                                      marginLeft: '4px',
+                                      marginRight: '-2px'
+                                    }
                                   }}
                                 />
                               )}
                             </Box>
-                            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                            <Typography 
+                              variant="caption" 
+                              sx={{ 
+                                color: 'text.secondary', 
+                                fontSize: '0.75rem',
+                                lineHeight: 1.4
+                              }}
+                            >
                               {item.description}
                             </Typography>
                           </Box>

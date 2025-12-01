@@ -1,49 +1,92 @@
 import React from 'react';
-import {Box, Typography, Breadcrumbs, Link, Divider} from '@mui/material';
+import { Box, Typography, Breadcrumbs, Link, Chip, alpha } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
+import { 
+  NavigateNext as NavigateNextIcon,
+  Home as HomeIcon 
+} from '@mui/icons-material';
 
-/**
- * PageHeader component for consistent page headers across the application
- * 
- * @param {Object} props - Component props
- * @param {string} props.title - Page title
- * @param {Array} props.breadcrumbs - Array of breadcrumb objects with text and link properties
- * @param {React.ReactNode} props.action - Action button or component to display in the header
- * @param {string} props.subtitle - Optional subtitle text
- */
-const PageHeader = ({ title, breadcrumbs = [], action, subtitle }) => {
+const PageHeader = ({ 
+  title, 
+  breadcrumbs = [], 
+  action, 
+  subtitle,
+  badge,
+  badgeColor = 'primary',
+  icon,
+  variant = 'default'
+}) => {
+  const isCompact = variant === 'compact';
+  
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ mb: isCompact ? 3 : 4 }}>
       {breadcrumbs.length > 0 && (
         <Breadcrumbs 
-          separator={<NavigateNextIcon fontSize="small" />} 
+          separator={
+            <NavigateNextIcon 
+              fontSize="small" 
+              sx={{ color: 'text.disabled', fontSize: '1rem' }} 
+            />
+          } 
           aria-label="breadcrumb"
-          sx={{ mb: 2 }}
+          sx={{ 
+            mb: 2,
+            '& .MuiBreadcrumbs-li': {
+              display: 'flex',
+              alignItems: 'center',
+            }
+          }}
         >
           <Link 
             component={RouterLink} 
             to="/dashboard" 
-            color="inherit"
-            underline="hover"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              color: 'text.secondary',
+              textDecoration: 'none',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              transition: 'color 0.15s ease',
+              '&:hover': {
+                color: 'primary.main',
+              }
+            }}
           >
-            Dashboard
+            <HomeIcon sx={{ fontSize: '1rem' }} />
+            Home
           </Link>
           
           {breadcrumbs.map((breadcrumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
             
             return isLast ? (
-              <Typography color="text.primary" key={index}>
+              <Typography 
+                key={index}
+                sx={{ 
+                  color: 'text.primary',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                }}
+              >
                 {breadcrumb.text}
               </Typography>
             ) : (
               <Link
                 component={RouterLink}
                 to={breadcrumb.link}
-                color="inherit"
-                underline="hover"
                 key={index}
+                sx={{
+                  color: 'text.secondary',
+                  textDecoration: 'none',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  transition: 'color 0.15s ease',
+                  '&:hover': {
+                    color: 'primary.main',
+                  }
+                }}
               >
                 {breadcrumb.text}
               </Link>
@@ -55,29 +98,77 @@ const PageHeader = ({ title, breadcrumbs = [], action, subtitle }) => {
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
-        alignItems: 'center',
-        mb: 1
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        gap: 2,
       }}>
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom={!!subtitle}>
-            {title}
-          </Typography>
-          
-          {subtitle && (
-            <Typography variant="subtitle1" color="text.secondary">
-              {subtitle}
-            </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          {icon && (
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                color: 'primary.main',
+                flexShrink: 0,
+              }}
+            >
+              {icon}
+            </Box>
           )}
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: subtitle ? 0.5 : 0 }}>
+              <Typography 
+                variant={isCompact ? 'h5' : 'h4'} 
+                component="h1" 
+                sx={{ 
+                  fontWeight: 700,
+                  color: 'text.primary',
+                  lineHeight: 1.2,
+                }}
+              >
+                {title}
+              </Typography>
+              {badge && (
+                <Chip
+                  label={badge}
+                  size="small"
+                  color={badgeColor}
+                  sx={{
+                    height: 24,
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                  }}
+                />
+              )}
+            </Box>
+            
+            {subtitle && (
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: 'text.secondary',
+                  mt: 0.5,
+                  maxWidth: 600,
+                  lineHeight: 1.5,
+                }}
+              >
+                {subtitle}
+              </Typography>
+            )}
+          </Box>
         </Box>
         
         {action && (
-          <Box>
+          <Box sx={{ flexShrink: 0 }}>
             {action}
           </Box>
         )}
       </Box>
-      
-      <Divider sx={{ mt: 2, mb: 3 }} />
     </Box>
   );
 };

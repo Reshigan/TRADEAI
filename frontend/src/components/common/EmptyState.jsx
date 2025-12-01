@@ -1,42 +1,87 @@
 import React from 'react';
+import { Box, Typography, Button, Paper } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 
-const EmptyState = ({ icon = '📭', title = 'No data found', message, actionLabel, onAction }) => {
+const EmptyState = ({ 
+  icon = '📭', 
+  title = 'No data found', 
+  message, 
+  actionLabel, 
+  onAction,
+  actionIcon = <AddIcon />,
+  variant = 'default'
+}) => {
+  const isCompact = variant === 'compact';
+  
   return (
-    <div style={{
-      textAlign: 'center',
-      padding: '60px 20px',
-      color: '#666'
-    }}>
-      <div style={{ fontSize: '64px', marginBottom: '20px' }}>{icon}</div>
-      <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '10px', color: '#333' }}>
+    <Paper
+      elevation={0}
+      sx={{
+        textAlign: 'center',
+        py: isCompact ? 4 : 8,
+        px: 3,
+        backgroundColor: 'transparent',
+        border: '2px dashed',
+        borderColor: 'divider',
+        borderRadius: 3,
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          borderColor: 'primary.light',
+          backgroundColor: 'rgba(59, 130, 246, 0.02)',
+        }
+      }}
+    >
+      <Box
+        sx={{
+          fontSize: isCompact ? '48px' : '64px',
+          mb: 2,
+          filter: 'grayscale(20%)',
+          opacity: 0.9,
+        }}
+      >
+        {icon}
+      </Box>
+      <Typography 
+        variant={isCompact ? 'h6' : 'h5'}
+        component="h3" 
+        sx={{ 
+          fontWeight: 600, 
+          mb: 1,
+          color: 'text.primary'
+        }}
+      >
         {title}
-      </h3>
+      </Typography>
       {message && (
-        <p style={{ fontSize: '14px', marginBottom: '30px', maxWidth: '400px', margin: '0 auto 30px' }}>
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{ 
+            mb: 3, 
+            maxWidth: '400px', 
+            mx: 'auto',
+            lineHeight: 1.6
+          }}
+        >
           {message}
-        </p>
+        </Typography>
       )}
       {onAction && actionLabel && (
-        <button
+        <Button
+          variant="contained"
+          color="primary"
           onClick={onAction}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '600',
-            transition: 'background 0.2s'
+          startIcon={actionIcon}
+          sx={{
+            mt: 1,
+            px: 3,
+            py: 1,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
         >
           {actionLabel}
-        </button>
+        </Button>
       )}
-    </div>
+    </Paper>
   );
 };
 
