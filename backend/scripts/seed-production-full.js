@@ -243,14 +243,23 @@ class ProductionSeeder {
       isActive: true
     });
 
-    // Create Tenant
+    // Create Tenant - use company._id as tenant._id for consistency
     try {
       this.tenant = await Tenant.create({
+        _id: this.company._id,  // Use same ID as company for tenant isolation
         name: CONFIG.company.name,
-        code: CONFIG.company.code,
+        slug: CONFIG.company.code.toLowerCase().replace(/_/g, '-'),  // Required field
         domain: CONFIG.company.domain,
-        company: this.company._id,
-        status: 'active',
+        companyInfo: {
+          legalName: CONFIG.company.name,
+          industry: 'FMCG',
+          companySize: 'enterprise'
+        },
+        subscription: {
+          plan: 'enterprise',
+          status: 'active',
+          startDate: new Date('2024-01-01')
+        },
         settings: {
           currency: CONFIG.company.currency,
           timezone: CONFIG.company.timezone,
@@ -263,8 +272,10 @@ class ProductionSeeder {
           auditTrail: true
         }
       });
+      console.log(`Tenant created: ${this.tenant.name} (ID: ${this.tenant._id})`);
     } catch (err) {
-      console.log('Tenant creation skipped (model may not support all fields)');
+      console.log('Tenant creation error:', err.message);
+      // Fallback: use company ID as tenant ID
       this.tenant = { _id: this.company._id };
     }
 
@@ -275,13 +286,12 @@ class ProductionSeeder {
     console.log('\nCreating users...');
     
     for (const profile of USER_PROFILES) {
-      const hashedPassword = await bcrypt.hash(CONFIG.defaultPassword, 10);
-      
+      // Pass plain password - User model's pre-save hook will hash it
       const user = await User.create({
         ...profile,
         companyId: this.company._id,
         tenantId: this.tenant._id,
-        password: hashedPassword,
+        password: CONFIG.defaultPassword,
         isActive: true,
         lastLogin: addDays(new Date(), -randomBetween(0, 30)),
         preferences: {
