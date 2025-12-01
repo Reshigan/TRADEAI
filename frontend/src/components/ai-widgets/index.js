@@ -13,3 +13,12 @@ export { default as AIPriceOptimizationWidget } from './AIPriceOptimizationWidge
 export { default as AICustomerSegmentationWidget } from './AICustomerSegmentationWidget';
 export { default as AIAnomalyDetectionWidget } from './AIAnomalyDetectionWidget';
 export { default as AIModelHealthWidget } from './AIModelHealthWidget';
+
+// AI Feature Status Components
+export { 
+  default as AIFeatureStatus,
+  AIStatusChip,
+  AIFeatureBanner,
+  AIFeaturesOverview,
+  AI_FEATURES
+} from './AIFeatureStatus';
