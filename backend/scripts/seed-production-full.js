@@ -331,7 +331,7 @@ class ProductionSeeder {
         sapCustomerId: `SAP${String(i + 1).padStart(6, '0')}`,
         name: retailer.name,
         code: retailer.code,
-        customerType: i < 5 ? 'chain' : (i < 7 ? 'retailer' : 'wholesaler'),
+        customerType: i < 5 ? 'chain' : (i < 7 ? 'independent' : 'wholesaler'),
         channel: i < 5 ? 'modern_trade' : (i < 7 ? 'traditional_trade' : 'b2b'),
         tier: retailer.tier,
         status: 'active',
@@ -556,7 +556,7 @@ class ProductionSeeder {
       { name: 'Spring Clean', type: 'seasonal', months: [9, 10] },
       { name: 'Holiday Season', type: 'seasonal', months: [11, 12] },
       { name: 'New Product Launch', type: 'product_launch', months: [] },
-      { name: 'Brand Awareness', type: 'brand', months: [] }
+      { name: 'Brand Awareness', type: 'brand_awareness', months: [] }
     ];
 
     for (let year = 2024; year <= 2025; year++) {
@@ -576,9 +576,17 @@ class ProductionSeeder {
           status: endDate < new Date() ? 'completed' : (startDate <= new Date() ? 'active' : 'approved'),
           period: { startDate, endDate },
           budget: {
-            allocated: randomBetween(1000000, 5000000),
-            spent: endDate < new Date() ? randomBetween(800000, 4500000) : 0,
-            currency: CONFIG.company.currency
+            total: randomBetween(1000000, 5000000),
+            allocated: randomBetween(800000, 4000000),
+            spent: endDate < new Date() ? randomBetween(600000, 3500000) : 0,
+            breakdown: {
+              advertising: randomBetween(200000, 1000000),
+              inStore: randomBetween(200000, 800000),
+              digital: randomBetween(100000, 500000),
+              trade: randomBetween(200000, 800000),
+              production: randomBetween(50000, 200000),
+              other: randomBetween(50000, 200000)
+            }
           },
           targets: {
             revenueTarget: randomBetween(10000000, 50000000),
@@ -708,6 +716,7 @@ class ProductionSeeder {
           tenantId: this.tenant._id,
           spendId: generateId('TS', this.tradeSpends.length + 1),
           spendType: spendType,
+          activityType: randomElement(['trade_marketing', 'key_account']),
           category: randomElement(categories),
           amount: {
             requested: requestedAmount,
@@ -761,6 +770,7 @@ class ProductionSeeder {
         const tradingTerm = await TradingTerm.create({
           company: this.company._id,
           tenantId: this.tenant._id,
+          termId: generateId('TERM', this.tradingTerms.length + 1),
           name: `${termType.replace('_', ' ')} - ${customer.name}`,
           code: `TT-${customer.code}-${String(i + 1).padStart(3, '0')}`,
           description: `${termType.replace('_', ' ')} agreement for ${customer.name}`,
@@ -896,6 +906,7 @@ class ProductionSeeder {
 
         const transaction = await Transaction.create({
           tenantId: this.tenant._id,
+          transactionNumber: generateId('TXN', this.transactions.length + 1),
           customerId: customer._id,
           transactionType,
           status: randomElement(['completed', 'approved', 'processing']),
