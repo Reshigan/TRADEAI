@@ -173,7 +173,7 @@ const CustomerListEnhanced = () => {
           <Typography variant="body2" fontWeight="600">
             {value}
           </Typography>
-          {row.totalRevenue > 100000 && (
+          {(row.businessInfo?.annualRevenue || row.totalRevenue || 0) > 100000 && (
             <StarIcon sx={{ fontSize: 16, color: 'warning.main' }} />
           )}
         </Box>
@@ -185,14 +185,14 @@ const CustomerListEnhanced = () => {
       sortable: true
     },
     {
-      id: 'type',
+      id: 'customerType',
       label: 'Type',
       sortable: true,
-      render: (value) => (
+      render: (value, row) => (
         <Chip 
-          label={value?.toUpperCase() || 'N/A'} 
+          label={(value || row.type || 'N/A').toUpperCase()} 
           size="small"
-          color={value === 'retail' ? 'primary' : 'secondary'}
+          color={value === 'chain' || value === 'retailer' ? 'primary' : 'secondary'}
           variant="outlined"
         />
       )
@@ -210,24 +210,24 @@ const CustomerListEnhanced = () => {
       )
     },
     {
-      id: 'totalRevenue',
+      id: 'businessInfo',
       label: 'Revenue',
       sortable: true,
-      render: (value) => (
+      render: (value, row) => (
         <Typography variant="body2" fontWeight="600">
-          ${(value || 0).toLocaleString()}
+          R{((value?.annualRevenue || row.totalRevenue || 0) / 1000000).toFixed(1)}M
         </Typography>
       )
     },
     {
-      id: 'contact',
+      id: 'contacts',
       label: 'Contact',
-      render: (value) => value?.name || 'N/A'
+      render: (value) => value?.[0]?.name || 'N/A'
     },
     {
-      id: 'address',
+      id: 'addresses',
       label: 'City',
-      render: (value) => value?.city || 'N/A'
+      render: (value) => value?.[0]?.city || 'N/A'
     }
   ];
 

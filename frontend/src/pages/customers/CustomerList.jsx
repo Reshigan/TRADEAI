@@ -179,7 +179,7 @@ const CustomerList = () => {
                     <BusinessIcon sx={{ color: 'primary.main', fontSize: 20 }} />
                   </Box>
                   <Typography variant="h6" fontWeight={700} color="text.primary">
-                    {customer.customerName}
+                    {customer.name}
                   </Typography>
                 </Box>
 
@@ -189,7 +189,7 @@ const CustomerList = () => {
                       Code
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {customer.customerCode}
+                      {customer.code}
                     </Typography>
                   </Box>
 
@@ -198,7 +198,7 @@ const CustomerList = () => {
                       Type
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {customer.customerType}
+                      {customer.customerType || customer.type || 'N/A'}
                     </Typography>
                   </Box>
 
@@ -207,7 +207,7 @@ const CustomerList = () => {
                       Location
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {customer.location?.city}, {customer.location?.state}
+                      {customer.addresses?.[0]?.city || 'N/A'}, {customer.addresses?.[0]?.state || ''}
                     </Typography>
                   </Box>
 
