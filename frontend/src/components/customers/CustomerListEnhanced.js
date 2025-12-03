@@ -171,9 +171,9 @@ const CustomerListEnhanced = () => {
       render: (value, row) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography variant="body2" fontWeight="600">
-            {value}
+            {value || row.customerName}
           </Typography>
-          {row.totalRevenue > 100000 && (
+          {(row.totalRevenue || row.performance?.lastYearSales || 0) > 100000 && (
             <StarIcon sx={{ fontSize: 16, color: 'warning.main' }} />
           )}
         </Box>
@@ -182,20 +182,24 @@ const CustomerListEnhanced = () => {
     {
       id: 'code',
       label: 'Code',
-      sortable: true
+      sortable: true,
+      render: (value, row) => value || row.customerCode || 'N/A'
     },
     {
-      id: 'type',
+      id: 'customerType',
       label: 'Type',
       sortable: true,
-      render: (value) => (
-        <Chip 
-          label={value?.toUpperCase() || 'N/A'} 
-          size="small"
-          color={value === 'retail' ? 'primary' : 'secondary'}
-          variant="outlined"
-        />
-      )
+      render: (value, row) => {
+        const type = value || row.type;
+        return (
+          <Chip 
+            label={type?.toUpperCase() || 'N/A'} 
+            size="small"
+            color={type === 'retailer' || type === 'retail' ? 'primary' : 'secondary'}
+            variant="outlined"
+          />
+        );
+      }
     },
     {
       id: 'status',
@@ -213,21 +217,30 @@ const CustomerListEnhanced = () => {
       id: 'totalRevenue',
       label: 'Revenue',
       sortable: true,
-      render: (value) => (
-        <Typography variant="body2" fontWeight="600">
-          ${(value || 0).toLocaleString()}
-        </Typography>
-      )
+      render: (value, row) => {
+        const revenue = value || row.performance?.lastYearSales || row.businessInfo?.annualRevenue || 0;
+        return (
+          <Typography variant="body2" fontWeight="600">
+            R{revenue.toLocaleString()}
+          </Typography>
+        );
+      }
     },
     {
-      id: 'contact',
+      id: 'contacts',
       label: 'Contact',
-      render: (value) => value?.name || 'N/A'
+      render: (value, row) => {
+        const contact = value?.[0] || row.contact;
+        return contact?.name || 'N/A';
+      }
     },
     {
-      id: 'address',
+      id: 'addresses',
       label: 'City',
-      render: (value) => value?.city || 'N/A'
+      render: (value, row) => {
+        const address = value?.[0] || row.address;
+        return address?.city || 'N/A';
+      }
     }
   ];
 
