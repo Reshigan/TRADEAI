@@ -787,7 +787,7 @@ class ProductionSeeder {
           description: `${termType.replace('_', ' ')} agreement for ${customer.name}`,
           termType: termType,
           applicability: {
-            customers: [{ customer: customer._id, customerTier: customer.tier, customerType: customer.customerType }],
+            customers: [{ customer: customer._id, customerTier: customer.tier, customerType: 'chain' }], // Use valid enum value
             products: this.products.slice(0, randomBetween(5, 15)).map(p => ({ product: p._id })),
             channels: [customer.channel],
             regions: REGIONS.slice(0, randomBetween(3, 9)),
