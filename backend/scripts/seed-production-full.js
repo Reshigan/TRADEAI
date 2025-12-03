@@ -243,28 +243,77 @@ class ProductionSeeder {
       isActive: true
     });
 
-    // Create Tenant
+    // Create Tenant with same _id as Company for consistency
     try {
       this.tenant = await Tenant.create({
+        _id: this.company._id, // Use same ID as company for tenant isolation
         name: CONFIG.company.name,
-        code: CONFIG.company.code,
+        slug: CONFIG.company.code.toLowerCase().replace(/_/g, '-'), // Required field
         domain: CONFIG.company.domain,
-        company: this.company._id,
-        status: 'active',
+        companyInfo: {
+          legalName: CONFIG.company.name,
+          industry: 'FMCG',
+          companySize: 'large'
+        },
+        contactInfo: {
+          primaryContact: {
+            name: 'Admin User',
+            email: 'admin@modelex.co.za',
+            phone: '+27 11 123 4567'
+          },
+          address: {
+            street: '123 Sandton Drive',
+            city: 'Sandton',
+            state: 'Gauteng',
+            country: 'South Africa',
+            postalCode: '2196'
+          }
+        },
+        subscription: {
+          plan: 'enterprise',
+          status: 'active',
+          startDate: new Date('2024-01-01'),
+          trialEndDate: new Date('2025-12-31')
+        },
+        limits: {
+          maxUsers: 100,
+          maxStorageGB: 100,
+          maxCustomers: 5000,
+          maxProducts: 10000,
+          maxPromotions: 1000,
+          maxAPICallsPerMonth: 1000000
+        },
         settings: {
-          currency: CONFIG.company.currency,
           timezone: CONFIG.company.timezone,
-          dateFormat: 'DD/MM/YYYY'
+          currency: CONFIG.company.currency,
+          dateFormat: 'DD/MM/YYYY',
+          language: 'en'
         },
         features: {
-          aiPredictions: true,
+          multiCurrency: true,
           advancedAnalytics: true,
-          multiCurrency: false,
-          auditTrail: true
+          aiPredictions: true,
+          customReporting: true,
+          apiAccess: true,
+          sapIntegration: true,
+          excelImportExport: true,
+          emailNotifications: true,
+          workflowApprovals: true,
+          auditLogging: true,
+          dataBackup: true,
+          ssoIntegration: true
+        },
+        isActive: true,
+        isVerified: true,
+        metadata: {
+          source: 'admin_created',
+          notes: 'Production seed data'
         }
       });
+      console.log(`Tenant created: ${this.tenant.name} (ID: ${this.tenant._id})`);
     } catch (err) {
-      console.log('Tenant creation skipped (model may not support all fields)');
+      console.log('Tenant creation error:', err.message);
+      // Fallback: use company ID as tenant ID
       this.tenant = { _id: this.company._id };
     }
 
