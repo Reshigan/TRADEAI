@@ -20,7 +20,8 @@ import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { usePageVariants } from '../../hooks/usePageVariants';
-import ProcessShell from '../../components/ProcessShell';
+// ProcessShell removed temporarily due to React error #31 - needs investigation
+// import ProcessShell from '../../components/ProcessShell';
 
 import PromotionOverview from './tabs/PromotionOverview';
 import PromotionProducts from './tabs/PromotionProducts';
@@ -126,9 +127,8 @@ const PromotionDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="promotion" entityId={id} entity={promotion}>
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        {/* Modern Header */}
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {/* Modern Header */}
         <Box sx={{ mb: 4 }}>
           <Button
             startIcon={<BackIcon />}
@@ -236,8 +236,7 @@ const PromotionDetailWithTabs = () => {
           {activeTab === 'performance' && <PromotionPerformance promotionId={id} promotion={promotion} />}
           {activeTab === 'history' && <PromotionHistory promotionId={id} promotion={promotion} />}
         </Box>
-      </Container>
-    </ProcessShell>
+    </Container>
   );
 };
 
