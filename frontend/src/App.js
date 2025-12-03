@@ -118,6 +118,11 @@ import TenantManagement from './pages/admin/tenants/TenantManagement';
 // Data Import/Export
 import DataImportExport from './pages/data/DataImportExport';
 
+// Company Admin Pages
+import AzureADPage from './pages/company-admin/AzureADPage';
+import ERPSettingsPage from './pages/company-admin/ERPSettingsPage';
+import CompanyAdminUsersPage from './pages/company-admin/UsersPage';
+
 // Activity Page Wrappers
 import ActivityDetailPage from './pages/activities/ActivityDetailPage';
 import ActivityFormPage from './pages/activities/ActivityFormPage';
@@ -1535,6 +1540,10 @@ function App() {
           <Route path="hierarchy" element={<HierarchyManager />} />
           <Route path="security" element={<SettingsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          {/* Company Admin Routes */}
+          <Route path="azure-ad" element={<AzureADPage />} />
+          <Route path="erp-settings" element={<ERPSettingsPage />} />
+          <Route path="company-users" element={<CompanyAdminUsersPage />} />
         </Route>
         <Route 
           path="/import-center" 

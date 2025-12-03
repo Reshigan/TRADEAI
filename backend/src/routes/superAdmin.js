@@ -5,7 +5,7 @@ const { authenticateToken, _authorize } = require('../middleware/auth');
 
 // Middleware to check super admin role
 const requireSuperAdmin = (req, res, next) => {
-  if (req.user.role !== 'superadmin') {
+  if (req.user.role !== 'super_admin') {
     return res.status(403).json({
       success: false,
       error: 'Access denied. Super admin privileges required.'
