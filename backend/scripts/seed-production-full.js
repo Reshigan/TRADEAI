@@ -403,24 +403,13 @@ class ProductionSeeder {
           postalCode: String(randomBetween(1000, 9999)),
           country: 'South Africa'
         }],
-        businessInfo: {
-          industry: 'Retail',
-          annualRevenue: retailer.annualVolume,
-          employeeCount: retailer.stores * 25,
-          storeCount: retailer.stores,
-          regions: retailer.tier === 'platinum' ? ['National'] : REGIONS.slice(0, 3)
-        },
-        tradingTerms: {
-          paymentTerms: randomElement(['30 days', '45 days', '60 days']),
-          creditLimit: retailer.annualVolume * 0.1,
-          discount: randomFloat(2, 8),
-          rebate: randomFloat(1, 5)
-        },
+        creditLimit: retailer.annualVolume * 0.1,
         performance: {
-          lastOrderDate: addDays(new Date(), -randomBetween(1, 30)),
-          totalOrders: randomBetween(100, 500),
-          averageOrderValue: retailer.annualVolume / 365,
-          lifetimeValue: retailer.annualVolume * 2
+          lastYearSales: retailer.annualVolume,
+          currentYearTarget: retailer.annualVolume * 1.1,
+          currentYearActual: retailer.annualVolume * randomFloat(0.8, 1.2),
+          growthRate: randomFloat(-5, 15),
+          marketShare: randomFloat(5, 25)
         },
         assignedUsers: [assignedKam._id],
         createdBy: this.users[0]._id
