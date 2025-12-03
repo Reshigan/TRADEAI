@@ -94,8 +94,21 @@ const ERPSettingsPage = () => {
       const response = await companyAdminApi.getERPSettings();
       setSettings(response.data);
     } catch (err) {
-      setError('Failed to load ERP settings');
-      console.error(err);
+      // Don't show error for "not configured" state - this is expected for new setups
+      const errorMessage = err.message || err.error || '';
+      if (errorMessage.includes('not found') || errorMessage.includes('not configured') || err.status === 404) {
+        // Set default settings for fresh setup
+        setSettings({
+          sap: { enabled: false, connectionStatus: 'not_configured' },
+          erp: { enabled: false, connectionStatus: 'not_configured' },
+          masterData: { syncEnabled: false },
+          salesData: { syncEnabled: false }
+        });
+        console.log('ERP settings not configured yet - showing setup form');
+      } else {
+        setError('Failed to load ERP settings');
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }

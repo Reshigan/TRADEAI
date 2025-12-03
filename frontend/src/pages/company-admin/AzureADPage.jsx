@@ -50,7 +50,14 @@ export default function AzureADPage() {
         setConfig(prev => ({ ...prev, ...response.data }));
       }
     } catch (err) {
-      setError(err.message || 'Failed to load Azure AD configuration');
+      // Don't show error for "not configured" state - this is expected for new setups
+      const errorMessage = err.message || err.error || '';
+      if (errorMessage.includes('not found') || errorMessage.includes('not configured') || err.status === 404) {
+        // Keep default config state - this is a fresh setup
+        console.log('Azure AD not configured yet - showing setup form');
+      } else {
+        setError(err.message || 'Failed to load Azure AD configuration');
+      }
     } finally {
       setLoading(false);
     }
