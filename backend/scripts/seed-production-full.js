@@ -501,15 +501,34 @@ class ProductionSeeder {
         const totalAmount = CONFIG.annualBudget * cat.percentage;
         const monthlyAmount = totalAmount / 12;
 
+        // Calculate allocated and spent for frontend display
+        const allocatedAmount = totalAmount * 0.85; // 85% allocated
+        const spentAmount = year === 2024 ? totalAmount * 0.70 : totalAmount * 0.15; // 70% spent for 2024, 15% for 2025
+        
         const budget = await Budget.create({
           company: this.company._id,
           tenantId: this.tenant._id,
           name: `${cat.name} Budget ${year}`,
+          budgetName: `${cat.name} Budget ${year}`, // For frontend compatibility
           code: `BUD-${year}-${cat.name.replace(/\s+/g, '-').toUpperCase()}`,
           year: year,
           budgetType: 'budget',
           status: year === 2024 ? 'approved' : 'approved',
-          scope: { level: 'company' },
+          department: cat.name, // For frontend display
+          // Simple budget tracking fields for frontend
+          totalBudget: totalAmount,
+          allocated: allocatedAmount,
+          spent: spentAmount,
+          remaining: allocatedAmount - spentAmount,
+          // Date range for frontend
+          startDate: new Date(`${year}-01-01`),
+          endDate: new Date(`${year}-12-31`),
+          // Customer assignment (assign to first customer for display)
+          customer: this.customers.length > 0 ? this.customers[0]._id : null,
+          scope: { 
+            level: 'company',
+            customers: this.customers.slice(0, 2).map(c => c._id) // Assign to first 2 customers
+          },
           budgetLines: Array.from({ length: 12 }, (_, i) => ({
             month: i + 1,
             sales: {
