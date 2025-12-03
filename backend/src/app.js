@@ -84,6 +84,7 @@ const alertsRoutes = require('./routes/alerts');
 const performanceAnalyticsRoutes = require('./routes/performanceAnalytics');
 const bulkOperationsRoutes = require('./routes/bulkOperations');
 const predictiveAnalyticsRoutes = require('./routes/predictiveAnalytics');
+const companyAdminRoutes = require('./routes/companyAdmin');
 
 // Create Express app
 const app = express();
@@ -355,6 +356,9 @@ app.use('/api/alerts', authenticateToken, alertsRoutes);
 app.use('/api/performance-analytics', authenticateToken, performanceAnalyticsRoutes);
 app.use('/api/bulk-operations', authenticateToken, bulkOperationsRoutes);
 app.use('/api/predictive-analytics', authenticateToken, predictiveAnalyticsRoutes);
+
+// Company Admin routes (requires authentication - route handles role check internally)
+app.use('/api/company-admin', companyAdminRoutes);
 
 // ⚠️ DISABLED: Mock/placeholder routes - Use real implementations instead
 // app.use('/api', authenticateToken, missingRoutesFixRoutes);
