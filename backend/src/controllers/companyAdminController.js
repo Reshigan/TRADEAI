@@ -1250,35 +1250,86 @@ exports.syncSalesData = asyncHandler(async (req, res) => {
 
     // Process sales records
     const SalesHistory = require('../models/SalesHistory');
+    const Customer = require('../models/Customer');
+    const Product = require('../models/Product');
     
     for (const record of (fetchResult.records || [])) {
       try {
         stats.recordsProcessed++;
         
+        // Generate a unique transactionId if not provided
+        const transactionId = record.transactionId || record.externalId || `ERP-${Date.now()}-${stats.recordsProcessed}`;
+        
+        // Find existing record by company and transactionId (the correct schema fields)
         const existing = await SalesHistory.findOne({ 
-          companyId, 
-          externalId: record.externalId 
+          company: companyId, 
+          transactionId: transactionId 
         });
         
-        if (existing) {
-          await SalesHistory.findByIdAndUpdate(existing._id, {
-            ...record,
-            lastSyncedAt: new Date(),
-            updatedBy: req.user._id
+        // Look up customer and product by external ID or name if provided
+        let customerId = record.customer;
+        let productId = record.product;
+        
+        if (record.customerExternalId && !customerId) {
+          const customer = await Customer.findOne({ companyId, externalId: record.customerExternalId });
+          customerId = customer?._id;
+        }
+        if (record.productExternalId && !productId) {
+          const product = await Product.findOne({ companyId, externalId: record.productExternalId });
+          productId = product?._id;
+        }
+        
+        // Skip if we don't have required references
+        if (!customerId || !productId) {
+          stats.recordsFailed++;
+          stats.errors.push({ 
+            id: transactionId, 
+            error: `Missing required reference: customer=${!!customerId}, product=${!!productId}` 
           });
+          continue;
+        }
+        
+        // Map ERP record to SalesHistory schema
+        const salesData = {
+          company: companyId,
+          transactionId: transactionId,
+          sapDocumentNumber: record.sapDocumentNumber || record.documentNumber,
+          date: record.date ? new Date(record.date) : new Date(),
+          customer: customerId,
+          product: productId,
+          quantity: record.quantity || 0,
+          unitOfMeasure: record.unitOfMeasure || record.uom || 'EA',
+          revenue: {
+            gross: record.grossRevenue || record.revenue || 0,
+            net: record.netRevenue || record.netAmount,
+            currency: record.currency || 'ZAR'
+          },
+          pricing: {
+            listPrice: record.listPrice,
+            invoicePrice: record.invoicePrice,
+            netPrice: record.netPrice,
+            discount: record.discount,
+            discountPercentage: record.discountPercentage
+          },
+          channel: record.channel,
+          region: record.region,
+          brand: record.brand,
+          category: record.category,
+          importBatch: `ERP-SYNC-${new Date().toISOString().split('T')[0]}`,
+          importDate: new Date(),
+          source: record.source || 'integration'
+        };
+        
+        if (existing) {
+          await SalesHistory.findByIdAndUpdate(existing._id, salesData);
           stats.recordsUpdated++;
         } else {
-          await SalesHistory.create({
-            ...record,
-            companyId,
-            lastSyncedAt: new Date(),
-            createdBy: req.user._id
-          });
+          await SalesHistory.create(salesData);
           stats.recordsCreated++;
         }
       } catch (err) {
         stats.recordsFailed++;
-        stats.errors.push({ id: record.externalId, error: err.message });
+        stats.errors.push({ id: record.transactionId || record.externalId, error: err.message });
       }
     }
 
