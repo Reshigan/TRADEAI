@@ -21,7 +21,10 @@ import {
   Settings as SettingsIcon,
   Dashboard as DashboardIcon,
   ArrowBack as BackIcon,
-  AccountTree as TenantsIcon
+  AccountTree as TenantsIcon,
+  Cloud as AzureIcon,
+  Storage as ERPIcon,
+  ManageAccounts as CompanyUsersIcon
 } from '@mui/icons-material';
 
 const DRAWER_WIDTH = 240;
@@ -36,7 +39,11 @@ const AdminLayout = ({ user, onLogout }) => {
     { path: '/admin/tenants', label: 'Tenant Management', icon: <TenantsIcon /> },
     { path: '/admin/companies', label: 'Companies', icon: <CompaniesIcon /> },
     { path: '/admin/security', label: 'Security', icon: <SecurityIcon /> },
-    { path: '/admin/settings', label: 'Settings', icon: <SettingsIcon /> }
+    { path: '/admin/settings', label: 'Settings', icon: <SettingsIcon /> },
+    { divider: true, label: 'Company Admin' },
+    { path: '/admin/company-users', label: 'Company Users', icon: <CompanyUsersIcon /> },
+    { path: '/admin/azure-ad', label: 'Azure AD', icon: <AzureIcon /> },
+    { path: '/admin/erp-settings', label: 'ERP Settings', icon: <ERPIcon /> }
   ];
 
   const isActive = (path) => location.pathname.startsWith(path);
@@ -87,33 +94,42 @@ const AdminLayout = ({ user, onLogout }) => {
             ADMINISTRATION
           </Typography>
           <List>
-            {menuItems.map((item) => (
-              <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  selected={isActive(item.path)}
-                  onClick={() => navigate(item.path)}
-                  sx={{
-                    borderRadius: 1,
-                    '&.Mui-selected': {
-                      backgroundColor: 'primary.light',
-                      color: 'primary.contrastText',
-                      '&:hover': {
-                        backgroundColor: 'primary.main'
-                      }
-                    }
-                  }}
-                >
-                  <ListItemIcon
+            {menuItems.map((item, index) => (
+              item.divider ? (
+                <React.Fragment key={`divider-${index}`}>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, px: 2 }}>
+                    {item.label}
+                  </Typography>
+                </React.Fragment>
+              ) : (
+                <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+                  <ListItemButton
+                    selected={isActive(item.path)}
+                    onClick={() => navigate(item.path)}
                     sx={{
-                      color: isActive(item.path) ? 'primary.contrastText' : 'inherit',
-                      minWidth: 40
+                      borderRadius: 1,
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.light',
+                        color: 'primary.contrastText',
+                        '&:hover': {
+                          backgroundColor: 'primary.main'
+                        }
+                      }
                     }}
                   >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              </ListItem>
+                    <ListItemIcon
+                      sx={{
+                        color: isActive(item.path) ? 'primary.contrastText' : 'inherit',
+                        minWidth: 40
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.label} />
+                  </ListItemButton>
+                </ListItem>
+              )
             ))}
           </List>
           <Divider sx={{ my: 2 }} />

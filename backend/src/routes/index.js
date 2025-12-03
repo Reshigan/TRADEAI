@@ -27,6 +27,9 @@ const integrationRoutes = require('./integration');
 const sapRoutes = require('./sap');
 const securityRoutes = require('./security');
 
+// Company Admin Routes
+const companyAdminRoutes = require('./companyAdmin');
+
 // NEW: AI Promotion Routes
 const aiPromotionRoutes = require('./aiPromotion');
 
@@ -81,6 +84,9 @@ router.use('/ml', mlRoutes);
 router.use('/integrations', integrationRoutes);
 router.use('/sap', sapRoutes);
 router.use('/security', securityRoutes);
+
+// Company Admin Routes
+router.use('/company-admin', companyAdminRoutes);
 
 // NEW: AI-Powered Promotion Routes
 router.use('/ai-promotion', aiPromotionRoutes);

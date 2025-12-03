@@ -307,6 +307,88 @@ export const superAdminApi = {
 };
 
 /**
+ * Company Admin API
+ */
+export const companyAdminApi = {
+  // Dashboard
+  getDashboardStats: () => apiClient.get('/company-admin/dashboard/stats'),
+
+  // Learning Courses
+  getCourses: (params) => apiClient.get('/company-admin/courses', { params }),
+  getCourse: (id) => apiClient.get(`/company-admin/courses/${id}`),
+  createCourse: (data) => apiClient.post('/company-admin/courses', data),
+  updateCourse: (id, data) => apiClient.put(`/company-admin/courses/${id}`, data),
+  deleteCourse: (id) => apiClient.delete(`/company-admin/courses/${id}`),
+
+  // Games
+  getGames: (params) => apiClient.get('/company-admin/games', { params }),
+  getGame: (id) => apiClient.get(`/company-admin/games/${id}`),
+  createGame: (data) => apiClient.post('/company-admin/games', data),
+  updateGame: (id, data) => apiClient.put(`/company-admin/games/${id}`, data),
+  deleteGame: (id) => apiClient.delete(`/company-admin/games/${id}`),
+
+  // Announcements
+  getAnnouncements: (params) => apiClient.get('/company-admin/announcements', { params }),
+  getAnnouncement: (id) => apiClient.get(`/company-admin/announcements/${id}`),
+  createAnnouncement: (data) => apiClient.post('/company-admin/announcements', data),
+  updateAnnouncement: (id, data) => apiClient.put(`/company-admin/announcements/${id}`, data),
+  deleteAnnouncement: (id) => apiClient.delete(`/company-admin/announcements/${id}`),
+  publishAnnouncement: (id) => apiClient.post(`/company-admin/announcements/${id}/publish`),
+
+  // Policies
+  getPolicies: (params) => apiClient.get('/company-admin/policies', { params }),
+  getPolicy: (id) => apiClient.get(`/company-admin/policies/${id}`),
+  createPolicy: (data) => apiClient.post('/company-admin/policies', data),
+  updatePolicy: (id, data) => apiClient.put(`/company-admin/policies/${id}`, data),
+  deletePolicy: (id) => apiClient.delete(`/company-admin/policies/${id}`),
+  publishPolicy: (id) => apiClient.post(`/company-admin/policies/${id}/publish`),
+
+  // Company Settings
+  getSettings: () => apiClient.get('/company-admin/settings'),
+  updateSettings: (data) => apiClient.put('/company-admin/settings', data),
+  uploadLogo: (data) => apiClient.post('/company-admin/settings/logo', data),
+
+  // Azure AD
+  getAzureADConfig: () => apiClient.get('/company-admin/azure-ad'),
+  saveAzureADConfig: (data) => apiClient.post('/company-admin/azure-ad', data),
+  testAzureADConnection: () => apiClient.post('/company-admin/azure-ad/test'),
+  syncAzureAD: () => apiClient.post('/company-admin/azure-ad/sync'),
+
+  // Employees
+  getEmployees: (params) => apiClient.get('/company-admin/employees', { params }),
+  getEmployee: (id) => apiClient.get(`/company-admin/employees/${id}`),
+  createEmployee: (data) => apiClient.post('/company-admin/employees', data),
+  updateEmployee: (id, data) => apiClient.put(`/company-admin/employees/${id}`, data),
+  provisionEmployeeUser: (id, data) => apiClient.post(`/company-admin/employees/${id}/provision`, data),
+
+  // Departments
+  getDepartments: (params) => apiClient.get('/company-admin/departments', { params }),
+  getDepartmentTree: () => apiClient.get('/company-admin/departments/tree'),
+  createDepartment: (data) => apiClient.post('/company-admin/departments', data),
+  updateDepartment: (id, data) => apiClient.put(`/company-admin/departments/${id}`, data),
+
+  // Users
+  getUsers: (params) => apiClient.get('/company-admin/users', { params }),
+  getUser: (id) => apiClient.get(`/company-admin/users/${id}`),
+  createUser: (data) => apiClient.post('/company-admin/users', data),
+  updateUser: (id, data) => apiClient.put(`/company-admin/users/${id}`, data),
+  toggleUserStatus: (id) => apiClient.patch(`/company-admin/users/${id}/toggle-status`),
+  updateUserRole: (id, role) => apiClient.patch(`/company-admin/users/${id}/role`, { role }),
+
+  // ERP Settings
+  getERPSettings: () => apiClient.get('/company-admin/erp-settings'),
+  updateERPSettings: (data) => apiClient.put('/company-admin/erp-settings', data),
+  testSAPConnection: () => apiClient.post('/company-admin/erp-settings/test-sap'),
+  testERPConnection: () => apiClient.post('/company-admin/erp-settings/test-erp'),
+  syncMasterData: (dataType) => apiClient.post('/company-admin/erp-settings/sync-master-data', { dataType }),
+  syncSalesData: () => apiClient.post('/company-admin/erp-settings/sync-sales-data'),
+  getERPSyncHistory: (limit) => apiClient.get('/company-admin/erp-settings/sync-history', { params: { limit } }),
+
+  // Audit Logs
+  getAuditLogs: (params) => apiClient.get('/company-admin/audit-logs', { params })
+};
+
+/**
  * Enterprise Simulations API
  */
 export const simulationsApi = {
@@ -382,6 +464,7 @@ const enterpriseApi = {
   promotionSimulation: promotionSimulationApi,
   masterData: masterDataApi,
   superAdmin: superAdminApi,
+  companyAdmin: companyAdminApi,
   simulations: simulationsApi,
   dashboards: dashboardsApi
 };
