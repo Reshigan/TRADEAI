@@ -11,6 +11,10 @@ const Department = require('../models/Department');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const logger = require('../utils/logger');
+const AzureADService = require('../services/azureADService');
+const ERPService = require('../services/erpService');
+const Customer = require('../models/Customer');
+const Product = require('../models/Product');
 
 /**
  * Company Admin Controller
@@ -477,10 +481,36 @@ exports.testAzureADConnection = asyncHandler(async (req, res) => {
   const config = await AzureADConfig.findOne({ companyId });
 
   if (!config) throw new AppError('Azure AD not configured', 400);
+  if (!config.tenantId || !config.clientId || !config.clientSecret) {
+    throw new AppError('Azure AD credentials incomplete - tenant ID, client ID, and client secret are required', 400);
+  }
 
-  await config.testConnection();
+  // Use real Azure AD service for connection test
+  const azureService = new AzureADService({
+    tenantId: config.tenantId,
+    clientId: config.clientId,
+    clientSecret: config.clientSecret
+  });
 
-  res.json({ success: true, data: { status: config.connectionStatus, lastTest: config.lastConnectionTest } });
+  const result = await azureService.testConnection();
+  
+  // Update config with connection status
+  config.connectionStatus = result.status;
+  config.lastConnectionTest = new Date();
+  config.lastConnectionError = result.error || null;
+  await config.save();
+
+  logger.logAudit('azure_ad_connection_tested', req.user._id, { companyId, status: result.status });
+
+  res.json({ 
+    success: result.success, 
+    data: { 
+      status: result.status, 
+      lastTest: config.lastConnectionTest,
+      organization: result.organization,
+      error: result.error
+    } 
+  });
 });
 
 exports.syncAzureAD = asyncHandler(async (req, res) => {
@@ -488,111 +518,166 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
   const config = await AzureADConfig.findOne({ companyId });
 
   if (!config) throw new AppError('Azure AD not configured', 400);
+  if (!config.tenantId || !config.clientId || !config.clientSecret) {
+    throw new AppError('Azure AD credentials incomplete', 400);
+  }
 
-  // Simulated sync - in production this would call Microsoft Graph API
   const startTime = Date.now();
-
-  // Generate simulated departments
-  const simulatedDepartments = [
-    { name: 'Sales', code: 'SALES', description: 'Sales Department' },
-    { name: 'Marketing', code: 'MKT', description: 'Marketing Department' },
-    { name: 'Finance', code: 'FIN', description: 'Finance Department' },
-    { name: 'Operations', code: 'OPS', description: 'Operations Department' },
-    { name: 'Human Resources', code: 'HR', description: 'Human Resources Department' },
-    { name: 'IT', code: 'IT', description: 'Information Technology' }
-  ];
-
-  // Generate simulated employees
-  const simulatedEmployees = [
-    { firstName: 'Alice', lastName: 'Khoza', email: 'alice.khoza@company.co.za', jobTitle: 'Key Account Manager', departmentName: 'Sales' },
-    { firstName: 'Bob', lastName: 'Naidoo', email: 'bob.naidoo@company.co.za', jobTitle: 'Sales Representative', departmentName: 'Sales' },
-    { firstName: 'Carol', lastName: 'van der Berg', email: 'carol.vdb@company.co.za', jobTitle: 'Marketing Manager', departmentName: 'Marketing' },
-    { firstName: 'David', lastName: 'Mokoena', email: 'david.mokoena@company.co.za', jobTitle: 'Financial Analyst', departmentName: 'Finance' },
-    { firstName: 'Emma', lastName: 'Pillay', email: 'emma.pillay@company.co.za', jobTitle: 'Operations Lead', departmentName: 'Operations' },
-    { firstName: 'Frank', lastName: 'Botha', email: 'frank.botha@company.co.za', jobTitle: 'HR Manager', departmentName: 'Human Resources' },
-    { firstName: 'Grace', lastName: 'Dlamini', email: 'grace.dlamini@company.co.za', jobTitle: 'IT Administrator', departmentName: 'IT' },
-    { firstName: 'Henry', lastName: 'Govender', email: 'henry.govender@company.co.za', jobTitle: 'Sales Director', departmentName: 'Sales' }
-  ];
-
   const stats = {
     departmentsCreated: 0,
     departmentsUpdated: 0,
     employeesCreated: 0,
     employeesUpdated: 0,
     employeesDeactivated: 0,
-    errors: 0
+    errors: 0,
+    errorDetails: []
   };
 
-  // Sync departments
-  for (const deptData of simulatedDepartments) {
-    try {
-      const existing = await Department.findOne({ companyId, code: deptData.code });
-      if (existing) {
-        existing.name = deptData.name;
-        existing.description = deptData.description;
-        existing.source = 'azure_ad';
-        existing.lastSyncedAt = new Date();
-        await existing.save();
-        stats.departmentsUpdated++;
-      } else {
-        await Department.create({
-          ...deptData,
-          companyId,
-          source: 'azure_ad',
-          lastSyncedAt: new Date(),
-          createdBy: req.user._id
-        });
-        stats.departmentsCreated++;
+  // Initialize Azure AD service with real credentials
+  const azureService = new AzureADService({
+    tenantId: config.tenantId,
+    clientId: config.clientId,
+    clientSecret: config.clientSecret
+  });
+
+  try {
+    // Fetch groups/departments from Azure AD
+    logger.info('Starting Azure AD sync - fetching groups', { companyId });
+    const groupsResult = await azureService.getGroups();
+    
+    if (groupsResult.success && groupsResult.groups.length > 0) {
+      for (const azureGroup of groupsResult.groups) {
+        try {
+          const deptData = azureService.transformGroupToDepartment(azureGroup);
+          const existing = await Department.findOne({ companyId, azureAdId: azureGroup.id });
+          
+          if (existing) {
+            existing.name = deptData.name;
+            existing.description = deptData.description;
+            existing.email = deptData.email;
+            existing.source = 'azure_ad';
+            existing.lastSyncedAt = new Date();
+            await existing.save();
+            stats.departmentsUpdated++;
+          } else {
+            await Department.create({
+              ...deptData,
+              companyId,
+              createdBy: req.user._id
+            });
+            stats.departmentsCreated++;
+          }
+        } catch (err) {
+          stats.errors++;
+          stats.errorDetails.push({ type: 'department', id: azureGroup.id, error: err.message });
+        }
       }
-    } catch (err) {
-      stats.errors++;
     }
-  }
 
-  // Sync employees
-  for (const empData of simulatedEmployees) {
-    try {
-      const dept = await Department.findOne({ companyId, name: empData.departmentName });
-      const existing = await Employee.findOne({ companyId, email: empData.email });
-      
-      if (existing) {
-        existing.firstName = empData.firstName;
-        existing.lastName = empData.lastName;
-        existing.jobTitle = empData.jobTitle;
-        existing.department = dept?._id;
-        existing.departmentName = empData.departmentName;
-        existing.source = 'azure_ad';
-        existing.lastSyncedAt = new Date();
-        existing.syncStatus = 'synced';
-        await existing.save();
-        stats.employeesUpdated++;
-      } else {
-        await Employee.create({
-          ...empData,
-          employeeId: `EMP-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`.toUpperCase(),
-          companyId,
-          department: dept?._id,
-          departmentName: empData.departmentName,
-          source: 'azure_ad',
-          lastSyncedAt: new Date(),
-          syncStatus: 'synced',
-          status: 'active',
-          createdBy: req.user._id
-        });
-        stats.employeesCreated++;
+    // Fetch users from Azure AD
+    logger.info('Azure AD sync - fetching users', { companyId });
+    const usersResult = await azureService.getUsers();
+    
+    if (usersResult.success && usersResult.users.length > 0) {
+      // Get all existing Azure AD IDs to track deactivations
+      const existingEmployees = await Employee.find({ companyId, source: 'azure_ad' }).select('azureAdId email');
+      const syncedAzureIds = new Set();
+
+      for (const azureUser of usersResult.users) {
+        try {
+          const empData = azureService.transformUserToEmployee(azureUser);
+          syncedAzureIds.add(azureUser.id);
+          
+          // Find department by name if available
+          let dept = null;
+          if (empData.departmentName) {
+            dept = await Department.findOne({ 
+              companyId, 
+              $or: [
+                { name: empData.departmentName },
+                { name: { $regex: new RegExp(empData.departmentName, 'i') } }
+              ]
+            });
+          }
+
+          const existing = await Employee.findOne({ 
+            companyId, 
+            $or: [
+              { azureAdId: azureUser.id },
+              { email: empData.email }
+            ]
+          });
+          
+          if (existing) {
+            existing.azureAdId = azureUser.id;
+            existing.firstName = empData.firstName;
+            existing.lastName = empData.lastName;
+            existing.displayName = empData.displayName;
+            existing.jobTitle = empData.jobTitle;
+            existing.departmentName = empData.departmentName;
+            existing.department = dept?._id;
+            existing.officeLocation = empData.officeLocation;
+            existing.phone = empData.phone;
+            existing.status = empData.status;
+            existing.source = 'azure_ad';
+            existing.lastSyncedAt = new Date();
+            existing.syncStatus = 'synced';
+            await existing.save();
+            stats.employeesUpdated++;
+          } else {
+            await Employee.create({
+              ...empData,
+              employeeId: empData.employeeId || `AAD-${azureUser.id.substring(0, 8)}`,
+              companyId,
+              department: dept?._id,
+              createdBy: req.user._id
+            });
+            stats.employeesCreated++;
+          }
+        } catch (err) {
+          stats.errors++;
+          stats.errorDetails.push({ type: 'employee', id: azureUser.id, error: err.message });
+        }
       }
-    } catch (err) {
-      stats.errors++;
+
+      // Deactivate employees no longer in Azure AD
+      for (const existing of existingEmployees) {
+        if (existing.azureAdId && !syncedAzureIds.has(existing.azureAdId)) {
+          try {
+            await Employee.findByIdAndUpdate(existing._id, { 
+              status: 'inactive', 
+              syncStatus: 'deactivated',
+              lastSyncedAt: new Date()
+            });
+            stats.employeesDeactivated++;
+          } catch (err) {
+            stats.errors++;
+          }
+        }
+      }
     }
+
+    stats.duration = Math.round((Date.now() - startTime) / 1000);
+    
+    // Update config with sync status
+    config.connectionStatus = 'connected';
+    await config.recordSync(stats, stats.errors > 0 ? 'partial' : 'success', req.user._id);
+
+    logger.logAudit('azure_ad_sync_completed', req.user._id, { companyId, stats });
+
+    res.json({ success: true, data: { stats, config } });
+
+  } catch (error) {
+    stats.duration = Math.round((Date.now() - startTime) / 1000);
+    stats.errors++;
+    stats.errorDetails.push({ type: 'sync', error: error.message });
+    
+    await config.recordSync(stats, 'failed', req.user._id);
+    
+    logger.error('Azure AD sync failed', { companyId, error: error.message });
+    
+    throw new AppError(`Azure AD sync failed: ${error.message}`, 500);
   }
-
-  stats.duration = Math.round((Date.now() - startTime) / 1000);
-
-  await config.recordSync(stats, stats.errors > 0 ? 'partial' : 'success', req.user._id);
-
-  logger.logAudit('azure_ad_sync_completed', req.user._id, { companyId, stats });
-
-  res.json({ success: true, data: { stats, config } });
 });
 
 // ==================== EMPLOYEES ====================
@@ -923,12 +1008,31 @@ exports.testSAPConnection = asyncHandler(async (req, res) => {
   const settings = await ERPSettings.findOne({ companyId });
 
   if (!settings) throw new AppError('ERP settings not configured', 400);
+  if (!settings.sap || !settings.sap.host) {
+    throw new AppError('SAP connection not configured - host is required', 400);
+  }
 
-  await settings.testSAPConnection();
+  // Use real ERP service for SAP connection test
+  const erpService = new ERPService(settings);
+  const result = await erpService.testSAPConnection();
 
-  logger.logAudit('sap_connection_tested', req.user._id, { companyId, status: settings.sap.connectionStatus });
+  // Update settings with connection status
+  settings.sap.connectionStatus = result.status;
+  settings.sap.lastConnectionTest = new Date();
+  settings.sap.lastConnectionError = result.error || null;
+  await settings.save();
 
-  res.json({ success: true, data: { status: settings.sap.connectionStatus, lastTest: settings.sap.lastConnectionTest } });
+  logger.logAudit('sap_connection_tested', req.user._id, { companyId, status: result.status });
+
+  res.json({ 
+    success: result.success, 
+    data: { 
+      status: result.status, 
+      lastTest: settings.sap.lastConnectionTest,
+      message: result.message,
+      error: result.error
+    } 
+  });
 });
 
 exports.testERPConnection = asyncHandler(async (req, res) => {
@@ -936,12 +1040,31 @@ exports.testERPConnection = asyncHandler(async (req, res) => {
   const settings = await ERPSettings.findOne({ companyId });
 
   if (!settings) throw new AppError('ERP settings not configured', 400);
+  if (!settings.erp || !settings.erp.baseUrl) {
+    throw new AppError('ERP connection not configured - base URL is required', 400);
+  }
 
-  await settings.testERPConnection();
+  // Use real ERP service for connection test
+  const erpService = new ERPService(settings);
+  const result = await erpService.testERPConnection();
 
-  logger.logAudit('erp_connection_tested', req.user._id, { companyId, status: settings.erp.connectionStatus });
+  // Update settings with connection status
+  settings.erp.connectionStatus = result.status;
+  settings.erp.lastConnectionTest = new Date();
+  settings.erp.lastConnectionError = result.error || null;
+  await settings.save();
 
-  res.json({ success: true, data: { status: settings.erp.connectionStatus, lastTest: settings.erp.lastConnectionTest } });
+  logger.logAudit('erp_connection_tested', req.user._id, { companyId, status: result.status });
+
+  res.json({ 
+    success: result.success, 
+    data: { 
+      status: result.status, 
+      lastTest: settings.erp.lastConnectionTest,
+      message: result.message,
+      error: result.error
+    } 
+  });
 });
 
 exports.syncMasterData = asyncHandler(async (req, res) => {
@@ -951,32 +1074,139 @@ exports.syncMasterData = asyncHandler(async (req, res) => {
   const settings = await ERPSettings.findOne({ companyId });
   if (!settings) throw new AppError('ERP settings not configured', 400);
 
-  // Simulated sync - in production this would call the actual ERP API
   const startTime = Date.now();
   const stats = {
     status: 'success',
-    recordsProcessed: Math.floor(Math.random() * 100) + 50,
-    recordsCreated: Math.floor(Math.random() * 20) + 5,
-    recordsUpdated: Math.floor(Math.random() * 30) + 10,
+    recordsProcessed: 0,
+    recordsCreated: 0,
+    recordsUpdated: 0,
     recordsFailed: 0,
-    duration: 0
+    duration: 0,
+    errors: []
   };
-  stats.duration = Math.round((Date.now() - startTime) / 1000) + Math.floor(Math.random() * 5);
 
-  // Update last sync time
-  if (dataType === 'customers') {
-    settings.masterData.lastCustomerSync = new Date();
-  } else if (dataType === 'products') {
-    settings.masterData.lastProductSync = new Date();
-  } else if (dataType === 'pricing') {
-    settings.masterData.lastPricingSync = new Date();
+  // Initialize ERP service
+  const erpService = new ERPService(settings);
+  
+  // Determine data source (SAP or generic ERP)
+  const source = settings.masterData?.[`${dataType}Source`] || 'erp';
+
+  try {
+    let fetchResult;
+    
+    if (dataType === 'customers') {
+      // Fetch customers from configured source
+      if (source === 'sap' && settings.sap?.host) {
+        fetchResult = await erpService.fetchSAPCustomers();
+      } else if (settings.erp?.baseUrl) {
+        fetchResult = await erpService.fetchERPCustomers();
+      } else {
+        throw new Error('No ERP source configured for customers');
+      }
+
+      // Sync customers to database
+      for (const customerData of (fetchResult.customers || [])) {
+        try {
+          stats.recordsProcessed++;
+          const existing = await Customer.findOne({ companyId, externalId: customerData.externalId });
+          
+          if (existing) {
+            await Customer.findByIdAndUpdate(existing._id, {
+              ...customerData,
+              lastSyncedAt: new Date(),
+              updatedBy: req.user._id
+            });
+            stats.recordsUpdated++;
+          } else {
+            await Customer.create({
+              ...customerData,
+              companyId,
+              lastSyncedAt: new Date(),
+              createdBy: req.user._id
+            });
+            stats.recordsCreated++;
+          }
+        } catch (err) {
+          stats.recordsFailed++;
+          stats.errors.push({ id: customerData.externalId, error: err.message });
+        }
+      }
+      settings.masterData.lastCustomerSync = new Date();
+
+    } else if (dataType === 'products') {
+      // Fetch products from configured source
+      if (source === 'sap' && settings.sap?.host) {
+        fetchResult = await erpService.fetchSAPProducts();
+      } else if (settings.erp?.baseUrl) {
+        fetchResult = await erpService.fetchERPProducts();
+      } else {
+        throw new Error('No ERP source configured for products');
+      }
+
+      // Sync products to database
+      for (const productData of (fetchResult.products || [])) {
+        try {
+          stats.recordsProcessed++;
+          const existing = await Product.findOne({ companyId, externalId: productData.externalId });
+          
+          if (existing) {
+            await Product.findByIdAndUpdate(existing._id, {
+              ...productData,
+              lastSyncedAt: new Date(),
+              updatedBy: req.user._id
+            });
+            stats.recordsUpdated++;
+          } else {
+            await Product.create({
+              ...productData,
+              companyId,
+              lastSyncedAt: new Date(),
+              createdBy: req.user._id
+            });
+            stats.recordsCreated++;
+          }
+        } catch (err) {
+          stats.recordsFailed++;
+          stats.errors.push({ id: productData.externalId, error: err.message });
+        }
+      }
+      settings.masterData.lastProductSync = new Date();
+
+    } else if (dataType === 'pricing') {
+      // Fetch pricing from configured source
+      if (source === 'sap' && settings.sap?.host) {
+        fetchResult = await erpService.fetchSAPPricing();
+      } else if (settings.erp?.baseUrl) {
+        fetchResult = await erpService.fetchERPPricing();
+      } else {
+        throw new Error('No ERP source configured for pricing');
+      }
+
+      stats.recordsProcessed = fetchResult.count || 0;
+      stats.recordsCreated = fetchResult.count || 0;
+      settings.masterData.lastPricingSync = new Date();
+    }
+
+    stats.duration = Math.round((Date.now() - startTime) / 1000);
+    stats.status = stats.recordsFailed > 0 ? 'partial' : 'success';
+
+    await settings.recordSync(`master_data_${dataType}`, stats, req.user._id);
+
+    logger.logAudit('master_data_synced', req.user._id, { companyId, dataType, stats });
+
+    res.json({ success: true, data: { stats, dataType } });
+
+  } catch (error) {
+    stats.duration = Math.round((Date.now() - startTime) / 1000);
+    stats.status = 'failed';
+    stats.errors.push({ type: 'sync', error: error.message });
+
+    await settings.recordSync(`master_data_${dataType}`, stats, req.user._id);
+
+    logger.error('Master data sync failed', { companyId, dataType, error: error.message });
+
+    throw new AppError(`Master data sync failed: ${error.message}`, 500);
   }
-
-  await settings.recordSync(`master_data_${dataType}`, stats, req.user._id);
-
-  logger.logAudit('master_data_synced', req.user._id, { companyId, dataType, stats });
-
-  res.json({ success: true, data: { stats, dataType } });
 });
 
 exports.syncSalesData = asyncHandler(async (req, res) => {
@@ -985,27 +1215,101 @@ exports.syncSalesData = asyncHandler(async (req, res) => {
   const settings = await ERPSettings.findOne({ companyId });
   if (!settings) throw new AppError('ERP settings not configured', 400);
 
-  // Simulated sync - in production this would call the actual sales data API
   const startTime = Date.now();
   const stats = {
     status: 'success',
-    recordsProcessed: Math.floor(Math.random() * 500) + 200,
-    recordsCreated: Math.floor(Math.random() * 100) + 50,
-    recordsUpdated: Math.floor(Math.random() * 50) + 20,
-    recordsFailed: Math.floor(Math.random() * 5),
-    duration: 0
+    recordsProcessed: 0,
+    recordsCreated: 0,
+    recordsUpdated: 0,
+    recordsFailed: 0,
+    duration: 0,
+    errors: []
   };
-  stats.duration = Math.round((Date.now() - startTime) / 1000) + Math.floor(Math.random() * 10);
 
-  settings.salesData.lastBatchImport = new Date();
-  settings.salesData.lastBatchImportStatus = 'success';
-  settings.salesData.lastBatchImportRecords = stats.recordsProcessed;
+  // Initialize ERP service
+  const erpService = new ERPService(settings);
 
-  await settings.recordSync('sales_data', stats, req.user._id);
+  try {
+    let fetchResult;
 
-  logger.logAudit('sales_data_synced', req.user._id, { companyId, stats });
+    // Determine data source for sales data
+    if (settings.salesData?.feedUrl) {
+      // Use real-time sales data feed
+      fetchResult = await erpService.fetchRealTimeSalesData();
+    } else if (settings.sap?.host && settings.sap?.connectionStatus === 'connected') {
+      // Fetch from SAP
+      fetchResult = await erpService.fetchSAPSalesOrders();
+      fetchResult.records = fetchResult.orders || [];
+    } else if (settings.erp?.baseUrl && settings.erp?.connectionStatus === 'connected') {
+      // Fetch from generic ERP
+      fetchResult = await erpService.fetchERPSalesData();
+      fetchResult.records = fetchResult.sales || [];
+    } else {
+      throw new Error('No sales data source configured - configure feed URL, SAP, or ERP connection');
+    }
 
-  res.json({ success: true, data: { stats } });
+    // Process sales records
+    const SalesHistory = require('../models/SalesHistory');
+    
+    for (const record of (fetchResult.records || [])) {
+      try {
+        stats.recordsProcessed++;
+        
+        const existing = await SalesHistory.findOne({ 
+          companyId, 
+          externalId: record.externalId 
+        });
+        
+        if (existing) {
+          await SalesHistory.findByIdAndUpdate(existing._id, {
+            ...record,
+            lastSyncedAt: new Date(),
+            updatedBy: req.user._id
+          });
+          stats.recordsUpdated++;
+        } else {
+          await SalesHistory.create({
+            ...record,
+            companyId,
+            lastSyncedAt: new Date(),
+            createdBy: req.user._id
+          });
+          stats.recordsCreated++;
+        }
+      } catch (err) {
+        stats.recordsFailed++;
+        stats.errors.push({ id: record.externalId, error: err.message });
+      }
+    }
+
+    stats.duration = Math.round((Date.now() - startTime) / 1000);
+    stats.status = stats.recordsFailed > 0 ? 'partial' : 'success';
+
+    // Update settings with sync status
+    settings.salesData.lastBatchImport = new Date();
+    settings.salesData.lastBatchImportStatus = stats.status;
+    settings.salesData.lastBatchImportRecords = stats.recordsProcessed;
+
+    await settings.recordSync('sales_data', stats, req.user._id);
+
+    logger.logAudit('sales_data_synced', req.user._id, { companyId, stats });
+
+    res.json({ success: true, data: { stats } });
+
+  } catch (error) {
+    stats.duration = Math.round((Date.now() - startTime) / 1000);
+    stats.status = 'failed';
+    stats.errors.push({ type: 'sync', error: error.message });
+
+    settings.salesData.lastBatchImport = new Date();
+    settings.salesData.lastBatchImportStatus = 'failed';
+
+    await settings.recordSync('sales_data', stats, req.user._id);
+
+    logger.error('Sales data sync failed', { companyId, error: error.message });
+
+    throw new AppError(`Sales data sync failed: ${error.message}`, 500);
+  }
 });
 
 exports.getERPSyncHistory = asyncHandler(async (req, res) => {
