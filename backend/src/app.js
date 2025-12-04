@@ -74,6 +74,8 @@ const conflictsRoutes = require('./routes/conflicts');
 const approvalsRoutes = require('./routes/approvals');
 const claimsRoutes = require('./routes/claims');
 const deductionsRoutes = require('./routes/deductions');
+const priceElasticityRoutes = require('./routes/priceElasticity');
+const promotionAIRoutes = require('./routes/promotionAI');
 const hierarchyRoutes = require('./routes/hierarchy');
 const insightsRoutes = require('./routes/insights');
 const metricsRoutes = require('./routes/metrics');
@@ -318,6 +320,10 @@ app.use('/api/ai-promotion', authenticateToken, aiPromotionRoutes);
 app.use('/api/ai-chatbot', authenticateToken, aiChatbotRoutes);
 app.use('/api/ai-orchestrator', aiOrchestratorRoutes); // AI orchestrator with Ollama
 app.use('/api/ollama', ollamaRoutes); // Ollama LLM endpoints
+
+// Price Elasticity and Promotion AI routes (learned from sales history)
+app.use('/api/price-elasticity', authenticateToken, priceElasticityRoutes);
+app.use('/api/promotion-ai', authenticateToken, promotionAIRoutes);
 
 // Currency conversion routes
 app.use('/api', authenticateToken, currencyRoutes);
