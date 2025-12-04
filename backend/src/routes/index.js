@@ -63,6 +63,12 @@ const claimsRoutes = require('./claims');
 // Trade Spend Analytics Routes
 const tradeSpendAnalyticsRoutes = require('./tradeSpendAnalytics');
 
+// Price Elasticity Routes (learned from sales history)
+const priceElasticityRoutes = require('./priceElasticity');
+
+// Promotion AI Assistant Routes (conversational AI for gross benefit/volume uplift)
+const promotionAIRoutes = require('./promotionAI');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -123,6 +129,12 @@ router.use('/claims', claimsRoutes);
 
 // Trade Spend Analytics Routes
 router.use('/trade-spend-analytics', tradeSpendAnalyticsRoutes);
+
+// Price Elasticity Routes (learned from sales history)
+router.use('/price-elasticity', priceElasticityRoutes);
+
+// Promotion AI Assistant Routes (conversational AI for gross benefit/volume uplift)
+router.use('/promotion-ai', promotionAIRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {

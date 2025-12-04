@@ -1,6 +1,7 @@
 const SalesHistory = require('../models/SalesHistory');
 const Promotion = require('../models/Promotion');
 const Budget = require('../models/Budget');
+const priceElasticityService = require('./priceElasticityService');
 
 class PredictiveAnalyticsService {
   async predictSales(tenantId, options = {}) {
@@ -280,10 +281,28 @@ class PredictiveAnalyticsService {
     const avgVolume = sales.reduce((sum, s) => sum + s.quantity, 0) / sales.length;
     const avgRevenue = sales.reduce((sum, s) => sum + s.revenue.gross, 0) / sales.length;
 
-    const elasticity = -1.5;
+    // Use learned elasticity from priceElasticityService instead of hardcoded value
+    let elasticity = -1.5; // Default fallback
+    let elasticityConfidence = 'low';
+    let elasticityMethod = 'default';
+    
+    try {
+      const elasticityResult = await priceElasticityService.calculateProductElasticity(tenantId, productId);
+      if (elasticityResult && elasticityResult.elasticity) {
+        elasticity = elasticityResult.elasticity;
+        elasticityConfidence = elasticityResult.confidence || 'medium';
+        elasticityMethod = elasticityResult.method || 'learned';
+      }
+    } catch (error) {
+      console.error('Error getting learned elasticity, using default:', error.message);
+    }
+
     const volumeChange = elasticity * priceChange;
     const newVolume = avgVolume * (1 + volumeChange / 100);
     const newRevenue = avgRevenue * (1 + priceChange / 100) * (1 + volumeChange / 100);
+
+    // Calculate gross benefit (incremental revenue)
+    const grossBenefit = newRevenue - avgRevenue;
 
     return {
       currentVolume: avgVolume,
@@ -292,7 +311,13 @@ class PredictiveAnalyticsService {
       currentRevenue: avgRevenue,
       predictedRevenue: newRevenue,
       revenueChange: ((newRevenue - avgRevenue) / avgRevenue) * 100,
-      confidence: 'medium'
+      grossBenefit: grossBenefit,
+      elasticity: {
+        value: elasticity,
+        confidence: elasticityConfidence,
+        method: elasticityMethod
+      },
+      confidence: elasticityConfidence
     };
   }
 
