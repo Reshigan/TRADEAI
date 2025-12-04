@@ -57,6 +57,9 @@ const forwardBuyRoutes = require('./forwardBuy');
 // Rebate Routes
 const rebateRoutes = require('./rebate');
 
+// Claims Routes
+const claimsRoutes = require('./claims');
+
 // Trade Spend Analytics Routes
 const tradeSpendAnalyticsRoutes = require('./tradeSpendAnalytics');
 
@@ -114,6 +117,9 @@ router.use('/forward-buy', forwardBuyRoutes);
 
 // Rebate Routes
 router.use('/rebates', rebateRoutes);
+
+// Claims Routes
+router.use('/claims', claimsRoutes);
 
 // Trade Spend Analytics Routes
 router.use('/trade-spend-analytics', tradeSpendAnalyticsRoutes);
