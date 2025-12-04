@@ -42,7 +42,12 @@ const ProductListEnhanced = () => {
       const normalizedProducts = productData.map(product => ({
         ...product,
         category: typeof product.category === 'object' ? (product.category?.primary || 'Uncategorized') : product.category,
-        brand: typeof product.brand === 'object' ? (product.brand?.name || 'Unknown') : product.brand
+        brand: typeof product.brand === 'object' ? (product.brand?.name || 'Unknown') : product.brand,
+        // Normalize pricing fields - backend uses pricing.listPrice/costPrice
+        price: product.price ?? product.pricing?.listPrice ?? 0,
+        cost: product.cost ?? product.pricing?.costPrice ?? 0,
+        stock: product.stock ?? product.inventory?.currentStock ?? 0,
+        salesGrowth: product.salesGrowth ?? product.performance?.salesVelocity ?? 0
       }));
       
       setProducts(normalizedProducts);
