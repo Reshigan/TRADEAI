@@ -99,7 +99,15 @@ exports.getPromotions = asyncHandler(async (req, res, _next) => {
     sort = '-createdAt'
   } = req.query;
 
+  // Get tenant/company ID from user context for multi-tenant filtering
+  const tenantId = req.user.companyId?._id || req.user.companyId || req.user.tenantId;
+  
   const query = {};
+  
+  // Apply tenant filter for multi-tenant isolation
+  if (tenantId) {
+    query.company = tenantId;
+  }
 
   if (status) query.status = status;
   if (promotionType) query.promotionType = promotionType;
