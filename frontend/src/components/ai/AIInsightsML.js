@@ -31,7 +31,8 @@ import {
   Refresh,
   CheckCircle,
   Warning,
-  Info
+  Info,
+  Error as ErrorIcon
 } from '@mui/icons-material';
 
 import mlService from '../../services/ai/mlService';
