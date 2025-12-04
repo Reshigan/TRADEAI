@@ -220,7 +220,7 @@ const CampaignList = () => {
                       <CampaignIcon sx={{ color: 'warning.main', fontSize: 20 }} />
                     </Box>
                     <Typography variant="h6" fontWeight={700} color="text.primary">
-                      {campaign.campaignName}
+                      {campaign.campaignName || campaign.name}
                     </Typography>
                   </Box>
                   <Chip
@@ -241,7 +241,7 @@ const CampaignList = () => {
                       Objective
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {campaign.campaignObjective}
+                      {campaign.campaignObjective || campaign.campaignType || 'N/A'}
                     </Typography>
                   </Box>
 
@@ -250,7 +250,7 @@ const CampaignList = () => {
                       Budget
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {formatCurrency(campaign.budget)}
+                      {formatCurrency(campaign.budget?.total ?? campaign.budget ?? 0)}
                     </Typography>
                   </Box>
 
@@ -259,7 +259,7 @@ const CampaignList = () => {
                       Duration
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
+                      {formatDate(campaign.startDate || campaign.period?.startDate)} - {formatDate(campaign.endDate || campaign.period?.endDate)}
                     </Typography>
                   </Box>
 

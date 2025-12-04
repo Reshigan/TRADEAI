@@ -48,8 +48,14 @@ class TradeSpendService {
 
     const response = await apiClient.get(`/trade-spends?${params.toString()}`);
 
-    this.setCache(cacheKey, response.data);
-    return response.data;
+    // Normalize response to always have tradeSpends array
+    const result = {
+      ...response.data,
+      tradeSpends: response.data.tradeSpends || response.data.data || []
+    };
+
+    this.setCache(cacheKey, result);
+    return result;
   }
 
   async getTradeSpend(id) {

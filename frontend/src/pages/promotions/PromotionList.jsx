@@ -225,7 +225,7 @@ const PromotionList = () => {
               >
                 <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                   <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1, mr: 1 }}>
-                    {promo.promotionName}
+                    {promo.promotionName || promo.name}
                   </Typography>
                   <Chip
                     label={promo.status}
@@ -254,7 +254,7 @@ const PromotionList = () => {
                       Budget
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {formatCurrency(promo.budget)}
+                      {formatCurrency(promo.budget ?? promo.financial?.costs?.estimated ?? 0)}
                     </Typography>
                   </Box>
 
@@ -263,11 +263,11 @@ const PromotionList = () => {
                       Duration
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {formatDate(promo.startDate)} - {formatDate(promo.endDate)}
+                      {formatDate(promo.startDate || promo.period?.startDate)} - {formatDate(promo.endDate || promo.period?.endDate)}
                     </Typography>
                   </Box>
 
-                  {promo.expectedROI && (
+                  {(promo.expectedROI || promo.financial?.profitability?.roi) && (
                     <Box 
                       sx={{ 
                         p: 1.5,
@@ -285,7 +285,7 @@ const PromotionList = () => {
                         </Typography>
                       </Box>
                       <Typography variant="caption" fontWeight={700} color="success.main">
-                        {promo.expectedROI}x
+                        {(promo.expectedROI || promo.financial?.profitability?.roi || 0).toFixed(1)}x
                       </Typography>
                     </Box>
                   )}
