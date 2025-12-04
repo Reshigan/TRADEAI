@@ -1004,40 +1004,43 @@ class ProductionSeeder {
           const cost = volume * product.pricing.costPrice;
 
           try {
+            // Generate unique transaction ID
+            const transactionId = `TXN-${currentDate.getFullYear()}${String(monthNum).padStart(2, '0')}-${customer._id.toString().slice(-4)}-${product._id.toString().slice(-4)}-${totalRecords}`;
+            
             await SalesHistory.create({
               company: this.company._id,
-              tenantId: this.tenant._id,
+              transactionId: transactionId,
+              date: currentDate,
+              year: currentDate.getFullYear(),
+              month: monthNum,
+              week: Math.ceil(currentDate.getDate() / 7),
+              dayOfWeek: currentDate.getDay(),
+              quarter: Math.ceil(monthNum / 3),
               customer: customer._id,
               product: product._id,
-              period: {
-                year: currentDate.getFullYear(),
-                month: monthNum,
-                week: Math.ceil(currentDate.getDate() / 7),
-                date: currentDate
+              category: categoryName || 'General',
+              quantity: volume,
+              revenue: {
+                gross: revenue,
+                net: revenue * 0.85,
+                currency: CONFIG.company.currency
               },
-              metrics: {
-                volume,
-                revenue,
-                cost,
-                margin: revenue - cost,
-                marginPercentage: ((revenue - cost) / revenue) * 100,
-                averagePrice: product.pricing.listPrice,
-                transactions: randomBetween(5, 50)
+              pricing: {
+                listPrice: product.pricing.listPrice,
+                actualPrice: product.pricing.listPrice * randomFloat(0.9, 1.0),
+                discount: randomFloat(0, 10)
               },
-              comparison: {
-                previousPeriod: {
-                  volume: Math.floor(volume * randomFloat(0.8, 1.2)),
-                  revenue: Math.floor(revenue * randomFloat(0.8, 1.2))
-                },
-                yearOverYear: {
-                  volume: Math.floor(volume * randomFloat(0.9, 1.3)),
-                  revenue: Math.floor(revenue * randomFloat(0.9, 1.3))
-                }
+              cost: {
+                unitCost: product.pricing.costPrice,
+                totalCost: cost
               }
             });
             totalRecords++;
           } catch (err) {
-            // Skip duplicate records
+            // Log error for debugging but continue
+            if (totalRecords === 0 && month === 0) {
+              console.log(`  First record error: ${err.message}`);
+            }
           }
         }
       }
