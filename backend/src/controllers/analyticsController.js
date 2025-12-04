@@ -107,7 +107,7 @@ class AnalyticsController {
    * Used by frontend Dashboard component
    */
   getDashboardAnalytics = async (options = {}) => {
-    const { _userId, _period = '30days', currency = 'USD' } = options;
+    const { _userId, companyId, _period = '30days', currency = 'USD' } = options;
 
     try {
       // Get currency info
@@ -122,11 +122,15 @@ class AnalyticsController {
       const Promotion = require('../models/Promotion');
       const Budget = require('../models/Budget');
       const _TradeSpend = require('../models/TradeSpend');
+      
+      // Build tenant filter for multi-tenant isolation
+      const tenantFilter = companyId ? { company: companyId } : {};
 
       // Query real data from database
       // Check for both 'active' and 'completed' promotions for stats
       const now = new Date();
       const promotionQuery = {
+        ...tenantFilter,
         $or: [
           { status: 'active' },
           {
@@ -135,6 +139,9 @@ class AnalyticsController {
           }
         ]
       };
+      
+      // Build customer query with tenant filter
+      const customerQuery = { ...tenantFilter, status: 'active' };
 
       const [
         totalCustomers,
@@ -143,11 +150,11 @@ class AnalyticsController {
         promotions,
         budgets
       ] = await Promise.all([
-        Customer.countDocuments({ status: 'active' }),
+        Customer.countDocuments(customerQuery),
         Promotion.countDocuments(promotionQuery),
-        Customer.find({ status: 'active' }).limit(10).lean(),
+        Customer.find(customerQuery).limit(10).lean(),
         Promotion.find(promotionQuery).limit(20).lean(),
-        Budget.find({}).lean()
+        Budget.find(tenantFilter).lean()
       ]);
 
       // Calculate totals from real data

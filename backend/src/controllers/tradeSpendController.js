@@ -89,7 +89,15 @@ exports.getTradeSpends = asyncHandler(async (req, res, _next) => {
     sort = '-createdAt'
   } = req.query;
 
+  // Get company ID from user context for multi-tenant filtering
+  const companyId = req.user.companyId?._id || req.user.companyId || req.user.company || req.user.tenantId;
+  
   const query = {};
+  
+  // Apply tenant filter for multi-tenant isolation
+  if (companyId) {
+    query.company = companyId;
+  }
 
   if (spendType) query.spendType = spendType;
   if (status) query.status = status;

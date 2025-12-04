@@ -8,9 +8,13 @@ const { bulkOperationsLimiter } = require('../middleware/security');
 // Get all analytics overview
 router.get('/', authenticateToken, asyncHandler(async (req, res) => {
   const { period = '30days', currency = 'USD' } = req.query;
+  
+  // Get company ID from user context for multi-tenant filtering
+  const companyId = req.user.companyId?._id || req.user.companyId || req.user.company || req.user.tenantId;
 
   const analytics = await analyticsController.getDashboardAnalytics({
     userId: req.user._id,
+    companyId,
     period,
     currency
   });
@@ -24,9 +28,13 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
 // Get dashboard analytics
 router.get('/dashboard', authenticateToken, asyncHandler(async (req, res) => {
   const { period = '30days', currency = 'USD' } = req.query;
+  
+  // Get company ID from user context for multi-tenant filtering
+  const companyId = req.user.companyId?._id || req.user.companyId || req.user.company || req.user.tenantId;
 
   const analytics = await analyticsController.getDashboardAnalytics({
     userId: req.user._id,
+    companyId,
     period,
     currency
   });

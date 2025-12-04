@@ -11,9 +11,12 @@ const mlService = require('../services/mlService');
 // Executive Dashboard
 exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const { year = new Date().getFullYear() } = req.query;
+  
+  // Get company ID from user context for multi-tenant filtering
+  const companyId = req.user.companyId?._id || req.user.companyId || req.user.company || req.user.tenantId;
 
-  // Try to get from cache
-  const cacheKey = cacheService.generateKey('dashboard', 'executive', 'year', year);
+  // Try to get from cache (include companyId in cache key for tenant isolation)
+  const cacheKey = cacheService.generateKey('dashboard', 'executive', 'year', year, 'company', companyId?.toString());
   const cached = await cacheService.get(cacheKey);
 
   if (cached) {
@@ -28,11 +31,15 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const endDate = new Date(year, 11, 31);
   const currentDate = new Date();
   const ytdEndDate = currentDate > endDate ? endDate : currentDate;
+  
+  // Build tenant filter for aggregation queries
+  const tenantFilter = companyId ? { company: companyId } : {};
 
   // Get YTD Sales
   const salesData = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: startDate, $lte: ytdEndDate }
       }
     },
@@ -53,6 +60,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const lastYearSales = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: lastYearStart, $lte: lastYearEnd }
       }
     },
@@ -69,6 +77,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const tradeSpendData = await TradeSpend.aggregate([
     {
       $match: {
+        ...tenantFilter,
         'period.startDate': { $gte: startDate, $lte: ytdEndDate },
         status: { $in: ['approved', 'active', 'completed'] }
       }
@@ -83,6 +92,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
 
   // Get Active Promotions
   const activePromotions = await Promotion.countDocuments({
+    ...tenantFilter,
     'period.startDate': { $lte: currentDate },
     'period.endDate': { $gte: currentDate },
     status: 'active'
@@ -90,6 +100,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
 
   // Get Budget Performance
   const budgets = await Budget.find({
+    ...tenantFilter,
     year,
     status: 'approved',
     budgetType: 'budget'
@@ -142,6 +153,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const monthlyTrend = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: startDate, $lte: ytdEndDate }
       }
     },
@@ -160,6 +172,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const topCustomers = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: startDate, $lte: ytdEndDate }
       }
     },
@@ -185,6 +198,7 @@ exports.getExecutiveDashboard = asyncHandler(async (req, res, _next) => {
   const topProducts = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: startDate, $lte: ytdEndDate }
       }
     },
@@ -427,11 +441,18 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
     endDate = new Date(),
     groupBy = 'month'
   } = req.query;
+  
+  // Get company ID from user context for multi-tenant filtering
+  const companyId = req.user.companyId?._id || req.user.companyId || req.user.company || req.user.tenantId;
+  
+  // Build tenant filter for aggregation queries
+  const tenantFilter = companyId ? { company: companyId } : {};
 
   // Sales Analytics
   const salesAnalytics = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       }
     },
@@ -451,6 +472,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
   const channelPerformance = await SalesHistory.aggregate([
     {
       $match: {
+        ...tenantFilter,
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       }
     },
@@ -476,6 +498,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
   const promotionAnalytics = await Promotion.aggregate([
     {
       $match: {
+        ...tenantFilter,
         'period.startDate': { $gte: new Date(startDate), $lte: new Date(endDate) },
         status: 'completed'
       }
@@ -494,6 +517,7 @@ exports.getAnalyticsDashboard = asyncHandler(async (req, res, _next) => {
 
   // Anomalies
   const recentSales = await SalesHistory.find({
+    ...tenantFilter,
     date: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
   }).select('date customer product quantity revenue anomaly');
 
