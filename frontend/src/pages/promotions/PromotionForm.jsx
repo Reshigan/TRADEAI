@@ -488,7 +488,8 @@ const PromotionForm = () => {
           </button>
         </div>
       </form>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 

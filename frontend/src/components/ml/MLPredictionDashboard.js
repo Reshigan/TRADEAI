@@ -92,6 +92,7 @@ const MLPredictionDashboard = () => {
     includePromotions: true
   });
 
+  const [churnForm, setChurnForm] = useState({
     customerId: 'CUST001',
     daysSinceLastPurchase: 45,
     totalPurchases: 12,
@@ -105,6 +106,7 @@ const MLPredictionDashboard = () => {
     satisfactionScore: 0.6
   });
 
+  const [promotionForm, setPromotionForm] = useState({
     discountPercentage: 20,
     durationDays: 14,
     budget: 10000,
@@ -119,6 +121,7 @@ const MLPredictionDashboard = () => {
     productCategory: 2
   });
 
+  const [priceForm, setPriceForm] = useState({
     productId: 'PROD001',
     currentPrice: 99.99,
     cost: 45.00,
