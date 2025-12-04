@@ -156,7 +156,7 @@ const PromotionListEnhanced = () => {
       label: 'ROI',
       sortable: true,
       render: (value, row) => {
-        const roiValue = row.metrics?.roi || 0;
+        const roiValue = row.metrics?.roi || row.financial?.profitability?.roi || 0;
         return (
           <Chip
             label={`${roiValue.toFixed(2)}%`}
@@ -169,12 +169,18 @@ const PromotionListEnhanced = () => {
     {
       id: 'startDate',
       label: 'Start Date',
-      render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+      render: (value, row) => {
+        const date = value || row.period?.startDate;
+        return date ? new Date(date).toLocaleDateString() : 'N/A';
+      }
     },
     {
       id: 'endDate',
       label: 'End Date',
-      render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+      render: (value, row) => {
+        const date = value || row.period?.endDate;
+        return date ? new Date(date).toLocaleDateString() : 'N/A';
+      }
     }
   ];
 
