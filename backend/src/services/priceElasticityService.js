@@ -7,6 +7,17 @@
 const SalesHistory = require('../models/SalesHistory');
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
+const mongoose = require('mongoose');
+
+// Helper to convert string to ObjectId if needed
+const toObjectId = (id) => {
+  if (!id) return null;
+  if (id instanceof mongoose.Types.ObjectId) return id;
+  if (typeof id === 'string' && mongoose.Types.ObjectId.isValid(id)) {
+    return new mongoose.Types.ObjectId(id);
+  }
+  return id;
+};
 
 class PriceElasticityService {
   constructor() {
@@ -29,13 +40,17 @@ class PriceElasticityService {
     }
 
     try {
+      // Convert string IDs to ObjectIds for MongoDB query
+      const companyObjectId = toObjectId(tenantId);
+      const productObjectId = toObjectId(productId);
+
       // Get sales history with price variations
       // Support multiple price field names for compatibility
       const salesData = await SalesHistory.aggregate([
         {
           $match: {
-            company: tenantId,
-            product: productId,
+            company: companyObjectId,
+            product: productObjectId,
             quantity: { $gt: 0 }
           }
         },
@@ -182,9 +197,12 @@ class PriceElasticityService {
     }
 
     try {
+      // Convert string ID to ObjectId for MongoDB query
+      const companyObjectId = toObjectId(tenantId);
+
       // Get products in category
       const products = await Product.find({
-        company: tenantId,
+        company: companyObjectId,
         category: category
       }).select('_id');
 
@@ -204,7 +222,7 @@ class PriceElasticityService {
       const salesData = await SalesHistory.aggregate([
         {
           $match: {
-            company: tenantId,
+            company: companyObjectId,
             product: { $in: productIds },
             quantity: { $gt: 0 }
           }
@@ -305,12 +323,16 @@ class PriceElasticityService {
    */
   async predictVolumeAtPrice(tenantId, productId, newPrice) {
     try {
+      // Convert string IDs to ObjectIds for MongoDB query
+      const companyObjectId = toObjectId(tenantId);
+      const productObjectId = toObjectId(productId);
+
       // Get current baseline
       const recentSales = await SalesHistory.aggregate([
         {
           $match: {
-            company: tenantId,
-            product: productId
+            company: companyObjectId,
+            product: productObjectId
           }
         },
         {
@@ -320,10 +342,20 @@ class PriceElasticityService {
           $limit: 30
         },
         {
+          $addFields: {
+            effectivePrice: {
+              $ifNull: [
+                '$pricing.invoicePrice',
+                { $ifNull: ['$pricing.actualPrice', '$pricing.listPrice'] }
+              ]
+            }
+          }
+        },
+        {
           $group: {
             _id: null,
             avgQuantity: { $avg: '$quantity' },
-            avgPrice: { $avg: '$pricing.invoicePrice' },
+            avgPrice: { $avg: '$effectivePrice' },
             avgRevenue: { $avg: '$revenue.gross' },
             totalRecords: { $sum: 1 }
           }
@@ -399,12 +431,16 @@ class PriceElasticityService {
     const { minPrice, maxPrice, steps = 10 } = options;
 
     try {
+      // Convert string IDs to ObjectIds for MongoDB query
+      const companyObjectId = toObjectId(tenantId);
+      const productObjectId = toObjectId(productId);
+
       // Get current baseline
       const recentSales = await SalesHistory.aggregate([
         {
           $match: {
-            company: tenantId,
-            product: productId
+            company: companyObjectId,
+            product: productObjectId
           }
         },
         {
@@ -414,11 +450,21 @@ class PriceElasticityService {
           $limit: 30
         },
         {
+          $addFields: {
+            effectivePrice: {
+              $ifNull: [
+                '$pricing.invoicePrice',
+                { $ifNull: ['$pricing.actualPrice', '$pricing.listPrice'] }
+              ]
+            }
+          }
+        },
+        {
           $group: {
             _id: null,
             avgQuantity: { $avg: '$quantity' },
-            avgPrice: { $avg: '$pricing.invoicePrice' },
-            avgCost: { $avg: '$costs.unitCost' }
+            avgPrice: { $avg: '$effectivePrice' },
+            avgCost: { $avg: '$cost.unitCost' }
           }
         }
       ]);
