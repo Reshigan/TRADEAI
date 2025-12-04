@@ -1,6 +1,20 @@
 import apiClient from '../apiClient';
 
 class ClaimService {
+  async getClaims(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.status) params.append('status', filters.status);
+    if (filters.type) params.append('type', filters.type);
+    if (filters.customerId) params.append('customerId', filters.customerId);
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    
+    const response = await apiClient.get(
+      `/api/claims?${params.toString()}`
+    );
+    return response.data;
+  }
+
   async createClaim(claimData) {
     const response = await apiClient.post(
       `/api/claims`,

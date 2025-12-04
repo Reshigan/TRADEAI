@@ -56,7 +56,7 @@ const ClaimsList = () => {
       } else if (filter === 'pending') {
         response = await claimService.getPendingApprovalClaims();
       } else {
-        response = await claimService.getUnmatchedClaims();
+        response = await claimService.getClaims();
       }
       
       setClaims(response.data || []);
