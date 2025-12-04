@@ -10,14 +10,14 @@ class ClaimService {
     if (filters.endDate) params.append('endDate', filters.endDate);
     
     const response = await apiClient.get(
-      `/api/claims?${params.toString()}`
+      `/claims?${params.toString()}`
     );
     return response.data;
   }
 
   async createClaim(claimData) {
     const response = await apiClient.post(
-      `/api/claims`,
+      `/claims`,
       claimData,
       
     );
@@ -26,7 +26,7 @@ class ClaimService {
 
   async submitClaim(claimId) {
     const response = await apiClient.post(
-      `/api/claims/${claimId}/submit`,
+      `/claims/${claimId}/submit`,
       {},
       
     );
@@ -35,7 +35,7 @@ class ClaimService {
 
   async approveClaim(claimId, approvedAmount) {
     const response = await apiClient.post(
-      `/api/claims/${claimId}/approve`,
+      `/claims/${claimId}/approve`,
       { approvedAmount },
       
     );
@@ -44,7 +44,7 @@ class ClaimService {
 
   async rejectClaim(claimId, reason) {
     const response = await apiClient.post(
-      `/api/claims/${claimId}/reject`,
+      `/claims/${claimId}/reject`,
       { reason },
       
     );
@@ -53,7 +53,7 @@ class ClaimService {
 
   async matchClaimToInvoice(claimId, invoiceId, invoiceNumber, matchedAmount) {
     const response = await apiClient.post(
-      `/api/claims/${claimId}/match-invoice`,
+      `/claims/${claimId}/match-invoice`,
       { invoiceId, invoiceNumber, matchedAmount },
       
     );
@@ -62,7 +62,7 @@ class ClaimService {
 
   async autoMatchClaims() {
     const response = await apiClient.post(
-      `/api/claims/auto-match`,
+      `/claims/auto-match`,
       {},
       
     );
@@ -71,7 +71,7 @@ class ClaimService {
 
   async getUnmatchedClaims() {
     const response = await apiClient.get(
-      `/api/claims/unmatched`,
+      `/claims/unmatched`,
       
     );
     return response.data;
@@ -79,7 +79,7 @@ class ClaimService {
 
   async getPendingApprovalClaims() {
     const response = await apiClient.get(
-      `/api/claims/pending-approval`,
+      `/claims/pending-approval`,
       
     );
     return response.data;
@@ -91,7 +91,7 @@ class ClaimService {
     if (endDate) params.append('endDate', endDate);
     
     const response = await apiClient.get(
-      `/api/claims/customer/${customerId}?${params.toString()}`,
+      `/claims/customer/${customerId}?${params.toString()}`,
       
     );
     return response.data;
@@ -103,7 +103,7 @@ class ClaimService {
     if (endDate) params.append('endDate', endDate);
     
     const response = await apiClient.get(
-      `/api/claims/statistics?${params.toString()}`,
+      `/claims/statistics?${params.toString()}`,
       
     );
     return response.data;
