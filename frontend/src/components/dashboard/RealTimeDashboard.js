@@ -178,7 +178,9 @@ const RealTimeDashboard = () => {
         Math.floor(Math.random() * 50000) + 100000
       );
 
-              ],
+      const mockData = {
+        revenue: revenueData,
+        labels: labels,
         recentActivity: [
           {
             description: 'New promotion "Flash Sale" created',
