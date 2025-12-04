@@ -12,7 +12,6 @@ import {
   Alert,
   Skeleton,
   Tooltip,
-  Button,
   Menu,
   MenuItem
 } from '@mui/material';
@@ -20,10 +19,8 @@ import {
   Refresh as RefreshIcon,
   Settings as SettingsIcon,
   Fullscreen as FullscreenIcon,
-  Download as DownloadIcon,
   TrendingUp,
   TrendingDown,
-  Warning,
   CheckCircle,
   Error as ErrorIcon
 } from '@mui/icons-material';
@@ -42,9 +39,7 @@ import {
   Filler
 } from 'chart.js';
 import { io } from 'socket.io-client';
-import { format, subHours, subDays } from 'date-fns';
-import api from '../../services/api';
-import { formatCurrency } from '../../utils/formatters';
+import { format, subHours } from 'date-fns';
 
 // Register Chart.js components
 ChartJS.register(

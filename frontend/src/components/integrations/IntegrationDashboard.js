@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -13,9 +13,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  ListItemSecondaryAction,
   IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -29,42 +27,31 @@ import {
   FormControlLabel,
   Tabs,
   Tab,
-  LinearProgress,
-  CircularProgress,
-  Badge,
-  Divider
+  CircularProgress
 } from '@mui/material';
 import {
   Integration,
-  CloudSync,
   Webhook,
   Api,
-  Settings,
   Refresh,
   Add,
-  Edit,
   Delete,
   PlayArrow,
   Pause,
   Stop,
   CheckCircle,
   Error as ErrorIcon,
-  Warning,
   Info,
   Sync,
-  Timeline,
   Assessment,
-  Security,
-  Speed,
-  Storage,
   Email,
   ShoppingCart,
   Business,
   Analytics,
   Campaign
 } from '@mui/icons-material';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { format, subDays } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { format } from 'date-fns';
 import api from '../../services/api';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];

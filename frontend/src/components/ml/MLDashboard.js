@@ -6,14 +6,12 @@ import {
   CardContent,
   Typography,
   Button,
-  TextField,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
   Chip,
   LinearProgress,
-  Alert,
   Table,
   TableBody,
   TableCell,
@@ -38,13 +36,11 @@ import {
   AutoGraph,
   Refresh,
   Download,
-  Settings,
   Info,
   PlayArrow,
-  Stop,
   Assessment
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, ScatterChart, Scatter, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import axios from 'axios';
 
 const MLDashboard = () => {

@@ -61,7 +61,6 @@ const WorkflowDashboard = () => {
   const [workflows, setWorkflows] = useState([]);
   const [workflowInstances, setWorkflowInstances] = useState([]);
   const [tasks, setTasks] = useState([]);
-  null;
   const [selectedInstance, setSelectedInstance] = useState(null);
   const [createDialog, setCreateDialog] = useState({ open: false, type: 'workflow' });
   const [detailsDialog, setDetailsDialog] = useState({ open: false, data: null });

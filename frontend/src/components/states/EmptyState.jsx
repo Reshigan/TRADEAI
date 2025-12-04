@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Button, Paper } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 import {
   Inbox as InboxIcon,
   SearchOff as SearchOffIcon,

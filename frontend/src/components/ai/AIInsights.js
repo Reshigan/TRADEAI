@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -13,8 +13,6 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -24,10 +22,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  LinearProgress,
   CircularProgress,
   Badge,
   Divider,
@@ -37,31 +31,17 @@ import {
 import {
   Insights,
   TrendingUp,
-  TrendingDown,
   Warning,
   CheckCircle,
-  Error as ErrorIcon,
   Info,
   Lightbulb,
-  Psychology,
-  Analytics,
-  Assessment,
   Refresh,
-  Settings,
   FilterList,
-  Schedule,
   NotificationsActive,
-  ExpandMore,
-  PlayArrow,
-  Pause,
-  Stop,
-  Download,
-  Share,
-  Visibility,
-  VisibilityOff
+  Download
 } from '@mui/icons-material';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { format, subDays } from 'date-fns';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { format } from 'date-fns';
 import api from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 
