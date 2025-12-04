@@ -109,11 +109,13 @@ const upsertTenant = async (companyConfig, companyId) => {
     name: companyConfig.name,
     slug: companyConfig.code.toLowerCase(),
     domain: companyConfig.domain,
-    companyInfo: {
-      legalName: companyConfig.name,
-      industry: companyConfig.industry.toUpperCase(),
-      companySize: 'medium'
-    },
+      companyInfo: {
+        legalName: companyConfig.name,
+        // Use proper case for industry to match Tenant model enum: ['FMCG', 'Retail', 'Manufacturing', 'Distribution', 'Other']
+        industry: companyConfig.industry === 'fmcg' ? 'FMCG' : 
+                  companyConfig.industry.charAt(0).toUpperCase() + companyConfig.industry.slice(1).toLowerCase(),
+        companySize: 'medium'
+      },
     subscription: {
       plan: 'professional',
       status: 'active'
