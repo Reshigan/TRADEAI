@@ -30,23 +30,38 @@ class PriceElasticityService {
 
     try {
       // Get sales history with price variations
+      // Support multiple price field names for compatibility
       const salesData = await SalesHistory.aggregate([
         {
           $match: {
             company: tenantId,
             product: productId,
-            quantity: { $gt: 0 },
-            'pricing.invoicePrice': { $gt: 0 }
+            quantity: { $gt: 0 }
+          }
+        },
+        {
+          $addFields: {
+            effectivePrice: {
+              $ifNull: [
+                '$pricing.invoicePrice',
+                { $ifNull: ['$pricing.actualPrice', '$pricing.listPrice'] }
+              ]
+            }
+          }
+        },
+        {
+          $match: {
+            effectivePrice: { $gt: 0 }
           }
         },
         {
           $group: {
             _id: {
-              price: { $round: ['$pricing.invoicePrice', 2] }
+              price: { $round: ['$effectivePrice', 2] }
             },
             totalQuantity: { $sum: '$quantity' },
             count: { $sum: 1 },
-            avgPrice: { $avg: '$pricing.invoicePrice' }
+            avgPrice: { $avg: '$effectivePrice' }
           }
         },
         { $sort: { '_id.price': 1 } }
@@ -185,13 +200,28 @@ class PriceElasticityService {
       }
 
       // Aggregate sales data across category
+      // Support multiple price field names for compatibility
       const salesData = await SalesHistory.aggregate([
         {
           $match: {
             company: tenantId,
             product: { $in: productIds },
-            quantity: { $gt: 0 },
-            'pricing.invoicePrice': { $gt: 0 }
+            quantity: { $gt: 0 }
+          }
+        },
+        {
+          $addFields: {
+            effectivePrice: {
+              $ifNull: [
+                '$pricing.invoicePrice',
+                { $ifNull: ['$pricing.actualPrice', '$pricing.listPrice'] }
+              ]
+            }
+          }
+        },
+        {
+          $match: {
+            effectivePrice: { $gt: 0 }
           }
         },
         {
@@ -200,18 +230,18 @@ class PriceElasticityService {
               priceRange: {
                 $switch: {
                   branches: [
-                    { case: { $lt: ['$pricing.invoicePrice', 10] }, then: '0-10' },
-                    { case: { $lt: ['$pricing.invoicePrice', 25] }, then: '10-25' },
-                    { case: { $lt: ['$pricing.invoicePrice', 50] }, then: '25-50' },
-                    { case: { $lt: ['$pricing.invoicePrice', 100] }, then: '50-100' },
-                    { case: { $gte: ['$pricing.invoicePrice', 100] }, then: '100+' }
+                    { case: { $lt: ['$effectivePrice', 10] }, then: '0-10' },
+                    { case: { $lt: ['$effectivePrice', 25] }, then: '10-25' },
+                    { case: { $lt: ['$effectivePrice', 50] }, then: '25-50' },
+                    { case: { $lt: ['$effectivePrice', 100] }, then: '50-100' },
+                    { case: { $gte: ['$effectivePrice', 100] }, then: '100+' }
                   ],
                   default: 'unknown'
                 }
               }
             },
             totalQuantity: { $sum: '$quantity' },
-            avgPrice: { $avg: '$pricing.invoicePrice' },
+            avgPrice: { $avg: '$effectivePrice' },
             count: { $sum: 1 }
           }
         },
