@@ -1036,8 +1036,10 @@ class ProductionSeeder {
               },
               pricing: {
                 listPrice: product.pricing.listPrice,
-                actualPrice: actualPrice,
-                discount: discount
+                invoicePrice: actualPrice,
+                netPrice: actualPrice * 0.85,
+                discount: discount,
+                discountPercentage: discount
               },
               cost: {
                 unitCost: product.pricing.costPrice,
