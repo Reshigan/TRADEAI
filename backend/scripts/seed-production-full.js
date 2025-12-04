@@ -998,9 +998,18 @@ class ProductionSeeder {
           const category = CATEGORIES.find(c => c.name === categoryName);
           const seasonalMultiplier = getSeasonalMultiplier(monthNum, category);
           
+          // Create price variations for elasticity learning
+          // Simulate promotional pricing (70-100% of list price) with inverse volume relationship
+          const priceMultiplier = randomFloat(0.70, 1.0);
+          const actualPrice = Math.round(product.pricing.listPrice * priceMultiplier * 100) / 100;
+          const discount = Math.round((1 - priceMultiplier) * 100 * 10) / 10;
+          
+          // Volume inversely related to price (elasticity simulation)
+          // Lower prices = higher volumes (typical elastic demand)
           const baseVolume = randomBetween(100, 1000);
-          const volume = Math.floor(baseVolume * seasonalMultiplier);
-          const revenue = volume * product.pricing.listPrice;
+          const priceEffect = 1 + (1 - priceMultiplier) * 1.5; // 30% discount = 45% more volume
+          const volume = Math.floor(baseVolume * seasonalMultiplier * priceEffect);
+          const revenue = volume * actualPrice;
           const cost = volume * product.pricing.costPrice;
 
           try {
@@ -1027,8 +1036,8 @@ class ProductionSeeder {
               },
               pricing: {
                 listPrice: product.pricing.listPrice,
-                actualPrice: product.pricing.listPrice * randomFloat(0.9, 1.0),
-                discount: randomFloat(0, 10)
+                actualPrice: actualPrice,
+                discount: discount
               },
               cost: {
                 unitCost: product.pricing.costPrice,
