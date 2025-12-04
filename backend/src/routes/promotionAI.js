@@ -19,7 +19,8 @@ router.use(auth.authenticate);
 router.post('/chat', async (req, res) => {
   try {
     const { message, context } = req.body;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const userId = req.user._id;
 
     if (!message) {
@@ -58,7 +59,8 @@ router.post('/chat', async (req, res) => {
 router.post('/gross-benefit', async (req, res) => {
   try {
     const { productId, price } = req.body;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const userId = req.user._id;
 
     const response = await promotionAIAssistant.chat(
@@ -90,7 +92,8 @@ router.post('/gross-benefit', async (req, res) => {
 router.post('/volume-uplift', async (req, res) => {
   try {
     const { productId, price } = req.body;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const userId = req.user._id;
 
     const response = await promotionAIAssistant.chat(
@@ -122,7 +125,8 @@ router.post('/volume-uplift', async (req, res) => {
 router.post('/optimal-price', async (req, res) => {
   try {
     const { productId } = req.body;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const userId = req.user._id;
 
     if (!productId) {
@@ -160,7 +164,8 @@ router.post('/optimal-price', async (req, res) => {
  */
 router.get('/history', async (req, res) => {
   try {
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const userId = req.user._id;
 
     const history = promotionAIAssistant.getConversationHistory(tenantId, userId);
@@ -186,7 +191,8 @@ router.get('/history', async (req, res) => {
  */
 router.delete('/history', async (req, res) => {
   try {
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const userId = req.user._id;
 
     const result = promotionAIAssistant.clearConversationHistory(tenantId, userId);

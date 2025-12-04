@@ -19,7 +19,8 @@ router.use(auth.authenticate);
 router.get('/product/:productId', async (req, res) => {
   try {
     const { productId } = req.params;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
 
     const elasticity = await priceElasticityService.calculateProductElasticity(
       tenantId,
@@ -48,7 +49,8 @@ router.get('/product/:productId', async (req, res) => {
 router.get('/category/:category', async (req, res) => {
   try {
     const { category } = req.params;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
 
     const elasticity = await priceElasticityService.calculateCategoryElasticity(
       tenantId,
@@ -77,7 +79,8 @@ router.get('/category/:category', async (req, res) => {
 router.post('/predict-volume', async (req, res) => {
   try {
     const { productId, newPrice } = req.body;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
 
     if (!productId || !newPrice) {
       return res.status(400).json({
@@ -114,7 +117,8 @@ router.post('/predict-volume', async (req, res) => {
 router.post('/optimal-prices', async (req, res) => {
   try {
     const { productId, minPrice, maxPrice, steps } = req.body;
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
 
     if (!productId) {
       return res.status(400).json({
@@ -150,7 +154,8 @@ router.post('/optimal-prices', async (req, res) => {
  */
 router.get('/cached', async (req, res) => {
   try {
-    const tenantId = req.user.companyId;
+    // Handle companyId being either an object or string
+    const tenantId = req.user.companyId?._id || req.user.companyId;
     const cached = priceElasticityService.getCachedElasticities(tenantId);
 
     res.json({
