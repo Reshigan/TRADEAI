@@ -993,7 +993,9 @@ class ProductionSeeder {
       
       for (const customer of this.customers) {
         for (const product of this.products.slice(0, randomBetween(10, 20))) {
-          const category = CATEGORIES.find(c => c.name === product.category?.primary);
+          // Handle both string category and object category with primary field
+          const categoryName = typeof product.category === 'string' ? product.category : product.category?.primary;
+          const category = CATEGORIES.find(c => c.name === categoryName);
           const seasonalMultiplier = getSeasonalMultiplier(monthNum, category);
           
           const baseVolume = randomBetween(100, 1000);
