@@ -556,7 +556,7 @@ class ProductionSeeder {
       { name: 'Spring Clean', type: 'seasonal', months: [9, 10] },
       { name: 'Holiday Season', type: 'seasonal', months: [11, 12] },
       { name: 'New Product Launch', type: 'product_launch', months: [] },
-      { name: 'Brand Awareness', type: 'brand', months: [] }
+      { name: 'Brand Awareness', type: 'brand_awareness', months: [] }
     ];
 
     for (let year = 2024; year <= 2025; year++) {
