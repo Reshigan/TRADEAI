@@ -54,10 +54,11 @@ module.exports = async config => {
       // Click login button
       await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
       
-      // Wait for navigation to dashboard
+      // Wait for navigation away from login page (to any authenticated page)
       await page.waitForURL(url => {
         const pathname = new URL(url).pathname;
-        return pathname.includes('/dashboard') || pathname.includes('/home');
+        // Accept any page that's not the login page or root
+        return !pathname.includes('/login') && pathname !== '/' && pathname.length > 1;
       }, { timeout: 30000 });
       
       console.log('[E2E GLOBAL SETUP] Login successful, saving auth state...');
