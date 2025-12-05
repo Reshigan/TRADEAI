@@ -54,12 +54,24 @@ module.exports = async config => {
       // Click login button (handles different button text variations)
       await page.locator('button[type="submit"], button:has-text("Sign In"), button:has-text("ACCESS PLATFORM")').click();
       
-      // Wait for navigation away from login page (to any authenticated page)
-      await page.waitForURL(url => {
-        const pathname = new URL(url).pathname;
-        // Accept any page that's not the login page or root
-        return !pathname.includes('/login') && pathname !== '/' && pathname.length > 1;
-      }, { timeout: 30000 });
+      // Wait for successful login - either URL change or dashboard content appearing
+      // Some SPAs don't change the URL immediately, so we check for multiple indicators
+      await Promise.race([
+        // Option 1: URL changes to dashboard or other authenticated page
+        page.waitForURL(url => {
+          const pathname = new URL(url).pathname;
+          return pathname.includes('/dashboard') || pathname.includes('/home') || 
+                 (pathname !== '/' && pathname !== '/login' && pathname.length > 1);
+        }, { timeout: 30000 }),
+        // Option 2: Dashboard content appears (login form disappears)
+        page.waitForSelector('[data-testid="dashboard"], .dashboard, nav, .MuiDrawer-root, .sidebar', { 
+          state: 'visible', 
+          timeout: 30000 
+        })
+      ]);
+      
+      // Additional wait to ensure auth state is fully set
+      await page.waitForTimeout(2000);
       
       console.log('[E2E GLOBAL SETUP] Login successful, saving auth state...');
       
