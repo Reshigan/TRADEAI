@@ -12,6 +12,7 @@ const SalesHistory = require('../models/SalesHistory');
 const Campaign = require('../models/Campaign');
 const ActivityGrid = require('../models/ActivityGrid');
 const MasterData = require('../models/MasterData');
+const Company = require('../models/Company');
 const config = require('../config');
 const _logger = require('../utils/logger');
 
@@ -40,7 +41,28 @@ const clearData = async () => {
   await Campaign.deleteMany({});
   await ActivityGrid.deleteMany({});
   await MasterData.deleteMany({});
+  await Company.deleteMany({});
   console.log('Data cleared successfully');
+};
+
+// Create company
+const createCompany = async () => {
+  console.log('Creating company...');
+
+  const company = await Company.create({
+    name: 'TestCo',
+    slug: 'testco',
+    industry: 'retail',
+    status: 'active',
+    settings: {
+      currency: 'ZAR',
+      timezone: 'Africa/Johannesburg',
+      fiscalYearStart: 1
+    }
+  });
+
+  console.log(`Created company: ${company.name}`);
+  return company;
 };
 
 // Create users
@@ -1073,84 +1095,63 @@ const createTradeSpends = async (users, customers, vendors, budgets) => {
 };
 
 // Create campaigns
-const createCampaigns = async (users, customers, products) => {
+const createCampaigns = async (users, customers, products, company) => {
   console.log('Creating campaigns...');
 
   const campaigns = [
     {
+      company: company._id,
       campaignId: 'CAMP-2024-0001',
       name: 'Back to School 2024',
-      type: 'seasonal',
+      campaignType: 'seasonal',
       status: 'completed',
       period: {
         startDate: new Date(2024, 0, 15),
         endDate: new Date(2024, 1, 28)
       },
-      objectives: ['Increase stationery sales by 30%', 'Build brand awareness'],
+      objective: 'Increase stationery sales by 30% and build brand awareness',
       scope: {
         customers: customers.filter((c) => ['modern_trade', 'wholesale'].includes(c.channel)).map((c) => c._id),
         products: products.filter((p) => p.category === 'Stationery').map((p) => p._id),
         channels: ['modern_trade', 'wholesale']
       },
       budget: {
+        total: 500000,
         allocated: 500000,
         spent: 485000
       },
-      activities: [
-        {
-          type: 'in_store_display',
-          description: 'End-cap displays in all major stores',
-          cost: 150000
-        },
-        {
-          type: 'digital_marketing',
-          description: 'Social media and online advertising',
-          cost: 200000
-        },
-        {
-          type: 'promotions',
-          description: 'Bundle deals and discounts',
-          cost: 135000
-        }
-      ],
       performance: {
-        salesUplift: 28,
-        reachAchieved: 85,
-        roiActual: 2.3
+        reach: { target: 100000, actual: 85000 },
+        sales: { baseline: 1000000, incremental: 280000, total: 1280000 },
+        roi: 2.3
       },
       createdBy: users.find((u) => u.role === 'manager')._id
     },
     {
+      company: company._id,
       campaignId: 'CAMP-2024-0002',
       name: 'Winter DIY Campaign',
-      type: 'seasonal',
+      campaignType: 'seasonal',
       status: 'active',
       period: {
         startDate: new Date(2024, 5, 1),
         endDate: new Date(2024, 7, 31)
       },
-      objectives: ['Drive DIY product sales', 'Increase market share'],
+      objective: 'Drive DIY product sales and increase market share',
       scope: {
         customers: customers.map((c) => c._id),
         products: products.filter((p) => p.category === 'DIY').map((p) => p._id),
         channels: ['modern_trade', 'wholesale', 'traditional_trade']
       },
       budget: {
+        total: 750000,
         allocated: 750000,
         spent: 320000
       },
-      activities: [
-        {
-          type: 'tv_advertising',
-          description: 'Regional TV campaign',
-          cost: 300000
-        },
-        {
-          type: 'in_store_demo',
-          description: 'Product demonstrations',
-          cost: 100000
-        }
-      ],
+      performance: {
+        reach: { target: 150000, actual: 80000 },
+        sales: { baseline: 2000000, incremental: 0, total: 2000000 }
+      },
       createdBy: users.find((u) => u.role === 'manager')._id
     }
   ];
@@ -1261,6 +1262,9 @@ const seedDatabase = async () => {
     await connectDB();
     await clearData();
 
+    // Create company first (required for campaigns)
+    const company = await createCompany();
+
     // Create data in order
     const users = await createUsers();
     const customers = await createCustomers();
@@ -1273,7 +1277,7 @@ const seedDatabase = async () => {
     const budgets = await createBudgets(users, customers, products);
     const promotions = await createPromotions(users, customers, products, vendors);
     const tradeSpends = await createTradeSpends(users, customers, vendors, budgets);
-    const campaigns = await createCampaigns(users, customers, products);
+    const campaigns = await createCampaigns(users, customers, products, company);
 
     // Update user wallets
     await updateUserWallets(users, customers);
