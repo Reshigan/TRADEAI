@@ -275,13 +275,12 @@ class ProductionSeeder {
     console.log('\nCreating users...');
     
     for (const profile of USER_PROFILES) {
-      const hashedPassword = await bcrypt.hash(CONFIG.defaultPassword, 10);
-      
+      // Don't pre-hash password - User model's pre-save hook will hash it
       const user = await User.create({
         ...profile,
         companyId: this.company._id,
         tenantId: this.tenant._id,
-        password: hashedPassword,
+        password: CONFIG.defaultPassword,
         isActive: true,
         lastLogin: addDays(new Date(), -randomBetween(0, 30)),
         preferences: {
