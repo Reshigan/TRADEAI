@@ -898,6 +898,7 @@ class ProductionSeeder {
         const transaction = await Transaction.create({
           tenantId: this.tenant._id,
           customerId: customer._id,
+          transactionNumber: `TXN-${customer.code}-${String(this.transactions.length + 1).padStart(6, '0')}`,
           transactionType,
           status: randomElement(['completed', 'approved', 'processing']),
           currency: CONFIG.company.currency,
