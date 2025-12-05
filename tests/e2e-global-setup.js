@@ -54,24 +54,36 @@ module.exports = async config => {
       // Click login button (handles different button text variations)
       await page.locator('button[type="submit"], button:has-text("Sign In"), button:has-text("ACCESS PLATFORM")').click();
       
-      // Wait for successful login - either URL change or dashboard content appearing
-      // Some SPAs don't change the URL immediately, so we check for multiple indicators
-      await Promise.race([
-        // Option 1: URL changes to dashboard or other authenticated page
-        page.waitForURL(url => {
-          const pathname = new URL(url).pathname;
-          return pathname.includes('/dashboard') || pathname.includes('/home') || 
-                 (pathname !== '/' && pathname !== '/login' && pathname.length > 1);
-        }, { timeout: 30000 }),
-        // Option 2: Dashboard content appears (login form disappears)
-        page.waitForSelector('[data-testid="dashboard"], .dashboard, nav, .MuiDrawer-root, .sidebar', { 
-          state: 'visible', 
-          timeout: 30000 
-        })
-      ]);
+      // Wait for login response - check for either success or error
+      // First, wait a bit for the login request to complete
+      await page.waitForTimeout(3000);
       
-      // Additional wait to ensure auth state is fully set
-      await page.waitForTimeout(2000);
+      // Check current URL and page state
+      const currentUrl = page.url();
+      console.log(`[E2E GLOBAL SETUP] Current URL after login click: ${currentUrl}`);
+      
+      // Check if there's an error alert on the page
+      const errorAlert = await page.locator('.MuiAlert-root, [role="alert"]').first();
+      const hasError = await errorAlert.isVisible().catch(() => false);
+      if (hasError) {
+        const errorText = await errorAlert.textContent().catch(() => 'Unknown error');
+        console.log(`[E2E GLOBAL SETUP] Login error detected: ${errorText}`);
+        throw new Error(`Login failed with error: ${errorText}`);
+      }
+      
+      // Check if we're still on login page or have navigated away
+      const loginForm = await page.locator('input[type="email"], input[name="email"]').first();
+      const stillOnLogin = await loginForm.isVisible().catch(() => false);
+      
+      if (stillOnLogin) {
+        // Still on login page - login might have failed silently
+        console.log('[E2E GLOBAL SETUP] Still on login page, waiting longer...');
+        await page.waitForTimeout(5000);
+      }
+      
+      // Final URL check
+      const finalUrl = page.url();
+      console.log(`[E2E GLOBAL SETUP] Final URL: ${finalUrl}`);
       
       console.log('[E2E GLOBAL SETUP] Login successful, saving auth state...');
       
