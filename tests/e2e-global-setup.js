@@ -62,23 +62,31 @@ module.exports = async config => {
       const currentUrl = page.url();
       console.log(`[E2E GLOBAL SETUP] Current URL after login click: ${currentUrl}`);
       
-      // Check if there's an error alert on the page
-      const errorAlert = await page.locator('.MuiAlert-root, [role="alert"]').first();
-      const hasError = await errorAlert.isVisible().catch(() => false);
-      if (hasError) {
-        const errorText = await errorAlert.textContent().catch(() => 'Unknown error');
-        console.log(`[E2E GLOBAL SETUP] Login error detected: ${errorText}`);
-        throw new Error(`Login failed with error: ${errorText}`);
-      }
+      // Check if we successfully navigated away from login page
+      const isOnDashboard = currentUrl.includes('/dashboard') || currentUrl.includes('/home');
       
-      // Check if we're still on login page or have navigated away
-      const loginForm = await page.locator('input[type="email"], input[name="email"]').first();
-      const stillOnLogin = await loginForm.isVisible().catch(() => false);
-      
-      if (stillOnLogin) {
-        // Still on login page - login might have failed silently
-        console.log('[E2E GLOBAL SETUP] Still on login page, waiting longer...');
-        await page.waitForTimeout(5000);
+      if (!isOnDashboard) {
+        // Only check for error alerts if we're still on login page
+        // Look specifically for error severity alerts, not info/success alerts
+        const errorAlert = await page.locator('.MuiAlert-standardError, .MuiAlert-filledError, .MuiAlert-outlinedError, [role="alert"][class*="error"]').first();
+        const hasError = await errorAlert.isVisible().catch(() => false);
+        if (hasError) {
+          const errorText = await errorAlert.textContent().catch(() => 'Unknown error');
+          console.log(`[E2E GLOBAL SETUP] Login error detected: ${errorText}`);
+          throw new Error(`Login failed with error: ${errorText}`);
+        }
+        
+        // Check if we're still on login page
+        const loginForm = await page.locator('input[type="email"], input[name="email"]').first();
+        const stillOnLogin = await loginForm.isVisible().catch(() => false);
+        
+        if (stillOnLogin) {
+          // Still on login page - login might have failed silently
+          console.log('[E2E GLOBAL SETUP] Still on login page, waiting longer...');
+          await page.waitForTimeout(5000);
+        }
+      } else {
+        console.log('[E2E GLOBAL SETUP] Successfully navigated to dashboard');
       }
       
       // Final URL check
