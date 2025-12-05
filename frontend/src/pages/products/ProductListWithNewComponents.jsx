@@ -4,7 +4,6 @@ import { Button, Box, Chip } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import PageLayout from '../../components/layout/PageLayout';
 import { TablePro, FilterBar } from '../../components/table';
-import { EmptyState, ErrorState, SkeletonList } from '../../components/states';
 import { productService } from '../../services/api';
 
 /**

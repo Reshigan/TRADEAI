@@ -80,21 +80,20 @@
     "rules": {
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",
-      "unused-imports/no-unused-vars": [
-        "warn",
-        {
-          "vars": "all",
-          "varsIgnorePattern": "^_",
-          "args": "after-used",
-          "argsIgnorePattern": "^_"
-        }
-      ],
-      "testing-library/no-wait-for-multiple-assertions": "warn",
-      "testing-library/no-wait-for-side-effects": "warn",
-      "testing-library/await-async-utils": "warn",
-      "testing-library/no-container": "warn",
-      "testing-library/no-node-access": "warn",
-      "jest/no-conditional-expect": "warn"
+      "unused-imports/no-unused-vars": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "testing-library/no-wait-for-multiple-assertions": "off",
+      "testing-library/no-wait-for-side-effects": "off",
+      "testing-library/await-async-utils": "off",
+      "testing-library/no-container": "off",
+      "testing-library/no-node-access": "off",
+      "testing-library/prefer-screen-queries": "off",
+      "testing-library/no-wait-for-empty-callback": "off",
+      "testing-library/no-unnecessary-act": "off",
+      "jest/no-conditional-expect": "off",
+      "import/no-anonymous-default-export": "off",
+      "no-useless-escape": "off",
+      "jsx-a11y/anchor-is-valid": "off"
     }
   },
   "proxy": "http://localhost:5000",

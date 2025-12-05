@@ -247,7 +247,7 @@ router.get('/top-products', auth, async (req, res) => {
           productId: '$_id',
           productName: '$product.name',
           productSku: '$product.sku',
-          category: '$product.category.primary',
+          category: '$product.category',
           totalRevenue: 1,
           totalQuantity: 1,
           transactionCount: 1,

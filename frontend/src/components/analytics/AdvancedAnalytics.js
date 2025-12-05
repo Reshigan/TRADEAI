@@ -38,7 +38,8 @@ import {
   PieChart,
   BarChart,
   ShowChart,
-  TableChart
+  TableChart,
+  Analytics
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -50,6 +51,7 @@ import {
   BarChart as RechartsBarChart,
   Bar,
   PieChart as RechartsPieChart,
+  Pie,
   Cell,
   XAxis,
   YAxis,
@@ -78,7 +80,6 @@ const AdvancedAnalytics = () => {
     promotion: 'all',
     region: 'all'
   });
-  'line';
   const [loading, setLoading] = useState(false);
   const [, setError] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);

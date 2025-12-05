@@ -9,10 +9,8 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Checkbox,
   Button,
-  CircularProgress,
-  Typography
+  CircularProgress
 } from '@mui/material';
 import {
   DataGrid,
@@ -25,8 +23,7 @@ import {
 import {
   Refresh as RefreshIcon,
   MoreVert as MoreVertIcon,
-  FileDownload as ExportIcon,
-  ViewColumn as ViewColumnIcon
+  FileDownload as ExportIcon
 } from '@mui/icons-material';
 import { EmptyState, ErrorState } from '../states';
 

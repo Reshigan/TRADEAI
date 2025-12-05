@@ -58,7 +58,7 @@ router.get('/', authenticateToken, asyncHandler(async (req, res) => {
       { sapMaterialId: { $regex: search, $options: 'i' } }
     ];
   }
-  if (category) query['category.primary'] = category;
+  if (category) query.category = category;
   if (brand) query['brand.name'] = brand;
   if (status) query.status = status;
 
@@ -171,7 +171,7 @@ router.get('/:id/hierarchy', authenticateToken, asyncHandler(async (req, res) =>
 // Get products by category
 router.get('/category/:category', authenticateToken, asyncHandler(async (req, res) => {
   const products = await Product.find({
-    'category.primary': req.params.category,
+    category: req.params.category,
     status: 'active'
   }).sort({ name: 1 });
 

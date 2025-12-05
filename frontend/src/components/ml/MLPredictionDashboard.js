@@ -7,10 +7,6 @@ import {
   Typography,
   Button,
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Chip,
   Alert,
   Tabs,
@@ -22,17 +18,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   LinearProgress,
   CircularProgress,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Slider,
   Switch,
   FormControlLabel
@@ -40,7 +31,6 @@ import {
 import {
   Psychology as PsychologyIcon,
   TrendingUp,
-  TrendingDown,
   PredictiveText,
   Analytics,
   PersonSearch,
@@ -50,13 +40,7 @@ import {
   CheckCircle,
   Refresh,
   Settings,
-  ExpandMore,
-  PlayArrow,
-  Stop,
-  Download,
-  Upload,
-  Visibility,
-  VisibilityOff
+  PlayArrow
 } from '@mui/icons-material';
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer} from 'recharts';
 import {format} from 'date-fns';
@@ -71,7 +55,6 @@ const MLPredictionDashboard = () => {
   const [trainingStatus, setTrainingStatus] = useState({});
   const [, setBatchJobs] = useState([]);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
-  '';
 
   // Prediction forms state
   const [customerBehaviorForm, setCustomerBehaviorForm] = useState({
@@ -92,6 +75,7 @@ const MLPredictionDashboard = () => {
     includePromotions: true
   });
 
+  const [churnForm, setChurnForm] = useState({
     customerId: 'CUST001',
     daysSinceLastPurchase: 45,
     totalPurchases: 12,
@@ -105,6 +89,7 @@ const MLPredictionDashboard = () => {
     satisfactionScore: 0.6
   });
 
+  const [promotionForm, setPromotionForm] = useState({
     discountPercentage: 20,
     durationDays: 14,
     budget: 10000,
@@ -119,6 +104,7 @@ const MLPredictionDashboard = () => {
     productCategory: 2
   });
 
+  const [priceForm, setPriceForm] = useState({
     productId: 'PROD001',
     currentPrice: 99.99,
     cost: 45.00,
@@ -211,7 +197,7 @@ const MLPredictionDashboard = () => {
       setError(null);
 
       const response = await api.post('/api/ml/predict/churn', {
-        customerData: churnPredictionForm
+        customerData: churnForm
       });
 
       setPredictions(prev => ({
@@ -233,7 +219,7 @@ const MLPredictionDashboard = () => {
       setError(null);
 
       const response = await api.post('/api/ml/optimize/promotion', {
-        promotionData: promotionOptimizationForm
+        promotionData: promotionForm
       });
 
       setPredictions(prev => ({
@@ -255,11 +241,11 @@ const MLPredictionDashboard = () => {
       setError(null);
 
       const response = await api.post('/api/ml/optimize/price', {
-        productData: priceOptimizationForm,
+        productData: priceForm,
         marketConditions: {
-          competitorPrice: priceOptimizationForm.competitorPrice,
-          season: priceOptimizationForm.season,
-          marketShare: priceOptimizationForm.marketShare
+          competitorPrice: priceForm.competitorPrice,
+          season: priceForm.season,
+          marketShare: priceForm.marketShare
         }
       });
 

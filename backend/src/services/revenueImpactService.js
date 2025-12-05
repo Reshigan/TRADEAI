@@ -619,7 +619,7 @@ class RevenueImpactService {
           price: product.pricing?.listPrice || 0,
           margin,
           score,
-          category: product.category?.primary || 'Unknown',
+          category: product.category || 'Unknown',
           brand: product.brand?.name || 'Unknown'
         };
       });

@@ -57,7 +57,7 @@ exports.createPromotion = asyncHandler(async (req, res, _next) => {
     const predictions = await mlService.predictPromotionEffectiveness({
       discountPercentage: promotionData.mechanics.discountValue,
       duration: Math.ceil((new Date(promotionData.period.endDate) - new Date(promotionData.period.startDate)) / (1000 * 60 * 60 * 24)),
-      productCategory: products[0].category.primary,
+      productCategory: products[0].category,
       customerSegment: 'regular', // Would be determined from customer data
       historicalPromotions: [] // Would fetch historical data
     });
@@ -365,7 +365,7 @@ exports.analyzeCannibalization = asyncHandler(async (req, res, _next) => {
   const relatedProducts = await Product.find({
     _id: { $nin: promotedProducts.map((p) => p._id) },
     $or: [
-      { 'category.primary': { $in: promotedProducts.map((p) => p.category.primary) } },
+      { category: { $in: promotedProducts.map((p) => p.category) } },
       { 'brand.name': { $in: promotedProducts.map((p) => p.brand.name) } }
     ]
   });

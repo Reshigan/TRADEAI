@@ -5,7 +5,7 @@ import {
   DialogContent, DialogActions, TextField, MenuItem, Grid, Alert, CircularProgress,
   FormControlLabel, Switch, Tabs, Tab
 } from '@mui/material';
-import { Add, Edit, Delete, Policy, Publish, Gavel, CheckCircle } from '@mui/icons-material';
+import { Add, Edit, Delete, Publish, Gavel, CheckCircle } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 
 const policyCategories = [

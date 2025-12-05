@@ -65,13 +65,12 @@ const MonitoringDashboard = () => {
   const [traces, setTraces] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [, setDashboards] = useState([]);
-  'system_overview';
   const [alertDialog, setAlertDialog] = useState({ open: false, alert: null });
   const [logDialog, setLogDialog] = useState({ open: false, log: null });
   const [traceDialog, setTraceDialog] = useState({ open: false, trace: null });
   const [loading, setLoading] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  30;
+  const [refreshInterval] = useState(30);
   const [filters, setFilters] = useState({
     timeRange: '1h',
     logLevel: 'all',

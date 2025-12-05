@@ -6,7 +6,7 @@ import {
   FormControlLabel, Switch, Tabs, Tab
 } from '@mui/material';
 import {
-  Add, Edit, Delete, Visibility, School, PlayArrow, CheckCircle
+  Add, Edit, Delete, School, CheckCircle
 } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 
