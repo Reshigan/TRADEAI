@@ -438,10 +438,7 @@ class ProductionSeeder {
           barcode: `6${String(randomBetween(100000000000, 999999999999))}`,
           sapMaterialId: `MAT${String(productIndex).padStart(8, '0')}`,
           productType: 'own_brand',
-          category: {
-            primary: category,
-            secondary: [item.brand]
-          },
+          category: category,
           brand: item.brand,
           description: `Premium ${item.name.toLowerCase()} from ${item.brand}`,
           hierarchy: {
@@ -937,7 +934,7 @@ class ProductionSeeder {
       
       for (const customer of this.customers) {
         for (const product of this.products.slice(0, randomBetween(10, 20))) {
-          const category = CATEGORIES.find(c => c.name === product.category?.primary);
+          const category = CATEGORIES.find(c => c.name === product.category);
           const seasonalMultiplier = getSeasonalMultiplier(monthNum, category);
           
           const baseVolume = randomBetween(100, 1000);
