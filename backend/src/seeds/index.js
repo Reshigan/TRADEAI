@@ -1089,7 +1089,7 @@ const createCampaigns = async (users, customers, products) => {
       objectives: ['Increase stationery sales by 30%', 'Build brand awareness'],
       scope: {
         customers: customers.filter((c) => ['modern_trade', 'wholesale'].includes(c.channel)).map((c) => c._id),
-        products: products.filter((p) => p.category.primary === 'Stationery').map((p) => p._id),
+        products: products.filter((p) => p.category === 'Stationery').map((p) => p._id),
         channels: ['modern_trade', 'wholesale']
       },
       budget: {
@@ -1132,7 +1132,7 @@ const createCampaigns = async (users, customers, products) => {
       objectives: ['Drive DIY product sales', 'Increase market share'],
       scope: {
         customers: customers.map((c) => c._id),
-        products: products.filter((p) => p.category.primary === 'DIY').map((p) => p._id),
+        products: products.filter((p) => p.category === 'DIY').map((p) => p._id),
         channels: ['modern_trade', 'wholesale', 'traditional_trade']
       },
       budget: {

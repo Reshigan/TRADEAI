@@ -683,7 +683,7 @@ class BulkOperationsService {
       'Product SKU': record.sku,
       'Product Name': record.name,
       'Description': record.description,
-      'Category': record.category?.primary || '',
+      'Category': record.category || '',
       'Brand': record.brand?.name || '',
       'Product Type': record.productType,
       'List Price': record.pricing?.listPrice || '',

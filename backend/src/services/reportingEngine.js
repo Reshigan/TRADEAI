@@ -832,7 +832,7 @@ class ReportingEngine {
   getProductCategoryData(tenantId, _parameters) {
     return Product.aggregate([
       { $match: { tenantId: new mongoose.Types.ObjectId(tenantId) } },
-      { $group: { _id: '$category.primary', count: { $sum: 1 } } }
+      { $group: { _id: '$category', count: { $sum: 1 } } }
     ]);
   }
 
