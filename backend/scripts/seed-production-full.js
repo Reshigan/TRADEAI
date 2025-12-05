@@ -708,6 +708,7 @@ class ProductionSeeder {
           tenantId: this.tenant._id,
           spendId: generateId('TS', this.tradeSpends.length + 1),
           spendType: spendType,
+          activityType: randomElement(['trade_marketing', 'key_account']),
           category: randomElement(categories),
           amount: {
             requested: requestedAmount,
