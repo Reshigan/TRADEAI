@@ -331,7 +331,7 @@ class ProductionSeeder {
         sapCustomerId: `SAP${String(i + 1).padStart(6, '0')}`,
         name: retailer.name,
         code: retailer.code,
-        customerType: i < 5 ? 'chain' : (i < 7 ? 'retailer' : 'wholesaler'),
+        customerType: i < 5 ? 'chain' : (i < 7 ? 'independent' : 'wholesaler'),
         channel: i < 5 ? 'modern_trade' : (i < 7 ? 'traditional_trade' : 'b2b'),
         tier: retailer.tier,
         status: 'active',
