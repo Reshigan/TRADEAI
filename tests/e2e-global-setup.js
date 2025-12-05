@@ -51,8 +51,8 @@ module.exports = async config => {
       await page.locator('input[type="email"], input[name="email"]').fill(email);
       await page.locator('input[type="password"], input[name="password"]').fill(password);
       
-      // Click login button
-      await page.locator('button:has-text("ACCESS PLATFORM"), button[type="submit"]').click();
+      // Click login button (handles different button text variations)
+      await page.locator('button[type="submit"], button:has-text("Sign In"), button:has-text("ACCESS PLATFORM")').click();
       
       // Wait for navigation away from login page (to any authenticated page)
       await page.waitForURL(url => {
