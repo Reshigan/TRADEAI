@@ -576,9 +576,9 @@ class ProductionSeeder {
           status: endDate < new Date() ? 'completed' : (startDate <= new Date() ? 'active' : 'approved'),
           period: { startDate, endDate },
           budget: {
-            allocated: randomBetween(1000000, 5000000),
-            spent: endDate < new Date() ? randomBetween(800000, 4500000) : 0,
-            currency: CONFIG.company.currency
+            total: randomBetween(1000000, 5000000),
+            allocated: randomBetween(800000, 4000000),
+            spent: endDate < new Date() ? randomBetween(600000, 3500000) : 0
           },
           targets: {
             revenueTarget: randomBetween(10000000, 50000000),
