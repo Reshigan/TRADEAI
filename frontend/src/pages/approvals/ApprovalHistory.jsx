@@ -1,6 +1,6 @@
 /**
  * Approval History Page
- * Shows historical approval records
+ * Shows historical approval records with sorting and pagination
  */
 
 import React, { useState, useEffect } from 'react';
@@ -15,6 +15,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
+  TablePagination,
   Chip,
   TextField,
   InputAdornment,
@@ -23,6 +25,8 @@ import {
   Select,
   MenuItem,
   Grid,
+  Card,
+  CardContent,
   CircularProgress,
   Breadcrumbs,
   Link,
@@ -33,7 +37,10 @@ import {
   Search,
   CheckCircle,
   Cancel,
-  Visibility
+  Visibility,
+  History,
+  ThumbUp,
+  ThumbDown
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
@@ -48,6 +55,12 @@ const ApprovalHistory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  
+  // Sorting and pagination state
+  const [orderBy, setOrderBy] = useState('completedAt');
+  const [order, setOrder] = useState('desc');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchApprovals = async () => {
@@ -100,13 +113,43 @@ const ApprovalHistory = () => {
     }
   };
 
-  const filteredApprovals = approvals.filter(approval => {
-    const matchesSearch = approval.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         approval.requestedBy.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !typeFilter || approval.type === typeFilter;
-    const matchesStatus = !statusFilter || approval.status === statusFilter;
-    return matchesSearch && matchesType && matchesStatus;
-  });
+  // Sorting handler
+  const handleSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const filteredApprovals = approvals
+    .filter(approval => {
+      const matchesSearch = approval.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           approval.requestedBy.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = !typeFilter || approval.type === typeFilter;
+      const matchesStatus = !statusFilter || approval.status === statusFilter;
+      return matchesSearch && matchesType && matchesStatus;
+    })
+    .sort((a, b) => {
+      if (orderBy === 'completedAt' || orderBy === 'createdAt') {
+        return order === 'asc' 
+          ? new Date(a[orderBy]) - new Date(b[orderBy])
+          : new Date(b[orderBy]) - new Date(a[orderBy]);
+      }
+      const aVal = a[orderBy] || '';
+      const bVal = b[orderBy] || '';
+      if (typeof aVal === 'string') {
+        return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      return order === 'asc' ? aVal - bVal : bVal - aVal;
+    });
+
+  const paginatedApprovals = filteredApprovals.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  // Summary stats
+  const approvedCount = approvals.filter(a => a.status === 'approved').length;
+  const rejectedCount = approvals.filter(a => a.status === 'rejected').length;
 
   if (loading) {
     return (
@@ -136,6 +179,49 @@ const ApprovalHistory = () => {
           View past approval decisions and audit trail
         </Typography>
       </Box>
+
+      {/* Summary Cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={4}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" gap={2}>
+                <History color="primary" sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold">{approvals.length}</Typography>
+                  <Typography variant="body2" color="textSecondary">Total Decisions</Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" gap={2}>
+                <ThumbUp color="success" sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold">{approvedCount}</Typography>
+                  <Typography variant="body2" color="textSecondary">Approved</Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" gap={2}>
+                <ThumbDown color="error" sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h4" fontWeight="bold">{rejectedCount}</Typography>
+                  <Typography variant="body2" color="textSecondary">Rejected</Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
@@ -196,27 +282,59 @@ const ApprovalHistory = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Type</TableCell>
-                <TableCell>Title</TableCell>
-                <TableCell>Requested By</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === 'title'}
+                    direction={orderBy === 'title' ? order : 'asc'}
+                    onClick={() => handleSort('title')}
+                  >
+                    Title
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === 'requestedBy'}
+                    direction={orderBy === 'requestedBy' ? order : 'asc'}
+                    onClick={() => handleSort('requestedBy')}
+                  >
+                    Requested By
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>Decided By</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Requested</TableCell>
-                <TableCell>Completed</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === 'createdAt'}
+                    direction={orderBy === 'createdAt' ? order : 'asc'}
+                    onClick={() => handleSort('createdAt')}
+                  >
+                    Requested
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === 'completedAt'}
+                    direction={orderBy === 'completedAt' ? order : 'asc'}
+                    onClick={() => handleSort('completedAt')}
+                  >
+                    Completed
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredApprovals.length === 0 ? (
+              {paginatedApprovals.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} align="center">
                     <Typography color="textSecondary" py={4}>
-                      No approval history found
+                      {searchTerm || typeFilter || statusFilter ? 'No approvals match your filters' : 'No approval history found'}
                     </Typography>
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredApprovals.map((approval) => (
-                  <TableRow key={approval._id}>
+                paginatedApprovals.map((approval) => (
+                  <TableRow key={approval._id} hover>
                     <TableCell>
                       <Chip 
                         label={approval.type} 
@@ -260,6 +378,15 @@ const ApprovalHistory = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={filteredApprovals.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+        />
       </Paper>
     </Container>
   );

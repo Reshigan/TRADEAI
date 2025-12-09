@@ -1,6 +1,6 @@
 /**
  * System Alerts Page
- * Displays system alerts and notifications for admins
+ * Displays system alerts and notifications for admins with filtering and pagination
  */
 
 import React, { useState, useEffect } from 'react';
@@ -18,6 +18,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
+  TablePagination,
   Chip,
   IconButton,
   Button,
@@ -27,7 +29,13 @@ import {
   Breadcrumbs,
   Link,
   Tooltip,
-  Badge
+  Badge,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   Warning,
@@ -38,17 +46,29 @@ import {
   Delete,
   Visibility,
   NotificationsActive,
-  Settings
+  Settings,
+  Search,
+  DoneAll
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 
 const Alerts = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [alerts, setAlerts] = useState([]);
+  
+  // Table state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [orderBy, setOrderBy] = useState('createdAt');
+  const [order, setOrder] = useState('desc');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchAlerts = async () => {
@@ -122,13 +142,53 @@ const Alerts = () => {
     enqueueSnackbar('Alert deleted', { variant: 'success' });
   };
 
-  const filteredAlerts = activeTab === 0 
-    ? alerts 
-    : activeTab === 1 
-      ? alerts.filter(a => !a.read)
-      : alerts.filter(a => a.read);
+  // Sorting
+  const handleSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  // Mark all as read
+  const handleMarkAllAsRead = () => {
+    setAlerts(prev => prev.map(alert => ({ ...alert, read: true })));
+    enqueueSnackbar('All alerts marked as read', { variant: 'success' });
+  };
+
+  const filteredAlerts = alerts
+    .filter(a => {
+      // Tab filter
+      if (activeTab === 1 && a.read) return false;
+      if (activeTab === 2 && !a.read) return false;
+      // Search filter
+      const matchesSearch = !searchTerm || 
+        a.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        a.message?.toLowerCase().includes(searchTerm.toLowerCase());
+      // Type filter
+      const matchesType = !typeFilter || a.type === typeFilter;
+      return matchesSearch && matchesType;
+    })
+    .sort((a, b) => {
+      if (orderBy === 'createdAt') {
+        return order === 'asc' 
+          ? new Date(a.createdAt) - new Date(b.createdAt)
+          : new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      const aVal = a[orderBy] || '';
+      const bVal = b[orderBy] || '';
+      if (typeof aVal === 'string') {
+        return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      return order === 'asc' ? aVal - bVal : bVal - aVal;
+    });
+
+  const paginatedAlerts = filteredAlerts.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   const unreadCount = alerts.filter(a => !a.read).length;
+  const uniqueTypes = [...new Set(alerts.map(a => a.type).filter(Boolean))];
 
   if (loading) {
     return (
@@ -237,7 +297,7 @@ const Alerts = () => {
 
       {/* Tabs */}
       <Paper sx={{ mb: 3 }}>
-        <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)}>
+        <Tabs value={activeTab} onChange={(e, v) => { setActiveTab(v); setPage(0); }}>
           <Tab label={`All (${alerts.length})`} />
           <Tab label={`Unread (${unreadCount})`} />
           <Tab label={`Read (${alerts.length - unreadCount})`} />
@@ -246,31 +306,89 @@ const Alerts = () => {
 
       {/* Alerts Table */}
       <Paper>
+        <Box p={2} borderBottom={1} borderColor="divider" display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Box display="flex" gap={2} flexWrap="wrap">
+            <TextField
+              size="small"
+              placeholder="Search alerts..."
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                )
+              }}
+              sx={{ minWidth: 200 }}
+            />
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={typeFilter}
+                onChange={(e) => { setTypeFilter(e.target.value); setPage(0); }}
+                label="Type"
+              >
+                <MenuItem value="">All Types</MenuItem>
+                {uniqueTypes.map(type => (
+                  <MenuItem key={type} value={type}>{type}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          {unreadCount > 0 && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<DoneAll />}
+              onClick={handleMarkAllAsRead}
+            >
+              Mark All as Read
+            </Button>
+          )}
+        </Box>
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell width={50}>Type</TableCell>
-                <TableCell>Alert</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === 'title'}
+                    direction={orderBy === 'title' ? order : 'asc'}
+                    onClick={() => handleSort('title')}
+                  >
+                    Alert
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>Category</TableCell>
-                <TableCell>Time</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === 'createdAt'}
+                    direction={orderBy === 'createdAt' ? order : 'asc'}
+                    onClick={() => handleSort('createdAt')}
+                  >
+                    Time
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredAlerts.length === 0 ? (
+              {paginatedAlerts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center">
                     <Typography color="textSecondary" py={4}>
-                      No alerts found
+                      {searchTerm || typeFilter ? 'No alerts match your filters' : 'No alerts found'}
                     </Typography>
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAlerts.map((alert) => (
+                paginatedAlerts.map((alert) => (
                   <TableRow 
                     key={alert._id}
+                    hover
                     sx={{ bgcolor: alert.read ? 'transparent' : 'action.hover' }}
                   >
                     <TableCell>{getAlertIcon(alert.type)}</TableCell>
@@ -319,6 +437,15 @@ const Alerts = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={filteredAlerts.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+        />
       </Paper>
     </Container>
   );
