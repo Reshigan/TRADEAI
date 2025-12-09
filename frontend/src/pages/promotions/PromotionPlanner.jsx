@@ -26,13 +26,17 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import simulationService from '../../services/simulation/simulationService';
+import { promotionService } from '../../services/api';
+import { useSnackbar } from 'notistack';
 
 const steps = ['Select Hierarchy', 'Configure Promotion', 'Review & Simulate', 'Finalize'];
 
 const PromotionPlanner = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { enqueueSnackbar } = useSnackbar();
   const [activeStep, setActiveStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [lockRatios, setLockRatios] = useState(false);
@@ -106,28 +110,28 @@ const PromotionPlanner = () => {
 
   const handleSaveAndSubmit = async () => {
     try {
+      setSubmitting(true);
       const promotionData = {
         name: config.name,
-        type: config.type,
+        promotionType: config.type,
         customers: selectedCustomers.map(c => c.id),
         products: selectedProducts.map(p => p.id),
         discountPercent: config.discountPercent,
         startDate: config.startDate,
         endDate: config.endDate,
         budget: config.budget,
-        simulation: simulation,
-        lockRatios
+        status: 'pending_approval'
       };
 
-      console.log('Creating promotion:', promotionData);
+      await promotionService.create(promotionData);
+      enqueueSnackbar('Promotion created successfully and submitted for approval', { variant: 'success' });
 
-      navigate('/promotions', { 
-        state: { 
-          message: 'Promotion created successfully and submitted for approval' 
-        } 
-      });
+      navigate('/promotions');
     } catch (error) {
       console.error('Failed to create promotion:', error);
+      enqueueSnackbar(error.message || 'Failed to create promotion', { variant: 'error' });
+    } finally {
+      setSubmitting(false);
     }
   };
 

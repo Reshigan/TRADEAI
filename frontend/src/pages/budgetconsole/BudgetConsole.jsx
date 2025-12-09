@@ -120,11 +120,25 @@ const BudgetConsole = () => {
   const handleApplyReallocation = async (suggestion) => {
     if (window.confirm(`Apply reallocation: ${suggestion.description}?`)) {
       try {
-        console.log('Applying reallocation:', suggestion);
+        await budgetService.applyReallocation(suggestion);
+        toast.success('Reallocation applied successfully');
         await loadBudgets();
+        analytics.trackEvent('budget_reallocation_applied', { suggestionId: suggestion.id });
       } catch (error) {
         console.error('Failed to apply reallocation:', error);
+        toast.error('Failed to apply reallocation');
       }
+    }
+  };
+
+  const handleSimulateReallocation = async (suggestion) => {
+    try {
+      const result = await simulationService.simulateReallocation(suggestion);
+      toast.info(`Simulation: Expected ROI improvement of ${(result.expectedROIImprovement * 100).toFixed(1)}%`);
+      analytics.trackEvent('budget_reallocation_simulated', { suggestionId: suggestion.id });
+    } catch (error) {
+      console.error('Failed to simulate reallocation:', error);
+      toast.error('Failed to simulate reallocation');
     }
   };
 
@@ -332,7 +346,7 @@ const BudgetConsole = () => {
                       }}
                       confidence={suggestion.confidence || 0.80}
                       hierarchyChips={suggestion.affectedHierarchy?.slice(0, 3) || []}
-                      onSimulate={() => console.log('Simulate reallocation')}
+                      onSimulate={() => handleSimulateReallocation(suggestion)}
                       onApply={() => handleApplyReallocation(suggestion)}
                       explanation={suggestion.rationale || 'AI-generated reallocation based on historical ROI performance'}
                     />
