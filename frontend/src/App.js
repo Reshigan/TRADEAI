@@ -153,6 +153,21 @@ import { UserSkillProvider } from './hooks/useUserSkillContext';
 // Enterprise Components
 import EnterpriseDashboard from './components/enterprise/EnterpriseDashboard';
 
+// Admin Pages - Customer Assignment & Alerts
+import CustomerAssignment from './pages/admin/customer-assignment/CustomerAssignment';
+import Alerts from './pages/admin/alerts/Alerts';
+
+// Approval History
+import ApprovalHistory from './pages/approvals/ApprovalHistory';
+
+// Performance Analytics Pages
+import PromotionEffectiveness from './pages/performance-analytics/PromotionEffectiveness';
+import BudgetVariance from './pages/performance-analytics/BudgetVariance';
+import CustomerSegmentation from './pages/performance-analytics/CustomerSegmentation';
+
+// Predictive Analytics
+import PredictiveAnalytics from './pages/planning/PredictiveAnalytics';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -1188,20 +1203,104 @@ function App() {
             )
           } 
         />
-        <Route 
-          path="/approvals/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ApprovalDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/claims"
+                <Route 
+                  path="/approvals/:id" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <ApprovalDetail />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/approvals/history" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <ApprovalHistory />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/customer-assignment" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <CustomerAssignment />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/alerts" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <Alerts />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/performance-analytics/promotion-effectiveness" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <PromotionEffectiveness />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/performance-analytics/budget-variance" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <BudgetVariance />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/performance-analytics/customer-segmentation" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <CustomerSegmentation />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/predictive-analytics" 
+                  element={
+                    isAuthenticated ? (
+                      <Layout user={user} onLogout={handleLogout}>
+                        <PredictiveAnalytics />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/" replace />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/claims"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>

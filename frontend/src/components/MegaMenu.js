@@ -209,7 +209,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'KAM Tools',
           items: [
             isKAM && { text: 'My Wallet', path: '/kamwallet', badge: 'NEW', description: 'Your discretionary spend budget' },
-            isKAM && { text: 'Submit Claim', path: '/claims/new', description: 'Submit a new claim' },
+            isKAM && { text: 'Submit Claim', path: '/claims/create', description: 'Submit a new claim' },
           ].filter(Boolean)
         }
       ]
@@ -252,8 +252,8 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
         {
           title: 'Bulk Operations',
           items: [
-            isAdmin && { text: 'Import Data', path: '/bulk-operations/import', badge: 'NEW', description: 'Bulk import customers/products' },
-            isAdmin && { text: 'Export Data', path: '/bulk-operations/export', badge: 'NEW', description: 'Bulk export data' },
+                        isAdmin && { text: 'Import Data', path: '/data/import-export', badge: 'NEW', description: 'Bulk import customers/products' },
+                        isAdmin && { text: 'Export Data', path: '/data/import-export', badge: 'NEW', description: 'Bulk export data' },
           ].filter(Boolean)
         }
       ]
