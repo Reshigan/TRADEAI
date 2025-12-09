@@ -38,6 +38,7 @@ import {
   AutoGraph
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import api from '../../services/api';
 
 const PredictiveAnalytics = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -52,66 +53,53 @@ const PredictiveAnalytics = () => {
     topOpportunity: ''
   });
 
-  // Mock predictions data
-  const mockPredictions = [
-    {
-      _id: '1',
-      category: 'Total Revenue',
-      current: 5200000,
-      predicted: 5850000,
-      change: 12.5,
-      confidence: 85,
-      trend: 'up'
-    },
-    {
-      _id: '2',
-      category: 'Promotion ROI',
-      current: 145,
-      predicted: 162,
-      change: 11.7,
-      confidence: 78,
-      trend: 'up'
-    },
-    {
-      _id: '3',
-      category: 'Customer Acquisition',
-      current: 45,
-      predicted: 52,
-      change: 15.6,
-      confidence: 72,
-      trend: 'up'
-    },
-    {
-      _id: '4',
-      category: 'Trade Spend Efficiency',
-      current: 82,
-      predicted: 88,
-      change: 7.3,
-      confidence: 81,
-      trend: 'up'
-    },
-    {
-      _id: '5',
-      category: 'Market Share',
-      current: 18.5,
-      predicted: 19.2,
-      change: 3.8,
-      confidence: 68,
-      trend: 'up'
-    }
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setPredictions(mockPredictions);
+        // Call the predictive analytics API
+        const response = await api.post('/predictive-analytics/predict-sales', {
+          horizon: timeHorizon
+        });
+        const data = response.data;
+        
+        // Transform API data to match component format
+        const transformedPredictions = [];
+        
+        if (data.predictions) {
+          // If API returns predictions array
+          data.predictions.forEach((pred, index) => {
+            transformedPredictions.push({
+              _id: index.toString(),
+              category: pred.category || pred.metric || 'Metric',
+              current: pred.current || pred.baseline || 0,
+              predicted: pred.predicted || pred.forecast || 0,
+              change: pred.change || pred.growthRate || 0,
+              confidence: pred.confidence || 75,
+              trend: (pred.change || pred.growthRate || 0) >= 0 ? 'up' : 'down'
+            });
+          });
+        }
+        
+        // If no predictions from API, show summary-based predictions
+        if (transformedPredictions.length === 0 && data.summary) {
+          transformedPredictions.push({
+            _id: '1',
+            category: 'Total Revenue',
+            current: data.summary.currentRevenue || 0,
+            predicted: data.summary.predictedRevenue || 0,
+            change: data.summary.growthRate || 0,
+            confidence: data.summary.confidence || 75,
+            trend: (data.summary.growthRate || 0) >= 0 ? 'up' : 'down'
+          });
+        }
+        
+        setPredictions(transformedPredictions);
         setSummary({
-          predictedRevenue: 5850000,
-          predictedGrowth: 12.5,
-          confidence: 78,
-          topOpportunity: 'Customer Acquisition'
+          predictedRevenue: data.summary?.predictedRevenue || data.predictedRevenue || 0,
+          predictedGrowth: data.summary?.growthRate || data.growthRate || 0,
+          confidence: data.summary?.confidence || data.confidence || 75,
+          topOpportunity: data.summary?.topOpportunity || data.topOpportunity || 'Revenue Growth'
         });
       } catch (error) {
         console.error('Error fetching predictions:', error);
@@ -121,7 +109,7 @@ const PredictiveAnalytics = () => {
       }
     };
     fetchData();
-  }, [timeHorizon]);
+  }, [timeHorizon, enqueueSnackbar]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {

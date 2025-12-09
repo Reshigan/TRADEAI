@@ -31,6 +31,7 @@ import {
   Business
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import api from '../../services/api';
 
 const CustomerSegmentation = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -43,91 +44,42 @@ const CustomerSegmentation = () => {
     C: { count: 0, revenue: 0, percentage: 0 }
   });
 
-  // Mock data
-  const mockCustomers = [
-    {
-      _id: '1',
-      name: 'Mega Retailer Corp',
-      segment: 'A',
-      revenue: 2500000,
-      orders: 450,
-      growth: 15,
-      tier: 'platinum'
-    },
-    {
-      _id: '2',
-      name: 'SuperMart Chain',
-      segment: 'A',
-      revenue: 1800000,
-      orders: 320,
-      growth: 12,
-      tier: 'platinum'
-    },
-    {
-      _id: '3',
-      name: 'Regional Stores Inc',
-      segment: 'B',
-      revenue: 750000,
-      orders: 180,
-      growth: 8,
-      tier: 'gold'
-    },
-    {
-      _id: '4',
-      name: 'City Grocers',
-      segment: 'B',
-      revenue: 520000,
-      orders: 145,
-      growth: 5,
-      tier: 'gold'
-    },
-    {
-      _id: '5',
-      name: 'Corner Shop Network',
-      segment: 'C',
-      revenue: 180000,
-      orders: 85,
-      growth: 2,
-      tier: 'silver'
-    },
-    {
-      _id: '6',
-      name: 'Local Mart',
-      segment: 'C',
-      revenue: 95000,
-      orders: 42,
-      growth: -3,
-      tier: 'bronze'
-    }
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setCustomers(mockCustomers);
+        const response = await api.get('/performance-analytics/customer-segmentation');
+        const data = response.data;
         
-        const totalRevenue = mockCustomers.reduce((acc, c) => acc + c.revenue, 0);
-        const segmentA = mockCustomers.filter(c => c.segment === 'A');
-        const segmentB = mockCustomers.filter(c => c.segment === 'B');
-        const segmentC = mockCustomers.filter(c => c.segment === 'C');
+        // Transform API data to match component format
+        const transformedCustomers = (data.customers || []).map(customer => ({
+          _id: customer.customerId,
+          name: customer.customerName || 'Unknown Customer',
+          segment: customer.segment || 'C',
+          revenue: customer.revenue || 0,
+          orders: customer.transactionCount || 0,
+          growth: Math.round((customer.revenuePercentage || 0) * 10) / 10,
+          tier: customer.tier || 'bronze'
+        }));
         
+        setCustomers(transformedCustomers);
+        
+        const totalRevenue = data.summary?.totalRevenue || 0;
         setSegments({
           A: {
-            count: segmentA.length,
-            revenue: segmentA.reduce((acc, c) => acc + c.revenue, 0),
-            percentage: Math.round((segmentA.reduce((acc, c) => acc + c.revenue, 0) / totalRevenue) * 100)
+            count: data.summary?.segmentA?.count || 0,
+            revenue: data.summary?.segmentA?.revenue || 0,
+            percentage: totalRevenue > 0 ? Math.round((data.summary?.segmentA?.revenue || 0) / totalRevenue * 100) : 0
           },
           B: {
-            count: segmentB.length,
-            revenue: segmentB.reduce((acc, c) => acc + c.revenue, 0),
-            percentage: Math.round((segmentB.reduce((acc, c) => acc + c.revenue, 0) / totalRevenue) * 100)
+            count: data.summary?.segmentB?.count || 0,
+            revenue: data.summary?.segmentB?.revenue || 0,
+            percentage: totalRevenue > 0 ? Math.round((data.summary?.segmentB?.revenue || 0) / totalRevenue * 100) : 0
           },
           C: {
-            count: segmentC.length,
-            revenue: segmentC.reduce((acc, c) => acc + c.revenue, 0),
-            percentage: Math.round((segmentC.reduce((acc, c) => acc + c.revenue, 0) / totalRevenue) * 100)
+            count: data.summary?.segmentC?.count || 0,
+            revenue: data.summary?.segmentC?.revenue || 0,
+            percentage: totalRevenue > 0 ? Math.round((data.summary?.segmentC?.revenue || 0) / totalRevenue * 100) : 0
           }
         });
       } catch (error) {
@@ -138,7 +90,7 @@ const CustomerSegmentation = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [enqueueSnackbar]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {

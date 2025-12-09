@@ -90,7 +90,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Quick Actions',
           items: [
             isKAM && { text: 'Create Promotion', path: '/promotions/new', description: 'Start a new promotion' },
-            isKAM && { text: 'Submit Claim', path: '/claims/new', description: 'Submit a customer claim' },
+            isKAM && { text: 'Submit Claim', path: '/claims/create', description: 'Submit a customer claim' },
             isManager && { text: 'Pending Approvals', path: '/approvals', badge: String(3), description: 'Items awaiting your approval' },
           ].filter(Boolean)
         }

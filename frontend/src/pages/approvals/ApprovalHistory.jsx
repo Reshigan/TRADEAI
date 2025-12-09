@@ -37,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
 const ApprovalHistory = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -48,69 +49,27 @@ const ApprovalHistory = () => {
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  // Mock data - in production this would come from API
-  const mockApprovals = [
-    {
-      _id: '1',
-      type: 'promotion',
-      title: 'Summer Sale 2024',
-      requestedBy: 'John Smith',
-      approvedBy: 'Jane Manager',
-      status: 'approved',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      completedAt: new Date(Date.now() - 43200000).toISOString()
-    },
-    {
-      _id: '2',
-      type: 'tradespend',
-      title: 'Q4 Trade Spend - Retailer A',
-      requestedBy: 'Mike Johnson',
-      approvedBy: 'Jane Manager',
-      status: 'approved',
-      createdAt: new Date(Date.now() - 172800000).toISOString(),
-      completedAt: new Date(Date.now() - 129600000).toISOString()
-    },
-    {
-      _id: '3',
-      type: 'claim',
-      title: 'Damaged Goods Claim #1234',
-      requestedBy: 'Sarah KAM',
-      approvedBy: null,
-      status: 'rejected',
-      createdAt: new Date(Date.now() - 259200000).toISOString(),
-      completedAt: new Date(Date.now() - 216000000).toISOString(),
-      rejectionReason: 'Insufficient documentation'
-    },
-    {
-      _id: '4',
-      type: 'promotion',
-      title: 'Black Friday Promo',
-      requestedBy: 'Tom Wilson',
-      approvedBy: 'Jane Manager',
-      status: 'approved',
-      createdAt: new Date(Date.now() - 345600000).toISOString(),
-      completedAt: new Date(Date.now() - 302400000).toISOString()
-    },
-    {
-      _id: '5',
-      type: 'budget',
-      title: 'Marketing Budget Increase',
-      requestedBy: 'Lisa Chen',
-      approvedBy: null,
-      status: 'rejected',
-      createdAt: new Date(Date.now() - 432000000).toISOString(),
-      completedAt: new Date(Date.now() - 388800000).toISOString(),
-      rejectionReason: 'Budget constraints'
-    }
-  ];
-
   useEffect(() => {
     const fetchApprovals = async () => {
       setLoading(true);
       try {
-        // In production: const response = await api.get('/approvals/history');
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setApprovals(mockApprovals);
+        const response = await api.get('/approvals?status=approved,rejected');
+        const data = response.data;
+        
+        // Transform API data to match component format
+        const transformedApprovals = (data.approvals || data || []).map((approval, index) => ({
+          _id: approval._id || index.toString(),
+          type: approval.type || approval.approvalType || 'promotion',
+          title: approval.title || approval.name || `Approval #${index + 1}`,
+          requestedBy: approval.requestedBy?.name || approval.createdBy?.name || 'Unknown',
+          approvedBy: approval.approvedBy?.name || approval.reviewedBy?.name || null,
+          status: approval.status || 'approved',
+          createdAt: approval.createdAt || new Date().toISOString(),
+          completedAt: approval.completedAt || approval.updatedAt || new Date().toISOString(),
+          rejectionReason: approval.rejectionReason || approval.comments || null
+        }));
+        
+        setApprovals(transformedApprovals);
       } catch (error) {
         console.error('Error fetching approval history:', error);
         enqueueSnackbar('Failed to load approval history', { variant: 'error' });
@@ -119,7 +78,7 @@ const ApprovalHistory = () => {
       }
     };
     fetchApprovals();
-  }, []);
+  }, [enqueueSnackbar]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {

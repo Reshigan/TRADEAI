@@ -36,6 +36,7 @@ import {
   Assessment
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import api from '../../services/api';
 
 const PromotionEffectiveness = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -50,71 +51,31 @@ const PromotionEffectiveness = () => {
     totalRevenue: 0
   });
 
-  // Mock data
-  const mockPromotions = [
-    {
-      _id: '1',
-      name: 'Summer Sale 2024',
-      type: 'discount',
-      spend: 50000,
-      revenue: 125000,
-      roi: 150,
-      uplift: 25,
-      status: 'completed'
-    },
-    {
-      _id: '2',
-      name: 'Buy One Get One',
-      type: 'bogo',
-      spend: 30000,
-      revenue: 72000,
-      roi: 140,
-      uplift: 18,
-      status: 'completed'
-    },
-    {
-      _id: '3',
-      name: 'Loyalty Rewards',
-      type: 'loyalty',
-      spend: 25000,
-      revenue: 45000,
-      roi: 80,
-      uplift: 12,
-      status: 'active'
-    },
-    {
-      _id: '4',
-      name: 'Flash Sale Weekend',
-      type: 'flash',
-      spend: 15000,
-      revenue: 42000,
-      roi: 180,
-      uplift: 35,
-      status: 'completed'
-    },
-    {
-      _id: '5',
-      name: 'New Product Launch',
-      type: 'launch',
-      spend: 40000,
-      revenue: 68000,
-      roi: 70,
-      uplift: 8,
-      status: 'completed'
-    }
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setPromotions(mockPromotions);
+        const response = await api.get('/performance-analytics/promotion-effectiveness');
+        const data = response.data;
+        
+        // Transform API data to match component format
+        const transformedPromotions = (data.scorecard || []).map(promo => ({
+          _id: promo.promotionId,
+          name: promo.promotionName,
+          type: promo.promotionType || 'discount',
+          spend: promo.metrics?.tradeSpend || 0,
+          revenue: promo.metrics?.revenue || 0,
+          roi: Math.round(promo.metrics?.roi || 0),
+          uplift: Math.round((promo.metrics?.expectedLift - 1) * 100) || 0,
+          status: promo.status
+        }));
+        
+        setPromotions(transformedPromotions);
         setSummary({
-          totalPromotions: mockPromotions.length,
-          avgROI: Math.round(mockPromotions.reduce((acc, p) => acc + p.roi, 0) / mockPromotions.length),
-          totalSpend: mockPromotions.reduce((acc, p) => acc + p.spend, 0),
-          totalRevenue: mockPromotions.reduce((acc, p) => acc + p.revenue, 0)
+          totalPromotions: data.summary?.totalPromotions || transformedPromotions.length,
+          avgROI: Math.round(data.summary?.averageROI || 0),
+          totalSpend: data.summary?.totalSpend || 0,
+          totalRevenue: data.summary?.totalRevenue || 0
         });
       } catch (error) {
         console.error('Error fetching promotion data:', error);
@@ -124,7 +85,7 @@ const PromotionEffectiveness = () => {
       }
     };
     fetchData();
-  }, [timeRange]);
+  }, [timeRange, enqueueSnackbar]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {

@@ -41,6 +41,7 @@ import {
   Settings
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import api from '../../../services/api';
 
 const Alerts = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -49,64 +50,25 @@ const Alerts = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [alerts, setAlerts] = useState([]);
 
-  // Mock alerts data - in production this would come from the API
-  const mockAlerts = [
-    {
-      _id: '1',
-      type: 'warning',
-      title: 'Budget Threshold Exceeded',
-      message: 'Marketing budget has exceeded 90% of allocated amount',
-      category: 'budget',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      read: false
-    },
-    {
-      _id: '2',
-      type: 'info',
-      title: 'New User Registration',
-      message: '3 new users have been registered in the last 24 hours',
-      category: 'users',
-      createdAt: new Date(Date.now() - 7200000).toISOString(),
-      read: true
-    },
-    {
-      _id: '3',
-      type: 'success',
-      title: 'Promotion Approved',
-      message: 'Summer Sale promotion has been approved by management',
-      category: 'promotions',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      read: true
-    },
-    {
-      _id: '4',
-      type: 'error',
-      title: 'ERP Sync Failed',
-      message: 'Failed to sync sales data from ERP system. Please check connection settings.',
-      category: 'system',
-      createdAt: new Date(Date.now() - 172800000).toISOString(),
-      read: false
-    },
-    {
-      _id: '5',
-      type: 'warning',
-      title: 'Low Inventory Alert',
-      message: '15 products have inventory below minimum threshold',
-      category: 'products',
-      createdAt: new Date(Date.now() - 259200000).toISOString(),
-      read: false
-    }
-  ];
-
   useEffect(() => {
-    // Simulate API call
     const fetchAlerts = async () => {
       setLoading(true);
       try {
-        // In production: const response = await api.get('/alerts');
-        // setAlerts(response.data.alerts);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setAlerts(mockAlerts);
+        const response = await api.get('/alerts');
+        const data = response.data;
+        
+        // Transform API data to match component format
+        const transformedAlerts = (data.alerts || []).map((alert, index) => ({
+          _id: alert._id || index.toString(),
+          type: alert.severity === 'critical' ? 'error' : alert.severity || 'info',
+          title: alert.title || 'Alert',
+          message: alert.message || '',
+          category: alert.type || 'system',
+          createdAt: alert.createdAt || new Date().toISOString(),
+          read: alert.read || false
+        }));
+        
+        setAlerts(transformedAlerts);
       } catch (error) {
         console.error('Error fetching alerts:', error);
         enqueueSnackbar('Failed to load alerts', { variant: 'error' });
@@ -115,7 +77,7 @@ const Alerts = () => {
       }
     };
     fetchAlerts();
-  }, []);
+  }, [enqueueSnackbar]);
 
   const getAlertIcon = (type) => {
     switch (type) {

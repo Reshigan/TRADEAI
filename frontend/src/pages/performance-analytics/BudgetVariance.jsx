@@ -37,6 +37,7 @@ import {
   Assessment
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import api from '../../services/api';
 
 const BudgetVariance = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -51,68 +52,30 @@ const BudgetVariance = () => {
     utilizationRate: 0
   });
 
-  // Mock data
-  const mockBudgets = [
-    {
-      _id: '1',
-      name: 'Marketing Budget',
-      category: 'marketing',
-      allocated: 500000,
-      spent: 425000,
-      variance: -75000,
-      utilizationRate: 85
-    },
-    {
-      _id: '2',
-      name: 'Trade Promotions',
-      category: 'promotions',
-      allocated: 300000,
-      spent: 312000,
-      variance: 12000,
-      utilizationRate: 104
-    },
-    {
-      _id: '3',
-      name: 'Customer Rebates',
-      category: 'rebates',
-      allocated: 200000,
-      spent: 178000,
-      variance: -22000,
-      utilizationRate: 89
-    },
-    {
-      _id: '4',
-      name: 'Sales Incentives',
-      category: 'incentives',
-      allocated: 150000,
-      spent: 165000,
-      variance: 15000,
-      utilizationRate: 110
-    },
-    {
-      _id: '5',
-      name: 'Display & Merchandising',
-      category: 'merchandising',
-      allocated: 100000,
-      spent: 72000,
-      variance: -28000,
-      utilizationRate: 72
-    }
-  ];
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setBudgets(mockBudgets);
-        const totalAllocated = mockBudgets.reduce((acc, b) => acc + b.allocated, 0);
-        const totalSpent = mockBudgets.reduce((acc, b) => acc + b.spent, 0);
+        const response = await api.get(`/performance-analytics/budget-variance?year=${year}`);
+        const data = response.data;
+        
+        // Transform API data to match component format
+        const transformedBudgets = (data.budgetVariance || []).map((budget, index) => ({
+          _id: index.toString(),
+          name: budget.category ? `${budget.category.charAt(0).toUpperCase()}${budget.category.slice(1)} Budget` : 'Budget',
+          category: budget.category || 'general',
+          allocated: budget.allocated || 0,
+          spent: budget.spent || 0,
+          variance: (budget.spent || 0) - (budget.allocated || 0),
+          utilizationRate: Math.round(budget.utilizationRate || 0)
+        }));
+        
+        setBudgets(transformedBudgets);
         setSummary({
-          totalAllocated,
-          totalSpent,
-          totalVariance: totalSpent - totalAllocated,
-          utilizationRate: Math.round((totalSpent / totalAllocated) * 100)
+          totalAllocated: data.summary?.totalAllocated || 0,
+          totalSpent: data.summary?.totalSpent || 0,
+          totalVariance: (data.summary?.totalSpent || 0) - (data.summary?.totalAllocated || 0),
+          utilizationRate: Math.round(data.summary?.overallUtilization || 0)
         });
       } catch (error) {
         console.error('Error fetching budget data:', error);
@@ -122,7 +85,7 @@ const BudgetVariance = () => {
       }
     };
     fetchData();
-  }, [year]);
+  }, [year, enqueueSnackbar]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
