@@ -614,7 +614,7 @@ class MLIntegrationService {
     // Mock recommendations - would query actual products
     const products = await Product.find({
       tenantId,
-      ...(category && { 'category.primary': category })
+      ...(category && { category })
     }).limit(limit * 2);
 
     return products.slice(0, limit).map((product, index) => ({

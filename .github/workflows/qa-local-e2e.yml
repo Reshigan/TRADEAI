@@ -41,8 +41,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: |
+            package-lock.json
             backend/package-lock.json
             frontend/package-lock.json
+      
+      - name: Install root dependencies (for Playwright)
+        run: npm install --legacy-peer-deps
       
       - name: Install backend dependencies
         working-directory: backend
@@ -176,3 +180,4 @@ jobs:
           echo "**Test Suite**: Local E2E Validation" >> $GITHUB_STEP_SUMMARY
           echo "**Environment**: Local (MongoDB + Backend + Frontend)" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+# CI trigger - verify production E2E after re-seeding

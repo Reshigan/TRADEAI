@@ -275,13 +275,12 @@ class ProductionSeeder {
     console.log('\nCreating users...');
     
     for (const profile of USER_PROFILES) {
-      const hashedPassword = await bcrypt.hash(CONFIG.defaultPassword, 10);
-      
+      // Don't pre-hash password - User model's pre-save hook will hash it
       const user = await User.create({
         ...profile,
         companyId: this.company._id,
         tenantId: this.tenant._id,
-        password: hashedPassword,
+        password: CONFIG.defaultPassword,
         isActive: true,
         lastLogin: addDays(new Date(), -randomBetween(0, 30)),
         preferences: {
@@ -331,7 +330,7 @@ class ProductionSeeder {
         sapCustomerId: `SAP${String(i + 1).padStart(6, '0')}`,
         name: retailer.name,
         code: retailer.code,
-        customerType: i < 5 ? 'chain' : (i < 7 ? 'retailer' : 'wholesaler'),
+        customerType: i < 5 ? 'chain' : (i < 7 ? 'independent' : 'wholesaler'),
         channel: i < 5 ? 'modern_trade' : (i < 7 ? 'traditional_trade' : 'b2b'),
         tier: retailer.tier,
         status: 'active',
@@ -438,10 +437,7 @@ class ProductionSeeder {
           barcode: `6${String(randomBetween(100000000000, 999999999999))}`,
           sapMaterialId: `MAT${String(productIndex).padStart(8, '0')}`,
           productType: 'own_brand',
-          category: {
-            primary: category,
-            secondary: [item.brand]
-          },
+          category: category,
           brand: item.brand,
           description: `Premium ${item.name.toLowerCase()} from ${item.brand}`,
           hierarchy: {
@@ -559,7 +555,7 @@ class ProductionSeeder {
       { name: 'Spring Clean', type: 'seasonal', months: [9, 10] },
       { name: 'Holiday Season', type: 'seasonal', months: [11, 12] },
       { name: 'New Product Launch', type: 'product_launch', months: [] },
-      { name: 'Brand Awareness', type: 'brand', months: [] }
+      { name: 'Brand Awareness', type: 'brand_awareness', months: [] }
     ];
 
     for (let year = 2024; year <= 2025; year++) {
@@ -579,9 +575,9 @@ class ProductionSeeder {
           status: endDate < new Date() ? 'completed' : (startDate <= new Date() ? 'active' : 'approved'),
           period: { startDate, endDate },
           budget: {
-            allocated: randomBetween(1000000, 5000000),
-            spent: endDate < new Date() ? randomBetween(800000, 4500000) : 0,
-            currency: CONFIG.company.currency
+            total: randomBetween(1000000, 5000000),
+            allocated: randomBetween(800000, 4000000),
+            spent: endDate < new Date() ? randomBetween(600000, 3500000) : 0
           },
           targets: {
             revenueTarget: randomBetween(10000000, 50000000),
@@ -711,6 +707,7 @@ class ProductionSeeder {
           tenantId: this.tenant._id,
           spendId: generateId('TS', this.tradeSpends.length + 1),
           spendType: spendType,
+          activityType: randomElement(['trade_marketing', 'key_account']),
           category: randomElement(categories),
           amount: {
             requested: requestedAmount,
@@ -900,6 +897,7 @@ class ProductionSeeder {
         const transaction = await Transaction.create({
           tenantId: this.tenant._id,
           customerId: customer._id,
+          transactionNumber: `TXN-${customer.code}-${String(this.transactions.length + 1).padStart(6, '0')}`,
           transactionType,
           status: randomElement(['completed', 'approved', 'processing']),
           currency: CONFIG.company.currency,
@@ -937,7 +935,7 @@ class ProductionSeeder {
       
       for (const customer of this.customers) {
         for (const product of this.products.slice(0, randomBetween(10, 20))) {
-          const category = CATEGORIES.find(c => c.name === product.category?.primary);
+          const category = CATEGORIES.find(c => c.name === product.category);
           const seasonalMultiplier = getSeasonalMultiplier(monthNum, category);
           
           const baseVolume = randomBetween(100, 1000);
