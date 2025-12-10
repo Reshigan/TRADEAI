@@ -49,12 +49,51 @@ const TradeSpendDetail = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [budgets, setBudgets] = useState([]);
+  const [performanceMetrics, setPerformanceMetrics] = useState(null);
+  const [performanceLoading, setPerformanceLoading] = useState(false);
+  const [activityLogs, setActivityLogs] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(false);
 
   // Fetch trade spend on component mount
   useEffect(() => {
     fetchTradeSpend();
     fetchBudgets();
   }, [id]);
+
+  // Fetch performance metrics when tab changes
+  useEffect(() => {
+    if (tabValue === 1) {
+      fetchPerformanceMetrics();
+    } else if (tabValue === 2) {
+      fetchActivityLogs();
+    }
+  }, [tabValue, id]);
+
+  const fetchPerformanceMetrics = async () => {
+    setPerformanceLoading(true);
+    try {
+      const response = await tradeSpendService.getPerformanceMetrics(id);
+      setPerformanceMetrics(response.data || null);
+    } catch (err) {
+      console.error('Failed to fetch performance metrics:', err);
+      setPerformanceMetrics(null);
+    } finally {
+      setPerformanceLoading(false);
+    }
+  };
+
+  const fetchActivityLogs = async () => {
+    setActivityLoading(true);
+    try {
+      const response = await tradeSpendService.getActivityLogs(id);
+      setActivityLogs(response.data || []);
+    } catch (err) {
+      console.error('Failed to fetch activity logs:', err);
+      setActivityLogs([]);
+    } finally {
+      setActivityLoading(false);
+    }
+  };
 
   // Fetch trade spend from API
   const fetchTradeSpend = async () => {
@@ -374,27 +413,85 @@ const TradeSpendDetail = () => {
                 </Box>
               )}
               
-              {tabValue === 1 && (
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Performance
-                  </Typography>
-                  <Alert severity="info">
-                    Performance metrics feature coming soon.
-                  </Alert>
-                </Box>
-              )}
+                            {tabValue === 1 && (
+                              <Box>
+                                <Typography variant="h6" gutterBottom>
+                                  Performance
+                                </Typography>
+                                {performanceLoading ? (
+                                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                                    <CircularProgress size={24} />
+                                  </Box>
+                                ) : performanceMetrics ? (
+                                  <Grid container spacing={2}>
+                                    <Grid item xs={6} md={3}>
+                                      <Card variant="outlined">
+                                        <CardContent>
+                                          <Typography variant="body2" color="text.secondary">ROI</Typography>
+                                          <Typography variant="h6">{performanceMetrics.roi ? `${performanceMetrics.roi.toFixed(1)}%` : 'N/A'}</Typography>
+                                        </CardContent>
+                                      </Card>
+                                    </Grid>
+                                    <Grid item xs={6} md={3}>
+                                      <Card variant="outlined">
+                                        <CardContent>
+                                          <Typography variant="body2" color="text.secondary">Sales Lift</Typography>
+                                          <Typography variant="h6">{performanceMetrics.salesLift ? `${performanceMetrics.salesLift.toFixed(1)}%` : 'N/A'}</Typography>
+                                        </CardContent>
+                                      </Card>
+                                    </Grid>
+                                    <Grid item xs={6} md={3}>
+                                      <Card variant="outlined">
+                                        <CardContent>
+                                          <Typography variant="body2" color="text.secondary">Units Sold</Typography>
+                                          <Typography variant="h6">{performanceMetrics.unitsSold?.toLocaleString() || 'N/A'}</Typography>
+                                        </CardContent>
+                                      </Card>
+                                    </Grid>
+                                    <Grid item xs={6} md={3}>
+                                      <Card variant="outlined">
+                                        <CardContent>
+                                          <Typography variant="body2" color="text.secondary">Revenue</Typography>
+                                          <Typography variant="h6">{performanceMetrics.revenue ? formatCurrency(performanceMetrics.revenue) : 'N/A'}</Typography>
+                                        </CardContent>
+                                      </Card>
+                                    </Grid>
+                                  </Grid>
+                                ) : (
+                                  <Alert severity="info">
+                                    No performance data available yet. Performance metrics will be calculated once the trade spend is active.
+                                  </Alert>
+                                )}
+                              </Box>
+                            )}
               
-              {tabValue === 2 && (
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Activity Log
-                  </Typography>
-                  <Alert severity="info">
-                    Activity log feature coming soon.
-                  </Alert>
-                </Box>
-              )}
+                            {tabValue === 2 && (
+                              <Box>
+                                <Typography variant="h6" gutterBottom>
+                                  Activity Log
+                                </Typography>
+                                {activityLoading ? (
+                                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                                    <CircularProgress size={24} />
+                                  </Box>
+                                ) : activityLogs.length === 0 ? (
+                                  <Alert severity="info">
+                                    No activity recorded for this trade spend yet.
+                                  </Alert>
+                                ) : (
+                                  <List>
+                                    {activityLogs.map((log, index) => (
+                                      <ListItem key={log._id || index} divider>
+                                        <ListItemText
+                                          primary={log.action || log.description}
+                                          secondary={`${log.user?.name || 'System'} - ${formatDate(log.createdAt || log.timestamp)}`}
+                                        />
+                                      </ListItem>
+                                    ))}
+                                  </List>
+                                )}
+                              </Box>
+                            )}
             </Box>
           </Paper>
           

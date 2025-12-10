@@ -40,6 +40,7 @@ import {
 } from 'chart.js';
 import { io } from 'socket.io-client';
 import { format, subHours } from 'date-fns';
+import api from '../../services/api';
 
 // Register Chart.js components
 ChartJS.register(
@@ -158,48 +159,47 @@ const RealTimeDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    const fetchDashboardData = useCallback(async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Generate mock data for demonstration
-      const now = new Date();
-      const labels = Array.from({ length: 24 }, (_, i) => 
-        format(subHours(now, 23 - i), 'HH:mm')
-      );
+        // Fetch real dashboard data from API
+        const response = await api.get('/dashboard/activity');
+        const data = response.data;
 
-      const revenueData = Array.from({ length: 24 }, () => 
-        Math.floor(Math.random() * 50000) + 100000
-      );
+        // Generate time labels for the last 24 hours
+        const now = new Date();
+        const labels = Array.from({ length: 24 }, (_, i) => 
+          format(subHours(now, 23 - i), 'HH:mm')
+        );
 
-      const mockData = {
-        revenue: revenueData,
-        labels: labels,
-        recentActivity: [
-          {
-            description: 'New promotion "Flash Sale" created',
-            timestamp: new Date()
-          },
-          {
-            description: 'Customer segment analysis completed',
-            timestamp: new Date(Date.now() - 180000)
-          },
-          {
-            description: 'ROI calculation updated for Q3',
-            timestamp: new Date(Date.now() - 360000)
-          }
-        ]
-      };
+                // Use real data if available, otherwise show empty state
+                const newDashboardData = {
+                  revenue: data?.revenue || [],
+                  labels: labels,
+                  recentActivity: data?.recentActivity || [],
+                  kpis: data?.kpis || {}
+                };
 
-      setDashboardData(mockData);
-    } catch (err) {
-      setError('Failed to fetch dashboard data');
-      console.error('Dashboard fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+                setDashboardData(newDashboardData);
+      } catch (err) {
+        // On error, show empty state instead of mock data
+        const now = new Date();
+        const labels = Array.from({ length: 24 }, (_, i) => 
+          format(subHours(now, 23 - i), 'HH:mm')
+        );
+        setDashboardData({
+          revenue: [],
+          labels: labels,
+          recentActivity: []
+        });
+        setError('Failed to fetch dashboard data');
+        console.error('Dashboard fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }, []);
 
   const handleRefresh = () => {
     fetchDashboardData();

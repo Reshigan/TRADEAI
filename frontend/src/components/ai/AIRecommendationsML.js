@@ -30,11 +30,17 @@ import {
 
 import mlService from '../../services/ai/mlService';
 
-const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, autoRefresh = false }) => {
+const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, autoRefresh = false, onAddToCart }) => {
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
   const [error, setError] = useState(null);
   const [metadata, setMetadata] = useState(null);
+
+  const handleAddToCart = (productId, productName) => {
+    if (onAddToCart) {
+      onAddToCart(productId, productName);
+    }
+  };
 
   useEffect(() => {
     loadRecommendations();
@@ -212,14 +218,15 @@ const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, au
                           size="small"
                         />
                       )}
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<ShoppingCart />}
-                        onClick={() => console.log('Add to cart:', rec.product_id)}
-                      >
-                        Add
-                      </Button>
+                                            <Button
+                                              variant="contained"
+                                              size="small"
+                                              startIcon={<ShoppingCart />}
+                                              onClick={() => handleAddToCart(rec.product_id, rec.product_name)}
+                                              disabled={!onAddToCart}
+                                            >
+                                              Add
+                                            </Button>
                     </Stack>
                   </Stack>
                 </CardContent>
