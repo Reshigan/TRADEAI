@@ -116,22 +116,66 @@ const AdvancedAnalytics = () => {
     fetchAnalyticsData();
   }, [dateRange, filters]);
 
-  const fetchAnalyticsData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    const fetchAnalyticsData = useCallback(async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Generate comprehensive mock data for advanced analytics
-      const mockData = generateMockAnalyticsData();
-      setAnalyticsData(mockData);
+        // Fetch real analytics data from API
+        const response = await api.get('/analytics/advanced', {
+          params: {
+            startDate: dateRange.start.toISOString(),
+            endDate: dateRange.end.toISOString(),
+            ...filters
+          }
+        });
 
-    } catch (err) {
-      setError('Failed to fetch analytics data');
-      console.error('Analytics fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [dateRange, filters]);
+        if (response.data) {
+          setAnalyticsData(response.data);
+        } else {
+          // Use empty state if no data returned
+          setAnalyticsData({
+            roiAnalysis: [],
+            liftAnalysis: [],
+            customerSegments: [],
+            productPerformance: [],
+            promotionEffectiveness: [],
+            trendAnalysis: [],
+            correlationMatrix: [],
+            predictiveInsights: [],
+            kpis: {
+              totalROI: 0,
+              averageLift: 0,
+              topPerformingSegment: '',
+              conversionRate: 0
+            }
+          });
+        }
+
+      } catch (err) {
+        setError('Failed to fetch analytics data');
+        console.error('Analytics fetch error:', err);
+        // Set empty state on error
+        setAnalyticsData({
+          roiAnalysis: [],
+          liftAnalysis: [],
+          customerSegments: [],
+          productPerformance: [],
+          promotionEffectiveness: [],
+          trendAnalysis: [],
+          correlationMatrix: [],
+          predictiveInsights: [],
+          kpis: {
+            totalROI: 0,
+            averageLift: 0,
+            topPerformingSegment: '',
+            conversionRate: 0
+          }
+        });
+      } finally {
+        setLoading(false);
+      }
+    }, [dateRange, filters]);
 
   const generateMockAnalyticsData = () => {
     const days = Math.ceil((dateRange.end - dateRange.start) / (1000 * 60 * 60 * 24));

@@ -42,6 +42,8 @@ const BudgetDetail = () => {
   const toast = useToast();
   const [budget, setBudget] = useState(null);
   const [tradeSpends, setTradeSpends] = useState([]);
+  const [activityLogs, setActivityLogs] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tabValue, setTabValue] = useState(0);
@@ -54,6 +56,25 @@ const BudgetDetail = () => {
     fetchTradeSpends();
     analytics.trackPageView('budget_detail', { budgetId: id });
   }, [id]);
+
+  useEffect(() => {
+    if (tabValue === 1) {
+      fetchActivityLogs();
+    }
+  }, [tabValue, id]);
+
+  const fetchActivityLogs = async () => {
+    setActivityLoading(true);
+    try {
+      const response = await budgetService.getActivityLogs(id);
+      setActivityLogs(response.data || []);
+    } catch (err) {
+      console.error('Failed to fetch activity logs:', err);
+      setActivityLogs([]);
+    } finally {
+      setActivityLoading(false);
+    }
+  };
 
   const fetchBudget = async () => {
     setLoading(true);
@@ -408,16 +429,33 @@ const BudgetDetail = () => {
                 </Box>
               )}
               
-              {tabValue === 1 && (
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Activity Log
-                  </Typography>
-                  <Alert severity="info">
-                    Activity log feature coming soon.
-                  </Alert>
-                </Box>
-              )}
+                            {tabValue === 1 && (
+                              <Box>
+                                <Typography variant="h6" gutterBottom>
+                                  Activity Log
+                                </Typography>
+                                {activityLoading ? (
+                                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                                    <CircularProgress size={24} />
+                                  </Box>
+                                ) : activityLogs.length === 0 ? (
+                                  <Alert severity="info">
+                                    No activity recorded for this budget yet.
+                                  </Alert>
+                                ) : (
+                                  <List>
+                                    {activityLogs.map((log, index) => (
+                                      <ListItem key={log._id || index} divider>
+                                        <ListItemText
+                                          primary={log.action || log.description}
+                                          secondary={`${log.user?.name || 'System'} - ${formatDate(log.createdAt || log.timestamp)}`}
+                                        />
+                                      </ListItem>
+                                    ))}
+                                  </List>
+                                )}
+                              </Box>
+                            )}
             </Box>
           </Paper>
         </Grid>

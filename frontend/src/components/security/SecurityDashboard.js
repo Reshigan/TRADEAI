@@ -87,22 +87,66 @@ const SecurityDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchSecurityData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    const fetchSecurityData = useCallback(async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Generate comprehensive mock security data
-      const mockData = generateMockSecurityData();
-      setSecurityData(mockData);
+        // Fetch real security data from API
+        const response = await api.get('/security/dashboard');
+      
+        if (response.data) {
+          setSecurityData(response.data);
+        } else {
+          // Set empty state if no data returned
+          setSecurityData({
+            overview: {
+              totalEvents: 0,
+              criticalEvents: 0,
+              activeThreats: 0,
+              resolvedToday: 0,
+              riskScore: 0,
+              systemHealth: 'healthy'
+            },
+            events: [],
+            auditLogs: [],
+            users: [],
+            roles: [],
+            permissions: [],
+            threatTrends: [],
+            eventsByType: [],
+            userActivity: [],
+            securityPolicies: []
+          });
+        }
 
-    } catch (err) {
-      setError('Failed to fetch security data');
-      console.error('Security data fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      } catch (err) {
+        setError('Failed to fetch security data');
+        console.error('Security data fetch error:', err);
+        // Set empty state on error
+        setSecurityData({
+          overview: {
+            totalEvents: 0,
+            criticalEvents: 0,
+            activeThreats: 0,
+            resolvedToday: 0,
+            riskScore: 0,
+            systemHealth: 'unknown'
+          },
+          events: [],
+          auditLogs: [],
+          users: [],
+          roles: [],
+          permissions: [],
+          threatTrends: [],
+          eventsByType: [],
+          userActivity: [],
+          securityPolicies: []
+        });
+      } finally {
+        setLoading(false);
+      }
+    }, []);
 
   const generateMockSecurityData = () => {
     const now = new Date();

@@ -285,6 +285,15 @@ export const budgetService = {
       throw error;
     }
   },
+  getActivityLogs: async (id) => {
+    try {
+      const response = await api.get(`/transaction-processing/audit/entity/budget/${id}`);
+      return response.data;
+    } catch (error) {
+      // Return empty array if audit logs not available
+      return { data: [] };
+    }
+  },
 };
 
 // Trade Spend services
@@ -327,6 +336,24 @@ export const tradeSpendService = {
       return response.data;
     } catch (error) {
       throw error;
+    }
+  },
+  getActivityLogs: async (id) => {
+    try {
+      const response = await api.get(`/transaction-processing/audit/entity/trade-spend/${id}`);
+      return response.data;
+    } catch (error) {
+      // Return empty array if audit logs not available
+      return { data: [] };
+    }
+  },
+  getPerformanceMetrics: async (id) => {
+    try {
+      const response = await api.get(`/trade-spends/${id}/performance`);
+      return response.data;
+    } catch (error) {
+      // Return empty object if performance metrics not available
+      return { data: null };
     }
   },
 };

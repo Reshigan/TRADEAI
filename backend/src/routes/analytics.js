@@ -73,26 +73,74 @@ router.get('/sales', authenticateToken, asyncHandler(async (req, res) => {
 }));
 
 // Get promotion analytics
-router.get('/promotions', authenticateToken, asyncHandler((req, res) => {
-  const { _year = new Date().getFullYear() } = req.query;
-
-  // Return promotion analytics mock data
-  res.json({
-    success: true,
-    data: {
-      totalPromotions: 45,
-      activePromotions: 12,
-      avgROI: 2.34,
-      totalInvestment: 1200000,
-      totalRevenue: 2808000,
-      topPromotions: [],
-      performanceByType: {
-        price_discount: { count: 20, roi: 2.5 },
-        volume_discount: { count: 15, roi: 2.1 },
-        bogo: { count: 10, roi: 2.8 }
+// Note: This route returns aggregated data. For real-time data, use the dashboard analytics endpoint.
+router.get('/promotions', authenticateToken, asyncHandler(async (req, res) => {
+  // Get company ID from user context for multi-tenant filtering
+  const companyId = req.user.companyId?._id || req.user.companyId || req.user.company || req.user.tenantId;
+  
+  // Import models for real data queries
+  const Promotion = require('../models/Promotion');
+  
+  try {
+    // Query real promotion data
+    const query = companyId ? { companyId } : {};
+    const promotions = await Promotion.find(query).lean();
+    
+    const activePromotions = promotions.filter(p => p.status === 'active').length;
+    const totalInvestment = promotions.reduce((sum, p) => sum + (p.budget || 0), 0);
+    const totalRevenue = promotions.reduce((sum, p) => sum + (p.actualRevenue || p.expectedRevenue || 0), 0);
+    const avgROI = totalInvestment > 0 ? totalRevenue / totalInvestment : 0;
+    
+    // Group by type
+    const performanceByType = {};
+    promotions.forEach(p => {
+      const type = p.promotionType || 'other';
+      if (!performanceByType[type]) {
+        performanceByType[type] = { count: 0, totalBudget: 0, totalRevenue: 0 };
       }
-    }
-  });
+      performanceByType[type].count++;
+      performanceByType[type].totalBudget += p.budget || 0;
+      performanceByType[type].totalRevenue += p.actualRevenue || p.expectedRevenue || 0;
+    });
+    
+    // Calculate ROI per type
+    Object.keys(performanceByType).forEach(type => {
+      const data = performanceByType[type];
+      data.roi = data.totalBudget > 0 ? data.totalRevenue / data.totalBudget : 0;
+    });
+    
+    res.json({
+      success: true,
+      data: {
+        totalPromotions: promotions.length,
+        activePromotions,
+        avgROI: parseFloat(avgROI.toFixed(2)),
+        totalInvestment,
+        totalRevenue,
+        topPromotions: promotions.slice(0, 5).map(p => ({
+          id: p._id,
+          name: p.name,
+          status: p.status,
+          budget: p.budget
+        })),
+        performanceByType
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching promotion analytics:', error);
+    res.json({
+      success: true,
+      data: {
+        totalPromotions: 0,
+        activePromotions: 0,
+        avgROI: 0,
+        totalInvestment: 0,
+        totalRevenue: 0,
+        topPromotions: [],
+        performanceByType: {}
+      }
+    });
+  }
 }));
 
 // Get budget analytics
