@@ -378,42 +378,82 @@ class AnalyticsController {
    * Get analytics insights and recommendations
    * GET /api/analytics/insights
    */
-  getInsights = asyncHandler((req, res) => {
-    const _tenantId = req.tenant.id;
-    const { _dateRange, _category } = req.query;
+  getInsights = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { dateRange, category } = req.query;
+    const Promotion = require('../models/Promotion');
+    const Insight = require('../models/Insight');
+    const Alert = require('../models/Alert');
 
-    // This would implement intelligent insights generation
-    // For now, returning mock insights
+    const now = new Date();
+    const startDate = dateRange ? new Date(dateRange.split(',')[0]) : new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const endDate = dateRange ? new Date(dateRange.split(',')[1]) : now;
+
+    const promotionQuery = {
+      company: tenantId,
+      createdAt: { $gte: startDate, $lte: endDate }
+    };
+    if (category) promotionQuery.type = category;
+
+    const [promotions, savedInsights, activeAlerts] = await Promise.all([
+      Promotion.find(promotionQuery)
+        .sort({ 'performance.roi': -1 })
+        .limit(20)
+        .lean(),
+      Insight.find({ tenantId, createdAt: { $gte: startDate } })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .lean(),
+      Alert.find({ companyId: tenantId, status: 'active' })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean()
+    ]);
+
+    const topPerformingPromotions = promotions
+      .filter((p) => p.performance?.roi > 0)
+      .slice(0, 5)
+      .map((p) => ({
+        id: p._id,
+        name: p.name,
+        roi: p.performance?.roi || 0,
+        recommendation: p.performance?.roi > 20
+          ? 'Consider extending this promotion type'
+          : p.performance?.roi > 10
+            ? 'Good performance, maintain current strategy'
+            : 'Review and optimize promotion parameters'
+      }));
+
+    const underperformingAreas = promotions
+      .filter((p) => p.performance?.roi < 5 || p.status === 'underperforming')
+      .slice(0, 3)
+      .map((p) => ({
+        area: p.type || p.name,
+        issue: p.performance?.roi < 0 ? 'Negative ROI' : 'Below target performance',
+        recommendation: 'Review targeting strategy and budget allocation'
+      }));
+
+    const opportunities = savedInsights
+      .filter((i) => i.type === 'opportunity')
+      .map((i) => ({
+        opportunity: i.title,
+        description: i.description,
+        potentialImpact: i.impact || 'Medium'
+      }));
+
+    const alerts = activeAlerts.map((a) => ({
+      type: a.priority === 'critical' ? 'error' : a.priority,
+      message: a.message,
+      action: a.details?.recommendation || 'Review and take action'
+    }));
+
     const insights = {
-      topPerformingPromotions: [
-        {
-          id: 'promo_001',
-          name: 'Summer Sale 2024',
-          roi: 25.5,
-          recommendation: 'Consider extending this promotion type'
-        }
-      ],
-      underperformingAreas: [
-        {
-          area: 'Budget Customer Segment',
-          issue: 'Low engagement rates',
-          recommendation: 'Review targeting strategy'
-        }
-      ],
-      opportunities: [
-        {
-          opportunity: 'Cross-selling potential',
-          description: 'Electronics customers show high interest in accessories',
-          potentialImpact: 'High'
-        }
-      ],
-      alerts: [
-        {
-          type: 'warning',
-          message: 'ROI trending downward for Q4 promotions',
-          action: 'Review promotion strategy'
-        }
-      ]
+      topPerformingPromotions: topPerformingPromotions.length > 0 ? topPerformingPromotions : [],
+      underperformingAreas: underperformingAreas.length > 0 ? underperformingAreas : [],
+      opportunities: opportunities.length > 0 ? opportunities : [],
+      alerts: alerts.length > 0 ? alerts : [],
+      generatedAt: new Date(),
+      dateRange: { start: startDate, end: endDate }
     };
 
     res.json({
@@ -459,17 +499,41 @@ class AnalyticsController {
    * Get analytics performance metrics
    * GET /api/analytics/performance
    */
-  getPerformanceMetrics = asyncHandler((req, res) => {
-    const _tenantId = req.tenant.id;
+  getPerformanceMetrics = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const AnalyticsEvent = require('../models/AnalyticsEvent');
 
-    // Mock performance metrics
+    const now = new Date();
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const [totalEvents, errorEvents, recentEvents] = await Promise.all([
+      AnalyticsEvent.countDocuments({ tenantId, createdAt: { $gte: oneDayAgo } }),
+      AnalyticsEvent.countDocuments({
+        tenantId,
+        createdAt: { $gte: oneDayAgo },
+        status: 'error'
+      }),
+      AnalyticsEvent.find({ tenantId, createdAt: { $gte: oneDayAgo } })
+        .sort({ createdAt: -1 })
+        .limit(100)
+        .lean()
+    ]);
+
+    const avgQueryTime = recentEvents.length > 0
+      ? recentEvents.reduce((sum, e) => sum + (e.duration || 0), 0) / recentEvents.length
+      : 0;
+
+    const cacheHits = recentEvents.filter((e) => e.cacheHit).length;
+    const cacheHitRate = recentEvents.length > 0 ? (cacheHits / recentEvents.length) * 100 : 0;
+    const errorRate = totalEvents > 0 ? (errorEvents / totalEvents) * 100 : 0;
+
     const metrics = {
-      cacheHitRate: 85.2,
-      averageQueryTime: 245, // milliseconds
-      totalCalculations: 15420,
-      errorRate: 0.8,
+      cacheHitRate: parseFloat(cacheHitRate.toFixed(1)),
+      averageQueryTime: Math.round(avgQueryTime),
+      totalCalculations: totalEvents,
+      errorRate: parseFloat(errorRate.toFixed(2)),
       lastUpdated: new Date(),
-      systemHealth: 'good'
+      systemHealth: errorRate < 1 ? 'good' : errorRate < 5 ? 'degraded' : 'poor'
     };
 
     res.json({

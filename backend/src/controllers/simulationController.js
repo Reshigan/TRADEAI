@@ -146,28 +146,159 @@ exports.compareScenarios = asyncHandler(async (req, res, _next) => {
   });
 });
 
-// Get saved simulations (placeholder)
-exports.getSavedSimulations = asyncHandler((req, res, _next) => {
-  // Implementation would fetch saved simulations from database
+// Get saved simulations
+exports.getSavedSimulations = asyncHandler(async (req, res, _next) => {
+  const Simulation = require('../models/Simulation');
+  const { type, status, page = 1, limit = 20 } = req.query;
+
+  const query = {
+    companyId: req.tenant._id,
+    $or: [
+      { createdBy: req.user._id },
+      { 'sharedWith.user': req.user._id }
+    ]
+  };
+
+  if (type) query.type = type;
+  if (status) query.status = status;
+
+  const skip = (parseInt(page) - 1) * parseInt(limit);
+
+  const [simulations, total] = await Promise.all([
+    Simulation.find(query)
+      .populate('createdBy', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit)),
+    Simulation.countDocuments(query)
+  ]);
+
   res.json({
     success: true,
-    data: [],
-    message: 'Saved simulations feature - implementation pending'
+    data: simulations,
+    pagination: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      pages: Math.ceil(total / parseInt(limit))
+    }
   });
 });
 
-// Save simulation (placeholder)
-exports.saveSimulation = asyncHandler((req, res, _next) => {
-  const { _scenario, _results, name } = req.body;
+// Save simulation
+exports.saveSimulation = asyncHandler(async (req, res, _next) => {
+  const Simulation = require('../models/Simulation');
+  const { scenario, results, name, description, type, tags } = req.body;
 
-  // Implementation would save simulation to database
+  const startTime = Date.now();
+
+  const simulation = new Simulation({
+    name,
+    description,
+    type: type || scenario?.type || 'promotion_impact',
+    scenario,
+    results,
+    parameters: {
+      dateRange: scenario?.dateRange,
+      products: scenario?.products,
+      customers: scenario?.customers,
+      promotions: scenario?.promotions,
+      budgets: scenario?.budgets,
+      customParameters: scenario?.customParameters
+    },
+    metrics: {
+      roi: results?.roi,
+      revenue: results?.revenue,
+      cost: results?.cost,
+      profit: results?.profit,
+      volume: results?.volume,
+      marketShare: results?.marketShare,
+      uplift: results?.uplift,
+      confidence: results?.confidence
+    },
+    status: 'completed',
+    tags: tags || [],
+    companyId: req.tenant._id,
+    tenantId: req.tenant._id,
+    createdBy: req.user._id,
+    executionTime: Date.now() - startTime
+  });
+
+  await simulation.save();
+
   res.json({
     success: true,
     message: 'Simulation saved successfully',
     data: {
-      id: `sim_${Date.now()}`,
-      name,
-      savedAt: new Date()
+      id: simulation._id,
+      name: simulation.name,
+      type: simulation.type,
+      savedAt: simulation.createdAt
     }
+  });
+});
+
+// Get simulation by ID
+exports.getSimulationById = asyncHandler(async (req, res, _next) => {
+  const Simulation = require('../models/Simulation');
+  const { id } = req.params;
+
+  const simulation = await Simulation.findOne({
+    _id: id,
+    companyId: req.tenant._id
+  })
+    .populate('createdBy', 'firstName lastName email')
+    .populate('parameters.products', 'name sku')
+    .populate('parameters.customers', 'name code');
+
+  if (!simulation) {
+    return res.status(404).json({
+      success: false,
+      error: 'Simulation not found'
+    });
+  }
+
+  if (!simulation.canUserAccess(req.user._id)) {
+    return res.status(403).json({
+      success: false,
+      error: 'Access denied'
+    });
+  }
+
+  res.json({
+    success: true,
+    data: simulation
+  });
+});
+
+// Delete simulation
+exports.deleteSimulation = asyncHandler(async (req, res, _next) => {
+  const Simulation = require('../models/Simulation');
+  const { id } = req.params;
+
+  const simulation = await Simulation.findOne({
+    _id: id,
+    companyId: req.tenant._id
+  });
+
+  if (!simulation) {
+    return res.status(404).json({
+      success: false,
+      error: 'Simulation not found'
+    });
+  }
+
+  if (!simulation.canUserEdit(req.user._id)) {
+    return res.status(403).json({
+      success: false,
+      error: 'Access denied'
+    });
+  }
+
+  await Simulation.deleteOne({ _id: id });
+
+  res.json({
+    success: true,
+    message: 'Simulation deleted successfully'
   });
 });

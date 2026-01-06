@@ -285,19 +285,28 @@ class ReportingController {
    * Get report generation status
    * GET /api/reports/status/:reportId
    */
-  getReportStatus = asyncHandler((req, res) => {
+  getReportStatus = asyncHandler(async (req, res) => {
     const { reportId } = req.params;
+    const ReportRun = require('../models/ReportRun');
 
-    // This would typically check a job queue for report generation status
-    // For now, returning mock status
+    const reportRun = await ReportRun.findOne({ runId: reportId });
+
+    if (!reportRun) {
+      return res.status(404).json({
+        success: false,
+        error: 'Report run not found'
+      });
+    }
+
     const status = {
-      reportId,
-      status: 'completed', // pending, generating, completed, failed
-      progress: 100,
-      startTime: new Date(Date.now() - 30000),
-      endTime: new Date(),
-      downloadUrl: `/api/reports/download/${reportId}`,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      reportId: reportRun.runId,
+      status: reportRun.status,
+      progress: reportRun.status === 'completed' ? 100 : reportRun.status === 'running' ? 50 : 0,
+      startTime: reportRun.startedAt,
+      endTime: reportRun.completedAt,
+      downloadUrl: reportRun.downloadUrl || `/api/reports/download/${reportId}`,
+      expiresAt: new Date(reportRun.createdAt.getTime() + 24 * 60 * 60 * 1000),
+      error: reportRun.error
     };
 
     res.json({
@@ -325,45 +334,41 @@ class ReportingController {
    * Get report history
    * GET /api/reports/history
    */
-  getReportHistory = asyncHandler((req, res) => {
-    const _tenantId = req.tenant.id;
-    const { page = 1, limit = 20, _reportType, _status } = req.query;
+  getReportHistory = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { page = 1, limit = 20, reportType, status } = req.query;
+    const ReportRun = require('../models/ReportRun');
+    const Report = require('../models/Report');
 
-    // This would typically query a database for report history
-    // For now, returning mock history
-    const history = [
-      {
-        id: 'report_001',
-        name: 'Customer Performance Report',
-        reportType: 'customer_performance',
-        format: 'excel',
-        status: 'completed',
-        generatedAt: new Date(Date.now() - 3600000),
-        generatedBy: req.user?.name || 'System',
-        parameters: {
-          dateRange: {
-            start: '2024-01-01',
-            end: '2024-01-31'
-          }
-        }
-      },
-      {
-        id: 'report_002',
-        name: 'Promotion ROI Analysis',
-        reportType: 'promotion_roi',
-        format: 'pdf',
-        status: 'completed',
-        generatedAt: new Date(Date.now() - 7200000),
-        generatedBy: req.user?.name || 'System',
-        parameters: {
-          dateRange: {
-            start: '2024-01-01',
-            end: '2024-01-31'
-          },
-          includeForecasting: true
-        }
-      }
-    ];
+    const query = {};
+    if (reportType) query['parameters.reportType'] = reportType;
+    if (status) query.status = status;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [reportRuns, total] = await Promise.all([
+      ReportRun.find(query)
+        .populate('requestedBy', 'firstName lastName email')
+        .populate('reportDefinitionId', 'name reportType')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      ReportRun.countDocuments(query)
+    ]);
+
+    const history = reportRuns.map(run => ({
+      id: run.runId,
+      name: run.reportDefinitionId?.name || 'Report',
+      reportType: run.reportDefinitionId?.reportType || run.parameters?.reportType,
+      format: run.parameters?.outputFormat || 'excel',
+      status: run.status,
+      generatedAt: run.completedAt || run.startedAt,
+      generatedBy: run.requestedBy ? `${run.requestedBy.firstName} ${run.requestedBy.lastName}` : 'System',
+      parameters: run.parameters,
+      rowCount: run.rowCount,
+      fileSize: run.fileSize,
+      downloadUrl: run.downloadUrl
+    }));
 
     res.json({
       success: true,
@@ -372,8 +377,8 @@ class ReportingController {
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          total: history.length,
-          pages: Math.ceil(history.length / limit)
+          total,
+          pages: Math.ceil(total / parseInt(limit))
         }
       }
     });
@@ -383,40 +388,72 @@ class ReportingController {
    * Get report metrics and analytics
    * GET /api/reports/metrics
    */
-  getReportMetrics = asyncHandler((req, res) => {
-    const _tenantId = req.tenant.id;
+  getReportMetrics = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const ReportRun = require('../models/ReportRun');
+    const Report = require('../models/Report');
 
-    // Mock report metrics
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [
+      totalReports,
+      reportsThisMonth,
+      scheduledReports,
+      activeSchedules,
+      reportsByType,
+      reportsByFormat,
+      recentRuns,
+      avgDuration
+    ] = await Promise.all([
+      ReportRun.countDocuments({}),
+      ReportRun.countDocuments({ createdAt: { $gte: startOfMonth } }),
+      Report.countDocuments({ company: tenantId, 'schedule.isScheduled': true }),
+      Report.countDocuments({ company: tenantId, 'schedule.isScheduled': true, 'schedule.isActive': true }),
+      ReportRun.aggregate([
+        { $group: { _id: '$parameters.reportType', count: { $sum: 1 } } }
+      ]),
+      ReportRun.aggregate([
+        { $group: { _id: '$parameters.outputFormat', count: { $sum: 1 } } }
+      ]),
+      ReportRun.find({})
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate('reportDefinitionId', 'reportType'),
+      ReportRun.aggregate([
+        { $match: { duration: { $exists: true, $ne: null } } },
+        { $group: { _id: null, avgDuration: { $avg: '$duration' } } }
+      ])
+    ]);
+
+    const typeMap = {};
+    reportsByType.forEach(item => {
+      if (item._id) typeMap[item._id] = item.count;
+    });
+
+    const formatMap = {};
+    reportsByFormat.forEach(item => {
+      if (item._id) formatMap[item._id] = item.count;
+    });
+
+    const mostPopular = reportsByType.sort((a, b) => b.count - a.count)[0];
+
+    const recentActivity = recentRuns.map(run => ({
+      action: run.status === 'completed' ? 'generated' : run.status,
+      reportType: run.reportDefinitionId?.reportType || run.parameters?.reportType || 'unknown',
+      timestamp: run.createdAt
+    }));
+
     const metrics = {
-      totalReports: 156,
-      reportsThisMonth: 23,
-      scheduledReports: 8,
-      activeSchedules: 6,
-      mostPopularReportType: 'customer_performance',
-      averageGenerationTime: 45, // seconds
-      reportsByType: {
-        customer_performance: 45,
-        product_performance: 38,
-        promotion_roi: 32,
-        trade_spend: 28,
-        custom: 13
-      },
-      reportsByFormat: {
-        excel: 89,
-        pdf: 67
-      },
-      recentActivity: [
-        {
-          action: 'generated',
-          reportType: 'customer_performance',
-          timestamp: new Date(Date.now() - 1800000)
-        },
-        {
-          action: 'scheduled',
-          reportType: 'promotion_roi',
-          timestamp: new Date(Date.now() - 3600000)
-        }
-      ]
+      totalReports,
+      reportsThisMonth,
+      scheduledReports,
+      activeSchedules,
+      mostPopularReportType: mostPopular?._id || 'none',
+      averageGenerationTime: avgDuration[0]?.avgDuration ? Math.round(avgDuration[0].avgDuration / 1000) : 0,
+      reportsByType: typeMap,
+      reportsByFormat: formatMap,
+      recentActivity
     };
 
     res.json({

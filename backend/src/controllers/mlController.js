@@ -536,38 +536,12 @@ class MLController {
   }
 
   // Model Training Status
-  getTrainingStatus(req, res) {
+  async getTrainingStatus(req, res) {
     try {
-      // Mock training status - in real implementation, track actual training jobs
-      const trainingStatus = {
-        customerBehavior: {
-          status: 'completed',
-          accuracy: 0.87,
-          lastTrained: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          nextTraining: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        demandForecasting: {
-          status: 'training',
-          progress: 0.65,
-          estimatedCompletion: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
-        },
-        promotionOptimization: {
-          status: 'completed',
-          accuracy: 0.82,
-          lastTrained: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-          nextTraining: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        churnPrediction: {
-          status: 'completed',
-          accuracy: 0.91,
-          lastTrained: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          nextTraining: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        priceOptimization: {
-          status: 'scheduled',
-          scheduledStart: new Date(Date.now() + 60 * 60 * 1000).toISOString()
-        }
-      };
+      const tenantId = req.tenant?.id;
+      const MLTrainingJob = require('../models/MLTrainingJob');
+
+      const trainingStatus = await MLTrainingJob.getTrainingStatus(tenantId);
 
       res.json({
         success: true,
@@ -585,27 +559,14 @@ class MLController {
   }
 
   // Retrain Models
-  retrainModels(req, res) {
+  async retrainModels(req, res) {
     try {
-      const { models = [], _force = false } = req.body;
-      const _tenantId = req.tenant?.id;
+      const { models = [], force = false } = req.body;
+      const tenantId = req.tenant?.id;
+      const userId = req.user?._id;
+      const MLTrainingJob = require('../models/MLTrainingJob');
 
-      // Mock retraining process
-      const retrainingJobs = [];
-      const availableModels = ['customerBehavior', 'demandForecasting', 'promotionOptimization', 'churnPrediction', 'priceOptimization'];
-      const modelsToRetrain = models.length > 0 ? models : availableModels;
-
-      for (const modelName of modelsToRetrain) {
-        if (availableModels.includes(modelName)) {
-          retrainingJobs.push({
-            modelName,
-            jobId: `retrain_${modelName}_${Date.now()}`,
-            status: 'queued',
-            queuedAt: new Date().toISOString(),
-            estimatedDuration: Math.floor(Math.random() * 120) + 30 // 30-150 minutes
-          });
-        }
-      }
+      const retrainingJobs = await MLTrainingJob.queueRetraining(tenantId, models, userId, force);
 
       res.json({
         success: true,
@@ -627,10 +588,12 @@ class MLController {
   }
 
   // A/B Test Recommendations
-  createABTest(req, res) {
+  async createABTest(req, res) {
     try {
-      const { testName, variants, trafficSplit, duration, metrics } = req.body;
+      const { testName, variants, trafficSplit, duration, metrics, description, type, targetAudience } = req.body;
       const tenantId = req.tenant?.id;
+      const userId = req.user?._id;
+      const ABTest = require('../models/ABTest');
 
       if (!testName || !variants || !Array.isArray(variants)) {
         return res.status(400).json({
@@ -639,25 +602,48 @@ class MLController {
         });
       }
 
-      // Mock A/B test creation
-      const abTest = {
-        id: `ab_test_${Date.now()}`,
+      const variantDocs = variants.map((v, index) => ({
+        name: typeof v === 'string' ? v : v.name,
+        description: typeof v === 'object' ? v.description : null,
+        config: typeof v === 'object' ? v.config : null,
+        trafficWeight: trafficSplit ? trafficSplit[index] : 100 / variants.length
+      }));
+
+      const abTest = new ABTest({
+        testId: `ab_test_${Date.now()}`,
         name: testName,
-        tenantId,
-        variants,
+        description,
+        type: type || 'other',
+        variants: variantDocs,
         trafficSplit: trafficSplit || variants.map(() => 100 / variants.length),
-        duration: duration || 14, // days
+        duration: duration || 14,
         metrics: metrics || ['conversion_rate', 'revenue', 'engagement'],
+        targetAudience,
         status: 'active',
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + (duration || 14) * 24 * 60 * 60 * 1000).toISOString(),
-        participants: 0,
-        results: null
-      };
+        startDate: new Date(),
+        endDate: new Date(Date.now() + (duration || 14) * 24 * 60 * 60 * 1000),
+        companyId: tenantId,
+        createdBy: userId
+      });
+
+      await abTest.save();
 
       res.json({
         success: true,
-        data: abTest,
+        data: {
+          id: abTest.testId,
+          name: abTest.name,
+          tenantId,
+          variants: abTest.variants,
+          trafficSplit: abTest.trafficSplit,
+          duration: abTest.duration,
+          metrics: abTest.metrics,
+          status: abTest.status,
+          startDate: abTest.startDate.toISOString(),
+          endDate: abTest.endDate.toISOString(),
+          participants: abTest.totalParticipants,
+          results: abTest.results
+        },
         message: 'A/B test created successfully'
       });
     } catch (error) {
@@ -671,10 +657,11 @@ class MLController {
   }
 
   // Get A/B Test Results
-  getABTestResults(req, res) {
+  async getABTestResults(req, res) {
     try {
       const { testId } = req.params;
-      const _tenantId = req.tenant?.id;
+      const tenantId = req.tenant?.id;
+      const ABTest = require('../models/ABTest');
 
       if (!testId) {
         return res.status(400).json({
@@ -683,39 +670,14 @@ class MLController {
         });
       }
 
-      // Mock A/B test results
-      const results = {
-        testId,
-        status: 'completed',
-        participants: 1250,
-        duration: 14,
-        variants: [
-          {
-            name: 'Control',
-            participants: 625,
-            conversionRate: 3.2,
-            revenue: 15600,
-            engagement: 0.67,
-            confidence: 0.95
-          },
-          {
-            name: 'Variant A',
-            participants: 625,
-            conversionRate: 3.8,
-            revenue: 18200,
-            engagement: 0.72,
-            confidence: 0.95
-          }
-        ],
-        winner: 'Variant A',
-        significance: 0.03,
-        recommendation: 'Implement Variant A - shows 18.75% improvement in conversion rate',
-        insights: [
-          'Variant A performed significantly better across all metrics',
-          'Revenue increased by 16.7% with high statistical confidence',
-          'Engagement improved by 7.5% indicating better user experience'
-        ]
-      };
+      const results = await ABTest.getTestResults(testId, tenantId);
+
+      if (!results) {
+        return res.status(404).json({
+          success: false,
+          message: 'A/B test not found'
+        });
+      }
 
       res.json({
         success: true,

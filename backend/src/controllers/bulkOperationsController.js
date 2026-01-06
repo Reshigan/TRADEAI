@@ -327,23 +327,32 @@ class BulkOperationsController {
    * Get bulk operation status
    * GET /api/bulk/status/:operationId
    */
-  getOperationStatus = asyncHandler((req, res) => {
+  getOperationStatus = asyncHandler(async (req, res) => {
     const { operationId } = req.params;
+    const BulkOperation = require('../models/BulkOperation');
 
-    // This would typically check a job queue or database for operation status
-    // For now, returning mock status
+    const operation = await BulkOperation.findOne({ operationId })
+      .populate('userId', 'firstName lastName email');
+
+    if (!operation) {
+      return res.status(404).json({
+        success: false,
+        error: 'Operation not found'
+      });
+    }
+
     const status = {
-      operationId,
-      status: 'completed', // pending, processing, completed, failed
-      progress: 100,
-      startTime: new Date(Date.now() - 60000),
-      endTime: new Date(),
-      results: {
-        processed: 1000,
-        successful: 950,
-        failed: 50
-      },
-      errors: []
+      operationId: operation.operationId,
+      operation: operation.operation,
+      modelType: operation.modelType,
+      status: operation.status,
+      progress: operation.progress,
+      startTime: operation.startTime,
+      endTime: operation.endTime,
+      duration: operation.duration,
+      results: operation.results,
+      errors: operation.errors,
+      user: operation.userId ? `${operation.userId.firstName} ${operation.userId.lastName}` : 'System'
     };
 
     res.json({
@@ -388,38 +397,40 @@ class BulkOperationsController {
    * Get bulk operation history
    * GET /api/bulk/history
    */
-  getOperationHistory = asyncHandler((req, res) => {
-    const _tenantId = req.tenant.id;
-    const { page = 1, limit = 20, _operation, _modelType } = req.query;
+  getOperationHistory = asyncHandler(async (req, res) => {
+    const tenantId = req.tenant.id;
+    const { page = 1, limit = 20, operation, modelType, status } = req.query;
+    const BulkOperation = require('../models/BulkOperation');
 
-    // This would typically query a database for operation history
-    // For now, returning mock history
-    const history = [
-      {
-        id: 'op_001',
-        operation: 'import',
-        modelType: 'customer',
-        status: 'completed',
-        recordsProcessed: 500,
-        recordsSuccessful: 485,
-        recordsFailed: 15,
-        startTime: new Date(Date.now() - 3600000),
-        endTime: new Date(Date.now() - 3500000),
-        user: req.user?.name || 'System'
-      },
-      {
-        id: 'op_002',
-        operation: 'export',
-        modelType: 'product',
-        status: 'completed',
-        recordsProcessed: 1200,
-        recordsSuccessful: 1200,
-        recordsFailed: 0,
-        startTime: new Date(Date.now() - 7200000),
-        endTime: new Date(Date.now() - 7100000),
-        user: req.user?.name || 'System'
-      }
-    ];
+    const query = { companyId: tenantId };
+    if (operation) query.operation = operation;
+    if (modelType) query.modelType = modelType;
+    if (status) query.status = status;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [operations, total] = await Promise.all([
+      BulkOperation.find(query)
+        .populate('userId', 'firstName lastName email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      BulkOperation.countDocuments(query)
+    ]);
+
+    const history = operations.map((op) => ({
+      id: op.operationId,
+      operation: op.operation,
+      modelType: op.modelType,
+      status: op.status,
+      recordsProcessed: op.results?.processed || 0,
+      recordsSuccessful: op.results?.successful || 0,
+      recordsFailed: op.results?.failed || 0,
+      startTime: op.startTime,
+      endTime: op.endTime,
+      duration: op.duration,
+      user: op.userId ? `${op.userId.firstName} ${op.userId.lastName}` : 'System'
+    }));
 
     res.json({
       success: true,
@@ -428,8 +439,8 @@ class BulkOperationsController {
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          total: history.length,
-          pages: Math.ceil(history.length / limit)
+          total,
+          pages: Math.ceil(total / parseInt(limit))
         }
       }
     });
@@ -439,17 +450,34 @@ class BulkOperationsController {
    * Cancel bulk operation
    * POST /api/bulk/cancel/:operationId
    */
-  cancelOperation = asyncHandler((req, res) => {
+  cancelOperation = asyncHandler(async (req, res) => {
     const { operationId } = req.params;
+    const BulkOperation = require('../models/BulkOperation');
 
-    // This would typically cancel a running job
-    // For now, returning mock response
+    const operation = await BulkOperation.findOne({ operationId });
+
+    if (!operation) {
+      return res.status(404).json({
+        success: false,
+        error: 'Operation not found'
+      });
+    }
+
+    if (operation.status === 'completed' || operation.status === 'failed') {
+      return res.status(400).json({
+        success: false,
+        error: 'Cannot cancel a completed or failed operation'
+      });
+    }
+
+    await operation.cancel(req.user._id);
+
     res.json({
       success: true,
-      message: `Operation ${operationId} cancellation requested`,
+      message: `Operation ${operationId} cancelled successfully`,
       data: {
         operationId,
-        status: 'cancelling'
+        status: 'cancelled'
       }
     });
   });
