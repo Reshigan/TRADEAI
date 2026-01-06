@@ -11,12 +11,21 @@ build/
 .next/
 out/
 
-# Environment
+# Environment - NEVER commit real secrets
 .env
 .env.local
 .env.production.local
 .env.development.local
 .env.test.local
+.env.production.real
+.env.staging
+backend/.env
+backend/.env.development
+backend/.env.staging
+backend/.env.production
+# Redis dump files
+*.rdb
+dump.rdb
 
 # IDE
 .vscode/
