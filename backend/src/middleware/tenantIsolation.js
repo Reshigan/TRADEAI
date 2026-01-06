@@ -187,20 +187,13 @@ function isAdminRoute(path) {
  * Main tenant isolation middleware
  */
 const tenantIsolation = async (req, res, next) => {
-  console.log('[TenantIsolation] ========== MIDDLEWARE INVOKED ==========');
-  console.log('[TenantIsolation] path:', req.path);
-  console.log('[TenantIsolation] url:', req.url);
-  console.log('[TenantIsolation] originalUrl:', req.originalUrl);
-  console.log('[TenantIsolation] method:', req.method);
   try {
-
     // Generate unique request ID for context tracking
     req.requestId = req.headers['x-request-id'] ||
                    `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Skip tenant check for public routes
     if (isPublicRoute(req.path)) {
-      console.log('[TenantIsolation] Public route, skipping');
       return next();
     }
 
@@ -208,22 +201,16 @@ const tenantIsolation = async (req, res, next) => {
     if (isAdminRoute(req.path)) {
       // Admin routes require system admin privileges
       // This will be handled by admin authentication middleware
-      console.log('[TenantIsolation] Admin route, skipping');
       return next();
     }
 
     // Extract tenant information
     const tenantInfo = extractTenantId(req);
 
-    console.log('[TenantIsolation] Path:', req.path);
-    console.log('[TenantIsolation] TenantInfo:', tenantInfo);
-    console.log('[TenantIsolation] Auth header:', req.headers.authorization ? 'Present' : 'Missing');
-
     if (!tenantInfo) {
       // No tenant info found - let the auth middleware handle authentication
       // The auth middleware will return 401 if token is missing/invalid
       // If auth passes but tenant is still missing, that would be caught by route handlers
-      console.log('[TenantIsolation] No tenant info found, continuing without tenant');
       return next();
     }
 
@@ -265,31 +252,17 @@ const tenantIsolation = async (req, res, next) => {
         }
       };
     } else {
-      console.log('[TenantIsolation] Looking up tenant:', tenantInfo);
-      console.log('[TenantIsolation] TenantInfo type:', tenantInfo.type, 'value:', tenantInfo.value);
-
       if (tenantInfo.type === 'id') {
-        console.log('[TenantIsolation] Using Tenant.findById with value:', tenantInfo.value);
         tenant = await Tenant.findById(tenantInfo.value);
-        console.log('[TenantIsolation] Result from findById:', tenant ? { id: tenant._id, name: tenant.name } : 'NULL');
       } else if (tenantInfo.type === 'slug') {
-        console.log('[TenantIsolation] Using Tenant.findBySlug with value:', tenantInfo.value);
         tenant = await Tenant.findBySlug(tenantInfo.value);
-        console.log('[TenantIsolation] Result from findBySlug:', tenant ? { id: tenant._id, name: tenant.name } : 'NULL');
       }
 
-      console.log('[TenantIsolation] Tenant found:', tenant ? tenant.name : 'NO');
-
       if (!tenant) {
-        console.log('[TenantIsolation] Tenant not found in DB - tenantInfo was:', JSON.stringify(tenantInfo));
         return res.status(404).json({
           error: 'Tenant not found',
           message: 'The specified tenant does not exist',
-          code: 'TENANT_NOT_FOUND',
-          debug: {
-            tenantInfo,
-            path: req.path
-          }
+          code: 'TENANT_NOT_FOUND'
         });
       }
     }
@@ -337,8 +310,6 @@ const tenantIsolation = async (req, res, next) => {
       settings: tenant.settings
     };
 
-    console.log('[TenantIsolation] req.tenant set with _id:', req.tenant._id);
-
     // Add helper methods to request
     req.hasFeature = (featureName) => tenantContext.hasFeature(req.requestId, featureName);
     req.canPerformAction = (action, currentUsage) =>
@@ -357,7 +328,6 @@ const tenantIsolation = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('Tenant isolation middleware error:', error);
     res.status(500).json({
       error: 'Tenant validation failed',
       message: 'An error occurred while validating tenant access',

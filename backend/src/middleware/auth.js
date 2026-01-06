@@ -13,16 +13,11 @@ const securityLogger = new SecurityAuditLogger({
 
 // Authenticate JWT token
 const authenticateToken = async (req, res, next) => {
-  console.log('MIDDLEWARE ENTRY POINT');
   try {
-    logger.info('=== AUTH MIDDLEWARE CALLED ===');
-    logger.info(`Path: ${req.originalUrl}`);
-    logger.info(`Method: ${req.method}`);
 
     // Get token from authorization header or cookies
     let token;
     const authHeader = req.headers.authorization;
-    logger.info(`Auth header present: ${!!authHeader}`);
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1];
@@ -69,23 +64,9 @@ const authenticateToken = async (req, res, next) => {
 
     // Get user from database
     const userId = decoded.userId || decoded._id; // Support both userId and _id for compatibility
-    console.log('Auth middleware - Looking for user with ID:', userId);
-    console.log('Auth middleware - Decoded token:', { userId: decoded.userId, _id: decoded._id });
 
     const user = await User.findById(userId)
       .populate('companyId', 'name code currency');
-
-    console.log('Auth middleware - User found:', !!user);
-    if (user) {
-      console.log('User details:', JSON.stringify({
-        _id: user._id,
-        email: user.email,
-        role: user.role,
-        isActive: user.isActive,
-        companyId: user.companyId,
-        assignedCustomers: user.assignedCustomers
-      }));
-    }
 
     if (!user) {
       securityLogger.logAuth({ id: userId || 'unknown' }, 'access', false, {
@@ -167,7 +148,6 @@ const authenticateToken = async (req, res, next) => {
     req.tenantId = user.tenantId; // Add tenantId for easy access
     next();
   } catch (error) {
-    console.log('MIDDLEWARE ERROR:', error.message);
     // Handle specific JWT errors
     if (error.name === 'JsonWebTokenError') {
       securityLogger.logAuth({ id: 'unknown' }, 'access', false, {

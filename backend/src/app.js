@@ -18,8 +18,6 @@ const { authenticateToken } = require('./middleware/auth');
 const { tenantIsolation, tenantCleanup } = require('./middleware/tenantIsolation');
 const { initSentry, getHandlers } = require('./config/sentry');
 
-console.log('[App.js] tenantIsolation type:', typeof tenantIsolation);
-console.log('[App.js] tenantCleanup type:', typeof tenantCleanup);
 
 // Load all models to ensure they are registered with Mongoose
 require('./models');
@@ -98,10 +96,31 @@ const serverStartTime = Date.now();
 // Create HTTP server
 const server = createServer(app);
 
-// Initialize Socket.IO
+// Initialize Socket.IO with production-safe CORS
 const io = new Server(server, {
   cors: {
-    origin: '*', // Allow all origins for development
+    origin: (origin, callback) => {
+      // Get allowed origins from environment variable (same as HTTP CORS)
+      const allowedOrigins = process.env.CORS_ORIGINS
+        ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+        : ['http://localhost:3000', 'http://localhost:3001'];
+
+      // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+      if (!origin) return callback(null, true);
+
+      // In development, allow all origins
+      if (process.env.NODE_ENV === 'development') {
+        return callback(null, true);
+      }
+
+      // In production, check against whitelist
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        logger.warn(`WebSocket CORS blocked request from origin: ${origin}`);
+        callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -223,18 +242,10 @@ if (process.env.NODE_ENV === 'production' || process.env.ENABLE_RATE_LIMITING ==
   logger.warn('⚠️  Rate limiting disabled (development mode)');
 }
 
-// Test middleware to verify middleware execution
-app.use('/api', (req, res, next) => {
-  console.log('[TEST MIDDLEWARE] Request received:', req.method, req.originalUrl);
-  next();
-});
 
 // Tenant isolation middleware (before authentication)
-console.log('[App.js] About to apply tenantCleanup middleware');
 app.use(tenantCleanup);
-console.log('[App.js] About to apply tenantIsolation to /api');
 app.use('/api', tenantIsolation);
-console.log('[App.js] Tenant middlewares applied');
 
 // API Documentation
 const swaggerOptions = {

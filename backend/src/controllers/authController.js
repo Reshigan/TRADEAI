@@ -11,23 +11,15 @@ const QRCode = require('qrcode');
 
 // Generate tokens
 const generateTokens = (user) => {
-  try {
-    console.log('Generating access token for user:', user._id);
-    const accessToken = user.generateAuthToken();
-    console.log('Access token generated successfully');
+  const accessToken = user.generateAuthToken();
 
-    const refreshToken = jwt.sign(
-      { _id: user._id },
-      config.jwt.refreshSecret,
-      { expiresIn: config.jwt.refreshExpiresIn }
-    );
-    console.log('Refresh token generated successfully');
+  const refreshToken = jwt.sign(
+    { _id: user._id },
+    config.jwt.refreshSecret,
+    { expiresIn: config.jwt.refreshExpiresIn }
+  );
 
-    return { accessToken, refreshToken };
-  } catch (error) {
-    console.error('Error in generateTokens:', error);
-    throw error;
-  }
+  return { accessToken, refreshToken };
 };
 
 // Register new user
@@ -40,9 +32,12 @@ exports.register = asyncHandler(async (req, res, _next) => {
     throw new AppError('User with this email or employee ID already exists', 400);
   }
 
+  // Validate tenantId is provided
+  if (!req.body.tenantId) {
+    throw new AppError('Tenant ID is required for registration', 400);
+  }
+
   // Create new user
-  console.log("DEBUG: About to create user with data:", { email, role, department, employeeId });
-  try {
   const user = await User.create({
     email,
     password,
@@ -51,20 +46,17 @@ exports.register = asyncHandler(async (req, res, _next) => {
     employeeId,
     role,
     department,
-    tenantId: req.body.tenantId || "6922a385aaa506dfbfb04f8b"
+    tenantId: req.body.tenantId
   });
+
   // Generate tokens
   const { accessToken, refreshToken } = generateTokens(user);
 
   // Cache user data
   await cacheService.cacheUser(user._id.toString(), user);
 
-  // Send welcome email
-  try {
-    await emailService.sendWelcomeEmail(user);
-  } catch (emailError) {
-    console.log("Email sending failed (non-blocking):", emailError.message);
-  }
+  // Send welcome email (non-blocking)
+  emailService.sendWelcomeEmail(user).catch(() => {});
 
   // Log registration
   logger.logAudit('user_registered', user._id, {
@@ -88,10 +80,7 @@ exports.register = asyncHandler(async (req, res, _next) => {
         refreshToken
       }
     }
-  });  } catch (error) {
-    console.error("DEBUG: Register error:", error.message, error.stack);
-    throw error;
-  }
+  });
 });
 
 // Quick login for demo
@@ -226,7 +215,6 @@ exports.login = asyncHandler(async (req, res, _next) => {
           role: user.role,
           department: user.department,
           tenantId: user.tenantId,
-    company: user.company,
           company: user.companyId ? {
             id: user.companyId._id,
             name: user.companyId.name,
