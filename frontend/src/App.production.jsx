@@ -50,6 +50,11 @@ import CacheManagement from './pages/admin-tools/CacheManagement';
 import SecurityMonitoring from './pages/admin-tools/SecurityMonitoring';
 import PerformanceMetrics from './pages/admin-tools/PerformanceMetrics';
 
+// Governance & Data Lineage
+import DataLineageDashboard from './pages/governance/DataLineageDashboard';
+import BaselineConfigPage from './pages/governance/BaselineConfigPage';
+import VarianceAnalysisPage from './pages/governance/VarianceAnalysisPage';
+
 // Common Components
 import LoadingSpinner from './components/common/LoadingSpinner';
 
@@ -335,6 +340,32 @@ function AppProduction() {
             element={
               <ProtectedRoute>
                 <PerformanceMetrics />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected Routes - Governance & Data Lineage */}
+          <Route 
+            path="/governance/data-lineage" 
+            element={
+              <ProtectedRoute>
+                <DataLineageDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/governance/baseline-config" 
+            element={
+              <ProtectedRoute>
+                <BaselineConfigPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/governance/variance-analysis" 
+            element={
+              <ProtectedRoute>
+                <VarianceAnalysisPage />
               </ProtectedRoute>
             } 
           />
