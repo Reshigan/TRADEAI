@@ -75,6 +75,10 @@ const License = require('./License');
 // KAM specific
 const KAMWallet = require('./KAMWallet');
 
+// Webhooks
+const Webhook = require('./Webhook');
+const WebhookDelivery = require('./WebhookDelivery');
+
 module.exports = {
   // Core
   User,
@@ -148,5 +152,9 @@ module.exports = {
   License,
 
   // KAM
-  KAMWallet
+  KAMWallet,
+
+  // Webhooks
+  Webhook,
+  WebhookDelivery
 };

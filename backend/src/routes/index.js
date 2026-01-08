@@ -63,6 +63,12 @@ const tradeSpendAnalyticsRoutes = require('./tradeSpendAnalytics');
 // Data Lineage and Governance Routes
 const dataLineageRoutes = require('./dataLineageRoutes');
 
+// Webhook Routes
+const webhookRoutes = require('./webhookRoutes');
+
+// SSO Routes
+const ssoRoutes = require('./ssoRoutes');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -123,6 +129,12 @@ router.use('/trade-spend-analytics', tradeSpendAnalyticsRoutes);
 
 // Data Lineage and Governance Routes
 router.use('/data-lineage', dataLineageRoutes);
+
+// Webhook Routes
+router.use('/webhooks', webhookRoutes);
+
+// SSO Routes (no auth required for login/callback)
+router.use('/sso', ssoRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {

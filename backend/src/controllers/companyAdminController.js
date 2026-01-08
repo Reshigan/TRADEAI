@@ -400,7 +400,7 @@ exports.updateSettings = asyncHandler(async (req, res) => {
 
 exports.uploadLogo = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
-  
+
   // In production, this would handle file upload to S3/cloud storage
   // For now, we'll accept a URL or base64
   const { logoUrl, logoType = 'default' } = req.body;
@@ -493,7 +493,7 @@ exports.testAzureADConnection = asyncHandler(async (req, res) => {
   });
 
   const result = await azureService.testConnection();
-  
+
   // Update config with connection status
   config.connectionStatus = result.status;
   config.lastConnectionTest = new Date();
@@ -502,14 +502,14 @@ exports.testAzureADConnection = asyncHandler(async (req, res) => {
 
   logger.logAudit('azure_ad_connection_tested', req.user._id, { companyId, status: result.status });
 
-  res.json({ 
-    success: result.success, 
-    data: { 
-      status: result.status, 
+  res.json({
+    success: result.success,
+    data: {
+      status: result.status,
       lastTest: config.lastConnectionTest,
       organization: result.organization,
       error: result.error
-    } 
+    }
   });
 });
 
@@ -544,13 +544,13 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
     // Fetch groups/departments from Azure AD
     logger.info('Starting Azure AD sync - fetching groups', { companyId });
     const groupsResult = await azureService.getGroups();
-    
+
     if (groupsResult.success && groupsResult.groups.length > 0) {
       for (const azureGroup of groupsResult.groups) {
         try {
           const deptData = azureService.transformGroupToDepartment(azureGroup);
           const existing = await Department.findOne({ companyId, azureAdId: azureGroup.id });
-          
+
           if (existing) {
             existing.name = deptData.name;
             existing.description = deptData.description;
@@ -577,7 +577,7 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
     // Fetch users from Azure AD
     logger.info('Azure AD sync - fetching users', { companyId });
     const usersResult = await azureService.getUsers();
-    
+
     if (usersResult.success && usersResult.users.length > 0) {
       // Get all existing Azure AD IDs to track deactivations
       const existingEmployees = await Employee.find({ companyId, source: 'azure_ad' }).select('azureAdId email');
@@ -587,12 +587,12 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
         try {
           const empData = azureService.transformUserToEmployee(azureUser);
           syncedAzureIds.add(azureUser.id);
-          
+
           // Find department by name if available
           let dept = null;
           if (empData.departmentName) {
-            dept = await Department.findOne({ 
-              companyId, 
+            dept = await Department.findOne({
+              companyId,
               $or: [
                 { name: empData.departmentName },
                 { name: { $regex: new RegExp(empData.departmentName, 'i') } }
@@ -600,14 +600,14 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
             });
           }
 
-          const existing = await Employee.findOne({ 
-            companyId, 
+          const existing = await Employee.findOne({
+            companyId,
             $or: [
               { azureAdId: azureUser.id },
               { email: empData.email }
             ]
           });
-          
+
           if (existing) {
             existing.azureAdId = azureUser.id;
             existing.firstName = empData.firstName;
@@ -644,8 +644,8 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
       for (const existing of existingEmployees) {
         if (existing.azureAdId && !syncedAzureIds.has(existing.azureAdId)) {
           try {
-            await Employee.findByIdAndUpdate(existing._id, { 
-              status: 'inactive', 
+            await Employee.findByIdAndUpdate(existing._id, {
+              status: 'inactive',
               syncStatus: 'deactivated',
               lastSyncedAt: new Date()
             });
@@ -658,7 +658,7 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
     }
 
     stats.duration = Math.round((Date.now() - startTime) / 1000);
-    
+
     // Update config with sync status
     config.connectionStatus = 'connected';
     await config.recordSync(stats, stats.errors > 0 ? 'partial' : 'success', req.user._id);
@@ -671,11 +671,11 @@ exports.syncAzureAD = asyncHandler(async (req, res) => {
     stats.duration = Math.round((Date.now() - startTime) / 1000);
     stats.errors++;
     stats.errorDetails.push({ type: 'sync', error: error.message });
-    
+
     await config.recordSync(stats, 'failed', req.user._id);
-    
+
     logger.error('Azure AD sync failed', { companyId, error: error.message });
-    
+
     throw new AppError(`Azure AD sync failed: ${error.message}`, 500);
   }
 });
@@ -885,7 +885,7 @@ exports.getUser = asyncHandler(async (req, res) => {
 
 exports.createUser = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
-  
+
   // Company admin can only create users with role <= admin
   const allowedRoles = ['admin', 'manager', 'kam', 'analyst', 'user'];
   if (!allowedRoles.includes(req.body.role)) {
@@ -906,7 +906,7 @@ exports.createUser = asyncHandler(async (req, res) => {
 
 exports.updateUser = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
-  
+
   // Prevent changing role to super_admin
   if (req.body.role === 'super_admin') {
     throw new AppError('Cannot assign super_admin role', 400);
@@ -1024,14 +1024,14 @@ exports.testSAPConnection = asyncHandler(async (req, res) => {
 
   logger.logAudit('sap_connection_tested', req.user._id, { companyId, status: result.status });
 
-  res.json({ 
-    success: result.success, 
-    data: { 
-      status: result.status, 
+  res.json({
+    success: result.success,
+    data: {
+      status: result.status,
       lastTest: settings.sap.lastConnectionTest,
       message: result.message,
       error: result.error
-    } 
+    }
   });
 });
 
@@ -1056,21 +1056,21 @@ exports.testERPConnection = asyncHandler(async (req, res) => {
 
   logger.logAudit('erp_connection_tested', req.user._id, { companyId, status: result.status });
 
-  res.json({ 
-    success: result.success, 
-    data: { 
-      status: result.status, 
+  res.json({
+    success: result.success,
+    data: {
+      status: result.status,
       lastTest: settings.erp.lastConnectionTest,
       message: result.message,
       error: result.error
-    } 
+    }
   });
 });
 
 exports.syncMasterData = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
   const { dataType } = req.body; // 'customers', 'products', 'pricing'
-  
+
   const settings = await ERPSettings.findOne({ companyId });
   if (!settings) throw new AppError('ERP settings not configured', 400);
 
@@ -1087,13 +1087,13 @@ exports.syncMasterData = asyncHandler(async (req, res) => {
 
   // Initialize ERP service
   const erpService = new ERPService(settings);
-  
+
   // Determine data source (SAP or generic ERP)
   const source = settings.masterData?.[`${dataType}Source`] || 'erp';
 
   try {
     let fetchResult;
-    
+
     if (dataType === 'customers') {
       // Fetch customers from configured source
       if (source === 'sap' && settings.sap?.host) {
@@ -1109,7 +1109,7 @@ exports.syncMasterData = asyncHandler(async (req, res) => {
         try {
           stats.recordsProcessed++;
           const existing = await Customer.findOne({ companyId, externalId: customerData.externalId });
-          
+
           if (existing) {
             await Customer.findByIdAndUpdate(existing._id, {
               ...customerData,
@@ -1148,7 +1148,7 @@ exports.syncMasterData = asyncHandler(async (req, res) => {
         try {
           stats.recordsProcessed++;
           const existing = await Product.findOne({ companyId, externalId: productData.externalId });
-          
+
           if (existing) {
             await Product.findByIdAndUpdate(existing._id, {
               ...productData,
@@ -1211,7 +1211,7 @@ exports.syncMasterData = asyncHandler(async (req, res) => {
 
 exports.syncSalesData = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
-  
+
   const settings = await ERPSettings.findOne({ companyId });
   if (!settings) throw new AppError('ERP settings not configured', 400);
 
@@ -1250,16 +1250,16 @@ exports.syncSalesData = asyncHandler(async (req, res) => {
 
     // Process sales records
     const SalesHistory = require('../models/SalesHistory');
-    
+
     for (const record of (fetchResult.records || [])) {
       try {
         stats.recordsProcessed++;
-        
-        const existing = await SalesHistory.findOne({ 
-          companyId, 
-          externalId: record.externalId 
+
+        const existing = await SalesHistory.findOne({
+          companyId,
+          externalId: record.externalId
         });
-        
+
         if (existing) {
           await SalesHistory.findByIdAndUpdate(existing._id, {
             ...record,
@@ -1315,7 +1315,7 @@ exports.syncSalesData = asyncHandler(async (req, res) => {
 exports.getERPSyncHistory = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
   const { limit = 20 } = req.query;
-  
+
   const settings = await ERPSettings.findOne({ companyId });
   if (!settings) {
     return res.json({ success: true, data: [] });
@@ -1331,7 +1331,7 @@ exports.getERPSyncHistory = asyncHandler(async (req, res) => {
 exports.updateUserRole = asyncHandler(async (req, res) => {
   const companyId = getCompanyId(req);
   const { role } = req.body;
-  
+
   // Validate role - company admin can only assign these roles
   const allowedRoles = ['admin', 'manager', 'kam', 'analyst', 'user'];
   if (!allowedRoles.includes(role)) {
