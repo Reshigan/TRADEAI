@@ -55,6 +55,9 @@ import DataLineageDashboard from './pages/governance/DataLineageDashboard';
 import BaselineConfigPage from './pages/governance/BaselineConfigPage';
 import VarianceAnalysisPage from './pages/governance/VarianceAnalysisPage';
 
+// Integrations
+import WebhookManagementPage from './pages/integrations/WebhookManagementPage';
+
 // Common Components
 import LoadingSpinner from './components/common/LoadingSpinner';
 
@@ -366,6 +369,16 @@ function AppProduction() {
             element={
               <ProtectedRoute>
                 <VarianceAnalysisPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected Routes - Integrations */}
+          <Route 
+            path="/integrations/webhooks" 
+            element={
+              <ProtectedRoute>
+                <WebhookManagementPage />
               </ProtectedRoute>
             } 
           />
