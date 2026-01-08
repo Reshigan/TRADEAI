@@ -60,6 +60,9 @@ const rebateRoutes = require('./rebate');
 // Trade Spend Analytics Routes
 const tradeSpendAnalyticsRoutes = require('./tradeSpendAnalytics');
 
+// Data Lineage and Governance Routes
+const dataLineageRoutes = require('./dataLineageRoutes');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -118,6 +121,9 @@ router.use('/rebates', rebateRoutes);
 // Trade Spend Analytics Routes
 router.use('/trade-spend-analytics', tradeSpendAnalyticsRoutes);
 
+// Data Lineage and Governance Routes
+router.use('/data-lineage', dataLineageRoutes);
+
 // API documentation endpoint
 router.get('/', (req, res) => {
   res.json({
@@ -145,6 +151,12 @@ router.get('/', (req, res) => {
         'super-admin',
         'advanced-security',
         'enterprise-reporting'
+      ],
+      governance: [
+        'data-lineage',
+        'baseline-methodology',
+        'variance-reason-codes',
+        'reconciliation'
       ]
     },
     endpoints: {
