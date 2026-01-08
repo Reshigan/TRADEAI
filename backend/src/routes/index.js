@@ -69,6 +69,9 @@ const webhookRoutes = require('./webhookRoutes');
 // SSO Routes
 const ssoRoutes = require('./ssoRoutes');
 
+// Allocation Routes
+const allocationRoutes = require('./allocationRoutes');
+
 // Health check (no auth required)
 router.use('/health', healthRoutes);
 
@@ -135,6 +138,9 @@ router.use('/webhooks', webhookRoutes);
 
 // SSO Routes (no auth required for login/callback)
 router.use('/sso', ssoRoutes);
+
+// Allocation Routes (hierarchy-based proportional allocation)
+router.use('/allocations', allocationRoutes);
 
 // API documentation endpoint
 router.get('/', (req, res) => {

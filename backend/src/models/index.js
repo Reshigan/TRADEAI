@@ -79,6 +79,9 @@ const KAMWallet = require('./KAMWallet');
 const Webhook = require('./Webhook');
 const WebhookDelivery = require('./WebhookDelivery');
 
+// Allocation
+const Allocation = require('./Allocation');
+
 module.exports = {
   // Core
   User,
@@ -156,5 +159,8 @@ module.exports = {
 
   // Webhooks
   Webhook,
-  WebhookDelivery
+  WebhookDelivery,
+
+  // Allocation
+  Allocation
 };
