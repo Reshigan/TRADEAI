@@ -59,6 +59,12 @@ const AIChat = require('./AIChat');
 const AuditLog = require('./AuditLog');
 const SecurityEvent = require('./SecurityEvent');
 
+// Data lineage and governance
+const ImportBatch = require('./ImportBatch');
+const DataLineage = require('./DataLineage');
+const BaselineConfig = require('./BaselineConfig');
+const VarianceReasonCode = require('./VarianceReasonCode');
+
 // Approvals and permissions
 const Approval = require('./Approval');
 const ApprovalPolicy = require('./ApprovalPolicy');
@@ -77,27 +83,27 @@ module.exports = {
   Customer,
   Product,
   Vendor,
-  
+
   // Budget and financial
   Budget,
   MarketingBudgetAllocation,
   Accrual,
   Rebate,
   RebateAccrual,
-  
+
   // Promotions
   Promotion,
   Campaign,
   PromotionAnalysis,
   CombinationAnalysis,
-  
+
   // Trade spend and transactions
   TradeSpend,
   TradingTerm,
   Transaction,
   SalesTransaction,
   SalesHistory,
-  
+
   // Financial documents
   Invoice,
   Payment,
@@ -106,35 +112,41 @@ module.exports = {
   Deduction,
   Dispute,
   Settlement,
-  
+
   // Activity and analytics
   ActivityGrid,
   AnalyticsEvent,
   Insight,
-  
+
   // Reporting
   Report,
   ReportDefinition,
   ReportRun,
-  
+
   // Master data
   MasterData,
   StoreHierarchy,
-  
+
   // AI
   AIChat,
-  
+
   // Security and audit
   AuditLog,
   SecurityEvent,
-  
+
+  // Data lineage and governance
+  ImportBatch,
+  DataLineage,
+  BaselineConfig,
+  VarianceReasonCode,
+
   // Approvals and permissions
   Approval,
   ApprovalPolicy,
   Permission,
   Role,
   License,
-  
+
   // KAM
-  KAMWallet,
+  KAMWallet
 };
