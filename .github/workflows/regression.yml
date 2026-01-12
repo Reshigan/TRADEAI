@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload ledger artifact
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: ledger-${{ matrix.company_type }}-${{ github.run_id }}
           path: artifacts/ledger/${{ env.RUN_ID }}/
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-report-${{ matrix.company_type }}-${{ github.run_id }}
           path: playwright-report/
@@ -83,7 +83,7 @@ jobs:
 
       - name: Upload test traces
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: traces-${{ matrix.company_type }}-${{ github.run_id }}
           path: test-results/
