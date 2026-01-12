@@ -5,123 +5,11 @@ const logger = require('../utils/logger');
 /**
  * Trading Terms Controller
  * Manages trading terms for companies
+ * PRODUCTION: All mock data removed - using real MongoDB only
  */
-
-// Mock trading terms data
-const mockTradingTerms = [
-  {
-    _id: '507f1f77bcf86cd799439021',
-    name: 'Volume Discount - Walmart',
-    code: 'VD-WM-2024',
-    description: 'Volume-based discount for Walmart',
-    termType: 'volume_discount',
-    company: { _id: '507f1f77bcf86cd799439001', name: 'GoNxt', code: 'GONXT' },
-    approvalWorkflow: {
-      status: 'approved',
-      submittedAt: new Date('2024-01-15'),
-      approvedAt: new Date('2024-01-16')
-    },
-    validFrom: new Date('2024-01-01'),
-    validTo: new Date('2024-12-31'),
-    isActive: true,
-    priority: 'high',
-    createdBy: { _id: '507f1f77bcf86cd799439011', firstName: 'Admin', lastName: 'User' },
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-16')
-  },
-  {
-    _id: '507f1f77bcf86cd799439022',
-    name: 'Early Payment Discount',
-    code: 'EPD-2024',
-    description: 'Early payment discount for all customers',
-    termType: 'early_payment',
-    company: { _id: '507f1f77bcf86cd799439001', name: 'GoNxt', code: 'GONXT' },
-    approvalWorkflow: {
-      status: 'approved',
-      submittedAt: new Date('2024-01-10'),
-      approvedAt: new Date('2024-01-11')
-    },
-    validFrom: new Date('2024-01-01'),
-    validTo: new Date('2024-12-31'),
-    isActive: true,
-    priority: 'medium',
-    createdBy: { _id: '507f1f77bcf86cd799439011', firstName: 'Admin', lastName: 'User' },
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-11')
-  },
-  {
-    _id: '507f1f77bcf86cd799439023',
-    name: 'Loyalty Bonus - Target',
-    code: 'LB-TG-2024',
-    description: 'Loyalty bonus for Target',
-    termType: 'loyalty_bonus',
-    company: { _id: '507f1f77bcf86cd799439001', name: 'GoNxt', code: 'GONXT' },
-    approvalWorkflow: {
-      status: 'draft',
-      submittedAt: new Date('2024-02-01')
-    },
-    validFrom: new Date('2024-03-01'),
-    validTo: new Date('2024-12-31'),
-    isActive: true,
-    priority: 'high',
-    createdBy: { _id: '507f1f77bcf86cd799439011', firstName: 'Admin', lastName: 'User' },
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date('2024-02-01')
-  }
-];
 
 // Get all trading terms
 exports.getTradingTerms = asyncHandler(async (req, res, _next) => {
-  // Check if using mock database
-  if (process.env.USE_MOCK_DB === 'true') {
-    const {
-      page = 1,
-      limit = 10,
-      search,
-      termType,
-      status
-    } = req.query;
-
-    let filteredTerms = [...mockTradingTerms];
-
-    // Apply filters
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredTerms = filteredTerms.filter((term) =>
-        term.name.toLowerCase().includes(searchLower) ||
-        term.code.toLowerCase().includes(searchLower) ||
-        (term.description && term.description.toLowerCase().includes(searchLower))
-      );
-    }
-
-    if (termType) {
-      filteredTerms = filteredTerms.filter((term) => term.termType === termType);
-    }
-
-    if (status) {
-      filteredTerms = filteredTerms.filter((term) => term.approvalWorkflow.status === status);
-    }
-
-    const total = filteredTerms.length;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + parseInt(limit);
-    const paginatedTerms = filteredTerms.slice(startIndex, endIndex);
-
-    return res.json({
-      success: true,
-      data: {
-        tradingTerms: paginatedTerms,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total,
-          pages: Math.ceil(total / limit)
-        }
-      }
-    });
-  }
-
-  // Original database logic
   const {
     page = 1,
     limit = 10,
@@ -190,20 +78,6 @@ exports.getTradingTerms = asyncHandler(async (req, res, _next) => {
 exports.getTradingTerm = asyncHandler(async (req, res, _next) => {
   const { id } = req.params;
   const currentUser = req.user;
-
-  // Check if using mock database
-  if (process.env.USE_MOCK_DB === 'true') {
-    const tradingTerm = mockTradingTerms.find((term) => term._id === id);
-
-    if (!tradingTerm) {
-      throw new AppError('Trading term not found', 404);
-    }
-
-    return res.json({
-      success: true,
-      data: { tradingTerm }
-    });
-  }
 
   const query = { _id: id };
 
