@@ -4,11 +4,12 @@ compatibility_date = "2024-01-01"
 
 [vars]
 ENVIRONMENT = "production"
-MONGODB_DATA_SOURCE = "Cluster0"
-MONGODB_DATABASE = "tradeai"
-# MongoDB Atlas Data API URL - set via wrangler secret
-# MONGODB_DATA_API_URL = "https://data.mongodb-api.com/app/data-xxxxx/endpoint/data/v1"
-# MONGODB_API_KEY - set via wrangler secret
+
+# D1 database - primary data store (Cloudflare-native SQLite)
+[[d1_databases]]
+binding = "DB"
+database_name = "tradeai"
+database_id = "adb1f315-140f-404d-a7bb-c3cbb6f3205a"
 
 # R2 bucket for file storage
 [[r2_buckets]]
@@ -19,12 +20,6 @@ bucket_name = "tradeai-storage"
 [[kv_namespaces]]
 binding = "CACHE"
 id = "898dfed622044c399facd725f8815f55"
-
-# D1 database (optional, for session storage)
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "tradeai-sessions"
-# database_id = "placeholder"
 
 [env.production]
 vars = { ENVIRONMENT = "production" }

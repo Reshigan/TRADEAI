@@ -1,4 +1,4 @@
-import { getMongoClient } from '../services/mongodb.js';
+import { getMongoClient } from '../services/d1.js';
 
 // JWT verification for Cloudflare Workers
 // Using Web Crypto API instead of jsonwebtoken
