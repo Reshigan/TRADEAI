@@ -9,7 +9,7 @@ ENVIRONMENT = "production"
 [[d1_databases]]
 binding = "DB"
 database_name = "tradeai"
-database_id = "placeholder-will-be-set-on-deploy"
+database_id = "adb1f315-140f-404d-a7bb-c3cbb6f3205a"
 
 # R2 bucket for file storage
 [[r2_buckets]]
