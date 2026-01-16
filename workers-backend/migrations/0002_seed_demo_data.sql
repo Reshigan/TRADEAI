@@ -9,19 +9,19 @@ INSERT INTO companies (id, name, code, type, country, currency, timezone, status
 ('comp-diplomat-001', 'Diplomat SA', 'DIPLOMAT', 'distributor', 'ZA', 'ZAR', 'Africa/Johannesburg', 'active', '{"industry": "Distribution", "regions": ["Gauteng", "Mpumalanga"]}', datetime('now'), datetime('now'));
 
 -- Demo Users (password hash is SHA-256 of 'Demo@123' and 'Diplomat@123')
--- Note: SHA-256('Demo@123') = 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92
--- Note: SHA-256('Diplomat@123') = a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
+-- Note: SHA-256('Demo@123') = ff96673205dc722320598ebf8f88325b2ac56922d5a2164b5765868274bc0d73
+-- Note: SHA-256('Diplomat@123') = 8e61782552ff2990eca3e5793970680d50b38573b2aac7dd3dc099f1fb3c55b5
 INSERT INTO users (id, company_id, email, password, first_name, last_name, role, department, is_active, login_attempts, permissions, created_at, updated_at) VALUES
 -- Sunrise Foods users
-('user-sunrise-admin', 'comp-sunrise-001', 'admin@sunrisefoods.co.za', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'John', 'Smith', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
-('user-sunrise-kam', 'comp-sunrise-001', 'kam@sunrisefoods.co.za', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Sarah', 'Johnson', 'kam', 'Sales', 1, 0, '["promotions", "customers", "trade_spends"]', datetime('now'), datetime('now')),
+('user-sunrise-admin', 'comp-sunrise-001', 'admin@sunrisefoods.co.za', 'ff96673205dc722320598ebf8f88325b2ac56922d5a2164b5765868274bc0d73', 'John', 'Smith', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
+('user-sunrise-kam', 'comp-sunrise-001', 'kam@sunrisefoods.co.za', 'ff96673205dc722320598ebf8f88325b2ac56922d5a2164b5765868274bc0d73', 'Sarah', 'Johnson', 'kam', 'Sales', 1, 0, '["promotions", "customers", "trade_spends"]', datetime('now'), datetime('now')),
 -- Metro Distribution users
-('user-metro-admin', 'comp-metro-001', 'admin@metrodist.co.za', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Michael', 'Brown', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
+('user-metro-admin', 'comp-metro-001', 'admin@metrodist.co.za', 'ff96673205dc722320598ebf8f88325b2ac56922d5a2164b5765868274bc0d73', 'Michael', 'Brown', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
 -- FreshMart users
-('user-freshmart-admin', 'comp-freshmart-001', 'admin@freshmart.co.za', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Lisa', 'Williams', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
+('user-freshmart-admin', 'comp-freshmart-001', 'admin@freshmart.co.za', 'ff96673205dc722320598ebf8f88325b2ac56922d5a2164b5765868274bc0d73', 'Lisa', 'Williams', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
 -- Diplomat SA users
-('user-diplomat-admin', 'comp-diplomat-001', 'admin@diplomatsa.co.za', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'David', 'Miller', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
-('user-diplomat-user', 'comp-diplomat-001', 'user@diplomatsa.co.za', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'Emma', 'Davis', 'kam', 'Sales', 1, 0, '["promotions", "customers"]', datetime('now'), datetime('now'));
+('user-diplomat-admin', 'comp-diplomat-001', 'admin@diplomatsa.co.za', '8e61782552ff2990eca3e5793970680d50b38573b2aac7dd3dc099f1fb3c55b5', 'David', 'Miller', 'admin', 'Management', 1, 0, '["all"]', datetime('now'), datetime('now')),
+('user-diplomat-user', 'comp-diplomat-001', 'user@diplomatsa.co.za', '8e61782552ff2990eca3e5793970680d50b38573b2aac7dd3dc099f1fb3c55b5', 'Emma', 'Davis', 'kam', 'Sales', 1, 0, '["promotions", "customers"]', datetime('now'), datetime('now'));
 
 -- Demo Customers for Sunrise Foods
 INSERT INTO customers (id, company_id, name, code, customer_type, channel, tier, status, region, city, data, created_at, updated_at) VALUES
