@@ -325,10 +325,10 @@ async function createUsers(companies) {
 
 async function createVendors(company) {
   const vendorsData = [
-    { name: 'Global Ingredients Ltd', code: 'GIL', category: 'Raw Materials', country: 'ZA' },
-    { name: 'PackRight Solutions', code: 'PRS', category: 'Packaging', country: 'ZA' },
-    { name: 'FlavorTech Industries', code: 'FTI', category: 'Flavoring', country: 'ZA' },
-    { name: 'EcoPackage SA', code: 'EPS', category: 'Sustainable Packaging', country: 'ZA' }
+    { name: 'Global Ingredients Ltd', code: 'GIL', category: 'Raw Materials', country: 'ZA', vendorType: 'manufacturer', sapVendorId: 'VEND-GIL-001' },
+    { name: 'PackRight Solutions', code: 'PRS', category: 'Packaging', country: 'ZA', vendorType: 'manufacturer', sapVendorId: 'VEND-PRS-002' },
+    { name: 'FlavorTech Industries', code: 'FTI', category: 'Flavoring', country: 'ZA', vendorType: 'manufacturer', sapVendorId: 'VEND-FTI-003' },
+    { name: 'EcoPackage SA', code: 'EPS', category: 'Sustainable Packaging', country: 'ZA', vendorType: 'manufacturer', sapVendorId: 'VEND-EPS-004' }
   ];
 
   const vendors = [];
@@ -338,10 +338,12 @@ async function createVendors(company) {
       company: company._id,
       tenantId: company._id,
       status: 'active',
-      contactInfo: {
+      contacts: [{
+        name: `Contact at ${data.name}`,
         email: `info@${data.code.toLowerCase()}.co.za`,
-        phone: '+27 11 ' + randomBetween(100, 999) + ' ' + randomBetween(1000, 9999)
-      }
+        phone: '+27 11 ' + randomBetween(100, 999) + ' ' + randomBetween(1000, 9999),
+        isPrimary: true
+      }]
     });
     vendors.push(vendor);
     console.log(`Created vendor: ${vendor.name}`);
@@ -402,7 +404,7 @@ async function createProducts(company, users) {
             promotionSettings: {
               isPromotable: true,
               maxDiscountPercentage: randomBetween(15, 35),
-              allowedPromotionTypes: ['price_discount', 'volume_discount', 'bogo', 'display']
+              allowedPromotionTypes: ['price_discount', 'volume_discount', 'bogo', 'bundle']
             },
             status: 'active'
           });
@@ -515,6 +517,7 @@ async function createCustomers(companies, users) {
       tenantId: companies.distributor._id,
       name: name,
       code: `DIST${String(i + 1).padStart(4, '0')}`,
+      sapCustomerId: `SAPDIST${String(i + 1).padStart(5, '0')}`,
       customerType: 'independent',
       channel: 'traditional_trade',
       tier: randomFromArray(['silver', 'bronze', 'standard']),
@@ -554,6 +557,7 @@ async function createCustomers(companies, users) {
       tenantId: companies.retailer._id,
       name: `FreshMart ${city} ${i > 0 ? `Branch ${i + 1}` : 'Flagship'}`,
       code: `FM${String(i + 1).padStart(3, '0')}`,
+      sapCustomerId: `SAPFM${String(i + 1).padStart(5, '0')}`,
       customerType: 'chain',
       channel: 'modern_trade',
       tier: i === 0 ? 'platinum' : randomFromArray(['gold', 'silver']),
@@ -670,7 +674,7 @@ async function createPromotions(company, users, products, customers, budgets) {
     { name: 'Summer Refresh Campaign', type: 'price_discount', status: 'completed', daysAgo: 90, duration: 14, category: 'Beverages' },
     { name: 'Back to School Snacks', type: 'volume_discount', status: 'completed', daysAgo: 75, duration: 21, category: 'Snacks' },
     { name: 'Easter Chocolate Festival', type: 'bogo', status: 'completed', daysAgo: 60, duration: 10, category: 'Confectionery' },
-    { name: 'Dairy Days Promotion', type: 'display', status: 'completed', daysAgo: 45, duration: 14, category: 'Dairy' },
+    { name: 'Dairy Days Promotion', type: 'bundle', status: 'completed', daysAgo: 45, duration: 14, category: 'Dairy' },
     { name: 'Clean Home Week', type: 'bundle', status: 'completed', daysAgo: 30, duration: 7, category: 'Home Care' },
     
     // Active promotions (current)
@@ -678,7 +682,7 @@ async function createPromotions(company, users, products, customers, budgets) {
     { name: 'Family Snack Pack', type: 'bundle', status: 'active', daysAgo: 3, duration: 14, category: 'Snacks' },
     
     // Approved promotions (upcoming)
-    { name: 'Spring Fresh Launch', type: 'feature', status: 'approved', daysAgo: -14, duration: 21, category: 'Personal Care' },
+    { name: 'Spring Fresh Launch', type: 'gift', status: 'approved', daysAgo: -14, duration: 21, category: 'Personal Care' },
     { name: 'Holiday Season Kickoff', type: 'price_discount', status: 'approved', daysAgo: -30, duration: 28, category: 'Confectionery' },
     
     // Pending approval
@@ -686,7 +690,7 @@ async function createPromotions(company, users, products, customers, budgets) {
     { name: 'Summer BBQ Essentials', type: 'bundle', status: 'pending_approval', daysAgo: -60, duration: 21, category: 'Beverages' },
     
     // Draft promotions
-    { name: 'Q2 Trade Push', type: 'display', status: 'draft', daysAgo: -90, duration: 30, category: 'Snacks' }
+    { name: 'Q2 Trade Push', type: 'loyalty', status: 'draft', daysAgo: -90, duration: 30, category: 'Snacks' }
   ];
 
   for (const config of promotionConfigs) {
@@ -871,7 +875,7 @@ async function createPromotions(company, users, products, customers, budgets) {
           { recommendation: 'Increase focus on top-performing regions', expectedImpact: '+15% ROI', priority: 'high', category: 'targeting' },
           { recommendation: 'Extend promotion duration by 1 week', expectedImpact: '+10% volume', priority: 'medium', category: 'timing' }
         ]
-      } : null,
+      } : undefined,
       status: config.status,
       approvals: config.status !== 'draft' ? [
         { level: 'kam', status: config.status === 'pending_approval' ? 'pending' : 'approved', approver: users.find(u => u.role === 'kam')?._id, date: subtractDays(startDate, 14) },
@@ -938,6 +942,7 @@ async function createTradeSpends(company, users, products, customers, budgets, p
         company: company._id,
         spendId: generateId('TS'),
         spendType: spendType,
+        activityType: randomFromArray(['trade_marketing', 'key_account']),
         category: category,
         cashCoopDetails: spendType === 'cash_coop' ? {
           reason: randomFromArray(['shelf_space', 'end_cap_display', 'flyer_participation', 'in_store_demo']),
