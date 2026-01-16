@@ -126,11 +126,11 @@ const PromotionListEnhanced = () => {
       )
     },
     {
-      id: 'type',
+      id: 'promotionType',
       label: 'Type',
       sortable: true,
       render: (value) => (
-        <Chip label={value} size="small" color="primary" variant="outlined" />
+        <Chip label={value || 'N/A'} size="small" color="primary" variant="outlined" />
       )
     },
     {
@@ -141,7 +141,7 @@ const PromotionListEnhanced = () => {
         <Chip
           label={value}
           size="small"
-          color={value === 'active' ? 'success' : value === 'pending' ? 'warning' : 'default'}
+          color={value === 'active' ? 'success' : value === 'pending_approval' ? 'warning' : 'default'}
         />
       )
     },
@@ -149,14 +149,17 @@ const PromotionListEnhanced = () => {
       id: 'discount',
       label: 'Discount',
       sortable: true,
-      render: (value) => <Typography variant="body2">{value}%</Typography>
+      render: (value, row) => {
+        const discountValue = row.mechanics?.discountValue || 0;
+        return <Typography variant="body2">{discountValue.toFixed(1)}%</Typography>;
+      }
     },
     {
       id: 'roi',
       label: 'ROI',
       sortable: true,
       render: (value, row) => {
-        const roiValue = row.metrics?.roi || 0;
+        const roiValue = row.financial?.profitability?.roi || row.metrics?.roi || 0;
         return (
           <Chip
             label={`${roiValue.toFixed(2)}%`}
@@ -169,12 +172,18 @@ const PromotionListEnhanced = () => {
     {
       id: 'startDate',
       label: 'Start Date',
-      render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+      render: (value, row) => {
+        const date = row.period?.startDate || value;
+        return date ? new Date(date).toLocaleDateString() : 'N/A';
+      }
     },
     {
       id: 'endDate',
       label: 'End Date',
-      render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+      render: (value, row) => {
+        const date = row.period?.endDate || value;
+        return date ? new Date(date).toLocaleDateString() : 'N/A';
+      }
     }
   ];
 
