@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { getMongoClient } from '../services/mongodb.js';
+import { getMongoClient } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 
 export const userRoutes = new Hono();
