@@ -82,7 +82,7 @@ async function testROICalculation(token) {
     return;
   }
   
-  const goldenPromo = promoResponse.data?.find(p => p.id === 'golden-promo-001');
+  const goldenPromo = promoResponse.data?.find(p => (p.id || p._id) === 'golden-promo-001');
   
   if (!goldenPromo) {
     logTest('ROI: Find golden promotion', false, 'golden-promo-001 exists', 'not found');
@@ -91,15 +91,14 @@ async function testROICalculation(token) {
   
   logTest('ROI: Golden promotion exists', true, 'exists', 'exists');
   
-  // Parse the data JSON
-  const promoData = typeof goldenPromo.data === 'string' ? JSON.parse(goldenPromo.data) : goldenPromo.data;
-  const financial = promoData?.financial || {};
+  // The API returns data fields directly on the promotion object (not nested in a 'data' field)
+  const financial = goldenPromo.financial || {};
   
   // Verify ROI calculation: ROI = (Incremental Revenue - Trade Spend) / Trade Spend
   // Expected: (250,000 - 100,000) / 100,000 = 1.5
   const actualSpend = financial.actualSpend || 0;
   const incrementalRevenue = financial.incrementalRevenue || 0;
-  const expectedROI = promoData.expectedROI || 1.5;
+  const expectedROI = goldenPromo.expectedROI || 1.5;
   
   // Calculate ROI ourselves
   const calculatedROI = actualSpend > 0 ? (incrementalRevenue - actualSpend) / actualSpend : 0;
@@ -135,7 +134,7 @@ async function testBudgetUtilization(token) {
     return;
   }
   
-  const goldenBudget = budgetResponse.data?.find(b => b.id === 'budget-golden-001');
+  const goldenBudget = budgetResponse.data?.find(b => (b.id || b._id) === 'budget-golden-001');
   
   if (!goldenBudget) {
     logTest('Budget: Find golden budget', false, 'budget-golden-001 exists', 'not found');
@@ -192,7 +191,7 @@ async function testProductMargin(token) {
   ];
   
   for (const test of marginTests) {
-    const product = productResponse.data?.find(p => p.id === test.id);
+    const product = productResponse.data?.find(p => (p.id || p._id) === test.id);
     
     if (!product) {
       logTest(`Margin: Find ${test.id}`, false, 'exists', 'not found');
@@ -230,7 +229,7 @@ async function testTenantIsolation(sunriseToken, metroToken) {
   }
   
   // Check Sunrise doesn't see Metro's golden customer
-  const sunriseSeesMetro = sunriseCustomers.data?.some(c => c.id === 'golden-metro-cust-001');
+  const sunriseSeesMetro = sunriseCustomers.data?.some(c => (c.id || c._id) === 'golden-metro-cust-001');
   logTest(
     'Isolation: Sunrise cannot see Metro customers',
     !sunriseSeesMetro,
@@ -239,7 +238,7 @@ async function testTenantIsolation(sunriseToken, metroToken) {
   );
   
   // Check Metro doesn't see Sunrise's golden customers
-  const metroSeesSunrise = metroCustomers.data?.some(c => c.id === 'golden-cust-001');
+  const metroSeesSunrise = metroCustomers.data?.some(c => (c.id || c._id) === 'golden-cust-001');
   logTest(
     'Isolation: Metro cannot see Sunrise customers',
     !metroSeesSunrise,
@@ -248,7 +247,7 @@ async function testTenantIsolation(sunriseToken, metroToken) {
   );
   
   // Verify each tenant sees their own data
-  const sunriseSeesOwn = sunriseCustomers.data?.some(c => c.id === 'golden-cust-001' || c.id === 'cust-pnp-001');
+  const sunriseSeesOwn = sunriseCustomers.data?.some(c => (c.id || c._id) === 'golden-cust-001' || (c.id || c._id) === 'cust-pnp-001');
   logTest(
     'Isolation: Sunrise sees own customers',
     sunriseSeesOwn,
@@ -256,7 +255,7 @@ async function testTenantIsolation(sunriseToken, metroToken) {
     sunriseSeesOwn
   );
   
-  const metroSeesOwn = metroCustomers.data?.some(c => c.id === 'golden-metro-cust-001');
+  const metroSeesOwn = metroCustomers.data?.some(c => (c.id || c._id) === 'golden-metro-cust-001');
   logTest(
     'Isolation: Metro sees own customers',
     metroSeesOwn,
@@ -286,7 +285,7 @@ async function testTradeSpendWorkflow(token) {
   ];
   
   for (const test of workflowTests) {
-    const tradeSpend = tradeSpendResponse.data?.find(ts => ts.id === test.id);
+    const tradeSpend = tradeSpendResponse.data?.find(ts => (ts.id || ts._id) === test.id);
     
     if (!tradeSpend) {
       logTest(`TradeSpend: Find ${test.id}`, false, 'exists', 'not found');
