@@ -23,11 +23,29 @@ budgetRoutes.get('/', async (c) => {
       sort: { year: -1, createdAt: -1 }
     });
 
+    // Enrich budgets with customerName (use budget name or type as fallback since budgets are company-level)
+    const enrichedBudgets = budgets.map(budget => {
+      // Format budget type for display (e.g., "annual" -> "Annual Budget", "promotional" -> "Promotional")
+      const budgetTypeLabels = {
+        annual: 'Annual Budget',
+        promotional: 'Promotional',
+        listing: 'Listing Fees',
+        rebate: 'Rebate Program',
+        growth: 'Growth Initiative'
+      };
+      const customerName = budgetTypeLabels[budget.budgetType || budget.budget_type] || budget.name || 'Company Budget';
+      
+      return {
+        ...budget,
+        customerName
+      };
+    });
+
     const total = await mongodb.countDocuments('budgets', filter);
 
     return c.json({
       success: true,
-      data: budgets,
+      data: enrichedBudgets,
       pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit)) }
     });
   } catch (error) {
