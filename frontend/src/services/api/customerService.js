@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { normalizeCustomer, normalizeApiResponse } from './dataAdapters';
 
 const customerService = {
   /**
@@ -9,7 +10,9 @@ const customerService = {
   getAll: async (params = {}) => {
     try {
       const response = await apiClient.get('/customers', { params });
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeCustomer);
+      return normalized;
     } catch (error) {
       console.error('Get customers error:', error);
       throw error;
@@ -24,7 +27,9 @@ const customerService = {
   getById: async (id) => {
     try {
       const response = await apiClient.get(`/customers/${id}`);
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeCustomer);
+      return normalized;
     } catch (error) {
       console.error(`Get customer ${id} error:`, error);
       throw error;

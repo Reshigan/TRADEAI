@@ -148,7 +148,8 @@ const BudgetList = () => {
       label: 'Total Amount',
       numeric: true,
       format: (value, row) => {
-        const total = (row?.allocated || 0) + (row?.remaining || 0);
+        // API returns 'amount' for total budget
+        const total = row?.amount || row?.totalAmount || (row?.allocated || 0) + (row?.remaining || 0);
         return formatCurrencyCompact(total);
       }
     },
@@ -156,13 +157,23 @@ const BudgetList = () => {
       id: 'allocated', 
       label: 'Allocated',
       numeric: true,
-      format: (value) => formatCurrencyCompact(value)
+      format: (value, row) => {
+        // API returns 'utilized' for allocated amount
+        const allocated = row?.utilized || row?.allocated || value || 0;
+        return formatCurrencyCompact(allocated);
+      }
     },
     { 
       id: 'remaining', 
       label: 'Remaining',
       numeric: true,
-      format: (value) => formatCurrencyCompact(value)
+      format: (value, row) => {
+        // Calculate remaining from amount - utilized
+        const total = row?.amount || row?.totalAmount || 0;
+        const utilized = row?.utilized || row?.allocated || 0;
+        const remaining = row?.remaining || (total - utilized);
+        return formatCurrencyCompact(remaining);
+      }
     },
     { 
       id: 'status', 

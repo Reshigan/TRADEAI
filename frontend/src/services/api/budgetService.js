@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { normalizeBudget, normalizeBudgets, normalizeApiResponse } from './dataAdapters';
 
 const budgetService = {
   /**
@@ -9,7 +10,9 @@ const budgetService = {
   getAll: async (params = {}) => {
     try {
       const response = await apiClient.get('/budgets', { params });
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeBudget);
+      return normalized;
     } catch (error) {
       console.error('Get budgets error:', error);
       throw error;
@@ -24,7 +27,9 @@ const budgetService = {
   getById: async (id) => {
     try {
       const response = await apiClient.get(`/budgets/${id}`);
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeBudget);
+      return normalized;
     } catch (error) {
       console.error(`Get budget ${id} error:`, error);
       throw error;

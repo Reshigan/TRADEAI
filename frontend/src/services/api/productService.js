@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { normalizeProduct, normalizeApiResponse } from './dataAdapters';
 
 const productService = {
   /**
@@ -9,7 +10,9 @@ const productService = {
   getAll: async (params = {}) => {
     try {
       const response = await apiClient.get('/products', { params });
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeProduct);
+      return normalized;
     } catch (error) {
       console.error('Get products error:', error);
       throw error;
@@ -24,7 +27,9 @@ const productService = {
   getById: async (id) => {
     try {
       const response = await apiClient.get(`/products/${id}`);
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeProduct);
+      return normalized;
     } catch (error) {
       console.error(`Get product ${id} error:`, error);
       throw error;

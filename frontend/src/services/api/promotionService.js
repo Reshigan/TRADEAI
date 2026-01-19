@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { normalizePromotion, normalizeApiResponse } from './dataAdapters';
 
 const promotionService = {
   /**
@@ -9,7 +10,9 @@ const promotionService = {
   getAll: async (params = {}) => {
     try {
       const response = await apiClient.get('/promotions', { params });
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizePromotion);
+      return normalized;
     } catch (error) {
       console.error('Get promotions error:', error);
       throw error;
@@ -24,7 +27,9 @@ const promotionService = {
   getById: async (id) => {
     try {
       const response = await apiClient.get(`/promotions/${id}`);
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizePromotion);
+      return normalized;
     } catch (error) {
       console.error(`Get promotion ${id} error:`, error);
       throw error;

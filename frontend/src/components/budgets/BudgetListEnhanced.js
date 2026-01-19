@@ -32,8 +32,9 @@ const BudgetListEnhanced = () => {
     
     const insights = [];
     const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
-    const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
-    const utilization = (totalSpent / totalBudget) * 100;
+    // API returns 'utilized' instead of 'spent'
+    const totalSpent = budgets.reduce((sum, b) => sum + (b.utilized || b.spent || 0), 0);
+    const utilization = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
     
     if (utilization > 90) {
       insights.push({
@@ -43,7 +44,7 @@ const BudgetListEnhanced = () => {
       });
     }
 
-    const underutilized = budgets.filter(b => (b.spent / b.amount) < 0.5 && b.status === 'active').length;
+    const underutilized = budgets.filter(b => ((b.utilized || b.spent || 0) / (b.amount || 1)) < 0.5 && b.status === 'active').length;
     if (underutilized > 0) {
       insights.push({
         title: `${underutilized} Budgets Underutilized`,
@@ -97,7 +98,10 @@ const BudgetListEnhanced = () => {
   const generateRowInsights = () => {
     const insights = {};
     budgets.forEach(budget => {
-      const utilization = (budget.spent / budget.amount) * 100;
+      // API returns 'utilized' instead of 'spent'
+      const spent = budget.utilized || budget.spent || 0;
+      const amount = budget.amount || 1;
+      const utilization = (spent / amount) * 100;
       
       if (utilization > 95) {
         insights[budget.id || budget._id] = {
@@ -142,7 +146,7 @@ const BudgetListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600">
-          ${(value || 0).toLocaleString()}
+          R{(value || 0).toLocaleString()}
         </Typography>
       )
     },
@@ -150,9 +154,9 @@ const BudgetListEnhanced = () => {
       id: 'spent',
       label: 'Spent',
       sortable: true,
-      render: (value) => (
+      render: (value, row) => (
         <Typography variant="body2">
-          ${(value || 0).toLocaleString()}
+          R{((row?.utilized || row?.spent || value || 0)).toLocaleString()}
         </Typography>
       )
     },
@@ -161,7 +165,9 @@ const BudgetListEnhanced = () => {
       label: 'Utilization',
       sortable: true,
       render: (value, row) => {
-        const percent = (row.spent / row.amount) * 100;
+        const spent = row?.utilized || row?.spent || 0;
+        const amount = row?.amount || 1;
+        const percent = (spent / amount) * 100;
         return (
           <Box sx={{ width: 120 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
