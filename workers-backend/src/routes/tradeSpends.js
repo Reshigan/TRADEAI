@@ -25,6 +25,7 @@ tradeSpendRoutes.get('/', async (c) => {
     });
 
     // Enrich trade spends with customer names and promotion details
+    // Note: D1 service's rowToDocument already merges JSON data column into the document at top level
     const enrichedTradeSpends = await Promise.all(tradeSpends.map(async (ts) => {
       let customerName = null;
       let startDate = null;
@@ -40,8 +41,12 @@ tradeSpendRoutes.get('/', async (c) => {
         }
       }
       
-      // Get promotion start date if promotion_id exists
-      if (ts.promotionId || ts.promotion_id) {
+      // First check if startDate is already at top level (merged from JSON data column by D1 service)
+      if (ts.startDate) {
+        startDate = ts.startDate;
+      }
+      // Fallback: Get promotion start date if promotion_id exists
+      else if (ts.promotionId || ts.promotion_id) {
         const promotion = await mongodb.findOne('promotions', { 
           id: ts.promotionId || ts.promotion_id,
           companyId: tenantId 
