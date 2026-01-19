@@ -88,6 +88,7 @@ authRoutes.post('/login', async (c) => {
 
     return c.json({
       success: true,
+      token: accessToken,
       data: {
         user: {
           id: user._id.$oid || user._id,
@@ -97,7 +98,10 @@ authRoutes.post('/login', async (c) => {
           role: user.role,
           companyId: user.companyId
         },
-        accessToken,
+        tokens: {
+          accessToken,
+          refreshToken
+        },
         refreshToken
       },
       message: 'Login successful'
