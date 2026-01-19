@@ -24,11 +24,45 @@ tradeSpendRoutes.get('/', async (c) => {
       sort: { createdAt: -1 }
     });
 
+    // Enrich trade spends with customer names and promotion details
+    const enrichedTradeSpends = await Promise.all(tradeSpends.map(async (ts) => {
+      let customerName = null;
+      let startDate = null;
+      
+      // Get customer name if customer_id exists
+      if (ts.customerId || ts.customer_id) {
+        const customer = await mongodb.findOne('customers', { 
+          id: ts.customerId || ts.customer_id,
+          companyId: tenantId 
+        });
+        if (customer) {
+          customerName = customer.name;
+        }
+      }
+      
+      // Get promotion start date if promotion_id exists
+      if (ts.promotionId || ts.promotion_id) {
+        const promotion = await mongodb.findOne('promotions', { 
+          id: ts.promotionId || ts.promotion_id,
+          companyId: tenantId 
+        });
+        if (promotion) {
+          startDate = promotion.startDate || promotion.start_date;
+        }
+      }
+      
+      return {
+        ...ts,
+        customerName,
+        startDate
+      };
+    }));
+
     const total = await mongodb.countDocuments('tradespends', filter);
 
     return c.json({
       success: true,
-      data: tradeSpends,
+      data: enrichedTradeSpends,
       pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit)) }
     });
   } catch (error) {
