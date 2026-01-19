@@ -183,6 +183,9 @@ export const normalizeProduct = (product) => {
   return {
     ...product,
     id: product.id || product._id,
+    // Add price/cost aliases for components that expect these field names
+    price: unitPrice,
+    cost: costPrice,
     unitPrice,
     unit_price: unitPrice,
     costPrice,

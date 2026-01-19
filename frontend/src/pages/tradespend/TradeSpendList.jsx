@@ -50,7 +50,8 @@ const TradeSpendList = () => {
     setLoading(true);
     try {
       const response = await tradeSpendService.getTradeSpends(filters);
-      setTradeSpends(response.tradeSpends || []);
+      // API returns {success: true, data: [...]} or {tradeSpends: [...]}
+      setTradeSpends(response.data || response.tradeSpends || []);
     } catch (error) {
       console.error('Failed to load trade spends:', error);
     } finally {
