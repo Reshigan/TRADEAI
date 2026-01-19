@@ -122,7 +122,7 @@ const BudgetList = () => {
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase();
         return (
-          (budget?.scope?.customers?.[0]?.name || '').toLowerCase().includes(searchTerm) ||
+          (budget?.customerName || budget?.scope?.customers?.[0]?.name || budget?.name || '').toLowerCase().includes(searchTerm) ||
           (budget?.year?.toString() || '').includes(searchTerm) ||
           (budget?.status || '').toLowerCase().includes(searchTerm)
         );
@@ -141,7 +141,7 @@ const BudgetList = () => {
     { 
       id: 'customer', 
       label: 'Customer',
-      format: (value, row) => row?.scope?.customers?.[0]?.name || 'N/A'
+      format: (value, row) => row?.customerName || row?.scope?.customers?.[0]?.name || row?.name || 'N/A'
     },
     { 
       id: 'total_amount', 

@@ -124,10 +124,10 @@ const CustomerList = () => {
         return (
           (customer?.name || '').toLowerCase().includes(searchTerm) ||
           (customer?.code || '').toLowerCase().includes(searchTerm) ||
-          (customer?.contact?.name || '').toLowerCase().includes(searchTerm) ||
-          (customer?.contact?.email || '').toLowerCase().includes(searchTerm) ||
-          (customer?.address?.city || '').toLowerCase().includes(searchTerm) ||
-          (customer?.address?.state || '').toLowerCase().includes(searchTerm)
+          (customer?.contactName || customer?.contact?.name || '').toLowerCase().includes(searchTerm) ||
+          (customer?.contactEmail || customer?.contact?.email || '').toLowerCase().includes(searchTerm) ||
+          (customer?.city || customer?.address?.city || '').toLowerCase().includes(searchTerm) ||
+          (customer?.region || customer?.address?.state || '').toLowerCase().includes(searchTerm)
         );
       }
       
@@ -202,13 +202,13 @@ const CustomerList = () => {
     { 
       id: 'contact', 
       label: 'Contact',
-      format: (contact) => (
+      format: (contact, row) => (
         <Box>
           <Typography variant="body2">
-            {contact?.name || 'N/A'}
+            {row?.contactName || contact?.name || 'N/A'}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {contact?.email || 'N/A'}
+            {row?.contactEmail || contact?.email || 'N/A'}
           </Typography>
         </Box>
       )
