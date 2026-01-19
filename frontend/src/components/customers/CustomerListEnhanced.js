@@ -14,7 +14,7 @@ import {
 } from '@mui/icons-material';
 
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
-import { customerService } from '../../services/api';
+import customerService from '../../services/api/customerService';
 import CustomerForm from './CustomerForm';
 
 const CustomerListEnhanced = () => {
