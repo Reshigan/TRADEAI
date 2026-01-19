@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material';
 
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
-import { productService } from '../../services/api';
+import productService from '../../services/api/productService';
 import ProductForm from './ProductForm';
 import { formatCurrency } from '../../utils/formatters';
 
