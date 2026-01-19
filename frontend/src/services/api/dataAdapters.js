@@ -115,11 +115,26 @@ export const normalizePromotions = (promotions) => normalizeArray(promotions, no
 
 /**
  * Customer Adapter
- * API: { _id, name, code, customerType, channel, tier, status, region, city, ... }
- * Frontend: { id, name, code, customer_type, type, channel, tier, status, region, city, ... }
+ * API: { _id, name, code, customerType, channel, tier, status, region, city, contactName, contactEmail, contactPhone, ... }
+ * Frontend: { id, name, code, type, status, contact: { name, email, phone }, address: { city, state, region }, ... }
  */
 export const normalizeCustomer = (customer) => {
   if (!customer) return customer;
+  
+  // Build nested contact object from flat fields
+  const contact = customer.contact || {
+    name: customer.contactName || customer.contact_name || null,
+    email: customer.contactEmail || customer.contact_email || null,
+    phone: customer.contactPhone || customer.contact_phone || null,
+  };
+  
+  // Build nested address object from flat fields
+  const address = customer.address || {
+    city: customer.city || null,
+    state: customer.state || customer.province || null,
+    region: customer.region || null,
+    country: customer.country || 'South Africa',
+  };
   
   return {
     ...customer,
@@ -127,6 +142,8 @@ export const normalizeCustomer = (customer) => {
     customer_type: customer.customerType || customer.customer_type,
     customerType: customer.customerType || customer.customer_type,
     type: customer.customerType || customer.customer_type || customer.type,
+    contact,
+    address,
     companyId: customer.companyId || customer.company_id,
     createdAt: customer.createdAt || customer.created_at,
     updatedAt: customer.updatedAt || customer.updated_at,
@@ -137,16 +154,31 @@ export const normalizeCustomers = (customers) => normalizeArray(customers, norma
 
 /**
  * Product Adapter
- * API: { _id, name, sku, barcode, category, subcategory, brand, unit_price, cost_price, ... }
- * Frontend: { id, name, sku, barcode, category, subcategory, brand, unitPrice, costPrice, margin, ... }
+ * API: { _id, name, sku, barcode, category, subcategory, brand, unitPrice, costPrice, ... }
+ * Frontend: { id, name, sku, barcode, category: { primary, secondary }, pricing: { listPrice, costPrice }, ... }
  */
 export const normalizeProduct = (product) => {
   if (!product) return product;
   
-  const unitPrice = product.unitPrice || product.unit_price || 0;
+  const unitPrice = product.unitPrice || product.unit_price || product.listPrice || product.list_price || 0;
   const costPrice = product.costPrice || product.cost_price || 0;
   const margin = unitPrice > 0 ? ((unitPrice - costPrice) / unitPrice) * 100 : 0;
   const grossProfit = unitPrice - costPrice;
+  
+  // Build nested category object from flat fields
+  const category = product.category && typeof product.category === 'object' 
+    ? product.category 
+    : {
+        primary: product.category || product.categoryPrimary || product.category_primary || null,
+        secondary: product.subcategory || product.categorySecondary || product.category_secondary || null,
+      };
+  
+  // Build nested pricing object from flat fields
+  const pricing = product.pricing || {
+    listPrice: unitPrice,
+    costPrice: costPrice,
+    margin: margin,
+  };
   
   return {
     ...product,
@@ -158,6 +190,8 @@ export const normalizeProduct = (product) => {
     margin,
     marginPercent: margin,
     grossProfit,
+    category,
+    pricing,
     companyId: product.companyId || product.company_id,
     createdAt: product.createdAt || product.created_at,
     updatedAt: product.updatedAt || product.updated_at,
@@ -168,11 +202,31 @@ export const normalizeProducts = (products) => normalizeArray(products, normaliz
 
 /**
  * Trade Spend Adapter
- * API: { _id, spendId, spendType, activityType, amount, status, customerId, promotionId, budgetId, ... }
- * Frontend: { id, spend_id, spend_type, activity_type, amount, status, customer_id, promotion_id, budget_id, ... }
+ * API: { _id, spendId, spendType, activityType, requestedAmount, approvedAmount, status, customerId, startDate, endDate, ... }
+ * Frontend: { id, spendType, amount: { requested, approved }, period: { startDate, endDate }, customer: { name }, ... }
  */
 export const normalizeTradeSpend = (tradeSpend) => {
   if (!tradeSpend) return tradeSpend;
+  
+  // Build nested amount object from flat fields
+  const amount = tradeSpend.amount && typeof tradeSpend.amount === 'object'
+    ? tradeSpend.amount
+    : {
+        requested: tradeSpend.requestedAmount || tradeSpend.requested_amount || tradeSpend.amount || 0,
+        approved: tradeSpend.approvedAmount || tradeSpend.approved_amount || 0,
+      };
+  
+  // Build nested period object from flat fields
+  const period = tradeSpend.period || {
+    startDate: tradeSpend.startDate || tradeSpend.start_date || null,
+    endDate: tradeSpend.endDate || tradeSpend.end_date || null,
+  };
+  
+  // Build nested customer object if not present
+  const customer = tradeSpend.customer || {
+    name: tradeSpend.customerName || tradeSpend.customer_name || null,
+    _id: tradeSpend.customerId || tradeSpend.customer_id || null,
+  };
   
   return {
     ...tradeSpend,
@@ -183,6 +237,9 @@ export const normalizeTradeSpend = (tradeSpend) => {
     spendType: tradeSpend.spendType || tradeSpend.spend_type,
     activity_type: tradeSpend.activityType || tradeSpend.activity_type,
     activityType: tradeSpend.activityType || tradeSpend.activity_type,
+    amount,
+    period,
+    customer,
     customer_id: tradeSpend.customerId || tradeSpend.customer_id,
     customerId: tradeSpend.customerId || tradeSpend.customer_id,
     promotion_id: tradeSpend.promotionId || tradeSpend.promotion_id,
