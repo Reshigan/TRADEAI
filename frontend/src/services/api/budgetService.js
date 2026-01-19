@@ -1,5 +1,5 @@
 import apiClient from './apiClient';
-import { normalizeBudget, normalizeBudgets, normalizeApiResponse } from './dataAdapters';
+import { normalizeBudget, normalizeApiResponse } from './dataAdapters';
 
 const budgetService = {
   /**
