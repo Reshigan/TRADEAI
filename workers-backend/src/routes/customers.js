@@ -29,26 +29,41 @@ customerRoutes.get('/', async (c) => {
       sort: { name: 1 }
     });
 
-    // Enrich customers with contactName extracted from nested data structure
+    // Enrich customers with contactName extracted from various possible locations
+    // Note: D1 service's rowToDocument already merges JSON data column into the document at top level
     const enrichedCustomers = customers.map(customer => {
       let contactName = null;
+      let contactEmail = null;
+      let contactPhone = null;
       
-      // Try to extract contact name from various possible locations in the data
-      if (customer.data) {
+      // First check if contactName is already at top level (merged from JSON data column by D1 service)
+      if (customer.contactName) {
+        contactName = customer.contactName;
+        contactEmail = customer.contactEmail || null;
+        contactPhone = customer.contactPhone || null;
+      }
+      // Fallback: Try to extract from nested data structure if it wasn't merged
+      else if (customer.data) {
         const data = typeof customer.data === 'string' ? JSON.parse(customer.data) : customer.data;
         // Check for contactName directly
         if (data.contactName) {
           contactName = data.contactName;
+          contactEmail = data.contactEmail || null;
+          contactPhone = data.contactPhone || null;
         }
         // Check for contacts array
         else if (data.contacts && data.contacts.length > 0 && data.contacts[0].name) {
           contactName = data.contacts[0].name;
+          contactEmail = data.contacts[0].email || null;
+          contactPhone = data.contacts[0].phone || null;
         }
       }
       
       return {
         ...customer,
-        contactName
+        contactName,
+        contactEmail,
+        contactPhone
       };
     });
 
