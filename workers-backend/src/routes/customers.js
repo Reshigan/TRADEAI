@@ -29,11 +29,34 @@ customerRoutes.get('/', async (c) => {
       sort: { name: 1 }
     });
 
+    // Enrich customers with contactName extracted from nested data structure
+    const enrichedCustomers = customers.map(customer => {
+      let contactName = null;
+      
+      // Try to extract contact name from various possible locations in the data
+      if (customer.data) {
+        const data = typeof customer.data === 'string' ? JSON.parse(customer.data) : customer.data;
+        // Check for contactName directly
+        if (data.contactName) {
+          contactName = data.contactName;
+        }
+        // Check for contacts array
+        else if (data.contacts && data.contacts.length > 0 && data.contacts[0].name) {
+          contactName = data.contacts[0].name;
+        }
+      }
+      
+      return {
+        ...customer,
+        contactName
+      };
+    });
+
     const total = await mongodb.countDocuments('customers', filter);
 
     return c.json({
       success: true,
-      data: customers,
+      data: enrichedCustomers,
       pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit)) }
     });
   } catch (error) {
