@@ -9,7 +9,7 @@ optimizerRoutes.use('*', authMiddleware);
 optimizerRoutes.post('/budget/reallocate', async (c) => {
   try {
     const user = c.get('user');
-    const db = getD1Client(c.env.DB);
+    const db = getD1Client(c);
     const body = await c.req.json();
     
     const { budgetId, minROI = 100 } = body;
@@ -155,7 +155,7 @@ optimizerRoutes.post('/promotion/optimize', async (c) => {
 optimizerRoutes.post('/portfolio/analyze', async (c) => {
   try {
     const user = c.get('user');
-    const db = getD1Client(c.env.DB);
+    const db = getD1Client(c);
     
     const promotions = await db.find('promotions', {
       company_id: user.companyId

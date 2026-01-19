@@ -9,7 +9,7 @@ aiOrchestratorRoutes.use('*', authMiddleware);
 aiOrchestratorRoutes.post('/orchestrate', async (c) => {
   try {
     const user = c.get('user');
-    const db = getD1Client(c.env.DB);
+    const db = getD1Client(c);
     const body = await c.req.json();
     
     const { userIntent, context } = body;
