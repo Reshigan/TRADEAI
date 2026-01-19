@@ -298,15 +298,15 @@ const TradeSpendList = () => {
                         />
                       </TableCell>
                       <TableCell>{spend.category}</TableCell>
-                      <TableCell>{spend.customer?.name || 'N/A'}</TableCell>
+                      <TableCell>{spend.customer?.name || spend.customerName || 'N/A'}</TableCell>
                       <TableCell align="right">
-                        ${(spend.amount?.requested || 0).toLocaleString()}
+                        ${(spend.amount?.requested || spend.requestedAmount || spend.amount || 0).toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
-                        ${(spend.amount?.approved || 0).toLocaleString()}
+                        ${(spend.amount?.approved || spend.approvedAmount || 0).toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
-                        ${(spend.amount?.spent || 0).toLocaleString()}
+                        ${(spend.amount?.spent || spend.spentAmount || 0).toLocaleString()}
                       </TableCell>
                       <TableCell>
                         <Chip 
@@ -316,8 +316,8 @@ const TradeSpendList = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        {spend.period?.startDate 
-                          ? new Date(spend.period.startDate).toLocaleDateString()
+                        {(spend.period?.startDate || spend.startDate)
+                          ? new Date(spend.period?.startDate || spend.startDate).toLocaleDateString()
                           : 'N/A'}
                       </TableCell>
                       <TableCell align="center">
