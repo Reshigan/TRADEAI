@@ -47,7 +47,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import { budgetService } from '../../../services/api';
+import budgetService from '../../../services/api/budgetService';
 import { formatCurrency } from '../../../utils/formatters';
 
 const BudgetReports = () => {

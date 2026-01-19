@@ -1,4 +1,5 @@
 import apiClient from './apiClient';
+import { normalizeTradeSpend, normalizeApiResponse } from './dataAdapters';
 
 const tradeSpendService = {
   /**
@@ -9,7 +10,9 @@ const tradeSpendService = {
   getAll: async (params = {}) => {
     try {
       const response = await apiClient.get('/trade-spends', { params });
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeTradeSpend);
+      return normalized;
     } catch (error) {
       console.error('Get trade spends error:', error);
       throw error;
@@ -24,7 +27,9 @@ const tradeSpendService = {
   getById: async (id) => {
     try {
       const response = await apiClient.get(`/trade-spends/${id}`);
-      return response.data;
+      // Normalize API response to match frontend expectations
+      const normalized = normalizeApiResponse(response.data, normalizeTradeSpend);
+      return normalized;
     } catch (error) {
       console.error(`Get trade spend ${id} error:`, error);
       throw error;
