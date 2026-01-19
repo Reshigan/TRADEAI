@@ -15,6 +15,10 @@ import { tradeSpendRoutes } from './routes/tradeSpends.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { reportingRoutes } from './routes/reporting.js';
 import { analyticsRoutes } from './routes/analytics.js';
+import { simulationsRoutes } from './routes/simulations.js';
+import { aiOrchestratorRoutes } from './routes/aiOrchestrator.js';
+import { optimizerRoutes } from './routes/optimizer.js';
+import { recommendationsRoutes } from './routes/recommendations.js';
 
 const app = new Hono();
 
@@ -67,6 +71,10 @@ app.route('/api/trade-spends', tradeSpendRoutes);
 app.route('/api/dashboard', dashboardRoutes);
 app.route('/api/reporting', reportingRoutes);
 app.route('/api/analytics', analyticsRoutes);
+app.route('/api/simulations', simulationsRoutes);
+app.route('/api/ai-orchestrator', aiOrchestratorRoutes);
+app.route('/api/optimizer', optimizerRoutes);
+app.route('/api/recommendations', recommendationsRoutes);
 
 // 404 handler
 app.notFound((c) => {
