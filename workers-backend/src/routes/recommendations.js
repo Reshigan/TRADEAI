@@ -9,7 +9,7 @@ recommendationsRoutes.use('*', authMiddleware);
 recommendationsRoutes.post('/next-best-promotion', async (c) => {
   try {
     const user = c.get('user');
-    const db = getD1Client(c.env.DB);
+    const db = getD1Client(c);
     const body = await c.req.json();
     
     const { customerId, limit = 5 } = body;
