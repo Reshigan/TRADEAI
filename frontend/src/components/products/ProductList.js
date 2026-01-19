@@ -17,7 +17,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
-import { productService } from '../../services/api';
+import productService from '../../services/api/productService';
 import ProductForm from './ProductForm';
 
 // No more mock data - using real API calls
