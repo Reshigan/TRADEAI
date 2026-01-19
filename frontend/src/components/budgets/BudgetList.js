@@ -18,7 +18,7 @@ import {
 // import { format } from 'date-fns';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
-import { budgetService } from '../../services/api';
+import budgetService from '../../services/api/budgetService';
 import BudgetForm from './BudgetForm';
 import { formatCurrencyCompact } from '../../utils/formatters';
 

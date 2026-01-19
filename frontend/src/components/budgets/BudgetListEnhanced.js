@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Chip, Typography, LinearProgress, useTheme } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
-import { budgetService } from '../../services/api';
+import budgetService from '../../services/api/budgetService';
 
 const BudgetListEnhanced = () => {
   const navigate = useNavigate();

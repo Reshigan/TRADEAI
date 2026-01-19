@@ -30,7 +30,7 @@ import {
   AttachMoney as MoneyIcon
 } from '@mui/icons-material';
 // Removed TreeView import due to compatibility issues
-import { budgetService } from '../../services/api';
+import budgetService from '../../services/api/budgetService';
 
 const HierarchicalBudgetManager = () => {
   const [budgetHierarchy, setBudgetHierarchy] = useState([]);
