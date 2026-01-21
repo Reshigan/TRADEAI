@@ -27,7 +27,6 @@ import {
   Lightbulb as TipIcon,
   ArrowBack as BackIcon,
   Inventory as ProductsIcon,
-  Category as CategoryIcon,
   AccountTree as HierarchyIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
