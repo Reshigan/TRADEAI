@@ -122,6 +122,43 @@ budgetRoutes.delete('/:id', async (c) => {
   }
 });
 
+// Clone budget
+budgetRoutes.post('/:id/clone', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const userId = c.get('userId');
+    const mongodb = getMongoClient(c);
+    const body = await c.req.json().catch(() => ({}));
+
+    const original = await mongodb.findOne('budgets', { id: id, companyId: tenantId });
+    if (!original) return c.json({ success: false, message: 'Budget not found' }, 404);
+
+    const clonedBudget = {
+      ...original,
+      id: `budget-${Date.now()}`,
+      name: body.name || `${original.name} (Copy)`,
+      year: body.year || new Date().getFullYear(),
+      status: 'draft',
+      utilized: 0,
+      created_by: userId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    delete clonedBudget._id;
+
+    await mongodb.insertOne('budgets', clonedBudget);
+
+    return c.json({ 
+      success: true, 
+      data: { id: clonedBudget.id },
+      message: 'Budget cloned successfully' 
+    }, 201);
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to clone budget', error: error.message }, 500);
+  }
+});
+
 // Get budget utilization
 budgetRoutes.get('/:id/utilization', async (c) => {
   try {

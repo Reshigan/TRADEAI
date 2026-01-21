@@ -92,50 +92,89 @@ recommendationsRoutes.post('/next-best-promotion', async (c) => {
 recommendationsRoutes.post('/next-best-action', async (c) => {
   try {
     const user = c.get('user');
+    const db = getD1Client(c);
     const body = await c.req.json();
     
     const { entityType, entityId } = body;
+    const actions = [];
     
-    const actions = [
-      {
-        id: 'action-1',
-        priority: 'high',
-        type: 'promotion',
-        title: 'Launch Volume Discount',
-        description: 'Customer has high purchase frequency but declining basket size',
-        expectedImpact: '+15% basket size',
-        confidence: 0.85,
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'action-2',
+    // Get real data to generate deterministic recommendations
+    const [budgets, tradeSpends, promotions, customers] = await Promise.all([
+      db.find('budgets', { company_id: user.companyId, status: 'active' }),
+      db.find('trade_spends', { company_id: user.companyId, status: 'pending' }),
+      db.find('promotions', { company_id: user.companyId, status: 'active' }),
+      db.find('customers', { company_id: user.companyId, status: 'active' })
+    ]);
+    
+    // Rule 1: Budgets >90% utilized need attention
+    for (const budget of budgets) {
+      const utilization = budget.amount ? ((budget.utilized || 0) / budget.amount) * 100 : 0;
+      if (utilization > 90) {
+        actions.push({
+          id: `action-budget-${budget.id}`,
+          priority: 'high',
+          type: 'budget',
+          title: `Review ${budget.name} Budget`,
+          description: `Budget is ${utilization.toFixed(1)}% utilized with limited remaining funds`,
+          expectedImpact: 'Prevent overspend',
+          confidence: 0.95,
+          entityRef: { type: 'budget', id: budget.id, name: budget.name },
+          deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+        });
+      }
+    }
+    
+    // Rule 2: Pending trade spends need approval
+    if (tradeSpends.length > 0) {
+      const totalPending = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+      actions.push({
+        id: `action-approvals-${Date.now()}`,
+        priority: tradeSpends.length > 5 ? 'high' : 'medium',
+        type: 'approval',
+        title: `${tradeSpends.length} Trade Spends Pending Approval`,
+        description: `Total value: R${totalPending.toLocaleString()} awaiting approval`,
+        expectedImpact: 'Unblock operations',
+        confidence: 0.98,
+        deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString()
+      });
+    }
+    
+    // Rule 3: Customers without recent promotions
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const customersWithPromos = new Set(promotions.map(p => p.data?.customerId).filter(Boolean));
+    const neglectedCustomers = customers.filter(c => !customersWithPromos.has(c.id)).slice(0, 3);
+    
+    for (const customer of neglectedCustomers) {
+      actions.push({
+        id: `action-customer-${customer.id}`,
         priority: 'medium',
         type: 'engagement',
-        title: 'Schedule Business Review',
-        description: 'Quarterly review overdue by 2 weeks',
-        expectedImpact: 'Strengthen relationship',
-        confidence: 0.92,
+        title: `Engage ${customer.name}`,
+        description: 'No active promotions for this customer',
+        expectedImpact: 'Increase customer engagement',
+        confidence: 0.75,
+        entityRef: { type: 'customer', id: customer.id, name: customer.name },
         deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'action-3',
-        priority: 'low',
-        type: 'upsell',
-        title: 'Introduce Premium Line',
-        description: 'Customer profile matches premium segment',
-        expectedImpact: '+8% margin',
-        confidence: 0.68,
-        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-      }
-    ];
+      });
+    }
+    
+    // Sort by priority
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    actions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
     
     return c.json({
       success: true,
       data: {
         entityType,
         entityId,
-        actions,
-        generatedAt: new Date().toISOString()
+        actions: actions.slice(0, 10),
+        generatedAt: new Date().toISOString(),
+        basedOn: {
+          budgets: budgets.length,
+          pendingApprovals: tradeSpends.length,
+          activePromotions: promotions.length,
+          customers: customers.length
+        }
       }
     });
   } catch (error) {
@@ -147,40 +186,119 @@ recommendationsRoutes.post('/next-best-action', async (c) => {
 recommendationsRoutes.get('/insights/:entityType/:entityId', async (c) => {
   try {
     const user = c.get('user');
+    const db = getD1Client(c);
     const { entityType, entityId } = c.req.param();
     
-    const insights = [
-      {
-        id: 'insight-1',
-        type: 'trend',
-        severity: 'info',
-        title: 'Positive Growth Trend',
-        description: 'Revenue up 12% vs same period last year',
-        metric: { current: 125000, previous: 111600, change: 12 },
-        actionable: true,
-        suggestedAction: 'Capitalize on momentum with loyalty promotion'
-      },
-      {
-        id: 'insight-2',
-        type: 'anomaly',
-        severity: 'warning',
-        title: 'Order Frequency Decline',
-        description: 'Orders down 8% in last 30 days',
-        metric: { current: 23, previous: 25, change: -8 },
-        actionable: true,
-        suggestedAction: 'Reach out to understand concerns'
-      },
-      {
-        id: 'insight-3',
-        type: 'opportunity',
-        severity: 'success',
-        title: 'Cross-sell Opportunity',
-        description: 'Customer buys Category A but not related Category B',
-        metric: { potential: 15000, probability: 0.72 },
-        actionable: true,
-        suggestedAction: 'Bundle promotion for Category A + B'
+    const insights = [];
+    let overallHealth = 70;
+    let riskScore = 30;
+    let opportunityScore = 50;
+    
+    // Get entity-specific data based on type
+    if (entityType === 'customer') {
+      const customer = await db.findOne('customers', { id: entityId, company_id: user.companyId });
+      const tradeSpends = await db.find('trade_spends', { customer_id: entityId, company_id: user.companyId });
+      const promotions = await db.find('promotions', { company_id: user.companyId });
+      
+      if (customer) {
+        const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+        const approvedSpend = tradeSpends.filter(ts => ts.status === 'approved').reduce((sum, ts) => sum + (ts.amount || 0), 0);
+        const pendingSpend = tradeSpends.filter(ts => ts.status === 'pending').reduce((sum, ts) => sum + (ts.amount || 0), 0);
+        
+        if (totalSpend > 0) {
+          insights.push({
+            id: `insight-spend-${entityId}`,
+            type: 'metric',
+            severity: 'info',
+            title: 'Trade Spend Summary',
+            description: `Total trade spend: R${totalSpend.toLocaleString()}`,
+            metric: { total: totalSpend, approved: approvedSpend, pending: pendingSpend },
+            actionable: pendingSpend > 0,
+            suggestedAction: pendingSpend > 0 ? 'Review pending trade spends' : null
+          });
+        }
+        
+        // Check tier and suggest actions
+        if (customer.tier === 'platinum' || customer.tier === 'gold') {
+          opportunityScore = 85;
+          insights.push({
+            id: `insight-tier-${entityId}`,
+            type: 'opportunity',
+            severity: 'success',
+            title: `${customer.tier.charAt(0).toUpperCase() + customer.tier.slice(1)} Customer`,
+            description: 'High-value customer eligible for premium promotions',
+            actionable: true,
+            suggestedAction: 'Consider exclusive loyalty program'
+          });
+        }
+        
+        overallHealth = Math.min(95, 60 + (tradeSpends.length * 5));
+        riskScore = Math.max(5, 40 - (tradeSpends.length * 3));
       }
-    ];
+    } else if (entityType === 'promotion') {
+      const promotion = await db.findOne('promotions', { id: entityId, company_id: user.companyId });
+      
+      if (promotion) {
+        const status = promotion.status;
+        if (status === 'active') {
+          overallHealth = 80;
+          insights.push({
+            id: `insight-promo-active-${entityId}`,
+            type: 'status',
+            severity: 'success',
+            title: 'Promotion Active',
+            description: `${promotion.name} is currently running`,
+            actionable: true,
+            suggestedAction: 'Monitor performance metrics'
+          });
+        } else if (status === 'pending_approval') {
+          riskScore = 50;
+          insights.push({
+            id: `insight-promo-pending-${entityId}`,
+            type: 'alert',
+            severity: 'warning',
+            title: 'Awaiting Approval',
+            description: 'Promotion requires approval to proceed',
+            actionable: true,
+            suggestedAction: 'Review and approve promotion'
+          });
+        }
+      }
+    } else if (entityType === 'budget') {
+      const budget = await db.findOne('budgets', { id: entityId, company_id: user.companyId });
+      
+      if (budget) {
+        const utilization = budget.amount ? ((budget.utilized || 0) / budget.amount) * 100 : 0;
+        const remaining = (budget.amount || 0) - (budget.utilized || 0);
+        
+        insights.push({
+          id: `insight-budget-util-${entityId}`,
+          type: 'metric',
+          severity: utilization > 90 ? 'warning' : utilization > 70 ? 'info' : 'success',
+          title: 'Budget Utilization',
+          description: `${utilization.toFixed(1)}% utilized, R${remaining.toLocaleString()} remaining`,
+          metric: { utilization, remaining, total: budget.amount },
+          actionable: utilization > 80,
+          suggestedAction: utilization > 80 ? 'Review upcoming commitments' : null
+        });
+        
+        overallHealth = utilization > 90 ? 50 : utilization > 70 ? 70 : 90;
+        riskScore = utilization > 90 ? 70 : utilization > 70 ? 40 : 15;
+        opportunityScore = 100 - utilization;
+      }
+    }
+    
+    // Add generic insight if no specific ones found
+    if (insights.length === 0) {
+      insights.push({
+        id: `insight-generic-${entityId}`,
+        type: 'info',
+        severity: 'info',
+        title: 'No Specific Insights',
+        description: 'Insufficient data to generate insights for this entity',
+        actionable: false
+      });
+    }
     
     return c.json({
       success: true,
@@ -188,9 +306,9 @@ recommendationsRoutes.get('/insights/:entityType/:entityId', async (c) => {
         entityType,
         entityId,
         insights,
-        overallHealth: 78,
-        riskScore: 22,
-        opportunityScore: 85,
+        overallHealth,
+        riskScore,
+        opportunityScore,
         generatedAt: new Date().toISOString()
       }
     });
@@ -203,25 +321,112 @@ recommendationsRoutes.get('/insights/:entityType/:entityId', async (c) => {
 recommendationsRoutes.get('/trending', async (c) => {
   try {
     const user = c.get('user');
+    const db = getD1Client(c);
+    
+    // Get real data for trending analysis
+    const [promotions, customers, products, tradeSpends, budgets] = await Promise.all([
+      db.find('promotions', { company_id: user.companyId }),
+      db.find('customers', { company_id: user.companyId }),
+      db.find('products', { company_id: user.companyId }),
+      db.find('trade_spends', { company_id: user.companyId }),
+      db.find('budgets', { company_id: user.companyId, status: 'active' })
+    ]);
+    
+    // Top performing promotions (by status and type)
+    const completedPromotions = promotions.filter(p => p.status === 'completed' || p.status === 'active');
+    const topPerformingPromotions = completedPromotions
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        type: p.promotion_type,
+        status: p.status,
+        roi: p.data?.roi || p.data?.performance?.roi || 0,
+        trend: p.status === 'active' ? 'active' : 'completed'
+      }))
+      .sort((a, b) => b.roi - a.roi)
+      .slice(0, 5);
+    
+    // Category analysis from products
+    const categorySpend = {};
+    products.forEach(p => {
+      const cat = p.category || 'Uncategorized';
+      if (!categorySpend[cat]) {
+        categorySpend[cat] = { count: 0, totalValue: 0 };
+      }
+      categorySpend[cat].count++;
+      categorySpend[cat].totalValue += (p.unit_price || 0);
+    });
+    
+    const emergingCategories = Object.entries(categorySpend)
+      .map(([category, data]) => ({
+        category,
+        productCount: data.count,
+        avgPrice: data.count > 0 ? (data.totalValue / data.count).toFixed(2) : 0,
+        opportunity: data.count > 5 ? 'high' : data.count > 2 ? 'medium' : 'low'
+      }))
+      .sort((a, b) => b.productCount - a.productCount)
+      .slice(0, 5);
+    
+    // At-risk customers (those with pending/rejected trade spends or low activity)
+    const customerActivity = {};
+    tradeSpends.forEach(ts => {
+      if (ts.customer_id) {
+        if (!customerActivity[ts.customer_id]) {
+          customerActivity[ts.customer_id] = { total: 0, pending: 0, rejected: 0 };
+        }
+        customerActivity[ts.customer_id].total++;
+        if (ts.status === 'pending') customerActivity[ts.customer_id].pending++;
+        if (ts.status === 'rejected') customerActivity[ts.customer_id].rejected++;
+      }
+    });
+    
+    const atRiskCustomers = customers
+      .map(c => {
+        const activity = customerActivity[c.id] || { total: 0, pending: 0, rejected: 0 };
+        let riskScore = 0;
+        let reason = '';
+        
+        if (activity.total === 0) {
+          riskScore = 60;
+          reason = 'No trade spend activity';
+        } else if (activity.rejected > 0) {
+          riskScore = 70 + (activity.rejected * 5);
+          reason = `${activity.rejected} rejected trade spend(s)`;
+        } else if (activity.pending > 2) {
+          riskScore = 50;
+          reason = 'Multiple pending approvals';
+        }
+        
+        return { id: c.id, name: c.name, riskScore, reason, tier: c.tier };
+      })
+      .filter(c => c.riskScore > 0)
+      .sort((a, b) => b.riskScore - a.riskScore)
+      .slice(0, 5);
+    
+    // Budget utilization trends
+    const budgetTrends = budgets.map(b => {
+      const utilization = b.amount ? ((b.utilized || 0) / b.amount) * 100 : 0;
+      return {
+        id: b.id,
+        name: b.name,
+        utilization: utilization.toFixed(1),
+        remaining: (b.amount || 0) - (b.utilized || 0),
+        status: utilization > 90 ? 'critical' : utilization > 70 ? 'warning' : 'healthy'
+      };
+    });
     
     const trending = {
-      topPerformingPromotions: [
-        { id: 'promo-1', name: 'Summer BOGO', roi: 2.4, trend: 'up' },
-        { id: 'promo-2', name: 'Loyalty Rewards', roi: 2.1, trend: 'stable' },
-        { id: 'promo-3', name: 'Volume Discount', roi: 1.9, trend: 'up' }
-      ],
-      emergingCategories: [
-        { category: 'Health & Wellness', growth: 25, opportunity: 'high' },
-        { category: 'Premium Snacks', growth: 18, opportunity: 'medium' }
-      ],
-      atRiskCustomers: [
-        { id: 'cust-1', name: 'Customer A', riskScore: 72, reason: 'Declining orders' },
-        { id: 'cust-2', name: 'Customer B', riskScore: 65, reason: 'Payment delays' }
-      ],
-      marketTrends: [
-        { trend: 'Price sensitivity increasing', impact: 'medium', recommendation: 'Focus on value messaging' },
-        { trend: 'Digital engagement up', impact: 'high', recommendation: 'Increase online promotions' }
-      ]
+      topPerformingPromotions,
+      emergingCategories,
+      atRiskCustomers,
+      budgetTrends,
+      summary: {
+        totalPromotions: promotions.length,
+        activePromotions: promotions.filter(p => p.status === 'active').length,
+        totalCustomers: customers.length,
+        totalProducts: products.length,
+        pendingApprovals: tradeSpends.filter(ts => ts.status === 'pending').length
+      }
     };
     
     return c.json({

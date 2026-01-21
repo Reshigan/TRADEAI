@@ -104,6 +104,54 @@ promotionRoutes.delete('/:id', async (c) => {
   }
 });
 
+// Clone promotion
+promotionRoutes.post('/:id/clone', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const userId = c.get('userId');
+    const mongodb = getMongoClient(c);
+    const body = await c.req.json().catch(() => ({}));
+
+    const original = await mongodb.findOne('promotions', { id: id, companyId: tenantId });
+    if (!original) return c.json({ success: false, message: 'Promotion not found' }, 404);
+
+    // Create clone with optional date shift
+    const dateShiftDays = body.dateShiftDays || 0;
+    const shiftDate = (dateStr) => {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      date.setDate(date.getDate() + dateShiftDays);
+      return date.toISOString().split('T')[0];
+    };
+
+    const clonedPromotion = {
+      ...original,
+      id: `promo-${Date.now()}`,
+      name: body.name || `${original.name} (Copy)`,
+      status: 'draft',
+      start_date: shiftDate(original.start_date),
+      end_date: shiftDate(original.end_date),
+      sell_in_start_date: shiftDate(original.sell_in_start_date),
+      sell_in_end_date: shiftDate(original.sell_in_end_date),
+      created_by: userId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    delete clonedPromotion._id;
+
+    await mongodb.insertOne('promotions', clonedPromotion);
+
+    return c.json({ 
+      success: true, 
+      data: { id: clonedPromotion.id },
+      message: 'Promotion cloned successfully' 
+    }, 201);
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to clone promotion', error: error.message }, 500);
+  }
+});
+
 // Get promotion performance
 promotionRoutes.get('/:id/performance', async (c) => {
   try {
