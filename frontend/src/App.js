@@ -168,6 +168,19 @@ import CustomerSegmentation from './pages/performance-analytics/CustomerSegmenta
 // Predictive Analytics
 import PredictiveAnalytics from './pages/planning/PredictiveAnalytics';
 
+// Help & Training Pages
+import {
+  HelpCenter,
+  PromotionsHelp,
+  BudgetsHelp,
+  TradeSpendsHelp,
+  CustomersHelp,
+  ProductsHelp,
+  AnalyticsHelp,
+  SimulationsHelp,
+  ApprovalsHelp,
+} from './pages/help';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
@@ -1716,8 +1729,117 @@ function App() {
             )
           } 
         />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+              {/* Help & Training Routes */}
+              <Route 
+                path="/help" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <HelpCenter />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/promotions" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <PromotionsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/budgets" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <BudgetsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/trade-spends" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <TradeSpendsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/customers" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <CustomersHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/products" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <ProductsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/analytics" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <AnalyticsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/simulations" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <SimulationsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/approvals" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <ApprovalsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
                 </UserSkillProvider>
               </Router>
             </CompanyTypeProvider>
