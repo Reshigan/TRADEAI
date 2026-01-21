@@ -24,7 +24,6 @@ import {
 import {
   ExpandMore as ExpandMoreIcon,
   CheckCircle as CheckIcon,
-  Info as InfoIcon,
   Lightbulb as TipIcon,
   ArrowBack as BackIcon,
   AccountBalance as BudgetsIcon,
