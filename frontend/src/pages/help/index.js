@@ -1,0 +1,9 @@
+export { default as HelpCenter } from './HelpCenter';
+export { default as PromotionsHelp } from './PromotionsHelp';
+export { default as BudgetsHelp } from './BudgetsHelp';
+export { default as TradeSpendsHelp } from './TradeSpendsHelp';
+export { default as CustomersHelp } from './CustomersHelp';
+export { default as ProductsHelp } from './ProductsHelp';
+export { default as AnalyticsHelp } from './AnalyticsHelp';
+export { default as SimulationsHelp } from './SimulationsHelp';
+export { default as ApprovalsHelp } from './ApprovalsHelp';

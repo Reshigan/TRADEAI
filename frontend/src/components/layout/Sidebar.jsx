@@ -15,7 +15,9 @@ import {
   Assessment as AssessmentIcon,
   Security as SecurityIcon,
   Speed as SpeedIcon,
-  Logout as LogoutIcon
+  Logout as LogoutIcon,
+  Help as HelpIcon,
+  School as SchoolIcon
 } from '@mui/icons-material';
 
 const Sidebar = () => {
@@ -54,14 +56,21 @@ const Sidebar = () => {
         { icon: SwapHorizIcon, label: 'Import / Export', path: '/data/import-export' }
       ]
     },
-    {
-      section: 'Administration',
-      items: [
-        { icon: AssessmentIcon, label: 'Report Builder', path: '/reports' },
-        { icon: SecurityIcon, label: 'Security', path: '/admin/security' },
-        { icon: SpeedIcon, label: 'Performance', path: '/admin/performance' }
-      ]
-    }
+        {
+          section: 'Administration',
+          items: [
+            { icon: AssessmentIcon, label: 'Report Builder', path: '/reports' },
+            { icon: SecurityIcon, label: 'Security', path: '/admin/security' },
+            { icon: SpeedIcon, label: 'Performance', path: '/admin/performance' }
+          ]
+        },
+        {
+          section: 'Help & Training',
+          items: [
+            { icon: HelpIcon, label: 'Help Center', path: '/help' },
+            { icon: SchoolIcon, label: 'Training', path: '/help' }
+          ]
+        }
   ];
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
