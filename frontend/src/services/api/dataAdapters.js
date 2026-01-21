@@ -231,9 +231,26 @@ export const normalizeTradeSpend = (tradeSpend) => {
     _id: tradeSpend.customerId || tradeSpend.customer_id || null,
   };
   
+  // Derive category from spend_type or activity_type for display
+  // Maps spend_type codes to human-readable categories
+  const spendTypeLabels = {
+    cash_coop: 'Cash Co-op',
+    off_invoice: 'Off-Invoice',
+    scan_rebate: 'Scan Rebate',
+    volume_rebate: 'Volume Rebate',
+    listing_fee: 'Listing Fee',
+    promotional: 'Promotional',
+    trade_marketing: 'Trade Marketing',
+    key_account: 'Key Account'
+  };
+  const spendType = tradeSpend.spendType || tradeSpend.spend_type;
+  const activityType = tradeSpend.activityType || tradeSpend.activity_type;
+  const category = tradeSpend.category || spendTypeLabels[spendType] || spendTypeLabels[activityType] || spendType || activityType || 'General';
+  
   return {
     ...tradeSpend,
     id: tradeSpend.id || tradeSpend._id,
+    category,
     spend_id: tradeSpend.spendId || tradeSpend.spend_id,
     spendId: tradeSpend.spendId || tradeSpend.spend_id,
     spend_type: tradeSpend.spendType || tradeSpend.spend_type,

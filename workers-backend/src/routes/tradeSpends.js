@@ -143,6 +143,57 @@ tradeSpendRoutes.delete('/:id', async (c) => {
   }
 });
 
+// Clone trade spend
+tradeSpendRoutes.post('/:id/clone', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const userId = c.get('userId');
+    const mongodb = getMongoClient(c);
+    const body = await c.req.json().catch(() => ({}));
+
+    const original = await mongodb.findOne('tradespends', { id: id, companyId: tenantId });
+    if (!original) return c.json({ success: false, message: 'Trade spend not found' }, 404);
+
+    // Create clone with optional date shift
+    const dateShiftDays = body.dateShiftDays || 0;
+    const shiftDate = (dateStr) => {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      date.setDate(date.getDate() + dateShiftDays);
+      return date.toISOString().split('T')[0];
+    };
+
+    const clonedTradeSpend = {
+      ...original,
+      id: `ts-${Date.now()}`,
+      name: body.name || `${original.name || 'Trade Spend'} (Copy)`,
+      status: 'pending',
+      startDate: shiftDate(original.startDate),
+      endDate: shiftDate(original.endDate),
+      created_by: userId,
+      approved_by: null,
+      approved_at: null,
+      rejected_by: null,
+      rejected_at: null,
+      rejection_reason: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    delete clonedTradeSpend._id;
+
+    await mongodb.insertOne('tradespends', clonedTradeSpend);
+
+    return c.json({ 
+      success: true, 
+      data: { id: clonedTradeSpend.id },
+      message: 'Trade spend cloned successfully' 
+    }, 201);
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to clone trade spend', error: error.message }, 500);
+  }
+});
+
 // Approve trade spend
 tradeSpendRoutes.post('/:id/approve', async (c) => {
   try {

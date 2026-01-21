@@ -115,19 +115,24 @@ simulationsRoutes.post('/save', async (c) => {
     const db = getD1Client(c);
     const body = await c.req.json();
     
+    const simulationId = `sim-${Date.now()}`;
     const simulation = {
-      id: `sim-${Date.now()}`,
+      id: simulationId,
       company_id: user.companyId,
       created_by: user.id,
       name: body.name || 'Untitled Simulation',
-      scenarios: JSON.stringify(body.scenarios || []),
-      constraints: JSON.stringify(body.constraints || {}),
+      description: body.description || '',
+      simulation_type: body.simulationType || 'promotion',
       status: 'saved',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      config: JSON.stringify(body.config || {}),
+      results: JSON.stringify(body.results || {}),
+      scenarios: JSON.stringify(body.scenarios || []),
+      constraints: JSON.stringify(body.constraints || {})
     };
     
-    return c.json({ success: true, simulation });
+    await db.insertOne('simulations', simulation);
+    
+    return c.json({ success: true, simulation: { ...simulation, id: simulationId } });
   } catch (error) {
     console.error('Save simulation error:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -137,25 +142,46 @@ simulationsRoutes.post('/save', async (c) => {
 simulationsRoutes.get('/history', async (c) => {
   try {
     const user = c.get('user');
+    const db = getD1Client(c);
+    const { limit = 20, page = 1 } = c.req.query();
     
-    const history = [
-      {
-        id: 'sim-history-1',
-        name: 'Q1 Promotion Planning',
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        scenarioCount: 3,
-        bestROI: 2.1
-      },
-      {
-        id: 'sim-history-2',
-        name: 'Summer Campaign Analysis',
-        createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        scenarioCount: 4,
-        bestROI: 1.8
+    const simulations = await db.find('simulations', {
+      company_id: user.companyId
+    }, {
+      sort: { created_at: -1 },
+      limit: parseInt(limit),
+      skip: (parseInt(page) - 1) * parseInt(limit)
+    });
+    
+    const history = simulations.map(sim => {
+      const scenarios = sim.scenarios ? JSON.parse(sim.scenarios) : [];
+      const results = sim.results ? JSON.parse(sim.results) : {};
+      return {
+        id: sim.id,
+        name: sim.name,
+        description: sim.description,
+        simulationType: sim.simulation_type,
+        status: sim.status,
+        createdAt: sim.created_at,
+        updatedAt: sim.updated_at,
+        scenarioCount: scenarios.length || 1,
+        bestROI: results.roi || results.bestROI || 0,
+        appliedTo: sim.applied_to
+      };
+    });
+    
+    const total = await db.countDocuments('simulations', { company_id: user.companyId });
+    
+    return c.json({ 
+      success: true, 
+      data: history,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit))
       }
-    ];
-    
-    return c.json({ success: true, data: history });
+    });
   } catch (error) {
     console.error('History error:', error);
     return c.json({ success: false, message: error.message }, 500);

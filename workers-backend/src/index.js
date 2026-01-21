@@ -19,6 +19,7 @@ import { simulationsRoutes } from './routes/simulations.js';
 import { aiOrchestratorRoutes } from './routes/aiOrchestrator.js';
 import { optimizerRoutes } from './routes/optimizer.js';
 import { recommendationsRoutes } from './routes/recommendations.js';
+import { exportRoutes } from './routes/export.js';
 
 const app = new Hono();
 
@@ -75,6 +76,7 @@ app.route('/api/simulations', simulationsRoutes);
 app.route('/api/ai-orchestrator', aiOrchestratorRoutes);
 app.route('/api/optimizer', optimizerRoutes);
 app.route('/api/recommendations', recommendationsRoutes);
+app.route('/api/export', exportRoutes);
 
 // 404 handler
 app.notFound((c) => {
