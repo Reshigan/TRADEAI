@@ -31,7 +31,7 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/products`, { params: filters });
+      const response = await apiClient.get(`/products`, { params: filters });
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -46,7 +46,7 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/products/${id}`);
+      const response = await apiClient.get(`/products/${id}`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -61,9 +61,9 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const url = productId 
-        ? `/api/products/${productId}/hierarchy`
-        : `/api/products/hierarchy`;
+            const url = productId 
+              ? `/products/${productId}/hierarchy`
+              : `/products/hierarchy`;
       
       const response = await apiClient.get(url);
       setCachedData(cacheKey, response.data);
@@ -80,7 +80,7 @@ const productService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/products/${productId}/performance`);
+      const response = await apiClient.get(`/products/${productId}/performance`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -91,7 +91,7 @@ const productService = {
 
   createProduct: async (productData) => {
     try {
-      const response = await apiClient.post(`/api/products`, productData);
+      const response = await apiClient.post(`/products`, productData);
       clearCache();
       return response.data;
     } catch (error) {
@@ -102,7 +102,7 @@ const productService = {
 
   updateProduct: async (id, productData) => {
     try {
-      const response = await apiClient.put(`/api/products/${id}`, productData);
+      const response = await apiClient.put(`/products/${id}`, productData);
       clearCache();
       return response.data;
     } catch (error) {
@@ -113,7 +113,7 @@ const productService = {
 
   deleteProduct: async (id) => {
     try {
-      const response = await apiClient.delete(`/api/products/${id}`);
+      const response = await apiClient.delete(`/products/${id}`);
       clearCache();
       return response.data;
     } catch (error) {

@@ -31,7 +31,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/customers`, { params: filters });
+      const response = await apiClient.get(`/customers`, { params: filters });
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -46,7 +46,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/customers/${id}`);
+      const response = await apiClient.get(`/customers/${id}`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -61,9 +61,9 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const url = customerId 
-        ? `/api/customers/${customerId}/hierarchy`
-        : `/api/customers/hierarchy`;
+            const url = customerId 
+              ? `/customers/${customerId}/hierarchy`
+              : `/customers/hierarchy`;
       
       const response = await apiClient.get(url);
       setCachedData(cacheKey, response.data);
@@ -80,7 +80,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/customers/${customerId}/performance`);
+      const response = await apiClient.get(`/customers/${customerId}/performance`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -95,7 +95,7 @@ const customerService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/customers/${customerId}/ai-insights`);
+      const response = await apiClient.get(`/customers/${customerId}/ai-insights`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -106,7 +106,7 @@ const customerService = {
 
   createCustomer: async (customerData) => {
     try {
-      const response = await apiClient.post(`/api/customers`, customerData);
+      const response = await apiClient.post(`/customers`, customerData);
       clearCache();
       return response.data;
     } catch (error) {
@@ -117,7 +117,7 @@ const customerService = {
 
   updateCustomer: async (id, customerData) => {
     try {
-      const response = await apiClient.put(`/api/customers/${id}`, customerData);
+      const response = await apiClient.put(`/customers/${id}`, customerData);
       clearCache();
       return response.data;
     } catch (error) {
@@ -128,7 +128,7 @@ const customerService = {
 
   deleteCustomer: async (id) => {
     try {
-      const response = await apiClient.delete(`/api/customers/${id}`);
+      const response = await apiClient.delete(`/customers/${id}`);
       clearCache();
       return response.data;
     } catch (error) {
