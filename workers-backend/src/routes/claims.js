@@ -98,6 +98,216 @@ claims.get('/summary', async (c) => {
   }
 });
 
+// Get claims statistics (frontend expects this endpoint)
+claims.get('/statistics', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { startDate, endDate } = c.req.query();
+    
+    let dateFilter = '';
+    const params = [companyId];
+    if (startDate) {
+      dateFilter += ' AND claim_date >= ?';
+      params.push(startDate);
+    }
+    if (endDate) {
+      dateFilter += ' AND claim_date <= ?';
+      params.push(endDate);
+    }
+    
+    const byStatus = await db.prepare(`
+      SELECT 
+        status as _id,
+        COUNT(*) as count,
+        SUM(claimed_amount) as totalAmount
+      FROM claims WHERE company_id = ?${dateFilter}
+      GROUP BY status
+    `).bind(...params).all();
+    
+    return c.json({
+      success: true,
+      data: {
+        byStatus: byStatus.results || []
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching claims statistics:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get unmatched claims (frontend expects this endpoint)
+claims.get('/unmatched', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    
+    const result = await db.prepare(`
+      SELECT cl.*, cu.name as customer_name,
+        cl.id as _id,
+        cl.claim_number as claimId,
+        cl.claim_type as claimType,
+        cl.claimed_amount as claimAmount,
+        cl.claim_date as claimDate,
+        cl.approved_amount as approvedAmount
+      FROM claims cl 
+      LEFT JOIN customers cu ON cl.customer_id = cu.id 
+      WHERE cl.company_id = ? 
+      ORDER BY cl.created_at DESC
+    `).bind(companyId).all();
+    
+    // Transform to match frontend expected format
+    const claims = (result.results || []).map(claim => ({
+      ...claim,
+      customer: { name: claim.customer_name },
+      matching: { matchStatus: 'unmatched' }
+    }));
+    
+    return c.json({
+      success: true,
+      data: claims
+    });
+  } catch (error) {
+    console.error('Error fetching unmatched claims:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get pending approval claims (frontend expects this endpoint)
+claims.get('/pending-approval', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    
+    const result = await db.prepare(`
+      SELECT cl.*, cu.name as customer_name,
+        cl.id as _id,
+        cl.claim_number as claimId,
+        cl.claim_type as claimType,
+        cl.claimed_amount as claimAmount,
+        cl.claim_date as claimDate,
+        cl.approved_amount as approvedAmount
+      FROM claims cl 
+      LEFT JOIN customers cu ON cl.customer_id = cu.id 
+      WHERE cl.company_id = ? AND cl.status IN ('pending', 'under_review')
+      ORDER BY cl.created_at DESC
+    `).bind(companyId).all();
+    
+    // Transform to match frontend expected format
+    const claims = (result.results || []).map(claim => ({
+      ...claim,
+      customer: { name: claim.customer_name },
+      matching: { matchStatus: 'unmatched' }
+    }));
+    
+    return c.json({
+      success: true,
+      data: claims
+    });
+  } catch (error) {
+    console.error('Error fetching pending approval claims:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Auto-match claims (frontend expects this endpoint)
+claims.post('/auto-match', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    
+    // Get unmatched claims and deductions
+    const claims = await db.prepare(`
+      SELECT * FROM claims WHERE company_id = ? AND status IN ('pending', 'approved')
+    `).bind(companyId).all();
+    
+    const deductions = await db.prepare(`
+      SELECT * FROM deductions WHERE company_id = ? AND status = 'open'
+    `).bind(companyId).all();
+    
+    const matched = [];
+    const now = new Date().toISOString();
+    
+    // Simple matching by customer and amount
+    for (const claim of (claims.results || [])) {
+      for (const deduction of (deductions.results || [])) {
+        if (claim.customer_id === deduction.customer_id && 
+            Math.abs(claim.claimed_amount - deduction.deduction_amount) < 0.01) {
+          // Match found
+          await db.prepare(`
+            UPDATE claims SET data = ?, updated_at = ? WHERE id = ?
+          `).bind(JSON.stringify({ matchedDeductions: [deduction.id] }), now, claim.id).run();
+          
+          await db.prepare(`
+            UPDATE deductions SET status = 'matched', matched_to = ?, updated_at = ? WHERE id = ?
+          `).bind(JSON.stringify([claim.id]), now, deduction.id).run();
+          
+          matched.push({ claimId: claim.id, deductionId: deduction.id });
+        }
+      }
+    }
+    
+    return c.json({
+      success: true,
+      data: matched,
+      message: `Matched ${matched.length} claims to deductions`
+    });
+  } catch (error) {
+    console.error('Error auto-matching claims:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get claims by customer (frontend expects this endpoint)
+claims.get('/customer/:customerId', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { customerId } = c.req.param();
+    const { startDate, endDate } = c.req.query();
+    
+    let query = `
+      SELECT cl.*, cu.name as customer_name,
+        cl.id as _id,
+        cl.claim_number as claimId,
+        cl.claim_type as claimType,
+        cl.claimed_amount as claimAmount,
+        cl.claim_date as claimDate
+      FROM claims cl 
+      LEFT JOIN customers cu ON cl.customer_id = cu.id 
+      WHERE cl.company_id = ? AND cl.customer_id = ?
+    `;
+    const params = [companyId, customerId];
+    
+    if (startDate) {
+      query += ' AND cl.claim_date >= ?';
+      params.push(startDate);
+    }
+    if (endDate) {
+      query += ' AND cl.claim_date <= ?';
+      params.push(endDate);
+    }
+    
+    query += ' ORDER BY cl.created_at DESC';
+    
+    const result = await db.prepare(query).bind(...params).all();
+    
+    const claims = (result.results || []).map(claim => ({
+      ...claim,
+      customer: { name: claim.customer_name }
+    }));
+    
+    return c.json({
+      success: true,
+      data: claims
+    });
+  } catch (error) {
+    console.error('Error fetching claims by customer:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 // Get claim by ID
 claims.get('/:id', async (c) => {
   try {
