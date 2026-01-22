@@ -20,6 +20,17 @@ import { aiOrchestratorRoutes } from './routes/aiOrchestrator.js';
 import { optimizerRoutes } from './routes/optimizer.js';
 import { recommendationsRoutes } from './routes/recommendations.js';
 import { exportRoutes } from './routes/export.js';
+// New routes for complete platform functionality
+import { approvalsRoutes } from './routes/approvals.js';
+import { rebatesRoutes } from './routes/rebates.js';
+import { tradingTermsRoutes } from './routes/tradingTerms.js';
+import { claimsRoutes } from './routes/claims.js';
+import { deductionsRoutes } from './routes/deductions.js';
+import { vendorsRoutes } from './routes/vendors.js';
+import { campaignsRoutes } from './routes/campaigns.js';
+import { activitiesRoutes } from './routes/activities.js';
+import { dataLineageRoutes } from './routes/dataLineage.js';
+import { forecastingRoutes } from './routes/forecasting.js';
 
 const app = new Hono();
 
@@ -77,6 +88,17 @@ app.route('/api/ai-orchestrator', aiOrchestratorRoutes);
 app.route('/api/optimizer', optimizerRoutes);
 app.route('/api/recommendations', recommendationsRoutes);
 app.route('/api/export', exportRoutes);
+// New routes for complete platform functionality
+app.route('/api/approvals', approvalsRoutes);
+app.route('/api/rebates', rebatesRoutes);
+app.route('/api/trading-terms', tradingTermsRoutes);
+app.route('/api/claims', claimsRoutes);
+app.route('/api/deductions', deductionsRoutes);
+app.route('/api/vendors', vendorsRoutes);
+app.route('/api/campaigns', campaignsRoutes);
+app.route('/api/activities', activitiesRoutes);
+app.route('/api/data-lineage', dataLineageRoutes);
+app.route('/api/forecasting', forecastingRoutes);
 
 // 404 handler
 app.notFound((c) => {
