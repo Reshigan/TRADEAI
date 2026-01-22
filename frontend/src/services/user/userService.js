@@ -31,7 +31,7 @@ const userService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/users`, { params: filters });
+      const response = await apiClient.get(`/users`, { params: filters });
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -46,7 +46,7 @@ const userService = {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.get(`/api/users/${id}`);
+      const response = await apiClient.get(`/users/${id}`);
       setCachedData(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -57,7 +57,7 @@ const userService = {
 
   createUser: async (userData) => {
     try {
-      const response = await apiClient.post(`/api/users`, userData);
+      const response = await apiClient.post(`/users`, userData);
       clearCache();
       return response.data;
     } catch (error) {
@@ -68,7 +68,7 @@ const userService = {
 
   updateUser: async (id, userData) => {
     try {
-      const response = await apiClient.put(`/api/users/${id}`, userData);
+      const response = await apiClient.put(`/users/${id}`, userData);
       clearCache();
       return response.data;
     } catch (error) {
@@ -79,7 +79,7 @@ const userService = {
 
   deleteUser: async (id) => {
     try {
-      const response = await apiClient.delete(`/api/users/${id}`);
+      const response = await apiClient.delete(`/users/${id}`);
       clearCache();
       return response.data;
     } catch (error) {

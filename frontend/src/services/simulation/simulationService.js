@@ -32,7 +32,7 @@ class SimulationService {
 
   async simulatePromotion(promotionData) {
     try {
-      const response = await apiClient.post(`/api/simulations/promotion`, promotionData);
+      const response = await apiClient.post(`/simulations/promotion`, promotionData);
       return response.data;
     } catch (error) {
       console.error('Promotion simulation failed:', error);
@@ -42,7 +42,7 @@ class SimulationService {
 
   async compareScenarios(scenarios, baseline = null) {
     try {
-      const response = await apiClient.post(`/api/simulations/compare`, { scenarios, baseline });
+      const response = await apiClient.post(`/simulations/compare`, { scenarios, baseline });
       return response.data;
     } catch (error) {
       console.error('Scenario comparison failed:', error);
@@ -56,7 +56,7 @@ class SimulationService {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.post(`/api/recommendations/next-best-promotion`, { customerId, limit });
+      const response = await apiClient.post(`/recommendations/next-best-promotion`, { customerId, limit });
       this.setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -71,7 +71,7 @@ class SimulationService {
     if (cached) return cached;
 
     try {
-      const response = await apiClient.post(`/api/optimizer/budget/reallocate`, { budgetId, minROI });
+      const response = await apiClient.post(`/optimizer/budget/reallocate`, { budgetId, minROI });
       this.setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -82,7 +82,7 @@ class SimulationService {
 
   async previewConflicts(promotionData, excludePromotionId = null) {
     try {
-      const response = await apiClient.post(`/api/promotions/conflicts/preview`, { ...promotionData, excludePromotionId });
+      const response = await apiClient.post(`/promotions/conflicts/preview`, { ...promotionData, excludePromotionId });
       return response.data;
     } catch (error) {
       console.error('Conflict preview failed:', error);
@@ -99,7 +99,7 @@ class SimulationService {
       const params = new URLSearchParams({ year, view });
       if (month) params.append('month', month);
 
-      const response = await apiClient.get(`/api/promotions/calendar?${params.toString()}`);
+      const response = await apiClient.get(`/promotions/calendar?${params.toString()}`);
       this.setCache(cacheKey, response.data);
       return response.data;
     } catch (error) {
@@ -110,7 +110,7 @@ class SimulationService {
 
   async orchestrateAI(userIntent, context = {}) {
     try {
-      const response = await apiClient.post(`/api/ai-orchestrator/orchestrate`, { userIntent, context });
+      const response = await apiClient.post(`/ai-orchestrator/orchestrate`, { userIntent, context });
       return response.data;
     } catch (error) {
       console.error('AI orchestration failed:', error);
