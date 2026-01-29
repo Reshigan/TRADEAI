@@ -179,6 +179,11 @@ import {
   AnalyticsHelp,
   SimulationsHelp,
   ApprovalsHelp,
+  RebatesHelp,
+  ClaimsHelp,
+  DeductionsHelp,
+  ForecastingHelp,
+  BusinessProcessGuide,
 } from './pages/help';
 
 function App() {
@@ -1832,6 +1837,66 @@ function App() {
                   isAuthenticated ? (
                     <Layout user={user} onLogout={handleLogout}>
                       <ApprovalsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/rebates" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <RebatesHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/claims" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <ClaimsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/deductions" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <DeductionsHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/forecasting" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <ForecastingHelp />
+                    </Layout>
+                  ) : (
+                    <Navigate to="/" replace />
+                  )
+                } 
+              />
+              <Route 
+                path="/help/business-process-guide" 
+                element={
+                  isAuthenticated ? (
+                    <Layout user={user} onLogout={handleLogout}>
+                      <BusinessProcessGuide />
                     </Layout>
                   ) : (
                     <Navigate to="/" replace />
