@@ -7,3 +7,8 @@ export { default as ProductsHelp } from './ProductsHelp';
 export { default as AnalyticsHelp } from './AnalyticsHelp';
 export { default as SimulationsHelp } from './SimulationsHelp';
 export { default as ApprovalsHelp } from './ApprovalsHelp';
+export { default as RebatesHelp } from './RebatesHelp';
+export { default as ClaimsHelp } from './ClaimsHelp';
+export { default as DeductionsHelp } from './DeductionsHelp';
+export { default as ForecastingHelp } from './ForecastingHelp';
+export { default as BusinessProcessGuide } from './BusinessProcessGuide';

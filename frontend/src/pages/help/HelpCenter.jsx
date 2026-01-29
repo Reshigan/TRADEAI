@@ -34,6 +34,10 @@ import {
   MenuBook as GuideIcon,
   School as TrainingIcon,
   Help as HelpIcon,
+  Percent as RebatesIcon,
+  ReceiptLong as ClaimsIcon,
+  RemoveCircle as DeductionsIcon,
+  TrendingUp as ForecastingIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -110,6 +114,42 @@ const helpSections = [
     path: '/help/approvals',
     topics: ['Approval queues', 'Delegation', 'Escalation', 'Audit trail'],
   },
+  {
+    id: 'rebates',
+    title: 'Rebates',
+    icon: RebatesIcon,
+    color: '#7b1fa2',
+    description: 'Create and manage rebate programs',
+    path: '/help/rebates',
+    topics: ['Rebate types', 'Calculation methods', 'Accruals', 'Settlement'],
+  },
+  {
+    id: 'claims',
+    title: 'Claims',
+    icon: ClaimsIcon,
+    color: '#d32f2f',
+    description: 'Manage customer claims and matching',
+    path: '/help/claims',
+    topics: ['Claim types', 'Review process', 'Deduction matching', 'Settlement'],
+  },
+  {
+    id: 'deductions',
+    title: 'Deductions',
+    icon: DeductionsIcon,
+    color: '#f57c00',
+    description: 'Track and resolve customer deductions',
+    path: '/help/deductions',
+    topics: ['Investigation', 'Auto-matching', 'Dispute resolution', 'Aging'],
+  },
+  {
+    id: 'forecasting',
+    title: 'Forecasting',
+    icon: ForecastingIcon,
+    color: '#0288d1',
+    description: 'Create and analyze forecasts',
+    path: '/help/forecasting',
+    topics: ['Forecast types', 'Methods', 'Variance analysis', 'AI predictions'],
+  },
 ];
 
 const quickStartGuides = [
@@ -135,6 +175,30 @@ const quickStartGuides = [
     title: 'Running a Simulation',
     duration: '7 min',
     description: 'Use simulations to optimize your promotions',
+    type: 'video',
+  },
+  {
+    title: 'Setting Up Rebate Agreements',
+    duration: '12 min',
+    description: 'Create and configure rebate programs with customers',
+    type: 'guide',
+  },
+  {
+    title: 'Managing Claims and Deductions',
+    duration: '10 min',
+    description: 'Process customer claims and match to deductions',
+    type: 'guide',
+  },
+  {
+    title: 'Creating Forecasts',
+    duration: '8 min',
+    description: 'Generate budget and demand forecasts using AI',
+    type: 'guide',
+  },
+  {
+    title: 'Approval Workflow Overview',
+    duration: '6 min',
+    description: 'Understand how approvals work across the system',
     type: 'video',
   },
 ];
@@ -163,6 +227,30 @@ const faqs = [
   {
     question: 'What do the different approval statuses mean?',
     answer: 'Draft: Not yet submitted. Pending: Awaiting approval. Approved: Ready to execute. Rejected: Needs revision. Active: Currently running. Completed: Finished.',
+  },
+  {
+    question: 'How do rebate calculations work?',
+    answer: 'Rebates can be calculated as a percentage of sales, a fixed amount, or per unit. The system supports thresholds (minimum qualifying amount) and caps (maximum payout). Accruals are calculated automatically based on sales data.',
+  },
+  {
+    question: 'What is the difference between claims and deductions?',
+    answer: 'Claims are requests from customers for payment (e.g., for promotions or rebates). Deductions are amounts customers withhold from invoice payments. The system can automatically match claims to deductions for reconciliation.',
+  },
+  {
+    question: 'How do I create a forecast?',
+    answer: 'Go to Forecasting > Create New. Select the forecast type (budget, demand, revenue, or volume), choose a forecasting method, and set the parameters. The system will generate predictions based on historical data.',
+  },
+  {
+    question: 'What forecasting methods are available?',
+    answer: 'TRADEAI supports Historical Average, Growth Rate, Weighted Moving Average, Manual Entry, and ML-Predicted methods. ML predictions require at least 12 months of historical data for best accuracy.',
+  },
+  {
+    question: 'How do I resolve an unauthorized deduction?',
+    answer: 'Mark the deduction as Disputed, document the reason, and contact the customer. Track all communications in the system. If unresolved, escalate to management or collections.',
+  },
+  {
+    question: 'Can I run simulations before creating a promotion?',
+    answer: 'Yes! Use the Simulation Studio to model different scenarios. You can compare ROI, uplift, and other metrics across multiple scenarios before committing to a promotion.',
   },
 ];
 
@@ -330,6 +418,26 @@ const HelpCenter = () => {
       )}
 
       <Divider sx={{ my: 4 }} />
+
+      <Paper sx={{ p: 3, mb: 4, bgcolor: '#e3f2fd' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Business Process Guide
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Comprehensive guide to TRADEAI workflows, processes, and system integration
+            </Typography>
+          </Box>
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={() => navigate('/help/business-process-guide')}
+          >
+            View Full Guide
+          </Button>
+        </Box>
+      </Paper>
 
       <Box sx={{ textAlign: 'center' }}>
         <Typography variant="h6" gutterBottom>
