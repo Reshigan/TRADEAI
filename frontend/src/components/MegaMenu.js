@@ -37,13 +37,27 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
   const [anchorEl, setAnchorEl] = useState({});
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
+  const [closeTimeout, setCloseTimeout] = useState(null);
 
   const handleMenuOpen = (event, menuKey) => {
+    // Clear any pending close timeout when opening a menu
+    if (closeTimeout) {
+      clearTimeout(closeTimeout);
+      setCloseTimeout(null);
+    }
     setAnchorEl({ ...anchorEl, [menuKey]: event.currentTarget });
   };
 
   const handleMenuClose = (menuKey) => {
     setAnchorEl({ ...anchorEl, [menuKey]: null });
+  };
+
+  const handleMenuCloseDelayed = (menuKey) => {
+    // Add a delay before closing to allow mouse to move to submenu
+    const timeout = setTimeout(() => {
+      setAnchorEl((prev) => ({ ...prev, [menuKey]: null }));
+    }, 150);
+    setCloseTimeout(timeout);
   };
 
   const handleUserMenuOpen = (event) => {
@@ -391,9 +405,15 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
               onClose={() => handleMenuClose(menuItem.key)}
               TransitionComponent={Fade}
               transitionDuration={200}
-              MenuListProps={{
-                onMouseLeave: () => handleMenuClose(menuItem.key),
-              }}
+                            MenuListProps={{
+                              onMouseLeave: () => handleMenuCloseDelayed(menuItem.key),
+                              onMouseEnter: () => {
+                                if (closeTimeout) {
+                                  clearTimeout(closeTimeout);
+                                  setCloseTimeout(null);
+                                }
+                              },
+                            }}
               PaperProps={{
                 elevation: 0,
                 sx: {

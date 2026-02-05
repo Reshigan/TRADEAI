@@ -12,6 +12,7 @@ import {
   Cancel as CancelIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+import './PromotionForm.css';
 
 const PromotionForm = () => {
   const { id } = useParams();
