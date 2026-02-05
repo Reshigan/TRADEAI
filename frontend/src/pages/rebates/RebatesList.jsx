@@ -21,7 +21,7 @@ import api from '../../services/api';
 const RebatesList = () => {
   const navigate = useNavigate();
   const [rebates, setRebates] = useState([]);
-  const [setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const loadRebates = async () => {
     try {
@@ -123,12 +123,12 @@ const RebatesList = () => {
                     size="small"
                   />
                 </TableCell>
-                <TableCell>
-                  {rebate.calculationType === 'percentage' 
-                    ? `${rebate.rate}%`
-                    : `R${rebate.amount?.toLocaleString()}`
-                  }
-                </TableCell>
+                                <TableCell>
+                                  {rebate.calculationType === 'percentage' 
+                                    ? `${rebate.rate || 0}%`
+                                    : `R ${(rebate.amount || 0).toLocaleString()}`
+                                  }
+                                </TableCell>
                 <TableCell>
                   {rebate.startDate ? new Date(rebate.startDate).toLocaleDateString() : '-'}
                 </TableCell>

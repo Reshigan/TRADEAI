@@ -63,6 +63,91 @@ deductions.get('/', async (c) => {
   }
 });
 
+// Get unmatched deductions
+deductions.get('/unmatched', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    
+    const result = await db.prepare(`
+      SELECT d.*, cu.name as customer_name 
+      FROM deductions d 
+      LEFT JOIN customers cu ON d.customer_id = cu.id 
+      WHERE d.company_id = ? AND d.status IN ('open', 'under_review')
+      ORDER BY d.created_at DESC
+    `).bind(companyId).all();
+    
+    return c.json({
+      success: true,
+      data: result.results || []
+    });
+  } catch (error) {
+    console.error('Error fetching unmatched deductions:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get disputed deductions
+deductions.get('/disputed', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    
+    const result = await db.prepare(`
+      SELECT d.*, cu.name as customer_name 
+      FROM deductions d 
+      LEFT JOIN customers cu ON d.customer_id = cu.id 
+      WHERE d.company_id = ? AND d.status = 'disputed'
+      ORDER BY d.created_at DESC
+    `).bind(companyId).all();
+    
+    return c.json({
+      success: true,
+      data: result.results || []
+    });
+  } catch (error) {
+    console.error('Error fetching disputed deductions:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get deduction statistics
+deductions.get('/statistics', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    
+    const byStatus = await db.prepare(`
+      SELECT 
+        status as _id,
+        COUNT(*) as count,
+        SUM(deduction_amount) as totalAmount
+      FROM deductions WHERE company_id = ?
+      GROUP BY status
+    `).bind(companyId).all();
+    
+    const disputes = await db.prepare(`
+      SELECT 
+        reason_code as _id,
+        COUNT(*) as count,
+        SUM(deduction_amount) as totalAmount
+      FROM deductions WHERE company_id = ? AND status = 'disputed'
+      GROUP BY reason_code
+    `).bind(companyId).all();
+    
+    return c.json({
+      success: true,
+      data: {
+        byStatus: byStatus.results || [],
+        disputes: disputes.results || []
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching deduction statistics:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 // Get deductions summary/analytics
 deductions.get('/summary', async (c) => {
   try {

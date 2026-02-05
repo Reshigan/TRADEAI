@@ -177,13 +177,13 @@ const BudgetConsole = () => {
             </Box>
             <Box sx={{ textAlign: 'right' }}>
               <Typography variant="body2" color="text.secondary">
-                Allocated: ${node.allocated.toLocaleString()}
+                Allocated: R{node.allocated.toLocaleString()}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Spent: ${node.spent.toLocaleString()}
+                Spent: R{node.spent.toLocaleString()}
               </Typography>
               <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                Remaining: ${(node.allocated - node.spent).toLocaleString()}
+                Remaining: R{(node.allocated - node.spent).toLocaleString()}
               </Typography>
             </Box>
           </Box>
@@ -271,7 +271,7 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                    ${totalBudget > 0 ? (totalBudget / 1000).toFixed(0) : '0'}K
+                    R{totalBudget > 0 ? (totalBudget / 1000).toFixed(0) : '0'}K
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {selectedBudget.period || selectedBudget.year || 'N/A'}
@@ -289,7 +289,7 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                    ${allocated > 0 ? (allocated / 1000).toFixed(0) : '0'}K
+                    R{allocated > 0 ? (allocated / 1000).toFixed(0) : '0'}K
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {totalBudget > 0 ? ((allocated / totalBudget) * 100).toFixed(0) : 0}% of total
@@ -307,7 +307,7 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.main' }}>
-                    ${spent > 0 ? (spent / 1000).toFixed(0) : '0'}K
+                    R{spent > 0 ? (spent / 1000).toFixed(0) : '0'}K
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {allocated > 0 ? ((spent / allocated) * 100).toFixed(0) : 0}% utilized
@@ -415,7 +415,7 @@ const BudgetConsole = () => {
                       </Box>
                       <Alert severity="success">
                         <Typography variant="caption">
-                          Optimal budget: ${(roiCurve.optimal / 1000).toFixed(0)}K for maximum ROI
+                          Optimal budget: R{(roiCurve.optimal / 1000).toFixed(0)}K for maximum ROI
                         </Typography>
                       </Alert>
                     </Box>

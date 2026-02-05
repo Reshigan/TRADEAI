@@ -170,7 +170,7 @@ const TradeSpendList = () => {
                   </Typography>
                 </Box>
                 <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  ${(summary.totalRequested / 1000 || 0).toFixed(1)}K
+                  R{(summary.totalRequested / 1000 || 0).toFixed(1)}K
                 </Typography>
               </CardContent>
             </Card>
@@ -185,7 +185,7 @@ const TradeSpendList = () => {
                   </Typography>
                 </Box>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                  ${(summary.totalApproved / 1000 || 0).toFixed(1)}K
+                  R{(summary.totalApproved / 1000 || 0).toFixed(1)}K
                 </Typography>
               </CardContent>
             </Card>
@@ -200,7 +200,7 @@ const TradeSpendList = () => {
                   </Typography>
                 </Box>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.main' }}>
-                  ${(summary.totalSpent / 1000 || 0).toFixed(1)}K
+                  R{(summary.totalSpent / 1000 || 0).toFixed(1)}K
                 </Typography>
               </CardContent>
             </Card>
@@ -300,13 +300,13 @@ const TradeSpendList = () => {
                       <TableCell>{spend.category}</TableCell>
                       <TableCell>{spend.customer?.name || spend.customerName || 'N/A'}</TableCell>
                       <TableCell align="right">
-                        ${(spend.amount?.requested || spend.requestedAmount || spend.amount || 0).toLocaleString()}
+                        R{(spend.amount?.requested || spend.requestedAmount || spend.amount || 0).toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
-                        ${(spend.amount?.approved || spend.approvedAmount || 0).toLocaleString()}
+                        R{(spend.amount?.approved || spend.approvedAmount || 0).toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
-                        ${(spend.amount?.spent || spend.spentAmount || 0).toLocaleString()}
+                        R{(spend.amount?.spent || spend.spentAmount || 0).toLocaleString()}
                       </TableCell>
                       <TableCell>
                         <Chip 
