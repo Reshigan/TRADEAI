@@ -10,7 +10,9 @@ import {
   Chip,
   Paper,
   Divider,
-  Grid
+  Grid,
+  Card,
+  CardContent
 } from '@mui/material';
 import {
   AttachMoney as MoneyIcon,
@@ -18,6 +20,7 @@ import {
   Psychology as PsychologyIcon
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
+import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import axios from 'axios';
 import { preFlightCheck } from '../../utils/apiHealth';
 
@@ -58,13 +61,15 @@ const TradeSpendEntryFlow = () => {
       customerHeadOffice: ''
     });
   
-  const [roiPrediction, setRoiPrediction] = useState(null);
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [historicalData, setHistoricalData] = useState(null);
-  const [alert, setAlert] = useState(null);
+    const [roiPrediction, setRoiPrediction] = useState(null);
+    const [isCalculating, setIsCalculating] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [historicalData, setHistoricalData] = useState(null);
+    const [alert, setAlert] = useState(null);
+    const [selectedCustomers, setSelectedCustomers] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
   
   const spendTypes = ['Display', 'Co-op Advertising', 'Slotting Fee', 'Volume Rebate', 'Promotion Support'];
   const categories = ['Marketing', 'Merchandising', 'Logistics', 'Admin'];
@@ -159,17 +164,19 @@ const TradeSpendEntryFlow = () => {
     
     setIsSaving(true);
     
-    try {
-      await axios.post(
-        `${API_BASE_URL}/trade-spends`,
-        {
-          ...formData,
-          roiPrediction
-        },
-        {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        }
-      );
+        try {
+          await axios.post(
+            `${API_BASE_URL}/trade-spends`,
+            {
+              ...formData,
+              roiPrediction,
+              selectedCustomers,
+              selectedProducts
+            },
+            {
+              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            }
+          );
       
       setSaveSuccess(true);
       setTimeout(() => {
@@ -395,128 +402,45 @@ const TradeSpendEntryFlow = () => {
                   </Grid>
                 </Grid>
 
-                {/* Product Hierarchy Section */}
-                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#1a237e' }}>
-                    Product Hierarchy (Optional)
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Vendor - Category - Brand - Sub Brand
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Vendor"
-                        value={formData.productVendor}
-                        onChange={handleChange('productVendor')}
-                        placeholder="e.g., Unilever"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Category"
-                        value={formData.productCategory}
-                        onChange={handleChange('productCategory')}
-                        placeholder="e.g., Personal Care"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Brand"
-                        value={formData.productBrand}
-                        onChange={handleChange('productBrand')}
-                        placeholder="e.g., Dove"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Sub Brand"
-                        value={formData.productSubBrand}
-                        onChange={handleChange('productSubBrand')}
-                        placeholder="e.g., Dove Men+Care"
-                      />
-                    </Grid>
-                  </Grid>
-                </Paper>
-
-                {/* Customer Hierarchy Section */}
-                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#1a237e' }}>
-                    Customer Hierarchy (Optional)
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Channel"
-                        value={formData.customerChannel}
-                        onChange={handleChange('customerChannel')}
-                        placeholder="e.g., Retail"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Sub Channel"
-                        value={formData.customerSubChannel}
-                        onChange={handleChange('customerSubChannel')}
-                        placeholder="e.g., Supermarket"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Segmentation"
-                        value={formData.customerSegmentation}
-                        onChange={handleChange('customerSegmentation')}
-                        placeholder="e.g., Premium"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Hierarchy 1"
-                        value={formData.customerHierarchy1}
-                        onChange={handleChange('customerHierarchy1')}
-                        placeholder="e.g., Region"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Hierarchy 2"
-                        value={formData.customerHierarchy2}
-                        onChange={handleChange('customerHierarchy2')}
-                        placeholder="e.g., District"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Hierarchy 3"
-                        value={formData.customerHierarchy3}
-                        onChange={handleChange('customerHierarchy3')}
-                        placeholder="e.g., Territory"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Head Office"
-                        value={formData.customerHeadOffice}
-                        onChange={handleChange('customerHeadOffice')}
-                        placeholder="e.g., Shoprite Holdings"
-                      />
-                    </Grid>
-                  </Grid>
-                </Paper>
+                                {/* Hierarchy Selection */}
+                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#1a237e' }}>
+                                  Trade Spend Scope (Optional)
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                  Select specific customers and/or products this trade spend applies to. Leave empty for company-wide spend.
+                                </Typography>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} md={6}>
+                                    <Card variant="outlined">
+                                      <CardContent>
+                                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                                          Customer Hierarchy
+                                        </Typography>
+                                        <HierarchySelector
+                                          type="customer"
+                                          selected={selectedCustomers}
+                                          onSelectionChange={setSelectedCustomers}
+                                          showAllocation={false}
+                                        />
+                                      </CardContent>
+                                    </Card>
+                                  </Grid>
+                                  <Grid item xs={12} md={6}>
+                                    <Card variant="outlined">
+                                      <CardContent>
+                                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                                          Product Hierarchy
+                                        </Typography>
+                                        <HierarchySelector
+                                          type="product"
+                                          selected={selectedProducts}
+                                          onSelectionChange={setSelectedProducts}
+                                          showAllocation={false}
+                                        />
+                                      </CardContent>
+                                    </Card>
+                                  </Grid>
+                                </Grid>
         
                 {roiPrediction && !isCalculating && (
           <Paper sx={{ p: 2, mt: 3, bgcolor: '#fff3e0', border: '2px solid #ff9800' }}>

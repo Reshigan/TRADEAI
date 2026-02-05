@@ -34,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import HierarchySelector from '../hierarchy/HierarchySelector';
 
 
 const getCurrencySymbol = () => {
@@ -64,17 +65,19 @@ const steps = [
 
 const BudgetPlanningWizard = () => {
   const navigate = useNavigate();
-  const [activeStep, setActiveStep] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [budgetData, setBudgetData] = useState({
-    year: new Date().getFullYear() + 1,
-    totalAmount: '',
-    description: '',
-    categories: []
-  });
-  const [historicalData, setHistoricalData] = useState(null);
-  const [aiSuggestions, setAiSuggestions] = useState(null);
-  const [allocationPlan, setAllocationPlan] = useState([]);
+    const [activeStep, setActiveStep] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [budgetData, setBudgetData] = useState({
+      year: new Date().getFullYear() + 1,
+      totalAmount: '',
+      description: '',
+      categories: []
+    });
+    const [historicalData, setHistoricalData] = useState(null);
+    const [aiSuggestions, setAiSuggestions] = useState(null);
+    const [allocationPlan, setAllocationPlan] = useState([]);
+    const [selectedCustomers, setSelectedCustomers] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
 
   useEffect(() => {
     fetchHistoricalData();
@@ -227,18 +230,21 @@ const BudgetPlanningWizard = () => {
     try {
       setLoading(true);
       
-      const payload = {
-        year: budgetData.year,
-        totalAmount: parseFloat(budgetData.totalAmount),
-        description: budgetData.description || `${budgetData.year} Annual Budget - AI Planned`,
-        status: 'draft',
-        spentAmount: 0,
-        categories: allocationPlan.map(item => ({
-          name: item.category,
-          allocated: item.customAmount,
-          spent: 0
-        }))
-      };
+            const payload = {
+              year: budgetData.year,
+              totalAmount: parseFloat(budgetData.totalAmount),
+              description: budgetData.description || `${budgetData.year} Annual Budget - AI Planned`,
+              status: 'draft',
+              spentAmount: 0,
+              categories: allocationPlan.map(item => ({
+                name: item.category,
+                allocated: item.customAmount,
+                spent: 0
+              })),
+              // Hierarchy scope
+              selectedCustomers: selectedCustomers,
+              selectedProducts: selectedProducts
+            };
       
       const response = await apiClient.post(`/budgets`, payload);
       
@@ -299,20 +305,60 @@ const BudgetPlanningWizard = () => {
                   helperText={historicalData ? `Recommended: $${(historicalData.previousYearBudget * (1 + historicalData.recommendedIncrease / 100)).toLocaleString()}` : ''}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Budget Description (Optional)"
-                  multiline
-                  rows={3}
-                  value={budgetData.description}
-                  onChange={(e) => setBudgetData({ ...budgetData, description: e.target.value })}
-                  placeholder="e.g., Annual trade marketing budget for North America region"
-                />
-              </Grid>
-            </Grid>
+                          <Grid item xs={12}>
+                            <TextField
+                              fullWidth
+                              label="Budget Description (Optional)"
+                              multiline
+                              rows={3}
+                              value={budgetData.description}
+                              onChange={(e) => setBudgetData({ ...budgetData, description: e.target.value })}
+                              placeholder="e.g., Annual trade marketing budget for North America region"
+                            />
+                          </Grid>
+                        </Grid>
 
-            {historicalData && (
+                        {/* Hierarchy Selection */}
+                        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
+                          Budget Scope (Optional)
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Select specific customers and/or products this budget applies to. Leave empty for company-wide budget.
+                        </Typography>
+                        <Grid container spacing={3}>
+                          <Grid item xs={12} md={6}>
+                            <Card variant="outlined">
+                              <CardContent>
+                                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                                  Customer Hierarchy
+                                </Typography>
+                                <HierarchySelector
+                                  type="customer"
+                                  selected={selectedCustomers}
+                                  onSelectionChange={setSelectedCustomers}
+                                  showAllocation={false}
+                                />
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          <Grid item xs={12} md={6}>
+                            <Card variant="outlined">
+                              <CardContent>
+                                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                                  Product Hierarchy
+                                </Typography>
+                                <HierarchySelector
+                                  type="product"
+                                  selected={selectedProducts}
+                                  onSelectionChange={setSelectedProducts}
+                                  showAllocation={false}
+                                />
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        </Grid>
+
+                        {historicalData && (
               <Card sx={{ mt: 3, bgcolor: 'background.default' }}>
                 <CardContent>
                   <Typography variant="subtitle2" gutterBottom color="primary">
