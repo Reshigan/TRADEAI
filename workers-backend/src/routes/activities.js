@@ -1,11 +1,19 @@
 import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
 
 const activities = new Hono();
+
+// Apply auth middleware to all routes
+activities.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
 
 const getCompanyId = (c) => {
-  return c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+  return c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+};
+
+const getUserId = (c) => {
+  return c.get('userId') || null;
 };
 
 // Get all activities (activity feed)
@@ -269,7 +277,7 @@ activities.post('/bulk', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     const activitiesData = body.activities || [];

@@ -1,13 +1,21 @@
 import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
 
 const approvals = new Hono();
+
+// Apply auth middleware to all routes
+approvals.use('*', authMiddleware);
 
 // Helper to generate UUID
 const generateId = () => crypto.randomUUID();
 
 // Helper to get company_id from auth context
 const getCompanyId = (c) => {
-  return c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+  return c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+};
+
+const getUserId = (c) => {
+  return c.get('userId') || null;
 };
 
 // Get all approvals (with filters)
@@ -154,7 +162,7 @@ approvals.post('/', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     
     const id = generateId();
     const now = new Date().toISOString();
@@ -189,7 +197,7 @@ approvals.post('/:id/approve', async (c) => {
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     // Get current approval
@@ -253,7 +261,7 @@ approvals.post('/:id/reject', async (c) => {
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     const approval = await db.prepare(`

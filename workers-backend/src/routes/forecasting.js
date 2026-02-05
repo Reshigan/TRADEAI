@@ -1,11 +1,19 @@
 import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
 
 const forecasting = new Hono();
+
+// Apply auth middleware to all routes
+forecasting.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
 
 const getCompanyId = (c) => {
-  return c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+  return c.get('tenantId') || c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+};
+
+const getUserId = (c) => {
+  return c.get('userId') || null;
 };
 
 // Get all forecasts
@@ -102,7 +110,7 @@ forecasting.post('/', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     
     const id = generateId();
     const now = new Date().toISOString();
@@ -221,7 +229,7 @@ forecasting.post('/generate', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     
     const forecastType = body.forecastType || body.forecast_type || 'budget';
     const method = body.method || 'historical';

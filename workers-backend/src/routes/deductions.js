@@ -1,11 +1,19 @@
 import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
 
 const deductions = new Hono();
+
+// Apply auth middleware to all routes
+deductions.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
 
 const getCompanyId = (c) => {
-  return c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+  return c.get('tenantId') || c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+};
+
+const getUserId = (c) => {
+  return c.get('userId') || null;
 };
 
 // Get all deductions
@@ -145,7 +153,7 @@ deductions.post('/', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     
     const id = generateId();
     const deductionNumber = `DED-${Date.now().toString(36).toUpperCase()}`;
@@ -263,7 +271,7 @@ deductions.post('/:id/review', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     await db.prepare(`
@@ -360,7 +368,7 @@ deductions.post('/:id/approve', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     await db.prepare(`
@@ -385,7 +393,7 @@ deductions.post('/:id/write-off', async (c) => {
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     await db.prepare(`
