@@ -48,6 +48,57 @@ userRoutes.get('/', requireRole('admin', 'superadmin'), async (c) => {
   }
 });
 
+// Create user (admin only)
+userRoutes.post('/', requireRole('admin', 'superadmin'), async (c) => {
+  try {
+    const tenantId = c.get('tenantId');
+    const mongodb = getMongoClient(c);
+    const userData = await c.req.json();
+
+    // Validate required fields
+    if (!userData.email || !userData.password || !userData.firstName || !userData.lastName) {
+      return c.json({ success: false, message: 'Email, password, firstName, and lastName are required' }, 400);
+    }
+
+    // Check if user already exists
+    const existingUser = await mongodb.findOne('users', { email: userData.email.toLowerCase() });
+    if (existingUser) {
+      return c.json({ success: false, message: 'User with this email already exists' }, 409);
+    }
+
+    // Hash password using SHA-256 (Workers-compatible)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(userData.password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // Create user object
+    const newUser = {
+      email: userData.email.toLowerCase(),
+      password: hashedPassword,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      role: userData.role || 'kam',
+      companyId: tenantId,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const result = await mongodb.insertOne('users', newUser);
+
+    // Return user without password
+    delete newUser.password;
+    newUser._id = result.insertedId;
+
+    return c.json({ success: true, data: newUser, message: 'User created successfully' }, 201);
+  } catch (error) {
+    console.error('Create user error:', error);
+    return c.json({ success: false, message: 'Failed to create user', error: error.message }, 500);
+  }
+});
+
 // Get user by ID
 userRoutes.get('/:id', async (c) => {
   try {
