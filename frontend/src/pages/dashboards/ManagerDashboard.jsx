@@ -121,7 +121,7 @@ const ManagerDashboard = () => {
                   <MonetizationOn sx={{ color: 'primary.main' }} />
                 </Box>
                 <Typography variant="h3" fontWeight={700} color="text.primary" mb={0.5}>
-                  ${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K
+                  R{(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Available to optimize
@@ -152,7 +152,7 @@ const ManagerDashboard = () => {
                   <AttachMoney sx={{ color: 'success.main' }} />
                 </Box>
                 <Typography variant="h3" fontWeight={700} color="text.primary" mb={0.5}>
-                  ${(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K
+                  R{(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K
                 </Typography>
                 <Box display="flex" alignItems="center" gap={0.5}>
                   <TrendingUp sx={{ fontSize: 16, color: 'success.main' }} />
