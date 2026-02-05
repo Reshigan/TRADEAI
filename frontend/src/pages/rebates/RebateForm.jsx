@@ -23,6 +23,24 @@ import { useNavigate, useParams } from 'react-router-dom';
 import rebateService from '../../services/rebateService';
 import api from '../../services/api';
 
+// Static hierarchy options for consistency across the app
+const productHierarchyOptions = {
+  vendors: ['Unilever', 'Nestle', 'P&G', 'Coca-Cola', 'PepsiCo', 'Kraft Heinz', 'General Mills'],
+  categories: ['Beverages', 'Snacks', 'Personal Care', 'Home Care', 'Food', 'Dairy', 'Confectionery'],
+  brands: ['Coca-Cola', 'Pepsi', 'Lays', 'Doritos', 'Dove', 'Axe', 'Omo', 'Sunlight', 'Maggi', 'KitKat'],
+  subBrands: ['Original', 'Zero Sugar', 'Diet', 'Light', 'Premium', 'Classic', 'Extra', 'Max']
+};
+
+const customerHierarchyOptions = {
+  channels: ['Modern Trade', 'Traditional Trade', 'E-Commerce', 'Wholesale', 'Foodservice', 'Convenience'],
+  subChannels: ['Hypermarket', 'Supermarket', 'Mini Market', 'Spaza Shop', 'Online Marketplace', 'Quick Service Restaurant'],
+  segmentations: ['Premium', 'Value', 'Budget', 'Mainstream', 'Niche'],
+  hierarchy1: ['National', 'Regional', 'Local'],
+  hierarchy2: ['Key Account', 'Mid-Tier', 'Small Account'],
+  hierarchy3: ['Strategic', 'Growth', 'Maintain', 'Decline'],
+  headOffices: ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth', 'Bloemfontein']
+};
+
 const RebateForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -34,35 +52,48 @@ const RebateForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    type: 'volume',
-    status: 'draft',
-    calculation: {
-      method: 'percentage',
-      value: 0,
-      tiers: []
-    },
-    eligibility: {
-      customerIds: [],
-      productIds: [],
-      minimumPurchase: 0,
-      purchasePeriod: 'monthly'
-    },
-    terms: {
-      startDate: '',
-      endDate: '',
-      paymentTerms: 'net_30',
-      claimDeadline: 30
-    },
-    approvalWorkflow: {
-      requiresApproval: true,
-      approvers: [],
-      autoApprove: false,
-      approvalLimit: 0
-    }
-  });
+    const [formData, setFormData] = useState({
+      name: '',
+      description: '',
+      type: 'volume',
+      status: 'draft',
+      calculation: {
+        method: 'percentage',
+        value: 0,
+        tiers: []
+      },
+      eligibility: {
+        customerIds: [],
+        productIds: [],
+        minimumPurchase: 0,
+        purchasePeriod: 'monthly'
+      },
+      terms: {
+        startDate: '',
+        endDate: '',
+        paymentTerms: 'net_30',
+        claimDeadline: 30
+      },
+      approvalWorkflow: {
+        requiresApproval: true,
+        approvers: [],
+        autoApprove: false,
+        approvalLimit: 0
+      },
+      // Product hierarchy
+      productVendor: '',
+      productCategory: '',
+      productBrand: '',
+      productSubBrand: '',
+      // Customer hierarchy
+      customerChannel: '',
+      customerSubChannel: '',
+      customerSegmentation: '',
+      customerHierarchy1: '',
+      customerHierarchy2: '',
+      customerHierarchy3: '',
+      customerHeadOffice: ''
+    });
 
   useEffect(() => {
     loadInitialData();
@@ -277,14 +308,14 @@ const RebateForm = () => {
                   <Grid item xs={12} md={6}>
                     <TextField
                       fullWidth
-                      label={formData.calculation.method === 'percentage' ? 'Percentage (%)' : 'Fixed Amount ($)'}
+                      label={formData.calculation.method === 'percentage' ? 'Percentage (%)' : 'Fixed Amount (R)'}
                       type="number"
                       value={formData.calculation.value}
                       onChange={(e) => handleNestedChange('calculation', 'value', parseFloat(e.target.value))}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            {formData.calculation.method === 'percentage' ? '%' : '$'}
+                            {formData.calculation.method === 'percentage' ? '%' : 'R'}
                           </InputAdornment>
                         )
                       }}
@@ -404,9 +435,9 @@ const RebateForm = () => {
                     type="number"
                     value={formData.eligibility.minimumPurchase}
                     onChange={(e) => handleNestedChange('eligibility', 'minimumPurchase', parseFloat(e.target.value))}
-                    InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>
-                    }}
+                                        InputProps={{
+                                          startAdornment: <InputAdornment position="start">R</InputAdornment>
+                                        }}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -421,6 +452,201 @@ const RebateForm = () => {
                       <MenuItem value="quarterly">Quarterly</MenuItem>
                       <MenuItem value="yearly">Yearly</MenuItem>
                       <MenuItem value="campaign">Campaign Period</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Product Hierarchy */}
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Product Hierarchy (Optional)
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Chip label="Product Hierarchy" size="small" color="primary" sx={{ mr: 1 }} />
+                Vendor - Category - Brand - Sub Brand
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Vendor</InputLabel>
+                    <Select
+                      value={formData.productVendor}
+                      onChange={(e) => handleChange('productVendor', e.target.value)}
+                      label="Vendor"
+                    >
+                      <MenuItem value="">All Vendors</MenuItem>
+                      {productHierarchyOptions.vendors.map(v => (
+                        <MenuItem key={v} value={v}>{v}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Category</InputLabel>
+                    <Select
+                      value={formData.productCategory}
+                      onChange={(e) => handleChange('productCategory', e.target.value)}
+                      label="Category"
+                    >
+                      <MenuItem value="">All Categories</MenuItem>
+                      {productHierarchyOptions.categories.map(c => (
+                        <MenuItem key={c} value={c}>{c}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Brand</InputLabel>
+                    <Select
+                      value={formData.productBrand}
+                      onChange={(e) => handleChange('productBrand', e.target.value)}
+                      label="Brand"
+                    >
+                      <MenuItem value="">All Brands</MenuItem>
+                      {productHierarchyOptions.brands.map(b => (
+                        <MenuItem key={b} value={b}>{b}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Sub Brand</InputLabel>
+                    <Select
+                      value={formData.productSubBrand}
+                      onChange={(e) => handleChange('productSubBrand', e.target.value)}
+                      label="Sub Brand"
+                    >
+                      <MenuItem value="">All Sub Brands</MenuItem>
+                      {productHierarchyOptions.subBrands.map(sb => (
+                        <MenuItem key={sb} value={sb}>{sb}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Customer Hierarchy */}
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Customer Hierarchy (Optional)
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Chip label="Customer Hierarchy" size="small" color="secondary" sx={{ mr: 1 }} />
+                Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Channel</InputLabel>
+                    <Select
+                      value={formData.customerChannel}
+                      onChange={(e) => handleChange('customerChannel', e.target.value)}
+                      label="Channel"
+                    >
+                      <MenuItem value="">All Channels</MenuItem>
+                      {customerHierarchyOptions.channels.map(c => (
+                        <MenuItem key={c} value={c}>{c}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Sub Channel</InputLabel>
+                    <Select
+                      value={formData.customerSubChannel}
+                      onChange={(e) => handleChange('customerSubChannel', e.target.value)}
+                      label="Sub Channel"
+                    >
+                      <MenuItem value="">All Sub Channels</MenuItem>
+                      {customerHierarchyOptions.subChannels.map(sc => (
+                        <MenuItem key={sc} value={sc}>{sc}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Segmentation</InputLabel>
+                    <Select
+                      value={formData.customerSegmentation}
+                      onChange={(e) => handleChange('customerSegmentation', e.target.value)}
+                      label="Segmentation"
+                    >
+                      <MenuItem value="">All Segments</MenuItem>
+                      {customerHierarchyOptions.segmentations.map(s => (
+                        <MenuItem key={s} value={s}>{s}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Hierarchy 1</InputLabel>
+                    <Select
+                      value={formData.customerHierarchy1}
+                      onChange={(e) => handleChange('customerHierarchy1', e.target.value)}
+                      label="Hierarchy 1"
+                    >
+                      <MenuItem value="">All</MenuItem>
+                      {customerHierarchyOptions.hierarchy1.map(h => (
+                        <MenuItem key={h} value={h}>{h}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Hierarchy 2</InputLabel>
+                    <Select
+                      value={formData.customerHierarchy2}
+                      onChange={(e) => handleChange('customerHierarchy2', e.target.value)}
+                      label="Hierarchy 2"
+                    >
+                      <MenuItem value="">All</MenuItem>
+                      {customerHierarchyOptions.hierarchy2.map(h => (
+                        <MenuItem key={h} value={h}>{h}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Hierarchy 3</InputLabel>
+                    <Select
+                      value={formData.customerHierarchy3}
+                      onChange={(e) => handleChange('customerHierarchy3', e.target.value)}
+                      label="Hierarchy 3"
+                    >
+                      <MenuItem value="">All</MenuItem>
+                      {customerHierarchyOptions.hierarchy3.map(h => (
+                        <MenuItem key={h} value={h}>{h}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Head Office</InputLabel>
+                    <Select
+                      value={formData.customerHeadOffice}
+                      onChange={(e) => handleChange('customerHeadOffice', e.target.value)}
+                      label="Head Office"
+                    >
+                      <MenuItem value="">All Head Offices</MenuItem>
+                      {customerHierarchyOptions.headOffices.map(ho => (
+                        <MenuItem key={ho} value={ho}>{ho}</MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </Grid>
