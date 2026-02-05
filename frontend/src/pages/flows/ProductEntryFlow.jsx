@@ -41,16 +41,21 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
  */
 const ProductEntryFlow = () => {
   // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    sku: '',
-    category: 'Beverages',
-    price: '',
-    cost: '',
-    stock: '',
-    status: 'Active',
-    description: ''
-  });
+    const [formData, setFormData] = useState({
+      name: '',
+      sku: '',
+      category: 'Beverages',
+      price: '',
+      cost: '',
+      stock: '',
+      status: 'Active',
+      description: '',
+      // Product hierarchy
+      vendor: '',
+      productCategory: '',
+      brand: '',
+      subBrand: ''
+    });
   
   // AI state
   const [demandForecast, setDemandForecast] = useState(null);
@@ -76,8 +81,8 @@ const ProductEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-        const response = await axios.post(
-          `${API_BASE_URL}/ai/product-analysis`,
+                const response = await axios.post(
+                  `${API_BASE_URL}/ai-orchestrator/product-analysis`,
           {
             name: formData.name,
             category: formData.category,
@@ -553,20 +558,68 @@ const ProductEntryFlow = () => {
             />
           </Grid>
           
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Description"
-              value={formData.description}
-              onChange={handleChange('description')}
-              placeholder="Product description..."
-            />
-          </Grid>
-        </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Description"
+                      value={formData.description}
+                      onChange={handleChange('description')}
+                      placeholder="Product description..."
+                    />
+                  </Grid>
+                </Grid>
+
+                {/* Product Hierarchy Section */}
+                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#2e7d32' }}>
+                    Product Hierarchy (Optional)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Vendor - Category - Brand - Sub Brand
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Vendor"
+                        value={formData.vendor}
+                        onChange={handleChange('vendor')}
+                        placeholder="e.g., Unilever"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Product Category"
+                        value={formData.productCategory}
+                        onChange={handleChange('productCategory')}
+                        placeholder="e.g., Personal Care"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Brand"
+                        value={formData.brand}
+                        onChange={handleChange('brand')}
+                        placeholder="e.g., Dove"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Sub Brand"
+                        value={formData.subBrand}
+                        onChange={handleChange('subBrand')}
+                        placeholder="e.g., Dove Men+Care"
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
         
-        {/* ML Pricing Display */}
+                {/* ML Pricing Display */}
         {priceOptimization && !isCalculating && (
           <Paper sx={{ 
             p: 2, 

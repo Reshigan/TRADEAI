@@ -34,16 +34,29 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
  * - Break-even analysis
  */
 const TradeSpendEntryFlow = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    customer: '',
-    type: 'Display',
-    amount: '',
-    date: '',
-    duration: '30',
-    category: 'Marketing',
-    description: ''
-  });
+    const [formData, setFormData] = useState({
+      name: '',
+      customer: '',
+      type: 'Display',
+      amount: '',
+      date: '',
+      duration: '30',
+      category: 'Marketing',
+      description: '',
+      // Product hierarchy
+      productVendor: '',
+      productCategory: '',
+      productBrand: '',
+      productSubBrand: '',
+      // Customer hierarchy
+      customerChannel: '',
+      customerSubChannel: '',
+      customerSegmentation: '',
+      customerHierarchy1: '',
+      customerHierarchy2: '',
+      customerHierarchy3: '',
+      customerHeadOffice: ''
+    });
   
   const [roiPrediction, setRoiPrediction] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -64,8 +77,8 @@ const TradeSpendEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-        const response = await axios.post(
-          `${API_BASE_URL}/ai/roi-predict`,
+                const response = await axios.post(
+                  `${API_BASE_URL}/ai-orchestrator/roi-predict`,
           {
             amount: parseFloat(formData.amount),
             type: formData.type,
@@ -370,19 +383,142 @@ const TradeSpendEntryFlow = () => {
             </TextField>
           </Grid>
           
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Description"
-              value={formData.description}
-              onChange={handleChange('description')}
-            />
-          </Grid>
-        </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Description"
+                      value={formData.description}
+                      onChange={handleChange('description')}
+                    />
+                  </Grid>
+                </Grid>
+
+                {/* Product Hierarchy Section */}
+                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#1a237e' }}>
+                    Product Hierarchy (Optional)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Vendor - Category - Brand - Sub Brand
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Vendor"
+                        value={formData.productVendor}
+                        onChange={handleChange('productVendor')}
+                        placeholder="e.g., Unilever"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Category"
+                        value={formData.productCategory}
+                        onChange={handleChange('productCategory')}
+                        placeholder="e.g., Personal Care"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Brand"
+                        value={formData.productBrand}
+                        onChange={handleChange('productBrand')}
+                        placeholder="e.g., Dove"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Sub Brand"
+                        value={formData.productSubBrand}
+                        onChange={handleChange('productSubBrand')}
+                        placeholder="e.g., Dove Men+Care"
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
+
+                {/* Customer Hierarchy Section */}
+                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#1a237e' }}>
+                    Customer Hierarchy (Optional)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Channel"
+                        value={formData.customerChannel}
+                        onChange={handleChange('customerChannel')}
+                        placeholder="e.g., Retail"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Sub Channel"
+                        value={formData.customerSubChannel}
+                        onChange={handleChange('customerSubChannel')}
+                        placeholder="e.g., Supermarket"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Segmentation"
+                        value={formData.customerSegmentation}
+                        onChange={handleChange('customerSegmentation')}
+                        placeholder="e.g., Premium"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Hierarchy 1"
+                        value={formData.customerHierarchy1}
+                        onChange={handleChange('customerHierarchy1')}
+                        placeholder="e.g., Region"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Hierarchy 2"
+                        value={formData.customerHierarchy2}
+                        onChange={handleChange('customerHierarchy2')}
+                        placeholder="e.g., District"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Hierarchy 3"
+                        value={formData.customerHierarchy3}
+                        onChange={handleChange('customerHierarchy3')}
+                        placeholder="e.g., Territory"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Head Office"
+                        value={formData.customerHeadOffice}
+                        onChange={handleChange('customerHeadOffice')}
+                        placeholder="e.g., Shoprite Holdings"
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
         
-        {roiPrediction && !isCalculating && (
+                {roiPrediction && !isCalculating && (
           <Paper sx={{ p: 2, mt: 3, bgcolor: '#fff3e0', border: '2px solid #ff9800' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <MoneyIcon color="warning" />
