@@ -95,17 +95,16 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Daily Tasks',
           items: [
             isKAM && { text: 'My Dashboard', path: '/dashboard', description: 'Your personalized command center' },
-            isKAM && { text: 'My Customers', path: '/customers', description: 'Customers assigned to you' },
-            isKAM && { text: 'My Promotions', path: '/promotions', description: 'Promotions you manage' },
             isKAM && { text: 'My Wallet', path: '/kamwallet', badge: 'NEW', description: 'Your discretionary spend budget' },
+            isManager && { text: 'Pending Approvals', path: '/approvals', badge: String(3), description: 'Items awaiting your approval' },
           ].filter(Boolean)
         },
         {
           title: 'Quick Actions',
           items: [
-            isKAM && { text: 'Create Promotion', path: '/promotions/new', description: 'Start a new promotion' },
+            isKAM && { text: 'New Promotion', path: '/promotions/new-flow', badge: 'AI', description: 'AI-guided promotion creation' },
+            isKAM && { text: 'New Budget', path: '/budgets/new-flow', badge: 'AI', description: 'AI-guided budget planning' },
             isKAM && { text: 'Submit Claim', path: '/claims/create', description: 'Submit a customer claim' },
-            isManager && { text: 'Pending Approvals', path: '/approvals', badge: String(3), description: 'Items awaiting your approval' },
           ].filter(Boolean)
         }
       ].filter(section => section.items.length > 0)
@@ -120,16 +119,15 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Promotion Management',
           items: [
             { text: 'All Promotions', path: '/promotions', description: 'View and manage all promotions' },
-            { text: 'Promotions Timeline', path: '/promotions-timeline', badge: 'NEW', description: 'Visual timeline view' },
-            { text: 'Activity Calendar', path: '/activity-grid', description: 'Calendar view of activities' },
-            { text: 'Create Promotion', path: '/promotions/new', description: 'Start a new promotion' },
+            { text: 'New Promotion', path: '/promotions/new-flow', badge: 'AI', description: 'AI-guided promotion creation' },
+            { text: 'Promotion Planner', path: '/promotion-planner', badge: 'AI', description: 'AI-powered promotion planning' },
           ]
         },
         {
-          title: 'AI-Powered Tools',
+          title: 'Views & Calendar',
           items: [
-            { text: 'Promotion Planner', path: '/promotion-planner', badge: 'AI', description: 'AI-guided promotion planning' },
-            { text: 'Performance Insights', path: '/analytics', badge: 'AI', description: 'AI-powered promotion insights' },
+            { text: 'Promotions Timeline', path: '/promotions-timeline', description: 'Visual timeline view' },
+            { text: 'Activity Calendar', path: '/activity-grid', description: 'Calendar view of activities' },
           ]
         }
       ]
@@ -144,14 +142,15 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Budget Management',
           items: [
             { text: 'All Budgets', path: '/budgets', description: 'View and manage all budgets' },
-            { text: 'Budget Console', path: '/budget-console', badge: 'AI', description: 'Hierarchical budget allocation' },
-            { text: 'Annual Planning', path: '/budgets/new-flow', description: 'Annual budget planning flow' },
+            { text: 'New Budget', path: '/budgets/new-flow', badge: 'AI', description: 'AI-guided budget planning' },
+            { text: 'Budget Console', path: '/budget-console', badge: 'AI', description: 'AI-powered budget optimization' },
           ]
         },
         {
           title: 'Trade Spend',
           items: [
             { text: 'Trade Spends', path: '/trade-spends', description: 'Manage trade spend activities' },
+            { text: 'New Trade Spend', path: '/trade-spends/new-flow', badge: 'AI', description: 'AI-guided trade spend entry' },
             { text: 'Trading Terms', path: '/trading-terms', description: 'Configure trading terms' },
           ]
         }
@@ -164,20 +163,20 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
       icon: <AnalyticsIcon fontSize="small" />,
       sections: [
         {
-          title: 'Performance Analytics',
+          title: 'Analytics',
           items: [
+            { text: 'Analytics Dashboard', path: '/analytics', badge: 'AI', description: 'AI-powered insights & recommendations' },
             { text: 'Live Performance', path: '/realtime-dashboard', badge: 'LIVE', description: 'Real-time metrics dashboard' },
-            { text: 'AI Insights', path: '/analytics', badge: 'AI', description: 'AI-powered insights & recommendations' },
-            { text: 'Promotion Analytics', path: '/performance-analytics/promotion-effectiveness', badge: 'NEW', description: 'Promotion ROI & effectiveness' },
-            { text: 'Budget Analytics', path: '/performance-analytics/budget-variance', badge: 'NEW', description: 'Budget utilization & variance' },
+            { text: 'Promotion Effectiveness', path: '/performance-analytics/promotion-effectiveness', description: 'Promotion ROI & effectiveness' },
+            { text: 'Budget Variance', path: '/performance-analytics/budget-variance', description: 'Budget utilization & variance' },
           ]
         },
         {
           title: 'Reports & Forecasting',
           items: [
             { text: 'Reports', path: '/reports', description: 'Comprehensive reporting' },
-            { text: 'Forecasting', path: '/forecasting', description: 'Predictive analytics' },
-            { text: 'Customer Segmentation', path: '/performance-analytics/customer-segmentation', badge: 'NEW', description: 'ABC customer analysis' },
+            { text: 'Forecasting', path: '/forecasting', badge: 'AI', description: 'AI-powered predictive analytics' },
+            { text: 'Customer Segmentation', path: '/performance-analytics/customer-segmentation', description: 'ABC customer analysis' },
           ]
         }
       ]
@@ -192,14 +191,6 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Approval Workflows',
           items: [
             { text: 'Pending Approvals', path: '/approvals', badge: String(3), description: 'Review and approve requests' },
-            { text: 'Promotion Approvals', path: '/approvals?type=promotion', description: 'Approve promotions' },
-            { text: 'Trade Spend Approvals', path: '/approvals?type=tradespend', description: 'Approve trade spends' },
-            { text: 'Claim Approvals', path: '/approvals?type=claim', description: 'Approve customer claims' },
-          ]
-        },
-        {
-          title: 'History & Audit',
-          items: [
             { text: 'Approval History', path: '/approvals/history', description: 'View approval history' },
           ]
         }
@@ -212,19 +203,20 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
       icon: <ReceiptIcon fontSize="small" />,
       sections: [
         {
-          title: 'Claims Management',
+          title: 'Claims & Deductions',
           items: [
             { text: 'All Claims', path: '/claims', description: 'Manage customer claims' },
+            { text: 'Submit Claim', path: '/claims/create', description: 'Submit a new claim' },
             { text: 'Deductions', path: '/deductions', description: 'Track and manage deductions' },
             { text: 'Reconciliation', path: '/deductions/reconciliation', description: 'Reconcile claims & deductions' },
           ]
         },
         {
-          title: 'KAM Tools',
+          title: 'Rebates',
           items: [
-            isKAM && { text: 'My Wallet', path: '/kamwallet', badge: 'NEW', description: 'Your discretionary spend budget' },
-            isKAM && { text: 'Submit Claim', path: '/claims/create', description: 'Submit a new claim' },
-          ].filter(Boolean)
+            { text: 'All Rebates', path: '/rebates', description: 'Manage rebate programs' },
+            { text: 'New Rebate', path: '/rebates/new', description: 'Create a new rebate program' },
+          ]
         }
       ]
     },
@@ -238,14 +230,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'AI-Powered Planning',
           items: [
             { text: 'Simulation Studio', path: '/simulation-studio', badge: 'AI', description: 'What-if scenario analysis' },
-            { text: 'Scenario Planning', path: '/simulations', description: 'Multi-scenario planning' },
             { text: 'Predictive Analytics', path: '/predictive-analytics', badge: 'AI', description: 'Sales & ROI forecasting' },
-          ]
-        },
-        {
-          title: 'Optimization',
-          items: [
-            { text: 'Budget Optimization', path: '/budget-console', badge: 'AI', description: 'AI-powered budget reallocation' },
           ]
         }
       ]
@@ -260,17 +245,18 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Master Data',
           items: [
             { text: 'Customers', path: '/customers', description: 'Manage customer master data' },
+            { text: 'New Customer', path: '/customers/new-flow', badge: 'AI', description: 'AI-guided customer entry' },
             { text: 'Products', path: '/products', description: 'Manage product master data' },
+            { text: 'New Product', path: '/products/new-flow', badge: 'AI', description: 'AI-guided product entry' },
           ]
         },
         {
           title: 'Bulk Operations',
           items: [
-                        isAdmin && { text: 'Import Data', path: '/data/import-export', badge: 'NEW', description: 'Bulk import customers/products' },
-                        isAdmin && { text: 'Export Data', path: '/data/import-export', badge: 'NEW', description: 'Bulk export data' },
+            isAdmin && { text: 'Import/Export', path: '/data/import-export', description: 'Bulk import and export data' },
           ].filter(Boolean)
         }
-      ]
+      ].filter(section => section.items.length > 0)
     },
 
     isAdmin && {
@@ -282,14 +268,14 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'User Management',
           items: [
             { text: 'Users', path: '/users', description: 'Manage users and roles' },
-            { text: 'Customer Assignment', path: '/customer-assignment', badge: 'NEW', description: 'Assign customers to KAMs' },
+            { text: 'Customer Assignment', path: '/customer-assignment', description: 'Assign customers to KAMs' },
           ]
         },
         {
           title: 'System',
           items: [
             { text: 'Settings', path: '/settings', description: 'System configuration' },
-            { text: 'Alerts', path: '/alerts', badge: 'NEW', description: 'System alerts & notifications' },
+            { text: 'Alerts', path: '/alerts', description: 'System alerts & notifications' },
           ]
         }
       ]
