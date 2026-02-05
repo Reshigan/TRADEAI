@@ -40,6 +40,52 @@ analyticsRoutes.get('/', async (c) => {
   }
 });
 
+// Get analytics dashboard (alias for frontend compatibility)
+analyticsRoutes.get('/dashboard', async (c) => {
+  try {
+    const tenantId = c.get('tenantId');
+    const mongodb = getMongoClient(c);
+
+    const [promotions, tradeSpends, budgets, customers, products] = await Promise.all([
+      mongodb.find('promotions', { companyId: tenantId }),
+      mongodb.find('tradespends', { companyId: tenantId }),
+      mongodb.find('budgets', { companyId: tenantId }),
+      mongodb.find('customers', { companyId: tenantId }),
+      mongodb.find('products', { companyId: tenantId })
+    ]);
+
+    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const avgROI = promotions.length > 0 
+      ? promotions.reduce((sum, p) => sum + (p.performance?.roi || 0), 0) / promotions.length 
+      : 0;
+
+    return c.json({
+      success: true,
+      data: {
+        totalSpend,
+        totalBudget,
+        budgetUtilization: totalBudget ? ((totalSpend / totalBudget) * 100).toFixed(2) : 0,
+        averageROI: avgROI.toFixed(2),
+        promotionCount: promotions.length,
+        activePromotions: promotions.filter(p => p.status === 'active').length,
+        totalCustomers: customers.length,
+        totalProducts: products.length,
+        summary: {
+          totalBudget,
+          totalUsed: totalSpend,
+          budgetUtilization: totalBudget ? ((totalSpend / totalBudget) * 100).toFixed(2) : 0,
+          activePromotions: promotions.filter(p => p.status === 'active').length,
+          totalCustomers: customers.length,
+          currencySymbol: 'R'
+        }
+      }
+    });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to get analytics dashboard', error: error.message }, 500);
+  }
+});
+
 // Get insights
 analyticsRoutes.get('/insights', async (c) => {
   try {

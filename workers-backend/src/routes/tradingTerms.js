@@ -1,11 +1,19 @@
 import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
 
 const tradingTerms = new Hono();
+
+// Apply auth middleware to all routes
+tradingTerms.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
 
 const getCompanyId = (c) => {
-  return c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+  return c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+};
+
+const getUserId = (c) => {
+  return c.get('userId') || null;
 };
 
 // Get all trading terms
@@ -137,7 +145,7 @@ tradingTerms.post('/', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     
     const id = generateId();
     const now = new Date().toISOString();
@@ -274,7 +282,7 @@ tradingTerms.post('/:id/approve', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    const userId = c.get('userId') || 'system';
+    const userId = getUserId(c);
     const now = new Date().toISOString();
     
     await db.prepare(`

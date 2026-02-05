@@ -1,11 +1,15 @@
 import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
 
 const vendors = new Hono();
+
+// Apply auth middleware to all routes
+vendors.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
 
 const getCompanyId = (c) => {
-  return c.get('companyId') || c.req.header('X-Company-Code') || 'default';
+  return c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
 };
 
 // Get all vendors
