@@ -286,11 +286,12 @@ const ClaimsList = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="bold">
-                      {formatCurrency(claim.claimAmount, claim.currency)}
+                      {formatCurrency(claim.claimAmount || claim.claimed_amount || 0, claim.currency)}
                     </Typography>
-                    {claim.approvedAmount && claim.approvedAmount !== claim.claimAmount && (
+                    {(claim.approvedAmount || claim.approved_amount) > 0 && 
+                     (claim.approvedAmount || claim.approved_amount) !== (claim.claimAmount || claim.claimed_amount) && (
                       <Typography variant="caption" color="textSecondary" display="block">
-                        Approved: {formatCurrency(claim.approvedAmount, claim.currency)}
+                        Approved: {formatCurrency(claim.approvedAmount || claim.approved_amount, claim.currency)}
                       </Typography>
                     )}
                   </TableCell>
