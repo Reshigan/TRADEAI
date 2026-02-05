@@ -262,43 +262,46 @@ const DeductionsList = () => {
               </TableRow>
             ) : (
               deductions.map((deduction) => (
-                <TableRow key={deduction._id}>
+                <TableRow key={deduction.id || deduction._id}>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {deduction.deductionId}
+                      {deduction.deduction_number || deduction.deductionId || deduction.id || '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={deduction.deductionType?.toUpperCase()}
+                      label={(deduction.deduction_type || deduction.deductionType || 'unknown')?.toUpperCase()}
                       size="small"
                       variant="outlined"
                     />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {deduction.customer?.name || 'Unknown'}
+                      {deduction.customer_name || deduction.customer?.name || 'Unknown'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="textSecondary">
-                      {formatDate(deduction.deductionDate)}
+                      {deduction.deduction_date || deduction.deductionDate 
+                        ? formatDate(deduction.deduction_date || deduction.deductionDate)
+                        : '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="bold">
-                      {formatCurrency(deduction.deductionAmount, deduction.currency)}
+                      {formatCurrency(deduction.deduction_amount || deduction.deductionAmount || 0, deduction.currency)}
                     </Typography>
-                    {deduction.validatedAmount && deduction.validatedAmount !== deduction.deductionAmount && (
+                    {(deduction.validated_amount || deduction.validatedAmount) && 
+                     (deduction.validated_amount || deduction.validatedAmount) !== (deduction.deduction_amount || deduction.deductionAmount) && (
                       <Typography variant="caption" color="textSecondary" display="block">
-                        Validated: {formatCurrency(deduction.validatedAmount, deduction.currency)}
+                        Validated: {formatCurrency(deduction.validated_amount || deduction.validatedAmount, deduction.currency)}
                       </Typography>
                     )}
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Chip
-                        label={deduction.status?.toUpperCase()}
+                        label={(deduction.status || 'unknown')?.toUpperCase()}
                         color={getStatusColor(deduction.status)}
                         size="small"
                       />
@@ -311,8 +314,8 @@ const DeductionsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={deduction.claim?.claimId ? 'MATCHED' : 'UNMATCHED'}
-                      color={deduction.claim?.claimId ? 'success' : 'error'}
+                      label={(deduction.matched_amount || 0) > 0 ? 'MATCHED' : 'UNMATCHED'}
+                      color={(deduction.matched_amount || 0) > 0 ? 'success' : 'error'}
                       size="small"
                     />
                   </TableCell>
@@ -321,7 +324,7 @@ const DeductionsList = () => {
                       <Tooltip title="View Details">
                         <IconButton
                           size="small"
-                          onClick={() => navigate(`/deductions/${deduction._id}`)}
+                          onClick={() => navigate(`/deductions/${deduction.id || deduction._id}`)}
                         >
                           <ViewIcon />
                         </IconButton>
