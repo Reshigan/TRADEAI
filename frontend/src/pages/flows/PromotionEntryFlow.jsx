@@ -10,7 +10,10 @@ import {
   Chip,
   Paper,
   Divider,
-  LinearProgress
+  LinearProgress,
+  Grid,
+  Card,
+  CardContent
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -18,6 +21,7 @@ import {
   Psychology as PsychologyIcon
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
+import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import PromotionAIInsights from '../../components/ai/promotions/PromotionAIInsights';
 import axios from 'axios';
 import { preFlightCheck } from '../../utils/apiHealth';
@@ -68,10 +72,12 @@ const PromotionEntryFlow = () => {
   const [risks, setRisks] = useState([]);
   const [historicalData, setHistoricalData] = useState(null);
   
-  // UI state
-  const [errors, setErrors] = useState({});
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+    // UI state
+    const [errors, setErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [selectedCustomers, setSelectedCustomers] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
   
   // Promotion types
   const promotionTypes = [
@@ -255,20 +261,22 @@ const PromotionEntryFlow = () => {
     
     setIsSaving(true);
     
-    try {
-      await axios.post(
-        `${API_BASE_URL}/promotions`,
-        {
-          ...formData,
-          mlPredictions: mlCalculations,
-          aiSuggestions: aiSuggestions
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
+        try {
+          await axios.post(
+            `${API_BASE_URL}/promotions`,
+            {
+              ...formData,
+              mlPredictions: mlCalculations,
+              aiSuggestions: aiSuggestions,
+              selectedCustomers,
+              selectedProducts
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            }
+          );
       
       setSaveSuccess(true);
       setTimeout(() => {
@@ -622,107 +630,45 @@ const PromotionEntryFlow = () => {
                   />
                 </Box>
 
-                {/* Product Hierarchy Section */}
-                <Paper sx={{ p: 3, mb: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#1a237e' }}>
-                    Product Hierarchy (Optional)
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Vendor - Category - Brand - Sub Brand
-                  </Typography>
-                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                    <TextField
-                      fullWidth
-                      label="Vendor"
-                      value={formData.productVendor}
-                      onChange={handleChange('productVendor')}
-                      placeholder="e.g., Unilever"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Category"
-                      value={formData.productCategory}
-                      onChange={handleChange('productCategory')}
-                      placeholder="e.g., Personal Care"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Brand"
-                      value={formData.productBrand}
-                      onChange={handleChange('productBrand')}
-                      placeholder="e.g., Dove"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Sub Brand"
-                      value={formData.productSubBrand}
-                      onChange={handleChange('productSubBrand')}
-                      placeholder="e.g., Dove Men+Care"
-                    />
-                  </Box>
-                </Paper>
-
-                {/* Customer Hierarchy Section */}
-                <Paper sx={{ p: 3, mb: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#1a237e' }}>
-                    Customer Hierarchy (Optional)
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office
-                  </Typography>
-                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                    <TextField
-                      fullWidth
-                      label="Channel"
-                      value={formData.customerChannel}
-                      onChange={handleChange('customerChannel')}
-                      placeholder="e.g., Retail"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Sub Channel"
-                      value={formData.customerSubChannel}
-                      onChange={handleChange('customerSubChannel')}
-                      placeholder="e.g., Supermarket"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Segmentation"
-                      value={formData.customerSegmentation}
-                      onChange={handleChange('customerSegmentation')}
-                      placeholder="e.g., Premium"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Hierarchy 1"
-                      value={formData.customerHierarchy1}
-                      onChange={handleChange('customerHierarchy1')}
-                      placeholder="e.g., Region"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Hierarchy 2"
-                      value={formData.customerHierarchy2}
-                      onChange={handleChange('customerHierarchy2')}
-                      placeholder="e.g., District"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Hierarchy 3"
-                      value={formData.customerHierarchy3}
-                      onChange={handleChange('customerHierarchy3')}
-                      placeholder="e.g., Territory"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Head Office"
-                      value={formData.customerHeadOffice}
-                      onChange={handleChange('customerHeadOffice')}
-                      placeholder="e.g., Shoprite Holdings"
-                      sx={{ gridColumn: 'span 2' }}
-                    />
-                  </Box>
-                </Paper>
+                                {/* Hierarchy Selection */}
+                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#1a237e' }}>
+                                  Promotion Scope (Optional)
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                  Select specific customers and/or products this promotion applies to. Leave empty for company-wide promotion.
+                                </Typography>
+                                <Grid container spacing={3}>
+                                  <Grid item xs={12} md={6}>
+                                    <Card variant="outlined">
+                                      <CardContent>
+                                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                                          Customer Hierarchy
+                                        </Typography>
+                                        <HierarchySelector
+                                          type="customer"
+                                          selected={selectedCustomers}
+                                          onSelectionChange={setSelectedCustomers}
+                                          showAllocation={false}
+                                        />
+                                      </CardContent>
+                                    </Card>
+                                  </Grid>
+                                  <Grid item xs={12} md={6}>
+                                    <Card variant="outlined">
+                                      <CardContent>
+                                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                                          Product Hierarchy
+                                        </Typography>
+                                        <HierarchySelector
+                                          type="product"
+                                          selected={selectedProducts}
+                                          onSelectionChange={setSelectedProducts}
+                                          showAllocation={false}
+                                        />
+                                      </CardContent>
+                                    </Card>
+                                  </Grid>
+                                </Grid>
         
                 {/* Action Buttons */}
         <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
