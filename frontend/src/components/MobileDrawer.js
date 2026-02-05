@@ -56,11 +56,11 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       icon: <DashboardIcon />,
       children: [
         isKAM && { label: 'My Dashboard', path: '/dashboard' },
-        isKAM && { label: 'My Customers', path: '/customers' },
-        isKAM && { label: 'My Promotions', path: '/promotions' },
         isKAM && { label: 'My Wallet', path: '/kamwallet', badge: 'NEW' },
-        isKAM && { label: 'Create Promotion', path: '/promotions/new' },
         isManager && { label: 'Pending Approvals', path: '/approvals' },
+        isKAM && { label: 'New Promotion', path: '/promotions/new-flow', badge: 'AI' },
+        isKAM && { label: 'New Budget', path: '/budgets/new-flow', badge: 'AI' },
+        isKAM && { label: 'Submit Claim', path: '/claims/create' },
       ].filter(Boolean)
     },
     {
@@ -69,10 +69,10 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       icon: <LightbulbIcon />,
       children: [
         { label: 'All Promotions', path: '/promotions' },
+        { label: 'New Promotion', path: '/promotions/new-flow', badge: 'AI' },
+        { label: 'Promotion Planner', path: '/promotion-planner', badge: 'AI' },
         { label: 'Timeline', path: '/promotions-timeline' },
         { label: 'Activity Calendar', path: '/activity-grid' },
-        { label: 'Create Promotion', path: '/promotions/new' },
-        { label: 'Promotion Planner', path: '/promotion-planner', badge: 'AI' },
       ]
     },
     {
@@ -81,9 +81,10 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       icon: <RocketIcon />,
       children: [
         { label: 'All Budgets', path: '/budgets' },
+        { label: 'New Budget', path: '/budgets/new-flow', badge: 'AI' },
         { label: 'Budget Console', path: '/budget-console', badge: 'AI' },
-        { label: 'Annual Planning', path: '/budgets/new-flow' },
         { label: 'Trade Spends', path: '/trade-spends' },
+        { label: 'New Trade Spend', path: '/trade-spends/new-flow', badge: 'AI' },
         { label: 'Trading Terms', path: '/trading-terms' },
       ]
     },
@@ -92,10 +93,13 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       label: 'Insights',
       icon: <AnalyticsIcon />,
       children: [
+        { label: 'Analytics Dashboard', path: '/analytics', badge: 'AI' },
         { label: 'Live Performance', path: '/realtime-dashboard', badge: 'LIVE' },
-        { label: 'AI Insights', path: '/analytics', badge: 'AI' },
+        { label: 'Promotion Effectiveness', path: '/performance-analytics/promotion-effectiveness' },
+        { label: 'Budget Variance', path: '/performance-analytics/budget-variance' },
         { label: 'Reports', path: '/reports' },
-        { label: 'Forecasting', path: '/forecasting' },
+        { label: 'Forecasting', path: '/forecasting', badge: 'AI' },
+        { label: 'Customer Segmentation', path: '/performance-analytics/customer-segmentation' },
       ]
     },
     isManager && {
@@ -113,10 +117,12 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       icon: <ReceiptIcon />,
       children: [
         { label: 'All Claims', path: '/claims' },
+        { label: 'Submit Claim', path: '/claims/create' },
         { label: 'Deductions', path: '/deductions' },
         { label: 'Reconciliation', path: '/deductions/reconciliation' },
-        isKAM && { label: 'Submit Claim', path: '/claims/create' },
-      ].filter(Boolean)
+        { label: 'All Rebates', path: '/rebates' },
+        { label: 'New Rebate', path: '/rebates/new' },
+      ]
     },
     {
       key: 'planning',
@@ -124,7 +130,6 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       icon: <MonitorIcon />,
       children: [
         { label: 'Simulation Studio', path: '/simulation-studio', badge: 'AI' },
-        { label: 'Scenario Planning', path: '/simulations' },
         { label: 'Predictive Analytics', path: '/predictive-analytics', badge: 'AI' },
       ]
     },
@@ -134,8 +139,10 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
       icon: <DataIcon />,
       children: [
         { label: 'Customers', path: '/customers' },
+        { label: 'New Customer', path: '/customers/new-flow', badge: 'AI' },
         { label: 'Products', path: '/products' },
-        isAdmin && { label: 'Import Data', path: '/data/import-export' },
+        { label: 'New Product', path: '/products/new-flow', badge: 'AI' },
+        isAdmin && { label: 'Import/Export', path: '/data/import-export' },
       ].filter(Boolean)
     },
     isAdmin && {
