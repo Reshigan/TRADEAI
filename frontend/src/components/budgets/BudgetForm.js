@@ -10,8 +10,6 @@ import {
   Select,
   Typography,
   Divider,
-  Tabs,
-  Tab,
   Chip
 } from '@mui/material';
 import { FormDialog } from '../common';
@@ -84,9 +82,8 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
   });
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [scopeTab, setScopeTab] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
 
   // Fetch customers and products on component mount
   useEffect(() => {
@@ -118,7 +115,6 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
         customerHeadOffice: budget.customerHeadOffice || budget.customer_head_office || '',
         customerId: budget.customerId || budget.customer_id || ''
       });
-      setScopeTab(budget.scopeType === 'product' || budget.scope_type === 'product' ? 0 : 1);
     }
   }, [budget]);
 
@@ -215,14 +211,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     }));
   };
 
-  const handleScopeTabChange = (event, newValue) => {
-    setScopeTab(newValue);
-    setFormData(prev => ({
-      ...prev,
-      scopeType: newValue === 0 ? 'product' : 'customer'
-    }));
-  };
-
+  
   return (
     <FormDialog
       open={open}
@@ -352,280 +341,263 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
 
         <Divider sx={{ my: 3 }} />
 
-        {/* Scope Selection - Product or Customer Hierarchy */}
+        {/* Product Hierarchy Section */}
         <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-          Budget Scope
+          Product Hierarchy (Optional)
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Select whether this budget applies to Product or Customer hierarchy
+          <Chip label="Product Hierarchy" size="small" color="primary" sx={{ mr: 1 }} />
+          Vendor - Category - Brand - Sub Brand - Product
         </Typography>
         
-        <Tabs 
-          value={scopeTab} 
-          onChange={handleScopeTabChange}
-          sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Tab label="Product Hierarchy" />
-          <Tab label="Customer Hierarchy" />
-        </Tabs>
-
-        {/* Product Hierarchy Tab */}
-        {scopeTab === 0 && (
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                <Chip label="Product Hierarchy" size="small" color="primary" sx={{ mr: 1 }} />
-                Vendor - Category - Brand - Sub Brand - Product
-              </Typography>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="product-vendor-label">Vendor</InputLabel>
-                <Select
-                  labelId="product-vendor-label"
-                  name="productVendor"
-                  value={formData.productVendor}
-                  onChange={handleChange}
-                  label="Vendor"
-                >
-                  <MenuItem value="">All Vendors</MenuItem>
-                  {productHierarchyOptions.vendors.map(v => (
-                    <MenuItem key={v} value={v}>{v}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="product-category-label">Category</InputLabel>
-                <Select
-                  labelId="product-category-label"
-                  name="productCategory"
-                  value={formData.productCategory}
-                  onChange={handleChange}
-                  label="Category"
-                >
-                  <MenuItem value="">All Categories</MenuItem>
-                  {productHierarchyOptions.categories.map(c => (
-                    <MenuItem key={c} value={c}>{c}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="product-brand-label">Brand</InputLabel>
-                <Select
-                  labelId="product-brand-label"
-                  name="productBrand"
-                  value={formData.productBrand}
-                  onChange={handleChange}
-                  label="Brand"
-                >
-                  <MenuItem value="">All Brands</MenuItem>
-                  {productHierarchyOptions.brands.map(b => (
-                    <MenuItem key={b} value={b}>{b}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="product-sub-brand-label">Sub Brand</InputLabel>
-                <Select
-                  labelId="product-sub-brand-label"
-                  name="productSubBrand"
-                  value={formData.productSubBrand}
-                  onChange={handleChange}
-                  label="Sub Brand"
-                >
-                  <MenuItem value="">All Sub Brands</MenuItem>
-                  {productHierarchyOptions.subBrands.map(sb => (
-                    <MenuItem key={sb} value={sb}>{sb}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="product-id-label">Specific Product</InputLabel>
-                <Select
-                  labelId="product-id-label"
-                  name="productId"
-                  value={formData.productId}
-                  onChange={handleChange}
-                  label="Specific Product"
-                >
-                  <MenuItem value="">All Products</MenuItem>
-                  {products.map(p => (
-                    <MenuItem key={p.id || p._id} value={p.id || p._id}>{p.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="product-vendor-label">Vendor</InputLabel>
+              <Select
+                labelId="product-vendor-label"
+                name="productVendor"
+                value={formData.productVendor}
+                onChange={handleChange}
+                label="Vendor"
+              >
+                <MenuItem value="">All Vendors</MenuItem>
+                {productHierarchyOptions.vendors.map(v => (
+                  <MenuItem key={v} value={v}>{v}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
-        )}
-
-        {/* Customer Hierarchy Tab */}
-        {scopeTab === 1 && (
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                <Chip label="Customer Hierarchy" size="small" color="secondary" sx={{ mr: 1 }} />
-                Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office - Customer
-              </Typography>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-channel-label">Channel</InputLabel>
-                <Select
-                  labelId="customer-channel-label"
-                  name="customerChannel"
-                  value={formData.customerChannel}
-                  onChange={handleChange}
-                  label="Channel"
-                >
-                  <MenuItem value="">All Channels</MenuItem>
-                  {customerHierarchyOptions.channels.map(c => (
-                    <MenuItem key={c} value={c}>{c}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-sub-channel-label">Sub Channel</InputLabel>
-                <Select
-                  labelId="customer-sub-channel-label"
-                  name="customerSubChannel"
-                  value={formData.customerSubChannel}
-                  onChange={handleChange}
-                  label="Sub Channel"
-                >
-                  <MenuItem value="">All Sub Channels</MenuItem>
-                  {customerHierarchyOptions.subChannels.map(sc => (
-                    <MenuItem key={sc} value={sc}>{sc}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-segmentation-label">Segmentation</InputLabel>
-                <Select
-                  labelId="customer-segmentation-label"
-                  name="customerSegmentation"
-                  value={formData.customerSegmentation}
-                  onChange={handleChange}
-                  label="Segmentation"
-                >
-                  <MenuItem value="">All Segments</MenuItem>
-                  {customerHierarchyOptions.segmentations.map(s => (
-                    <MenuItem key={s} value={s}>{s}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-h1-label">Hierarchy 1</InputLabel>
-                <Select
-                  labelId="customer-h1-label"
-                  name="customerHierarchy1"
-                  value={formData.customerHierarchy1}
-                  onChange={handleChange}
-                  label="Hierarchy 1"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {customerHierarchyOptions.hierarchy1.map(h => (
-                    <MenuItem key={h} value={h}>{h}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-h2-label">Hierarchy 2</InputLabel>
-                <Select
-                  labelId="customer-h2-label"
-                  name="customerHierarchy2"
-                  value={formData.customerHierarchy2}
-                  onChange={handleChange}
-                  label="Hierarchy 2"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {customerHierarchyOptions.hierarchy2.map(h => (
-                    <MenuItem key={h} value={h}>{h}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-h3-label">Hierarchy 3</InputLabel>
-                <Select
-                  labelId="customer-h3-label"
-                  name="customerHierarchy3"
-                  value={formData.customerHierarchy3}
-                  onChange={handleChange}
-                  label="Hierarchy 3"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {customerHierarchyOptions.hierarchy3.map(h => (
-                    <MenuItem key={h} value={h}>{h}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-head-office-label">Head Office</InputLabel>
-                <Select
-                  labelId="customer-head-office-label"
-                  name="customerHeadOffice"
-                  value={formData.customerHeadOffice}
-                  onChange={handleChange}
-                  label="Head Office"
-                >
-                  <MenuItem value="">All Head Offices</MenuItem>
-                  {customerHierarchyOptions.headOffices.map(ho => (
-                    <MenuItem key={ho} value={ho}>{ho}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel id="customer-id-label">Specific Customer</InputLabel>
-                <Select
-                  labelId="customer-id-label"
-                  name="customerId"
-                  value={formData.customerId}
-                  onChange={handleChange}
-                  label="Specific Customer"
-                >
-                  <MenuItem value="">All Customers</MenuItem>
-                  {customers.map(c => (
-                    <MenuItem key={c.id || c._id} value={c.id || c._id}>{c.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="product-category-label">Category</InputLabel>
+              <Select
+                labelId="product-category-label"
+                name="productCategory"
+                value={formData.productCategory}
+                onChange={handleChange}
+                label="Category"
+              >
+                <MenuItem value="">All Categories</MenuItem>
+                {productHierarchyOptions.categories.map(c => (
+                  <MenuItem key={c} value={c}>{c}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
-        )}
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="product-brand-label">Brand</InputLabel>
+              <Select
+                labelId="product-brand-label"
+                name="productBrand"
+                value={formData.productBrand}
+                onChange={handleChange}
+                label="Brand"
+              >
+                <MenuItem value="">All Brands</MenuItem>
+                {productHierarchyOptions.brands.map(b => (
+                  <MenuItem key={b} value={b}>{b}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="product-sub-brand-label">Sub Brand</InputLabel>
+              <Select
+                labelId="product-sub-brand-label"
+                name="productSubBrand"
+                value={formData.productSubBrand}
+                onChange={handleChange}
+                label="Sub Brand"
+              >
+                <MenuItem value="">All Sub Brands</MenuItem>
+                {productHierarchyOptions.subBrands.map(sb => (
+                  <MenuItem key={sb} value={sb}>{sb}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel id="product-id-label">Specific Product</InputLabel>
+              <Select
+                labelId="product-id-label"
+                name="productId"
+                value={formData.productId}
+                onChange={handleChange}
+                label="Specific Product"
+              >
+                <MenuItem value="">All Products</MenuItem>
+                {products.map(p => (
+                  <MenuItem key={p.id || p._id} value={p.id || p._id}>{p.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Customer Hierarchy Section */}
+        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+          Customer Hierarchy (Optional)
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Chip label="Customer Hierarchy" size="small" color="secondary" sx={{ mr: 1 }} />
+          Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office - Customer
+        </Typography>
+        
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-channel-label">Channel</InputLabel>
+              <Select
+                labelId="customer-channel-label"
+                name="customerChannel"
+                value={formData.customerChannel}
+                onChange={handleChange}
+                label="Channel"
+              >
+                <MenuItem value="">All Channels</MenuItem>
+                {customerHierarchyOptions.channels.map(c => (
+                  <MenuItem key={c} value={c}>{c}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-sub-channel-label">Sub Channel</InputLabel>
+              <Select
+                labelId="customer-sub-channel-label"
+                name="customerSubChannel"
+                value={formData.customerSubChannel}
+                onChange={handleChange}
+                label="Sub Channel"
+              >
+                <MenuItem value="">All Sub Channels</MenuItem>
+                {customerHierarchyOptions.subChannels.map(sc => (
+                  <MenuItem key={sc} value={sc}>{sc}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-segmentation-label">Segmentation</InputLabel>
+              <Select
+                labelId="customer-segmentation-label"
+                name="customerSegmentation"
+                value={formData.customerSegmentation}
+                onChange={handleChange}
+                label="Segmentation"
+              >
+                <MenuItem value="">All Segments</MenuItem>
+                {customerHierarchyOptions.segmentations.map(s => (
+                  <MenuItem key={s} value={s}>{s}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-h1-label">Hierarchy 1</InputLabel>
+              <Select
+                labelId="customer-h1-label"
+                name="customerHierarchy1"
+                value={formData.customerHierarchy1}
+                onChange={handleChange}
+                label="Hierarchy 1"
+              >
+                <MenuItem value="">All</MenuItem>
+                {customerHierarchyOptions.hierarchy1.map(h => (
+                  <MenuItem key={h} value={h}>{h}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-h2-label">Hierarchy 2</InputLabel>
+              <Select
+                labelId="customer-h2-label"
+                name="customerHierarchy2"
+                value={formData.customerHierarchy2}
+                onChange={handleChange}
+                label="Hierarchy 2"
+              >
+                <MenuItem value="">All</MenuItem>
+                {customerHierarchyOptions.hierarchy2.map(h => (
+                  <MenuItem key={h} value={h}>{h}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-h3-label">Hierarchy 3</InputLabel>
+              <Select
+                labelId="customer-h3-label"
+                name="customerHierarchy3"
+                value={formData.customerHierarchy3}
+                onChange={handleChange}
+                label="Hierarchy 3"
+              >
+                <MenuItem value="">All</MenuItem>
+                {customerHierarchyOptions.hierarchy3.map(h => (
+                  <MenuItem key={h} value={h}>{h}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-head-office-label">Head Office</InputLabel>
+              <Select
+                labelId="customer-head-office-label"
+                name="customerHeadOffice"
+                value={formData.customerHeadOffice}
+                onChange={handleChange}
+                label="Head Office"
+              >
+                <MenuItem value="">All Head Offices</MenuItem>
+                {customerHierarchyOptions.headOffices.map(ho => (
+                  <MenuItem key={ho} value={ho}>{ho}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="customer-id-label">Specific Customer</InputLabel>
+              <Select
+                labelId="customer-id-label"
+                name="customerId"
+                value={formData.customerId}
+                onChange={handleChange}
+                label="Specific Customer"
+              >
+                <MenuItem value="">All Customers</MenuItem>
+                {customers.map(c => (
+                  <MenuItem key={c.id || c._id} value={c.id || c._id}>{c.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
 
         <Divider sx={{ my: 3 }} />
 

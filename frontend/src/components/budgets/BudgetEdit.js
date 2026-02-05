@@ -32,6 +32,12 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || '/api';
 
+// Helper to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const getCurrencySymbol = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -85,17 +91,20 @@ const BudgetEdit = () => {
     fetchBudget();
   }, [id]);
 
-  const fetchBudget = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/budgets/${id}`);
-      setBudget(response.data);
-    } catch (err) {
-      setError('Error loading budget: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchBudget = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/budgets/${id}`, {
+          headers: getAuthHeaders()
+        });
+        const budgetData = response.data?.data || response.data;
+        setBudget(budgetData);
+      } catch (err) {
+        setError('Error loading budget: ' + (err.response?.data?.message || err.message));
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handleChange = (field, value) => {
     setBudget(prev => ({
@@ -183,7 +192,9 @@ const BudgetEdit = () => {
         allocations: calculatePercentages()
       };
 
-      await axios.put(`${API_URL}/budgets/${id}`, updatedBudget);
+      await axios.put(`${API_URL}/budgets/${id}`, updatedBudget, {
+        headers: getAuthHeaders()
+      });
       
       setSuccess('Budget updated successfully!');
       setTimeout(() => {
