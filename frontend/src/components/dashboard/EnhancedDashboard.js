@@ -180,7 +180,7 @@ export default function EnhancedDashboard({ user }) {
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Total Revenue"
-            value="$2.5M"
+            value="R2.5M"
             change={12.5}
             trend="up"
             icon={<AttachMoney sx={{ fontSize: 32 }} />}
@@ -204,7 +204,7 @@ export default function EnhancedDashboard({ user }) {
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Trade Spend"
-            value="$850K"
+            value="R850K"
             change={-3.2}
             trend="down"
             icon={<TrendingUp sx={{ fontSize: 32 }} />}
@@ -292,7 +292,7 @@ export default function EnhancedDashboard({ user }) {
                       <Typography variant="body2">{item.name}</Typography>
                     </Box>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      ${(item.amount / 1000).toFixed(0)}K
+                      R{(item.amount / 1000).toFixed(0)}K
                     </Typography>
                   </Box>
                 ))}
