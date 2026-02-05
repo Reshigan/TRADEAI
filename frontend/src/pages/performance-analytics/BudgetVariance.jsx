@@ -317,8 +317,8 @@ const BudgetVariance = () => {
                   <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} fontSize={12} />
-                    <YAxis label={{ value: 'Amount ($K)', angle: -90, position: 'insideLeft' }} />
-                    <RechartsTooltip formatter={(value) => [`$${value}K`, '']} />
+                                        <YAxis label={{ value: 'Amount (R K)', angle: -90, position: 'insideLeft' }} />
+                                        <RechartsTooltip formatter={(value) => [`R${value}K`, '']} />
                     <Legend />
                     <Bar dataKey="allocated" fill="#2196f3" name="Allocated" />
                     <Bar dataKey="spent" fill="#ff9800" name="Spent" />

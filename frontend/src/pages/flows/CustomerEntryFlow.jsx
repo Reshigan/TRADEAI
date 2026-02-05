@@ -37,17 +37,25 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
  */
 const CustomerEntryFlow = () => {
   // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    code: '',
-    type: 'Retail',
-    email: '',
-    phone: '',
-    city: '',
-    creditLimit: '',
-    paymentTerms: 'Net 30',
-    status: 'Active'
-  });
+    const [formData, setFormData] = useState({
+      name: '',
+      code: '',
+      type: 'Retail',
+      email: '',
+      phone: '',
+      city: '',
+      creditLimit: '',
+      paymentTerms: 'Net 30',
+      status: 'Active',
+      // Customer hierarchy
+      channel: '',
+      subChannel: '',
+      segmentation: '',
+      hierarchy1: '',
+      hierarchy2: '',
+      hierarchy3: '',
+      headOffice: ''
+    });
   
   // AI state
   const [setAiProfile] = useState(null);
@@ -76,8 +84,8 @@ const CustomerEntryFlow = () => {
       
       try {
         // Real API call (with fallback)
-        const response = await axios.post(
-          `${API_BASE_URL}/ai/customer-analysis`,
+                const response = await axios.post(
+                  `${API_BASE_URL}/ai-orchestrator/customer-analysis`,
           {
             name: formData.name,
             type: formData.type,
@@ -539,23 +547,98 @@ const CustomerEntryFlow = () => {
             </TextField>
           </Grid>
           
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Credit Limit (ZAR)"
-              type="number"
-              value={formData.creditLimit}
-              onChange={handleChange('creditLimit')}
-              error={!!errors.creditLimit}
-              helperText={errors.creditLimit || (riskAssessment && `AI suggests: R${suggestedCreditLimit.toLocaleString()}`)}
-              InputProps={{
-                startAdornment: 'R'
-              }}
-            />
-          </Grid>
-        </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Credit Limit (ZAR)"
+                      type="number"
+                      value={formData.creditLimit}
+                      onChange={handleChange('creditLimit')}
+                      error={!!errors.creditLimit}
+                      helperText={errors.creditLimit || (riskAssessment && `AI suggests: R${suggestedCreditLimit.toLocaleString()}`)}
+                      InputProps={{
+                        startAdornment: 'R'
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+
+                {/* Customer Hierarchy Section */}
+                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#7b1fa2' }}>
+                    Customer Hierarchy (Optional)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Channel"
+                        value={formData.channel}
+                        onChange={handleChange('channel')}
+                        placeholder="e.g., Retail"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Sub Channel"
+                        value={formData.subChannel}
+                        onChange={handleChange('subChannel')}
+                        placeholder="e.g., Supermarket"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Segmentation"
+                        value={formData.segmentation}
+                        onChange={handleChange('segmentation')}
+                        placeholder="e.g., Premium"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Hierarchy 1"
+                        value={formData.hierarchy1}
+                        onChange={handleChange('hierarchy1')}
+                        placeholder="e.g., Region"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Hierarchy 2"
+                        value={formData.hierarchy2}
+                        onChange={handleChange('hierarchy2')}
+                        placeholder="e.g., District"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        label="Hierarchy 3"
+                        value={formData.hierarchy3}
+                        onChange={handleChange('hierarchy3')}
+                        placeholder="e.g., Territory"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Head Office"
+                        value={formData.headOffice}
+                        onChange={handleChange('headOffice')}
+                        placeholder="e.g., Shoprite Holdings"
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
         
-        {/* AI Risk Display */}
+                {/* AI Risk Display */}
         {riskAssessment && !isCalculating && (
           <Paper sx={{ 
             p: 2, 

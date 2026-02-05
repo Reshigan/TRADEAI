@@ -308,7 +308,7 @@ const PromotionEffectiveness = () => {
                     <YAxis label={{ value: 'ROI %', angle: -90, position: 'insideLeft' }} />
                     <RechartsTooltip 
                       formatter={(value, name) => [
-                        name === 'roi' ? `${value}%` : `$${value}K`,
+                        name === 'roi' ? `${value}%` : `R${value}K`,
                         name === 'roi' ? 'ROI' : name === 'spend' ? 'Spend' : 'Revenue'
                       ]}
                     />

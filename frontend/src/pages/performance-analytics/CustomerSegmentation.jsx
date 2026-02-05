@@ -340,8 +340,8 @@ const CustomerSegmentation = () => {
                   <BarChart data={revenueBarData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis label={{ value: 'Revenue ($K)', angle: -90, position: 'insideLeft' }} />
-                    <RechartsTooltip formatter={(value, name) => [name === 'revenue' ? `$${value}K` : `${value}%`, name === 'revenue' ? 'Revenue' : 'Percentage']} />
+                                        <YAxis label={{ value: 'Revenue (R K)', angle: -90, position: 'insideLeft' }} />
+                                        <RechartsTooltip formatter={(value, name) => [name === 'revenue' ? `R${value}K` : `${value}%`, name === 'revenue' ? 'Revenue' : 'Percentage']} />
                     <Bar dataKey="revenue" fill="#4caf50" name="Revenue" />
                   </BarChart>
                 </ResponsiveContainer>
