@@ -69,8 +69,22 @@ const REVERSE_COLUMN_MAP = Object.fromEntries(
 const JSON_FIELDS = [
   'mechanics', 'financial', 'period', 'products', 'customers', 'approvals',
   'performance', 'metrics', 'settings', 'permissions', 'hierarchy',
-  'contacts', 'address', 'allocations', 'details', 'lineItems'
+  'contacts', 'address', 'allocations', 'details', 'lineItems',
+  // Additional fields that don't have dedicated columns
+  'email', 'phone', 'company', 'notes', 'description', 'tags', 'metadata',
+  'contactName', 'contactEmail', 'contactPhone'
 ];
+
+// Known columns per table (to avoid inserting unknown columns)
+const TABLE_COLUMNS = {
+  customers: ['id', 'company_id', 'name', 'code', 'sap_customer_id', 'customer_type', 'channel', 'tier', 'status', 'region', 'city', 'data', 'created_at', 'updated_at', 'sub_channel', 'segmentation', 'hierarchy_1', 'hierarchy_2', 'hierarchy_3', 'head_office'],
+  products: ['id', 'company_id', 'name', 'code', 'sku', 'category', 'brand', 'unit_price', 'cost_price', 'status', 'data', 'created_at', 'updated_at', 'vendor', 'sub_brand'],
+  budgets: ['id', 'company_id', 'name', 'year', 'amount', 'utilized', 'budget_type', 'status', 'created_by', 'data', 'created_at', 'updated_at', 'budget_category', 'scope_type', 'deal_type', 'claim_type', 'product_vendor', 'product_category', 'product_brand', 'product_sub_brand', 'product_id', 'customer_channel', 'customer_sub_channel', 'customer_segmentation', 'customer_hierarchy_1', 'customer_hierarchy_2', 'customer_hierarchy_3', 'customer_head_office', 'customer_id'],
+  promotions: ['id', 'company_id', 'name', 'description', 'promotion_type', 'status', 'start_date', 'end_date', 'sell_in_start_date', 'sell_in_end_date', 'budget_id', 'created_by', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'data', 'created_at', 'updated_at'],
+  trade_spends: ['id', 'company_id', 'budget_id', 'promotion_id', 'customer_id', 'product_id', 'amount', 'spend_type', 'status', 'description', 'created_by', 'data', 'created_at', 'updated_at'],
+  users: ['id', 'company_id', 'email', 'password', 'first_name', 'last_name', 'role', 'permissions', 'is_active', 'login_attempts', 'lock_until', 'last_login', 'refresh_token', 'refresh_token_expiry', 'password_changed_at', 'created_at', 'updated_at'],
+  companies: ['id', 'name', 'code', 'status', 'subscription_plan', 'data', 'created_at', 'updated_at']
+};
 
 // Generate a UUID for new records
 function generateId() {
@@ -202,9 +216,13 @@ function rowToDocument(row) {
 }
 
 // Convert document to D1 row format
-function documentToRow(document, isUpdate = false) {
+// tableName parameter is used to filter out columns that don't exist in the table
+function documentToRow(document, tableName = null, isUpdate = false) {
   const row = {};
   const jsonData = {};
+  
+  // Get valid columns for this table (if known)
+  const validColumns = tableName ? TABLE_COLUMNS[tableName] : null;
   
   for (const [field, value] of Object.entries(document)) {
     // Skip internal fields
@@ -218,6 +236,13 @@ function documentToRow(document, isUpdate = false) {
     
     // Map field name to column
     const column = COLUMN_MAP[field] || field;
+    
+    // If we know the valid columns for this table, check if this column exists
+    // If not, store it in the JSON data column
+    if (validColumns && !validColumns.includes(column)) {
+      jsonData[field] = value;
+      continue;
+    }
     
     // Handle special types
     if (typeof value === 'boolean') {
@@ -282,7 +307,8 @@ export class D1Client {
     const id = generateId();
     const now = new Date().toISOString();
     
-    const row = documentToRow(document);
+    // Pass table name to documentToRow to filter out unknown columns
+    const row = documentToRow(document, table);
     row.id = id;
     row.created_at = now;
     row.updated_at = now;
@@ -318,7 +344,8 @@ export class D1Client {
     // Get existing document to merge JSON data
     const existing = await this.findOne(collection, filter);
     
-    const row = documentToRow(update, true);
+    // Pass table name to documentToRow to filter out unknown columns
+    const row = documentToRow(update, table, true);
     row.updated_at = new Date().toISOString();
     
     // Merge JSON data if both exist
@@ -347,7 +374,8 @@ export class D1Client {
     const params = [];
     const where = filterToWhere(filter, params);
     
-    const row = documentToRow(update, true);
+    // Pass table name to documentToRow to filter out unknown columns
+    const row = documentToRow(update, table, true);
     row.updated_at = new Date().toISOString();
     
     const setClauses = Object.keys(row).map(col => `${col} = ?`).join(', ');
