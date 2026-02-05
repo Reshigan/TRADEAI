@@ -37,16 +37,29 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
  */
 const PromotionEntryFlow = () => {
   // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    type: 'Discount',
-    discount: '',
-    startDate: '',
-    endDate: '',
-    budget: '',
-    targetProducts: [],
-    targetCustomers: []
-  });
+    const [formData, setFormData] = useState({
+      name: '',
+      type: 'Discount',
+      discount: '',
+      startDate: '',
+      endDate: '',
+      budget: '',
+      targetProducts: [],
+      targetCustomers: [],
+      // Product hierarchy
+      productVendor: '',
+      productCategory: '',
+      productBrand: '',
+      productSubBrand: '',
+      // Customer hierarchy
+      customerChannel: '',
+      customerSubChannel: '',
+      customerSegmentation: '',
+      customerHierarchy1: '',
+      customerHierarchy2: '',
+      customerHierarchy3: '',
+      customerHeadOffice: ''
+    });
   
   // AI state
   const [mlCalculations, setMlCalculations] = useState(null);
@@ -81,8 +94,8 @@ const PromotionEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-        const response = await axios.post(
-          `${API_BASE_URL}/api/ai-orchestrator/orchestrate`,
+                const response = await axios.post(
+                  `${API_BASE_URL}/ai-orchestrator/orchestrate`,
           {
             userIntent: `Optimize promotion with ${formData.discount}% discount and ${formData.budget} budget for ${formData.type} promotion`,
             context: {
@@ -587,29 +600,131 @@ const PromotionEntryFlow = () => {
           </Paper>
         )}
         
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 3 }}>
-          <TextField
-            label="Start Date"
-            type="date"
-            value={formData.startDate}
-            onChange={handleChange('startDate')}
-            error={!!errors.startDate}
-            helperText={errors.startDate}
-            InputLabelProps={{ shrink: true }}
-          />
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 3 }}>
+                  <TextField
+                    label="Start Date"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={handleChange('startDate')}
+                    error={!!errors.startDate}
+                    helperText={errors.startDate}
+                    InputLabelProps={{ shrink: true }}
+                  />
           
-          <TextField
-            label="End Date"
-            type="date"
-            value={formData.endDate}
-            onChange={handleChange('endDate')}
-            error={!!errors.endDate}
-            helperText={errors.endDate}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Box>
+                  <TextField
+                    label="End Date"
+                    type="date"
+                    value={formData.endDate}
+                    onChange={handleChange('endDate')}
+                    error={!!errors.endDate}
+                    helperText={errors.endDate}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Box>
+
+                {/* Product Hierarchy Section */}
+                <Paper sx={{ p: 3, mb: 3, bgcolor: '#f5f5f5' }}>
+                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#1a237e' }}>
+                    Product Hierarchy (Optional)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Vendor - Category - Brand - Sub Brand
+                  </Typography>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                    <TextField
+                      fullWidth
+                      label="Vendor"
+                      value={formData.productVendor}
+                      onChange={handleChange('productVendor')}
+                      placeholder="e.g., Unilever"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Category"
+                      value={formData.productCategory}
+                      onChange={handleChange('productCategory')}
+                      placeholder="e.g., Personal Care"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Brand"
+                      value={formData.productBrand}
+                      onChange={handleChange('productBrand')}
+                      placeholder="e.g., Dove"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Sub Brand"
+                      value={formData.productSubBrand}
+                      onChange={handleChange('productSubBrand')}
+                      placeholder="e.g., Dove Men+Care"
+                    />
+                  </Box>
+                </Paper>
+
+                {/* Customer Hierarchy Section */}
+                <Paper sx={{ p: 3, mb: 3, bgcolor: '#f5f5f5' }}>
+                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#1a237e' }}>
+                    Customer Hierarchy (Optional)
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office
+                  </Typography>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                    <TextField
+                      fullWidth
+                      label="Channel"
+                      value={formData.customerChannel}
+                      onChange={handleChange('customerChannel')}
+                      placeholder="e.g., Retail"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Sub Channel"
+                      value={formData.customerSubChannel}
+                      onChange={handleChange('customerSubChannel')}
+                      placeholder="e.g., Supermarket"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Segmentation"
+                      value={formData.customerSegmentation}
+                      onChange={handleChange('customerSegmentation')}
+                      placeholder="e.g., Premium"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Hierarchy 1"
+                      value={formData.customerHierarchy1}
+                      onChange={handleChange('customerHierarchy1')}
+                      placeholder="e.g., Region"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Hierarchy 2"
+                      value={formData.customerHierarchy2}
+                      onChange={handleChange('customerHierarchy2')}
+                      placeholder="e.g., District"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Hierarchy 3"
+                      value={formData.customerHierarchy3}
+                      onChange={handleChange('customerHierarchy3')}
+                      placeholder="e.g., Territory"
+                    />
+                    <TextField
+                      fullWidth
+                      label="Head Office"
+                      value={formData.customerHeadOffice}
+                      onChange={handleChange('customerHeadOffice')}
+                      placeholder="e.g., Shoprite Holdings"
+                      sx={{ gridColumn: 'span 2' }}
+                    />
+                  </Box>
+                </Paper>
         
-        {/* Action Buttons */}
+                {/* Action Buttons */}
         <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
           <Button
             variant="contained"

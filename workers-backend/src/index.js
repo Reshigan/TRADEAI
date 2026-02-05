@@ -29,6 +29,7 @@ import { deductionsRoutes } from './routes/deductions.js';
 import { vendorsRoutes } from './routes/vendors.js';
 import { campaignsRoutes } from './routes/campaigns.js';
 import { activitiesRoutes } from './routes/activities.js';
+import { activityGridRoutes } from './routes/activityGrid.js';
 import { dataLineageRoutes } from './routes/dataLineage.js';
 import { forecastingRoutes } from './routes/forecasting.js';
 
@@ -97,6 +98,7 @@ app.route('/api/deductions', deductionsRoutes);
 app.route('/api/vendors', vendorsRoutes);
 app.route('/api/campaigns', campaignsRoutes);
 app.route('/api/activities', activitiesRoutes);
+app.route('/api/activity-grid', activityGridRoutes);
 app.route('/api/data-lineage', dataLineageRoutes);
 app.route('/api/forecasting', forecastingRoutes);
 
