@@ -6,6 +6,89 @@ export const productRoutes = new Hono();
 
 productRoutes.use('*', authMiddleware);
 
+// Get product hierarchy for selection components
+productRoutes.get('/hierarchy', async (c) => {
+  try {
+    const tenantId = c.get('tenantId');
+    const mongodb = getMongoClient(c);
+
+    // Get all products for this tenant
+    const products = await mongodb.find('products', { companyId: tenantId }, {
+      sort: { name: 1 }
+    });
+
+    // Build hierarchy from product data
+    // Group by category -> brand -> product
+    const categoryMap = new Map();
+    
+    products.forEach(product => {
+      const category = product.category || product.product_category || 'Other';
+      const brand = product.brand || product.product_brand || 'General';
+      
+      if (!categoryMap.has(category)) {
+        categoryMap.set(category, {
+          id: `category-${category.toLowerCase().replace(/\s+/g, '-')}`,
+          name: category,
+          level: 1,
+          volume: 0,
+          children: new Map()
+        });
+      }
+      
+      const categoryNode = categoryMap.get(category);
+      
+      if (!categoryNode.children.has(brand)) {
+        categoryNode.children.set(brand, {
+          id: `brand-${category.toLowerCase().replace(/\s+/g, '-')}-${brand.toLowerCase().replace(/\s+/g, '-')}`,
+          name: brand,
+          level: 2,
+          volume: 0,
+          children: []
+        });
+      }
+      
+      const brandNode = categoryNode.children.get(brand);
+      const productVolume = product.volume || product.salesVolume || 1000;
+      
+      brandNode.children.push({
+        id: product.id || product._id,
+        name: product.name,
+        level: 3,
+        volume: productVolume
+      });
+      
+      brandNode.volume += productVolume;
+      categoryNode.volume += productVolume;
+    });
+
+    // Convert Maps to arrays
+    const hierarchy = Array.from(categoryMap.values()).map(category => ({
+      ...category,
+      children: Array.from(category.children.values())
+    }));
+
+    return c.json({
+      success: true,
+      hierarchy: hierarchy.length > 0 ? hierarchy : [
+        {
+          id: 'all-products',
+          name: 'All Products',
+          level: 1,
+          volume: products.reduce((sum, p) => sum + (p.volume || p.salesVolume || 1000), 0),
+          children: products.map(product => ({
+            id: product.id || product._id,
+            name: product.name,
+            level: 2,
+            volume: product.volume || product.salesVolume || 1000
+          }))
+        }
+      ]
+    });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to get product hierarchy', error: error.message }, 500);
+  }
+});
+
 // Get all products
 productRoutes.get('/', async (c) => {
   try {

@@ -6,6 +6,89 @@ export const customerRoutes = new Hono();
 
 customerRoutes.use('*', authMiddleware);
 
+// Get customer hierarchy for selection components
+customerRoutes.get('/hierarchy', async (c) => {
+  try {
+    const tenantId = c.get('tenantId');
+    const mongodb = getMongoClient(c);
+
+    // Get all customers for this tenant
+    const customers = await mongodb.find('customers', { companyId: tenantId }, {
+      sort: { name: 1 }
+    });
+
+    // Build hierarchy from customer data
+    // Group by channel -> subChannel -> customer
+    const channelMap = new Map();
+    
+    customers.forEach(customer => {
+      const channel = customer.channel || customer.customer_channel || 'Other';
+      const subChannel = customer.subChannel || customer.customer_sub_channel || 'General';
+      
+      if (!channelMap.has(channel)) {
+        channelMap.set(channel, {
+          id: `channel-${channel.toLowerCase().replace(/\s+/g, '-')}`,
+          name: channel,
+          level: 1,
+          revenue: 0,
+          children: new Map()
+        });
+      }
+      
+      const channelNode = channelMap.get(channel);
+      
+      if (!channelNode.children.has(subChannel)) {
+        channelNode.children.set(subChannel, {
+          id: `subchannel-${channel.toLowerCase().replace(/\s+/g, '-')}-${subChannel.toLowerCase().replace(/\s+/g, '-')}`,
+          name: subChannel,
+          level: 2,
+          revenue: 0,
+          children: []
+        });
+      }
+      
+      const subChannelNode = channelNode.children.get(subChannel);
+      const customerRevenue = customer.revenue || customer.annualRevenue || 100000;
+      
+      subChannelNode.children.push({
+        id: customer.id || customer._id,
+        name: customer.name,
+        level: 3,
+        revenue: customerRevenue
+      });
+      
+      subChannelNode.revenue += customerRevenue;
+      channelNode.revenue += customerRevenue;
+    });
+
+    // Convert Maps to arrays
+    const hierarchy = Array.from(channelMap.values()).map(channel => ({
+      ...channel,
+      children: Array.from(channel.children.values())
+    }));
+
+    return c.json({
+      success: true,
+      hierarchy: hierarchy.length > 0 ? hierarchy : [
+        {
+          id: 'all-customers',
+          name: 'All Customers',
+          level: 1,
+          revenue: customers.reduce((sum, c) => sum + (c.revenue || c.annualRevenue || 100000), 0),
+          children: customers.map(customer => ({
+            id: customer.id || customer._id,
+            name: customer.name,
+            level: 2,
+            revenue: customer.revenue || customer.annualRevenue || 100000
+          }))
+        }
+      ]
+    });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to get customer hierarchy', error: error.message }, 500);
+  }
+});
+
 // Get all customers
 customerRoutes.get('/', async (c) => {
   try {
