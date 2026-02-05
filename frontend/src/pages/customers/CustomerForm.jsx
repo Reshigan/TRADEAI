@@ -12,13 +12,25 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  Grid
+  Grid,
+  Divider
 } from '@mui/material';
 import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+
+// Static hierarchy options for consistency across the app
+const customerHierarchyOptions = {
+  channels: ['Modern Trade', 'Traditional Trade', 'E-Commerce', 'Wholesale', 'Foodservice', 'Convenience'],
+  subChannels: ['Hypermarket', 'Supermarket', 'Mini Market', 'Spaza Shop', 'Online Marketplace', 'Quick Service Restaurant'],
+  segmentations: ['Premium', 'Value', 'Budget', 'Mainstream', 'Niche'],
+  hierarchy1: ['National', 'Regional', 'Local'],
+  hierarchy2: ['Key Account', 'Mid-Tier', 'Small Account'],
+  hierarchy3: ['Strategic', 'Growth', 'Maintain', 'Decline'],
+  headOffices: ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth', 'Bloemfontein']
+};
 
 const CustomerForm = () => {
   const { id } = useParams();
@@ -32,7 +44,15 @@ const CustomerForm = () => {
     company: '',
     tier: 'bronze',
     status: 'active',
-    address: ''
+    address: '',
+    // Hierarchy fields
+    channel: '',
+    subChannel: '',
+    segmentation: '',
+    hierarchy1: '',
+    hierarchy2: '',
+    hierarchy3: '',
+    headOffice: ''
   });
 
   const [loading, setLoading] = useState(isEditMode);
@@ -58,7 +78,15 @@ const CustomerForm = () => {
         company: customer.company || '',
         tier: customer.tier || 'bronze',
         status: customer.status || 'active',
-        address: customer.address || ''
+        address: customer.address || '',
+        // Hierarchy fields
+        channel: customer.channel || '',
+        subChannel: customer.subChannel || customer.sub_channel || '',
+        segmentation: customer.segmentation || '',
+        hierarchy1: customer.hierarchy1 || customer.hierarchy_1 || '',
+        hierarchy2: customer.hierarchy2 || customer.hierarchy_2 || '',
+        hierarchy3: customer.hierarchy3 || customer.hierarchy_3 || '',
+        headOffice: customer.headOffice || customer.head_office || ''
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load customer');
@@ -82,7 +110,24 @@ const CustomerForm = () => {
       setSaving(true);
       const token = localStorage.getItem('token');
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/customers${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, formData, {
+      
+      // Transform hierarchy fields to snake_case for backend
+      const payload = {
+        ...formData,
+        sub_channel: formData.subChannel,
+        hierarchy_1: formData.hierarchy1,
+        hierarchy_2: formData.hierarchy2,
+        hierarchy_3: formData.hierarchy3,
+        head_office: formData.headOffice
+      };
+      // Remove camelCase versions
+      delete payload.subChannel;
+      delete payload.hierarchy1;
+      delete payload.hierarchy2;
+      delete payload.hierarchy3;
+      delete payload.headOffice;
+      
+      await axios[isEditMode ? 'put' : 'post'](url, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/customers');
@@ -223,6 +268,128 @@ const CustomerForm = () => {
               onChange={handleChange}
               placeholder="Enter address..."
             />
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Customer Hierarchy
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Channel</InputLabel>
+                  <Select
+                    name="channel"
+                    value={formData.channel}
+                    onChange={handleChange}
+                    label="Channel"
+                  >
+                    <MenuItem value="">Select Channel</MenuItem>
+                    {customerHierarchyOptions.channels.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Sub Channel</InputLabel>
+                  <Select
+                    name="subChannel"
+                    value={formData.subChannel}
+                    onChange={handleChange}
+                    label="Sub Channel"
+                  >
+                    <MenuItem value="">Select Sub Channel</MenuItem>
+                    {customerHierarchyOptions.subChannels.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Segmentation</InputLabel>
+                  <Select
+                    name="segmentation"
+                    value={formData.segmentation}
+                    onChange={handleChange}
+                    label="Segmentation"
+                  >
+                    <MenuItem value="">Select Segmentation</MenuItem>
+                    {customerHierarchyOptions.segmentations.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Hierarchy 1</InputLabel>
+                  <Select
+                    name="hierarchy1"
+                    value={formData.hierarchy1}
+                    onChange={handleChange}
+                    label="Hierarchy 1"
+                  >
+                    <MenuItem value="">Select Hierarchy 1</MenuItem>
+                    {customerHierarchyOptions.hierarchy1.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Hierarchy 2</InputLabel>
+                  <Select
+                    name="hierarchy2"
+                    value={formData.hierarchy2}
+                    onChange={handleChange}
+                    label="Hierarchy 2"
+                  >
+                    <MenuItem value="">Select Hierarchy 2</MenuItem>
+                    {customerHierarchyOptions.hierarchy2.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Hierarchy 3</InputLabel>
+                  <Select
+                    name="hierarchy3"
+                    value={formData.hierarchy3}
+                    onChange={handleChange}
+                    label="Hierarchy 3"
+                  >
+                    <MenuItem value="">Select Hierarchy 3</MenuItem>
+                    {customerHierarchyOptions.hierarchy3.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Head Office</InputLabel>
+                  <Select
+                    name="headOffice"
+                    value={formData.headOffice}
+                    onChange={handleChange}
+                    label="Head Office"
+                  >
+                    <MenuItem value="">Select Head Office</MenuItem>
+                    {customerHierarchyOptions.headOffices.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>

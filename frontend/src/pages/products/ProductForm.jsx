@@ -12,13 +12,22 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  Grid
+  Grid,
+  Divider
 } from '@mui/material';
 import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+
+// Static hierarchy options for consistency across the app
+const productHierarchyOptions = {
+  vendors: ['Unilever', 'Nestle', 'P&G', 'Coca-Cola', 'PepsiCo', 'Kraft Heinz', 'General Mills'],
+  categories: ['Beverages', 'Snacks', 'Personal Care', 'Home Care', 'Food', 'Dairy', 'Confectionery'],
+  brands: ['Coca-Cola', 'Pepsi', 'Lays', 'Doritos', 'Dove', 'Axe', 'Omo', 'Sunlight', 'Maggi', 'KitKat'],
+  subBrands: ['Original', 'Zero Sugar', 'Diet', 'Light', 'Premium', 'Classic', 'Extra', 'Max']
+};
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -33,7 +42,11 @@ const ProductForm = () => {
     cost: '',
     stock: '',
     status: 'active',
-    description: ''
+    description: '',
+    // Hierarchy fields
+    vendor: '',
+    brand: '',
+    subBrand: ''
   });
 
   const [loading, setLoading] = useState(isEditMode);
@@ -60,7 +73,11 @@ const ProductForm = () => {
         cost: product.cost || '',
         stock: product.stock || '',
         status: product.status || 'active',
-        description: product.description || ''
+        description: product.description || '',
+        // Hierarchy fields
+        vendor: product.vendor || '',
+        brand: product.brand || '',
+        subBrand: product.subBrand || product.sub_brand || ''
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load product');
@@ -83,12 +100,17 @@ const ProductForm = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
+      // Transform hierarchy fields to snake_case for backend
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
         cost: formData.cost ? parseFloat(formData.cost) : 0,
-        stock: formData.stock ? parseInt(formData.stock) : 0
+        stock: formData.stock ? parseInt(formData.stock) : 0,
+        sub_brand: formData.subBrand
       };
+      // Remove camelCase version
+      delete payload.subBrand;
+      
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/products${isEditMode ? `/${id}` : ''}`;
       await axios[isEditMode ? 'put' : 'post'](url, payload, {
         headers: { Authorization: `Bearer ${token}` }
@@ -257,6 +279,64 @@ const ProductForm = () => {
               onChange={handleChange}
               placeholder="Enter product description..."
             />
+          </Box>
+
+          <Divider sx={{ my: 3 }} />
+
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Product Hierarchy
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Vendor</InputLabel>
+                  <Select
+                    name="vendor"
+                    value={formData.vendor}
+                    onChange={handleChange}
+                    label="Vendor"
+                  >
+                    <MenuItem value="">Select Vendor</MenuItem>
+                    {productHierarchyOptions.vendors.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Brand</InputLabel>
+                  <Select
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleChange}
+                    label="Brand"
+                  >
+                    <MenuItem value="">Select Brand</MenuItem>
+                    {productHierarchyOptions.brands.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Sub Brand</InputLabel>
+                  <Select
+                    name="subBrand"
+                    value={formData.subBrand}
+                    onChange={handleChange}
+                    label="Sub Brand"
+                  >
+                    <MenuItem value="">Select Sub Brand</MenuItem>
+                    {productHierarchyOptions.subBrands.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>

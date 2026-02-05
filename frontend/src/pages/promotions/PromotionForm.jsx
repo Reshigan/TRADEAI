@@ -14,6 +14,24 @@ import {
 import axios from 'axios';
 import './PromotionForm.css';
 
+// Static hierarchy options for consistency across the app
+const productHierarchyOptions = {
+  vendors: ['Unilever', 'Nestle', 'P&G', 'Coca-Cola', 'PepsiCo', 'Kraft Heinz', 'General Mills'],
+  categories: ['Beverages', 'Snacks', 'Personal Care', 'Home Care', 'Food', 'Dairy', 'Confectionery'],
+  brands: ['Coca-Cola', 'Pepsi', 'Lays', 'Doritos', 'Dove', 'Axe', 'Omo', 'Sunlight', 'Maggi', 'KitKat'],
+  subBrands: ['Original', 'Zero Sugar', 'Diet', 'Light', 'Premium', 'Classic', 'Extra', 'Max']
+};
+
+const customerHierarchyOptions = {
+  channels: ['Modern Trade', 'Traditional Trade', 'E-Commerce', 'Wholesale', 'Foodservice', 'Convenience'],
+  subChannels: ['Hypermarket', 'Supermarket', 'Mini Market', 'Spaza Shop', 'Online Marketplace', 'Quick Service Restaurant'],
+  segmentations: ['Premium', 'Value', 'Budget', 'Mainstream', 'Niche'],
+  hierarchy1: ['National', 'Regional', 'Local'],
+  hierarchy2: ['Key Account', 'Mid-Tier', 'Small Account'],
+  hierarchy3: ['Strategic', 'Growth', 'Maintain', 'Decline'],
+  headOffices: ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth', 'Bloemfontein']
+};
+
 const PromotionForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -28,17 +46,26 @@ const PromotionForm = () => {
     endDate: '',
     budget: '',
     description: '',
+    dealType: 'off_invoice',
+    claimType: 'vendor_invoice',
     products: [],
     customers: [],
     productHierarchy: {
-      level1: '',
-      level2: '',
-      level3: ''
+      vendor: '',
+      category: '',
+      brand: '',
+      subBrand: '',
+      productId: ''
     },
     customerHierarchy: {
-      level1: '',
-      level2: '',
-      level3: ''
+      channel: '',
+      subChannel: '',
+      segmentation: '',
+      hierarchy1: '',
+      hierarchy2: '',
+      hierarchy3: '',
+      headOffice: '',
+      customerId: ''
     }
   });
 
@@ -47,8 +74,6 @@ const PromotionForm = () => {
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
-  const [productHierarchies, setProductHierarchies] = useState({ level1: [], level2: [], level3: [] });
-  const [customerHierarchies, setCustomerHierarchies] = useState({ level1: [], level2: [], level3: [] });
 
   useEffect(() => {
     fetchProducts();
@@ -66,21 +91,6 @@ const PromotionForm = () => {
       });
       const productsData = response.data.data || response.data;
       setProducts(productsData);
-      
-      // Extract unique hierarchies
-      const hierarchies = { level1: [], level2: [], level3: [] };
-      productsData.forEach(product => {
-        if (product.hierarchy?.level1?.name && !hierarchies.level1.find(h => h === product.hierarchy.level1.name)) {
-          hierarchies.level1.push(product.hierarchy.level1.name);
-        }
-        if (product.hierarchy?.level2?.name && !hierarchies.level2.find(h => h === product.hierarchy.level2.name)) {
-          hierarchies.level2.push(product.hierarchy.level2.name);
-        }
-        if (product.hierarchy?.level3?.name && !hierarchies.level3.find(h => h === product.hierarchy.level3.name)) {
-          hierarchies.level3.push(product.hierarchy.level3.name);
-        }
-      });
-      setProductHierarchies(hierarchies);
     } catch (err) {
       console.error('Failed to fetch products:', err);
     }
@@ -94,21 +104,6 @@ const PromotionForm = () => {
       });
       const customersData = response.data.data || response.data;
       setCustomers(customersData);
-      
-      // Extract unique hierarchies
-      const hierarchies = { level1: [], level2: [], level3: [] };
-      customersData.forEach(customer => {
-        if (customer.hierarchy?.level1?.name && !hierarchies.level1.find(h => h === customer.hierarchy.level1.name)) {
-          hierarchies.level1.push(customer.hierarchy.level1.name);
-        }
-        if (customer.hierarchy?.level2?.name && !hierarchies.level2.find(h => h === customer.hierarchy.level2.name)) {
-          hierarchies.level2.push(customer.hierarchy.level2.name);
-        }
-        if (customer.hierarchy?.level3?.name && !hierarchies.level3.find(h => h === customer.hierarchy.level3.name)) {
-          hierarchies.level3.push(customer.hierarchy.level3.name);
-        }
-      });
-      setCustomerHierarchies(hierarchies);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
     }
@@ -352,51 +347,109 @@ const PromotionForm = () => {
                 placeholder="0.00"
               />
             </div>
+            
+            <div className="form-group">
+              <label htmlFor="dealType">Deal Type</label>
+              <select
+                id="dealType"
+                name="dealType"
+                value={formData.dealType}
+                onChange={handleChange}
+              >
+                <option value="off_invoice">Off Invoice</option>
+                <option value="on_invoice">On Invoice</option>
+                <option value="rebate">Rebate</option>
+                <option value="allowance">Allowance</option>
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="claimType">Claim Type</label>
+              <select
+                id="claimType"
+                name="claimType"
+                value={formData.claimType}
+                onChange={handleChange}
+              >
+                <option value="vendor_invoice">Vendor Invoice</option>
+                <option value="credit_note">Credit Note</option>
+                <option value="deduction">Deduction</option>
+                <option value="check">Check</option>
+              </select>
+            </div>
           </div>
         </div>
 
         <div className="form-section">
           <h2>Product Hierarchy Selection</h2>
-          <p className="section-description">Select product categories to target with this promotion</p>
+          <p className="section-description">Vendor - Category - Brand - Sub Brand - Product</p>
           <div className="form-grid">
             <div className="form-group">
-              <label htmlFor="productLevel1">Product Category (Level 1)</label>
+              <label htmlFor="productVendor">Vendor</label>
               <select
-                id="productLevel1"
-                value={formData.productHierarchy.level1}
-                onChange={(e) => handleHierarchyChange('product', 'level1', e.target.value)}
+                id="productVendor"
+                value={formData.productHierarchy.vendor}
+                onChange={(e) => handleHierarchyChange('product', 'vendor', e.target.value)}
               >
-                <option value="">All Categories</option>
-                {productHierarchies.level1.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">All Vendors</option>
+                {productHierarchyOptions.vendors.map(v => (
+                  <option key={v} value={v}>{v}</option>
                 ))}
               </select>
             </div>
             
             <div className="form-group">
-              <label htmlFor="productLevel2">Product Sub-Category (Level 2)</label>
+              <label htmlFor="productCategory">Category</label>
               <select
-                id="productLevel2"
-                value={formData.productHierarchy.level2}
-                onChange={(e) => handleHierarchyChange('product', 'level2', e.target.value)}
+                id="productCategory"
+                value={formData.productHierarchy.category}
+                onChange={(e) => handleHierarchyChange('product', 'category', e.target.value)}
               >
-                <option value="">All Sub-Categories</option>
-                {productHierarchies.level2.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">All Categories</option>
+                {productHierarchyOptions.categories.map(c => (
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="productLevel3">Product Type (Level 3)</label>
+              <label htmlFor="productBrand">Brand</label>
               <select
-                id="productLevel3"
-                value={formData.productHierarchy.level3}
-                onChange={(e) => handleHierarchyChange('product', 'level3', e.target.value)}
+                id="productBrand"
+                value={formData.productHierarchy.brand}
+                onChange={(e) => handleHierarchyChange('product', 'brand', e.target.value)}
               >
-                <option value="">All Types</option>
-                {productHierarchies.level3.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">All Brands</option>
+                {productHierarchyOptions.brands.map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="productSubBrand">Sub Brand</label>
+              <select
+                id="productSubBrand"
+                value={formData.productHierarchy.subBrand}
+                onChange={(e) => handleHierarchyChange('product', 'subBrand', e.target.value)}
+              >
+                <option value="">All Sub Brands</option>
+                {productHierarchyOptions.subBrands.map(sb => (
+                  <option key={sb} value={sb}>{sb}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="productId">Specific Product</label>
+              <select
+                id="productId"
+                value={formData.productHierarchy.productId}
+                onChange={(e) => handleHierarchyChange('product', 'productId', e.target.value)}
+              >
+                <option value="">All Products</option>
+                {products.map(p => (
+                  <option key={p.id || p._id} value={p.id || p._id}>{p.name}</option>
                 ))}
               </select>
             </div>
@@ -405,46 +458,116 @@ const PromotionForm = () => {
 
         <div className="form-section">
           <h2>Customer Hierarchy Selection</h2>
-          <p className="section-description">Select customer segments to target with this promotion</p>
+          <p className="section-description">Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office - Customer</p>
           <div className="form-grid">
             <div className="form-group">
-              <label htmlFor="customerLevel1">Customer Group (Level 1)</label>
+              <label htmlFor="customerChannel">Channel</label>
               <select
-                id="customerLevel1"
-                value={formData.customerHierarchy.level1}
-                onChange={(e) => handleHierarchyChange('customer', 'level1', e.target.value)}
+                id="customerChannel"
+                value={formData.customerHierarchy.channel}
+                onChange={(e) => handleHierarchyChange('customer', 'channel', e.target.value)}
               >
-                <option value="">All Customer Groups</option>
-                {customerHierarchies.level1.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">All Channels</option>
+                {customerHierarchyOptions.channels.map(c => (
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
             
             <div className="form-group">
-              <label htmlFor="customerLevel2">Customer Segment (Level 2)</label>
+              <label htmlFor="customerSubChannel">Sub Channel</label>
               <select
-                id="customerLevel2"
-                value={formData.customerHierarchy.level2}
-                onChange={(e) => handleHierarchyChange('customer', 'level2', e.target.value)}
+                id="customerSubChannel"
+                value={formData.customerHierarchy.subChannel}
+                onChange={(e) => handleHierarchyChange('customer', 'subChannel', e.target.value)}
               >
-                <option value="">All Segments</option>
-                {customerHierarchies.level2.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">All Sub Channels</option>
+                {customerHierarchyOptions.subChannels.map(sc => (
+                  <option key={sc} value={sc}>{sc}</option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="customerLevel3">Customer Type (Level 3)</label>
+              <label htmlFor="customerSegmentation">Segmentation</label>
               <select
-                id="customerLevel3"
-                value={formData.customerHierarchy.level3}
-                onChange={(e) => handleHierarchyChange('customer', 'level3', e.target.value)}
+                id="customerSegmentation"
+                value={formData.customerHierarchy.segmentation}
+                onChange={(e) => handleHierarchyChange('customer', 'segmentation', e.target.value)}
               >
-                <option value="">All Types</option>
-                {customerHierarchies.level3.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                <option value="">All Segments</option>
+                {customerHierarchyOptions.segmentations.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="customerH1">Hierarchy 1</label>
+              <select
+                id="customerH1"
+                value={formData.customerHierarchy.hierarchy1}
+                onChange={(e) => handleHierarchyChange('customer', 'hierarchy1', e.target.value)}
+              >
+                <option value="">All</option>
+                {customerHierarchyOptions.hierarchy1.map(h => (
+                  <option key={h} value={h}>{h}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="customerH2">Hierarchy 2</label>
+              <select
+                id="customerH2"
+                value={formData.customerHierarchy.hierarchy2}
+                onChange={(e) => handleHierarchyChange('customer', 'hierarchy2', e.target.value)}
+              >
+                <option value="">All</option>
+                {customerHierarchyOptions.hierarchy2.map(h => (
+                  <option key={h} value={h}>{h}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="customerH3">Hierarchy 3</label>
+              <select
+                id="customerH3"
+                value={formData.customerHierarchy.hierarchy3}
+                onChange={(e) => handleHierarchyChange('customer', 'hierarchy3', e.target.value)}
+              >
+                <option value="">All</option>
+                {customerHierarchyOptions.hierarchy3.map(h => (
+                  <option key={h} value={h}>{h}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="customerHeadOffice">Head Office</label>
+              <select
+                id="customerHeadOffice"
+                value={formData.customerHierarchy.headOffice}
+                onChange={(e) => handleHierarchyChange('customer', 'headOffice', e.target.value)}
+              >
+                <option value="">All Head Offices</option>
+                {customerHierarchyOptions.headOffices.map(ho => (
+                  <option key={ho} value={ho}>{ho}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="customerId">Specific Customer</label>
+              <select
+                id="customerId"
+                value={formData.customerHierarchy.customerId}
+                onChange={(e) => handleHierarchyChange('customer', 'customerId', e.target.value)}
+              >
+                <option value="">All Customers</option>
+                {customers.map(c => (
+                  <option key={c.id || c._id} value={c.id || c._id}>{c.name}</option>
                 ))}
               </select>
             </div>

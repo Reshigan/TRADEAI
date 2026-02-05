@@ -10,10 +10,13 @@ import {
   InputLabel,
   Select,
   Typography,
-  Divider
+  Divider,
+  Tabs,
+  Tab,
+  Chip
 } from '@mui/material';
 import { FormDialog } from '../common';
-import { customerService } from '../../services/api';
+import { customerService, productService } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
 
 // Get currency symbol from user's company settings
@@ -36,33 +39,87 @@ const getCurrencySymbol = () => {
   return 'R'; // Fallback to ZAR
 };
 
+// Hierarchy options
+const productHierarchyOptions = {
+  vendors: ['Unilever', 'Nestle', 'P&G', 'Coca-Cola', 'PepsiCo', 'Kraft Heinz', 'General Mills'],
+  categories: ['Beverages', 'Snacks', 'Personal Care', 'Home Care', 'Food', 'Dairy', 'Confectionery'],
+  brands: ['Coca-Cola', 'Pepsi', 'Lays', 'Doritos', 'Dove', 'Axe', 'Omo', 'Sunlight', 'Maggi', 'KitKat'],
+  subBrands: ['Original', 'Zero Sugar', 'Diet', 'Light', 'Premium', 'Classic', 'Extra', 'Max']
+};
+
+const customerHierarchyOptions = {
+  channels: ['Modern Trade', 'Traditional Trade', 'E-Commerce', 'Wholesale', 'Foodservice', 'Convenience'],
+  subChannels: ['Hypermarket', 'Supermarket', 'Mini Market', 'Spaza Shop', 'Online Marketplace', 'Quick Service Restaurant'],
+  segmentations: ['Premium', 'Value', 'Budget', 'Mainstream', 'Niche'],
+  hierarchy1: ['National', 'Regional', 'Local'],
+  hierarchy2: ['Key Account', 'Mid-Tier', 'Small Account'],
+  hierarchy3: ['Strategic', 'Growth', 'Maintain', 'Decline'],
+  headOffices: ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth', 'Bloemfontein']
+};
+
 const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
   const [formData, setFormData] = useState({
     year: new Date().getFullYear() + 1,
-    customer_id: '',
     total_amount: '',
     budgetCategory: 'marketing',
     status: 'draft',
-    notes: ''
+    notes: '',
+    scopeType: 'customer',
+    dealType: 'off_invoice',
+    claimType: 'vendor_invoice',
+    // Product hierarchy
+    productVendor: '',
+    productCategory: '',
+    productBrand: '',
+    productSubBrand: '',
+    productId: '',
+    // Customer hierarchy
+    customerChannel: '',
+    customerSubChannel: '',
+    customerSegmentation: '',
+    customerHierarchy1: '',
+    customerHierarchy2: '',
+    customerHierarchy3: '',
+    customerHeadOffice: '',
+    customerId: ''
   });
   const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [scopeTab, setScopeTab] = useState(1);
 
-  // Fetch customers on component mount
+  // Fetch customers and products on component mount
   useEffect(() => {
     fetchCustomers();
+    fetchProducts();
     
     // If editing an existing budget, populate the form
     if (budget) {
       setFormData({
         year: budget.year,
-        customer_id: budget.customer.id,
-        total_amount: budget.total_amount,
-        budgetCategory: budget.budgetCategory || 'marketing',
+        total_amount: budget.amount || budget.total_amount,
+        budgetCategory: budget.budgetCategory || budget.budget_category || 'marketing',
         status: budget.status,
-        notes: budget.notes || ''
+        notes: budget.notes || '',
+        scopeType: budget.scopeType || budget.scope_type || 'customer',
+        dealType: budget.dealType || budget.deal_type || 'off_invoice',
+        claimType: budget.claimType || budget.claim_type || 'vendor_invoice',
+        productVendor: budget.productVendor || budget.product_vendor || '',
+        productCategory: budget.productCategory || budget.product_category || '',
+        productBrand: budget.productBrand || budget.product_brand || '',
+        productSubBrand: budget.productSubBrand || budget.product_sub_brand || '',
+        productId: budget.productId || budget.product_id || '',
+        customerChannel: budget.customerChannel || budget.customer_channel || '',
+        customerSubChannel: budget.customerSubChannel || budget.customer_sub_channel || '',
+        customerSegmentation: budget.customerSegmentation || budget.customer_segmentation || '',
+        customerHierarchy1: budget.customerHierarchy1 || budget.customer_hierarchy_1 || '',
+        customerHierarchy2: budget.customerHierarchy2 || budget.customer_hierarchy_2 || '',
+        customerHierarchy3: budget.customerHierarchy3 || budget.customer_hierarchy_3 || '',
+        customerHeadOffice: budget.customerHeadOffice || budget.customer_head_office || '',
+        customerId: budget.customerId || budget.customer_id || ''
       });
+      setScopeTab(budget.scopeType === 'product' || budget.scope_type === 'product' ? 0 : 1);
     }
   }, [budget]);
 
@@ -71,11 +128,18 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     try {
       const response = await customerService.getAll();
       setCustomers(response.data || response);
-      setLoading(false);
     } catch (error) {
       console.error('Error loading customers:', error);
-      setErrors({ general: error.message || 'Failed to load customers' });
-      setLoading(false);
+    }
+  };
+
+  // Fetch products from API
+  const fetchProducts = async () => {
+    try {
+      const response = await productService.getAll();
+      setProducts(response.data || response);
+    } catch (error) {
+      console.error('Error loading products:', error);
     }
   };
 
@@ -95,31 +159,43 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
         throw new Error('Company ID not found. Please log in again.');
       }
       
-      // Find selected customer name
-      const selectedCustomer = customers.find(c => c.id === formData.customer_id);
-      const customerName = selectedCustomer ? selectedCustomer.name : 'Unknown';
-      
-      // Generate a safe code from customer_id
-      const customerId = formData.customer_id || '';
-      const customerCode = customerId.length >= 8 ? customerId.substring(0, 8).toUpperCase() : customerId.toUpperCase().padEnd(8, '0');
+      // Build budget name based on scope
+      let budgetName = `${formData.year} ${formData.budgetCategory === 'marketing' ? 'Marketing' : 'Trade Spend'} Budget`;
+      if (formData.scopeType === 'product' && formData.productVendor) {
+        budgetName = `${formData.productVendor} - ${budgetName}`;
+      } else if (formData.scopeType === 'customer' && formData.customerChannel) {
+        budgetName = `${formData.customerChannel} - ${budgetName}`;
+      }
       
       // Transform form data to match backend Budget model
       const transformedData = {
-        company: companyId,
-        name: `${customerName} ${formData.year} Budget`,
-        code: `BUD-${formData.year}-${customerCode}`,
+        company_id: companyId,
+        name: budgetName,
         year: parseInt(formData.year),
-        budgetType: 'budget',
-        budgetCategory: formData.budgetCategory || 'marketing',
-        scope: {
-          level: 'customer',
-          customers: [formData.customer_id]
-        },
+        amount: parseFloat(formData.total_amount) || 0,
+        utilized: 0,
         status: formData.status,
-        allocated: parseFloat(formData.total_amount) || 0,
-        remaining: parseFloat(formData.total_amount) || 0,
-        spent: 0,
-        notes: formData.notes
+        budget_type: formData.budgetCategory,
+        budget_category: formData.budgetCategory,
+        scope_type: formData.scopeType,
+        deal_type: formData.dealType,
+        claim_type: formData.claimType,
+        // Product hierarchy
+        product_vendor: formData.productVendor || null,
+        product_category: formData.productCategory || null,
+        product_brand: formData.productBrand || null,
+        product_sub_brand: formData.productSubBrand || null,
+        product_id: formData.productId || null,
+        // Customer hierarchy
+        customer_channel: formData.customerChannel || null,
+        customer_sub_channel: formData.customerSubChannel || null,
+        customer_segmentation: formData.customerSegmentation || null,
+        customer_hierarchy_1: formData.customerHierarchy1 || null,
+        customer_hierarchy_2: formData.customerHierarchy2 || null,
+        customer_hierarchy_3: formData.customerHierarchy3 || null,
+        customer_head_office: formData.customerHeadOffice || null,
+        customer_id: formData.customerId || null,
+        data: JSON.stringify({ notes: formData.notes })
       };
       
       console.log('Transformed budget data:', transformedData);
@@ -140,6 +216,14 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     }));
   };
 
+  const handleScopeTabChange = (event, newValue) => {
+    setScopeTab(newValue);
+    setFormData(prev => ({
+      ...prev,
+      scopeType: newValue === 0 ? 'product' : 'customer'
+    }));
+  };
+
   return (
     <FormDialog
       open={open}
@@ -148,8 +232,13 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
       title={budget ? 'Edit Budget' : 'Create Budget'}
       submitText={budget ? 'Update' : 'Create'}
       loading={loading}
+      maxWidth="md"
     >
       <Box sx={{ p: 1 }}>
+        {/* Basic Information */}
+        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+          Basic Information
+        </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -167,28 +256,6 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
           </Grid>
           
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth error={!!errors.customer_id} required>
-              <InputLabel id="customer-label">Customer</InputLabel>
-              <Select
-                labelId="customer-label"
-                name="customer_id"
-                value={formData.customer_id}
-                onChange={handleChange}
-                label="Customer"
-              >
-                {customers.map((customer) => (
-                  <MenuItem key={customer.id} value={customer.id}>
-                    {customer.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.customer_id && (
-                <FormHelperText>{errors.customer_id}</FormHelperText>
-              )}
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Total Amount"
@@ -205,7 +272,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
             />
           </Grid>
           
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth required>
               <InputLabel id="budget-category-label">Budget Category</InputLabel>
               <Select
@@ -216,12 +283,12 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
                 label="Budget Category"
               >
                 <MenuItem value="marketing">Marketing</MenuItem>
-                <MenuItem value="trade_marketing">Trade Marketing</MenuItem>
+                <MenuItem value="trade_spend">Trade Spend</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel id="status-label">Status</InputLabel>
               <Select
@@ -238,7 +305,333 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
               </Select>
             </FormControl>
           </Grid>
+        </Grid>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Deal Type and Claim Type */}
+        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+          Deal & Claim Configuration
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="deal-type-label">Deal Type</InputLabel>
+              <Select
+                labelId="deal-type-label"
+                name="dealType"
+                value={formData.dealType}
+                onChange={handleChange}
+                label="Deal Type"
+              >
+                <MenuItem value="off_invoice">Off Invoice</MenuItem>
+                <MenuItem value="on_invoice">On Invoice</MenuItem>
+                <MenuItem value="rebate">Rebate</MenuItem>
+                <MenuItem value="allowance">Allowance</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
           
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel id="claim-type-label">Claim Type</InputLabel>
+              <Select
+                labelId="claim-type-label"
+                name="claimType"
+                value={formData.claimType}
+                onChange={handleChange}
+                label="Claim Type"
+              >
+                <MenuItem value="vendor_invoice">Vendor Invoice</MenuItem>
+                <MenuItem value="credit_note">Credit Note</MenuItem>
+                <MenuItem value="deduction">Deduction</MenuItem>
+                <MenuItem value="check">Check</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Scope Selection - Product or Customer Hierarchy */}
+        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+          Budget Scope
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Select whether this budget applies to Product or Customer hierarchy
+        </Typography>
+        
+        <Tabs 
+          value={scopeTab} 
+          onChange={handleScopeTabChange}
+          sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab label="Product Hierarchy" />
+          <Tab label="Customer Hierarchy" />
+        </Tabs>
+
+        {/* Product Hierarchy Tab */}
+        {scopeTab === 0 && (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Chip label="Product Hierarchy" size="small" color="primary" sx={{ mr: 1 }} />
+                Vendor - Category - Brand - Sub Brand - Product
+              </Typography>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="product-vendor-label">Vendor</InputLabel>
+                <Select
+                  labelId="product-vendor-label"
+                  name="productVendor"
+                  value={formData.productVendor}
+                  onChange={handleChange}
+                  label="Vendor"
+                >
+                  <MenuItem value="">All Vendors</MenuItem>
+                  {productHierarchyOptions.vendors.map(v => (
+                    <MenuItem key={v} value={v}>{v}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="product-category-label">Category</InputLabel>
+                <Select
+                  labelId="product-category-label"
+                  name="productCategory"
+                  value={formData.productCategory}
+                  onChange={handleChange}
+                  label="Category"
+                >
+                  <MenuItem value="">All Categories</MenuItem>
+                  {productHierarchyOptions.categories.map(c => (
+                    <MenuItem key={c} value={c}>{c}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="product-brand-label">Brand</InputLabel>
+                <Select
+                  labelId="product-brand-label"
+                  name="productBrand"
+                  value={formData.productBrand}
+                  onChange={handleChange}
+                  label="Brand"
+                >
+                  <MenuItem value="">All Brands</MenuItem>
+                  {productHierarchyOptions.brands.map(b => (
+                    <MenuItem key={b} value={b}>{b}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="product-sub-brand-label">Sub Brand</InputLabel>
+                <Select
+                  labelId="product-sub-brand-label"
+                  name="productSubBrand"
+                  value={formData.productSubBrand}
+                  onChange={handleChange}
+                  label="Sub Brand"
+                >
+                  <MenuItem value="">All Sub Brands</MenuItem>
+                  {productHierarchyOptions.subBrands.map(sb => (
+                    <MenuItem key={sb} value={sb}>{sb}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="product-id-label">Specific Product</InputLabel>
+                <Select
+                  labelId="product-id-label"
+                  name="productId"
+                  value={formData.productId}
+                  onChange={handleChange}
+                  label="Specific Product"
+                >
+                  <MenuItem value="">All Products</MenuItem>
+                  {products.map(p => (
+                    <MenuItem key={p.id || p._id} value={p.id || p._id}>{p.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        )}
+
+        {/* Customer Hierarchy Tab */}
+        {scopeTab === 1 && (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Chip label="Customer Hierarchy" size="small" color="secondary" sx={{ mr: 1 }} />
+                Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office - Customer
+              </Typography>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-channel-label">Channel</InputLabel>
+                <Select
+                  labelId="customer-channel-label"
+                  name="customerChannel"
+                  value={formData.customerChannel}
+                  onChange={handleChange}
+                  label="Channel"
+                >
+                  <MenuItem value="">All Channels</MenuItem>
+                  {customerHierarchyOptions.channels.map(c => (
+                    <MenuItem key={c} value={c}>{c}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-sub-channel-label">Sub Channel</InputLabel>
+                <Select
+                  labelId="customer-sub-channel-label"
+                  name="customerSubChannel"
+                  value={formData.customerSubChannel}
+                  onChange={handleChange}
+                  label="Sub Channel"
+                >
+                  <MenuItem value="">All Sub Channels</MenuItem>
+                  {customerHierarchyOptions.subChannels.map(sc => (
+                    <MenuItem key={sc} value={sc}>{sc}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-segmentation-label">Segmentation</InputLabel>
+                <Select
+                  labelId="customer-segmentation-label"
+                  name="customerSegmentation"
+                  value={formData.customerSegmentation}
+                  onChange={handleChange}
+                  label="Segmentation"
+                >
+                  <MenuItem value="">All Segments</MenuItem>
+                  {customerHierarchyOptions.segmentations.map(s => (
+                    <MenuItem key={s} value={s}>{s}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-h1-label">Hierarchy 1</InputLabel>
+                <Select
+                  labelId="customer-h1-label"
+                  name="customerHierarchy1"
+                  value={formData.customerHierarchy1}
+                  onChange={handleChange}
+                  label="Hierarchy 1"
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {customerHierarchyOptions.hierarchy1.map(h => (
+                    <MenuItem key={h} value={h}>{h}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-h2-label">Hierarchy 2</InputLabel>
+                <Select
+                  labelId="customer-h2-label"
+                  name="customerHierarchy2"
+                  value={formData.customerHierarchy2}
+                  onChange={handleChange}
+                  label="Hierarchy 2"
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {customerHierarchyOptions.hierarchy2.map(h => (
+                    <MenuItem key={h} value={h}>{h}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-h3-label">Hierarchy 3</InputLabel>
+                <Select
+                  labelId="customer-h3-label"
+                  name="customerHierarchy3"
+                  value={formData.customerHierarchy3}
+                  onChange={handleChange}
+                  label="Hierarchy 3"
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {customerHierarchyOptions.hierarchy3.map(h => (
+                    <MenuItem key={h} value={h}>{h}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-head-office-label">Head Office</InputLabel>
+                <Select
+                  labelId="customer-head-office-label"
+                  name="customerHeadOffice"
+                  value={formData.customerHeadOffice}
+                  onChange={handleChange}
+                  label="Head Office"
+                >
+                  <MenuItem value="">All Head Offices</MenuItem>
+                  {customerHierarchyOptions.headOffices.map(ho => (
+                    <MenuItem key={ho} value={ho}>{ho}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="customer-id-label">Specific Customer</InputLabel>
+                <Select
+                  labelId="customer-id-label"
+                  name="customerId"
+                  value={formData.customerId}
+                  onChange={handleChange}
+                  label="Specific Customer"
+                >
+                  <MenuItem value="">All Customers</MenuItem>
+                  {customers.map(c => (
+                    <MenuItem key={c.id || c._id} value={c.id || c._id}>{c.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        )}
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Notes */}
+        <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -247,7 +640,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
               value={formData.notes}
               onChange={handleChange}
               multiline
-              rows={4}
+              rows={3}
             />
           </Grid>
         </Grid>
@@ -271,12 +664,12 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
-                  Allocated: {formatCurrency(budget.allocated_amount)}
+                  Allocated: {formatCurrency(budget.amount)}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
-                  Remaining: {formatCurrency(budget.remaining_amount)}
+                  Utilized: {formatCurrency(budget.utilized)}
                 </Typography>
               </Grid>
             </Grid>
