@@ -231,6 +231,7 @@ const BudgetPlanningWizard = () => {
       setLoading(true);
       
             const payload = {
+              name: `${budgetData.year} Annual Budget`,
               year: budgetData.year,
               totalAmount: parseFloat(budgetData.totalAmount),
               description: budgetData.description || `${budgetData.year} Annual Budget - AI Planned`,
