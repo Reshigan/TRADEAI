@@ -250,7 +250,15 @@ const BudgetConsole = () => {
         </Box>
       </Box>
 
-      {selectedBudget && (
+      {selectedBudget && (() => {
+        const totalBudget = selectedBudget.totalBudget || selectedBudget.totalAmount || selectedBudget.amount || 0;
+        const allocated = selectedBudget.allocated || totalBudget;
+        const spent = selectedBudget.spent || selectedBudget.spentAmount || selectedBudget.utilized || 0;
+        const performance = selectedBudget.performance || { avgROI: 0, topPerformers: [], underPerformers: [] };
+        const hierarchy = selectedBudget.hierarchy || [];
+        const avgROI = performance.avgROI || 0;
+        
+        return (
         <>
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={3}>
@@ -263,10 +271,10 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                    ${(selectedBudget.totalBudget / 1000).toFixed(0)}K
+                    ${totalBudget > 0 ? (totalBudget / 1000).toFixed(0) : '0'}K
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {selectedBudget.period}
+                    {selectedBudget.period || selectedBudget.year || 'N/A'}
                   </Typography>
                 </CardContent>
               </Card>
@@ -281,10 +289,10 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                    ${(selectedBudget.allocated / 1000).toFixed(0)}K
+                    ${allocated > 0 ? (allocated / 1000).toFixed(0) : '0'}K
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {((selectedBudget.allocated / selectedBudget.totalBudget) * 100).toFixed(0)}% of total
+                    {totalBudget > 0 ? ((allocated / totalBudget) * 100).toFixed(0) : 0}% of total
                   </Typography>
                 </CardContent>
               </Card>
@@ -299,10 +307,10 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.main' }}>
-                    ${(selectedBudget.spent / 1000).toFixed(0)}K
+                    ${spent > 0 ? (spent / 1000).toFixed(0) : '0'}K
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {((selectedBudget.spent / selectedBudget.allocated) * 100).toFixed(0)}% utilized
+                    {allocated > 0 ? ((spent / allocated) * 100).toFixed(0) : 0}% utilized
                   </Typography>
                 </CardContent>
               </Card>
@@ -317,10 +325,10 @@ const BudgetConsole = () => {
                     </Typography>
                   </Box>
                   <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                    {selectedBudget.performance.avgROI.toFixed(2)}x
+                    {avgROI.toFixed(2)}x
                   </Typography>
-                  <Typography variant="caption" color={selectedBudget.performance.avgROI >= 2.0 ? 'success.main' : 'warning.main'}>
-                    {selectedBudget.performance.avgROI >= 2.0 ? 'Above target' : 'Below target'}
+                  <Typography variant="caption" color={avgROI >= 2.0 ? 'success.main' : 'warning.main'}>
+                    {avgROI >= 2.0 ? 'Above target' : 'Below target'}
                   </Typography>
                 </CardContent>
               </Card>
@@ -364,7 +372,13 @@ const BudgetConsole = () => {
                     Hierarchical Budget Allocation
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-                  {selectedBudget.hierarchy.map(node => renderHierarchyBudget(node))}
+                  {hierarchy.length > 0 ? (
+                    hierarchy.map(node => renderHierarchyBudget(node))
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No hierarchy data available. Create budgets with hierarchy allocation to see details here.
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -419,35 +433,44 @@ const BudgetConsole = () => {
                     <Typography variant="subtitle2" gutterBottom>
                       Top Performers
                     </Typography>
-                    {selectedBudget.performance.topPerformers.map((perf, idx) => (
-                      <Box key={idx} sx={{ mb: 1 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <Typography variant="caption">{perf.name}</Typography>
-                          <Chip label={`${perf.roi.toFixed(2)}x`} size="small" color="success" />
+                    {(performance.topPerformers || []).length > 0 ? (
+                      performance.topPerformers.map((perf, idx) => (
+                        <Box key={idx} sx={{ mb: 1 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant="caption">{perf.name}</Typography>
+                            <Chip label={`${(perf.roi || 0).toFixed(2)}x`} size="small" color="success" />
+                          </Box>
                         </Box>
-                      </Box>
-                    ))}
+                      ))
+                    ) : (
+                      <Typography variant="caption" color="text.secondary">No data available</Typography>
+                    )}
                   </Box>
                   <Divider sx={{ my: 2 }} />
                   <Box>
                     <Typography variant="subtitle2" gutterBottom>
                       Under Performers
                     </Typography>
-                    {selectedBudget.performance.underPerformers.map((perf, idx) => (
-                      <Box key={idx} sx={{ mb: 1 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <Typography variant="caption">{perf.name}</Typography>
-                          <Chip label={`${perf.roi.toFixed(2)}x`} size="small" color="warning" />
+                    {(performance.underPerformers || []).length > 0 ? (
+                      performance.underPerformers.map((perf, idx) => (
+                        <Box key={idx} sx={{ mb: 1 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant="caption">{perf.name}</Typography>
+                            <Chip label={`${(perf.roi || 0).toFixed(2)}x`} size="small" color="warning" />
+                          </Box>
                         </Box>
-                      </Box>
-                    ))}
+                      ))
+                    ) : (
+                      <Typography variant="caption" color="text.secondary">No data available</Typography>
+                    )}
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
         </>
-      )}
+        );
+      })()}
     </Box>
   );
 };
