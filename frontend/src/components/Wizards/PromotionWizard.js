@@ -113,19 +113,57 @@ const PromotionWizard = () => {
 
   const fetchCustomerHierarchies = async () => {
     try {
-      const response = await apiClient.get(`/hierarchies/customer`);
-      setCustomerHierarchies(response.data);
+      const response = await apiClient.get(`/customers/hierarchy`);
+      // Transform hierarchy data to flat array with levels
+      const hierarchyData = response.data || [];
+      const flatHierarchies = [];
+      const processHierarchy = (items, level = 1) => {
+        if (!Array.isArray(items)) return;
+        items.forEach(item => {
+          flatHierarchies.push({
+            _id: item.id,
+            name: item.name,
+            level: level,
+            value: item.value
+          });
+          if (item.children && Array.isArray(item.children)) {
+            processHierarchy(item.children, level + 1);
+          }
+        });
+      };
+      processHierarchy(hierarchyData);
+      setCustomerHierarchies(flatHierarchies);
     } catch (error) {
       console.error('Error fetching customer hierarchies:', error);
+      setCustomerHierarchies([]);
     }
   };
 
   const fetchProductHierarchies = async () => {
     try {
-      const response = await apiClient.get(`/hierarchies/product`);
-      setProductHierarchies(response.data);
+      const response = await apiClient.get(`/products/hierarchy`);
+      // Transform hierarchy data to flat array with levels
+      const hierarchyData = response.data || [];
+      const flatHierarchies = [];
+      const processHierarchy = (items, level = 1) => {
+        if (!Array.isArray(items)) return;
+        items.forEach(item => {
+          flatHierarchies.push({
+            _id: item.id,
+            name: item.name,
+            level: level,
+            value: item.value
+          });
+          if (item.children && Array.isArray(item.children)) {
+            processHierarchy(item.children, level + 1);
+          }
+        });
+      };
+      processHierarchy(hierarchyData);
+      setProductHierarchies(flatHierarchies);
     } catch (error) {
       console.error('Error fetching product hierarchies:', error);
+      setProductHierarchies([]);
     }
   };
 

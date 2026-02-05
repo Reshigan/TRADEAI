@@ -13,7 +13,9 @@ import {
   Grid,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  Card,
+  CardContent
 } from '@mui/material';
 import {
   Inventory as InventoryIcon,
@@ -22,6 +24,7 @@ import {
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
+import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import axios from 'axios';
 import { preFlightCheck } from '../../utils/apiHealth';
 
@@ -69,6 +72,8 @@ const ProductEntryFlow = () => {
   const [errors, setErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   
   // Product categories
   const categories = ['Beverages', 'Snacks', 'Dairy', 'Bakery', 'Frozen', 'Fresh', 'Household', 'Personal Care'];
@@ -227,6 +232,8 @@ const ProductEntryFlow = () => {
         `${API_BASE_URL}/products`,
         {
           ...formData,
+          selectedCustomers,
+          selectedProducts,
           aiData: {
             demand: demandForecast,
             pricing: priceOptimization,
@@ -571,53 +578,45 @@ const ProductEntryFlow = () => {
                   </Grid>
                 </Grid>
 
-                {/* Product Hierarchy Section */}
-                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#2e7d32' }}>
-                    Product Hierarchy (Optional)
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Vendor - Category - Brand - Sub Brand
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Vendor"
-                        value={formData.vendor}
-                        onChange={handleChange('vendor')}
-                        placeholder="e.g., Unilever"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Product Category"
-                        value={formData.productCategory}
-                        onChange={handleChange('productCategory')}
-                        placeholder="e.g., Personal Care"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Brand"
-                        value={formData.brand}
-                        onChange={handleChange('brand')}
-                        placeholder="e.g., Dove"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        label="Sub Brand"
-                        value={formData.subBrand}
-                        onChange={handleChange('subBrand')}
-                        placeholder="e.g., Dove Men+Care"
-                      />
-                    </Grid>
+                {/* Hierarchy Selection */}
+                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#2e7d32' }}>
+                  Related Hierarchies (Optional)
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Select related customers and/or products for this product. Leave empty if not applicable.
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                          Customer Hierarchy
+                        </Typography>
+                        <HierarchySelector
+                          type="customer"
+                          selected={selectedCustomers}
+                          onSelectionChange={setSelectedCustomers}
+                          showAllocation={false}
+                        />
+                      </CardContent>
+                    </Card>
                   </Grid>
-                </Paper>
+                  <Grid item xs={12} md={6}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                          Product Hierarchy
+                        </Typography>
+                        <HierarchySelector
+                          type="product"
+                          selected={selectedProducts}
+                          onSelectionChange={setSelectedProducts}
+                          showAllocation={false}
+                        />
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
         
                 {/* ML Pricing Display */}
         {priceOptimization && !isCalculating && (
