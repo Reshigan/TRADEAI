@@ -11,8 +11,6 @@ import {
   Select,
   Typography,
   Divider,
-  Tabs,
-  Tab,
   Chip
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -77,9 +75,8 @@ const TradeSpendForm = ({
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [customers, setCustomers] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [scopeTab, setScopeTab] = useState(1);
+    const [customers, setCustomers] = useState([]);
+    const [products, setProducts] = useState([]);
 
   // Load customers and products on mount
   useEffect(() => {
@@ -127,7 +124,6 @@ const TradeSpendForm = ({
         customerHeadOffice: tradeSpend.customerHeadOffice || tradeSpend.customer_head_office || '',
         customerId: tradeSpend.customerId || tradeSpend.customer_id || ''
       });
-      setScopeTab(tradeSpend.scopeType === 'product' || tradeSpend.scope_type === 'product' ? 0 : 1);
     } else if (initialBudgetId) {
       setFormData(prev => ({
         ...prev,
@@ -135,15 +131,6 @@ const TradeSpendForm = ({
       }));
     }
   }, [tradeSpend, initialBudgetId]);
-
-  // Handle scope tab change
-  const handleScopeTabChange = (event, newValue) => {
-    setScopeTab(newValue);
-    setFormData(prev => ({
-      ...prev,
-      scopeType: newValue === 0 ? 'product' : 'customer'
-    }));
-  };
 
   // Handle form field changes
   const handleChange = (event) => {
@@ -418,32 +405,16 @@ const TradeSpendForm = ({
 
           <Divider sx={{ my: 3 }} />
 
-          {/* Scope Selection */}
+          {/* Product Hierarchy Section */}
           <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-            Trade Spend Scope
+            Product Hierarchy (Optional)
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Select whether this trade spend applies to Product or Customer hierarchy
+            <Chip label="Product Hierarchy" size="small" color="primary" sx={{ mr: 1 }} />
+            Vendor - Category - Brand - Sub Brand - Product
           </Typography>
           
-          <Tabs 
-            value={scopeTab} 
-            onChange={handleScopeTabChange}
-            sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
-          >
-            <Tab label="Product Hierarchy" />
-            <Tab label="Customer Hierarchy" />
-          </Tabs>
-
-          {/* Product Hierarchy Tab */}
-          {scopeTab === 0 && (
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  <Chip label="Product Hierarchy" size="small" color="primary" sx={{ mr: 1 }} />
-                  Vendor - Category - Brand - Sub Brand - Product
-                </Typography>
-              </Grid>
+          <Grid container spacing={3}>
               
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
@@ -534,18 +505,20 @@ const TradeSpendForm = ({
                   </Select>
                 </FormControl>
               </Grid>
-            </Grid>
-          )}
+          </Grid>
 
-          {/* Customer Hierarchy Tab */}
-          {scopeTab === 1 && (
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  <Chip label="Customer Hierarchy" size="small" color="secondary" sx={{ mr: 1 }} />
-                  Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office - Customer
-                </Typography>
-              </Grid>
+          <Divider sx={{ my: 3 }} />
+
+          {/* Customer Hierarchy Section */}
+          <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+            Customer Hierarchy (Optional)
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Chip label="Customer Hierarchy" size="small" color="secondary" sx={{ mr: 1 }} />
+            Channel - Sub Channel - Segmentation - Hierarchy 1/2/3 - Head Office - Customer
+          </Typography>
+          
+          <Grid container spacing={3}>
               
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
@@ -690,8 +663,7 @@ const TradeSpendForm = ({
                   </Select>
                 </FormControl>
               </Grid>
-            </Grid>
-          )}
+          </Grid>
 
           <Divider sx={{ my: 3 }} />
 
