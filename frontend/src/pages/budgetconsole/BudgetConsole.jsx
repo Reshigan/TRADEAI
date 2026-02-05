@@ -33,7 +33,7 @@ const BudgetConsole = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [loading, setLoading] = useState(true);
-  const [setBudgets] = useState([]);
+  const [budgets, setBudgets] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
 
 
