@@ -124,12 +124,12 @@ seedRoutes.post('/ml-data', async (c) => {
       tradeSpends.push({
         company_id: companyId,
         customer_id: customers[i % customers.length],
-        product_id: products[i % products.length],
         amount: amount,
         spend_type: spendType,
         status: status,
         description: `Trade spend for ${spendType}`,
         data: JSON.stringify({
+          productId: products[i % products.length],
           startDate: getDateStr(daysAgo),
           endDate: getDateStr(daysAgo - 30),
           actualROI: (1.5 + Math.random() * 2.5).toFixed(2),
