@@ -156,104 +156,102 @@ seedRoutes.post('/ml-data', async (c) => {
       await db.insertOne('trade_spends', spend);
     }
     
-    // Seed 40+ claims with different statuses
+    // Seed 40+ claims with different statuses (using correct schema)
     const claimStatuses = ['submitted', 'approved', 'rejected', 'paid', 'pending'];
-    const claimTypes = ['Promotion Claim', 'Rebate Claim', 'Damage Claim', 'Shortage Claim'];
+    const claimTypes = ['promotion', 'rebate', 'damage', 'shortage', 'marketing'];
     
     for (let i = 1; i <= 45; i++) {
       const daysAgo = Math.floor(Math.random() * 90);
-      const amount = Math.floor(Math.random() * 15000) + 2000;
+      const claimedAmount = Math.floor(Math.random() * 15000) + 2000;
       const status = claimStatuses[Math.floor(Math.random() * claimStatuses.length)];
+      const approvedAmount = status === 'approved' || status === 'paid' ? claimedAmount * (0.8 + Math.random() * 0.2) : 0;
+      const settledAmount = status === 'paid' ? approvedAmount : 0;
       
-      await db.rawExecute(`
-        INSERT INTO claims (id, company_id, customer_id, claim_number, claim_type, amount, status, submitted_date, data, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        crypto.randomUUID(),
-        companyId,
-        customers[i % customers.length],
-        `CLM-2026-${String(i).padStart(4, '0')}`,
-        claimTypes[i % claimTypes.length],
-        amount,
-        status,
-        getDateStr(daysAgo),
-        JSON.stringify({
+      await db.insertOne('claims', {
+        company_id: companyId,
+        customer_id: customers[i % customers.length],
+        claim_number: `CLM-ML-${String(i).padStart(4, '0')}`,
+        claim_type: claimTypes[i % claimTypes.length],
+        status: status,
+        claimed_amount: claimedAmount,
+        approved_amount: Math.round(approvedAmount),
+        settled_amount: Math.round(settledAmount),
+        claim_date: getDate(daysAgo),
+        reason: `ML Training Claim - ${claimTypes[i % claimTypes.length]}`,
+        supporting_documents: JSON.stringify(['invoice.pdf', 'proof.jpg']),
+        data: JSON.stringify({
           description: `Claim for ${claimTypes[i % claimTypes.length]}`,
-          supportingDocs: ['invoice.pdf', 'proof.jpg'],
           processingTime: Math.floor(Math.random() * 14) + 1
-        }),
-        getDate(daysAgo),
-        now.toISOString()
-      ]);
+        })
+      });
     }
     
-    // Seed 40+ deductions with aging data
+    // Seed 40+ deductions with aging data (using correct schema)
     const deductionStatuses = ['open', 'matched', 'disputed', 'written_off', 'resolved'];
-    const deductionReasons = ['Pricing Discrepancy', 'Shortage', 'Damage', 'Promotion Deduction', 'Unauthorized Deduction'];
+    const deductionTypes = ['pricing', 'shortage', 'damage', 'promotion', 'unauthorized'];
     
     for (let i = 1; i <= 45; i++) {
       const daysAgo = Math.floor(Math.random() * 120);
-      const amount = Math.floor(Math.random() * 8000) + 1000;
+      const deductionAmount = Math.floor(Math.random() * 8000) + 1000;
       const status = deductionStatuses[Math.floor(Math.random() * deductionStatuses.length)];
+      const matchedAmount = status === 'matched' || status === 'resolved' ? deductionAmount : 0;
       
-      await db.rawExecute(`
-        INSERT INTO deductions (id, company_id, customer_id, deduction_number, reason, amount, status, deduction_date, data, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        crypto.randomUUID(),
-        companyId,
-        customers[i % customers.length],
-        `DED-2026-${String(i).padStart(4, '0')}`,
-        deductionReasons[i % deductionReasons.length],
-        amount,
-        status,
-        getDateStr(daysAgo),
-        JSON.stringify({
-          invoiceNumber: `INV-${Math.floor(Math.random() * 10000)}`,
+      await db.insertOne('deductions', {
+        company_id: companyId,
+        customer_id: customers[i % customers.length],
+        deduction_number: `DED-ML-${String(i).padStart(4, '0')}`,
+        deduction_type: deductionTypes[i % deductionTypes.length],
+        status: status,
+        invoice_number: `INV-ML-${Math.floor(Math.random() * 10000)}`,
+        deduction_amount: deductionAmount,
+        matched_amount: matchedAmount,
+        remaining_amount: deductionAmount - matchedAmount,
+        deduction_date: getDate(daysAgo),
+        reason_description: `ML Training Deduction - ${deductionTypes[i % deductionTypes.length]}`,
+        data: JSON.stringify({
           agingBucket: daysAgo <= 30 ? '0-30' : daysAgo <= 60 ? '31-60' : daysAgo <= 90 ? '61-90' : '90+',
-          matchedClaimId: status === 'matched' ? `CLM-2026-${String(Math.floor(Math.random() * 45) + 1).padStart(4, '0')}` : null
-        }),
-        getDate(daysAgo),
-        now.toISOString()
-      ]);
+          matchedClaimId: status === 'matched' ? `CLM-ML-${String(Math.floor(Math.random() * 45) + 1).padStart(4, '0')}` : null
+        })
+      });
     }
     
-    // Seed 25+ rebates with calculations
-    const rebateTypes = ['Volume', 'Growth', 'Loyalty', 'Promotional', 'Tiered'];
-    const rebateStatuses = ['active', 'pending', 'calculated', 'paid'];
+    // Seed 25+ rebates with calculations (using correct schema)
+    const rebateTypes = ['volume', 'growth', 'loyalty', 'promotional', 'tiered'];
+    const rebateStatuses = ['active', 'draft', 'calculated', 'settled'];
     
     for (let i = 1; i <= 28; i++) {
-      const amount = Math.floor(Math.random() * 25000) + 5000;
+      const accruedAmount = Math.floor(Math.random() * 25000) + 5000;
       const rate = (Math.random() * 5 + 1).toFixed(2);
       const status = rebateStatuses[Math.floor(Math.random() * rebateStatuses.length)];
+      const settledAmount = status === 'settled' ? accruedAmount : 0;
+      const threshold = Math.floor(Math.random() * 50000) + 10000;
       
-      await db.rawExecute(`
-        INSERT INTO rebates (id, company_id, customer_id, rebate_number, rebate_type, rate, amount, status, start_date, end_date, data, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        crypto.randomUUID(),
-        companyId,
-        customers[i % customers.length],
-        `REB-2026-${String(i).padStart(4, '0')}`,
-        rebateTypes[i % rebateTypes.length],
-        parseFloat(rate),
-        amount,
-        status,
-        getDateStr(90),
-        getDateStr(0),
-        JSON.stringify({
+      await db.insertOne('rebates', {
+        company_id: companyId,
+        customer_id: customers[i % customers.length],
+        name: `ML Training Rebate ${i} - ${rebateTypes[i % rebateTypes.length]}`,
+        description: `Historical rebate for ML training`,
+        rebate_type: rebateTypes[i % rebateTypes.length],
+        status: status,
+        rate: parseFloat(rate),
+        rate_type: 'percentage',
+        threshold: threshold,
+        accrued_amount: accruedAmount,
+        settled_amount: settledAmount,
+        calculation_basis: 'volume',
+        settlement_frequency: 'quarterly',
+        start_date: getDateStr(90),
+        end_date: getDateStr(0),
+        data: JSON.stringify({
           targetVolume: Math.floor(Math.random() * 100000) + 50000,
           actualVolume: Math.floor(Math.random() * 120000) + 40000,
           tiers: [
             { threshold: 50000, rate: 1 },
             { threshold: 75000, rate: 2 },
             { threshold: 100000, rate: 3 }
-          ],
-          calculatedAmount: amount * (0.8 + Math.random() * 0.4)
-        }),
-        getDate(90),
-        now.toISOString()
-      ]);
+          ]
+        })
+      });
     }
     
     return c.json({
