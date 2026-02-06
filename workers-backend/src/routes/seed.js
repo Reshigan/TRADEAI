@@ -19,11 +19,21 @@ seedRoutes.post('/ml-data', async (c) => {
     
     const getDateStr = (daysAgo) => getDate(daysAgo).split('T')[0];
     
+    // Get actual customer and product IDs from the database
+    const existingCustomers = await db.find('customers', { company_id: companyId }, { limit: 10 });
+    const existingProducts = await db.find('products', { company_id: companyId }, { limit: 10 });
+    
+    // Use actual IDs or fallback to null (no foreign key constraint)
+    const customers = existingCustomers.length > 0 
+      ? existingCustomers.map(c => c.id || c._id)
+      : [null];
+    const products = existingProducts.length > 0 
+      ? existingProducts.map(p => p.id || p._id)
+      : [null];
+    
     // Seed 50+ promotions with varied outcomes
     const promotionTypes = ['Discount', 'BOGO', 'Bundle', 'Rebate', 'Display', 'Sampling'];
     const promotionStatuses = ['completed', 'completed', 'completed', 'active', 'draft'];
-    const customers = ['cust-001', 'cust-002', 'cust-003', 'cust-004', 'cust-005'];
-    const products = ['prod-001', 'prod-002', 'prod-003', 'prod-004', 'prod-005'];
     
     const promotions = [];
     for (let i = 1; i <= 60; i++) {
