@@ -138,8 +138,41 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
     }
   };
 
+  // Validate form data
+  const validateForm = () => {
+    const newErrors = {};
+    const currentYear = new Date().getFullYear();
+    
+    // Year validation
+    if (!formData.year) {
+      newErrors.year = 'Year is required';
+    } else if (formData.year < currentYear) {
+      newErrors.year = `Year must be ${currentYear} or later`;
+    } else if (formData.year > currentYear + 10) {
+      newErrors.year = 'Year cannot be more than 10 years in the future';
+    }
+    
+    // Amount validation
+    if (!formData.total_amount) {
+      newErrors.total_amount = 'Budget amount is required';
+    } else if (parseFloat(formData.total_amount) <= 0) {
+      newErrors.total_amount = 'Budget amount must be greater than zero';
+    } else if (parseFloat(formData.total_amount) > 1000000000) {
+      newErrors.total_amount = 'Budget amount exceeds maximum limit';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
     try {
       // Get company ID from user data

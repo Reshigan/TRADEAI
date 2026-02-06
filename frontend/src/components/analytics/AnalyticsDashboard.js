@@ -560,7 +560,7 @@ const AnalyticsDashboard = () => {
                         Total Budget
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        {analyticsData.summary.currencySymbol || '$'}
+                        {analyticsData.summary.currencySymbol || 'R'}
                         {(analyticsData.summary.totalBudget || 0).toLocaleString()}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -577,7 +577,7 @@ const AnalyticsDashboard = () => {
                         Total Used
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        {analyticsData.summary.currencySymbol || '$'}
+                        {analyticsData.summary.currencySymbol || 'R'}
                         {(analyticsData.summary.totalUsed || 0).toLocaleString()}
                       </Typography>
                       <Typography variant="body2" color={analyticsData.summary.budgetUtilization > 80 ? "error.main" : "success.main"}>
@@ -613,7 +613,7 @@ const AnalyticsDashboard = () => {
                     {analyticsData.topCustomers.slice(0, 4).map((customer, index) => (
                       <li key={index}>
                         <Typography variant="body2">
-                          {customer.name} - {analyticsData.summary.currencySymbol || '$'}
+                          {customer.name} - {analyticsData.summary.currencySymbol || 'R'}
                           {(customer.totalSpend || 0).toLocaleString()} 
                           <span style={{ color: customer.growth > 0 ? 'green' : 'red' }}>
                             {' '}({customer.growth > 0 ? '+' : ''}{customer.growth}% growth)
@@ -634,7 +634,7 @@ const AnalyticsDashboard = () => {
                     {analyticsData.categoryPerformance.slice(0, 3).map((cat, index) => (
                       <li key={index}>
                         <Typography variant="body2">
-                          {cat.category} - ROI: {cat.roi}x (Spend: {analyticsData.summary.currencySymbol || '$'}
+                          {cat.category} - ROI: {cat.roi}x (Spend: {analyticsData.summary.currencySymbol || 'R'}
                           {(cat.spend || 0).toLocaleString()})
                         </Typography>
                       </li>

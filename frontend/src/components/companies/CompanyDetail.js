@@ -196,8 +196,8 @@ const CompanyDetail = () => {
   };
   
   // Format currency
-  const formatCurrency = (amount, currencyCode = 'USD') => {
-    const symbol = currencySymbols[currencyCode] || '$';
+  const formatCurrency = (amount, currencyCode = 'ZAR') => {
+    const symbol = currencySymbols[currencyCode] || 'R';
     
     return new Intl.NumberFormat('en-US', {
       style: 'decimal',
