@@ -277,7 +277,7 @@ const BudgetPlanningWizard = () => {
               <Alert severity="info" icon={<AnalyticsIcon />} sx={{ mb: 3 }}>
                 <Typography variant="body2" fontWeight="bold">Historical Insight:</Typography>
                 <Typography variant="body2">
-                  Previous year budget: ${historicalData.previousYearBudget?.toLocaleString()} | 
+                  Previous year budget: {getCurrencySymbol()}{historicalData.previousYearBudget?.toLocaleString()} | 
                   Avg utilization: {historicalData.avgUtilization}% | 
                   Recommended increase: {historicalData.recommendedIncrease}%
                 </Typography>
@@ -298,12 +298,12 @@ const BudgetPlanningWizard = () => {
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
-                  label="Total Budget Amount ($)"
+                  label={`Total Budget Amount (${getCurrencySymbol()})`}
                   type="number"
                   value={budgetData.totalAmount}
                   onChange={(e) => setBudgetData({ ...budgetData, totalAmount: e.target.value })}
                   required
-                  helperText={historicalData ? `Recommended: $${(historicalData.previousYearBudget * (1 + historicalData.recommendedIncrease / 100)).toLocaleString()}` : ''}
+                  helperText={historicalData ? `Recommended: ${getCurrencySymbol()}${(historicalData.previousYearBudget * (1 + historicalData.recommendedIncrease / 100)).toLocaleString()}` : ''}
                 />
               </Grid>
                           <Grid item xs={12}>
@@ -376,7 +376,7 @@ const BudgetPlanningWizard = () => {
                     </Grid>
                     <Grid item xs={4}>
                       <Typography variant="body2" color="text.secondary">Last Year Budget</Typography>
-                      <Typography variant="h6">${historicalData.previousYearBudget?.toLocaleString()}</Typography>
+                      <Typography variant="h6">{getCurrencySymbol()}{historicalData.previousYearBudget?.toLocaleString()}</Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -464,8 +464,8 @@ const BudgetPlanningWizard = () => {
 
             <Alert severity="success" sx={{ mb: 3 }}>
               <Typography variant="body2">
-                <strong>Total Budget:</strong> ${parseFloat(budgetData.totalAmount).toLocaleString()} | 
-                <strong> Allocated:</strong> ${allocationPlan.reduce((sum, item) => sum + item.customAmount, 0).toLocaleString()}
+                <strong>Total Budget:</strong> {getCurrencySymbol()}{parseFloat(budgetData.totalAmount).toLocaleString()} | 
+                <strong> Allocated:</strong> {getCurrencySymbol()}{allocationPlan.reduce((sum, item) => sum + item.customAmount, 0).toLocaleString()}
               </Typography>
             </Alert>
 
