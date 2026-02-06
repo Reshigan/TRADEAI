@@ -38,41 +38,127 @@ import {
   Cell,
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
 const COLORS = ['#1976d2', '#2e7d32', '#ed6c02', '#d32f2f', '#9c27b0'];
 
-// Sample data
-const revenueData = [
-  { month: 'Jan', revenue: 450000, target: 420000 },
-  { month: 'Feb', revenue: 480000, target: 450000 },
-  { month: 'Mar', revenue: 520000, target: 480000 },
-  { month: 'Apr', revenue: 490000, target: 500000 },
-  { month: 'May', revenue: 550000, target: 520000 },
-  { month: 'Jun', revenue: 580000, target: 550000 },
+// Default data (will be replaced by API data)
+const defaultRevenueData = [
+  { month: 'Jan', revenue: 0, target: 0 },
+  { month: 'Feb', revenue: 0, target: 0 },
+  { month: 'Mar', revenue: 0, target: 0 },
+  { month: 'Apr', revenue: 0, target: 0 },
+  { month: 'May', revenue: 0, target: 0 },
+  { month: 'Jun', revenue: 0, target: 0 },
 ];
 
-const budgetData = [
-  { name: 'Marketing', value: 35, amount: 350000 },
-  { name: 'Trade Spend', value: 28, amount: 280000 },
-  { name: 'Promotions', value: 22, amount: 220000 },
-  { name: 'Operations', value: 15, amount: 150000 },
+const defaultBudgetData = [
+  { name: 'Used', value: 0, amount: 0 },
+  { name: 'Remaining', value: 0, amount: 0 },
 ];
 
-const activities = [
-  { type: 'budget', title: 'Q3 Budget Approved', time: '2 hours ago', status: 'success' },
-  { type: 'promotion', title: 'Summer Sale Performance', time: '4 hours ago', status: 'info' },
-  { type: 'alert', title: 'Trade Spend Variance Detected', time: '6 hours ago', status: 'warning' },
-  { type: 'insight', title: 'AI Recommendation Available', time: '1 day ago', status: 'info' },
+const defaultActivities = [
+  { type: 'info', title: 'Welcome to TRADEAI', time: 'Just now', status: 'info' },
 ];
 
 export default function EnhancedDashboard({ user }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState({
+    totalBudget: 0,
+    totalSpend: 0,
+    activePromotions: 0,
+    totalCustomers: 0,
+    budgetUtilization: 0
+  });
+  const [revenueData, setRevenueData] = useState(defaultRevenueData);
+  const [budgetData, setBudgetData] = useState(defaultBudgetData);
+  const [activities, setActivities] = useState(defaultActivities);
 
   useEffect(() => {
-    // Simulate data loading
-    setTimeout(() => setLoading(false), 1000);
+    fetchDashboardData();
   }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch analytics dashboard data
+      const analyticsResponse = await api.get('/analytics/dashboard');
+      if (analyticsResponse.data.success && analyticsResponse.data.data) {
+        const data = analyticsResponse.data.data;
+        setMetrics({
+          totalBudget: data.totalBudget || 0,
+          totalSpend: data.totalSpend || 0,
+          activePromotions: data.activePromotions || 0,
+          totalCustomers: data.totalCustomers || 0,
+          budgetUtilization: parseFloat(data.budgetUtilization) || 0
+        });
+        
+        // Set budget distribution data
+        const used = data.totalSpend || 0;
+        const remaining = (data.totalBudget || 0) - used;
+        setBudgetData([
+          { name: 'Used', value: used > 0 ? Math.round((used / (data.totalBudget || 1)) * 100) : 0, amount: used },
+          { name: 'Remaining', value: remaining > 0 ? Math.round((remaining / (data.totalBudget || 1)) * 100) : 0, amount: remaining }
+        ]);
+      }
+
+      // Fetch sales performance data for chart
+      try {
+        const salesResponse = await api.get('/analytics/sales-performance');
+        if (salesResponse.data.success && salesResponse.data.data) {
+          setRevenueData(salesResponse.data.data.map(item => ({
+            month: item.month,
+            revenue: item.sales,
+            target: item.target
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load sales data:', err);
+      }
+
+      // Fetch recent activities
+      try {
+        const activitiesResponse = await api.get('/activities?limit=4');
+        if (activitiesResponse.data.success && activitiesResponse.data.data && activitiesResponse.data.data.length > 0) {
+          setActivities(activitiesResponse.data.data.map(a => ({
+            type: a.activity_type || 'info',
+            title: a.description || a.title || 'Activity',
+            time: formatTimeAgo(a.created_at),
+            status: a.status === 'completed' ? 'success' : a.status === 'pending' ? 'warning' : 'info'
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load activities:', err);
+      }
+
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatTimeAgo = (dateString) => {
+    if (!dateString) return 'Recently';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 60) return `${diffMins} minutes ago`;
+    if (diffHours < 24) return `${diffHours} hours ago`;
+    return `${diffDays} days ago`;
+  };
+
+  const formatCurrency = (value) => {
+    if (value >= 1000000) return `R${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `R${(value / 1000).toFixed(0)}K`;
+    return `R${value}`;
+  };
 
   const MetricCard = ({ title, value, change, trend, icon, color, subtitle, onClick }) => (
     <Card
@@ -179,50 +265,50 @@ export default function EnhancedDashboard({ user }) {
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Total Revenue"
-            value="R2.5M"
+            title="Total Budget"
+            value={formatCurrency(metrics.totalBudget)}
             change={12.5}
             trend="up"
-            icon={<AttachMoney sx={{ fontSize: 32 }} />}
+            icon={<AccountBalance sx={{ fontSize: 32 }} />}
             color="#1976d2"
-            subtitle="vs last month"
+            subtitle="Allocated budget"
             onClick={() => navigate('/analytics')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            title="Active Budgets"
-            value="24"
-            change={8.3}
-            trend="up"
-            icon={<AccountBalance sx={{ fontSize: 32 }} />}
-            color="#2e7d32"
-            subtitle="3 pending approval"
-            onClick={() => navigate('/enterprise/budget')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <MetricCard
             title="Trade Spend"
-            value="R850K"
-            change={-3.2}
-            trend="down"
-            icon={<TrendingUp sx={{ fontSize: 32 }} />}
-            color="#ed6c02"
-            subtitle="Under budget by 5%"
+            value={formatCurrency(metrics.totalSpend)}
+            change={metrics.budgetUtilization > 80 ? -3.2 : 8.3}
+            trend={metrics.budgetUtilization > 80 ? "down" : "up"}
+            icon={<AttachMoney sx={{ fontSize: 32 }} />}
+            color="#2e7d32"
+            subtitle={`${metrics.budgetUtilization.toFixed(1)}% utilized`}
             onClick={() => navigate('/enterprise/trade-spend')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             title="Active Promotions"
-            value="18"
+            value={metrics.activePromotions.toString()}
             change={15.2}
             trend="up"
             icon={<Campaign sx={{ fontSize: 32 }} />}
-            color="#1E40AF"
-            subtitle="ROI: 245%"
+            color="#ed6c02"
+            subtitle="Running campaigns"
             onClick={() => navigate('/enterprise/promotions')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Customers"
+            value={metrics.totalCustomers.toString()}
+            change={8.3}
+            trend="up"
+            icon={<TrendingUp sx={{ fontSize: 32 }} />}
+            color="#1E40AF"
+            subtitle="Active accounts"
+            onClick={() => navigate('/customers')}
           />
         </Grid>
       </Grid>

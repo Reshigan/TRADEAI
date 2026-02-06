@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, useTheme } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, useTheme, CircularProgress } from '@mui/material';
 import { 
   PieChart, 
   Pie, 
@@ -9,23 +9,64 @@ import {
   Legend
 } from 'recharts';
 import { formatCurrency } from '../../../utils/formatters';
+import api from '../../../services/api';
 
-// No more mock data - using real API calls
-
-const BudgetUtilizationChart = ({ data = [], height = 400 }) => {
+const BudgetUtilizationChart = ({ data: propData, height = 400 }) => {
   const theme = useTheme();
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Colors for the pie chart
   const COLORS = [
     theme.palette.primary.main,
     theme.palette.warning.main,
-    theme.palette.success.light
+    theme.palette.success.light,
+    theme.palette.info.main,
+    theme.palette.error.light
   ];
 
+  useEffect(() => {
+    if (propData && propData.length > 0) {
+      setChartData(propData);
+      setLoading(false);
+    } else {
+      fetchData();
+    }
+  }, [propData]);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/analytics/budget-utilization');
+      if (response.data.success && response.data.data) {
+        // Transform data for pie chart
+        const budgets = response.data.data;
+        const totalUsed = budgets.reduce((sum, b) => sum + (b.used || 0), 0);
+        const totalRemaining = budgets.reduce((sum, b) => sum + (b.remaining || 0), 0);
+        setChartData([
+          { name: 'Used', value: totalUsed },
+          { name: 'Remaining', value: totalRemaining }
+        ]);
+      }
+    } catch (err) {
+      console.error('Failed to load budget utilization data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height }}>
+        <CircularProgress size={40} />
+      </Box>
+    );
+  }
+
+  const data = chartData;
 
   // Calculate total budget
-  const totalBudget = data.reduce((sum, item) => sum + item.value, 0);
+  const totalBudget = data.reduce((sum, item) => sum + (item.value || 0), 0);
 
   // Calculate percentages
   const dataWithPercentage = data.map(item => ({

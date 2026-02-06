@@ -111,10 +111,10 @@ const RebatesList = () => {
           </TableHead>
           <TableBody>
             {rebates.map((rebate) => (
-              <TableRow key={rebate._id}>
+              <TableRow key={rebate.id || rebate._id}>
                 <TableCell>{rebate.name}</TableCell>
                 <TableCell>
-                  <Chip label={getTypeLabel(rebate.type)} size="small" />
+                  <Chip label={getTypeLabel(rebate.rebate_type || rebate.type)} size="small" />
                 </TableCell>
                 <TableCell>
                   <Chip 
@@ -123,22 +123,24 @@ const RebatesList = () => {
                     size="small"
                   />
                 </TableCell>
-                                <TableCell>
-                                  {rebate.calculationType === 'percentage' 
-                                    ? `${rebate.rate || 0}%`
-                                    : `R ${(rebate.amount || 0).toLocaleString()}`
-                                  }
-                                </TableCell>
                 <TableCell>
-                  {rebate.startDate ? new Date(rebate.startDate).toLocaleDateString() : '-'}
+                  {rebate.rate_type === 'percentage' || rebate.calculationType === 'percentage'
+                    ? `${rebate.rate || 0}%`
+                    : `R ${(rebate.amount || 0).toLocaleString()}`
+                  }
                 </TableCell>
-                <TableCell>R{(rebate.totalAccrued || 0).toLocaleString()}</TableCell>
-                <TableCell>R{(rebate.totalPaid || 0).toLocaleString()}</TableCell>
+                <TableCell>
+                  {rebate.start_date || rebate.startDate 
+                    ? new Date(rebate.start_date || rebate.startDate).toLocaleDateString() 
+                    : '-'}
+                </TableCell>
+                <TableCell>R {(rebate.accrued_amount || rebate.totalAccrued || 0).toLocaleString()}</TableCell>
+                <TableCell>R {(rebate.settled_amount || rebate.totalPaid || 0).toLocaleString()}</TableCell>
                 <TableCell align="right">
-                  <IconButton size="small" onClick={() => navigate(`/rebates/${rebate._id}`)}>
+                  <IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}`)}>
                     <Edit />
                   </IconButton>
-                  <IconButton size="small" color="error" onClick={() => handleDelete(rebate._id)}>
+                  <IconButton size="small" color="error" onClick={() => handleDelete(rebate.id || rebate._id)}>
                     <Delete />
                   </IconButton>
                 </TableCell>
