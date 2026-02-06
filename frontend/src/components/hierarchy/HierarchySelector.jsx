@@ -36,7 +36,27 @@ import {
 import customerService from '../../services/customer/customerService';
 import productService from '../../services/product/productService';
 
-const HierarchySelector = ({ 
+// Get currency symbol from user's company settings
+const getCurrencySymbol = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user.company && user.company.currency) {
+        const currencyMap = {
+          'USD': '$', 'EUR': '€', 'GBP': '£', 'ZAR': 'R', 'AUD': 'A$',
+          'CAD': 'C$', 'JPY': '¥', 'CNY': '¥', 'INR': '₹'
+        };
+        return currencyMap[user.company.currency] || 'R';
+      }
+    }
+  } catch (error) {
+    console.warn('Error getting currency symbol:', error);
+  }
+  return 'R';
+};
+
+const HierarchySelector = ({
   type = 'customer', // 'customer' or 'product'
   selected = [],
   onSelectionChange,
@@ -186,7 +206,7 @@ const HierarchySelector = ({
             <ListItemText 
               primary={node.name}
               secondary={`Level ${node.level} • ${type === 'customer' 
-                ? `$${(node.revenue || 0).toLocaleString()}` 
+                ? `${getCurrencySymbol()}${(node.revenue || 0).toLocaleString()}` 
                 : `${(node.volume || 0).toLocaleString()} units`}`}
             />
             {hasChildren && (
