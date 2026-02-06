@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, useTheme, CircularProgress, Typography } from '@mui/material';
+import { Box, useTheme, CircularProgress } from '@mui/material';
 import { 
   PieChart, 
   Pie, 
