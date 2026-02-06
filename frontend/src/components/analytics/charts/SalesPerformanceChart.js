@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, useTheme } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, useTheme, CircularProgress, Typography } from '@mui/material';
 import { 
   Bar, 
   XAxis, 
@@ -12,11 +12,50 @@ import {
   ComposedChart
 } from 'recharts';
 import { formatCurrency } from '../../../utils/formatters';
+import api from '../../../services/api';
 
-// No more mock data - using real API calls
-
-const SalesPerformanceChart = ({ data = [], height = 400 }) => {
+const SalesPerformanceChart = ({ data: propData, height = 400 }) => {
   const theme = useTheme();
+  const [data, setData] = useState(propData || []);
+  const [loading, setLoading] = useState(!propData || propData.length === 0);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!propData || propData.length === 0) {
+      fetchData();
+    }
+  }, [propData]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/analytics/sales-performance');
+      if (response.data.success && response.data.data) {
+        setData(response.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to load sales performance data:', err);
+      setError('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height }}>
+        <CircularProgress size={40} />
+      </Box>
+    );
+  }
+
+  if (error || data.length === 0) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height }}>
+        <Typography color="text.secondary">No sales data available</Typography>
+      </Box>
+    );
+  }
 
 
 

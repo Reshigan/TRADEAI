@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, useTheme } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, useTheme, CircularProgress, Typography } from '@mui/material';
 import { 
   BarChart, 
   Bar, 
@@ -12,11 +12,53 @@ import {
   LabelList
 } from 'recharts';
 import { formatCurrency } from '../../../utils/formatters';
+import api from '../../../services/api';
 
-// No more mock data - using real API calls
-
-const CustomerPerformanceChart = ({ data = [], height = 400 }) => {
+const CustomerPerformanceChart = ({ data: propData, height = 400 }) => {
   const theme = useTheme();
+  const [data, setData] = useState(propData || []);
+  const [loading, setLoading] = useState(!propData || propData.length === 0);
+
+  useEffect(() => {
+    if (!propData || propData.length === 0) {
+      fetchData();
+    }
+  }, [propData]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/analytics/customer-performance');
+      if (response.data.success && response.data.data) {
+        setData(response.data.data.map(item => ({
+          name: item.name,
+          sales: item.sales,
+          spend: item.tradeSpend,
+          roi: item.sales > 0 && item.tradeSpend > 0 ? (item.sales / item.tradeSpend).toFixed(1) : 0
+        })));
+      }
+    } catch (err) {
+      console.error('Failed to load customer performance data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height }}>
+        <CircularProgress size={40} />
+      </Box>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height }}>
+        <Typography color="text.secondary">No customer data available</Typography>
+      </Box>
+    );
+  }
 
 
 
