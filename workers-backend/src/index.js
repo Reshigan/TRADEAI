@@ -41,14 +41,22 @@ app.use('*', logger());
 app.use('*', prettyJSON());
 app.use('*', secureHeaders());
 
-// CORS configuration
+// CORS configuration - allow all Cloudflare Pages subdomains
 app.use('*', cors({
-  origin: [
-    'https://tradeai.vantax.co.za',
-    'https://tradeai-frontend.pages.dev',
-    'http://localhost:3000',
-    'http://localhost:12000'
-  ],
+  origin: (origin) => {
+    // Allow all Cloudflare Pages subdomains for tradeai-frontend
+    if (origin && (
+      origin.endsWith('.tradeai-frontend.pages.dev') ||
+      origin === 'https://tradeai-frontend.pages.dev' ||
+      origin === 'https://tradeai.vantax.co.za' ||
+      origin === 'http://localhost:3000' ||
+      origin === 'http://localhost:12000'
+    )) {
+      return origin;
+    }
+    // Default to production domain
+    return 'https://tradeai.vantax.co.za';
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization', 'X-Company-Code', 'X-Tenant-Id'],
   credentials: true,
