@@ -34,7 +34,7 @@ const POSImport = () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await api.post('/api/pos-import/upload', formData, {
+      const response = await api.post('/pos-import/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -61,7 +61,7 @@ const POSImport = () => {
     setError(null);
     setImporting(true);
     try {
-      const response = await api.post('/api/pos-import/validate', { jobId });
+      const response = await api.post('/pos-import/validate', { jobId });
       setValidation(response.data.data);
       setActiveStep(2);
     } catch (err) {
@@ -77,7 +77,7 @@ const POSImport = () => {
     setActiveStep(3);
 
     try {
-      await api.post('/api/pos-import/confirm', { jobId });
+      await api.post('/pos-import/confirm', { jobId });
       const pollStatus = setInterval(async () => {
         try {
           const response = await api.get(`/pos-import/status/${jobId}`);
@@ -105,7 +105,7 @@ const POSImport = () => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await api.get('/api/pos-import/template', { responseType: 'blob' });
+      const response = await api.get('/pos-import/template', { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;

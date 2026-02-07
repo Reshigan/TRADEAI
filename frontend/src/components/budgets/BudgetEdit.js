@@ -30,13 +30,6 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 
-const API_URL = process.env.REACT_APP_API_URL || '/api';
-
-// Helper to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 const getCurrencySymbol = () => {
   try {
@@ -94,9 +87,7 @@ const BudgetEdit = () => {
     const fetchBudget = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`${API_URL}/budgets/${id}`, {
-          headers: getAuthHeaders()
-        });
+                const response = await api.get(`/budgets/${id}`);
         const budgetData = response.data?.data || response.data;
         setBudget(budgetData);
       } catch (err) {
@@ -192,9 +183,7 @@ const BudgetEdit = () => {
         allocations: calculatePercentages()
       };
 
-      await api.put(`${API_URL}/budgets/${id}`, updatedBudget, {
-        headers: getAuthHeaders()
-      });
+            await api.put(`/budgets/${id}`, updatedBudget);
       
       setSuccess('Budget updated successfully!');
       setTimeout(() => {

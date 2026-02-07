@@ -34,8 +34,8 @@ const RealTimeDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const [insightsRes, metricsRes] = await Promise.all([
-        api.get('/api/ai/insights'),
-        api.get('/api/dashboard/metrics')
+        api.get('/ai/insights'),
+        api.get('/dashboard/metrics')
       ]);
 
       setInsights(insightsRes.data.insights || []);

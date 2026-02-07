@@ -128,7 +128,7 @@ const MLPredictionDashboard = () => {
 
   const fetchModelMetrics = useCallback(async () => {
     try {
-      const response = await api.get('/api/ml/models/metrics');
+      const response = await api.get('/ml/models/metrics');
       setModelMetrics(response.data.data);
     } catch (error) {
       console.error('Error fetching model metrics:', error);
@@ -137,7 +137,7 @@ const MLPredictionDashboard = () => {
 
   const fetchTrainingStatus = useCallback(async () => {
     try {
-      const response = await api.get('/api/ml/models/training-status');
+      const response = await api.get('/ml/models/training-status');
       setTrainingStatus(response.data.data);
     } catch (error) {
       console.error('Error fetching training status:', error);
@@ -154,7 +154,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/predict/customer-behavior', {
+      const response = await api.post('/ml/predict/customer-behavior', {
         customerData: customerBehaviorForm
       });
 
@@ -176,7 +176,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/predict/demand-forecast', demandForecastForm);
+      const response = await api.post('/ml/predict/demand-forecast', demandForecastForm);
 
       setPredictions(prev => ({
         ...prev,
@@ -196,7 +196,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/predict/churn', {
+      const response = await api.post('/ml/predict/churn', {
         customerData: churnForm
       });
 
@@ -218,7 +218,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/optimize/promotion', {
+      const response = await api.post('/ml/optimize/promotion', {
         promotionData: promotionForm
       });
 
@@ -240,7 +240,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/optimize/price', {
+      const response = await api.post('/ml/optimize/price', {
         productData: priceForm,
         marketConditions: {
           competitorPrice: priceForm.competitorPrice,
@@ -267,7 +267,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/predict/batch', {
+      const response = await api.post('/ml/predict/batch', {
         predictionType,
         dataArray
       });
@@ -294,7 +294,7 @@ const MLPredictionDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.post('/api/ml/models/retrain', {
+      const response = await api.post('/ml/models/retrain', {
         models,
         force: true
       });
