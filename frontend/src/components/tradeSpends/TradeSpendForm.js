@@ -99,13 +99,13 @@ const TradeSpendForm = ({
   useEffect(() => {
     if (tradeSpend) {
       setFormData({
-        budget_id: tradeSpend.budget?.id || tradeSpend.budget_id || '',
+        budget_id: tradeSpend.budgetId || tradeSpend.budget?.id || tradeSpend.budget_id || '',
         amount: tradeSpend.amount,
-        type: tradeSpend.type,
-        description: tradeSpend.description,
-        status: tradeSpend.status,
-        start_date: new Date(tradeSpend.start_date),
-        end_date: new Date(tradeSpend.end_date),
+        type: tradeSpend.spendType || tradeSpend.type || 'promotion',
+        description: tradeSpend.description || '',
+        status: tradeSpend.status || 'draft',
+        start_date: new Date(tradeSpend.startDate || tradeSpend.start_date || new Date()),
+        end_date: new Date(tradeSpend.endDate || tradeSpend.end_date || new Date()),
         notes: tradeSpend.notes || '',
         dealType: tradeSpend.dealType || tradeSpend.deal_type || 'off_invoice',
         claimType: tradeSpend.claimType || tradeSpend.claim_type || 'vendor_invoice',

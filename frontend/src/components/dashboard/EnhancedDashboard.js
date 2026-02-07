@@ -123,9 +123,9 @@ export default function EnhancedDashboard({ user }) {
         const activitiesResponse = await api.get('/activities?limit=4');
         if (activitiesResponse.data.success && activitiesResponse.data.data && activitiesResponse.data.data.length > 0) {
           setActivities(activitiesResponse.data.data.map(a => ({
-            type: a.activity_type || 'info',
+            type: a.activityType || a.activity_type || 'info',
             title: a.description || a.title || 'Activity',
-            time: formatTimeAgo(a.created_at),
+            time: formatTimeAgo(a.createdAt || a.created_at),
             status: a.status === 'completed' ? 'success' : a.status === 'pending' ? 'warning' : 'info'
           })));
         }

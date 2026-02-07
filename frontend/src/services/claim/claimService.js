@@ -64,6 +64,11 @@ class ClaimService {
     return response.data;
   }
 
+  async getAllClaims() {
+    const response = await apiClient.get(`/claims`);
+    return response.data;
+  }
+
   async getUnmatchedClaims() {
     const response = await apiClient.get(
       `/claims/unmatched`,

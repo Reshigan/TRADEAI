@@ -34,6 +34,7 @@ import approvalService from '../../services/approval/approvalService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import ProcessShell from '../../components/ProcessShell';
+import { formatLabel } from '../../utils/formatters';
 
 const ApprovalDetail = () => {
   const { id } = useParams();
@@ -178,11 +179,11 @@ const ApprovalDetail = () => {
             Approval Request Details
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Request ID: {approval._id}
+            Request ID: {approval.id || approval._id}
           </Typography>
         </Box>
         <Chip
-          label={approval.status.toUpperCase()}
+          label={formatLabel(approval.status)}
           color={getStatusColor(approval.status)}
           size="large"
         />
@@ -204,7 +205,7 @@ const ApprovalDetail = () => {
                     Request Type
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {approval.requestType}
+                    {formatLabel(approval.requestType)}
                   </Typography>
                 </Grid>
 
@@ -222,7 +223,7 @@ const ApprovalDetail = () => {
                     Requested By
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {approval.requestedBy?.firstName} {approval.requestedBy?.lastName}
+                    {typeof approval.requestedBy === 'object' ? `${approval.requestedBy?.firstName || ''} ${approval.requestedBy?.lastName || ''}`.trim() : (approval.requestedByName || approval.requestedBy || 'N/A')}
                   </Typography>
                 </Grid>
 
@@ -274,11 +275,11 @@ const ApprovalDetail = () => {
                         <TableRow key={index}>
                           <TableCell>{step.level}</TableCell>
                           <TableCell>
-                            {step.approver?.firstName} {step.approver?.lastName}
+                            {typeof step.approver === 'object' ? `${step.approver?.firstName || ''} ${step.approver?.lastName || ''}`.trim() : (step.approverName || step.approver || 'N/A')}
                           </TableCell>
                           <TableCell>
                             <Chip
-                              label={step.status}
+                              label={formatLabel(step.status)}
                               color={getStatusColor(step.status)}
                               size="small"
                             />

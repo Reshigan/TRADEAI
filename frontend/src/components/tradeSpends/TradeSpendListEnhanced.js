@@ -36,7 +36,7 @@ const TradeSpendListEnhanced = () => {
     const avgROI = tradeSpends.reduce((sum, ts) => sum + (ts.roi || 0), 0) / tradeSpends.length;
     
     insights.push({
-      title: `Total Trade Spend: $${totalSpend.toLocaleString()}`,
+      title: `Total Trade Spend: R${totalSpend.toLocaleString()}`,
       description: `Average ROI across all trade spends is ${avgROI.toFixed(0)}%. Top performers show 3x better returns.`,
       confidence: 0.92
     });
@@ -144,7 +144,7 @@ const TradeSpendListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600" color="primary">
-          ${(value || 0).toLocaleString()}
+          R{(value || 0).toLocaleString()}
         </Typography>
       )
     },

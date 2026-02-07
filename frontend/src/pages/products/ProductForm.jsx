@@ -19,7 +19,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import { productService } from '../../services/api';
 
 // Static hierarchy options for consistency across the app
 const productHierarchyOptions = {
@@ -60,11 +60,8 @@ const ProductForm = () => {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const product = response.data.data || response.data;
+      const response = await productService.getById(id);
+      const product = response.data || response;
       setFormData({
         name: product.name || '',
         sku: product.sku || '',
@@ -99,22 +96,18 @@ const ProductForm = () => {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
-      // Transform hierarchy fields to snake_case for backend
       const payload = {
         ...formData,
         price: parseFloat(formData.price),
         cost: formData.cost ? parseFloat(formData.cost) : 0,
-        stock: formData.stock ? parseInt(formData.stock) : 0,
-        sub_brand: formData.subBrand
+        stock: formData.stock ? parseInt(formData.stock) : 0
       };
-      // Remove camelCase version
-      delete payload.subBrand;
       
-      const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/products${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      if (isEditMode) {
+        await productService.update(id, payload);
+      } else {
+        await productService.create(payload);
+      }
       navigate('/products');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save product');
