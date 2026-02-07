@@ -25,7 +25,7 @@ class AzureADService {
     }
 
     const tokenUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
-    
+
     const params = new URLSearchParams();
     params.append('client_id', this.clientId);
     params.append('client_secret', this.clientSecret);
@@ -43,7 +43,7 @@ class AzureADService {
       this.accessToken = response.data.access_token;
       // Token expires in seconds, convert to ms and subtract 5 min buffer
       this.tokenExpiry = Date.now() + (response.data.expires_in * 1000) - 300000;
-      
+
       return this.accessToken;
     } catch (error) {
       logger.error('Azure AD token acquisition failed', {
@@ -61,7 +61,7 @@ class AzureADService {
   async testConnection() {
     try {
       const token = await this.getAccessToken();
-      
+
       // Try to get organization info to verify connection
       const response = await axios.get('https://graph.microsoft.com/v1.0/organization', {
         headers: {
@@ -81,7 +81,7 @@ class AzureADService {
         error: error.message,
         status: error.response?.status
       });
-      
+
       return {
         success: false,
         status: 'error',
@@ -96,16 +96,16 @@ class AzureADService {
    */
   async getUsers(options = {}) {
     const { pageSize = 100, filter = null, select = null } = options;
-    
+
     try {
       const token = await this.getAccessToken();
-      
+
       let url = `https://graph.microsoft.com/v1.0/users?$top=${pageSize}`;
-      
+
       // Default fields to retrieve
       const defaultSelect = 'id,displayName,givenName,surname,mail,userPrincipalName,jobTitle,department,officeLocation,mobilePhone,businessPhones,employeeId,accountEnabled';
       url += `&$select=${select || defaultSelect}`;
-      
+
       if (filter) {
         url += `&$filter=${encodeURIComponent(filter)}`;
       }
@@ -124,7 +124,7 @@ class AzureADService {
 
         allUsers.push(...response.data.value);
         nextLink = response.data['@odata.nextLink'] || null;
-        
+
         // Safety limit to prevent infinite loops
         if (allUsers.length > 10000) {
           logger.warn('Azure AD user fetch hit safety limit of 10000 users');
@@ -142,7 +142,7 @@ class AzureADService {
         error: error.message,
         status: error.response?.status
       });
-      
+
       throw new Error(`Failed to fetch users: ${error.response?.data?.error?.message || error.message}`);
     }
   }
@@ -153,13 +153,13 @@ class AzureADService {
    */
   async getGroups(options = {}) {
     const { pageSize = 100, filter = null } = options;
-    
+
     try {
       const token = await this.getAccessToken();
-      
+
       let url = `https://graph.microsoft.com/v1.0/groups?$top=${pageSize}`;
       url += '&$select=id,displayName,description,mail,mailEnabled,securityEnabled,groupTypes';
-      
+
       if (filter) {
         url += `&$filter=${encodeURIComponent(filter)}`;
       }
@@ -178,7 +178,7 @@ class AzureADService {
 
         allGroups.push(...response.data.value);
         nextLink = response.data['@odata.nextLink'] || null;
-        
+
         if (allGroups.length > 5000) {
           logger.warn('Azure AD group fetch hit safety limit of 5000 groups');
           break;
@@ -195,7 +195,7 @@ class AzureADService {
         error: error.message,
         status: error.response?.status
       });
-      
+
       throw new Error(`Failed to fetch groups: ${error.response?.data?.error?.message || error.message}`);
     }
   }
@@ -207,7 +207,7 @@ class AzureADService {
   async getGroupMembers(groupId) {
     try {
       const token = await this.getAccessToken();
-      
+
       const response = await axios.get(
         `https://graph.microsoft.com/v1.0/groups/${groupId}/members?$select=id,displayName,mail,userPrincipalName`,
         {
@@ -228,7 +228,7 @@ class AzureADService {
         error: error.message,
         groupId
       });
-      
+
       throw new Error(`Failed to fetch group members: ${error.response?.data?.error?.message || error.message}`);
     }
   }
@@ -240,7 +240,7 @@ class AzureADService {
   async getUserManager(userId) {
     try {
       const token = await this.getAccessToken();
-      
+
       const response = await axios.get(
         `https://graph.microsoft.com/v1.0/users/${userId}/manager?$select=id,displayName,mail,userPrincipalName`,
         {
@@ -260,12 +260,12 @@ class AzureADService {
       if (error.response?.status === 404) {
         return { success: true, manager: null };
       }
-      
+
       logger.error('Azure AD manager fetch failed', {
         error: error.message,
         userId
       });
-      
+
       return { success: false, manager: null, error: error.message };
     }
   }
@@ -277,7 +277,7 @@ class AzureADService {
   async getUserDirectReports(userId) {
     try {
       const token = await this.getAccessToken();
-      
+
       const response = await axios.get(
         `https://graph.microsoft.com/v1.0/users/${userId}/directReports?$select=id,displayName,mail,userPrincipalName,jobTitle`,
         {
@@ -298,7 +298,7 @@ class AzureADService {
         error: error.message,
         userId
       });
-      
+
       return { success: false, directReports: [], error: error.message };
     }
   }

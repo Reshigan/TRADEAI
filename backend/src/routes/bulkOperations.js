@@ -8,11 +8,11 @@ const Budget = require('../models/Budget');
 const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 const upload = multer({ dest: '/tmp/uploads/' });
 
-router.post('/import/customers', protect, upload.single('file'), async (req, res) => {
+router.post('/import/customers', protect, upload.single('file'), (req, res) => {
   try {
     const userRole = req.user.role;
     if (userRole !== 'admin' && userRole !== 'manager') {
@@ -51,7 +51,7 @@ router.post('/import/customers', protect, upload.single('file'), async (req, res
         try {
           if (results.length > 0) {
             const inserted = await Customer.insertMany(results, { ordered: false });
-            
+
             fs.unlinkSync(req.file.path);
 
             res.json({
@@ -75,7 +75,7 @@ router.post('/import/customers', protect, upload.single('file'), async (req, res
   }
 });
 
-router.post('/import/products', protect, upload.single('file'), async (req, res) => {
+router.post('/import/products', protect, upload.single('file'), (req, res) => {
   try {
     const userRole = req.user.role;
     if (userRole !== 'admin' && userRole !== 'manager') {
@@ -116,7 +116,7 @@ router.post('/import/products', protect, upload.single('file'), async (req, res)
         try {
           if (results.length > 0) {
             const inserted = await Product.insertMany(results, { ordered: false });
-            
+
             fs.unlinkSync(req.file.path);
 
             res.json({
@@ -151,14 +151,14 @@ router.get('/export/customers', protect, async (req, res) => {
     }
 
     const headers = ['name', 'code', 'customerType', 'tier', 'paymentTerms', 'creditLimit', 'currency', 'status'];
-    let csv = headers.join(',') + '\n';
+    let csv = `${headers.join(',')}\n`;
 
-    customers.forEach(customer => {
-      const row = headers.map(header => {
+    customers.forEach((customer) => {
+      const row = headers.map((header) => {
         const value = customer[header] || '';
         return `"${value}"`;
       });
-      csv += row.join(',') + '\n';
+      csv += `${row.join(',')}\n`;
     });
 
     res.setHeader('Content-Type', 'text/csv');
@@ -181,9 +181,9 @@ router.get('/export/products', protect, async (req, res) => {
     }
 
     const headers = ['name', 'code', 'category', 'brand', 'listPrice', 'costPrice', 'currency', 'status'];
-    let csv = headers.join(',') + '\n';
+    let csv = `${headers.join(',')}\n`;
 
-    products.forEach(product => {
+    products.forEach((product) => {
       const row = [
         product.name || '',
         product.code || '',
@@ -194,7 +194,7 @@ router.get('/export/products', protect, async (req, res) => {
         product.pricing?.currency || 'ZAR',
         product.status || 'active'
       ];
-      csv += row.map(v => `"${v}"`).join(',') + '\n';
+      csv += `${row.map((v) => `"${v}"`).join(',')}\n`;
     });
 
     res.setHeader('Content-Type', 'text/csv');

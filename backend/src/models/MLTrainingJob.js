@@ -104,7 +104,7 @@ addTenantSupport(mlTrainingJobSchema);
 mlTrainingJobSchema.index({ tenantId: 1, modelName: 1, status: 1 });
 mlTrainingJobSchema.index({ companyId: 1, modelName: 1, createdAt: -1 });
 
-mlTrainingJobSchema.statics.getTrainingStatus = async function(companyId) {
+mlTrainingJobSchema.statics.getTrainingStatus = async function (companyId) {
   const models = ['customerBehavior', 'demandForecasting', 'promotionOptimization', 'churnPrediction', 'priceOptimization'];
   const status = {};
 
@@ -119,7 +119,7 @@ mlTrainingJobSchema.statics.getTrainingStatus = async function(companyId) {
         progress: latestJob.progress,
         lastTrained: latestJob.completedAt?.toISOString(),
         nextTraining: latestJob.nextTraining?.toISOString(),
-        estimatedCompletion: latestJob.status === 'training' 
+        estimatedCompletion: latestJob.status === 'training'
           ? new Date(Date.now() + (latestJob.estimatedDuration || 60) * 60 * 1000).toISOString()
           : null,
         scheduledStart: latestJob.scheduledStart?.toISOString()
@@ -137,10 +137,10 @@ mlTrainingJobSchema.statics.getTrainingStatus = async function(companyId) {
   return status;
 };
 
-mlTrainingJobSchema.statics.queueRetraining = async function(companyId, modelNames, userId, force = false) {
+mlTrainingJobSchema.statics.queueRetraining = async function (companyId, modelNames, userId, force = false) {
   const jobs = [];
   const availableModels = ['customerBehavior', 'demandForecasting', 'promotionOptimization', 'churnPrediction', 'priceOptimization'];
-  const modelsToRetrain = modelNames.length > 0 ? modelNames.filter(m => availableModels.includes(m)) : availableModels;
+  const modelsToRetrain = modelNames.length > 0 ? modelNames.filter((m) => availableModels.includes(m)) : availableModels;
 
   for (const modelName of modelsToRetrain) {
     const existingJob = await this.findOne({
@@ -183,19 +183,19 @@ mlTrainingJobSchema.statics.queueRetraining = async function(companyId, modelNam
   return jobs;
 };
 
-mlTrainingJobSchema.methods.start = function() {
+mlTrainingJobSchema.methods.start = function () {
   this.status = 'training';
   this.startedAt = new Date();
   this.progress = 0;
   return this.save();
 };
 
-mlTrainingJobSchema.methods.updateProgress = function(progress) {
+mlTrainingJobSchema.methods.updateProgress = function (progress) {
   this.progress = Math.min(100, Math.max(0, progress));
   return this.save();
 };
 
-mlTrainingJobSchema.methods.complete = function(accuracy, metrics) {
+mlTrainingJobSchema.methods.complete = function (accuracy, metrics) {
   this.status = 'completed';
   this.progress = 100;
   this.completedAt = new Date();
@@ -208,7 +208,7 @@ mlTrainingJobSchema.methods.complete = function(accuracy, metrics) {
   return this.save();
 };
 
-mlTrainingJobSchema.methods.fail = function(error) {
+mlTrainingJobSchema.methods.fail = function (error) {
   this.status = 'failed';
   this.completedAt = new Date();
   if (error) {

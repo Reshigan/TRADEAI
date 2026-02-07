@@ -18,7 +18,7 @@ router.get('/', protect, async (req, res) => {
         status: { $in: ['exceeded', 'warning'] }
       }).select('name category allocated spent status');
 
-      budgetOverruns.forEach(budget => {
+      budgetOverruns.forEach((budget) => {
         const utilizationRate = (budget.spent / budget.allocated) * 100;
         alerts.push({
           type: 'budget_overrun',
@@ -150,9 +150,9 @@ router.get('/', protect, async (req, res) => {
     res.json({
       alerts,
       count: alerts.length,
-      critical: alerts.filter(a => a.severity === 'critical').length,
-      warning: alerts.filter(a => a.severity === 'warning').length,
-      info: alerts.filter(a => a.severity === 'info').length
+      critical: alerts.filter((a) => a.severity === 'critical').length,
+      warning: alerts.filter((a) => a.severity === 'warning').length,
+      info: alerts.filter((a) => a.severity === 'info').length
     });
   } catch (error) {
     console.error('Get alerts error:', error);
@@ -160,7 +160,7 @@ router.get('/', protect, async (req, res) => {
   }
 });
 
-router.post('/:id/read', protect, async (req, res) => {
+router.post('/:id/read', protect, (req, res) => {
   try {
     res.json({ message: 'Alert marked as read' });
   } catch (error) {

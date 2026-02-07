@@ -87,10 +87,10 @@ router.get('/promotion-effectiveness', protect, async (req, res) => {
         averageROI: scorecard.reduce((sum, p) => sum + p.metrics.roi, 0) / scorecard.length || 0,
         totalRevenue: scorecard.reduce((sum, p) => sum + p.metrics.revenue, 0),
         totalSpend: scorecard.reduce((sum, p) => sum + p.metrics.tradeSpend, 0),
-        excellent: scorecard.filter(p => p.performance === 'excellent').length,
-        good: scorecard.filter(p => p.performance === 'good').length,
-        fair: scorecard.filter(p => p.performance === 'fair').length,
-        poor: scorecard.filter(p => p.performance === 'poor').length
+        excellent: scorecard.filter((p) => p.performance === 'excellent').length,
+        good: scorecard.filter((p) => p.performance === 'good').length,
+        fair: scorecard.filter((p) => p.performance === 'fair').length,
+        poor: scorecard.filter((p) => p.performance === 'poor').length
       }
     });
   } catch (error) {
@@ -247,8 +247,8 @@ router.get('/budget-variance', protect, async (req, res) => {
       totalSpent: budgetVariance.reduce((sum, b) => sum + b.spent, 0),
       totalRemaining: budgetVariance.reduce((sum, b) => sum + b.remaining, 0),
       overallUtilization: 0,
-      categoriesExceeded: budgetVariance.filter(b => b.status === 'exceeded').length,
-      categoriesWarning: budgetVariance.filter(b => b.status === 'warning').length
+      categoriesExceeded: budgetVariance.filter((b) => b.status === 'exceeded').length,
+      categoriesWarning: budgetVariance.filter((b) => b.status === 'warning').length
     };
 
     summary.overallUtilization = summary.totalAllocated > 0
@@ -330,16 +330,16 @@ router.get('/customer-segmentation', protect, async (req, res) => {
       totalCustomers: segmented.length,
       totalRevenue,
       segmentA: {
-        count: segmented.filter(c => c.segment === 'A').length,
-        revenue: segmented.filter(c => c.segment === 'A').reduce((sum, c) => sum + c.revenue, 0)
+        count: segmented.filter((c) => c.segment === 'A').length,
+        revenue: segmented.filter((c) => c.segment === 'A').reduce((sum, c) => sum + c.revenue, 0)
       },
       segmentB: {
-        count: segmented.filter(c => c.segment === 'B').length,
-        revenue: segmented.filter(c => c.segment === 'B').reduce((sum, c) => sum + c.revenue, 0)
+        count: segmented.filter((c) => c.segment === 'B').length,
+        revenue: segmented.filter((c) => c.segment === 'B').reduce((sum, c) => sum + c.revenue, 0)
       },
       segmentC: {
-        count: segmented.filter(c => c.segment === 'C').length,
-        revenue: segmented.filter(c => c.segment === 'C').reduce((sum, c) => sum + c.revenue, 0)
+        count: segmented.filter((c) => c.segment === 'C').length,
+        revenue: segmented.filter((c) => c.segment === 'C').reduce((sum, c) => sum + c.revenue, 0)
       }
     };
 

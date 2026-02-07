@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+const _crypto = require('crypto');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const rateLimit = require('express-rate-limit');

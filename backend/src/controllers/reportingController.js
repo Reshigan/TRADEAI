@@ -335,10 +335,10 @@ class ReportingController {
    * GET /api/reports/history
    */
   getReportHistory = asyncHandler(async (req, res) => {
-    const tenantId = req.tenant.id;
+    const _tenantId = req.tenant.id;
     const { page = 1, limit = 20, reportType, status } = req.query;
     const ReportRun = require('../models/ReportRun');
-    const Report = require('../models/Report');
+    const _Report = require('../models/Report');
 
     const query = {};
     if (reportType) query['parameters.reportType'] = reportType;
@@ -356,7 +356,7 @@ class ReportingController {
       ReportRun.countDocuments(query)
     ]);
 
-    const history = reportRuns.map(run => ({
+    const history = reportRuns.map((run) => ({
       id: run.runId,
       name: run.reportDefinitionId?.name || 'Report',
       reportType: run.reportDefinitionId?.reportType || run.parameters?.reportType,
@@ -427,18 +427,18 @@ class ReportingController {
     ]);
 
     const typeMap = {};
-    reportsByType.forEach(item => {
+    reportsByType.forEach((item) => {
       if (item._id) typeMap[item._id] = item.count;
     });
 
     const formatMap = {};
-    reportsByFormat.forEach(item => {
+    reportsByFormat.forEach((item) => {
       if (item._id) formatMap[item._id] = item.count;
     });
 
     const mostPopular = reportsByType.sort((a, b) => b.count - a.count)[0];
 
-    const recentActivity = recentRuns.map(run => ({
+    const recentActivity = recentRuns.map((run) => ({
       action: run.status === 'completed' ? 'generated' : run.status,
       reportType: run.reportDefinitionId?.reportType || run.parameters?.reportType || 'unknown',
       timestamp: run.createdAt

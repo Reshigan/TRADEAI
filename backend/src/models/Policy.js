@@ -126,22 +126,22 @@ policySchema.index({ companyId: 1, category: 1 });
 policySchema.index({ companyId: 1, effectiveDate: 1 });
 
 // Virtual for acknowledgment rate
-policySchema.virtual('acknowledgmentRate').get(function() {
+policySchema.virtual('acknowledgmentRate').get(function () {
   // This would need to be calculated based on target audience
   return this.acknowledgments ? this.acknowledgments.length : 0;
 });
 
 // Method to publish policy
-policySchema.methods.publish = async function(userId) {
+policySchema.methods.publish = async function (userId) {
   this.status = 'published';
   this.publishedAt = new Date();
   this.publishedBy = userId;
-  return this.save();
+  const saved = await this.save();
+  return saved;
 };
 
 // Method to create new version
-policySchema.methods.createNewVersion = async function(newContent, newVersion, userId) {
-  // Archive current version
+policySchema.methods.createNewVersion = async function (newContent, newVersion, userId) {
   this.previousVersions.push({
     version: this.version,
     content: this.content,
@@ -149,20 +149,20 @@ policySchema.methods.createNewVersion = async function(newContent, newVersion, u
     archivedAt: new Date(),
     archivedBy: userId
   });
-  
-  // Update to new version
+
   this.version = newVersion;
   this.content = newContent;
   this.status = 'draft';
   this.updatedBy = userId;
-  this.acknowledgments = []; // Reset acknowledgments for new version
-  
-  return this.save();
+  this.acknowledgments = [];
+
+  const saved = await this.save();
+  return saved;
 };
 
 // Method to acknowledge
-policySchema.methods.acknowledge = async function(userId, ipAddress, userAgent) {
-  const existing = this.acknowledgments.find(a => a.userId.toString() === userId.toString());
+policySchema.methods.acknowledge = async function (userId, ipAddress, userAgent) {
+  const existing = this.acknowledgments.find((a) => a.userId.toString() === userId.toString());
   if (!existing) {
     this.acknowledgments.push({
       userId,
@@ -170,7 +170,8 @@ policySchema.methods.acknowledge = async function(userId, ipAddress, userAgent) 
       ipAddress,
       userAgent
     });
-    return this.save();
+    const saved = await this.save();
+    return saved;
   }
   return this;
 };

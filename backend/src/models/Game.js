@@ -108,13 +108,13 @@ gameSchema.index({ companyId: 1, type: 1 });
 gameSchema.index({ companyId: 1, 'participants.userId': 1 });
 
 // Virtual for participant count
-gameSchema.virtual('participantCount').get(function() {
+gameSchema.virtual('participantCount').get(function () {
   return this.participants ? this.participants.length : 0;
 });
 
 // Method to add points to a participant
-gameSchema.methods.addPoints = async function(userId, points, action) {
-  const participant = this.participants.find(p => p.userId.toString() === userId.toString());
+gameSchema.methods.addPoints = async function (userId, points, _action) {
+  const participant = this.participants.find((p) => p.userId.toString() === userId.toString());
   if (participant) {
     participant.points += points;
     participant.lastActivityAt = new Date();
@@ -130,7 +130,8 @@ gameSchema.methods.addPoints = async function(userId, points, action) {
   this.participants.forEach((p, index) => {
     p.rank = index + 1;
   });
-  return this.save();
+  const saved = await this.save();
+  return saved;
 };
 
 addTenantSupport(gameSchema);

@@ -86,13 +86,13 @@ learningCourseSchema.index({ companyId: 1, category: 1 });
 learningCourseSchema.index({ companyId: 1, 'assignedTo': 1 });
 
 // Virtual for completion rate
-learningCourseSchema.virtual('completionRate').get(function() {
+learningCourseSchema.virtual('completionRate').get(function () {
   if (!this.assignedTo || this.assignedTo.length === 0) return 0;
   return Math.round((this.completions.length / this.assignedTo.length) * 100);
 });
 
 // Calculate total duration from modules
-learningCourseSchema.pre('save', function(next) {
+learningCourseSchema.pre('save', function (next) {
   if (this.modules && this.modules.length > 0) {
     this.duration = this.modules.reduce((total, mod) => total + (mod.duration || 0), 0);
   }

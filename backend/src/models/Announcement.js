@@ -105,39 +105,42 @@ announcementSchema.index({ companyId: 1, 'scheduling.publishAt': 1 });
 announcementSchema.index({ companyId: 1, isPinned: -1, createdAt: -1 });
 
 // Virtual for view count
-announcementSchema.virtual('viewCount').get(function() {
+announcementSchema.virtual('viewCount').get(function () {
   return this.views ? this.views.length : 0;
 });
 
 // Virtual for acknowledgment count
-announcementSchema.virtual('acknowledgmentCount').get(function() {
+announcementSchema.virtual('acknowledgmentCount').get(function () {
   return this.acknowledgments ? this.acknowledgments.length : 0;
 });
 
 // Method to publish announcement
-announcementSchema.methods.publish = async function(userId) {
+announcementSchema.methods.publish = async function (userId) {
   this.status = 'published';
   this.publishedAt = new Date();
   this.publishedBy = userId;
-  return this.save();
+  const saved = await this.save();
+  return saved;
 };
 
 // Method to record view
-announcementSchema.methods.recordView = async function(userId) {
-  const existingView = this.views.find(v => v.userId.toString() === userId.toString());
+announcementSchema.methods.recordView = async function (userId) {
+  const existingView = this.views.find((v) => v.userId.toString() === userId.toString());
   if (!existingView) {
     this.views.push({ userId, viewedAt: new Date() });
-    return this.save();
+    const saved = await this.save();
+    return saved;
   }
   return this;
 };
 
 // Method to acknowledge
-announcementSchema.methods.acknowledge = async function(userId) {
-  const existing = this.acknowledgments.find(a => a.userId.toString() === userId.toString());
+announcementSchema.methods.acknowledge = async function (userId) {
+  const existing = this.acknowledgments.find((a) => a.userId.toString() === userId.toString());
   if (!existing) {
     this.acknowledgments.push({ userId, acknowledgedAt: new Date() });
-    return this.save();
+    const saved = await this.save();
+    return saved;
   }
   return this;
 };

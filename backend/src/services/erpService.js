@@ -18,18 +18,18 @@ class ERPService {
    */
   async testSAPConnection() {
     const { sap } = this.settings;
-    
+
     if (!sap || !sap.host) {
       return { success: false, status: 'not_configured', error: 'SAP not configured' };
     }
 
     try {
       let response;
-      
+
       if (sap.connectionType === 'api' || sap.connectionType === 'middleware') {
         // REST API connection (SAP Gateway, SAP API Hub, or middleware like MuleSoft)
         const baseUrl = sap.host.startsWith('http') ? sap.host : `https://${sap.host}`;
-        
+
         response = await axios.get(`${baseUrl}/sap/opu/odata/sap/API_BUSINESS_PARTNER/A_BusinessPartner?$top=1`, {
           auth: {
             username: sap.username,
@@ -55,7 +55,7 @@ class ERPService {
         // Direct RFC connection would use node-rfc library
         // For now, we'll use HTTP ping to the SAP system
         const baseUrl = sap.host.startsWith('http') ? sap.host : `https://${sap.host}:${sap.port || 443}`;
-        
+
         response = await axios.get(`${baseUrl}/sap/bc/ping`, {
           timeout: 15000,
           validateStatus: () => true
@@ -100,7 +100,7 @@ class ERPService {
 
     try {
       const baseUrl = sap.host.startsWith('http') ? sap.host : `https://${sap.host}`;
-      
+
       // SAP Business Partner API (S/4HANA)
       const response = await axios.get(
         `${baseUrl}/sap/opu/odata/sap/API_BUSINESS_PARTNER/A_BusinessPartner`,
@@ -124,10 +124,10 @@ class ERPService {
       );
 
       const customers = response.data.d?.results || response.data.value || [];
-      
+
       return {
         success: true,
-        customers: customers.map(c => this.transformSAPCustomer(c)),
+        customers: customers.map((c) => this.transformSAPCustomer(c)),
         count: customers.length,
         hasMore: customers.length === pageSize
       };
@@ -150,7 +150,7 @@ class ERPService {
 
     try {
       const baseUrl = sap.host.startsWith('http') ? sap.host : `https://${sap.host}`;
-      
+
       // SAP Product Master API
       const response = await axios.get(
         `${baseUrl}/sap/opu/odata/sap/API_PRODUCT_SRV/A_Product`,
@@ -172,10 +172,10 @@ class ERPService {
       );
 
       const products = response.data.d?.results || response.data.value || [];
-      
+
       return {
         success: true,
-        products: products.map(p => this.transformSAPProduct(p)),
+        products: products.map((p) => this.transformSAPProduct(p)),
         count: products.length,
         hasMore: products.length === pageSize
       };
@@ -198,7 +198,7 @@ class ERPService {
 
     try {
       const baseUrl = sap.host.startsWith('http') ? sap.host : `https://${sap.host}`;
-      
+
       // SAP Pricing Conditions API
       const response = await axios.get(
         `${baseUrl}/sap/opu/odata/sap/API_SLSPRICINGCONDITIONRECORD_SRV/A_SlsPrcgConditionRecord`,
@@ -220,10 +220,10 @@ class ERPService {
       );
 
       const pricing = response.data.d?.results || response.data.value || [];
-      
+
       return {
         success: true,
-        pricing: pricing.map(p => this.transformSAPPricing(p)),
+        pricing: pricing.map((p) => this.transformSAPPricing(p)),
         count: pricing.length,
         hasMore: pricing.length === pageSize
       };
@@ -246,7 +246,7 @@ class ERPService {
 
     try {
       const baseUrl = sap.host.startsWith('http') ? sap.host : `https://${sap.host}`;
-      
+
       let filter = '';
       if (fromDate) {
         filter = `CreationDate ge datetime'${fromDate.toISOString()}'`;
@@ -274,10 +274,10 @@ class ERPService {
       );
 
       const orders = response.data.d?.results || response.data.value || [];
-      
+
       return {
         success: true,
-        orders: orders.map(o => this.transformSAPSalesOrder(o)),
+        orders: orders.map((o) => this.transformSAPSalesOrder(o)),
         count: orders.length,
         hasMore: orders.length === pageSize
       };
@@ -294,7 +294,7 @@ class ERPService {
    */
   async testERPConnection() {
     const { erp } = this.settings;
-    
+
     if (!erp || !erp.baseUrl) {
       return { success: false, status: 'not_configured', error: 'ERP not configured' };
     }
@@ -302,7 +302,7 @@ class ERPService {
     try {
       let response;
       const baseUrl = erp.baseUrl.startsWith('http') ? erp.baseUrl : `https://${erp.baseUrl}`;
-      
+
       const headers = {
         'Accept': 'application/json'
       };
@@ -312,7 +312,7 @@ class ERPService {
         headers['X-API-Key'] = erp.apiKey;
         headers['Authorization'] = `Bearer ${erp.apiKey}`;
       } else if (erp.username && erp.password) {
-        headers['Authorization'] = 'Basic ' + Buffer.from(`${erp.username}:${erp.password}`).toString('base64');
+        headers['Authorization'] = `Basic ${Buffer.from(`${erp.username}:${erp.password}`).toString('base64')}`;
       }
 
       if (erp.connectionType === 'rest_api') {
@@ -375,7 +375,7 @@ class ERPService {
 
     try {
       const baseUrl = erp.baseUrl.startsWith('http') ? erp.baseUrl : `https://${erp.baseUrl}`;
-      
+
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -385,7 +385,7 @@ class ERPService {
         headers['X-API-Key'] = erp.apiKey;
         headers['Authorization'] = `Bearer ${erp.apiKey}`;
       } else if (erp.username && erp.password) {
-        headers['Authorization'] = 'Basic ' + Buffer.from(`${erp.username}:${erp.password}`).toString('base64');
+        headers['Authorization'] = `Basic ${Buffer.from(`${erp.username}:${erp.password}`).toString('base64')}`;
       }
 
       const response = await axios.get(`${baseUrl}${endpoint}`, {
@@ -393,7 +393,7 @@ class ERPService {
         params: {
           ...params,
           limit: pageSize,
-          page: page,
+          page,
           offset: (page - 1) * pageSize
         },
         timeout: 60000
@@ -418,7 +418,7 @@ class ERPService {
     const result = await this.fetchERPData('/api/customers', options);
     return {
       ...result,
-      customers: (result.data || []).map(c => this.transformERPCustomer(c))
+      customers: (result.data || []).map((c) => this.transformERPCustomer(c))
     };
   }
 
@@ -429,7 +429,7 @@ class ERPService {
     const result = await this.fetchERPData('/api/products', options);
     return {
       ...result,
-      products: (result.data || []).map(p => this.transformERPProduct(p))
+      products: (result.data || []).map((p) => this.transformERPProduct(p))
     };
   }
 
@@ -451,7 +451,7 @@ class ERPService {
     const result = await this.fetchERPData('/api/sales', options);
     return {
       ...result,
-      sales: (result.data || []).map(s => this.transformERPSalesRecord(s))
+      sales: (result.data || []).map((s) => this.transformERPSalesRecord(s))
     };
   }
 
@@ -462,7 +462,7 @@ class ERPService {
    */
   async fetchRealTimeSalesData(options = {}) {
     const { salesData } = this.settings;
-    
+
     if (!salesData || !salesData.feedUrl) {
       throw new Error('Sales data feed not configured');
     }
@@ -487,7 +487,7 @@ class ERPService {
       });
 
       let data = response.data;
-      
+
       // Handle different response formats
       if (typeof data === 'string') {
         try {
@@ -519,7 +519,7 @@ class ERPService {
       industry: sapCustomer.Industry,
       searchTerm: sapCustomer.SearchTerm1,
       source: 'sap',
-      addresses: (sapCustomer.to_BusinessPartnerAddress?.results || []).map(addr => ({
+      addresses: (sapCustomer.to_BusinessPartnerAddress?.results || []).map((addr) => ({
         street: addr.StreetName,
         city: addr.CityName,
         region: addr.Region,
@@ -563,7 +563,7 @@ class ERPService {
       totalAmount: parseFloat(sapOrder.TotalNetAmount) || 0,
       currency: sapOrder.TransactionCurrency,
       orderDate: sapOrder.CreationDate,
-      items: (sapOrder.to_Item?.results || []).map(item => ({
+      items: (sapOrder.to_Item?.results || []).map((item) => ({
         product: item.Material,
         quantity: parseFloat(item.RequestedQuantity) || 0,
         unit: item.RequestedQuantityUnit,
@@ -612,10 +612,10 @@ class ERPService {
   parseCSVSalesData(csvString) {
     const lines = csvString.trim().split('\n');
     if (lines.length < 2) return [];
-    
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+
+    const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
     const records = [];
-    
+
     for (let i = 1; i < lines.length; i++) {
       const values = lines[i].split(',');
       const record = {};
@@ -624,7 +624,7 @@ class ERPService {
       });
       records.push(record);
     }
-    
+
     return records;
   }
 }

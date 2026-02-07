@@ -138,9 +138,9 @@ simulationSchema.index({ tenantId: 1, createdBy: 1, createdAt: -1 });
 simulationSchema.index({ companyId: 1, status: 1, createdAt: -1 });
 simulationSchema.index({ companyId: 1, type: 1, status: 1 });
 
-simulationSchema.statics.getSavedSimulations = function(companyId, userId, options = {}) {
+simulationSchema.statics.getSavedSimulations = function (companyId, userId, options = {}) {
   const { type, status, limit = 50, page = 1 } = options;
-  
+
   const query = {
     companyId,
     $or: [
@@ -148,12 +148,12 @@ simulationSchema.statics.getSavedSimulations = function(companyId, userId, optio
       { 'sharedWith.user': userId }
     ]
   };
-  
+
   if (type) query.type = type;
   if (status) query.status = status;
-  
+
   const skip = (page - 1) * limit;
-  
+
   return this.find(query)
     .populate('createdBy', 'firstName lastName email')
     .sort({ createdAt: -1 })
@@ -161,14 +161,14 @@ simulationSchema.statics.getSavedSimulations = function(companyId, userId, optio
     .limit(limit);
 };
 
-simulationSchema.methods.canUserAccess = function(userId) {
+simulationSchema.methods.canUserAccess = function (userId) {
   if (this.createdBy.toString() === userId.toString()) return true;
-  return this.sharedWith.some(share => share.user.toString() === userId.toString());
+  return this.sharedWith.some((share) => share.user.toString() === userId.toString());
 };
 
-simulationSchema.methods.canUserEdit = function(userId) {
+simulationSchema.methods.canUserEdit = function (userId) {
   if (this.createdBy.toString() === userId.toString()) return true;
-  const share = this.sharedWith.find(s => s.user.toString() === userId.toString());
+  const share = this.sharedWith.find((s) => s.user.toString() === userId.toString());
   return share && share.permission === 'edit';
 };
 

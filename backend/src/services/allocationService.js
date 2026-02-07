@@ -179,7 +179,7 @@ class AllocationService {
         entityName: entity?.name || 'Unknown',
         entityCode: entity?.code || entity?.sku || entityId,
         weight: weights[entityId],
-        weightPercentage: (weights[entityId] * 100).toFixed(2) + '%',
+        weightPercentage: `${(weights[entityId] * 100).toFixed(2)}%`,
         allocatedAmount,
         hierarchy: entity?.hierarchy
       };
@@ -270,7 +270,7 @@ class AllocationService {
   async recalculateAllocation(existingAllocation, newPeriodEnd = null) {
     const periodEnd = newPeriodEnd || existingAllocation.periodEnd;
 
-    return this.executeAllocation(
+    const result = await this.executeAllocation(
       existingAllocation.companyId,
       existingAllocation.sourceType,
       existingAllocation.sourceId,
@@ -282,6 +282,8 @@ class AllocationService {
       periodEnd,
       existingAllocation.createdBy
     );
+
+    return result;
   }
 
   /**

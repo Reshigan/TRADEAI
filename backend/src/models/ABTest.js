@@ -121,7 +121,7 @@ addTenantSupport(abTestSchema);
 abTestSchema.index({ tenantId: 1, status: 1, createdAt: -1 });
 abTestSchema.index({ companyId: 1, status: 1, createdAt: -1 });
 
-abTestSchema.pre('save', function(next) {
+abTestSchema.pre('save', function (next) {
   if (this.isNew && !this.testId) {
     this.testId = `ab_test_${Date.now()}`;
   }
@@ -132,32 +132,32 @@ abTestSchema.pre('save', function(next) {
   next();
 });
 
-abTestSchema.methods.start = function() {
+abTestSchema.methods.start = function () {
   this.status = 'active';
   this.startDate = new Date();
   this.endDate = new Date(Date.now() + this.duration * 24 * 60 * 60 * 1000);
   return this.save();
 };
 
-abTestSchema.methods.pause = function() {
+abTestSchema.methods.pause = function () {
   this.status = 'paused';
   return this.save();
 };
 
-abTestSchema.methods.complete = function() {
+abTestSchema.methods.complete = function () {
   this.status = 'completed';
   this.endDate = new Date();
   this.calculateResults();
   return this.save();
 };
 
-abTestSchema.methods.cancel = function() {
+abTestSchema.methods.cancel = function () {
   this.status = 'cancelled';
   this.endDate = new Date();
   return this.save();
 };
 
-abTestSchema.methods.recordParticipant = function(variantIndex) {
+abTestSchema.methods.recordParticipant = function (variantIndex) {
   if (this.variants[variantIndex]) {
     this.variants[variantIndex].participants += 1;
     this.totalParticipants += 1;
@@ -165,7 +165,7 @@ abTestSchema.methods.recordParticipant = function(variantIndex) {
   return this.save();
 };
 
-abTestSchema.methods.recordConversion = function(variantIndex, revenue = 0) {
+abTestSchema.methods.recordConversion = function (variantIndex, revenue = 0) {
   if (this.variants[variantIndex]) {
     this.variants[variantIndex].conversions += 1;
     this.variants[variantIndex].revenue += revenue;
@@ -173,10 +173,10 @@ abTestSchema.methods.recordConversion = function(variantIndex, revenue = 0) {
   return this.save();
 };
 
-abTestSchema.methods.calculateResults = function() {
+abTestSchema.methods.calculateResults = function () {
   if (this.variants.length < 2) return;
 
-  const variantResults = this.variants.map(v => ({
+  const variantResults = this.variants.map((v) => ({
     name: v.name,
     participants: v.participants,
     conversionRate: v.participants > 0 ? (v.conversions / v.participants) * 100 : 0,
@@ -195,9 +195,9 @@ abTestSchema.methods.calculateResults = function() {
   }
 
   const control = variantResults[0];
-  const bestVariant = variantResults.find(v => v.name === winner);
-  const improvement = control.conversionRate > 0 
-    ? ((bestVariant.conversionRate - control.conversionRate) / control.conversionRate) * 100 
+  const bestVariant = variantResults.find((v) => v.name === winner);
+  const improvement = control.conversionRate > 0
+    ? ((bestVariant.conversionRate - control.conversionRate) / control.conversionRate) * 100
     : 0;
 
   this.results = {
@@ -216,13 +216,13 @@ abTestSchema.methods.calculateResults = function() {
   };
 };
 
-abTestSchema.statics.getActiveTests = function(companyId) {
+abTestSchema.statics.getActiveTests = function (companyId) {
   return this.find({ companyId, status: 'active' })
     .populate('createdBy', 'firstName lastName email')
     .sort({ startDate: -1 });
 };
 
-abTestSchema.statics.getTestResults = async function(testId, companyId) {
+abTestSchema.statics.getTestResults = async function (testId, companyId) {
   const test = await this.findOne({ testId, companyId });
   if (!test) return null;
 
@@ -237,7 +237,7 @@ abTestSchema.statics.getTestResults = async function(testId, companyId) {
     status: test.status,
     participants: test.totalParticipants,
     duration: test.duration,
-    variants: test.variants.map(v => ({
+    variants: test.variants.map((v) => ({
       name: v.name,
       participants: v.participants,
       conversionRate: v.participants > 0 ? (v.conversions / v.participants) * 100 : 0,

@@ -24,7 +24,7 @@ router.get('/admin', protect, async (req, res) => {
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     const activeUsers = await User.countDocuments({
       tenantId,
       lastLogin: { $gte: thirtyDaysAgo }
@@ -255,9 +255,9 @@ router.get('/kam', protect, async (req, res) => {
         performance: customerPerformance
       },
       myDeductions: {
-        pending: myDeductions.filter(d => d.status === 'pending').length,
-        submitted: myDeductions.filter(d => d.status === 'submitted').length,
-        approved: myDeductions.filter(d => d.status === 'approved').length,
+        pending: myDeductions.filter((d) => d.status === 'pending').length,
+        submitted: myDeductions.filter((d) => d.status === 'submitted').length,
+        approved: myDeductions.filter((d) => d.status === 'approved').length,
         recent: myDeductions
       },
       myWallet: {

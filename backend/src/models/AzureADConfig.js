@@ -9,7 +9,7 @@ const azureADConfigSchema = new mongoose.Schema({
     unique: true,
     index: true
   },
-  
+
   // Azure AD Configuration
   tenantId: {
     type: String,
@@ -30,7 +30,7 @@ const azureADConfigSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  
+
   // Connection Status
   connectionStatus: {
     type: String,
@@ -39,7 +39,7 @@ const azureADConfigSchema = new mongoose.Schema({
   },
   lastConnectionTest: Date,
   connectionError: String,
-  
+
   // Sync Configuration
   syncEnabled: { type: Boolean, default: false },
   syncSchedule: {
@@ -48,7 +48,7 @@ const azureADConfigSchema = new mongoose.Schema({
     default: 'daily'
   },
   syncTime: { type: String, default: '02:00' }, // Time for scheduled sync
-  
+
   // Sync Filters
   syncFilters: {
     includeDepartments: [String],
@@ -57,7 +57,7 @@ const azureADConfigSchema = new mongoose.Schema({
     excludeGroups: [String],
     userFilter: String // OData filter expression
   },
-  
+
   // Field Mappings
   fieldMappings: {
     firstName: { type: String, default: 'givenName' },
@@ -70,7 +70,7 @@ const azureADConfigSchema = new mongoose.Schema({
     phone: { type: String, default: 'mobilePhone' },
     office: { type: String, default: 'officeLocation' }
   },
-  
+
   // Sync Statistics
   lastSyncAt: Date,
   lastSyncStatus: {
@@ -88,7 +88,7 @@ const azureADConfigSchema = new mongoose.Schema({
     errors: { type: Number, default: 0 },
     duration: Number // in seconds
   },
-  
+
   // Sync History
   syncHistory: [{
     syncedAt: Date,
@@ -105,7 +105,7 @@ const azureADConfigSchema = new mongoose.Schema({
     triggeredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     errorDetails: String
   }],
-  
+
   // Auto-provisioning Settings
   autoProvisioning: {
     enabled: { type: Boolean, default: false },
@@ -114,14 +114,14 @@ const azureADConfigSchema = new mongoose.Schema({
     assignToManager: { type: Boolean, default: true },
     sendWelcomeEmail: { type: Boolean, default: true }
   },
-  
+
   // SSO Settings
   sso: {
     enabled: { type: Boolean, default: false },
     allowPasswordLogin: { type: Boolean, default: true },
     forceSSO: { type: Boolean, default: false }
   },
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -140,9 +140,7 @@ const azureADConfigSchema = new mongoose.Schema({
 azureADConfigSchema.index({ companyId: 1 }, { unique: true });
 
 // Method to test connection (simulated)
-azureADConfigSchema.methods.testConnection = async function() {
-  // In production, this would actually test the Azure AD connection
-  // For simulation, we'll just validate the config exists
+azureADConfigSchema.methods.testConnection = async function () {
   if (this.tenantId && this.clientId) {
     this.connectionStatus = 'connected';
     this.lastConnectionTest = new Date();
@@ -151,17 +149,17 @@ azureADConfigSchema.methods.testConnection = async function() {
     this.connectionStatus = 'error';
     this.connectionError = 'Missing required configuration';
   }
-  return this.save();
+  const saved = await this.save();
+  return saved;
 };
 
 // Method to record sync
-azureADConfigSchema.methods.recordSync = async function(stats, status, triggeredBy, errorDetails = null) {
+azureADConfigSchema.methods.recordSync = async function (stats, status, triggeredBy, errorDetails = null) {
   this.lastSyncAt = new Date();
   this.lastSyncStatus = status;
   this.lastSyncStats = stats;
   this.lastSyncError = errorDetails;
-  
-  // Add to history (keep last 50)
+
   this.syncHistory.unshift({
     syncedAt: new Date(),
     status,
@@ -169,12 +167,13 @@ azureADConfigSchema.methods.recordSync = async function(stats, status, triggered
     triggeredBy,
     errorDetails
   });
-  
+
   if (this.syncHistory.length > 50) {
     this.syncHistory = this.syncHistory.slice(0, 50);
   }
-  
-  return this.save();
+
+  const saved = await this.save();
+  return saved;
 };
 
 addTenantSupport(azureADConfigSchema);

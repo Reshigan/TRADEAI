@@ -9,7 +9,7 @@ const companySettingsSchema = new mongoose.Schema({
     unique: true,
     index: true
   },
-  
+
   // Branding
   branding: {
     logoUrl: String,
@@ -26,7 +26,7 @@ const companySettingsSchema = new mongoose.Schema({
     },
     showCompanyLogo: { type: Boolean, default: true }
   },
-  
+
   // General Settings
   general: {
     companyDisplayName: String,
@@ -40,7 +40,7 @@ const companySettingsSchema = new mongoose.Schema({
     currency: { type: String, default: 'ZAR' },
     currencySymbol: { type: String, default: 'R' }
   },
-  
+
   // Feature Toggles
   features: {
     aiInsights: { type: Boolean, default: true },
@@ -54,7 +54,7 @@ const companySettingsSchema = new mongoose.Schema({
     selfRegistration: { type: Boolean, default: false },
     apiAccess: { type: Boolean, default: false }
   },
-  
+
   // Notification Settings
   notifications: {
     emailNotifications: { type: Boolean, default: true },
@@ -71,7 +71,7 @@ const companySettingsSchema = new mongoose.Schema({
     notifyOnCourseAssignment: { type: Boolean, default: true },
     notifyOnGameActivity: { type: Boolean, default: true }
   },
-  
+
   // Learning Settings
   learning: {
     autoAssignOnboarding: { type: Boolean, default: true },
@@ -82,7 +82,7 @@ const companySettingsSchema = new mongoose.Schema({
     maxRetakes: { type: Number, default: 3 },
     trackProgress: { type: Boolean, default: true }
   },
-  
+
   // Gamification Settings
   gamification: {
     enabled: { type: Boolean, default: true },
@@ -97,7 +97,7 @@ const companySettingsSchema = new mongoose.Schema({
     pointsForPolicyAcknowledgment: { type: Number, default: 10 },
     badgesEnabled: { type: Boolean, default: true }
   },
-  
+
   // Security Settings
   security: {
     passwordMinLength: { type: Number, default: 8 },
@@ -112,7 +112,7 @@ const companySettingsSchema = new mongoose.Schema({
     ipWhitelist: [String],
     allowedDomains: [String]
   },
-  
+
   // Integration Settings
   integrations: {
     sapEnabled: { type: Boolean, default: false },
@@ -124,7 +124,7 @@ const companySettingsSchema = new mongoose.Schema({
     teamsEnabled: { type: Boolean, default: false },
     teamsWebhook: String
   },
-  
+
   // Workflow Settings
   workflows: {
     requireApprovalForBudgets: { type: Boolean, default: true },
@@ -134,10 +134,10 @@ const companySettingsSchema = new mongoose.Schema({
     escalationEnabled: { type: Boolean, default: true },
     escalationAfterHours: { type: Number, default: 48 }
   },
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -152,7 +152,7 @@ const companySettingsSchema = new mongoose.Schema({
 companySettingsSchema.index({ companyId: 1 }, { unique: true });
 
 // Static method to get or create settings for a company
-companySettingsSchema.statics.getOrCreate = async function(companyId) {
+companySettingsSchema.statics.getOrCreate = async function (companyId) {
   let settings = await this.findOne({ companyId });
   if (!settings) {
     settings = await this.create({ companyId });

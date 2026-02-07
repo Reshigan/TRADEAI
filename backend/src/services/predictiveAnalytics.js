@@ -34,10 +34,10 @@ class PredictiveAnalyticsService {
       }
 
       // Simple linear regression for trend
-      const revenues = historicalSales.map(s => s.totalRevenue);
+      const revenues = historicalSales.map((s) => s.totalRevenue);
       const n = revenues.length;
       const xValues = Array.from({ length: n }, (_, i) => i);
-      
+
       const sumX = xValues.reduce((a, b) => a + b, 0);
       const sumY = revenues.reduce((a, b) => a + b, 0);
       const sumXY = xValues.reduce((sum, x, i) => sum + x * revenues[i], 0);
@@ -47,7 +47,7 @@ class PredictiveAnalyticsService {
       const intercept = (sumY - slope * sumX) / n;
 
       const monthlyFactors = {};
-      historicalSales.forEach(sale => {
+      historicalSales.forEach((sale) => {
         const month = sale._id.month;
         if (!monthlyFactors[month]) {
           monthlyFactors[month] = [];
@@ -57,7 +57,7 @@ class PredictiveAnalyticsService {
 
       const avgMonthlyRevenue = revenues.reduce((a, b) => a + b, 0) / revenues.length;
       const seasonalityFactors = {};
-      Object.keys(monthlyFactors).forEach(month => {
+      Object.keys(monthlyFactors).forEach((month) => {
         const avgForMonth = monthlyFactors[month].reduce((a, b) => a + b, 0) / monthlyFactors[month].length;
         seasonalityFactors[month] = avgForMonth / avgMonthlyRevenue;
       });
@@ -65,7 +65,7 @@ class PredictiveAnalyticsService {
       // Generate predictions
       const predictions = [];
       const currentDate = new Date();
-      
+
       for (let i = 1; i <= months; i++) {
         const futureDate = new Date(currentDate);
         futureDate.setMonth(futureDate.getMonth() + i);
@@ -89,10 +89,10 @@ class PredictiveAnalyticsService {
         const predicted = slope * i + intercept;
         return sum + Math.pow(r - predicted, 2);
       }, 0) / n;
-      
+
       const stdDev = Math.sqrt(variance);
       const coefficientOfVariation = stdDev / avgMonthlyRevenue;
-      
+
       let confidence;
       if (coefficientOfVariation < 0.2) confidence = 'high';
       else if (coefficientOfVariation < 0.5) confidence = 'medium';
@@ -113,7 +113,7 @@ class PredictiveAnalyticsService {
 
   async predictPromotionROI(tenantId, promotionParams) {
     try {
-      const { promotionType, discountValue, duration } = promotionParams;
+      const { promotionType, discountValue, duration: _duration } = promotionParams;
 
       // Find similar historical promotions
       const similarPromotions = await Promotion.find({
@@ -212,7 +212,7 @@ class PredictiveAnalyticsService {
       const avgUtilization = historicalBudgets.reduce((sum, b) => sum + b.avgUtilization, 0) / historicalBudgets.length;
       const avgSpent = historicalBudgets.reduce((sum, b) => sum + b.totalSpent, 0) / historicalBudgets.length;
 
-      const spentValues = historicalBudgets.map(b => b.totalSpent);
+      const spentValues = historicalBudgets.map((b) => b.totalSpent);
       const growthRate = spentValues.length > 1
         ? (spentValues[spentValues.length - 1] - spentValues[0]) / spentValues[0] / spentValues.length
         : 0;
@@ -288,7 +288,7 @@ class PredictiveAnalyticsService {
     return {
       currentVolume: avgVolume,
       predictedVolume: newVolume,
-      volumeChange: volumeChange,
+      volumeChange,
       currentRevenue: avgRevenue,
       predictedRevenue: newRevenue,
       revenueChange: ((newRevenue - avgRevenue) / avgRevenue) * 100,
