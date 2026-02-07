@@ -220,7 +220,7 @@ const CampaignList = () => {
                       <CampaignIcon sx={{ color: 'warning.main', fontSize: 20 }} />
                     </Box>
                     <Typography variant="h6" fontWeight={700} color="text.primary">
-                      {campaign.campaignName}
+                      {campaign.name}
                     </Typography>
                   </Box>
                   <Chip
@@ -241,7 +241,7 @@ const CampaignList = () => {
                       Objective
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {campaign.campaignObjective}
+                      {campaign.campaignType ? campaign.campaignType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-'}
                     </Typography>
                   </Box>
 
@@ -250,7 +250,7 @@ const CampaignList = () => {
                       Budget
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {formatCurrency(campaign.budget)}
+                      {formatCurrency(campaign.budgetAmount || campaign.budget)}
                     </Typography>
                   </Box>
 
