@@ -14,7 +14,24 @@ const TABLE_MAP = {
   activities: 'activities',
   notifications: 'notifications',
   reportruns: 'report_runs',
-  report_runs: 'report_runs'
+  report_runs: 'report_runs',
+  vendors: 'vendors',
+  campaigns: 'campaigns',
+  trading_terms: 'trading_terms',
+  tradingterms: 'trading_terms',
+  rebates: 'rebates',
+  claims: 'claims',
+  deductions: 'deductions',
+  approvals: 'approvals',
+  data_lineage: 'data_lineage',
+  forecasts: 'forecasts',
+  kam_wallets: 'kam_wallets',
+  import_jobs: 'import_jobs',
+  simulations: 'simulations',
+  business_rules_config: 'business_rules_config',
+  allocations: 'allocations',
+  activity_grid: 'activity_grid',
+  settings: 'settings'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -81,9 +98,23 @@ const TABLE_COLUMNS = {
   products: ['id', 'company_id', 'name', 'code', 'sku', 'category', 'brand', 'unit_price', 'cost_price', 'status', 'data', 'created_at', 'updated_at', 'vendor', 'sub_brand'],
   budgets: ['id', 'company_id', 'name', 'year', 'amount', 'utilized', 'budget_type', 'status', 'created_by', 'data', 'created_at', 'updated_at', 'budget_category', 'scope_type', 'deal_type', 'claim_type', 'product_vendor', 'product_category', 'product_brand', 'product_sub_brand', 'product_id', 'customer_channel', 'customer_sub_channel', 'customer_segmentation', 'customer_hierarchy_1', 'customer_hierarchy_2', 'customer_hierarchy_3', 'customer_head_office', 'customer_id'],
   promotions: ['id', 'company_id', 'name', 'description', 'promotion_type', 'status', 'start_date', 'end_date', 'sell_in_start_date', 'sell_in_end_date', 'budget_id', 'created_by', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'data', 'created_at', 'updated_at'],
-  trade_spends: ['id', 'company_id', 'budget_id', 'promotion_id', 'customer_id', 'product_id', 'amount', 'spend_type', 'status', 'description', 'created_by', 'data', 'created_at', 'updated_at'],
-  users: ['id', 'company_id', 'email', 'password', 'first_name', 'last_name', 'role', 'permissions', 'is_active', 'login_attempts', 'lock_until', 'last_login', 'refresh_token', 'refresh_token_expiry', 'password_changed_at', 'created_at', 'updated_at'],
-  companies: ['id', 'name', 'code', 'status', 'subscription_plan', 'data', 'created_at', 'updated_at']
+  trade_spends: ['id', 'company_id', 'spend_id', 'budget_id', 'promotion_id', 'customer_id', 'product_id', 'amount', 'spend_type', 'activity_type', 'status', 'description', 'created_by', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'data', 'created_at', 'updated_at'],
+  users: ['id', 'company_id', 'email', 'password', 'first_name', 'last_name', 'role', 'department', 'permissions', 'is_active', 'login_attempts', 'lock_until', 'last_login', 'refresh_token', 'refresh_token_expiry', 'password_changed_at', 'data', 'created_at', 'updated_at'],
+  companies: ['id', 'name', 'code', 'type', 'country', 'currency', 'timezone', 'status', 'subscription_plan', 'settings', 'data', 'created_at', 'updated_at'],
+  vendors: ['id', 'company_id', 'name', 'code', 'vendor_type', 'status', 'contact_name', 'contact_email', 'contact_phone', 'address', 'city', 'region', 'country', 'payment_terms', 'tax_number', 'bank_details', 'data', 'created_at', 'updated_at'],
+  campaigns: ['id', 'company_id', 'name', 'description', 'campaign_type', 'status', 'start_date', 'end_date', 'budget_amount', 'spent_amount', 'target_revenue', 'actual_revenue', 'target_volume', 'actual_volume', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  trading_terms: ['id', 'company_id', 'name', 'description', 'term_type', 'status', 'customer_id', 'start_date', 'end_date', 'rate', 'rate_type', 'threshold', 'cap', 'payment_frequency', 'calculation_basis', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  rebates: ['id', 'company_id', 'name', 'description', 'rebate_type', 'status', 'customer_id', 'trading_term_id', 'start_date', 'end_date', 'rate', 'rate_type', 'threshold', 'cap', 'accrued_amount', 'settled_amount', 'calculation_basis', 'settlement_frequency', 'last_calculated_at', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  claims: ['id', 'company_id', 'claim_number', 'claim_type', 'status', 'customer_id', 'promotion_id', 'rebate_id', 'claimed_amount', 'approved_amount', 'settled_amount', 'claim_date', 'due_date', 'settlement_date', 'reason', 'supporting_documents', 'reviewed_by', 'reviewed_at', 'review_notes', 'created_by', 'data', 'created_at', 'updated_at'],
+  deductions: ['id', 'company_id', 'deduction_number', 'deduction_type', 'status', 'customer_id', 'invoice_number', 'invoice_date', 'deduction_amount', 'matched_amount', 'remaining_amount', 'deduction_date', 'due_date', 'reason_code', 'reason_description', 'matched_to', 'reviewed_by', 'reviewed_at', 'review_notes', 'created_by', 'data', 'created_at', 'updated_at'],
+  approvals: ['id', 'company_id', 'entity_type', 'entity_id', 'entity_name', 'amount', 'status', 'priority', 'requested_by', 'requested_at', 'assigned_to', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'comments', 'due_date', 'sla_hours', 'escalated_to', 'escalated_at', 'data', 'created_at', 'updated_at'],
+  activities: ['id', 'company_id', 'user_id', 'action', 'entity_type', 'entity_id', 'description', 'data', 'created_at'],
+  notifications: ['id', 'company_id', 'user_id', 'title', 'message', 'type', 'read', 'data', 'created_at'],
+  business_rules_config: ['id', 'company_id', 'category', 'rules', 'updated_by', 'data', 'created_at', 'updated_at'],
+  allocations: ['id', 'company_id', 'name', 'budget_id', 'customer_id', 'product_id', 'amount', 'status', 'allocation_type', 'created_by', 'data', 'created_at', 'updated_at'],
+  settings: ['id', 'company_id', 'key', 'value', 'data', 'created_at', 'updated_at'],
+  simulations: ['id', 'company_id', 'name', 'description', 'simulation_type', 'status', 'parameters', 'results', 'created_by', 'data', 'created_at', 'updated_at'],
+  forecasts: ['id', 'company_id', 'name', 'forecast_type', 'status', 'period_type', 'start_period', 'end_period', 'base_year', 'forecast_year', 'total_forecast', 'total_actual', 'variance', 'variance_percent', 'method', 'confidence_level', 'created_by', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
@@ -393,8 +424,9 @@ export class D1Client {
     const params = [];
     const where = filterToWhere(filter, params);
     
-    const sql = `DELETE FROM ${table} WHERE ${where} LIMIT 1`;
-    const result = await this.db.prepare(sql).bind(...params).run();
+    const existing = await this.db.prepare(`SELECT id FROM ${table} WHERE ${where} LIMIT 1`).bind(...params).first();
+    if (!existing) return { deletedCount: 0 };
+    const result = await this.db.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(existing.id).run();
     
     return { deletedCount: result.changes || 0 };
   }

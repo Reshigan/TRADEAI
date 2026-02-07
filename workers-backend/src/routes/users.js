@@ -7,6 +7,82 @@ export const userRoutes = new Hono();
 // Apply auth middleware to all routes
 userRoutes.use('*', authMiddleware);
 
+// Get current user profile
+userRoutes.get('/profile', async (c) => {
+  try {
+    const user = c.get('user');
+    return c.json({
+      success: true,
+      data: {
+        id: user._id || user.id,
+        email: user.email,
+        firstName: user.firstName || user.first_name,
+        lastName: user.lastName || user.last_name,
+        role: user.role,
+        companyId: user.companyId || user.company_id,
+        permissions: user.permissions || [],
+        lastLogin: user.lastLogin || user.last_login
+      }
+    });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to get profile', error: error.message }, 500);
+  }
+});
+
+// Update current user profile
+userRoutes.put('/profile', async (c) => {
+  try {
+    const user = c.get('user');
+    const updates = await c.req.json();
+    const mongodb = getMongoClient(c);
+
+    delete updates.password;
+    delete updates.refreshToken;
+    delete updates.role;
+    delete updates.email;
+
+    const userId = user._id?.$oid || user._id || user.id;
+    await mongodb.updateOne('users', { _id: { $oid: userId } }, updates);
+
+    return c.json({ success: true, message: 'Profile updated successfully' });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to update profile', error: error.message }, 500);
+  }
+});
+
+// Change password
+userRoutes.put('/change-password', async (c) => {
+  try {
+    const { currentPassword, newPassword } = await c.req.json();
+    const user = c.get('user');
+    const mongodb = getMongoClient(c);
+
+    if (!currentPassword || !newPassword) {
+      return c.json({ success: false, message: 'Current and new passwords are required' }, 400);
+    }
+
+    const encoder = new TextEncoder();
+    const currentHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(currentPassword)))).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    if (currentHash !== user.password) {
+      return c.json({ success: false, message: 'Current password is incorrect' }, 401);
+    }
+
+    const newHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(newPassword)))).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    const userId = user._id?.$oid || user._id || user.id;
+    await mongodb.updateOne('users', { _id: { $oid: userId } }, {
+      password: newHash,
+      passwordChangedAt: new Date().toISOString(),
+      refreshToken: null
+    });
+
+    return c.json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to change password', error: error.message }, 500);
+  }
+});
+
 // Get all users (admin only)
 userRoutes.get('/', requireRole('admin', 'superadmin'), async (c) => {
   try {
