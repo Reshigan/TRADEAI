@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const tradingTerms = new Hono();
 
@@ -46,7 +47,7 @@ tradingTerms.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -106,7 +107,7 @@ tradingTerms.get('/applicable/:customerId', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching applicable terms:', error);
@@ -132,7 +133,7 @@ tradingTerms.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Trading term not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching trading term:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -172,7 +173,7 @@ tradingTerms.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating trading term:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -223,7 +224,7 @@ tradingTerms.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating trading term:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -269,7 +270,7 @@ tradingTerms.post('/:id/submit', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting trading term:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -292,7 +293,7 @@ tradingTerms.post('/:id/approve', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving trading term:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -314,7 +315,7 @@ tradingTerms.post('/:id/reject', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting trading term:', error);
     return c.json({ success: false, message: error.message }, 500);

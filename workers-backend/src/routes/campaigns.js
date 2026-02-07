@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const campaigns = new Hono();
 
@@ -50,7 +51,7 @@ campaigns.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -92,8 +93,8 @@ campaigns.get('/analytics', async (c) => {
     return c.json({
       success: true,
       data: {
-        summary,
-        byType: byType.results || []
+        summary: rowToDocument(summary),
+        byType: (byType.results || []).map(rowToDocument)
       }
     });
   } catch (error) {
@@ -134,8 +135,8 @@ campaigns.get('/:id', async (c) => {
     return c.json({ 
       success: true, 
       data: {
-        ...result,
-        promotions
+        ...rowToDocument(result),
+        promotions: promotions.map(rowToDocument)
       }
     });
   } catch (error) {
@@ -181,7 +182,7 @@ campaigns.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -235,7 +236,7 @@ campaigns.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -281,7 +282,7 @@ campaigns.post('/:id/submit', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -304,7 +305,7 @@ campaigns.post('/:id/approve', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -326,7 +327,7 @@ campaigns.post('/:id/activate', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -348,7 +349,7 @@ campaigns.post('/:id/complete', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error completing campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -370,7 +371,7 @@ campaigns.post('/:id/cancel', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error cancelling campaign:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -410,7 +411,7 @@ campaigns.post('/:id/promotions', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error adding promotion:', error);
     return c.json({ success: false, message: error.message }, 500);

@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const rebates = new Hono();
 
@@ -54,7 +55,7 @@ rebates.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -133,7 +134,7 @@ rebates.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Rebate not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -214,7 +215,7 @@ rebates.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -265,7 +266,7 @@ rebates.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -311,7 +312,7 @@ rebates.post('/:id/activate', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -333,7 +334,7 @@ rebates.post('/:id/deactivate', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error deactivating rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -355,7 +356,7 @@ rebates.post('/:id/submit', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -378,7 +379,7 @@ rebates.post('/:id/approve', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -401,7 +402,7 @@ rebates.post('/:id/reject', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated, reason: body.reason });
+    return c.json({ success: true, data: rowToDocument(updated), reason: body.reason });
   } catch (error) {
     console.error('Error rejecting rebate:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -460,7 +461,7 @@ rebates.post('/:id/calculate', async (c) => {
     
     return c.json({
       success: true,
-      data: updated,
+      data: rowToDocument(updated),
       calculation: {
         baseValue,
         rate: rebate.rate,
