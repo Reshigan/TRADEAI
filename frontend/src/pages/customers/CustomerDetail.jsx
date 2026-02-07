@@ -21,6 +21,7 @@ import CustomerAIInsights from '../../components/ai/customers/CustomerAIInsights
 import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const CustomerDetail = () => {
   const { id } = useParams();
@@ -115,7 +116,7 @@ const CustomerDetail = () => {
             </Typography>
             {data.status && (
               <Chip 
-                label={data.status} 
+                label={formatLabel(data.status)} 
                 color={getStatusColor(data.status)}
                 size="small"
               />

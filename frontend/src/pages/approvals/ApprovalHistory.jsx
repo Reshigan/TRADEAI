@@ -45,6 +45,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const ApprovalHistory = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -337,7 +338,7 @@ const ApprovalHistory = () => {
                   <TableRow key={approval.id || approval._id} hover>
                     <TableCell>
                       <Chip 
-                        label={approval.type} 
+                        label={formatLabel(approval.type)} 
                         size="small" 
                         color={getTypeColor(approval.type)}
                       />
@@ -355,7 +356,7 @@ const ApprovalHistory = () => {
                     <TableCell>
                       <Chip
                         icon={approval.status === 'approved' ? <CheckCircle /> : <Cancel />}
-                        label={approval.status}
+                        label={formatLabel(approval.status)}
                         size="small"
                         color={approval.status === 'approved' ? 'success' : 'error'}
                       />

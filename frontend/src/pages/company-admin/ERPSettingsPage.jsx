@@ -43,6 +43,7 @@ import {
   PlayArrow as PlayArrowIcon
 } from '@mui/icons-material';
 import { companyAdminApi } from '../../services/enterpriseApi';
+import { formatLabel } from '../../utils/formatters';
 
 const TabPanel = ({ children, value, index, ...other }) => (
   <div role="tabpanel" hidden={value !== index} {...other}>
@@ -958,7 +959,7 @@ const ERPSettingsPage = () => {
                         <TableCell>{new Date(record.syncedAt).toLocaleString()}</TableCell>
                         <TableCell>
                           <Chip
-                            label={record.status}
+                            label={formatLabel(record.status)}
                             size="small"
                             color={record.status === 'success' ? 'success' : record.status === 'partial' ? 'warning' : 'error'}
                           />

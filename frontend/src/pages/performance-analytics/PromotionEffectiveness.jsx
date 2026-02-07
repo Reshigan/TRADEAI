@@ -60,6 +60,7 @@ import {
   Legend
 } from 'recharts';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const COLORS = ['#4caf50', '#2196f3', '#ff9800', '#f44336', '#9c27b0'];
 
@@ -453,7 +454,7 @@ const PromotionEffectiveness = () => {
                       <Typography fontWeight="medium">{promo.name}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Chip label={promo.type} size="small" variant="outlined" />
+                      <Chip label={formatLabel(promo.type)} size="small" variant="outlined" />
                     </TableCell>
                     <TableCell align="right">{formatCurrency(promo.spend)}</TableCell>
                     <TableCell align="right">{formatCurrency(promo.revenue)}</TableCell>
@@ -478,7 +479,7 @@ const PromotionEffectiveness = () => {
                     </TableCell>
                     <TableCell>
                       <Chip 
-                        label={promo.status} 
+                        label={formatLabel(promo.status)} 
                         size="small"
                         color={promo.status === 'active' ? 'success' : 'default'}
                       />

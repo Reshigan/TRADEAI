@@ -17,6 +17,7 @@ import {
   Visibility as ViewIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -104,7 +105,7 @@ const CampaignDetail = () => {
             </Typography>
             {campaign.status && (
               <Chip 
-                label={campaign.status} 
+                label={formatLabel(campaign.status)} 
                 color={getStatusColor(campaign.status)}
                 size="small"
               />

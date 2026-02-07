@@ -25,6 +25,7 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
+import { formatLabel } from '../../utils/formatters';
 
 const FundingOverview = () => {
   const [loading, setLoading] = useState(true);
@@ -217,7 +218,7 @@ const FundingOverview = () => {
                         <TableCell align="right">R {remaining.toLocaleString()}</TableCell>
                         <TableCell>
                           <Chip
-                            label={budget.status}
+                            label={formatLabel(budget.status)}
                             size="small"
                             color={budget.status === 'approved' ? 'success' : 'default'}
                           />
@@ -255,7 +256,7 @@ const FundingOverview = () => {
                       <TableCell align="right">R {(wallet.remainingBalance || 0).toLocaleString()}</TableCell>
                       <TableCell>
                         <Chip
-                          label={wallet.status}
+                          label={formatLabel(wallet.status)}
                           size="small"
                           color={wallet.status === 'active' ? 'success' : 'default'}
                         />

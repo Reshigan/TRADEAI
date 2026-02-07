@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import kamWalletService from '../../services/kamwallet/kamWalletService';
 import userService from '../../services/user/userService';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import { formatLabel } from '../../utils/formatters';
 
 const KAMWalletManagement = () => {
   const navigate = useNavigate();
@@ -185,7 +186,7 @@ const KAMWalletManagement = () => {
                         </TableCell>
                         <TableCell align="center">
                           <Chip
-                            label={wallet.status}
+                            label={formatLabel(wallet.status)}
                             color={getStatusColor(wallet.status)}
                             size="small"
                           />

@@ -38,6 +38,7 @@ const availableEvents = [
   { event: 'import.failed', description: 'When a data import fails', category: 'System' },
   { event: 'alert.triggered', description: 'When a system alert is triggered', category: 'System' }
 ];
+import { formatLabel } from '../../utils/formatters';
 
 const eventCategories = [...new Set(availableEvents.map(e => e.category))];
 
@@ -578,7 +579,7 @@ export default function WebhookManagementPage() {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={delivery.status}
+                          label={formatLabel(delivery.status)}
                           size="small"
                           color={delivery.status === 'success' ? 'success' : delivery.status === 'failed' ? 'error' : 'warning'}
                         />

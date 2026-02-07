@@ -9,6 +9,7 @@ import {
   PlayArrow, Refresh
 } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
+import { formatLabel } from '../../utils/formatters';
 
 const syncSchedules = [
   { value: 'manual', label: 'Manual Only' },
@@ -369,7 +370,7 @@ export default function AzureADPage() {
                           </TableCell>
                           <TableCell>
                             <Chip 
-                              label={sync.status} 
+                              label={formatLabel(sync.status)} 
                               size="small" 
                               color={sync.status === 'success' ? 'success' : 'warning'}
                             />
