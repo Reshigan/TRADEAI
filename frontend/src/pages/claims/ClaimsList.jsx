@@ -30,6 +30,11 @@ import claimService from '../../services/claim/claimService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 
+const formatLabel = (str) => {
+  if (!str) return 'Unknown';
+  return str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+};
+
 const ClaimsList = () => {
   const navigate = useNavigate();
   const [claims, setClaims] = useState([]);
@@ -194,7 +199,7 @@ const ClaimsList = () => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="textSecondary">
-                    {stat._id?.toUpperCase() || 'UNKNOWN'}
+                    {formatLabel(stat._id)}
                   </Typography>
                   <Typography variant="h4">{stat.count}</Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -269,7 +274,7 @@ const ClaimsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={claim.claimType?.toUpperCase()}
+                      label={formatLabel(claim.claimType)}
                       size="small"
                       variant="outlined"
                     />
@@ -297,14 +302,14 @@ const ClaimsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={claim.status?.toUpperCase()}
+                      label={formatLabel(claim.status)}
                       color={getStatusColor(claim.status)}
                       size="small"
                     />
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={claim.matching?.matchStatus?.toUpperCase() || 'UNMATCHED'}
+                      label={formatLabel(claim.matching?.matchStatus || 'unmatched')}
                       color={getMatchStatusColor(claim.matching?.matchStatus)}
                       size="small"
                     />
