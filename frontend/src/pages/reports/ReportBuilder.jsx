@@ -17,9 +17,8 @@ import {
 import {
   Download as DownloadIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const ReportBuilder = () => {
   const [reportConfig, setReportConfig] = useState({
@@ -45,10 +44,7 @@ const ReportBuilder = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_BASE_URL}/reports/generate`, reportConfig, {
-        headers: { 'Authorization': `Bearer ${token}` },
-        responseType: reportConfig.format === 'pdf' ? 'blob' : 'json'
+      const response = await api.post('/reports/generate', reportConfig, { responseType: reportConfig.format === 'pdf' ? 'blob' : 'json'
       });
 
       if (reportConfig.format === 'pdf') {

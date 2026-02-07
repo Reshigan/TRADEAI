@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import './CSVExport.css';
 
 const CSVExport = ({ entityType, filters = {} }) => {
@@ -12,8 +12,8 @@ const CSVExport = ({ entityType, filters = {} }) => {
       setError(null);
 
       const params = new URLSearchParams(filters);
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL || '/api'}/${entityType}s/export?${params}`,
+      const response = await api.get(
+        `/${entityType}s/export?${params}`,
         {
           responseType: 'blob'
         }

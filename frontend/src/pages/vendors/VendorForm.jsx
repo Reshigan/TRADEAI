@@ -18,7 +18,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const VendorForm = () => {
   const { id } = useParams();
@@ -46,9 +46,7 @@ const VendorForm = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await api.get(`/vendors/${id}`);
         const vendor = response.data.data || response.data;
         setFormData({
           name: vendor.name || '',
@@ -83,16 +81,14 @@ const VendorForm = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
-      const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors${isEditMode ? `/${id}` : ''}`;
+      const url = `/vendors${isEditMode ? `/${id}` : ''}`;
       const payload = {
         ...formData,
         contactName: formData.contactPerson,
         contactEmail: formData.email,
         contactPhone: formData.phone
       };
-      await axios[isEditMode ? 'put' : 'post'](url, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api[isEditMode ? 'put' : 'post'](url, payload);
       navigate('/vendors');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save vendor');

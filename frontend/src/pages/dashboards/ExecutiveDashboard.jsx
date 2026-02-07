@@ -17,7 +17,7 @@ import {
   TrendingDown as TrendingDownIcon,
   TrendingFlat as TrendingFlatIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -44,7 +44,6 @@ ChartJS.register(
   Filler
 );
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const ExecutiveDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -60,9 +59,7 @@ const ExecutiveDashboard = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-      
-      const response = await axios.get(`${API_BASE_URL}/dashboards/executive?year=${selectedYear}`, { headers });
+      const response = await api.get('/dashboards/executive?year=${selectedYear}');
       
       if (response?.data?.success) {
         setDashboardData(response.data.data);
@@ -79,11 +76,9 @@ const ExecutiveDashboard = () => {
       setExporting(true);
       const token = localStorage.getItem('token');
       
-      const response = await axios.get(
-        `${API_BASE_URL}/dashboards/executive/export/${format}?year=${selectedYear}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` },
-          responseType: 'blob'
+      const response = await api.get(
+        `/dashboards/executive/export/${format}?year=${selectedYear}`,
+        { responseType: 'blob'
         }
       );
       

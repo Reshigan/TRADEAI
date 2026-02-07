@@ -17,7 +17,7 @@ import {
   CheckCircle as CheckIcon,
   Download as DownloadIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../../services/api';
 
 const TwoFASetup = () => {
   const navigate = useNavigate();
@@ -36,8 +36,8 @@ const TwoFASetup = () => {
   const generateSecret = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL || '/api'}/auth/2fa/generate`
+      const response = await api.post(
+        `/auth/2fa/generate`
       );
       setQrCode(response.data.qrCode);
       setSecret(response.data.secret);
@@ -57,8 +57,8 @@ const TwoFASetup = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL || '/api'}/auth/2fa/verify`,
+      const response = await api.post(
+        `/auth/2fa/verify`,
         {
           token: verificationCode,
           secret: secret

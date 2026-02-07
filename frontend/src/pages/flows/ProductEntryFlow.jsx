@@ -25,10 +25,9 @@ import {
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
-import axios from 'axios';
+import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * AI-Powered Product Entry Flow
@@ -86,8 +85,8 @@ const ProductEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-                const response = await axios.post(
-                  `${API_BASE_URL}/ai-orchestrator/product-analysis`,
+                const response = await api.post(
+                  `/ai-orchestrator/product-analysis`,
           {
             name: formData.name,
             category: formData.category,
@@ -228,8 +227,8 @@ const ProductEntryFlow = () => {
     setIsSaving(true);
     
     try {
-      await axios.post(
-        `${API_BASE_URL}/products`,
+      await api.post(
+        `/products`,
         {
           ...formData,
           selectedCustomers,
@@ -263,8 +262,8 @@ const ProductEntryFlow = () => {
     if (!formData.name) return;
     
     try {
-      await axios.post(
-        `${API_BASE_URL}/products/draft`,
+      await api.post(
+        `/products/draft`,
         formData,
         {
           headers: {

@@ -7,9 +7,8 @@ import {
   CircularProgress,
   LinearProgress
 } from '@mui/material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const BudgetAnalytics = () => {
   const [loading, setLoading] = useState(true);
@@ -26,10 +25,7 @@ const BudgetAnalytics = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
-      const response = await axios.get(`${API_BASE_URL}/budgets/analytics`, { headers });
+      const response = await api.get('/budgets/analytics');
 
       if (response.data.success) {
         setAnalytics(response.data.data);

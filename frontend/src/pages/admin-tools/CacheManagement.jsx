@@ -12,9 +12,8 @@ import {
   Refresh as RefreshIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const CacheManagement = () => {
   const [cacheStats, setCacheStats] = useState({ hits: 0, misses: 0, keys: 0, memory: 0 });
@@ -28,8 +27,7 @@ const CacheManagement = () => {
   const fetchCacheStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/admin/cache/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get('/admin/cache/stats'
       }).catch(() => ({ data: { data: { hits: 0, misses: 0, keys: 0, memory: 0 } } }));
 
       setCacheStats(response.data.data);
@@ -43,9 +41,7 @@ const CacheManagement = () => {
   const clearCache = async (pattern = '*') => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API_BASE_URL}/admin/cache/clear`, { pattern }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      await api.post('/admin/cache/clear', { pattern });
       
       setMessage('Cache cleared successfully');
       setTimeout(() => setMessage(''), 3000);

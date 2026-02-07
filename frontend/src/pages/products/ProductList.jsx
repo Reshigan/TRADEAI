@@ -20,9 +20,8 @@ import {
   Search as SearchIcon,
   Inventory as InventoryIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -36,13 +35,11 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
       if (filters.search) params.append('search', filters.search);
       if (filters.category !== 'all') params.append('category', filters.category);
 
-      const response = await axios.get(`${API_BASE_URL}/products?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get(`/products?${params}`
       });
 
       if (response.data.success) {

@@ -29,7 +29,7 @@ import {
   Error,
   InfoOutlined
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const AIModelHealthWidget = () => {
   const [loading, setLoading] = useState(false);
@@ -48,14 +48,8 @@ const AIModelHealthWidget = () => {
     setError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL || '/api'}/ai/health`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
+      const response = await api.get(
+        `/ai/health`
       );
 
       setHealth(response.data);

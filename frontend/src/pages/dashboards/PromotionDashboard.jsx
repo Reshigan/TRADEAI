@@ -7,9 +7,8 @@ import {
   CircularProgress,
   LinearProgress
 } from '@mui/material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const PromotionDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -29,10 +28,7 @@ const PromotionDashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
-      const response = await axios.get(`${API_BASE_URL}/analytics/promotion-metrics`, { headers }).catch(() => null);
+      const response = await api.get('/analytics/promotion-metrics').catch(() => null);
 
       if (response?.data) {
         setMetrics(response.data.data);

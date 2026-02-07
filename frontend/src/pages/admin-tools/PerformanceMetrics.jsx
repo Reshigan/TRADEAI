@@ -11,9 +11,8 @@ import {
 import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const PerformanceMetrics = () => {
   const [loading, setLoading] = useState(true);
@@ -34,10 +33,7 @@ const PerformanceMetrics = () => {
 
   const fetchMetrics = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
-      const response = await axios.get(`${API_BASE_URL}/admin/performance/metrics`, { headers }).catch(() => ({ data: { data: {} } }));
+      const response = await api.get('/admin/performance/metrics').catch(() => ({ data: { data: {} } }));
 
       setMetrics(response.data.data || {
         avgResponseTime: 0,

@@ -16,7 +16,7 @@ import {
   Delete as DeleteIcon,
   Visibility as ViewIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -33,9 +33,7 @@ const CampaignDetail = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/campaigns/${id}`);
       setCampaign(response.data.data || response.data);
       setError(null);
     } catch (err) {
@@ -53,9 +51,7 @@ const CampaignDetail = () => {
     if (window.confirm('Are you sure you want to delete this campaign?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/campaigns/${id}`);
         navigate('/campaigns');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete campaign');

@@ -14,9 +14,8 @@ import {
   Pause as PauseIcon,
   Celebration as CelebrationIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const ActivityDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -38,10 +37,7 @@ const ActivityDashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
-      const response = await axios.get(`${API_BASE_URL}/activities/metrics`, { headers });
+      const response = await api.get('/activities/metrics');
 
       if (response.data.success) {
         setMetrics(response.data.data);

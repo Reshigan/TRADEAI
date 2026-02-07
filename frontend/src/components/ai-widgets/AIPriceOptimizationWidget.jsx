@@ -26,7 +26,7 @@ import {
   CheckCircle,
   InfoOutlined
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 25.99 }) => {
   const [loading, setLoading] = useState(false);
@@ -44,9 +44,8 @@ const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 2
     setError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || '/api'}/ai/optimize/price`,
+      const response = await api.post(
+        `/ai/optimize/price`,
         {
           productId,
           currentPrice,
@@ -56,11 +55,6 @@ const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 2
             max_price: currentPrice * 1.3
           },
           optimizationObjective: 'profit'
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
         }
       );
 

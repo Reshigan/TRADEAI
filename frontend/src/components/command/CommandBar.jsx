@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Zap, TrendingUp, Users, DollarSign, Calendar, AlertTriangle } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const CommandBar = ({ isOpen, onClose, onExecute }) => {
   const [query, setQuery] = useState('');
@@ -116,14 +115,9 @@ const CommandBar = ({ isOpen, onClose, onExecute }) => {
     } else if (command.action === 'api') {
       setIsLoading(true);
       try {
-        const response = await axios.post(
-          `${API_BASE_URL}${command.endpoint}`,
-          command.payload || {},
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          }
+        const response = await api.post(
+          command.endpoint,
+          command.payload || {}
         );
         onExecute({ type: 'api', command: command.id, data: response.data });
         onClose();

@@ -31,7 +31,7 @@ import {
   InfoOutlined
 } from '@mui/icons-material';
 import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip as ChartTooltip} from 'recharts';
-import axios from 'axios';
+import api from '../../services/api';
 
 const COLORS = {
   highValue: '#4caf50',
@@ -54,17 +54,11 @@ const AICustomerSegmentationWidget = ({ companyId }) => {
     setError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || '/api'}/ai/segment/customers`,
+      const response = await api.post(
+        `/ai/segment/customers`,
         {
           method: 'rfm',
           tenantId: companyId
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
         }
       );
 

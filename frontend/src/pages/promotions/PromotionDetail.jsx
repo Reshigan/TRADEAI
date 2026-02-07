@@ -15,7 +15,7 @@ import {
   Delete as DeleteIcon,
   AccountBalance as TradeSpendIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
@@ -39,9 +39,7 @@ const PromotionDetail = () => {
       setLoading(true);
       const startTime = Date.now();
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/promotions/${id}`);
       setPromotion(response.data.data || response.data);
       setError(null);
       
@@ -67,9 +65,7 @@ const PromotionDetail = () => {
     if (window.confirm('Are you sure you want to delete this promotion?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/promotions/${id}`);
         analytics.trackEvent('promotion_deleted', { promotionId: id });
         toast.success('Promotion deleted successfully!');
         navigate('/promotions');

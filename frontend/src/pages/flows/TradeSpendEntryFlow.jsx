@@ -21,10 +21,9 @@ import {
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
-import axios from 'axios';
+import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * AI-Powered Trade Spend Entry Flow
@@ -82,8 +81,8 @@ const TradeSpendEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-                const response = await axios.post(
-                  `${API_BASE_URL}/ai-orchestrator/roi-predict`,
+                const response = await api.post(
+                  `/ai-orchestrator/roi-predict`,
           {
             amount: parseFloat(formData.amount),
             type: formData.type,
@@ -165,8 +164,8 @@ const TradeSpendEntryFlow = () => {
     setIsSaving(true);
     
         try {
-          await axios.post(
-            `${API_BASE_URL}/trade-spends`,
+          await api.post(
+            `/trade-spends`,
             {
               ...formData,
               roiPrediction,

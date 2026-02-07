@@ -22,9 +22,8 @@ import {
   ArrowForward as ArrowForwardIcon,
   Lightbulb as LightbulbIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * Smart Insights Widget - Proactive Intelligence
@@ -43,8 +42,8 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
     const fetchInsights = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/ai/smart-insights`,
+        const response = await api.get(
+          `/ai/smart-insights`,
           {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
           }

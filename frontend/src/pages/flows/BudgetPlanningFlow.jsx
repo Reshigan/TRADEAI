@@ -20,10 +20,9 @@ import {
   AutoFixHigh as AutoIcon
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
-import axios from 'axios';
+import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * AI-Powered Budget Planning Flow
@@ -83,8 +82,8 @@ const BudgetPlanningFlow = () => {
       setIsCalculating(true);
       
       try {
-                const response = await axios.post(
-                  `${API_BASE_URL}/ai-orchestrator/budget-optimize`,
+                const response = await api.post(
+                  `/ai-orchestrator/budget-optimize`,
           {
             totalBudget: parseFloat(formData.totalBudget),
             currentAllocations: formData.allocations,
@@ -197,8 +196,8 @@ const BudgetPlanningFlow = () => {
     setIsSaving(true);
     
     try {
-      await axios.post(
-        `${API_BASE_URL}/budgets`,
+      await api.post(
+        `/budgets`,
         {
           ...formData,
           aiOptimization: {
