@@ -41,7 +41,7 @@ import {
   Assessment
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import axios from 'axios';
+import api from '../../services/api';
 
 const MLDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -66,8 +66,8 @@ const MLDashboard = () => {
     try {
       // Load customers and products for predictions
       const [customersRes, productsRes] = await Promise.all([
-        axios.get('/api/customers'),
-        axios.get('/api/products')
+        api.get('/api/customers'),
+        api.get('/api/products')
       ]);
       
       setCustomers(customersRes.data.slice(0, 50)); // Limit for demo
@@ -79,7 +79,7 @@ const MLDashboard = () => {
 
   const loadModelStatus = async () => {
     try {
-      const response = await axios.get('/api/ml/models/status');
+      const response = await api.get('/api/ml/models/status');
       setModels(response.data.models);
       setModelMetrics(response.data.metrics);
     } catch (error) {
@@ -90,7 +90,7 @@ const MLDashboard = () => {
   const runPrediction = async (type, params) => {
     setLoading(true);
     try {
-      const response = await axios.post(`/api/ml/predict/${type}`, params);
+      const response = await api.post(`/ml/predict/${type}`, params);
       setPredictionResults({
         type,
         ...response.data
@@ -105,7 +105,7 @@ const MLDashboard = () => {
   const trainModel = async (modelType) => {
     setTrainingStatus(prev => ({ ...prev, [modelType]: 'training' }));
     try {
-      const response = await axios.post(`/api/ml/train/${modelType}`);
+      const response = await api.post(`/ml/train/${modelType}`);
       setTrainingStatus(prev => ({ ...prev, [modelType]: 'completed' }));
       loadModelStatus(); // Refresh model status
     } catch (error) {

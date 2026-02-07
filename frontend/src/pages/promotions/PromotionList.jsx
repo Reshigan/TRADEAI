@@ -20,11 +20,10 @@ import {
   Search as SearchIcon,
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 import { formatLabel } from '../../utils/formatters';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const PromotionList = () => {
   const navigate = useNavigate();
@@ -38,14 +37,12 @@ const PromotionList = () => {
 
   const fetchPromotions = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
       if (filters.status !== 'all') params.append('status', filters.status);
       if (filters.type !== 'all') params.append('promotionType', filters.type);
       if (filters.search) params.append('search', filters.search);
 
-      const response = await axios.get(`${API_BASE_URL}/promotions?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get(`/promotions?${params}`
       });
 
       if (response.data.success) {

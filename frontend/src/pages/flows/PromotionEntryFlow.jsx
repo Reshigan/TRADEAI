@@ -23,10 +23,9 @@ import {
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import PromotionAIInsights from '../../components/ai/promotions/PromotionAIInsights';
-import axios from 'axios';
+import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * AI-Powered Promotion Entry Flow
@@ -100,8 +99,8 @@ const PromotionEntryFlow = () => {
       setIsCalculating(true);
       
       try {
-                const response = await axios.post(
-                  `${API_BASE_URL}/ai-orchestrator/orchestrate`,
+                const response = await api.post(
+                  `/ai-orchestrator/orchestrate`,
           {
             userIntent: `Optimize promotion with ${formData.discount}% discount and ${formData.budget} budget for ${formData.type} promotion`,
             context: {
@@ -179,7 +178,7 @@ const PromotionEntryFlow = () => {
   useEffect(() => {
     const loadHistoricalData = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/promotions/similar`, {
+        const response = await api.get('/promotions/similar', {
           params: { type: formData.type },
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -262,8 +261,8 @@ const PromotionEntryFlow = () => {
     setIsSaving(true);
     
         try {
-          await axios.post(
-            `${API_BASE_URL}/promotions`,
+          await api.post(
+            `/promotions`,
             {
               ...formData,
               mlPredictions: mlCalculations,
@@ -294,8 +293,8 @@ const PromotionEntryFlow = () => {
     if (!formData.name) return; // Don't save empty forms
     
     try {
-      await axios.post(
-        `${API_BASE_URL}/promotions/draft`,
+      await api.post(
+        `/promotions/draft`,
         formData,
         {
           headers: {

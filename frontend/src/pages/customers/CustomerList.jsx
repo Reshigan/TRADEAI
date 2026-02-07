@@ -15,10 +15,9 @@ import {
   Search as SearchIcon,
   Business as BusinessIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
-const API_BASE_URL= process.env.REACT_APP_API_BASE_URL || '/api';
 
 const CustomerList = () => {
   const navigate = useNavigate();
@@ -32,10 +31,8 @@ const CustomerList = () => {
 
   const fetchCustomers = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = search ? `?search=${search}` : '';
-      const response = await axios.get(`${API_BASE_URL}/customers${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get(`/customers${params}`
       });
 
       if (response.data.success) {

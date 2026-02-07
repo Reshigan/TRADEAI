@@ -28,7 +28,7 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const API_URL = process.env.REACT_APP_API_URL || '/api';
 
@@ -94,7 +94,7 @@ const BudgetEdit = () => {
     const fetchBudget = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${API_URL}/budgets/${id}`, {
+        const response = await api.get(`${API_URL}/budgets/${id}`, {
           headers: getAuthHeaders()
         });
         const budgetData = response.data?.data || response.data;
@@ -192,7 +192,7 @@ const BudgetEdit = () => {
         allocations: calculatePercentages()
       };
 
-      await axios.put(`${API_URL}/budgets/${id}`, updatedBudget, {
+      await api.put(`${API_URL}/budgets/${id}`, updatedBudget, {
         headers: getAuthHeaders()
       });
       

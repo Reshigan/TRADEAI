@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import './CSVImport.css';
 
 const CSVImport = ({ entityType, onImportComplete }) => {
@@ -31,8 +31,8 @@ const CSVImport = ({ entityType, onImportComplete }) => {
     try {
       setUploading(true);
       setError(null);
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL || '/api'}/${entityType}s/import`,
+      const response = await api.post(
+        `/${entityType}s/import`,
         formData,
         {
           headers: {

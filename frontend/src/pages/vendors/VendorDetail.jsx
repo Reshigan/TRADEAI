@@ -17,7 +17,7 @@ import {
   Delete as DeleteIcon,
   AccountBalance as TradeSpendIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import ProcessShell from '../../components/ProcessShell';
 import { formatLabel } from '../../utils/formatters';
 
@@ -33,9 +33,7 @@ const VendorDetail = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await api.get(`/vendors/${id}`);
         setData(response.data.data || response.data);
         setError(null);
       } catch (err) {
@@ -56,9 +54,7 @@ const VendorDetail = () => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/vendors/${id}`);
         navigate('/vendors');
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete vendor');

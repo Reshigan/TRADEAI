@@ -56,7 +56,7 @@ import {
   TrendingDown
 } from '@mui/icons-material';
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area} from 'recharts';
-import axios from 'axios';
+import api from '../../services/api';
 
 const MonitoringDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -94,11 +94,11 @@ const MonitoringDashboard = () => {
     setLoading(true);
     try {
       const [metricsRes, logsRes, tracesRes, alertsRes, dashboardsRes] = await Promise.all([
-        axios.get('/api/monitoring/metrics', { params: filters }),
-        axios.get('/api/monitoring/logs', { params: filters }),
-        axios.get('/api/monitoring/traces', { params: filters }),
-        axios.get('/api/monitoring/alerts'),
-        axios.get('/api/monitoring/dashboards')
+        api.get('/api/monitoring/metrics', { params: filters }),
+        api.get('/api/monitoring/logs', { params: filters }),
+        api.get('/api/monitoring/traces', { params: filters }),
+        api.get('/api/monitoring/alerts'),
+        api.get('/api/monitoring/dashboards')
       ]);
 
       setMetrics(metricsRes.data);
@@ -115,7 +115,7 @@ const MonitoringDashboard = () => {
 
   const acknowledgeAlert = async (alertId) => {
     try {
-      await axios.post(`/api/monitoring/alerts/${alertId}/acknowledge`);
+      await api.post(`/monitoring/alerts/${alertId}/acknowledge`);
       loadMonitoringData(); // Refresh data
     } catch (error) {
       console.error('Error acknowledging alert:', error);
@@ -124,7 +124,7 @@ const MonitoringDashboard = () => {
 
   const resolveAlert = async (alertId) => {
     try {
-      await axios.post(`/api/monitoring/alerts/${alertId}/resolve`);
+      await api.post(`/monitoring/alerts/${alertId}/resolve`);
       loadMonitoringData(); // Refresh data
     } catch (error) {
       console.error('Error resolving alert:', error);

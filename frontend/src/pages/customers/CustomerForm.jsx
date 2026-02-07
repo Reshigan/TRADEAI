@@ -19,7 +19,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 // Static hierarchy options for consistency across the app
 const customerHierarchyOptions = {
@@ -67,9 +67,7 @@ const CustomerForm = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/customers/${id}`);
       const customer = response.data.data || response.data;
       setFormData({
         name: customer.name || '',
@@ -109,7 +107,7 @@ const CustomerForm = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
-      const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/customers${isEditMode ? `/${id}` : ''}`;
+      const url = `/customers${isEditMode ? `/${id}` : ''}`;
       
       // Transform hierarchy fields to snake_case for backend
       const payload = {
@@ -128,9 +126,7 @@ const CustomerForm = () => {
       delete payload.hierarchy3;
       delete payload.headOffice;
       
-      await axios[isEditMode ? 'put' : 'post'](url, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api[isEditMode ? 'put' : 'post'](url, payload);
       navigate('/customers');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save customer');

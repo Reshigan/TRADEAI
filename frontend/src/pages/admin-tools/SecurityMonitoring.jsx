@@ -17,9 +17,8 @@ import {
 import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const SecurityMonitoring = () => {
   const [loading, setLoading] = useState(true);
@@ -32,12 +31,9 @@ const SecurityMonitoring = () => {
 
   const fetchSecurityData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
       const [eventsRes, statsRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/admin/security/events?limit=50`, { headers }).catch(() => ({ data: { data: [] } })),
-        axios.get(`${API_BASE_URL}/admin/security/stats`, { headers }).catch(() => ({ data: { data: {} } }))
+        api.get('/admin/security/events?limit=50').catch(() => ({ data: { data: [] } })),
+        api.get('/admin/security/stats').catch(() => ({ data: { data: {} } }))
       ]);
 
       setSecurityEvents(eventsRes.data.data || []);

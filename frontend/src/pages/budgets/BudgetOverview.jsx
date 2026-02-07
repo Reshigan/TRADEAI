@@ -14,10 +14,9 @@ import {
   Add as AddIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import BudgetAIInsights from '../../components/ai/budgets/BudgetAIInsights';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const BudgetOverview = () => {
   const navigate = useNavigate();
@@ -31,9 +30,7 @@ const BudgetOverview = () => {
 
   const fetchBudgets = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE_URL}/budgets`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get('/budgets'
       });
 
       if (response.data.success) {

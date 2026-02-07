@@ -54,7 +54,7 @@ import {
   History
 } from '@mui/icons-material';
 import {PieChart, Pie, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line} from 'recharts';
-import axios from 'axios';
+import api from '../../services/api';
 
 const WorkflowDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -76,10 +76,10 @@ const WorkflowDashboard = () => {
     setLoading(true);
     try {
       const [workflowsRes, instancesRes, tasksRes, statsRes] = await Promise.all([
-        axios.get('/api/workflows'),
-        axios.get('/api/workflows/instances'),
-        axios.get('/api/workflows/tasks'),
-        axios.get('/api/workflows/stats')
+        api.get('/api/workflows'),
+        api.get('/api/workflows/instances'),
+        api.get('/api/workflows/tasks'),
+        api.get('/api/workflows/stats')
       ]);
 
       setWorkflows(workflowsRes.data);
@@ -96,7 +96,7 @@ const WorkflowDashboard = () => {
 
   const startWorkflow = async (workflowId, data) => {
     try {
-      const response = await axios.post(`/api/workflows/${workflowId}/start`, data);
+      const response = await api.post(`/workflows/${workflowId}/start`, data);
       loadWorkflowData(); // Refresh data
       return response.data;
     } catch (error) {
@@ -106,7 +106,7 @@ const WorkflowDashboard = () => {
 
   const completeTask = async (taskId, data) => {
     try {
-      await axios.post(`/api/workflows/tasks/${taskId}/complete`, data);
+      await api.post(`/workflows/tasks/${taskId}/complete`, data);
       loadWorkflowData(); // Refresh data
     } catch (error) {
       console.error('Error completing task:', error);
@@ -115,7 +115,7 @@ const WorkflowDashboard = () => {
 
   const approveTask = async (taskId, approved, comments) => {
     try {
-      await axios.post(`/api/workflows/tasks/${taskId}/approve`, {
+      await api.post(`/workflows/tasks/${taskId}/approve`, {
         approved,
         comments
       });

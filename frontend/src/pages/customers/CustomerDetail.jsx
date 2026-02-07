@@ -16,7 +16,7 @@ import {
   Visibility as ViewIcon,
   AccountBalance as TradeSpendIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import CustomerAIInsights from '../../components/ai/customers/CustomerAIInsights';
 import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
@@ -40,9 +40,7 @@ const CustomerDetail = () => {
       setLoading(true);
       const startTime = Date.now();
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/customers/${id}`);
       setData(response.data.data || response.data);
       setError(null);
       
@@ -68,9 +66,7 @@ const CustomerDetail = () => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/customers/${id}`);
         analytics.trackEvent('customer_deleted', { customerId: id });
         toast.success('Customer deleted successfully!');
         navigate('/customers');

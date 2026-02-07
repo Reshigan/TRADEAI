@@ -32,7 +32,7 @@ import {
   Delete as DeleteIcon,
   PersonAdd as PersonAddIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../../services/api';
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -51,9 +51,7 @@ const UserList = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/users`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/users`);
       setUsers(response.data.data || response.data || []);
       setError(null);
     } catch (err) {
@@ -67,9 +65,7 @@ const UserList = () => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/users/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/users/${id}`);
         fetchUsers();
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete user');
@@ -80,10 +76,8 @@ const UserList = () => {
   const handleToggleStatus = async (id, currentStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`${process.env.REACT_APP_API_BASE_URL || '/api'}/users/${id}/status`, {
+      await api.patch(`/users/${id}/status`, {
         isActive: !currentStatus
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       fetchUsers();
     } catch (err) {

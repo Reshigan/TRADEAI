@@ -318,7 +318,7 @@ const SecurityDashboard = () => {
 
   const handleResolveEvent = async (eventId) => {
     try {
-      await api.post(`/api/security/events/${eventId}/resolve`, {
+      await api.post(`/security/events/${eventId}/resolve`, {
         action: 'RESOLVED',
         description: 'Event resolved by security team'
       });

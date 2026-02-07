@@ -34,7 +34,7 @@ import {
   TrendingUp,
   InfoOutlined
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
   const [loading, setLoading] = useState(false);
@@ -53,17 +53,11 @@ const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
     setError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || '/api'}/ai/detect/anomalies`,
+      const response = await api.post(
+        `/ai/detect/anomalies`,
         {
           metricType: scope === 'all' ? 'sales' : scope,
           threshold: 2.5
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
         }
       );
 

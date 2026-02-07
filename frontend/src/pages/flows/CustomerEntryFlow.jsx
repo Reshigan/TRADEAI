@@ -22,10 +22,9 @@ import {
 } from '@mui/icons-material';
 import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
-import axios from 'axios';
+import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * AI-Powered Customer Entry Flow
@@ -89,8 +88,8 @@ const CustomerEntryFlow = () => {
       
       try {
         // Real API call (with fallback)
-                const response = await axios.post(
-                  `${API_BASE_URL}/ai-orchestrator/customer-analysis`,
+                const response = await api.post(
+                  `/ai-orchestrator/customer-analysis`,
           {
             name: formData.name,
             type: formData.type,
@@ -217,8 +216,8 @@ const CustomerEntryFlow = () => {
     setIsSaving(true);
     
     try {
-      await axios.post(
-        `${API_BASE_URL}/customers`,
+      await api.post(
+        `/customers`,
         {
           ...formData,
           selectedCustomers,
@@ -253,8 +252,8 @@ const CustomerEntryFlow = () => {
     if (!formData.name) return;
     
     try {
-      await axios.post(
-        `${API_BASE_URL}/customers/draft`,
+      await api.post(
+        `/customers/draft`,
         formData,
         {
           headers: {

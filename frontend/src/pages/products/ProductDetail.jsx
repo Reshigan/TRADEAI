@@ -15,7 +15,7 @@ import {
   Delete as DeleteIcon,
   Visibility as ViewIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
@@ -38,9 +38,7 @@ const ProductDetail = () => {
       setLoading(true);
       const startTime = Date.now();
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/products/${id}`);
       setData(response.data.data || response.data);
       setError(null);
       
@@ -66,9 +64,7 @@ const ProductDetail = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/products/${id}`);
         analytics.trackEvent('product_deleted', { productId: id });
         toast.success('Product deleted successfully!');
         navigate('/products');

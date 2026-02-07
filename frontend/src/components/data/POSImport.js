@@ -9,7 +9,7 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
-import axios from 'axios';
+import api from '../../services/api';
 
 const POSImport = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -34,7 +34,7 @@ const POSImport = () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await axios.post('/api/pos-import/upload', formData, {
+      const response = await api.post('/api/pos-import/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
@@ -61,7 +61,7 @@ const POSImport = () => {
     setError(null);
     setImporting(true);
     try {
-      const response = await axios.post('/api/pos-import/validate', { jobId });
+      const response = await api.post('/api/pos-import/validate', { jobId });
       setValidation(response.data.data);
       setActiveStep(2);
     } catch (err) {
@@ -77,10 +77,10 @@ const POSImport = () => {
     setActiveStep(3);
 
     try {
-      await axios.post('/api/pos-import/confirm', { jobId });
+      await api.post('/api/pos-import/confirm', { jobId });
       const pollStatus = setInterval(async () => {
         try {
-          const response = await axios.get(`/api/pos-import/status/${jobId}`);
+          const response = await api.get(`/pos-import/status/${jobId}`);
           const { status, result } = response.data.data;
           if (status === 'completed') {
             clearInterval(pollStatus);
@@ -105,7 +105,7 @@ const POSImport = () => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await axios.get('/api/pos-import/template', { responseType: 'blob' });
+      const response = await api.get('/api/pos-import/template', { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;

@@ -20,10 +20,9 @@ import {
   Search as SearchIcon,
   CalendarToday as CalendarIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const ActivityList = () => {
   const navigate = useNavigate();
@@ -43,7 +42,6 @@ const ActivityList = () => {
 
   const fetchActivities = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams();
       
       if (filters.status !== 'all') params.append('status', filters.status);
@@ -51,9 +49,7 @@ const ActivityList = () => {
       if (filters.performance !== 'all') params.append('performance', filters.performance);
       if (filters.search) params.append('search', filters.search);
 
-      const response = await axios.get(`${API_BASE_URL}/activities?${params.toString()}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get(`/activities?${params.toString()}`);
 
       if (response.data.success) {
         setActivities(response.data.data);

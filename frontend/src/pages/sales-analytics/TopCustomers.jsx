@@ -14,9 +14,8 @@ import {
 import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const TopCustomers = () => {
   const navigate = useNavigate();
@@ -31,11 +30,9 @@ const TopCustomers = () => {
 
   const fetchCustomers = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams({ limit: limit.toString(), sortBy });
 
-      const response = await axios.get(`${API_BASE_URL}/sales-transactions/top-customers?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get(`/sales-transactions/top-customers?${params}`
       });
 
       if (response.data.success) {

@@ -23,11 +23,10 @@ import {
   AttachMoney
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import simulationService from '../../services/simulation/simulationService';
 import analytics from '../../utils/analytics';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const JAMDashboard = () => {
   const navigate = useNavigate();
@@ -98,11 +97,9 @@ const JAMDashboard = () => {
 
   const handleApprovePromotion = async (promotionId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `${API_BASE_URL}/api/promotions/${promotionId}`,
-        { status: 'approved' },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await api.patch(
+        `/api/promotions/${promotionId}`,
+        { status: 'approved' }
       );
       loadDashboardData();
     } catch (error) {

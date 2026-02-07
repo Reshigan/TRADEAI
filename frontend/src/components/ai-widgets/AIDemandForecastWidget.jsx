@@ -32,7 +32,7 @@ import {
   Area,
   AreaChart
 } from 'recharts';
-import axios from 'axios';
+import api from '../../services/api';
 
 const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 7 }) => {
   const [loading, setLoading] = useState(false);
@@ -48,19 +48,13 @@ const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 
     setError(null);
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || '/api'}/ai/forecast/demand`,
+      const response = await api.post(
+        `/ai/forecast/demand`,
         {
           productId,
           customerId,
           horizonDays: days,
           includePromotions: true
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
         }
       );
 

@@ -11,9 +11,8 @@ import {
   Grid,
   MenuItem
 } from '@mui/material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -45,7 +44,7 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...registerData } = formData;
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, registerData);
+      const response = await api.post('/auth/register', registerData);
 
       if (response.data.success) {
         localStorage.setItem('token', response.data.tokens.accessToken);

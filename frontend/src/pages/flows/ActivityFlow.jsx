@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import './PromotionFlow.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const ActivityFlow = () => {
   const navigate = useNavigate();
@@ -196,7 +195,6 @@ const ActivityFlow = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
       
       // Prepare activity data
       const activityData = {
@@ -236,12 +234,7 @@ const ActivityFlow = () => {
         performance: 'Not Started'
       };
 
-      const response = await axios.post(`${API_BASE_URL}/activities`, activityData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await api.post('/activities', activityData);
 
       if (response.data.success) {
         navigate('/activities', { state: { message: 'Activity created successfully!' } });

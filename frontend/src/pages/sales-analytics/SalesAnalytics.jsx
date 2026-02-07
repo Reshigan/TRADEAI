@@ -6,9 +6,8 @@ import {
   Grid,
   CircularProgress
 } from '@mui/material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const SalesAnalytics = () => {
   const [loading, setLoading] = useState(true);
@@ -25,13 +24,10 @@ const SalesAnalytics = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
-
       const [revenueRes, customersRes, productsRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/sales-transactions/revenue-by-period`, { headers }),
-        axios.get(`${API_BASE_URL}/sales-transactions/top-customers`, { headers }),
-        axios.get(`${API_BASE_URL}/sales-transactions/top-products`, { headers })
+        api.get('/sales-transactions/revenue-by-period'),
+        api.get('/sales-transactions/top-customers'),
+        api.get('/sales-transactions/top-products')
       ]);
 
       setData({

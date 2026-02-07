@@ -13,9 +13,8 @@ import {
 import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
 const RevenueByPeriod = () => {
   const [loading, setLoading] = useState(true);
@@ -29,13 +28,11 @@ const RevenueByPeriod = () => {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token');
       const params = new URLSearchParams({ period });
       if (dateRange.startDate) params.append('startDate', dateRange.startDate);
       if (dateRange.endDate) params.append('endDate', dateRange.endDate);
 
-      const response = await axios.get(`${API_BASE_URL}/sales-transactions/revenue-by-period?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await api.get(`/sales-transactions/revenue-by-period?${params}`
       });
 
       if (response.data.success) {
