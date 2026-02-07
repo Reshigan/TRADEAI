@@ -24,7 +24,8 @@ import {
   AccountTree as TenantsIcon,
   Cloud as AzureIcon,
   Storage as ERPIcon,
-  ManageAccounts as CompanyUsersIcon
+  ManageAccounts as CompanyUsersIcon,
+  Tune as TuneIcon
 } from '@mui/icons-material';
 
 const DRAWER_WIDTH = 240;
@@ -40,6 +41,7 @@ const AdminLayout = ({ user, onLogout }) => {
     { path: '/admin/companies', label: 'Companies', icon: <CompaniesIcon /> },
     { path: '/admin/security', label: 'Security', icon: <SecurityIcon /> },
     { path: '/admin/settings', label: 'Settings', icon: <SettingsIcon /> },
+    { path: '/admin/business-rules', label: 'Business Rules', icon: <TuneIcon /> },
     { divider: true, label: 'Company Admin' },
     { path: '/admin/company-users', label: 'Company Users', icon: <CompanyUsersIcon /> },
     { path: '/admin/azure-ad', label: 'Azure AD', icon: <AzureIcon /> },
