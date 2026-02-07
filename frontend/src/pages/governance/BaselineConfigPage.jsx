@@ -301,7 +301,7 @@ const BaselineConfigPage = () => {
                           <TableCell>
                             <IconButton
                               size="small"
-                              onClick={() => handleSetDefault(config._id)}
+                              onClick={() => handleSetDefault(config.id || config._id)}
                               color={config.isDefault ? 'warning' : 'default'}
                             >
                               {config.isDefault ? <StarIcon /> : <StarBorderIcon />}

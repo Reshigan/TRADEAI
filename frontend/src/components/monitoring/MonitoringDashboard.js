@@ -94,11 +94,11 @@ const MonitoringDashboard = () => {
     setLoading(true);
     try {
       const [metricsRes, logsRes, tracesRes, alertsRes, dashboardsRes] = await Promise.all([
-        api.get('/api/monitoring/metrics', { params: filters }),
-        api.get('/api/monitoring/logs', { params: filters }),
-        api.get('/api/monitoring/traces', { params: filters }),
-        api.get('/api/monitoring/alerts'),
-        api.get('/api/monitoring/dashboards')
+        api.get('/monitoring/metrics', { params: filters }),
+        api.get('/monitoring/logs', { params: filters }),
+        api.get('/monitoring/traces', { params: filters }),
+        api.get('/monitoring/alerts'),
+        api.get('/monitoring/dashboards')
       ]);
 
       setMetrics(metricsRes.data);

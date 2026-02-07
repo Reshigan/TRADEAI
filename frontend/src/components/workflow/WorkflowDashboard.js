@@ -76,10 +76,10 @@ const WorkflowDashboard = () => {
     setLoading(true);
     try {
       const [workflowsRes, instancesRes, tasksRes, statsRes] = await Promise.all([
-        api.get('/api/workflows'),
-        api.get('/api/workflows/instances'),
-        api.get('/api/workflows/tasks'),
-        api.get('/api/workflows/stats')
+        api.get('/workflows'),
+        api.get('/workflows/instances'),
+        api.get('/workflows/tasks'),
+        api.get('/workflows/stats')
       ]);
 
       setWorkflows(workflowsRes.data);

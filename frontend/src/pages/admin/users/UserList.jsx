@@ -50,7 +50,6 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await api.get(`/users`);
       setUsers(response.data.data || response.data || []);
       setError(null);
@@ -64,7 +63,6 @@ const UserList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        const token = localStorage.getItem('token');
         await api.delete(`/users/${id}`);
         fetchUsers();
       } catch (err) {
@@ -75,7 +73,6 @@ const UserList = () => {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      const token = localStorage.getItem('token');
       await api.patch(`/users/${id}/status`, {
         isActive: !currentStatus
       });
@@ -271,7 +268,7 @@ const UserList = () => {
                       label={user.isActive ? 'Active' : 'Inactive'}
                       color={user.isActive ? 'success' : 'default'}
                       size="small"
-                      onClick={() => handleToggleStatus(user._id, user.isActive)}
+                      onClick={() => handleToggleStatus(user.id || user._id, user.isActive)}
                       sx={{ cursor: 'pointer', fontWeight: 600 }}
                     />
                   </TableCell>
@@ -302,7 +299,7 @@ const UserList = () => {
                         <IconButton
                           size="small"
                           color="error"
-                          onClick={() => handleDelete(user._id)}
+                          onClick={() => handleDelete(user.id || user._id)}
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>

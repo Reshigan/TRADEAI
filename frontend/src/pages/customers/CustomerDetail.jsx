@@ -186,16 +186,20 @@ const CustomerDetail = () => {
           Information
         </Typography>
         <Grid container spacing={3}>
-          {Object.keys(data).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(key => (
+          {Object.keys(data).filter(key => !['_id', 'id', '__v', 'createdAt', 'updatedAt', 'companyId'].includes(key) && data[key] != null && data[key] !== '').map(key => {
+            const val = data[key];
+            const isEnum = typeof val === 'string' && /^[a-z_]+$/.test(val);
+            return (
             <Grid item xs={12} sm={6} md={4} key={key}>
               <Typography variant="body2" color="text.secondary" mb={0.5}>
-                {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                {formatLabel(key)}
               </Typography>
               <Typography variant="body1" fontWeight={500}>
-                {typeof data[key] === 'object' ? JSON.stringify(data[key]) : (data[key] || 'N/A')}
+                {typeof val === 'object' && val !== null ? JSON.stringify(val) : isEnum ? formatLabel(val) : (val || 'N/A')}
               </Typography>
             </Grid>
-          ))}
+            );
+          })}
         </Grid>
       </Paper>
 

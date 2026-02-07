@@ -1,10 +1,8 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
+import api from '../api';
 
 class AIOrchestratorService {
   constructor() {
-    this.baseURL = `${API_BASE_URL}/api/ai-orchestrator`;
+    this.basePath = '/ai-orchestrator';
     this.cache = new Map();
     this.cacheTTL = 5 * 60 * 1000;
   }
@@ -18,18 +16,10 @@ class AIOrchestratorService {
         return cached;
       }
 
-      const token = localStorage.getItem('token');
-      
-      const response = await axios.post(
-        `${this.baseURL}/orchestrate`,
+      const response = await api.post(
+        `${this.basePath}/orchestrate`,
         { intent, context },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          timeout: 30000
-        }
+        { timeout: 30000 }
       );
 
       const result = response.data;
@@ -47,18 +37,10 @@ class AIOrchestratorService {
 
   async explain(result) {
     try {
-      const token = localStorage.getItem('token');
-      
-      const response = await axios.post(
-        `${this.baseURL}/explain`,
+      const response = await api.post(
+        `${this.basePath}/explain`,
         { result },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          timeout: 30000
-        }
+        { timeout: 30000 }
       );
 
       return response.data;
@@ -73,13 +55,7 @@ class AIOrchestratorService {
 
   async getTools() {
     try {
-      const token = localStorage.getItem('token');
-      
-      const response = await axios.get(`${this.baseURL}/tools`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await api.get(`${this.basePath}/tools`);
 
       return response.data;
     } catch (error) {
@@ -90,13 +66,7 @@ class AIOrchestratorService {
 
   async healthCheck() {
     try {
-      const token = localStorage.getItem('token');
-      
-      const response = await axios.get(`${this.baseURL}/health`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await api.get(`${this.basePath}/health`);
 
       return response.data;
     } catch (error) {

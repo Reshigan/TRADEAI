@@ -365,7 +365,7 @@ const DataLineageDashboard = () => {
                     <Grid item xs={12} sm={6} md={3} key={metric.id || metric._id}>
                       <Paper sx={{ p: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="textSecondary">
-                          {formatLabel(metric._id)}
+                          {formatLabel(metric.id || metric._id)}
                         </Typography>
                         <Typography variant="h5">
                           {formatNumber(metric.currentValue)}
