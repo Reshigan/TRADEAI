@@ -34,7 +34,7 @@ import {
   AttachMoney as MoneyIcon,
   LocalOffer as TagIcon
 } from '@mui/icons-material';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../utils/formatters';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { productService, promotionService, tradeSpendService } from '../../services/api';
@@ -514,7 +514,7 @@ const ProductDetail = () => {
                           >
                             <ListItemText
                               primary={tradeSpend.description}
-                              secondary={`${tradeSpend.type.charAt(0).toUpperCase() + tradeSpend.type.slice(1)} | Amount: ${formatCurrency(tradeSpend.amount)}`}
+                              secondary={`${formatLabel(tradeSpend.type)} | Amount: ${formatCurrency(tradeSpend.amount)}`}
                             />
                             <ListItemSecondaryAction>
                               <StatusChip status={tradeSpend.status} sx={{ mr: 1 }} />
