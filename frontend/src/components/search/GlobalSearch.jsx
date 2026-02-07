@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import './GlobalSearch.css';
 
 const GlobalSearch = () => {
@@ -22,9 +22,7 @@ const GlobalSearch = () => {
   const performSearch = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL || '/api'}/search?q=${query}`
-      );
+      const response = await api.get(`/search?q=${query}`);
       setResults(response.data.results || []);
       setShowResults(true);
     } catch (err) {
@@ -44,7 +42,7 @@ const GlobalSearch = () => {
       vendor: '/vendors'
     };
     const basePath = routes[result.type] || '/';
-    navigate(`${basePath}/${result._id}`);
+    navigate(`${basePath}/${result.id || result._id}`);
     setQuery('');
     setShowResults(false);
   };
@@ -78,7 +76,7 @@ const GlobalSearch = () => {
         <div className="search-results">
           {results.map((result) => (
             <div
-              key={`${result.type}-${result._id}`}
+              key={`${result.type}-${result.id || result._id}`}
               className="search-result-item"
               onClick={() => handleResultClick(result)}
             >

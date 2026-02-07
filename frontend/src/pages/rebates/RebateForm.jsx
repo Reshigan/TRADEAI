@@ -109,12 +109,8 @@ const RebateForm = () => {
         api.get('/products')
       ]);
       
-      if (customersRes.data.success) {
-        setCustomers(customersRes.data.data || []);
-      }
-      if (productsRes.data.success) {
-        setProducts(productsRes.data.data || []);
-      }
+      setCustomers(customersRes.data?.data || customersRes.data || []);
+      setProducts(productsRes.data?.data || productsRes.data || []);
     } catch (error) {
       console.error('Failed to load initial data:', error);
       setError('Failed to load form data');
@@ -395,9 +391,9 @@ const RebateForm = () => {
                     multiple
                     options={customers}
                     getOptionLabel={(option) => option.name || ''}
-                    value={customers.filter(c => formData.eligibility.customerIds.includes(c._id))}
-                    onChange={(e, newValue) => {
-                      handleNestedChange('eligibility', 'customerIds', newValue.map(v => v._id));
+                                    value={customers.filter(c => formData.eligibility.customerIds.includes(c.id || c._id))}
+                                    onChange={(e, newValue) => {
+                                      handleNestedChange('eligibility', 'customerIds', newValue.map(v => v.id || v._id));
                     }}
                     renderInput={(params) => (
                       <TextField {...params} label="Eligible Customers" placeholder="Select customers" />
@@ -414,9 +410,9 @@ const RebateForm = () => {
                     multiple
                     options={products}
                     getOptionLabel={(option) => option.name || ''}
-                    value={products.filter(p => formData.eligibility.productIds.includes(p._id))}
-                    onChange={(e, newValue) => {
-                      handleNestedChange('eligibility', 'productIds', newValue.map(v => v._id));
+                                    value={products.filter(p => formData.eligibility.productIds.includes(p.id || p._id))}
+                                    onChange={(e, newValue) => {
+                                      handleNestedChange('eligibility', 'productIds', newValue.map(v => v.id || v._id));
                     }}
                     renderInput={(params) => (
                       <TextField {...params} label="Eligible Products" placeholder="Select products" />

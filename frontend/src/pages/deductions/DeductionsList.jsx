@@ -184,12 +184,12 @@ const DeductionsList = () => {
 
       {statistics && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          {statistics.byStatus?.map((stat) => (
-            <Grid item xs={12} sm={6} md={3} key={stat._id}>
+          {statistics.byStatus?.map((stat, index) => (
+            <Grid item xs={12} sm={6} md={3} key={stat.id || stat._id || stat.status || index}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="textSecondary">
-                    {formatLabel(stat._id)}
+                    {formatLabel(stat.status || stat._id || stat.id || 'Unknown')}
                   </Typography>
                   <Typography variant="h4">{stat.count}</Typography>
                   <Typography variant="body2" color="textSecondary">

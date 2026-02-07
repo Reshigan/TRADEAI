@@ -133,7 +133,7 @@ const ReconciliationDashboard = () => {
                 onChange={(e) => setSelectedCustomer(e.target.value)}
               >
                 {customers.map((customer) => (
-                  <MenuItem key={customer._id} value={customer._id}>
+                  <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
                     {customer.name} ({customer.code})
                   </MenuItem>
                 ))}
@@ -298,7 +298,7 @@ const ReconciliationDashboard = () => {
                       </TableHead>
                       <TableBody>
                         {deductions.slice(0, 10).map((deduction) => (
-                          <TableRow key={deduction._id}>
+                          <TableRow key={deduction.id || deduction._id}>
                             <TableCell>
                               <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
                                 {deduction.deductionId}
@@ -353,7 +353,7 @@ const ReconciliationDashboard = () => {
                       </TableHead>
                       <TableBody>
                         {claims.slice(0, 10).map((claim) => (
-                          <TableRow key={claim._id}>
+                          <TableRow key={claim.id || claim._id}>
                             <TableCell>
                               <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
                                 {claim.claimId}

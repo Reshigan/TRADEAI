@@ -11,7 +11,7 @@ import {
 import {
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 import './PromotionForm.css';
 
 // Static hierarchy options for consistency across the app
@@ -85,10 +85,7 @@ const PromotionForm = () => {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/products`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/products`);
       const productsData = response.data.data || response.data;
       setProducts(productsData);
     } catch (err) {
@@ -98,10 +95,7 @@ const PromotionForm = () => {
 
   const fetchCustomers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/customers`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/customers`);
       const customersData = response.data.data || response.data;
       setCustomers(customersData);
     } catch (err) {
@@ -112,10 +106,7 @@ const PromotionForm = () => {
   const fetchPromotion = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/promotions/${id}`);
       const promotion = response.data.data || response.data;
       
       setFormData({
@@ -174,7 +165,6 @@ const PromotionForm = () => {
       setSaving(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         promotionType: formData.type,
@@ -182,17 +172,9 @@ const PromotionForm = () => {
       };
 
       if (isEditMode) {
-        await axios.put(
-          `${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions/${id}`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.put(`/promotions/${id}`, payload);
       } else {
-        await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL || '/api'}/promotions`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.post(`/promotions`, payload);
       }
 
       navigate('/promotions');

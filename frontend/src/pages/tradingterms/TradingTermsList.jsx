@@ -230,7 +230,7 @@ const TradingTermsList = () => {
                 </TableHead>
                 <TableBody>
                   {tradingTerms.map((term) => (
-                    <TableRow key={term._id} hover>
+                    <TableRow key={term.id || term._id} hover>
                       <TableCell>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           {term.code}
@@ -276,19 +276,19 @@ const TradingTermsList = () => {
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title="View">
-                          <IconButton size="small" onClick={() => handleView(term._id)}>
+                          <IconButton size="small" onClick={() => handleView(term.id || term._id)}>
                             <Visibility fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Edit">
-                          <IconButton size="small" onClick={() => handleEdit(term._id)}>
+                          <IconButton size="small" onClick={() => handleEdit(term.id || term._id)}>
                             <Edit fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Delete">
                           <IconButton 
                             size="small" 
-                            onClick={() => handleDelete(term._id)}
+                            onClick={() => handleDelete(term.id || term._id)}
                             color="error"
                           >
                             <Delete fontSize="small" />
