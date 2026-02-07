@@ -143,7 +143,7 @@ bulkOperationSchema.index({ companyId: 1, status: 1, createdAt: -1 });
 bulkOperationSchema.index({ companyId: 1, operation: 1, modelType: 1 });
 bulkOperationSchema.index({ userId: 1, createdAt: -1 });
 
-bulkOperationSchema.pre('save', function(next) {
+bulkOperationSchema.pre('save', function (next) {
   if (this.isModified('status') && this.status === 'completed' && !this.endTime) {
     this.endTime = new Date();
     if (this.startTime) {
@@ -153,16 +153,16 @@ bulkOperationSchema.pre('save', function(next) {
   next();
 });
 
-bulkOperationSchema.statics.getOperationHistory = function(companyId, options = {}) {
+bulkOperationSchema.statics.getOperationHistory = function (companyId, options = {}) {
   const { operation, modelType, status, page = 1, limit = 20 } = options;
-  
+
   const query = { companyId };
   if (operation) query.operation = operation;
   if (modelType) query.modelType = modelType;
   if (status) query.status = status;
-  
+
   const skip = (page - 1) * limit;
-  
+
   return this.find(query)
     .populate('userId', 'firstName lastName email')
     .sort({ createdAt: -1 })
@@ -170,20 +170,20 @@ bulkOperationSchema.statics.getOperationHistory = function(companyId, options = 
     .limit(limit);
 };
 
-bulkOperationSchema.methods.updateProgress = function(processed, successful, failed) {
+bulkOperationSchema.methods.updateProgress = function (processed, successful, failed) {
   this.results.processed = processed;
   this.results.successful = successful;
   this.results.failed = failed;
-  
+
   const total = this.results.processed + this.results.failed;
   if (total > 0) {
     this.progress = Math.min(100, Math.round((processed / total) * 100));
   }
-  
+
   return this.save();
 };
 
-bulkOperationSchema.methods.complete = function(results) {
+bulkOperationSchema.methods.complete = function (results) {
   this.status = 'completed';
   this.progress = 100;
   this.endTime = new Date();
@@ -196,7 +196,7 @@ bulkOperationSchema.methods.complete = function(results) {
   return this.save();
 };
 
-bulkOperationSchema.methods.fail = function(error) {
+bulkOperationSchema.methods.fail = function (error) {
   this.status = 'failed';
   this.endTime = new Date();
   if (this.startTime) {
@@ -211,7 +211,7 @@ bulkOperationSchema.methods.fail = function(error) {
   return this.save();
 };
 
-bulkOperationSchema.methods.cancel = function(userId) {
+bulkOperationSchema.methods.cancel = function (userId) {
   this.status = 'cancelled';
   this.cancelledBy = userId;
   this.cancelledAt = new Date();

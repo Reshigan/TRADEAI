@@ -95,7 +95,7 @@ router.post('/unassign', protect, async (req, res) => {
     }
 
     user.assignedCustomers = user.assignedCustomers.filter(
-      c => c.toString() !== customerId.toString()
+      (c) => c.toString() !== customerId.toString()
     );
     await user.save();
 

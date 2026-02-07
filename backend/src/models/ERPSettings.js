@@ -9,7 +9,7 @@ const erpSettingsSchema = new mongoose.Schema({
     unique: true,
     index: true
   },
-  
+
   // SAP Integration
   sap: {
     enabled: { type: Boolean, default: false },
@@ -26,7 +26,7 @@ const erpSettingsSchema = new mongoose.Schema({
     password: String, // Should be encrypted in production
     apiKey: String,
     baseUrl: String,
-    
+
     // Connection Status
     connectionStatus: {
       type: String,
@@ -35,7 +35,7 @@ const erpSettingsSchema = new mongoose.Schema({
     },
     lastConnectionTest: Date,
     connectionError: String,
-    
+
     // Sync Settings
     syncEnabled: { type: Boolean, default: false },
     syncSchedule: {
@@ -45,7 +45,7 @@ const erpSettingsSchema = new mongoose.Schema({
     },
     lastSyncAt: Date,
     lastSyncStatus: String,
-    
+
     // Data Mapping
     masterDataMapping: {
       customers: { type: Boolean, default: true },
@@ -54,7 +54,7 @@ const erpSettingsSchema = new mongoose.Schema({
       inventory: { type: Boolean, default: false }
     }
   },
-  
+
   // Generic ERP Integration (for non-SAP systems)
   erp: {
     enabled: { type: Boolean, default: false },
@@ -68,7 +68,7 @@ const erpSettingsSchema = new mongoose.Schema({
     apiKey: String,
     username: String,
     password: String,
-    
+
     // Connection Status
     connectionStatus: {
       type: String,
@@ -77,7 +77,7 @@ const erpSettingsSchema = new mongoose.Schema({
     },
     lastConnectionTest: Date,
     connectionError: String,
-    
+
     // Sync Settings
     syncEnabled: { type: Boolean, default: false },
     syncSchedule: {
@@ -88,7 +88,7 @@ const erpSettingsSchema = new mongoose.Schema({
     lastSyncAt: Date,
     lastSyncStatus: String
   },
-  
+
   // Master Data Settings
   masterData: {
     // Customer Master
@@ -100,7 +100,7 @@ const erpSettingsSchema = new mongoose.Schema({
     customerSyncEnabled: { type: Boolean, default: false },
     customerSyncSchedule: { type: String, default: 'daily' },
     lastCustomerSync: Date,
-    
+
     // Product Master
     productSource: {
       type: String,
@@ -110,7 +110,7 @@ const erpSettingsSchema = new mongoose.Schema({
     productSyncEnabled: { type: Boolean, default: false },
     productSyncSchedule: { type: String, default: 'daily' },
     lastProductSync: Date,
-    
+
     // Pricing Master
     pricingSource: {
       type: String,
@@ -121,7 +121,7 @@ const erpSettingsSchema = new mongoose.Schema({
     pricingSyncSchedule: { type: String, default: 'daily' },
     lastPricingSync: Date
   },
-  
+
   // Real-time Sales Data Settings
   salesData: {
     enabled: { type: Boolean, default: false },
@@ -130,7 +130,7 @@ const erpSettingsSchema = new mongoose.Schema({
       enum: ['manual', 'erp', 'sap', 'pos', 'api'],
       default: 'manual'
     },
-    
+
     // Real-time Feed
     realtimeFeedEnabled: { type: Boolean, default: false },
     realtimeFeedUrl: String,
@@ -140,7 +140,7 @@ const erpSettingsSchema = new mongoose.Schema({
       enum: ['json', 'xml', 'csv'],
       default: 'json'
     },
-    
+
     // Batch Import
     batchImportEnabled: { type: Boolean, default: true },
     batchImportSchedule: {
@@ -152,10 +152,10 @@ const erpSettingsSchema = new mongoose.Schema({
     lastBatchImport: Date,
     lastBatchImportStatus: String,
     lastBatchImportRecords: Number,
-    
+
     // Data Retention
     retentionPeriodMonths: { type: Number, default: 24 },
-    
+
     // Connection Status
     connectionStatus: {
       type: String,
@@ -164,7 +164,7 @@ const erpSettingsSchema = new mongoose.Schema({
     },
     lastConnectionTest: Date
   },
-  
+
   // POS Integration
   pos: {
     enabled: { type: Boolean, default: false },
@@ -176,19 +176,19 @@ const erpSettingsSchema = new mongoose.Schema({
     },
     baseUrl: String,
     apiKey: String,
-    
+
     connectionStatus: {
       type: String,
       enum: ['not_configured', 'configured', 'connected', 'error', 'disconnected'],
       default: 'not_configured'
     },
     lastConnectionTest: Date,
-    
+
     syncEnabled: { type: Boolean, default: false },
     syncSchedule: { type: String, default: 'daily' },
     lastSyncAt: Date
   },
-  
+
   // Sync History
   syncHistory: [{
     syncType: String, // 'sap', 'erp', 'master_data', 'sales', 'pos'
@@ -202,7 +202,7 @@ const erpSettingsSchema = new mongoose.Schema({
     triggeredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     errorDetails: String
   }],
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -221,7 +221,7 @@ const erpSettingsSchema = new mongoose.Schema({
 erpSettingsSchema.index({ companyId: 1 }, { unique: true });
 
 // Static method to get or create settings for a company
-erpSettingsSchema.statics.getOrCreate = async function(companyId) {
+erpSettingsSchema.statics.getOrCreate = async function (companyId) {
   let settings = await this.findOne({ companyId });
   if (!settings) {
     settings = await this.create({ companyId });
@@ -230,9 +230,8 @@ erpSettingsSchema.statics.getOrCreate = async function(companyId) {
 };
 
 // Method to test SAP connection (simulated)
-erpSettingsSchema.methods.testSAPConnection = async function() {
+erpSettingsSchema.methods.testSAPConnection = async function () {
   if (this.sap.enabled && this.sap.host) {
-    // Simulated connection test
     this.sap.connectionStatus = 'connected';
     this.sap.lastConnectionTest = new Date();
     this.sap.connectionError = null;
@@ -240,11 +239,12 @@ erpSettingsSchema.methods.testSAPConnection = async function() {
     this.sap.connectionStatus = 'error';
     this.sap.connectionError = 'SAP not configured';
   }
-  return this.save();
+  const saved = await this.save();
+  return saved;
 };
 
-// Method to test ERP connection (simulated)
-erpSettingsSchema.methods.testERPConnection = async function() {
+// Method to test ERP connection(simulated)
+erpSettingsSchema.methods.testERPConnection = async function () {
   if (this.erp.enabled && this.erp.baseUrl) {
     this.erp.connectionStatus = 'connected';
     this.erp.lastConnectionTest = new Date();
@@ -253,11 +253,12 @@ erpSettingsSchema.methods.testERPConnection = async function() {
     this.erp.connectionStatus = 'error';
     this.erp.connectionError = 'ERP not configured';
   }
-  return this.save();
+  const saved = await this.save();
+  return saved;
 };
 
 // Method to record sync
-erpSettingsSchema.methods.recordSync = async function(syncType, stats, triggeredBy) {
+erpSettingsSchema.methods.recordSync = async function (syncType, stats, triggeredBy) {
   this.syncHistory.unshift({
     syncType,
     syncedAt: new Date(),
@@ -270,13 +271,13 @@ erpSettingsSchema.methods.recordSync = async function(syncType, stats, triggered
     triggeredBy,
     errorDetails: stats.errorDetails
   });
-  
-  // Keep last 100 sync records
+
   if (this.syncHistory.length > 100) {
     this.syncHistory = this.syncHistory.slice(0, 100);
   }
-  
-  return this.save();
+
+  const saved = await this.save();
+  return saved;
 };
 
 addTenantSupport(erpSettingsSchema);

@@ -94,72 +94,72 @@ const tradeSpendSchema = new mongoose.Schema({
     }
   },
 
-    // Associations
-    customer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Customer',
-      required: true
+  // Associations
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: true
+  },
+  vendor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vendor'
+  },
+  products: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product'
+  }],
+
+  // Hierarchy Scope for proportional allocation
+  productScope: {
+    type: {
+      type: String,
+      enum: ['leaf', 'hierarchy', 'all'],
+      default: 'leaf'
     },
-    vendor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Vendor'
-    },
-    products: [{
+    ids: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product'
     }],
-
-    // Hierarchy Scope for proportional allocation
-    productScope: {
-      type: {
-        type: String,
-        enum: ['leaf', 'hierarchy', 'all'],
-        default: 'leaf'
-      },
-      ids: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
-      }],
-      level: {
-        type: Number,
-        min: 1,
-        max: 5
-      },
-      value: {
-        type: String
-      }
+    level: {
+      type: Number,
+      min: 1,
+      max: 5
     },
-    customerScope: {
-      type: {
-        type: String,
-        enum: ['leaf', 'hierarchy', 'all'],
-        default: 'leaf'
-      },
-      ids: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer'
-      }],
-      level: {
-        type: Number,
-        min: 1,
-        max: 5
-      },
-      value: {
-        type: String
-      }
+    value: {
+      type: String
+    }
+  },
+  customerScope: {
+    type: {
+      type: String,
+      enum: ['leaf', 'hierarchy', 'all'],
+      default: 'leaf'
     },
-    productHierarchy: [{
-      level: { type: Number, min: 1, max: 5 },
-      value: { type: String }
-    }],
-    customerHierarchy: [{
-      level: { type: Number, min: 1, max: 5 },
-      value: { type: String }
-    }],
-    allocation: {
+    ids: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Allocation'
+      ref: 'Customer'
+    }],
+    level: {
+      type: Number,
+      min: 1,
+      max: 5
     },
+    value: {
+      type: String
+    }
+  },
+  productHierarchy: [{
+    level: { type: Number, min: 1, max: 5 },
+    value: { type: String }
+  }],
+  customerHierarchy: [{
+    level: { type: Number, min: 1, max: 5 },
+    value: { type: String }
+  }],
+  allocation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Allocation'
+  },
   promotion: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Promotion'

@@ -8,10 +8,10 @@ const departmentSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   // Azure AD Reference
   azureAdId: String,
-  
+
   // Basic Information
   name: {
     type: String,
@@ -25,7 +25,7 @@ const departmentSchema = new mongoose.Schema({
     trim: true
   },
   description: String,
-  
+
   // Hierarchy
   parentDepartment: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,30 +33,30 @@ const departmentSchema = new mongoose.Schema({
   },
   level: { type: Number, default: 0 }, // 0 = top level
   path: String, // e.g., "/sales/retail/key-accounts"
-  
+
   // Leadership
   head: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Employee'
   },
   headName: String, // Denormalized
-  
+
   // Contact
   email: String,
   phone: String,
   location: String,
-  
+
   // Budget Information
   costCenter: String,
   budgetCode: String,
-  
+
   // Status
   status: {
     type: String,
     enum: ['active', 'inactive', 'archived'],
     default: 'active'
   },
-  
+
   // Sync Information
   source: {
     type: String,
@@ -64,14 +64,14 @@ const departmentSchema = new mongoose.Schema({
     default: 'manual'
   },
   lastSyncedAt: Date,
-  
+
   // Statistics (denormalized for performance)
   employeeCount: { type: Number, default: 0 },
   activeEmployeeCount: { type: Number, default: 0 },
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -107,7 +107,7 @@ departmentSchema.virtual('employees', {
 });
 
 // Pre-save hook to update path
-departmentSchema.pre('save', async function(next) {
+departmentSchema.pre('save', async function (next) {
   if (this.isModified('parentDepartment') || this.isNew) {
     if (this.parentDepartment) {
       const parent = await this.constructor.findById(this.parentDepartment);
@@ -124,38 +124,38 @@ departmentSchema.pre('save', async function(next) {
 });
 
 // Method to update employee counts
-departmentSchema.methods.updateEmployeeCounts = async function() {
+departmentSchema.methods.updateEmployeeCounts = async function () {
   const Employee = mongoose.model('Employee');
-  
+
   this.employeeCount = await Employee.countDocuments({
     companyId: this.companyId,
     department: this._id
   });
-  
+
   this.activeEmployeeCount = await Employee.countDocuments({
     companyId: this.companyId,
     department: this._id,
     status: 'active'
   });
-  
+
   return this.save();
 };
 
 // Static method to get department tree
-departmentSchema.statics.getTree = async function(companyId) {
+departmentSchema.statics.getTree = async function (companyId) {
   const departments = await this.find({ companyId, status: 'active' })
     .sort({ level: 1, name: 1 })
     .lean();
-  
+
   // Build tree structure
   const map = {};
   const roots = [];
-  
-  departments.forEach(dept => {
+
+  departments.forEach((dept) => {
     map[dept._id.toString()] = { ...dept, children: [] };
   });
-  
-  departments.forEach(dept => {
+
+  departments.forEach((dept) => {
     if (dept.parentDepartment) {
       const parent = map[dept.parentDepartment.toString()];
       if (parent) {
@@ -165,7 +165,7 @@ departmentSchema.statics.getTree = async function(companyId) {
       roots.push(map[dept._id.toString()]);
     }
   });
-  
+
   return roots;
 };
 

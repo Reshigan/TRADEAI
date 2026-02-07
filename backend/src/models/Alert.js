@@ -107,23 +107,23 @@ alertSchema.index({ tenantId: 1, type: 1, status: 1 });
 alertSchema.index({ tenantId: 1, priority: 1, status: 1 });
 alertSchema.index({ companyId: 1, status: 1, createdAt: -1 });
 
-alertSchema.statics.getActiveAlerts = function(companyId, options = {}) {
+alertSchema.statics.getActiveAlerts = function (companyId, options = {}) {
   const { type, priority, limit = 50 } = options;
-  
+
   const query = {
     companyId,
     status: 'active'
   };
-  
+
   if (type) query.type = type;
   if (priority) query.priority = priority;
-  
+
   return this.find(query)
     .sort({ priority: 1, createdAt: -1 })
     .limit(limit);
 };
 
-alertSchema.statics.getAlertSummary = function(companyId) {
+alertSchema.statics.getAlertSummary = function (companyId) {
   return this.aggregate([
     { $match: { companyId: new mongoose.Types.ObjectId(companyId) } },
     {
@@ -135,14 +135,14 @@ alertSchema.statics.getAlertSummary = function(companyId) {
   ]);
 };
 
-alertSchema.methods.acknowledge = function(userId) {
+alertSchema.methods.acknowledge = function (userId) {
   this.status = 'acknowledged';
   this.acknowledgedBy = userId;
   this.acknowledgedAt = new Date();
   return this.save();
 };
 
-alertSchema.methods.resolve = function(userId, resolution) {
+alertSchema.methods.resolve = function (userId, resolution) {
   this.status = 'resolved';
   this.resolvedBy = userId;
   this.resolvedAt = new Date();

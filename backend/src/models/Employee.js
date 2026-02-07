@@ -8,13 +8,13 @@ const employeeSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  
+
   // Azure AD Reference
   azureAdId: {
     type: String,
     index: true
   },
-  
+
   // Basic Information
   employeeId: {
     type: String,
@@ -38,7 +38,7 @@ const employeeSchema = new mongoose.Schema({
     trim: true
   },
   displayName: String,
-  
+
   // Job Information
   jobTitle: String,
   department: {
@@ -51,12 +51,12 @@ const employeeSchema = new mongoose.Schema({
     ref: 'Employee'
   },
   managerEmail: String,
-  
+
   // Contact Information
   phone: String,
   mobilePhone: String,
   officeLocation: String,
-  
+
   // Employment Details
   employmentType: {
     type: String,
@@ -65,14 +65,14 @@ const employeeSchema = new mongoose.Schema({
   },
   startDate: Date,
   endDate: Date,
-  
+
   // Status
   status: {
     type: String,
     enum: ['active', 'inactive', 'pending', 'terminated'],
     default: 'active'
   },
-  
+
   // Linked User Account
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -80,7 +80,7 @@ const employeeSchema = new mongoose.Schema({
   },
   userProvisioned: { type: Boolean, default: false },
   userProvisionedAt: Date,
-  
+
   // Sync Information
   source: {
     type: String,
@@ -93,13 +93,13 @@ const employeeSchema = new mongoose.Schema({
     enum: ['synced', 'pending', 'error', 'not_synced'],
     default: 'not_synced'
   },
-  
+
   // Additional Azure AD Data
   azureAdData: mongoose.Schema.Types.Mixed,
-  
+
   // Custom Fields
   customFields: mongoose.Schema.Types.Mixed,
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -122,7 +122,7 @@ employeeSchema.index({ companyId: 1, department: 1 });
 employeeSchema.index({ companyId: 1, status: 1 });
 
 // Virtual for full name
-employeeSchema.virtual('fullName').get(function() {
+employeeSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
@@ -134,12 +134,12 @@ employeeSchema.virtual('directReports', {
 });
 
 // Method to provision user account
-employeeSchema.methods.provisionUser = async function(role = 'user', department = 'sales') {
+employeeSchema.methods.provisionUser = async function (role = 'user', department = 'sales') {
   const User = mongoose.model('User');
-  
+
   // Check if user already exists
   let user = await User.findOne({ email: this.email });
-  
+
   if (!user) {
     // Create new user
     user = await User.create({
@@ -150,15 +150,15 @@ employeeSchema.methods.provisionUser = async function(role = 'user', department 
       role,
       department,
       companyId: this.companyId,
-      password: Math.random().toString(36).slice(-12) + 'A1!', // Temporary password
+      password: `${Math.random().toString(36).slice(-12)}A1!`, // Temporary password
       isActive: true
     });
   }
-  
+
   this.userId = user._id;
   this.userProvisioned = true;
   this.userProvisionedAt = new Date();
-  
+
   return this.save();
 };
 

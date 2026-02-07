@@ -28,14 +28,20 @@ class ScopeResolver {
     const Model = entityType === 'product' ? Product : Customer;
 
     switch (selector.type) {
-      case 'leaf':
-        return this.resolveLeafSelector(companyId, Model, selector.ids);
+      case 'leaf': {
+        const result = await this.resolveLeafSelector(companyId, Model, selector.ids);
+        return result;
+      }
 
-      case 'hierarchy':
-        return this.resolveHierarchySelector(companyId, Model, selector.level, selector.value);
+      case 'hierarchy': {
+        const result = await this.resolveHierarchySelector(companyId, Model, selector.level, selector.value);
+        return result;
+      }
 
-      case 'all':
-        return this.resolveAllLeaves(companyId, Model);
+      case 'all': {
+        const result = await this.resolveAllLeaves(companyId, Model);
+        return result;
+      }
 
       default:
         throw new Error(`Unknown selector type: ${selector.type}`);
