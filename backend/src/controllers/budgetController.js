@@ -3,6 +3,7 @@ const SalesHistory = require('../models/SalesHistory');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const { cacheService } = require('../services/cacheService');
 const mlService = require('../services/mlService');
+const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 const logger = require('../utils/logger');
 
 // Create new budget
@@ -44,6 +45,43 @@ exports.createBudget = asyncHandler(async (req, res, _next) => {
         promotions: { budget: f.suggestedPromotions }
       }
     }));
+  }
+
+  const companyId = req.user.company || req.user.companyId || req.user.tenantId;
+  const rules = companyId ? await BusinessRulesConfig.getOrCreate(companyId) : null;
+  const budgetGuardrails = rules?.budgets || {};
+
+  const totalAmount = req.body.total_amount || budgetData.totalAmount || 0;
+  if (budgetGuardrails.guardrails?.requireROIForSpendOverAmount > 0 &&
+      totalAmount > budgetGuardrails.guardrails.requireROIForSpendOverAmount &&
+      !budgetData.expectedROI && !budgetData.mlForecast) {
+    throw new AppError(
+      `ROI justification required for budgets over ${budgetGuardrails.guardrails.requireROIForSpendOverAmount}`,
+      400
+    );
+  }
+
+  if (budgetGuardrails.allocationCaps?.overallPercentOfRevenue > 0 && budgetData.revenueBase) {
+    const maxBudget = budgetData.revenueBase * (budgetGuardrails.allocationCaps.overallPercentOfRevenue / 100);
+    if (totalAmount > maxBudget) {
+      throw new AppError(
+        `Budget ${totalAmount} exceeds ${budgetGuardrails.allocationCaps.overallPercentOfRevenue}% of revenue cap (${maxBudget})`,
+        400
+      );
+    }
+  }
+
+  if (budgetData.budgetType && budgetGuardrails.allocationCaps?.byCategoryPercent) {
+    const catCap = budgetGuardrails.allocationCaps.byCategoryPercent.get?.(budgetData.budgetType);
+    if (catCap && budgetData.revenueBase) {
+      const maxCat = budgetData.revenueBase * (catCap / 100);
+      if (totalAmount > maxCat) {
+        throw new AppError(
+          `Budget for category "${budgetData.budgetType}" exceeds ${catCap}% cap (max ${maxCat})`,
+          400
+        );
+      }
+    }
   }
 
   const budget = await Budget.create(budgetData);

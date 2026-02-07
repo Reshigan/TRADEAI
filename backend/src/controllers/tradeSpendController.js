@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Customer = require('../models/Customer');
 const Budget = require('../models/Budget');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 const logger = require('../utils/logger');
 const emailService = require('../services/emailService');
 
@@ -51,10 +52,23 @@ exports.createTradeSpend = asyncHandler(async (req, res, _next) => {
     }
   }
 
-  // Set approval requirements based on amount
-  tradeSpendData.approvals = this.getRequiredApprovals(
+  const companyId = req.user.company || req.user.companyId || req.user.tenantId;
+  const rules = companyId ? await BusinessRulesConfig.getOrCreate(companyId) : null;
+  const budgetRules = rules?.budgets || {};
+
+  if (budgetRules.guardrails?.requireROIForSpendOverAmount > 0 &&
+      tradeSpendData.amount.requested > budgetRules.guardrails.requireROIForSpendOverAmount &&
+      !tradeSpendData.expectedROI) {
+    throw new AppError(
+      `ROI justification required for spend over ${budgetRules.guardrails.requireROIForSpendOverAmount}`,
+      400
+    );
+  }
+
+  tradeSpendData.approvals = exports.getRequiredApprovals(
     tradeSpendData.amount.requested,
-    tradeSpendData.spendType
+    tradeSpendData.spendType,
+    budgetRules.approvals?.thresholds
   );
 
   const tradeSpend = await TradeSpend.create(tradeSpendData);
@@ -458,8 +472,18 @@ exports.getTradeSpendSummary = asyncHandler(async (req, res, _next) => {
 });
 
 // Helper functions
-exports.getRequiredApprovals = (amount, spendType) => {
+exports.getRequiredApprovals = (amount, spendType, configThresholds) => {
   const approvalLevels = [];
+
+  if (Array.isArray(configThresholds) && configThresholds.length > 0) {
+    const sorted = [...configThresholds].sort((a, b) => a.amount - b.amount);
+    for (const t of sorted) {
+      if (amount >= t.amount) {
+        approvalLevels.push({ level: t.approverRole, status: 'pending' });
+      }
+    }
+    if (approvalLevels.length > 0) return approvalLevels;
+  }
 
   if (amount <= 5000) {
     approvalLevels.push({ level: 'kam', status: 'pending' });
@@ -477,7 +501,6 @@ exports.getRequiredApprovals = (amount, spendType) => {
     approvalLevels.push({ level: 'board', status: 'pending' });
   }
 
-  // Add finance approval for certain types
   if (['cash_coop', 'rebate'].includes(spendType) && amount > 10000) {
     approvalLevels.push({ level: 'finance', status: 'pending' });
   }
