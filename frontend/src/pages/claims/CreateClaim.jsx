@@ -119,8 +119,9 @@ const CreateClaim = () => {
 
       const response = await claimService.createClaim(formData);
       
-      if (submitForApproval && response.data?._id) {
-        await claimService.submitClaim(response.data._id);
+      const createdId = response.data?.id || response.data?._id || response.id || response._id;
+      if (submitForApproval && createdId) {
+        await claimService.submitClaim(createdId);
       }
 
       analytics.trackEvent('claim_created', {
@@ -189,8 +190,8 @@ const CreateClaim = () => {
                     required
                   >
                     {customers.map((customer) => (
-                      <MenuItem key={customer._id} value={customer._id}>
-                        {customer.name} ({customer.code})
+                      <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
+                        {customer.name} ({customer.code || '-'})
                       </MenuItem>
                     ))}
                   </TextField>

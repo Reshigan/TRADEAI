@@ -182,21 +182,21 @@ const CommandCenter = () => {
         title: `${p.name || 'Untitled Promotion'}`,
         description: `${p.customer?.name || 'Customer'} - ${p.status}`,
         status: p.status,
-        route: `/promotions/${p._id}`,
+        route: `/promotions/${p.id || p._id}`,
         type: 'promotion'
       })),
       ...budgetsArray.filter(b => b.status === 'draft').slice(0, 2).map(b => ({
         title: `${b.name || 'Untitled Budget'}`,
         description: `$${(b.totalAmount || 0).toLocaleString()} - Draft`,
         status: 'draft',
-        route: `/budgets/${b._id}`,
+        route: `/budgets/${b.id || b._id}`,
         type: 'budget'
       })),
       ...tradeSpendsArray.filter(ts => ts.status === 'pending').slice(0, 2).map(ts => ({
         title: `${ts.description || 'Trade Spend Request'}`,
         description: `$${(ts.amount || 0).toLocaleString()} - Pending approval`,
         status: 'pending',
-        route: `/trade-spends/${ts._id}`,
+        route: `/trade-spends/${ts.id || ts._id}`,
         type: 'tradespend'
       }))
     ].slice(0, 5);

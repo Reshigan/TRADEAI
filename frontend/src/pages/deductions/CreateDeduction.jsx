@@ -150,8 +150,8 @@ const CreateDeduction = () => {
                     required
                   >
                     {customers.map((customer) => (
-                      <MenuItem key={customer._id} value={customer._id}>
-                        {customer.name} ({customer.code || customer._id.slice(-6)})
+                      <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
+                        {customer.name} ({customer.code || (customer.id || customer._id || '').toString().slice(-6)})
                       </MenuItem>
                     ))}
                   </TextField>
@@ -255,7 +255,7 @@ const CreateDeduction = () => {
                     Customer
                   </Typography>
                   <Typography variant="body1">
-                    {customers.find(c => c._id === formData.customer)?.name || 'Selected'}
+                    {customers.find(c => (c.id || c._id) === formData.customer)?.name || 'Selected'}
                   </Typography>
                 </Box>
               )}

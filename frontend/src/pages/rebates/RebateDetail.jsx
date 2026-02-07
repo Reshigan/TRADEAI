@@ -452,7 +452,7 @@ const RebateDetail = () => {
                     Rebate ID
                   </Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500, fontFamily: 'monospace' }}>
-                    {rebate._id}
+                    {rebate.id || rebate._id}
                   </Typography>
                 </Grid>
               </Grid>

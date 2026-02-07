@@ -18,9 +18,7 @@ import {
   Phone as PhoneIcon,
   LocationOn as LocationIcon
 } from '@mui/icons-material';
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
+import api from '../../services/api';
 
 const VendorList = () => {
   const navigate = useNavigate();
@@ -31,15 +29,9 @@ const VendorList = () => {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const token = localStorage.getItem('token');
         const params = search ? `?search=${search}` : '';
-        const response = await axios.get(`${API_BASE_URL}/vendors${params}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (response.data.success) {
-          setVendors(response.data.data);
-        }
+        const response = await api.get(`/vendors${params}`);
+        setVendors(response.data?.data || response.data || []);
       } catch (err) {
         console.error('Failed to fetch vendors:', err);
       } finally {
@@ -147,7 +139,7 @@ const VendorList = () => {
       ) : (
         <Grid container spacing={3}>
           {vendors.map(vendor => (
-            <Grid item xs={12} sm={6} lg={4} key={vendor._id}>
+            <Grid item xs={12} sm={6} lg={4} key={vendor.id || vendor._id}>
               <Paper
                 elevation={0}
                 sx={{
@@ -165,7 +157,7 @@ const VendorList = () => {
                     borderColor: 'primary.main'
                   }
                 }}
-                onClick={() => navigate(`/vendors/${vendor._id}`)}
+                onClick={() => navigate(`/vendors/${vendor.id || vendor._id}`)}
               >
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <BusinessIcon sx={{ color: 'primary.main', fontSize: 28 }} />

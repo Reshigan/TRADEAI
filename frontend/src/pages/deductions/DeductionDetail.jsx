@@ -201,7 +201,7 @@ const DeductionDetail = () => {
             Deduction Details
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Deduction ID: {deduction.deductionNumber || deduction._id}
+            Deduction ID: {deduction.deductionNumber || deduction.id || deduction._id}
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -317,7 +317,7 @@ const DeductionDetail = () => {
                     <ListItem key={index} divider={index < deduction.disputeHistory.length - 1}>
                       <ListItemText
                         primary={dispute.reason}
-                        secondary={`${formatDate(dispute.date)} - ${dispute.user?.firstName} ${dispute.user?.lastName}`}
+                        secondary={`${formatDate(dispute.date)} - ${typeof dispute.user === 'object' ? `${dispute.user?.firstName || ''} ${dispute.user?.lastName || ''}`.trim() : (dispute.userName || dispute.user || 'System')}`}
                       />
                     </ListItem>
                   ))}
@@ -411,7 +411,7 @@ const DeductionDetail = () => {
                         <Typography
                           variant="body2"
                           sx={{ cursor: 'pointer', color: 'primary.main' }}
-                          onClick={() => navigate(`/claims/${claim._id}`)}
+                          onClick={() => navigate(`/claims/${claim.id || claim._id}`)}
                         >
                           {claim.claimNumber}
                         </Typography>

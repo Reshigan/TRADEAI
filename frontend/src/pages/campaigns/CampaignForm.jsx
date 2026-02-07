@@ -18,7 +18,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../services/api';
 
 const CampaignForm = () => {
   const { id } = useParams();
@@ -48,10 +48,7 @@ const CampaignForm = () => {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`/campaigns/${id}`);
       const campaign = response.data.data || response.data;
       
       setFormData({
@@ -91,7 +88,6 @@ const CampaignForm = () => {
       setSaving(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
       const payload = {
         ...formData,
         campaignType: formData.type,
@@ -99,17 +95,9 @@ const CampaignForm = () => {
       };
 
       if (isEditMode) {
-        await axios.put(
-          `${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns/${id}`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.put(`/campaigns/${id}`, payload);
       } else {
-        await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL || '/api'}/campaigns`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.post(`/campaigns`, payload);
       }
 
       navigate('/campaigns');
