@@ -243,7 +243,7 @@ const RebateAnalytics = () => {
               {analytics.statusDistribution?.map((status) => (
                 <Box key={status.id || status._id} sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography variant="body2">{formatLabel(status._id)}</Typography>
+                    <Typography variant="body2">{formatLabel(status.id || status._id)}</Typography>
                     <Typography variant="body2" fontWeight="bold">
                       {status.count}
                     </Typography>

@@ -209,8 +209,8 @@ function App() {
       setIsAuthenticated(authStatus);
       setUser(userData);
       
-      if (userData && userData._id && userData.tenantId) {
-        analytics.setUser(userData._id, userData.tenantId);
+      if (userData && (userData.id || userData._id) && userData.tenantId) {
+        analytics.setUser(userData.id || userData._id, userData.tenantId);
         
         const onboardingCompleted = localStorage.getItem('onboarding_completed');
         if (!onboardingCompleted && authStatus) {

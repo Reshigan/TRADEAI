@@ -29,6 +29,7 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
+import { formatLabel } from '../../utils/formatters';
 
 
 const getCurrencySymbol = () => {
@@ -274,7 +275,7 @@ const CustomerEdit = () => {
             >
               {statusOptions.map(status => (
                 <MenuItem key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {formatLabel(status)}
                 </MenuItem>
               ))}
             </TextField>

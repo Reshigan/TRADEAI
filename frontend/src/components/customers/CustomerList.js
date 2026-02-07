@@ -20,6 +20,7 @@ import {
 
 import { PageHeader, DataTable, StatusChip } from '../common';
 import customerService from '../../services/api/customerService';
+import { formatLabel } from '../../utils/formatters';
 import CustomerForm from './CustomerForm';
 
 // No more mock data - using real API calls
@@ -197,7 +198,7 @@ const CustomerList = () => {
     { 
       id: 'type', 
       label: 'Type',
-      format: (value) => value ? value.charAt(0).toUpperCase() + value.slice(1) : 'N/A'
+      format: (value) => value ? formatLabel(value) : 'N/A'
     },
     { 
       id: 'contact', 
