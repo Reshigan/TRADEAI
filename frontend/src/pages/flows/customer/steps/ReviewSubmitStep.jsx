@@ -25,8 +25,9 @@ import {
   Psychology as AIIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
+import { formatLabel } from '../../../../utils/formatters';
 
-const ReviewSubmitStep = ({ data, onChange, errors = {}, onEditStep }) => {
+const ReviewSubmitStep= ({ data, onChange, errors = {}, onEditStep }) => {
   const renderValue = (value) => {
     if (value === null || value === undefined || value === '') {
       return <span style={{ color: '#999', fontStyle: 'italic' }}>Not provided</span>;
@@ -325,7 +326,7 @@ const ReviewSubmitStep = ({ data, onChange, errors = {}, onEditStep }) => {
                 <Paper elevation={0} sx={{ p: 2, textAlign: 'center', bgcolor: 'error.50' }}>
                   <Typography variant="caption" color="text.secondary">Risk Score</Typography>
                   <Typography variant="h5" fontWeight="bold">{data.aiInsights.riskScore}/100</Typography>
-                  <Chip label={data.aiInsights.riskLevel.toUpperCase()} color={data.aiInsights.riskColor} size="small" sx={{ mt: 1 }} />
+                  <Chip label={formatLabel(data.aiInsights.riskLevel)} color={data.aiInsights.riskColor} size="small" sx={{ mt: 1 }} />
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>

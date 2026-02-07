@@ -30,6 +30,7 @@ import {
   InfoOutlined
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const AIModelHealthWidget = () => {
   const [loading, setLoading] = useState(false);
@@ -142,7 +143,7 @@ const AIModelHealthWidget = () => {
               <Box display="flex" gap={1} flexWrap="wrap">
                 <Chip
                   icon={getStatusIcon(health.status)}
-                  label={health.status?.toUpperCase()}
+                  label={formatLabel(health.status)}
                   color={getStatusColor(health.status)}
                   size="small"
                 />
@@ -188,7 +189,7 @@ const AIModelHealthWidget = () => {
                         <Box display="flex" alignItems="center" gap={1}>
                           {getModelStatusIcon(loaded)}
                           <Typography variant="body2">
-                            {modelName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            {formatLabel(modelName)}
                           </Typography>
                         </Box>
                         <Chip

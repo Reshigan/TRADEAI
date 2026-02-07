@@ -32,8 +32,9 @@ import {
   KeyboardArrowDown as ArrowDownIcon,
   AutoAwesome as AIIcon
 } from '@mui/icons-material';
+import { formatLabel } from '../utils/formatters';
 
-const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
+const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
   const [anchorEl, setAnchorEl] = useState({});
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
@@ -562,7 +563,7 @@ const MegaMenu = ({ user, onLogout, onMobileMenuToggle }) => {
               {user?.email}
             </Typography>
             <Chip 
-              label={user?.role?.toUpperCase() || 'USER'} 
+              label={formatLabel(user?.role) || 'User'} 
               size="small" 
               sx={{ mt: 0.5, height: 20, fontSize: '0.65rem' }}
             />

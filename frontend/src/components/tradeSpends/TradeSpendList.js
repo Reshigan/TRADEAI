@@ -22,7 +22,7 @@ import tradeSpendService from '../../services/api/tradeSpendService';
 import budgetService from '../../services/api/budgetService';
 import customerService from '../../services/api/customerService';
 import { vendorService } from '../../services/api';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
 
 const TradeSpendList = () => {
@@ -196,7 +196,7 @@ const TradeSpendList = () => {
     { 
       id: 'spendType', 
       label: 'Type',
-      format: (value) => value ? value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'N/A'
+      format: (value) => value ? formatLabel(value) : 'N/A'
     },
     { 
       id: 'category', 

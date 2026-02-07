@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../services/api/apiClient';
+import { formatLabel } from '../utils/formatters';
 import './TransactionDashboard.css';
 
 const TransactionDashboard = () => {
@@ -88,7 +89,7 @@ const TransactionDashboard = () => {
       rejected: 'badge-red',
       settled: 'badge-blue'
     };
-    return <span className={`badge ${colors[status]}`}>{status.toUpperCase()}</span>;
+    return <span className={`badge ${colors[status]}`}>{formatLabel(status)}</span>;
   };
 
   return (

@@ -43,6 +43,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import { formatLabel } from '../../utils/formatters';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 
@@ -500,7 +501,7 @@ const PromotionWizard = () => {
 
                                 <Box sx={{ mt: 2 }}>
                                   <Chip 
-                                    label={`Risk: ${scenario.riskLevel.toUpperCase()}`}
+                                    label={`Risk: ${formatLabel(scenario.riskLevel)}`}
                                     color={scenario.riskLevel === 'low' ? 'success' : scenario.riskLevel === 'medium' ? 'warning' : 'error'}
                                     size="small"
                                   />
@@ -794,7 +795,7 @@ const PromotionWizard = () => {
                         </ListItemAvatar>
                         <ListItemText 
                           primary="Type" 
-                          secondary={promotionData.type.toUpperCase()}
+                          secondary={formatLabel(promotionData.type)}
                         />
                       </ListItem>
                       <ListItem>
@@ -899,7 +900,7 @@ const PromotionWizard = () => {
                       <Grid item xs={3}>
                         <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'warning.lighter', borderRadius: 2 }}>
                           <Typography variant="h4" color="warning.main">
-                            {selectedScenarioData?.riskLevel.toUpperCase()}
+                            {formatLabel(selectedScenarioData?.riskLevel)}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
                             Risk Level

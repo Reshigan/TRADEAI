@@ -57,7 +57,7 @@ import {
   Radar
 } from 'recharts';
 import { customerService } from '../../../services/api';
-import { formatCurrency } from '../../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../../utils/formatters';
 
 const CustomerReports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -147,13 +147,13 @@ const CustomerReports = () => {
   });
 
   const tierData = Object.entries(tierDistribution).map(([tier, count]) => ({
-    name: tier.toUpperCase(),
+    name: formatLabel(tier),
     value: count,
     percentage: ((count / totalCustomers) * 100).toFixed(1)
   }));
 
   const typeData = Object.entries(typeDistribution).map(([type, count]) => ({
-    name: type.replace('_', ' ').toUpperCase(),
+    name: formatLabel(type),
     value: count,
     percentage: ((count / totalCustomers) * 100).toFixed(1)
   }));
@@ -427,7 +427,7 @@ const CustomerReports = () => {
                       secondary={`Revenue: ${formatCurrency(customer.revenue)} | Orders: ${customer.orders}`}
                     />
                     <Chip
-                      label={customer.tier?.toUpperCase()}
+                      label={formatLabel(customer.tier)}
                       size="small"
                       sx={{ bgcolor: getTierColor(customer.tier), color: 'white' }}
                     />
@@ -488,14 +488,14 @@ const CustomerReports = () => {
                         <TableCell>{customer.name}</TableCell>
                         <TableCell>
                           <Chip
-                            label={customer.tier?.toUpperCase()}
+                            label={formatLabel(customer.tier)}
                             size="small"
                             sx={{ bgcolor: getTierColor(customer.tier), color: 'white' }}
                           />
                         </TableCell>
                         <TableCell>
                           <Chip
-                            label={customer.type?.replace('_', ' ').toUpperCase()}
+                            label={formatLabel(customer.type)}
                             size="small"
                             variant="outlined"
                           />
@@ -586,7 +586,7 @@ const CustomerReports = () => {
                       </ListItemAvatar>
                       <ListItemText
                         primary={customer.name}
-                        secondary={`${customer.tier?.toUpperCase()} • ${customer.type?.replace('_', ' ').toUpperCase()}`}
+                        secondary={`${formatLabel(customer.tier)} • ${formatLabel(customer.type)}`}
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography variant="body2" sx={{ mr: 1 }}>

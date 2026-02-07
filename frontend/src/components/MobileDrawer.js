@@ -30,8 +30,9 @@ import {
   Close as CloseIcon,
   Logout as LogoutIcon
 } from '@mui/icons-material';
+import { formatLabel } from '../utils/formatters';
 
-const MobileDrawer = ({ open, onClose, user, onLogout }) => {
+const MobileDrawer= ({ open, onClose, user, onLogout }) => {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = React.useState({});
 
@@ -214,7 +215,7 @@ const MobileDrawer = ({ open, onClose, user, onLogout }) => {
           </Typography>
         </Box>
         <Chip 
-          label={user?.role?.toUpperCase() || 'USER'} 
+          label={formatLabel(user?.role) || 'User'} 
           size="small" 
           sx={{ height: 20, fontSize: '0.65rem' }}
         />

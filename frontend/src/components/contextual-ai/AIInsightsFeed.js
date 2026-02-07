@@ -26,9 +26,10 @@ import {
   Refresh,
   ArrowForward
 } from '@mui/icons-material';
+import { formatLabel } from '../../utils/formatters';
 
 
-const AIInsightsFeed = ({ userId }) => {
+const AIInsightsFeed= ({ userId }) => {
   const [setLoading] = useState(true);
   const [actions, setActions] = useState([]);
   const [performance, setPerformance] = useState(null);
@@ -150,7 +151,7 @@ const AIInsightsFeed = ({ userId }) => {
                             {action.icon}
                           </Box>
                           <Chip 
-                            label={action.priority.toUpperCase()} 
+                            label={formatLabel(action.priority)} 
                             color={getPriorityColor(action.priority)}
                             size="small"
                           />

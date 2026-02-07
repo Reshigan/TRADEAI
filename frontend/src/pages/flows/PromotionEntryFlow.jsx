@@ -25,6 +25,7 @@ import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import PromotionAIInsights from '../../components/ai/promotions/PromotionAIInsights';
 import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
+import { formatLabel } from '../../utils/formatters';
 
 
 /**
@@ -396,7 +397,7 @@ const PromotionEntryFlow = () => {
           {risks.map((risk, idx) => (
             <Box key={idx} sx={{ mb: 1 }}>
               <Chip
-                label={risk.level.toUpperCase()}
+                label={formatLabel(risk.level)}
                 size="small"
                 color={risk.level === 'high' ? 'error' : 'warning'}
                 sx={{ mr: 1, mb: 0.5 }}

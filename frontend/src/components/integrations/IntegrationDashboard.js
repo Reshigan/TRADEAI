@@ -53,6 +53,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { format } from 'date-fns';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -322,7 +323,7 @@ const IntegrationDashboard = () => {
         </Box>
 
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          {integration.type.toUpperCase()} Integration
+          {formatLabel(integration.type)} Integration
         </Typography>
 
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>

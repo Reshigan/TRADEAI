@@ -18,6 +18,7 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 
 const ReportBuilder = () => {
@@ -124,7 +125,7 @@ const ReportBuilder = () => {
                 key={format} 
                 value={format} 
                 control={<Radio />} 
-                label={format.toUpperCase()} 
+                label={formatLabel(format)} 
               />
             ))}
           </RadioGroup>

@@ -24,8 +24,9 @@ import {
   Assessment as AssessmentIcon,
   LightbulbOutlined as LightbulbIcon
 } from '@mui/icons-material';
+import { formatLabel } from '../../../../utils/formatters';
 
-const AIAnalysisStep = ({ data, onChange, errors = {} }) => {
+const AIAnalysisStep= ({ data, onChange, errors = {} }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [aiInsights, setAiInsights] = useState(null);
 
@@ -223,7 +224,7 @@ const AIAnalysisStep = ({ data, onChange, errors = {} }) => {
               />
               <Box sx={{ mt: 2, textAlign: 'center' }}>
                 <Chip 
-                  label={`${aiInsights.riskLevel.toUpperCase()} RISK`}
+                  label={`${formatLabel(aiInsights.riskLevel)} RISK`}
                   color={aiInsights.riskColor}
                   size="large"
                   sx={{ fontWeight: 'bold' }}
