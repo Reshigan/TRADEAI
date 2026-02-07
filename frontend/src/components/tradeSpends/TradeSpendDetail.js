@@ -31,7 +31,7 @@ import { format } from 'date-fns';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { tradeSpendService, budgetService } from '../../services/api';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
 import { useToast } from '../common/ToastNotification';
 import analytics from '../../utils/analytics';
@@ -245,7 +245,7 @@ const TradeSpendDetail = () => {
                     </Typography>
                   </Box>
                   <Typography variant="body1" gutterBottom>
-                    {tradeSpend.type.charAt(0).toUpperCase() + tradeSpend.type.slice(1)}
+                    {formatLabel(tradeSpend.spendType || tradeSpend.type || 'N/A')}
                   </Typography>
                 </Grid>
                 
@@ -273,7 +273,7 @@ const TradeSpendDetail = () => {
                     </Typography>
                   </Box>
                   <Typography variant="body1" gutterBottom>
-                    {formatDate(tradeSpend.start_date)} - {formatDate(tradeSpend.end_date)}
+                    {(tradeSpend.startDate || tradeSpend.start_date) ? formatDate(tradeSpend.startDate || tradeSpend.start_date) : 'N/A'} - {(tradeSpend.endDate || tradeSpend.end_date) ? formatDate(tradeSpend.endDate || tradeSpend.end_date) : 'N/A'}
                   </Typography>
                 </Grid>
                 
@@ -293,16 +293,18 @@ const TradeSpendDetail = () => {
                     Budget
                   </Typography>
                   <Typography variant="body1" gutterBottom>
-                    {tradeSpend.budget.customer.name} ({tradeSpend.budget.year})
+                    {tradeSpend.customerName || tradeSpend.budget?.customer?.name || 'N/A'}{tradeSpend.budget?.year ? ` (${tradeSpend.budget.year})` : ''}
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => navigate(`/budgets/${tradeSpend.budget.id}`)}
-                    sx={{ mt: 1 }}
-                  >
-                    View Budget
-                  </Button>
+                  {(tradeSpend.budgetId || tradeSpend.budget?.id) && (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => navigate(`/budgets/${tradeSpend.budgetId || tradeSpend.budget?.id}`)}
+                      sx={{ mt: 1 }}
+                    >
+                      View Budget
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </CardContent>
@@ -426,7 +428,7 @@ const TradeSpendDetail = () => {
                     bgcolor: 'primary.main' 
                   }} />
                   <Typography variant="body2" color="text.secondary">
-                    {formatDate(tradeSpend.created_at)}
+                    {formatDate(tradeSpend.createdAt || tradeSpend.created_at)}
                   </Typography>
                   <Typography variant="body1">
                     Trade spend created
@@ -444,13 +446,14 @@ const TradeSpendDetail = () => {
                     bgcolor: 'primary.main' 
                   }} />
                   <Typography variant="body2" color="text.secondary">
-                    {formatDate(tradeSpend.updated_at)}
+                    {formatDate(tradeSpend.updatedAt || tradeSpend.updated_at)}
                   </Typography>
                   <Typography variant="body1">
-                    Status changed to {tradeSpend.status}
+                    Status changed to {formatLabel(tradeSpend.status)}
                   </Typography>
                 </Box>
                 
+                {(tradeSpend.startDate || tradeSpend.start_date) && (
                 <Box sx={{ mb: 3, position: 'relative' }}>
                   <Box sx={{ 
                     position: 'absolute', 
@@ -462,13 +465,15 @@ const TradeSpendDetail = () => {
                     bgcolor: 'grey.400' 
                   }} />
                   <Typography variant="body2" color="text.secondary">
-                    {formatDate(tradeSpend.start_date)}
+                    {formatDate(tradeSpend.startDate || tradeSpend.start_date)}
                   </Typography>
                   <Typography variant="body1">
                     Scheduled start date
                   </Typography>
                 </Box>
+                )}
                 
+                {(tradeSpend.endDate || tradeSpend.end_date) && (
                 <Box sx={{ position: 'relative' }}>
                   <Box sx={{ 
                     position: 'absolute', 
@@ -480,11 +485,13 @@ const TradeSpendDetail = () => {
                     bgcolor: 'grey.400' 
                   }} />
                   <Typography variant="body2" color="text.secondary">
-                    {formatDate(tradeSpend.end_date)}
+                    {formatDate(tradeSpend.endDate || tradeSpend.end_date)}
                   </Typography>
                   <Typography variant="body1">
                     Scheduled end date
                   </Typography>
+                </Box>
+                )}
                 </Box>
               </Box>
             </CardContent>

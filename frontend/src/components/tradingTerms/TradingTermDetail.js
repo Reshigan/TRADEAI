@@ -20,13 +20,15 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import tradingTermsService from '../../services/tradingterms/tradingTermsService';
+import { formatLabel } from '../../utils/formatters';
 
 const TradingTermDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tradingTerm, setTradingTerm] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [setError] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchTradingTerm();
@@ -34,22 +36,10 @@ const TradingTermDetail = () => {
 
   const fetchTradingTerm = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/trading-terms/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setTradingTerm(data);
-      } else {
-        setError('Failed to fetch trading term details');
-      }
-    } catch (error) {
-      console.error('Error fetching trading term:', error);
+      const data = await tradingTermsService.getTradingTerm(id);
+      setTradingTerm(data);
+    } catch (err) {
+      console.error('Error fetching trading term:', err);
       setError('Failed to load trading term details');
     } finally {
       setLoading(false);
@@ -175,7 +165,7 @@ const TradingTermDetail = () => {
                   Type
                 </Typography>
                 <Chip
-                  label={tradingTerm.type}
+                  label={formatLabel(tradingTerm.type || 'N/A')}
                   size="small"
                   variant="outlined"
                 />
@@ -186,7 +176,7 @@ const TradingTermDetail = () => {
                   Status
                 </Typography>
                 <Chip
-                  label={tradingTerm.status}
+                  label={formatLabel(tradingTerm.status || 'N/A')}
                   size="small"
                   color={getStatusColor(tradingTerm.status)}
                 />
@@ -198,7 +188,7 @@ const TradingTermDetail = () => {
                 </Typography>
                 <Chip
                   icon={getApprovalStatusIcon(tradingTerm.approvalStatus)}
-                  label={tradingTerm.approvalStatus}
+                  label={formatLabel(tradingTerm.approvalStatus || 'N/A')}
                   size="small"
                   color={getApprovalStatusColor(tradingTerm.approvalStatus)}
                 />

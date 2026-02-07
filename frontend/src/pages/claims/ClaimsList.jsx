@@ -57,7 +57,7 @@ const ClaimsList = () => {
       } else if (filter === 'pending') {
         response = await claimService.getPendingApprovalClaims();
       } else {
-        response = await claimService.getUnmatchedClaims();
+        response = await claimService.getAllClaims();
       }
       
       setClaims(response.data || []);
@@ -262,10 +262,10 @@ const ClaimsList = () => {
               </TableRow>
             ) : (
               claims.map((claim) => (
-                <TableRow key={claim._id}>
+                <TableRow key={claim.id || claim._id}>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {claim.claimId}
+                      {claim.claimNumber || claim.claimId || claim.id || '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -277,7 +277,7 @@ const ClaimsList = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {claim.customer?.name || 'Unknown'}
+                      {claim.customerName || claim.customer?.name || 'Unknown'}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -315,7 +315,7 @@ const ClaimsList = () => {
                       <Tooltip title="View Details">
                         <IconButton
                           size="small"
-                          onClick={() => navigate(`/claims/${claim._id}`)}
+                          onClick={() => navigate(`/claims/${claim.id || claim._id}`)}
                         >
                           <ViewIcon />
                         </IconButton>

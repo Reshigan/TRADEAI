@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import tradingTermsService from '../../services/tradingterms/tradingTermsService';
 
 const TradingTermForm = () => {
   const { id } = useParams();
@@ -47,21 +48,28 @@ const TradingTermForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      // Simulate API call to load existing data
-      setTimeout(() => {
-        setFormData({
-          title: 'Standard Payment Terms',
-          description: 'Net 30 payment terms for standard customers',
-          type: 'payment',
-          status: 'active',
-          content: 'Payment is due within 30 days of invoice date. Late payments may incur a 1.5% monthly service charge.',
-          effectiveDate: '2025-01-01',
-          expiryDate: '2025-12-31'
-        });
-        setLoading(false);
-      }, 1000);
+      const fetchTradingTerm = async () => {
+        try {
+          const data = await tradingTermsService.getTradingTerm(id);
+          setFormData({
+            title: data.title || data.name || '',
+            description: data.description || '',
+            type: data.type || data.termType || 'payment',
+            status: data.status || 'active',
+            content: data.content || data.terms || '',
+            effectiveDate: data.effectiveDate || data.startDate || '',
+            expiryDate: data.expiryDate || data.endDate || ''
+          });
+        } catch (err) {
+          console.error('Error loading trading term:', err);
+          setSnackbar({ open: true, message: 'Failed to load trading term', severity: 'error' });
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchTradingTerm();
     }
-  }, [isEditMode]);
+  }, [isEditMode, id]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -117,8 +125,11 @@ const TradingTermForm = () => {
     setSaving(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (isEditMode) {
+        await tradingTermsService.updateTradingTerm(id, formData);
+      } else {
+        await tradingTermsService.createTradingTerm(formData);
+      }
       
       setSnackbar({
         open: true,
@@ -126,15 +137,15 @@ const TradingTermForm = () => {
         severity: 'success'
       });
       
-      // Navigate back to list after a short delay
       setTimeout(() => {
         navigate('/trading-terms');
       }, 1500);
       
-    } catch (error) {
+    } catch (err) {
+      console.error('Error saving trading term:', err);
       setSnackbar({
         open: true,
-        message: 'An error occurred. Please try again.',
+        message: err.message || 'An error occurred. Please try again.',
         severity: 'error'
       });
     } finally {
