@@ -66,14 +66,19 @@ const ActivityList = () => {
   };
 
   const getStatusColor = (status) => {
+    const normalized = (status || '').toLowerCase();
     const statusMap = {
-      'Planned': 'primary',
-      'In Progress': 'warning',
-      'Completed': 'success',
-      'Cancelled': 'error',
-      'On Hold': 'default'
+      'planned': 'primary',
+      'in progress': 'warning',
+      'in_progress': 'warning',
+      'completed': 'success',
+      'cancelled': 'error',
+      'on hold': 'default',
+      'on_hold': 'default',
+      'active': 'success',
+      'draft': 'default'
     };
-    return statusMap[status] || 'default';
+    return statusMap[normalized] || 'default';
   };
 
   const formatCurrency = (amount) => {

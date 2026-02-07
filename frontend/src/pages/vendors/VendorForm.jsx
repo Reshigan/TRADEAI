@@ -52,9 +52,9 @@ const VendorForm = () => {
         const vendor = response.data.data || response.data;
         setFormData({
           name: vendor.name || '',
-          contactPerson: vendor.contactPerson || '',
-          email: vendor.email || '',
-          phone: vendor.phone || '',
+          contactPerson: vendor.contactName || vendor.contactPerson || '',
+          email: vendor.contactEmail || vendor.email || '',
+          phone: vendor.contactPhone || vendor.phone || '',
           rating: vendor.rating || '3',
           status: vendor.status || 'active',
           address: vendor.address || ''
@@ -84,7 +84,13 @@ const VendorForm = () => {
       setSaving(true);
       const token = localStorage.getItem('token');
       const url = `${process.env.REACT_APP_API_BASE_URL || '/api'}/vendors${isEditMode ? `/${id}` : ''}`;
-      await axios[isEditMode ? 'put' : 'post'](url, formData, {
+      const payload = {
+        ...formData,
+        contactName: formData.contactPerson,
+        contactEmail: formData.email,
+        contactPhone: formData.phone
+      };
+      await axios[isEditMode ? 'put' : 'post'](url, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/vendors');

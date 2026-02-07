@@ -73,8 +73,8 @@ const CustomerForm = () => {
       const customer = response.data.data || response.data;
       setFormData({
         name: customer.name || '',
-        email: customer.email || '',
-        phone: customer.phone || '',
+        email: customer.contactEmail || customer.email || '',
+        phone: customer.contactPhone || customer.phone || '',
         company: customer.company || '',
         tier: customer.tier || 'bronze',
         status: customer.status || 'active',
@@ -114,13 +114,14 @@ const CustomerForm = () => {
       // Transform hierarchy fields to snake_case for backend
       const payload = {
         ...formData,
+        contactEmail: formData.email,
+        contactPhone: formData.phone,
         sub_channel: formData.subChannel,
         hierarchy_1: formData.hierarchy1,
         hierarchy_2: formData.hierarchy2,
         hierarchy_3: formData.hierarchy3,
         head_office: formData.headOffice
       };
-      // Remove camelCase versions
       delete payload.subChannel;
       delete payload.hierarchy1;
       delete payload.hierarchy2;
