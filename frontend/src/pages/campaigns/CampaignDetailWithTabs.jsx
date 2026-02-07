@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
 import ProcessShell from '../../components/ProcessShell';
 
@@ -91,7 +92,7 @@ const CampaignDetailWithTabs = () => {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
                 <Typography variant="h4" fontWeight={700} color="text.primary">{campaign.name}</Typography>
-                <Chip label={campaign.status} color={campaign.status === 'active' ? 'success' : 'default'} sx={{ fontWeight: 600 }} />
+                <Chip label={formatLabel(campaign.status)} color={campaign.status === 'active' ? 'success' : campaign.status === 'approved' ? 'info' : campaign.status === 'draft' ? 'default' : 'warning'} sx={{ fontWeight: 600 }} />
               </Box>
               <Typography variant="body2" color="text.secondary">{campaign.campaignCode}</Typography>
             </Box>

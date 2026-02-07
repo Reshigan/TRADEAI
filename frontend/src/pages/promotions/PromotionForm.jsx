@@ -120,12 +120,12 @@ const PromotionForm = () => {
       
       setFormData({
         name: promotion.name || '',
-        type: promotion.type || '',
+        type: promotion.promotionType || promotion.type || '',
         status: promotion.status || 'planned',
         priority: promotion.priority || 'normal',
         startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().split('T')[0] : '',
         endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().split('T')[0] : '',
-        budget: promotion.budget || '',
+        budget: promotion.budgetAmount || promotion.budget || '',
         description: promotion.description || '',
         products: promotion.products || [],
         customers: promotion.customers || []
@@ -177,6 +177,7 @@ const PromotionForm = () => {
       const token = localStorage.getItem('token');
       const payload = {
         ...formData,
+        promotionType: formData.type,
         budget: formData.budget ? parseFloat(formData.budget) : 0
       };
 

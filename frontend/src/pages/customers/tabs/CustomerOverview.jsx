@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
+import { formatLabel } from '../../../utils/formatters';
 
 const CustomerOverview = ({ customer }) => {
   return (
@@ -13,15 +14,15 @@ const CustomerOverview = ({ customer }) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Type</Typography>
-            <Typography variant="body1">{customer.type || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(customer.customerType || customer.type) || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Channel</Typography>
-            <Typography variant="body1">{customer.channel || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(customer.channel) || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Status</Typography>
-            <Typography variant="body1">{customer.status || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(customer.status) || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body2" color="text.secondary">Address</Typography>
@@ -35,15 +36,15 @@ const CustomerOverview = ({ customer }) => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Contact Person</Typography>
-            <Typography variant="body1">{customer.contactPerson || 'N/A'}</Typography>
+            <Typography variant="body1">{customer.contactName || customer.contactPerson || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Email</Typography>
-            <Typography variant="body1">{customer.email || 'N/A'}</Typography>
+            <Typography variant="body1">{customer.contactEmail || customer.email || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Phone</Typography>
-            <Typography variant="body1">{customer.phone || 'N/A'}</Typography>
+            <Typography variant="body1">{customer.contactPhone || customer.phone || 'N/A'}</Typography>
           </Grid>
         </Grid>
       </Paper>
