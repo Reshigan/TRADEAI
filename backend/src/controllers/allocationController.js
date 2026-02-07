@@ -2,6 +2,7 @@ const Allocation = require('../models/Allocation');
 const allocationService = require('../services/allocationService');
 const scopeResolver = require('../utils/scopeResolver');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 const logger = require('../utils/logger');
 
 /**
@@ -76,6 +77,19 @@ exports.createAllocation = asyncHandler(async (req, res, _next) => {
 
   if (!entityType || !['product', 'customer'].includes(entityType)) {
     throw new AppError('entityType must be "product" or "customer"', 400);
+  }
+
+  const rules = companyId ? await BusinessRulesConfig.getOrCreate(companyId) : null;
+  const budgetCaps = rules?.budgets?.allocationCaps || {};
+
+  if (budgetCaps.overallPercentOfRevenue > 0 && req.body.revenueBase) {
+    const maxAlloc = req.body.revenueBase * (budgetCaps.overallPercentOfRevenue / 100);
+    if (amount > maxAlloc) {
+      throw new AppError(
+        `Allocation ${amount} exceeds ${budgetCaps.overallPercentOfRevenue}% of revenue cap (${maxAlloc})`,
+        400
+      );
+    }
   }
 
   const result = await allocationService.executeAllocation(

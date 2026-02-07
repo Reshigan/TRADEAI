@@ -3,6 +3,7 @@ const RebateAccrual = require('../models/RebateAccrual');
 const Transaction = require('../models/Transaction');
 const rebateCalculationService = require('../services/rebateCalculationService');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 const logger = require('../utils/logger');
 
 /**
@@ -59,6 +60,32 @@ exports.createRebate = asyncHandler(async (req, res) => {
     createdBy: req.user._id,
     status: 'draft'
   };
+
+  const companyId = req.user.company || req.user.companyId || req.user.tenantId;
+  const rules = companyId ? await BusinessRulesConfig.getOrCreate(companyId) : null;
+  const rebateRules = rules?.rebates || {};
+
+  if (rebateRules.accrualRates && rebateData.type && rebateData.rate) {
+    const maxRate = rebateRules.accrualRates.get?.(rebateData.type);
+    if (typeof maxRate === 'number' && maxRate > 0 && rebateData.rate > maxRate) {
+      throw new AppError(
+        `Rebate rate ${rebateData.rate}% exceeds max ${maxRate}% for type "${rebateData.type}"`,
+        400
+      );
+    }
+  }
+
+  if (rebateRules.settlement?.cycle && rebateData.accrualPeriod) {
+    const cyclePriority = { daily: 1, weekly: 2, monthly: 3, quarterly: 4, annually: 5 };
+    const configCycle = cyclePriority[rebateRules.settlement.cycle] || 0;
+    const requestedCycle = cyclePriority[rebateData.accrualPeriod] || 0;
+    if (requestedCycle > configCycle && configCycle > 0) {
+      throw new AppError(
+        `Accrual period "${rebateData.accrualPeriod}" exceeds settlement cycle "${rebateRules.settlement.cycle}"`,
+        400
+      );
+    }
+  }
 
   const rebate = await Rebate.create(rebateData);
 
