@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
 import { enZA } from 'date-fns/locale';
+import { formatLabel } from '../../utils/formatters';
 
 const ActivityGridList = ({ activities, onActivityClick }) => {
   const [order, setOrder] = useState('asc');
@@ -105,7 +106,7 @@ const ActivityGridList = ({ activities, onActivityClick }) => {
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'ZAR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);
@@ -198,7 +199,7 @@ const ActivityGridList = ({ activities, onActivityClick }) => {
                 <TableCell>
                   <Chip
                     icon={getActivityIcon(activity.type)}
-                    label={activity.type.replace('_', ' ')}
+                    label={formatLabel(activity.type)}
                     size="small"
                     color={getActivityColor(activity.type)}
                   />
@@ -210,7 +211,7 @@ const ActivityGridList = ({ activities, onActivityClick }) => {
                 </TableCell>
                 <TableCell>
                   <Chip
-                    label={activity.status}
+                    label={formatLabel(activity.status)}
                     size="small"
                     color={
                       activity.status === 'completed' ? 'success' :
@@ -222,7 +223,7 @@ const ActivityGridList = ({ activities, onActivityClick }) => {
                 </TableCell>
                 <TableCell>
                   <Chip
-                    label={activity.priority}
+                    label={formatLabel(activity.priority)}
                     size="small"
                     color={
                       activity.priority === 'high' ? 'error' :

@@ -4,6 +4,7 @@ import { Box, Button, Chip, Typography, useTheme } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import tradeSpendService from '../../services/api/tradeSpendService';
+import { formatLabel } from '../../utils/formatters';
 
 const TradeSpendListEnhanced = () => {
   const navigate = useNavigate();
@@ -165,7 +166,7 @@ const TradeSpendListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Chip
-          label={value}
+          label={formatLabel(value)}
           size="small"
           color={value === 'approved' ? 'success' : value === 'pending' ? 'warning' : 'default'}
         />

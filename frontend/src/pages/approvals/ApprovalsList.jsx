@@ -142,7 +142,8 @@ const ApprovalsList = () => {
   };
 
   const isOverdue = (approval) => {
-    return approval.sla?.isOverdue || (approval.sla?.dueDate && new Date(approval.sla.dueDate) < new Date());
+    const dueDate = approval.dueDate || approval.sla?.dueDate;
+    return approval.sla?.isOverdue || (dueDate && new Date(dueDate) < new Date());
   };
 
   const formatCurrency = (amount, currency = 'ZAR') => {
@@ -269,7 +270,7 @@ const ApprovalsList = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {approval.requestedBy?.name || 'Unknown'}
+                      {typeof approval.requestedBy === 'object' ? (approval.requestedBy?.name || 'Unknown') : (approval.requestedByName || approval.requestedBy || 'Unknown')}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -286,18 +287,19 @@ const ApprovalsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={`Level ${approval.currentApprovalLevel}/${approval.approvalChain?.length || 0}`}
+                      label={approval.currentApprovalLevel != null ? `Level ${approval.currentApprovalLevel}/${approval.approvalChain?.length || 0}` : formatLabel(approval.priority || 'normal')}
                       size="small"
+                      color={approval.priority === 'high' ? 'error' : approval.priority === 'medium' ? 'warning' : 'default'}
                       icon={<ClockIcon />}
                     />
                   </TableCell>
                   <TableCell>
-                    {approval.sla?.dueDate && (
+                    {(approval.dueDate || approval.sla?.dueDate) && (
                       <Typography
                         variant="body2"
                         color={isOverdue(approval) ? 'error' : 'textSecondary'}
                       >
-                        {formatDate(approval.sla.dueDate)}
+                        {formatDate(approval.dueDate || approval.sla.dueDate)}
                       </Typography>
                     )}
                   </TableCell>

@@ -158,7 +158,13 @@ const COLUMN_MAP = {
   updatedBy: 'updated_by',
   contactName: 'contact_name',
   contactEmail: 'contact_email',
-  contactPhone: 'contact_phone'
+  contactPhone: 'contact_phone',
+  customerName: 'customer_name',
+  productName: 'product_name',
+  activityName: 'activity_name',
+  budgetAllocated: 'budget_allocated',
+  budgetSpent: 'budget_spent',
+  claimId: 'claim_id'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)

@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import { formatLabel } from '../../utils/formatters';
 
 const TradingTermsList = () => {
   const navigate = useNavigate();
@@ -184,14 +185,14 @@ const TradingTermsList = () => {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={term.termType}
+                        label={formatLabel(term.termType)}
                         size="small"
                         variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={term.isActive ? 'active' : 'inactive'}
+                        label={formatLabel(term.isActive ? 'active' : 'inactive')}
                         size="small"
                         color={getStatusColor(term.isActive ? 'active' : 'inactive')}
                       />
@@ -199,7 +200,7 @@ const TradingTermsList = () => {
                     <TableCell>
                       <Chip
                         icon={getApprovalStatusIcon(term.approvalWorkflow?.status)}
-                        label={term.approvalWorkflow?.status || 'draft'}
+                        label={formatLabel(term.approvalWorkflow?.status || 'draft')}
                         size="small"
                         color={getApprovalStatusColor(term.approvalWorkflow?.status)}
                       />
