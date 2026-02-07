@@ -219,7 +219,7 @@ function rowToDocument(row) {
     // Convert column name back to camelCase
     const field = REVERSE_COLUMN_MAP[column] || column;
     
-    if (field === 'id') {
+    if (column === 'id') {
       doc._id = value;
       doc.id = value;
     } else if (column === 'data' && value) {
