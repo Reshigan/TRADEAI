@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/api/apiClient';
+import { formatLabel } from '../../utils/formatters';
 
 const CommandCenter = () => {
   const navigate = useNavigate();
@@ -375,7 +376,7 @@ const CommandCenter = () => {
                       </Grid>
                       <Grid item xs={3}>
                         <Chip 
-                          label={String(workflow.status || '').replace('_', ' ').toUpperCase()} 
+                          label={formatLabel(workflow.status || '')} 
                           size="small"
                           color={workflow.status === 'draft' ? 'default' : 'warning'}
                         />

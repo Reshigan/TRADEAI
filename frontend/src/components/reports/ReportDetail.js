@@ -36,6 +36,7 @@ import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
 import { reportService } from '../../services/api/reportService';
 import ReportForm from './ReportForm';
+import { formatLabel } from '../../utils/formatters';
 
 const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
   const [report, setReport] = useState(null);
@@ -276,7 +277,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
                   <Box display="flex" alignItems="center" gap={1}>
                     <Typography variant="subtitle2">Output Format:</Typography>
                     <Chip 
-                      label={report.configuration?.outputFormat?.toUpperCase() || 'PDF'} 
+                      label={formatLabel(report.configuration?.outputFormat) || 'PDF'} 
                       size="small" 
                       variant="outlined"
                     />

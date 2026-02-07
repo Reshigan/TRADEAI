@@ -58,7 +58,7 @@ import {
   Scatter
 } from 'recharts';
 import { tradingTermsService } from '../../../services/api';
-import { formatCurrency } from '../../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../../utils/formatters';
 
 const TradingTermsReports = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -130,13 +130,13 @@ const TradingTermsReports = () => {
   }));
 
   const statusData = Object.entries(statusCounts).map(([status, count]) => ({
-    name: status.replace('_', ' ').toUpperCase(),
+    name: formatLabel(status),
     value: count,
     percentage: ((count / safeTerms.length) * 100).toFixed(1)
   }));
 
   const termTypeData = Object.entries(termTypeCounts).map(([type, count]) => ({
-    name: type.replace('_', ' ').toUpperCase(),
+    name: formatLabel(type),
     value: count,
     percentage: ((count / safeTerms.length) * 100).toFixed(1)
   }));
@@ -508,7 +508,7 @@ const TradingTermsReports = () => {
                         <TableCell>{term.name}</TableCell>
                         <TableCell>
                           <Chip 
-                            label={term.termType?.replace('_', ' ').toUpperCase()} 
+                            label={formatLabel(term.termType)} 
                             size="small" 
                             variant="outlined"
                           />
@@ -537,7 +537,7 @@ const TradingTermsReports = () => {
                         <TableCell align="center">
                           <Chip
                             icon={getStatusIcon(term.approvalWorkflow?.status)}
-                            label={term.approvalWorkflow?.status?.replace('_', ' ').toUpperCase() || 'DRAFT'}
+                            label={formatLabel(term.approvalWorkflow?.status) || 'Draft'}
                             color={getStatusColor(term.approvalWorkflow?.status)}
                             size="small"
                           />
@@ -578,7 +578,7 @@ const TradingTermsReports = () => {
                       {getStatusIcon(status)}
                     </ListItemIcon>
                     <ListItemText
-                      primary={status.replace('_', ' ').toUpperCase()}
+                      primary={formatLabel(status)}
                       secondary={`${count} terms (${((count / safeTerms.length) * 100).toFixed(1)}%)`}
                     />
                   </ListItem>

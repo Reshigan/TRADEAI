@@ -42,6 +42,7 @@ import {
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const MLDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -534,7 +535,7 @@ const MLDashboard = () => {
                 <TableBody>
                   {Object.entries(models).map(([modelName, modelData]) => (
                     <TableRow key={modelName}>
-                      <TableCell>{modelName.toUpperCase()}</TableCell>
+                      <TableCell>{formatLabel(modelName)}</TableCell>
                       <TableCell>
                         <Chip
                           label={modelData.status}
@@ -677,7 +678,7 @@ const MLDashboard = () => {
         fullWidth
       >
         <DialogTitle>
-          {detailsDialog.type?.toUpperCase()} Model Details
+          {formatLabel(detailsDialog.type)} Model Details
         </DialogTitle>
         <DialogContent>
           {detailsDialog.data && (

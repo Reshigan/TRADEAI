@@ -47,6 +47,7 @@ import {
 } from 'recharts';
 
 import mlService from '../../services/ai/mlService';
+import { formatLabel } from '../../utils/formatters';
 
 const CustomerIntelligencePanel = ({ customerId, customerData }) => {
   const [loading, setLoading] = useState(true);
@@ -269,7 +270,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
                       <Box display="flex" alignItems="flex-start" gap={1}>
                         <Chip
                           icon={action.icon}
-                          label={action.priority.toUpperCase()}
+                          label={formatLabel(action.priority)}
                           color={getPriorityColor(action.priority)}
                           size="small"
                         />

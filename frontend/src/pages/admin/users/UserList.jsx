@@ -33,6 +33,7 @@ import {
   PersonAdd as PersonAddIcon
 } from '@mui/icons-material';
 import api from '../../../services/api';
+import { formatLabel } from '../../../utils/formatters';
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -252,7 +253,7 @@ const UserList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={user.role?.toUpperCase()}
+                      label={formatLabel(user.role)}
                       color={getRoleColor(user.role)}
                       size="small"
                       sx={{ fontWeight: 600 }}
