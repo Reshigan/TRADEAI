@@ -259,7 +259,7 @@ const AnalyticsDashboard = () => {
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => {
-                          const customer = customers.find(c => c._id === value);
+                          const customer = customers.find(c => (c.id || c._id) === value);
                           return (
                             <Chip key={value} label={customer ? customer.name : value} size="small" />
                           );
@@ -268,8 +268,8 @@ const AnalyticsDashboard = () => {
                     )}
                   >
                     {customers.map((customer) => (
-                      <MenuItem key={customer._id} value={customer._id}>
-                        <Checkbox checked={filters.customers.indexOf(customer._id) > -1} />
+                      <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
+                        <Checkbox checked={filters.customers.indexOf(customer.id || customer._id) > -1} />
                         <ListItemText primary={customer.name} />
                       </MenuItem>
                     ))}
@@ -293,7 +293,7 @@ const AnalyticsDashboard = () => {
                     renderValue={(selected) => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => {
-                          const product = products.find(p => p._id === value);
+                          const product = products.find(p => (p.id || p._id) === value);
                           return (
                             <Chip key={value} label={product ? product.name : value} size="small" />
                           );
@@ -302,8 +302,8 @@ const AnalyticsDashboard = () => {
                     )}
                   >
                     {products.map((product) => (
-                      <MenuItem key={product._id} value={product._id}>
-                        <Checkbox checked={filters.products.indexOf(product._id) > -1} />
+                      <MenuItem key={product.id || product._id} value={product.id || product._id}>
+                        <Checkbox checked={filters.products.indexOf(product.id || product._id) > -1} />
                         <ListItemText primary={product.name} />
                       </MenuItem>
                     ))}

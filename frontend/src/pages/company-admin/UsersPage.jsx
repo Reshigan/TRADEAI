@@ -101,7 +101,7 @@ export default function UsersPage() {
       if (!data.password) delete data.password;
       
       if (editingUser) {
-        await enterpriseApi.companyAdmin.updateUser(editingUser._id, data);
+        await enterpriseApi.companyAdmin.updateUser((editingUser.id || editingUser._id), data);
       } else {
         await enterpriseApi.companyAdmin.createUser(data);
       }
@@ -220,7 +220,7 @@ export default function UsersPage() {
               </TableHead>
               <TableBody>
                 {users.map((user) => (
-                  <TableRow key={user._id} hover>
+                  <TableRow key={user.id || user._id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>

@@ -94,7 +94,7 @@ const PromotionProducts = ({ promotionId, promotion, onUpdate }) => {
               </TableRow>
             ) : (
               products.map((item) => (
-                <TableRow key={item._id || item.product?._id}>
+                <TableRow key={item.id || item._id || item.product?.id || item.product?._id}>
                   <TableCell>{item.product?.name || 'N/A'}</TableCell>
                   <TableCell>{item.product?.sku || 'N/A'}</TableCell>
                   <TableCell>R {item.regularPrice?.toFixed(2) || '0.00'}</TableCell>
@@ -109,7 +109,7 @@ const PromotionProducts = ({ promotionId, promotion, onUpdate }) => {
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => handleDelete(item.product?._id || item.product)}
+                      onClick={() => handleDelete(item.product?.id || item.product?._id || item.product)}
                       disabled={promotion.status !== 'draft'}
                     >
                       <DeleteIcon />

@@ -80,7 +80,7 @@ const VendorManagement = () => {
   const handleSave = async () => {
     try {
       if (selectedVendor) {
-        await apiClient.put(`/vendors/${selectedVendor._id}`, formData);
+        await apiClient.put(`/vendors/${selectedVendor.id || (selectedVendor.id || selectedVendor._id)}`, formData);
       } else {
         await apiClient.post('/vendors', formData);
       }
@@ -150,7 +150,7 @@ const VendorManagement = () => {
                   </TableRow>
                 ) : (
                   vendors.map((vendor) => (
-                    <TableRow key={vendor._id}>
+                    <TableRow key={vendor.id || vendor._id}>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <BusinessIcon sx={{ mr: 1, color: 'primary.main' }} />

@@ -181,7 +181,7 @@ const ProductList = () => {
       ) : (
         <Grid container spacing={3}>
           {products.map(product => (
-            <Grid item xs={12} sm={6} md={4} key={product._id}>
+            <Grid item xs={12} sm={6} md={4} key={product.id || product._id}>
               <Paper
                 elevation={0}
                 sx={{
@@ -199,7 +199,7 @@ const ProductList = () => {
                     borderColor: 'primary.main'
                   }
                 }}
-                onClick={() => navigate(`/products/${product._id}`)}
+                onClick={() => navigate(`/products/${product.id || product._id}`)}
               >
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <Box 

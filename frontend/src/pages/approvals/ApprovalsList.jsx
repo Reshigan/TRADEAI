@@ -77,10 +77,10 @@ const ApprovalsList = () => {
   const handleApprove = async () => {
     try {
       setActionLoading(true);
-      await approvalService.approveApproval(selectedApproval._id, actionComment);
+      await approvalService.approveApproval((selectedApproval.id || selectedApproval._id), actionComment);
       
       analytics.trackEvent('approval_approved', {
-        approvalId: selectedApproval._id,
+        approvalId: (selectedApproval.id || selectedApproval._id),
         entityType: selectedApproval.entityType
       });
       
@@ -99,10 +99,10 @@ const ApprovalsList = () => {
   const handleReject = async () => {
     try {
       setActionLoading(true);
-      await approvalService.rejectApproval(selectedApproval._id, actionComment);
+      await approvalService.rejectApproval((selectedApproval.id || selectedApproval._id), actionComment);
       
       analytics.trackEvent('approval_rejected', {
-        approvalId: selectedApproval._id,
+        approvalId: (selectedApproval.id || selectedApproval._id),
         entityType: selectedApproval.entityType
       });
       
@@ -239,7 +239,7 @@ const ApprovalsList = () => {
             ) : (
               approvals.map((approval) => (
                 <TableRow
-                  key={approval._id}
+                  key={approval.id || approval._id}
                   sx={{
                     backgroundColor: isOverdue(approval) ? 'rgba(211, 47, 47, 0.08)' : 'inherit'
                   }}
@@ -308,7 +308,7 @@ const ApprovalsList = () => {
                       <Tooltip title="View Details">
                         <IconButton
                           size="small"
-                          onClick={() => navigate(`/approvals/${approval._id}`)}
+                          onClick={() => navigate(`/approvals/${approval.id || approval._id}`)}
                         >
                           <ViewIcon />
                         </IconButton>

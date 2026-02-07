@@ -143,7 +143,7 @@ const TopProducts = () => {
                   boxShadow: 3
                 }
               }}
-              onClick={() => navigate(`/products/${product.product?._id}`)}
+              onClick={() => navigate(`/products/${product.product?.id || product.product?._id || product.id || product._id}`)}
             >
               <Box display="flex" alignItems="center" gap={2} mb={2}>
                 <Avatar

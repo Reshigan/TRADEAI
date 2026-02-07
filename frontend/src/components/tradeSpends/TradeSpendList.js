@@ -162,7 +162,7 @@ const TradeSpendList = () => {
   // Apply client-side filters (backend handles customer/vendor/type/status filtering)
   const filteredTradeSpends = tradeSpends.filter((tradeSpend) => {
     // Apply budget filter
-    if (selectedBudgetId && tradeSpend.budget?._id !== selectedBudgetId) {
+    if (selectedBudgetId && (tradeSpend.budget?.id || tradeSpend.budget?._id) !== selectedBudgetId) {
       return false;
     }
     

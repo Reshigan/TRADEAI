@@ -110,11 +110,11 @@ const CustomerAssignment = () => {
       setAssigning(true);
       
       // Get current assigned customers and add new ones
-      const currentAssigned = selectedKam.assignedCustomers?.map(c => c._id) || [];
+      const currentAssigned = selectedKam.assignedCustomers?.map(c => c.id || c._id) || [];
       const newAssigned = [...currentAssigned, ...selectedCustomers];
       
       await api.post('/customer-assignment/assign', {
-        userId: selectedKam._id,
+        userId: (selectedKam.id || selectedKam._id),
         customerIds: newAssigned
       });
 
@@ -315,7 +315,7 @@ const CustomerAssignment = () => {
                 </TableRow>
               ) : (
                 kamUsers.map((kam) => (
-                  <TableRow key={kam._id}>
+                  <TableRow key={kam.id || kam._id}>
                     <TableCell>
                       <Box display="flex" alignItems="center" gap={2}>
                         <Avatar sx={{ bgcolor: 'primary.main' }}>
@@ -340,7 +340,7 @@ const CustomerAssignment = () => {
                       <Box display="flex" flexWrap="wrap" gap={0.5}>
                         {kam.assignedCustomers?.slice(0, 5).map((customer) => (
                           <Chip
-                            key={customer._id}
+                            key={customer.id || customer._id}
                             label={customer.name}
                             size="small"
                             onDelete={() => handleUnassignCustomer(kam, customer._id)}
@@ -420,15 +420,15 @@ const CustomerAssignment = () => {
             ) : (
               filteredUnassignedCustomers.map((customer) => (
                 <ListItem
-                  key={customer._id}
+                  key={customer.id || customer._id}
                   button
                   onClick={() => toggleCustomerSelection(customer._id)}
-                  selected={selectedCustomers.includes(customer._id)}
+                  selected={selectedCustomers.includes(customer.id || customer._id)}
                 >
                   <ListItemIcon>
                     <Checkbox
                       edge="start"
-                      checked={selectedCustomers.includes(customer._id)}
+                      checked={selectedCustomers.includes(customer.id || customer._id)}
                       tabIndex={-1}
                       disableRipple
                     />

@@ -193,7 +193,7 @@ const CampaignList = () => {
       ) : (
         <Grid container spacing={3}>
           {campaigns.map(campaign => (
-            <Grid item xs={12} sm={6} lg={4} key={campaign._id}>
+            <Grid item xs={12} sm={6} lg={4} key={campaign.id || campaign._id}>
               <Paper
                 elevation={0}
                 sx={{
@@ -211,7 +211,7 @@ const CampaignList = () => {
                     borderColor: 'primary.main'
                   }
                 }}
-                onClick={() => navigate(`/campaigns/${campaign._id}`)}
+                onClick={() => navigate(`/campaigns/${campaign.id || campaign._id}`)}
               >
                 <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                   <Box display="flex" alignItems="center" gap={1.5} sx={{ flex: 1, mr: 1 }}>

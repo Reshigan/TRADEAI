@@ -296,7 +296,7 @@ const PromotionWizard = () => {
       const response = await apiClient.post(`/promotions`, payload);
       
       alert('✅ Promotion created successfully!');
-      navigate(`/promotions/${response.data._id}`);
+      navigate(`/promotions/${(response.data.id || response.data._id)}`);
       
     } catch (error) {
       console.error('Error creating promotion:', error);
@@ -546,7 +546,7 @@ const PromotionWizard = () => {
                     onChange={(e) => setPromotionData({ ...promotionData, customer: e.target.value })}
                   >
                     {customers.map((customer) => (
-                      <MenuItem key={customer._id} value={customer._id}>
+                      <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
                         {customer.name}
                       </MenuItem>
                     ))}
@@ -563,7 +563,7 @@ const PromotionWizard = () => {
                     onChange={(e) => setPromotionData({ ...promotionData, product: e.target.value })}
                   >
                     {products.map((product) => (
-                      <MenuItem key={product._id} value={product._id}>
+                      <MenuItem key={product.id || product._id} value={product.id || product._id}>
                         {product.name}
                       </MenuItem>
                     ))}
@@ -584,7 +584,7 @@ const PromotionWizard = () => {
                       <em>None</em>
                     </MenuItem>
                     {customerHierarchies.filter(h => h.level === 1).map((hierarchy) => (
-                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                      <MenuItem key={hierarchy.id || hierarchy._id} value={hierarchy.id || hierarchy._id}>
                         {hierarchy.name}
                       </MenuItem>
                     ))}
@@ -604,7 +604,7 @@ const PromotionWizard = () => {
                       <em>None</em>
                     </MenuItem>
                     {customerHierarchies.filter(h => h.level === 2).map((hierarchy) => (
-                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                      <MenuItem key={hierarchy.id || hierarchy._id} value={hierarchy.id || hierarchy._id}>
                         {hierarchy.name}
                       </MenuItem>
                     ))}
@@ -624,7 +624,7 @@ const PromotionWizard = () => {
                       <em>None</em>
                     </MenuItem>
                     {customerHierarchies.filter(h => h.level === 3).map((hierarchy) => (
-                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                      <MenuItem key={hierarchy.id || hierarchy._id} value={hierarchy.id || hierarchy._id}>
                         {hierarchy.name}
                       </MenuItem>
                     ))}
@@ -645,7 +645,7 @@ const PromotionWizard = () => {
                       <em>None</em>
                     </MenuItem>
                     {productHierarchies.filter(h => h.level === 1).map((hierarchy) => (
-                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                      <MenuItem key={hierarchy.id || hierarchy._id} value={hierarchy.id || hierarchy._id}>
                         {hierarchy.name}
                       </MenuItem>
                     ))}
@@ -665,7 +665,7 @@ const PromotionWizard = () => {
                       <em>None</em>
                     </MenuItem>
                     {productHierarchies.filter(h => h.level === 2).map((hierarchy) => (
-                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                      <MenuItem key={hierarchy.id || hierarchy._id} value={hierarchy.id || hierarchy._id}>
                         {hierarchy.name}
                       </MenuItem>
                     ))}
@@ -685,7 +685,7 @@ const PromotionWizard = () => {
                       <em>None</em>
                     </MenuItem>
                     {productHierarchies.filter(h => h.level === 3).map((hierarchy) => (
-                      <MenuItem key={hierarchy._id} value={hierarchy._id}>
+                      <MenuItem key={hierarchy.id || hierarchy._id} value={hierarchy.id || hierarchy._id}>
                         {hierarchy.name}
                       </MenuItem>
                     ))}
@@ -755,8 +755,8 @@ const PromotionWizard = () => {
         );
 
       case 3:
-        const selectedCustomer = customers.find(c => c._id === promotionData.customer);
-        const selectedProduct = products.find(p => p._id === promotionData.product);
+        const selectedCustomer = customers.find(c => (c.id || c._id) === promotionData.customer);
+        const selectedProduct = products.find(p => (p.id || p._id) === promotionData.product);
         const selectedScenarioData = aiSuggestions?.scenarios.find(s => s.id === selectedScenario);
         const duration = promotionData.startDate && promotionData.endDate ? 
           Math.ceil((promotionData.endDate - promotionData.startDate) / (1000 * 60 * 60 * 24 * 7)) : 0;

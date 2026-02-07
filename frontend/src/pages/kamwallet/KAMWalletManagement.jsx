@@ -167,7 +167,7 @@ const KAMWalletManagement = () => {
                     const remaining = wallet.totalAllocation - totalUsed;
                     
                     return (
-                      <TableRow key={wallet._id}>
+                      <TableRow key={wallet.id || wallet._id}>
                         <TableCell>
                           {wallet.userId?.name || wallet.userId?.email || 'Unknown User'}
                         </TableCell>
@@ -193,14 +193,14 @@ const KAMWalletManagement = () => {
                         <TableCell align="center">
                           <IconButton
                             size="small"
-                            onClick={() => navigate(`/kamwallet/${wallet._id}`)}
+                            onClick={() => navigate(`/kamwallet/${wallet.id || wallet._id}`)}
                             title="View Details"
                           >
                             <ViewIcon />
                           </IconButton>
                           <IconButton
                             size="small"
-                            onClick={() => navigate(`/kamwallet/${wallet._id}/allocate`)}
+                            onClick={() => navigate(`/kamwallet/${wallet.id || wallet._id}/allocate`)}
                             title="Allocate Funds"
                           >
                             <EditIcon />
@@ -229,7 +229,7 @@ const KAMWalletManagement = () => {
               required
             >
               {users.map((user) => (
-                <MenuItem key={user._id} value={user._id}>
+                <MenuItem key={user.id || user._id} value={user.id || user._id}>
                   {user.name} ({user.email})
                 </MenuItem>
               ))}

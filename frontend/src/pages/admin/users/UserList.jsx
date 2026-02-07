@@ -248,7 +248,7 @@ const UserList = () => {
               </TableRow>
             ) : (
               filteredUsers.map(user => (
-                <TableRow key={user._id} hover>
+                <TableRow key={user.id || user._id} hover>
                   <TableCell>
                     <Typography variant="body2" fontWeight={600}>
                       {user.firstName} {user.lastName}
@@ -291,7 +291,7 @@ const UserList = () => {
                       <Tooltip title="View">
                         <IconButton
                           size="small"
-                          onClick={() => navigate(`/admin/users/${user._id}`)}
+                          onClick={() => navigate(`/admin/users/${user.id || user._id}`)}
                         >
                           <ViewIcon fontSize="small" />
                         </IconButton>
@@ -299,7 +299,7 @@ const UserList = () => {
                       <Tooltip title="Edit">
                         <IconButton
                           size="small"
-                          onClick={() => navigate(`/admin/users/${user._id}/edit`)}
+                          onClick={() => navigate(`/admin/users/${user.id || user._id}/edit`)}
                         >
                           <EditIcon fontSize="small" />
                         </IconButton>

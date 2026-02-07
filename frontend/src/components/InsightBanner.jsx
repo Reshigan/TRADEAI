@@ -103,7 +103,7 @@ const InsightBanner = ({ module, entityId }) => {
     <div className="insight-banner mb-3">
       {insights.map((insight) => (
         <Alert
-          key={insight._id}
+          key={insight.id || insight._id}
           variant={getSeverityVariant(insight.severity)}
           className="mb-2"
           dismissible={false}

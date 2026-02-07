@@ -289,7 +289,7 @@ const TradeSpendList = () => {
                 </TableHead>
                 <TableBody>
                   {tradeSpends.map((spend) => (
-                    <TableRow key={spend._id} hover>
+                    <TableRow key={spend.id || spend._id} hover>
                       <TableCell>{spend.spendId}</TableCell>
                       <TableCell>
                         <Chip 

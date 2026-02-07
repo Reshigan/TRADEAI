@@ -79,12 +79,12 @@ const RebateApproval = () => {
       let response;
       
       if (action === 'approve') {
-        response = await rebateService.approveRebate(selectedRebate._id, {
+        response = await rebateService.approveRebate((selectedRebate.id || selectedRebate._id), {
           comments,
           approvedAt: new Date().toISOString()
         });
       } else {
-        response = await rebateService.rejectRebate(selectedRebate._id, {
+        response = await rebateService.rejectRebate((selectedRebate.id || selectedRebate._id), {
           comments,
           rejectedAt: new Date().toISOString()
         });
@@ -167,7 +167,7 @@ const RebateApproval = () => {
               </TableRow>
             ) : (
               rebates.map((rebate) => (
-                <TableRow key={rebate._id}>
+                <TableRow key={rebate.id || rebate._id}>
                   <TableCell>
                     <Typography variant="subtitle2">{rebate.name}</Typography>
                     <Typography variant="caption" color="text.secondary">

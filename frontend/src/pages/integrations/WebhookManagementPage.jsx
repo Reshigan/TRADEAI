@@ -128,7 +128,7 @@ export default function WebhookManagementPage() {
       }
 
       if (editingWebhook) {
-        await api.put(`/webhooks/${editingWebhook._id}`, formData);
+        await api.put(`/webhooks/${editingWebhook.id || (editingWebhook.id || editingWebhook._id)}`, formData);
         setSuccess('Webhook updated successfully');
       } else {
         const response = await api.post('/webhooks', formData);
@@ -177,7 +177,7 @@ export default function WebhookManagementPage() {
 
   const handleToggleActive = async (webhook) => {
     try {
-      await api.put(`/webhooks/${webhook._id}`, { isActive: !webhook.isActive });
+      await api.put(`/webhooks/${webhook.id || webhook._id}`, { isActive: !webhook.isActive });
       loadWebhooks();
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to update webhook');
@@ -189,7 +189,7 @@ export default function WebhookManagementPage() {
     setDeliveriesDialogOpen(true);
     setLoadingDeliveries(true);
     try {
-      const response = await api.get(`/webhooks/${webhook._id}/deliveries`);
+      const response = await api.get(`/webhooks/${webhook.id || webhook._id}/deliveries`);
       setDeliveries(response.data.data || []);
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to load deliveries');
@@ -291,7 +291,7 @@ export default function WebhookManagementPage() {
             </TableHead>
             <TableBody>
               {webhooks.map((webhook) => (
-                <TableRow key={webhook._id}>
+                <TableRow key={webhook.id || webhook._id}>
                   <TableCell>
                     <Typography variant="subtitle2">{webhook.name}</Typography>
                     {webhook.description && (
@@ -572,7 +572,7 @@ export default function WebhookManagementPage() {
                 </TableHead>
                 <TableBody>
                   {deliveries.map((delivery) => (
-                    <TableRow key={delivery._id}>
+                    <TableRow key={delivery.id || delivery._id}>
                       <TableCell>
                         <Typography variant="body2">{delivery.event}</Typography>
                       </TableCell>

@@ -232,7 +232,7 @@ export default function SuperAdminDashboard() {
                 </TableHead>
                 <TableBody>
                   {tenants.map((tenant) => (
-                    <TableRow key={tenant._id}>
+                    <TableRow key={tenant.id || tenant._id}>
                       <TableCell>{tenant.name}</TableCell>
                       <TableCell>{tenant.domain}</TableCell>
                       <TableCell>

@@ -450,7 +450,7 @@ const CustomerSegmentation = () => {
                 </TableRow>
               ) : (
                 paginatedCustomers.map((customer) => (
-                  <TableRow key={customer._id} hover sx={{ cursor: 'pointer' }} onClick={() => customer._id && navigate(`/customers/${customer._id}`)}>
+                  <TableRow key={customer.id || customer._id} hover sx={{ cursor: 'pointer' }} onClick={() => customer._id && navigate(`/customers/${customer.id || customer._id}`)}>
                     <TableCell>
                       <Box display="flex" alignItems="center" gap={2}>
                         <Avatar sx={{ bgcolor: 'primary.light' }}>
@@ -495,7 +495,7 @@ const CustomerSegmentation = () => {
                     </TableCell>
                     <TableCell align="right">
                       <Tooltip title="View Customer">
-                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); customer._id && navigate(`/customers/${customer._id}`); }}>
+                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); customer._id && navigate(`/customers/${customer.id || customer._id}`); }}>
                           <OpenInNew fontSize="small" />
                         </IconButton>
                       </Tooltip>

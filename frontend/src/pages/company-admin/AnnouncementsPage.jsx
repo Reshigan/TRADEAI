@@ -129,7 +129,7 @@ export default function AnnouncementsPage() {
     try {
       setSaving(true);
       if (editingAnnouncement) {
-        await enterpriseApi.companyAdmin.updateAnnouncement(editingAnnouncement._id, formData);
+        await enterpriseApi.companyAdmin.updateAnnouncement((editingAnnouncement.id || editingAnnouncement._id), formData);
       } else {
         await enterpriseApi.companyAdmin.createAnnouncement(formData);
       }
@@ -220,7 +220,7 @@ export default function AnnouncementsPage() {
               </TableHead>
               <TableBody>
                 {announcements.map((announcement) => (
-                  <TableRow key={announcement._id} hover>
+                  <TableRow key={announcement.id || announcement._id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {announcement.isPinned && <PushPin sx={{ mr: 1, color: 'warning.main', fontSize: 18 }} />}

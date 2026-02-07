@@ -205,7 +205,7 @@ const PromotionList = () => {
       ) : (
         <Grid container spacing={3}>
           {promotions.map(promo => (
-            <Grid item xs={12} sm={6} lg={4} key={promo._id}>
+            <Grid item xs={12} sm={6} lg={4} key={promo.id || promo._id}>
               <Paper
                 elevation={0}
                 sx={{
@@ -223,7 +223,7 @@ const PromotionList = () => {
                     borderColor: 'primary.main'
                   }
                 }}
-                onClick={() => navigate(`/promotions/${promo._id}`)}
+                onClick={() => navigate(`/promotions/${promo.id || promo._id}`)}
               >
                 <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                   <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1, mr: 1 }}>

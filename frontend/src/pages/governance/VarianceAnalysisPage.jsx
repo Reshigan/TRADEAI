@@ -274,7 +274,7 @@ const VarianceAnalysisPage = () => {
                     onChange={(e) => setSelectedPromotion(e.target.value)}
                   >
                     {promotions.map((promo) => (
-                      <MenuItem key={promo._id} value={promo._id}>
+                      <MenuItem key={promo.id || promo._id} value={promo.id || promo._id}>
                         {promo.name} ({promo.status})
                       </MenuItem>
                     ))}
@@ -387,7 +387,7 @@ const VarianceAnalysisPage = () => {
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                       {varianceAnalysis.suggestedReasonCodes.map((code) => (
                         <Chip
-                          key={code._id}
+                          key={code.id || code._id}
                           label={`${code.code}: ${code.name}`}
                           variant="outlined"
                           onClick={() => {
@@ -518,7 +518,7 @@ const VarianceAnalysisPage = () => {
                     </TableRow>
                   ) : (
                     reasonCodes.map((code) => (
-                      <TableRow key={code._id}>
+                      <TableRow key={code.id || code._id}>
                         <TableCell>
                           <Chip label={code.code} size="small" variant="outlined" />
                         </TableCell>
@@ -570,7 +570,7 @@ const VarianceAnalysisPage = () => {
             sx={{ mt: 2, mb: 2 }}
           >
             {reasonCodes.map((code) => (
-              <MenuItem key={code._id} value={code._id}>
+              <MenuItem key={code.id || code._id} value={code.id || code._id}>
                 <Box>
                   <Typography>{code.code}: {code.name}</Typography>
                   <Typography variant="caption" color="textSecondary">

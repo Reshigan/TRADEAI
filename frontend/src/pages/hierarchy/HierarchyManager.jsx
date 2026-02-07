@@ -94,7 +94,7 @@ const HierarchyManager = () => {
         await apiClient.post(endpoint, formData);
         toast.success(`${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)} created successfully`);
       } else {
-        await apiClient.put(`${endpoint}/${formData._id}`, formData);
+        await apiClient.put(`${endpoint}/${formData.id || formData._id}`, formData);
         toast.success(`${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)} updated successfully`);
       }
       handleCloseDialog();
@@ -133,7 +133,7 @@ const HierarchyManager = () => {
         </TableHead>
         <TableBody>
           {regions.map((region) => (
-            <TableRow key={region._id}>
+            <TableRow key={region.id || region._id}>
               <TableCell>{region.code}</TableCell>
               <TableCell>{region.name}</TableCell>
               <TableCell>{region.country}</TableCell>
@@ -179,7 +179,7 @@ const HierarchyManager = () => {
         </TableHead>
         <TableBody>
           {districts.map((district) => (
-            <TableRow key={district._id}>
+            <TableRow key={district.id || district._id}>
               <TableCell>{district.code}</TableCell>
               <TableCell>{district.name}</TableCell>
               <TableCell>{district.region?.name || 'N/A'}</TableCell>
@@ -227,7 +227,7 @@ const HierarchyManager = () => {
         </TableHead>
         <TableBody>
           {stores.map((store) => (
-            <TableRow key={store._id}>
+            <TableRow key={store.id || store._id}>
               <TableCell>{store.storeCode}</TableCell>
               <TableCell>{store.name}</TableCell>
               <TableCell>{store.district?.name || 'N/A'}</TableCell>
@@ -313,7 +313,7 @@ const HierarchyManager = () => {
               >
                 <option value="">Select Region</option>
                 {regions.map((region) => (
-                  <option key={region._id} value={region._id}>
+                  <option key={region.id || region._id} value={region.id || region._id}>
                     {region.name}
                   </option>
                 ))}
@@ -344,7 +344,7 @@ const HierarchyManager = () => {
               >
                 <option value="">Select District</option>
                 {districts.map((district) => (
-                  <option key={district._id} value={district._id}>
+                  <option key={district.id || district._id} value={district.id || district._id}>
                     {district.name}
                   </option>
                 ))}
@@ -359,7 +359,7 @@ const HierarchyManager = () => {
               >
                 <option value="">Select Region</option>
                 {regions.map((region) => (
-                  <option key={region._id} value={region._id}>
+                  <option key={region.id || region._id} value={region.id || region._id}>
                     {region.name}
                   </option>
                 ))}

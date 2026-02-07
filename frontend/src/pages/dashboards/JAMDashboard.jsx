@@ -587,7 +587,7 @@ const JAMDashboard = () => {
                           variant="outlined"
                           size="small"
                           endIcon={<ArrowForward />}
-                          onClick={() => navigate(`/promotions/${promotion._id}`)}
+                          onClick={() => navigate(`/promotions/${promotion.id || promotion._id}`)}
                           sx={{ 
                             borderRadius: 2,
                             textTransform: 'none',

@@ -137,7 +137,7 @@ const TransactionDashboard = () => {
             </thead>
             <tbody>
               {transactions.map(txn => (
-                <tr key={txn._id}>
+                <tr key={txn.id || txn._id}>
                   <td>{txn._id.substring(0, 8)}</td>
                   <td>{txn.type}</td>
                   <td>${txn.amount.toLocaleString()}</td>

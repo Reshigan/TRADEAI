@@ -132,7 +132,7 @@ const Alerts = () => {
 
   const handleMarkAsRead = (alertId) => {
     setAlerts(prev => prev.map(alert => 
-      alert._id === alertId ? { ...alert, read: true } : alert
+      (alert.id || alert._id) === alertId ? { ...alert, read: true } : alert
     ));
     enqueueSnackbar('Alert marked as read', { variant: 'success' });
   };
@@ -387,7 +387,7 @@ const Alerts = () => {
               ) : (
                 paginatedAlerts.map((alert) => (
                   <TableRow 
-                    key={alert._id}
+                    key={alert.id || alert._id}
                     hover
                     sx={{ bgcolor: alert.read ? 'transparent' : 'action.hover' }}
                   >

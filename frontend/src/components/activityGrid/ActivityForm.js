@@ -131,9 +131,9 @@ const ActivityForm = ({ activity, onSubmit, startDate, endDate }) => {
           <Autocomplete
             options={customers}
             getOptionLabel={(option) => option.name}
-            value={customers.find(c => c._id === formik.values.customer) || null}
+            value={customers.find(c => (c.id || c._id) === formik.values.customer) || null}
             onChange={(_, newValue) => {
-              formik.setFieldValue('customer', newValue?._id || '');
+              formik.setFieldValue('customer', (newValue?.id || newValue?._id) || '');
             }}
             loading={loading}
             renderInput={(params) => (
@@ -153,9 +153,9 @@ const ActivityForm = ({ activity, onSubmit, startDate, endDate }) => {
             multiple
             options={products}
             getOptionLabel={(option) => option.name}
-            value={products.filter(p => formik.values.products.includes(p._id))}
+            value={products.filter(p => formik.values.products.includes(p.id || p._id))}
             onChange={(_, newValue) => {
-              formik.setFieldValue('products', newValue.map(p => p._id));
+              formik.setFieldValue('products', newValue.map(p => p.id || p._id));
             }}
             loading={loading}
             renderInput={(params) => (
@@ -172,7 +172,7 @@ const ActivityForm = ({ activity, onSubmit, startDate, endDate }) => {
                 <Chip
                   label={option.name}
                   {...getTagProps({ index })}
-                  key={option._id}
+                  key={option.id || option._id}
                 />
               ))
             }

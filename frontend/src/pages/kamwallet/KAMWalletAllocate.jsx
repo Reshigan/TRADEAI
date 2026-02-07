@@ -282,7 +282,7 @@ const KAMWalletAllocate = () => {
               required
             >
               {customers.map((customer) => (
-                <MenuItem key={customer._id} value={customer._id}>
+                <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
                   {customer.name} ({customer.code})
                 </MenuItem>
               ))}
