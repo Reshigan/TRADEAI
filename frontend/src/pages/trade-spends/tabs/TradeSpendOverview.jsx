@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
+import { formatLabel } from '../../../utils/formatters';
 
 const TradeSpendOverview = ({ tradeSpend }) => {
   return (
@@ -9,7 +10,7 @@ const TradeSpendOverview = ({ tradeSpend }) => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Spend Type</Typography>
-            <Typography variant="body1">{tradeSpend.spendType || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(tradeSpend.spendType)}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Category</Typography>

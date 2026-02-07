@@ -171,6 +171,14 @@ export const formatDate = (date, format = 'medium') => {
  * @param {number} amount - The amount to format
  * @returns {string} Formatted currency string
  */
+export const formatLabel = (str) => {
+  if (!str) return 'N/A';
+  return str
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+};
+
 export const formatCurrencyCompact = (amount) => {
   if (amount === null || amount === undefined || isNaN(amount)) {
     const settings = getCurrencySettings();

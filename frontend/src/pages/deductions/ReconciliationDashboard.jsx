@@ -28,6 +28,7 @@ import claimService from '../../services/claim/claimService';
 import customerService from '../../services/customer/customerService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const ReconciliationDashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -370,7 +371,7 @@ const ReconciliationDashboard = () => {
                             </TableCell>
                             <TableCell>
                               <Chip
-                                label={claim.matching?.matchStatus?.toUpperCase() || 'Unmatched'}
+                                label={formatLabel(claim.matching?.matchStatus || 'unmatched')}
                                 color={claim.matching?.matchStatus === 'full' ? 'success' : 'error'}
                                 size="small"
                               />

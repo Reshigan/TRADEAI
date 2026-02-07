@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
 import { useCompanyType } from '../../contexts/CompanyTypeContext';
+import { formatLabel } from '../../utils/formatters';
 
 const VendorManagement = () => {
   const { isDistributor } = useCompanyType();
@@ -160,7 +161,7 @@ const VendorManagement = () => {
                       <TableCell>{vendor.contactEmail || '-'}</TableCell>
                       <TableCell>
                         <Chip
-                          label={vendor.status || 'Active'}
+                          label={formatLabel(vendor.status || 'active')}
                           color="success"
                           size="small"
                         />

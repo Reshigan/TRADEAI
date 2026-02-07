@@ -4,11 +4,7 @@ import { Box, Button, Chip, Typography, useTheme } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { promotionService } from '../../services/api';
-
-const formatLabel = (str) => {
-  if (!str) return 'N/A';
-  return str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-};
+import { formatLabel } from '../../utils/formatters';
 
 const PromotionListEnhanced = () => {
   const navigate = useNavigate();
@@ -144,7 +140,7 @@ const PromotionListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Chip
-          label={value}
+          label={formatLabel(value)}
           size="small"
           color={value === 'active' ? 'success' : value === 'pending_approval' ? 'warning' : 'default'}
         />

@@ -17,6 +17,7 @@ import {
 import {Add, Edit, Delete} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const RebatesList = () => {
   const navigate = useNavigate();
@@ -118,7 +119,7 @@ const RebatesList = () => {
                 </TableCell>
                 <TableCell>
                   <Chip 
-                    label={rebate.status}
+                    label={formatLabel(rebate.status)}
                     color={getStatusColor(rebate.status)}
                     size="small"
                   />
