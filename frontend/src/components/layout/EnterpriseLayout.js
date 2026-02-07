@@ -164,7 +164,7 @@ export default function EnterpriseLayout({ children, user, onLogout }) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
-            {location.pathname.split('/').pop().replace(/-/g, ' ').toUpperCase() || 'DASHBOARD'}
+            {location.pathname.split('/').pop().replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Dashboard'}
           </Typography>
           <Tooltip title="Notifications">
             <IconButton sx={{ mx: 1 }}>

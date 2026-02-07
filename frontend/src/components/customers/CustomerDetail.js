@@ -37,7 +37,7 @@ import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { customerService, budgetService, promotionService, tradeSpendService } from '../../services/api';
 import { CustomerIntelligencePanel } from '../contextual-ai';
 import CustomerForm from './CustomerForm';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../utils/formatters';
 
 const CustomerDetail = () => {
   const { id } = useParams();
@@ -312,7 +312,7 @@ const CustomerDetail = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <BusinessIcon sx={{ mr: 1, color: 'text.secondary' }} />
                 <Typography variant="body2" color="text.secondary">
-                  Type: {customer.type.charAt(0).toUpperCase() + customer.type.slice(1)}
+                  Type: {formatLabel(customer.type)}
                 </Typography>
               </Box>
               
@@ -553,7 +553,7 @@ const CustomerDetail = () => {
                           >
                             <ListItemText
                               primary={tradeSpend.description}
-                              secondary={`${tradeSpend.type.charAt(0).toUpperCase() + tradeSpend.type.slice(1)} | Amount: ${formatCurrency(tradeSpend.amount)}`}
+                              secondary={`${formatLabel(tradeSpend.type)} | Amount: ${formatCurrency(tradeSpend.amount)}`}
                             />
                             <ListItemSecondaryAction>
                               <StatusChip status={tradeSpend.status} sx={{ mr: 1 }} />

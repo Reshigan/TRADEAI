@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
+import { formatLabel } from '../../utils/formatters';
 
 const HierarchyManager = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -92,10 +93,10 @@ const HierarchyManager = () => {
       const endpoint = `/hierarchy/${dialogType}s`;
       if (dialogMode === 'create') {
         await apiClient.post(endpoint, formData);
-        toast.success(`${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)} created successfully`);
+        toast.success(`${formatLabel(dialogType)} created successfully`);
       } else {
         await apiClient.put(`${endpoint}/${formData.id || formData._id}`, formData);
-        toast.success(`${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)} updated successfully`);
+        toast.success(`${formatLabel(dialogType)} updated successfully`);
       }
       handleCloseDialog();
       loadData();
@@ -111,7 +112,7 @@ const HierarchyManager = () => {
     }
     try {
       await apiClient.delete(`/hierarchy/${type}s/${id}`);
-      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully`);
+      toast.success(`${formatLabel(type)} deleted successfully`);
       loadData();
     } catch (error) {
       console.error('Error deleting:', error);
@@ -264,7 +265,7 @@ const HierarchyManager = () => {
   const renderDialog = () => (
     <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {dialogMode === 'create' ? 'Create' : 'Edit'} {dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}
+        {dialogMode === 'create' ? 'Create' : 'Edit'} {formatLabel(dialogType)}
       </DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>

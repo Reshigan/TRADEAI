@@ -61,6 +61,7 @@ import {
   Legend
 } from 'recharts';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const COLORS = ['#4caf50', '#2196f3', '#ff9800', '#f44336', '#9c27b0'];
 
@@ -96,7 +97,7 @@ const BudgetVariance = () => {
         // Transform API data to match component format
         const transformedBudgets = (data.budgetVariance || []).map((budget, index) => ({
           _id: index.toString(),
-          name: budget.category ? `${budget.category.charAt(0).toUpperCase()}${budget.category.slice(1)} Budget` : 'Budget',
+          name: budget.category ? `${formatLabel(budget.category)} Budget` : 'Budget',
           category: budget.category || 'general',
           allocated: budget.allocated || 0,
           spent: budget.spent || 0,

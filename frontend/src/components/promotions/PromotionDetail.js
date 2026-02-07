@@ -32,7 +32,7 @@ import {
 } from '@mui/icons-material';
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { promotionService, customerService } from '../../services/api';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { formatCurrency, formatDate, formatLabel } from '../../utils/formatters';
 import PromotionForm from './PromotionForm';
 
 // Production component - no mock data
@@ -439,7 +439,7 @@ const PromotionDetail = () => {
                           <ListItem>
                             <ListItemText
                               primary={tradeSpend.description}
-                              secondary={`${tradeSpend.type.charAt(0).toUpperCase() + tradeSpend.type.slice(1)} - ${formatCurrency(tradeSpend.amount)}`}
+                              secondary={`${formatLabel(tradeSpend.type)} - ${formatCurrency(tradeSpend.amount)}`}
                             />
                             <ListItemSecondaryAction>
                               <Button

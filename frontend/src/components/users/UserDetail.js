@@ -50,6 +50,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import { formatLabel } from '../../utils/formatters';
 
 // Mock data for development
 
@@ -405,7 +406,7 @@ const UserDetail = () => {
                         <Grid item xs={12} sm={6} md={4} key={category}>
                           <Card variant="outlined">
                             <CardHeader
-                              title={category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              title={formatLabel(category)}
                               avatar={<SecurityIcon />}
                             />
                             <CardContent>

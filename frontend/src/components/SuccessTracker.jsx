@@ -14,6 +14,7 @@ import {
   LocalFireDepartment as FireIcon,
   Share as ShareIcon
 } from '@mui/icons-material';
+import api from '../services/api';
 
 /**
  * Success Tracker - Gamification & Motivation
@@ -29,9 +30,8 @@ const SuccessTracker = ({ userId }) => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`/api/users/${userId}/stats`);
-        if (!response.ok) throw new Error('Failed to fetch stats');
-        const data = await response.json();
+        const response = await api.get(`/users/${userId}/stats`);
+        const data = response.data?.data || response.data;
         setStats(data);
         setRecentWins(data.recentWins || []);
       } catch (error) {

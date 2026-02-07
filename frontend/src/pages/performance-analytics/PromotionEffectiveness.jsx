@@ -179,7 +179,7 @@ const PromotionEffectiveness = () => {
   }, {});
 
   const pieChartData = Object.entries(typeDistribution).map(([name, value]) => ({
-    name: name.charAt(0).toUpperCase() + name.slice(1),
+    name: formatLabel(name),
     value
   }));
 

@@ -16,6 +16,7 @@ import deductionService from '../../services/deduction/deductionService';
 import customerService from '../../services/customer/customerService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const CreateDeduction = () => {
   const navigate = useNavigate();
@@ -246,7 +247,7 @@ const CreateDeduction = () => {
                   Type
                 </Typography>
                 <Typography variant="body1">
-                  {formData.deductionType.charAt(0).toUpperCase() + formData.deductionType.slice(1)}
+                  {formatLabel(formData.deductionType)}
                 </Typography>
               </Box>
               {formData.customer && (

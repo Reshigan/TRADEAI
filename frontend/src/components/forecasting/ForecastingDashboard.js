@@ -41,7 +41,7 @@ import {
   ComposedChart
 } from 'recharts';
 import { forecastingService } from '../../services/api';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatLabel } from '../../utils/formatters';
 
 const ForecastingDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -414,7 +414,7 @@ const ForecastingDashboard = () => {
             {demandForecast ? (
               <>
                 <Typography variant="h4" color="success.main" gutterBottom>
-                  {demandForecast.riskAnalysis?.riskLevel?.toUpperCase() || 'N/A'}
+                  {formatLabel(demandForecast.riskAnalysis?.riskLevel) || 'N/A'}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   Risk Level
