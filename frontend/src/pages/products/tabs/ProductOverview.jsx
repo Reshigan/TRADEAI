@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
+import { formatLabel } from '../../../utils/formatters';
 
 const ProductOverview = ({ product }) => {
   return (
@@ -21,7 +22,7 @@ const ProductOverview = ({ product }) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Status</Typography>
-            <Typography variant="body1">{product.status || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(product.status) || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body2" color="text.secondary">Description</Typography>
@@ -39,13 +40,13 @@ const ProductOverview = ({ product }) => {
           </Grid>
           <Grid item xs={12} md={4}>
             <Typography variant="body2" color="text.secondary">Selling Price</Typography>
-            <Typography variant="h6">R {product.sellingPrice?.toLocaleString() || '0'}</Typography>
+            <Typography variant="h6">R {(product.unitPrice || product.sellingPrice)?.toLocaleString() || '0'}</Typography>
           </Grid>
           <Grid item xs={12} md={4}>
             <Typography variant="body2" color="text.secondary">Margin</Typography>
             <Typography variant="h6">
-              {product.costPrice && product.sellingPrice ? 
-                (((product.sellingPrice - product.costPrice) / product.sellingPrice) * 100).toFixed(1) : '0'}%
+              {product.costPrice && (product.unitPrice || product.sellingPrice) ? 
+                ((((product.unitPrice || product.sellingPrice) - product.costPrice) / (product.unitPrice || product.sellingPrice)) * 100).toFixed(1) : '0'}%
             </Typography>
           </Grid>
         </Grid>

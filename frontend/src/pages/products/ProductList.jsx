@@ -214,7 +214,7 @@ const ProductList = () => {
                     <InventoryIcon sx={{ color: 'success.main', fontSize: 20 }} />
                   </Box>
                   <Typography variant="h6" fontWeight={700} color="text.primary">
-                    {product.productName}
+                    {product.name || product.productName}
                   </Typography>
                 </Box>
 
@@ -224,7 +224,7 @@ const ProductList = () => {
                       SKU
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {product.productCode}
+                      {product.sku || product.productCode}
                     </Typography>
                   </Box>
 

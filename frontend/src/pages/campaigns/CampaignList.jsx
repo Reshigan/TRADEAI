@@ -61,10 +61,13 @@ const CampaignList = () => {
 
   const getStatusColor = (status) => {
     const statusMap = {
-      'Active': 'success',
-      'Planned': 'primary',
-      'Completed': 'default',
-      'Paused': 'warning'
+      'active': 'success',
+      'planned': 'primary',
+      'completed': 'default',
+      'paused': 'warning',
+      'draft': 'default',
+      'approved': 'info',
+      'cancelled': 'error'
     };
     return statusMap[status] || 'default';
   };
@@ -146,10 +149,13 @@ const CampaignList = () => {
                 sx={{ borderRadius: 2 }}
               >
                 <MenuItem value="all">All Status</MenuItem>
-                <MenuItem value="Active">Active</MenuItem>
-                <MenuItem value="Planned">Planned</MenuItem>
-                <MenuItem value="Completed">Completed</MenuItem>
-                <MenuItem value="Paused">Paused</MenuItem>
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="draft">Draft</MenuItem>
+                <MenuItem value="approved">Approved</MenuItem>
+                <MenuItem value="planned">Planned</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="paused">Paused</MenuItem>
+                <MenuItem value="cancelled">Cancelled</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -225,7 +231,7 @@ const CampaignList = () => {
                     </Typography>
                   </Box>
                   <Chip
-                    label={campaign.status}
+                    label={formatLabel(campaign.status)}
                     color={getStatusColor(campaign.status)}
                     size="small"
                     sx={{ fontWeight: 600 }}

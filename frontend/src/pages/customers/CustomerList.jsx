@@ -16,8 +16,9 @@ import {
   Business as BusinessIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+import { formatLabel } from '../../utils/formatters';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
+const API_BASE_URL= process.env.REACT_APP_API_BASE_URL || '/api';
 
 const CustomerList = () => {
   const navigate = useNavigate();
@@ -179,7 +180,7 @@ const CustomerList = () => {
                     <BusinessIcon sx={{ color: 'primary.main', fontSize: 20 }} />
                   </Box>
                   <Typography variant="h6" fontWeight={700} color="text.primary">
-                    {customer.customerName}
+                    {customer.name || customer.customerName}
                   </Typography>
                 </Box>
 
@@ -189,7 +190,7 @@ const CustomerList = () => {
                       Code
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {customer.customerCode}
+                      {customer.code || customer.customerCode}
                     </Typography>
                   </Box>
 
@@ -198,7 +199,7 @@ const CustomerList = () => {
                       Type
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {customer.customerType}
+                      {formatLabel(customer.customerType)}
                     </Typography>
                   </Box>
 
@@ -207,7 +208,7 @@ const CustomerList = () => {
                       Location
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {customer.location?.city}, {customer.location?.state}
+                      {customer.city || customer.location?.city}{(customer.city || customer.location?.city) && (customer.region || customer.location?.state) ? ', ' : ''}{customer.region || customer.location?.state}
                     </Typography>
                   </Box>
 
