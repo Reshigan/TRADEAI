@@ -166,12 +166,12 @@ claims.get('/unmatched', async (c) => {
       ORDER BY cl.created_at DESC
     `).bind(companyId).all();
     
-    // Transform to match frontend expected format
-    const claims = (result.results || []).map(claim => ({
-      ...claim,
-      customer: { name: claim.customer_name },
-      matching: { matchStatus: 'unmatched' }
-    }));
+    const claims = (result.results || []).map(row => {
+      const doc = rowToDocument(row);
+      doc.customer = { name: doc.customerName || '' };
+      doc.matching = { matchStatus: 'unmatched' };
+      return doc;
+    });
     
     return c.json({
       success: true,
@@ -203,12 +203,12 @@ claims.get('/pending-approval', async (c) => {
       ORDER BY cl.created_at DESC
     `).bind(companyId).all();
     
-    // Transform to match frontend expected format
-    const claims = (result.results || []).map(claim => ({
-      ...claim,
-      customer: { name: claim.customer_name },
-      matching: { matchStatus: 'unmatched' }
-    }));
+    const claims = (result.results || []).map(row => {
+      const doc = rowToDocument(row);
+      doc.customer = { name: doc.customerName || '' };
+      doc.matching = { matchStatus: 'unmatched' };
+      return doc;
+    });
     
     return c.json({
       success: true,
@@ -302,10 +302,11 @@ claims.get('/customer/:customerId', async (c) => {
     
     const result = await db.prepare(query).bind(...params).all();
     
-    const claims = (result.results || []).map(claim => ({
-      ...claim,
-      customer: { name: claim.customer_name }
-    }));
+    const claims = (result.results || []).map(row => {
+      const doc = rowToDocument(row);
+      doc.customer = { name: doc.customerName || '' };
+      return doc;
+    });
     
     return c.json({
       success: true,

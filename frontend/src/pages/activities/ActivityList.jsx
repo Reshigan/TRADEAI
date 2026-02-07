@@ -21,6 +21,7 @@ import {
   CalendarToday as CalendarIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+import { formatLabel } from '../../utils/formatters';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
@@ -260,7 +261,7 @@ const ActivityList = () => {
                     {activity.activityName}
                   </Typography>
                   <Chip
-                    label={activity.status}
+                    label={formatLabel(activity.status)}
                     color={getStatusColor(activity.status)}
                     size="small"
                     sx={{ fontWeight: 600 }}
@@ -273,7 +274,7 @@ const ActivityList = () => {
                       Type
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {activity.activityType}
+                      {formatLabel(activity.activityType)}
                     </Typography>
                   </Box>
 

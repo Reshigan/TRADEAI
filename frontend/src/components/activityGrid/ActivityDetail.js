@@ -26,6 +26,7 @@ import { format } from 'date-fns';
 
 import activityGridService from '../../services/api/activityGridService';
 import ActivityForm from './ActivityForm';
+import { formatLabel } from '../../utils/formatters';
 
 const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
   const [activity, setActivity] = useState(null);
@@ -175,7 +176,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
               <Box display="flex" alignItems="center" gap={1} mb={2}>
                 <Typography variant="subtitle2">Status:</Typography>
                 <Chip
-                  label={activity.status || 'Unknown'}
+                  label={formatLabel(activity.status || 'unknown')}
                   color={getStatusColor(activity.status)}
                   size="small"
                 />
@@ -183,7 +184,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
               <Box display="flex" alignItems="center" gap={1}>
                 <Typography variant="subtitle2">Priority:</Typography>
                 <Chip
-                  label={activity.priority || 'Medium'}
+                  label={formatLabel(activity.priority || 'medium')}
                   color={getPriorityColor(activity.priority)}
                   size="small"
                 />
@@ -196,7 +197,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
                 <CategoryIcon fontSize="small" />
                 <Typography variant="subtitle2">Type:</Typography>
                 <Typography variant="body2">
-                  {activity.activityType || 'General'}
+                  {formatLabel(activity.activityType || 'general')}
                 </Typography>
               </Box>
             </Grid>

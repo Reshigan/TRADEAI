@@ -127,7 +127,7 @@ const TradeSpendList = () => {
       rebate: 'Rebate',
       promotion: 'Promotion'
     };
-    return labels[type] || type;
+    return labels[type] || formatLabel(type);
   };
 
   return (
