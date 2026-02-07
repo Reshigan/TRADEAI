@@ -6,6 +6,17 @@ const simulationsRoutes = new Hono();
 
 simulationsRoutes.use('*', authMiddleware);
 
+simulationsRoutes.get('/', async (c) => {
+  try {
+    const user = c.get('user');
+    const db = getD1Client(c);
+    const simulations = await db.find('simulations', { company_id: user.companyId }, { sort: { created_at: -1 }, limit: 20 });
+    return c.json({ success: true, data: simulations });
+  } catch (error) {
+    return c.json({ success: true, data: [] });
+  }
+});
+
 simulationsRoutes.post('/promotion', async (c) => {
   try {
     const user = c.get('user');

@@ -6,6 +6,22 @@ export const exportRoutes = new Hono();
 
 exportRoutes.use('*', authMiddleware);
 
+exportRoutes.get('/', async (c) => {
+  return c.json({
+    success: true,
+    data: {
+      availableExports: [
+        { id: 'promotions', name: 'Promotions', endpoint: '/api/export/promotions' },
+        { id: 'budgets', name: 'Budgets', endpoint: '/api/export/budgets' },
+        { id: 'trade-spends', name: 'Trade Spends', endpoint: '/api/export/trade-spends' },
+        { id: 'customers', name: 'Customers', endpoint: '/api/export/customers' },
+        { id: 'products', name: 'Products', endpoint: '/api/export/products' },
+        { id: 'simulations', name: 'Simulations', endpoint: '/api/export/simulations' }
+      ]
+    }
+  });
+});
+
 // Helper function to convert array of objects to CSV
 const toCSV = (data, columns) => {
   if (!data || data.length === 0) return '';

@@ -6,6 +6,29 @@ const recommendationsRoutes = new Hono();
 
 recommendationsRoutes.use('*', authMiddleware);
 
+recommendationsRoutes.get('/', async (c) => {
+  try {
+    const user = c.get('user');
+    const db = getD1Client(c);
+    const promotions = await db.find('promotions', { company_id: user.companyId, status: 'active' }, { limit: 5 });
+    return c.json({
+      success: true,
+      data: {
+        activePromotions: promotions.length,
+        availableEndpoints: [
+          { method: 'POST', path: '/next-best-promotion', description: 'AI-powered promotion recommendations' },
+          { method: 'POST', path: '/next-best-action', description: 'Next best action recommendations' },
+          { method: 'GET', path: '/trending', description: 'Trending insights and analytics' },
+          { method: 'GET', path: '/insights/:entityType/:entityId', description: 'Entity-specific insights' }
+        ],
+        status: 'active'
+      }
+    });
+  } catch (error) {
+    return c.json({ success: true, data: { status: 'active', availableEndpoints: [] } });
+  }
+});
+
 recommendationsRoutes.post('/next-best-promotion', async (c) => {
   try {
     const user = c.get('user');

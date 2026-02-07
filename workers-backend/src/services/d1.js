@@ -219,9 +219,9 @@ function rowToDocument(row) {
     // Convert column name back to camelCase
     const field = REVERSE_COLUMN_MAP[column] || column;
     
-    // Handle special fields
     if (field === 'id') {
       doc._id = value;
+      doc.id = value;
     } else if (column === 'data' && value) {
       // Merge JSON data into document
       try {
