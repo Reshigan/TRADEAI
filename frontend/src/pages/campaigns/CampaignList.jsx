@@ -21,6 +21,7 @@ import {
   Campaign as CampaignIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+import { formatLabel } from '../../utils/formatters';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
@@ -241,7 +242,7 @@ const CampaignList = () => {
                       Objective
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {campaign.campaignType ? campaign.campaignType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-'}
+                      {campaign.campaignType ? formatLabel(campaign.campaignType) : '-'}
                     </Typography>
                   </Box>
 
