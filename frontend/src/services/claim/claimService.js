@@ -1,40 +1,49 @@
 import apiClient from '../apiClient';
 
 class ClaimService {
+  async getById(id) {
+    const response = await apiClient.get(`/claims/${id}`);
+    return response.data?.data || response.data;
+  }
+
   async createClaim(claimData) {
-    const response = await apiClient.post(
-      `/claims`,
-      claimData,
-      
-    );
+    const payload = {
+      claimType: claimData.claimType,
+      customerId: claimData.customer || claimData.customerId,
+      claimedAmount: claimData.claimAmount || claimData.claimedAmount || 0,
+      claimDate: claimData.claimDate,
+      reason: claimData.notes || claimData.reason || '',
+      data: { lineItems: claimData.lineItems || [], currency: claimData.currency || 'ZAR' }
+    };
+    const response = await apiClient.post(`/claims`, payload);
+    return response.data;
+  }
+
+  async submit(claimId) {
+    const response = await apiClient.post(`/claims/${claimId}/submit`, {});
     return response.data;
   }
 
   async submitClaim(claimId) {
-    const response = await apiClient.post(
-      `/claims/${claimId}/submit`,
-      {},
-      
-    );
+    return this.submit(claimId);
+  }
+
+  async approve(claimId, data) {
+    const response = await apiClient.post(`/claims/${claimId}/approve`, data || {});
     return response.data;
   }
 
   async approveClaim(claimId, approvedAmount) {
-    const response = await apiClient.post(
-      `/claims/${claimId}/approve`,
-      { approvedAmount },
-      
-    );
+    return this.approve(claimId, { approvedAmount });
+  }
+
+  async reject(claimId, data) {
+    const response = await apiClient.post(`/claims/${claimId}/reject`, data || {});
     return response.data;
   }
 
   async rejectClaim(claimId, reason) {
-    const response = await apiClient.post(
-      `/claims/${claimId}/reject`,
-      { reason },
-      
-    );
-    return response.data;
+    return this.reject(claimId, { reason });
   }
 
   async matchClaimToInvoice(claimId, invoiceId, invoiceNumber, matchedAmount) {
