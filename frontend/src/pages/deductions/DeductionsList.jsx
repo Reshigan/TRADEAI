@@ -59,7 +59,7 @@ const DeductionsList = () => {
       } else if (filter === 'disputed') {
         response = await deductionService.getDisputedDeductions();
       } else {
-        response = await deductionService.getUnmatchedDeductions();
+        response = await deductionService.getAllDeductions();
       }
       
       setDeductions(response.data || []);

@@ -73,7 +73,7 @@ const RebatesList = () => {
       'billback': 'Bill-Back',
       'display': 'Display/Feature'
     };
-    return labels[type] || type;
+    return labels[type] || formatLabel(type);
   };
 
   return (

@@ -31,6 +31,11 @@ class DeductionService {
     return response.data;
   }
 
+  async getAllDeductions() {
+    const response = await apiClient.get(`/deductions`);
+    return response.data;
+  }
+
   async getUnmatchedDeductions() {
     const response = await apiClient.get(`/deductions/unmatched`);
     return response.data;
