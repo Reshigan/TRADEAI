@@ -4,6 +4,7 @@ import { Box, Button, Chip, Typography, LinearProgress, useTheme } from '@mui/ma
 import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import budgetService from '../../services/api/budgetService';
+import { formatLabel } from '../../utils/formatters';
 
 const BudgetListEnhanced = () => {
   const navigate = useNavigate();
@@ -188,7 +189,7 @@ const BudgetListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Chip
-          label={value}
+          label={formatLabel(value)}
           size="small"
           color={value === 'active' ? 'success' : 'default'}
         />

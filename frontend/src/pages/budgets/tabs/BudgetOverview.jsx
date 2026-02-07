@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
+import { formatLabel } from '../../../utils/formatters';
 
 const BudgetOverview = ({ budget }) => {
   return (
@@ -9,7 +10,7 @@ const BudgetOverview = ({ budget }) => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Budget Type</Typography>
-            <Typography variant="body1">{budget.budgetType || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(budget.budgetType) || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Year</Typography>
@@ -17,7 +18,7 @@ const BudgetOverview = ({ budget }) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Status</Typography>
-            <Typography variant="body1">{budget.status || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(budget.status) || 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Version</Typography>

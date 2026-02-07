@@ -184,36 +184,36 @@ const VendorList = () => {
                     </Typography>
                   </Box>
 
-                  {vendor.contactPerson && (
+                  {(vendor.contactName || vendor.contactPerson) && (
                     <Box display="flex" justifyContent="space-between" mb={1}>
                       <Typography variant="caption" color="text.secondary">
                         Contact
                       </Typography>
                       <Typography variant="caption" fontWeight={600}>
-                        {vendor.contactPerson}
+                        {vendor.contactName || vendor.contactPerson}
                       </Typography>
                     </Box>
                   )}
 
-                  {vendor.email && (
+                  {(vendor.contactEmail || vendor.email) && (
                     <Box display="flex" alignItems="center" gap={1} mb={1} mt={2}>
                       <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
                       <Typography variant="caption" color="text.secondary">
-                        {vendor.email}
+                        {vendor.contactEmail || vendor.email}
                       </Typography>
                     </Box>
                   )}
 
-                  {vendor.phone && (
+                  {(vendor.contactPhone || vendor.phone) && (
                     <Box display="flex" alignItems="center" gap={1} mb={1}>
                       <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
                       <Typography variant="caption" color="text.secondary">
-                        {vendor.phone}
+                        {vendor.contactPhone || vendor.phone}
                       </Typography>
                     </Box>
                   )}
 
-                  {vendor.location && (
+                  {(vendor.city || vendor.location) && (
                     <Box 
                       sx={{ 
                         mt: 2,
@@ -227,7 +227,7 @@ const VendorList = () => {
                     >
                       <LocationIcon sx={{ fontSize: 16, color: 'primary.main' }} />
                       <Typography variant="caption" color="primary.main">
-                        {vendor.location.city}, {vendor.location.state}
+                        {vendor.city || vendor.location?.city}{(vendor.city || vendor.location?.city) && (vendor.region || vendor.location?.state) ? ', ' : ''}{vendor.region || vendor.location?.state}
                       </Typography>
                     </Box>
                   )}
