@@ -1,9 +1,20 @@
 const Claim = require('../models/Claim');
 const _Deduction = require('../models/Deduction');
 const Invoice = require('../models/Invoice');
+const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 
 class ClaimService {
   async createClaim(tenantId, claimData, userId) {
+    const rules = tenantId ? await BusinessRulesConfig.getOrCreate(tenantId) : null;
+    const claimRules = rules?.claims || {};
+
+    if (typeof claimRules.writeoffLimits === 'number' && claimRules.writeoffLimits > 0 &&
+        claimData.claimAmount > claimRules.writeoffLimits) {
+      throw new Error(
+        `Claim amount ${claimData.claimAmount} exceeds write-off limit of ${claimRules.writeoffLimits}`
+      );
+    }
+
     const claimId = `CLM-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
     const claim = new Claim({
@@ -76,6 +87,13 @@ class ClaimService {
   }
 
   async autoMatchClaims(tenantId) {
+    const rules = tenantId ? await BusinessRulesConfig.getOrCreate(tenantId) : null;
+    const claimRules = rules?.claims || {};
+
+    if (claimRules.autoMatching === false) {
+      return { skipped: true, reason: 'Auto-matching disabled by admin configuration' };
+    }
+
     const unmatchedClaims = await Claim.findUnmatched(tenantId);
     const matchResults = [];
 

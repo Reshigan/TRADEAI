@@ -15,6 +15,7 @@ import {
   Assessment as AssessmentIcon,
   Security as SecurityIcon,
   Speed as SpeedIcon,
+  Tune as TuneIcon,
   Logout as LogoutIcon,
   Help as HelpIcon,
   School as SchoolIcon
@@ -61,7 +62,8 @@ const Sidebar = () => {
           items: [
             { icon: AssessmentIcon, label: 'Report Builder', path: '/reports' },
             { icon: SecurityIcon, label: 'Security', path: '/admin/security' },
-            { icon: SpeedIcon, label: 'Performance', path: '/admin/performance' }
+            { icon: SpeedIcon, label: 'Performance', path: '/admin/performance' },
+            { icon: TuneIcon, label: 'Business Rules', path: '/admin/business-rules' }
           ]
         },
         {

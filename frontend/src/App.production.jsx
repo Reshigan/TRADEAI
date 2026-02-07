@@ -57,6 +57,7 @@ import VarianceAnalysisPage from './pages/governance/VarianceAnalysisPage';
 
 // Integrations
 import WebhookManagementPage from './pages/integrations/WebhookManagementPage';
+import BusinessRulesPage from './pages/admin/BusinessRulesPage';
 
 // Common Components
 import LoadingSpinner from './components/common/LoadingSpinner';
@@ -343,6 +344,16 @@ function AppProduction() {
             element={
               <ProtectedRoute>
                 <PerformanceMetrics />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected Routes - Business Rules */}
+          <Route 
+            path="/admin/business-rules" 
+            element={
+              <ProtectedRoute>
+                <BusinessRulesPage />
               </ProtectedRoute>
             } 
           />
