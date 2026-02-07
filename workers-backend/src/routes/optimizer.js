@@ -6,6 +6,20 @@ const optimizerRoutes = new Hono();
 
 optimizerRoutes.use('*', authMiddleware);
 
+optimizerRoutes.get('/', async (c) => {
+  return c.json({
+    success: true,
+    data: {
+      availableEndpoints: [
+        { method: 'POST', path: '/budget/reallocate', description: 'Budget reallocation optimization' },
+        { method: 'POST', path: '/promotion/optimize', description: 'Promotion optimization' },
+        { method: 'POST', path: '/portfolio/analyze', description: 'Portfolio analysis' }
+      ],
+      status: 'active'
+    }
+  });
+});
+
 optimizerRoutes.post('/budget/reallocate', async (c) => {
   try {
     const user = c.get('user');

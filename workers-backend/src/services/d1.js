@@ -219,9 +219,9 @@ function rowToDocument(row) {
     // Convert column name back to camelCase
     const field = REVERSE_COLUMN_MAP[column] || column;
     
-    // Handle special fields
-    if (field === 'id') {
+    if (column === 'id') {
       doc._id = value;
+      doc.id = value;
     } else if (column === 'data' && value) {
       // Merge JSON data into document
       try {
@@ -257,7 +257,7 @@ function documentToRow(document, tableName = null, isUpdate = false) {
   
   for (const [field, value] of Object.entries(document)) {
     // Skip internal fields
-    if (field === '_id' || field === 'createdAt' || field === 'updatedAt') continue;
+    if (field === '_id' || field === 'id' || field === 'createdAt' || field === 'updatedAt') continue;
     
     // Check if this field should go in JSON data column
     if (JSON_FIELDS.includes(field)) {

@@ -6,7 +6,17 @@ export const reportingRoutes = new Hono();
 
 reportingRoutes.use('*', authMiddleware);
 
-// Get available reports
+reportingRoutes.get('/', async (c) => {
+  try {
+    const tenantId = c.get('tenantId');
+    const mongodb = getMongoClient(c);
+    const reports = await mongodb.find('reportruns', { companyId: tenantId }, { sort: { createdAt: -1 }, limit: 20 });
+    return c.json({ success: true, data: reports });
+  } catch (error) {
+    return c.json({ success: true, data: [] });
+  }
+});
+
 reportingRoutes.get('/templates', async (c) => {
   try {
     return c.json({

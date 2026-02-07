@@ -6,6 +6,22 @@ const aiOrchestratorRoutes = new Hono();
 
 aiOrchestratorRoutes.use('*', authMiddleware);
 
+aiOrchestratorRoutes.get('/', async (c) => {
+  return c.json({
+    success: true,
+    data: {
+      availableEndpoints: [
+        { method: 'POST', path: '/orchestrate', description: 'Main AI orchestration with ML analysis' },
+        { method: 'POST', path: '/predict-uplift', description: 'Uplift prediction with historical data' },
+        { method: 'POST', path: '/suggest-pricing', description: 'Pricing suggestion with market data' },
+        { method: 'POST', path: '/budget-optimize', description: 'Budget optimization with historical performance' },
+        { method: 'POST', path: '/roi-predict', description: 'ROI prediction with trade spend data' }
+      ],
+      status: 'active'
+    }
+  });
+});
+
 // Helper function to calculate statistics from historical data
 function calculateStats(data, field) {
   if (!data || data.length === 0) return { avg: 0, min: 0, max: 0, stdDev: 0 };

@@ -112,8 +112,15 @@ authRoutes.post('/login', async (c) => {
   }
 });
 
-// Refresh token endpoint
+// Refresh token endpoint (both paths for frontend compatibility)
+authRoutes.post('/refresh', async (c) => {
+  return handleRefreshToken(c);
+});
 authRoutes.post('/refresh-token', async (c) => {
+  return handleRefreshToken(c);
+});
+
+async function handleRefreshToken(c) {
   try {
     const { refreshToken } = await c.req.json();
 
@@ -155,7 +162,7 @@ authRoutes.post('/refresh-token', async (c) => {
     console.error('Refresh token error:', error);
     return c.json({ success: false, message: 'Token refresh failed', error: error.message }, 401);
   }
-});
+}
 
 // Logout endpoint
 authRoutes.post('/logout', authMiddleware, async (c) => {
