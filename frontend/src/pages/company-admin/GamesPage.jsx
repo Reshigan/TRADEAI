@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, SportsEsports, EmojiEvents, Leaderboard } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
+import { formatLabel } from '../../utils/formatters';
 
 const gameTypes = [
   { value: 'leaderboard', label: 'Leaderboard' },
@@ -228,7 +229,7 @@ export default function GamesPage() {
                     <TableCell>{game.participants?.length || 0}</TableCell>
                     <TableCell>{game.config?.resetPeriod || 'N/A'}</TableCell>
                     <TableCell>
-                      <Chip label={game.status} size="small" color={getStatusColor(game.status)} />
+                      <Chip label={formatLabel(game.status)} size="small" color={getStatusColor(game.status)} />
                     </TableCell>
                     <TableCell align="right">
                       <IconButton size="small" onClick={() => handleOpenDialog(game)}>

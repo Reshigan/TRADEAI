@@ -19,6 +19,7 @@ import api from '../../services/api';
 import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -113,7 +114,7 @@ const ProductDetail = () => {
             </Typography>
             {data.status && (
               <Chip 
-                label={data.status} 
+                label={formatLabel(data.status)} 
                 color={getStatusColor(data.status)}
                 size="small"
               />

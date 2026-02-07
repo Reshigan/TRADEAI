@@ -33,6 +33,7 @@ import simulationService from '../../services/simulation/simulationService';
 import customerService from '../../services/customer/customerService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const Customer360 = () => {
   const { id } = useParams();
@@ -197,7 +198,7 @@ const Customer360 = () => {
               icon={<Star />}
             />
             <Chip 
-              label={customer.status} 
+              label={formatLabel(customer.status)} 
               color={customer.status === 'active' ? 'success' : 'default'}
             />
           </Box>

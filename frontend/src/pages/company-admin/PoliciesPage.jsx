@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, Publish, Gavel, CheckCircle } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
+import { formatLabel } from '../../utils/formatters';
 
 const policyCategories = [
   { value: 'hr', label: 'Human Resources' },
@@ -232,7 +233,7 @@ export default function PoliciesPage() {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Chip label={policy.status} size="small" color={getStatusColor(policy.status)} />
+                      <Chip label={formatLabel(policy.status)} size="small" color={getStatusColor(policy.status)} />
                     </TableCell>
                     <TableCell align="right">
                       {policy.status === 'draft' && (

@@ -9,6 +9,7 @@ import {
   Add, Edit, Delete, School, CheckCircle
 } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
+import { formatLabel } from '../../utils/formatters';
 
 const categories = [
   { value: 'onboarding', label: 'Onboarding' },
@@ -217,7 +218,7 @@ export default function LearningCoursesPage() {
                     <TableCell>{course.modules?.length || 0}</TableCell>
                     <TableCell>{course.duration || 0} min</TableCell>
                     <TableCell>
-                      <Chip label={course.status} size="small" color={getStatusColor(course.status)} />
+                      <Chip label={formatLabel(course.status)} size="small" color={getStatusColor(course.status)} />
                     </TableCell>
                     <TableCell>
                       {course.isRequired && <CheckCircle color="success" fontSize="small" />}

@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, Campaign, Publish, PushPin, Visibility } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
+import { formatLabel } from '../../utils/formatters';
 
 const announcementTypes = [
   { value: 'info', label: 'Information', color: 'info' },
@@ -234,7 +235,7 @@ export default function AnnouncementsPage() {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Chip label={announcement.type} size="small" color={getTypeColor(announcement.type)} />
+                      <Chip label={formatLabel(announcement.type)} size="small" color={getTypeColor(announcement.type)} />
                     </TableCell>
                     <TableCell>{categories.find(c => c.value === announcement.category)?.label || announcement.category}</TableCell>
                     <TableCell>
@@ -252,7 +253,7 @@ export default function AnnouncementsPage() {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Chip label={announcement.status} size="small" color={getStatusColor(announcement.status)} />
+                      <Chip label={formatLabel(announcement.status)} size="small" color={getStatusColor(announcement.status)} />
                     </TableCell>
                     <TableCell align="right">
                       {announcement.status === 'draft' && (

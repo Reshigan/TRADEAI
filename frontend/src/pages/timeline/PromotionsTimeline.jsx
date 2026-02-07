@@ -36,6 +36,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';
 import simulationService from '../../services/simulation/simulationService';
+import { formatLabel } from '../../utils/formatters';
 
 const _getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -536,7 +537,7 @@ const PromotionsTimeline = () => {
                   primary="Status"
                   secondary={
                     <Chip 
-                      label={selectedPromotion.status} 
+                      label={formatLabel(selectedPromotion.status)} 
                       size="small"
                       color={selectedPromotion.status === 'active' ? 'success' : 'default'}
                     />
