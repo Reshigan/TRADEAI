@@ -80,6 +80,7 @@ const RebateDetail = () => {
     const colors = {
       draft: 'default',
       active: 'success',
+      calculating: 'info',
       inactive: 'warning',
       expired: 'error',
       pending: 'info'
