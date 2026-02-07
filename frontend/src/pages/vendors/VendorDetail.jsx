@@ -32,7 +32,6 @@ const VendorDetail = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
         const response = await api.get(`/vendors/${id}`);
         setData(response.data.data || response.data);
         setError(null);
@@ -53,7 +52,6 @@ const VendorDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
       try {
-        const token = localStorage.getItem('token');
         await api.delete(`/vendors/${id}`);
         navigate('/vendors');
       } catch (err) {

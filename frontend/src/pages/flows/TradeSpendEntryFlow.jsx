@@ -173,7 +173,6 @@ const TradeSpendEntryFlow = () => {
               selectedProducts
             },
             {
-              headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             }
           );
       

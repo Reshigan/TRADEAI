@@ -45,7 +45,6 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
         const response = await api.get(
           `/ai/smart-insights`,
           {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
           }
         );
         setInsights(response.data.insights || []);

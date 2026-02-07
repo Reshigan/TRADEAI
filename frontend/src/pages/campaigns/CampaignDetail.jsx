@@ -33,7 +33,6 @@ const CampaignDetail = () => {
   const fetchCampaign = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await api.get(`/campaigns/${id}`);
       setCampaign(response.data.data || response.data);
       setError(null);
@@ -51,7 +50,6 @@ const CampaignDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this campaign?')) {
       try {
-        const token = localStorage.getItem('token');
         await api.delete(`/campaigns/${id}`);
         navigate('/campaigns');
       } catch (err) {

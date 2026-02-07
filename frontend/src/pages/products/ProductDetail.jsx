@@ -38,7 +38,6 @@ const ProductDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const token = localStorage.getItem('token');
       const response = await api.get(`/products/${id}`);
       setData(response.data.data || response.data);
       setError(null);
@@ -64,7 +63,6 @@ const ProductDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        const token = localStorage.getItem('token');
         await api.delete(`/products/${id}`);
         analytics.trackEvent('product_deleted', { productId: id });
         toast.success('Product deleted successfully!');
