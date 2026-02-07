@@ -33,6 +33,9 @@ import { activityGridRoutes } from './routes/activityGrid.js';
 import { dataLineageRoutes } from './routes/dataLineage.js';
 import { forecastingRoutes } from './routes/forecasting.js';
 import { seedRoutes } from './routes/seed.js';
+import { businessRulesRoutes } from './routes/businessRules.js';
+import { allocationRoutes } from './routes/allocations.js';
+import { settingsRoutes } from './routes/settings.js';
 
 const app = new Hono();
 
@@ -111,6 +114,9 @@ app.route('/api/activity-grid', activityGridRoutes);
 app.route('/api/data-lineage', dataLineageRoutes);
 app.route('/api/forecasting', forecastingRoutes);
 app.route('/api/seed', seedRoutes);
+app.route('/api/business-rules', businessRulesRoutes);
+app.route('/api/allocations', allocationRoutes);
+app.route('/api/settings', settingsRoutes);
 
 // 404 handler
 app.notFound((c) => {
