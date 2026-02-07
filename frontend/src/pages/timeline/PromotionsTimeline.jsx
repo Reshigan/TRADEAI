@@ -38,11 +38,6 @@ import activityGridService from '../../services/activitygrid/activityGridService
 import simulationService from '../../services/simulation/simulationService';
 import { formatLabel } from '../../utils/formatters';
 
-const _getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 const PromotionsTimeline = () => {
   const navigate = useNavigate();
   const [view, setView] = useState('month');

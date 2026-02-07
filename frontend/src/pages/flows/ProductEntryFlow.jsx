@@ -238,11 +238,6 @@ const ProductEntryFlow = () => {
             pricing: priceOptimization,
             inventory: inventoryInsights
           }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
         }
       );
       
@@ -264,12 +259,7 @@ const ProductEntryFlow = () => {
     try {
       await api.post(
         `/products/draft`,
-        formData,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
+        formData
       );
     } catch (error) {
       console.error('Auto-save failed:', error);

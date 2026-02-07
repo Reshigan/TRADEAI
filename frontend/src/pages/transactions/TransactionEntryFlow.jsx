@@ -262,7 +262,7 @@ export default function TransactionEntryFlow() {
 
       // Redirect to transaction detail page after short delay
       setTimeout(() => {
-        navigate(`/transactions/${response.data.data._id}`);
+        navigate(`/transactions/${response.data?.data?.id || response.data?.data?._id || response.data?.id || ''}`);
       }, 1500);
 
     } catch (error) {

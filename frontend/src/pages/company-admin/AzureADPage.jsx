@@ -182,7 +182,7 @@ export default function AzureADPage() {
                 <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1 }}>
                   {getStatusIcon(config.connectionStatus)}
                   <Chip 
-                    label={config.connectionStatus.replace('_', ' ')} 
+                    label={formatLabel(config.connectionStatus)} 
                     size="small" 
                     color={getStatusColor(config.connectionStatus)} 
                   />

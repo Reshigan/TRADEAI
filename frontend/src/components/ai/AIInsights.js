@@ -104,7 +104,7 @@ const AIInsights = () => {
       }
 
       // Call actual API for insights
-      const response = await api.get('/api/ai/insights');
+      const response = await api.get('/ai/insights');
       setInsights(response.data.data || []);
     } catch (error) {
       setError('Failed to generate insights');
@@ -119,7 +119,7 @@ const AIInsights = () => {
 
     try {
       // Call actual API for alerts
-      const response = await api.get('/api/ai/alerts');
+      const response = await api.get('/ai/alerts');
       
       if (response.data.data.alerts.length > 0) {
         setAlerts(prev => [...response.data.data.alerts, ...prev.slice(0, 9)]);

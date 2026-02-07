@@ -58,7 +58,7 @@ const ExecutiveDashboard = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/dashboards/executive?year=${selectedYear}');
+      const response = await api.get(`/dashboards/executive?year=${selectedYear}`);
       
       if (response?.data?.success) {
         setDashboardData(response.data.data);

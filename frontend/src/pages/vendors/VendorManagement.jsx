@@ -80,7 +80,7 @@ const VendorManagement = () => {
   const handleSave = async () => {
     try {
       if (selectedVendor) {
-        await apiClient.put(`/vendors/${selectedVendor.id || (selectedVendor.id || selectedVendor._id)}`, formData);
+        await apiClient.put(`/vendors/${selectedVendor.id || selectedVendor._id}`, formData);
       } else {
         await apiClient.post('/vendors', formData);
       }

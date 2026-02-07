@@ -18,32 +18,19 @@ import {
   Person as PersonIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material';
+import api from '../../services/api';
 
-// AI Service API call
 const getAIResponse = async (message, context) => {
   try {
-    const response = await fetch('/api/ai/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        message,
-        context,
-        timestamp: new Date().toISOString()
-      })
+    const response = await api.post('/ai/chat', {
+      message,
+      context,
+      timestamp: new Date().toISOString()
     });
 
-    if (!response.ok) {
-      throw new Error('AI service unavailable');
-    }
-
-    const data = await response.json();
-    return data.response || "I'm here to help you with your trade spend analysis. What would you like to know?";
+    return response.data?.response || "I'm here to help you with your trade spend analysis. What would you like to know?";
   } catch (error) {
     console.error('AI service error:', error);
-    // Fallback response when AI service is unavailable
     return "I'm currently experiencing technical difficulties. Please try again later or contact support for assistance.";
   }
 };

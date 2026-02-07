@@ -161,17 +161,19 @@ const ProductDetail = () => {
           Information
         </Typography>
         <Grid container spacing={3}>
-          {Object.keys(data).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(key => {
+          {Object.keys(data).filter(key => !['_id', 'id', '__v', 'createdAt', 'updatedAt', 'companyId'].includes(key) && data[key] != null && data[key] !== '').map(key => {
+            const val = data[key];
             let displayValue = 'N/A';
             try {
-              if (data[key] === null || data[key] === undefined) {
+              if (val === null || val === undefined) {
                 displayValue = 'N/A';
-              } else if (typeof data[key] === 'object') {
-                displayValue = JSON.stringify(data[key]);
-              } else if (typeof data[key] === 'number') {
-                displayValue = data[key].toLocaleString();
+              } else if (typeof val === 'object') {
+                displayValue = JSON.stringify(val);
+              } else if (typeof val === 'number') {
+                displayValue = val.toLocaleString();
               } else {
-                displayValue = String(data[key]);
+                const isEnum = typeof val === 'string' && /^[a-z_]+$/.test(val);
+                displayValue = isEnum ? formatLabel(val) : String(val);
               }
             } catch (error) {
               displayValue = 'N/A';
@@ -180,7 +182,7 @@ const ProductDetail = () => {
             return (
               <Grid item xs={12} sm={6} md={4} key={key}>
                 <Typography variant="body2" color="text.secondary" mb={0.5}>
-                  {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                  {formatLabel(key)}
                 </Typography>
                 <Typography variant="body1" fontWeight={500}>
                   {displayValue}

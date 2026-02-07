@@ -20,6 +20,7 @@ import {
   CheckCircle,
   Lightbulb
 } from '@mui/icons-material';
+import api from '../../services/api';
 
 /**
  * ProcessWizard - Master component for guided workflow processes
@@ -98,24 +99,16 @@ const ProcessWizard = ({
 
     setIsLoading(true);
     try {
-      const response = await fetch(steps[stepIndex].aiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          processType,
-          currentData: stepData,
-          stepIndex
-        })
+      const response = await api.post(steps[stepIndex].aiEndpoint, {
+        processType,
+        currentData: stepData,
+        stepIndex
       });
 
-      if (response.ok) {
-        const recommendations = await response.json();
+      if (response.data) {
         setAiRecommendations(prev => ({
           ...prev,
-          [stepIndex]: recommendations
+          [stepIndex]: response.data
         }));
       }
     } catch (error) {

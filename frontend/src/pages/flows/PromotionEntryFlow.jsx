@@ -115,10 +115,7 @@ const PromotionEntryFlow = () => {
             }
           },
           { 
-            timeout: 30000,
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            timeout: 30000
           }
         );
         
@@ -179,10 +176,7 @@ const PromotionEntryFlow = () => {
     const loadHistoricalData = async () => {
       try {
         const response = await api.get('/promotions/similar', {
-          params: { type: formData.type },
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+          params: { type: formData.type }
         });
         setHistoricalData(response.data);
       } catch (error) {
@@ -269,11 +263,6 @@ const PromotionEntryFlow = () => {
               aiSuggestions: aiSuggestions,
               selectedCustomers,
               selectedProducts
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-              }
             }
           );
       
@@ -295,12 +284,7 @@ const PromotionEntryFlow = () => {
     try {
       await api.post(
         `/promotions/draft`,
-        formData,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
+        formData
       );
     } catch (error) {
       console.error('Auto-save failed:', error);

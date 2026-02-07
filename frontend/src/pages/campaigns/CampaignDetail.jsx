@@ -165,7 +165,7 @@ const CampaignDetail = () => {
               Type
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {campaign.type || 'N/A'}
+              {formatLabel(campaign.type) || 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -173,7 +173,7 @@ const CampaignDetail = () => {
               Status
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {campaign.status}
+              {formatLabel(campaign.status)}
             </Typography>
           </Grid>
         </Grid>

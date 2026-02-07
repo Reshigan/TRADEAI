@@ -226,7 +226,7 @@ const VarianceAnalysisPage = () => {
   };
 
   const chartData = varianceReport?.byReasonCode?.map((item) => ({
-    name: item._id?.substring(0, 15) || 'Unknown',
+    name: (item.id || item._id || 'Unknown').toString().substring(0, 15),
     count: item.count,
     avgVariance: Math.abs(item.avgVariance || 0)
   })) || [];
@@ -306,7 +306,7 @@ const VarianceAnalysisPage = () => {
                       <CardContent>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <Typography variant="subtitle2" color="textSecondary">
-                            {variance.metricType?.replace(/_/g, ' ').toUpperCase()}
+                            {formatLabel(variance.metricType)}
                           </Typography>
                           {getVarianceIcon(variance.percentageVariance)}
                         </Box>
@@ -391,7 +391,7 @@ const VarianceAnalysisPage = () => {
                           label={`${code.code}: ${code.name}`}
                           variant="outlined"
                           onClick={() => {
-                            setSelectedReasonCode(code._id);
+                            setSelectedReasonCode(code.id || code._id);
                             setTagDialogOpen(true);
                           }}
                         />
@@ -527,7 +527,7 @@ const VarianceAnalysisPage = () => {
                         </TableCell>
                         <TableCell>
                           <Chip
-                            label={code.category?.replace(/_/g, ' ')}
+                            label={formatLabel(code.category)}
                             size="small"
                             sx={{
                               bgcolor: VARIANCE_CATEGORIES.find((c) => c.value === code.category)?.color + '20',

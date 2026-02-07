@@ -228,11 +228,6 @@ const CustomerEntryFlow = () => {
             segment: segment,
             opportunities: opportunities
           }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
         }
       );
       
@@ -254,12 +249,7 @@ const CustomerEntryFlow = () => {
     try {
       await api.post(
         `/customers/draft`,
-        formData,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
+        formData
       );
     } catch (error) {
       console.error('Auto-save failed:', error);
