@@ -33,6 +33,7 @@ import {
 import claimService from '../../services/claim/claimService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 import ProcessShell from '../../components/ProcessShell';
 
 const ClaimDetail = () => {
@@ -124,9 +125,12 @@ const ClaimDetail = () => {
     const colors = {
       draft: 'default',
       submitted: 'info',
+      pending: 'warning',
+      under_review: 'info',
       approved: 'success',
       rejected: 'error',
       paid: 'success',
+      settled: 'success',
       partially_matched: 'warning',
       fully_matched: 'success'
     };
@@ -200,15 +204,15 @@ const ClaimDetail = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Chip
-            label={claim.status.toUpperCase()}
+            label={formatLabel(claim.status)}
             color={getStatusColor(claim.status)}
             size="large"
           />
           {claim.matchingStatus && (
             <Chip
-              label={claim.matchingStatus.replace('_', ' ').toUpperCase()}
-              color={getStatusColor(claim.matchingStatus)}
-              size="large"
+                label={formatLabel(claim.matchingStatus)}
+                color={getStatusColor(claim.matchingStatus)}
+                size="large"
             />
           )}
         </Box>
@@ -230,7 +234,7 @@ const ClaimDetail = () => {
                     Claim Type
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {claim.claimType}
+                    {formatLabel(claim.claimType)}
                   </Typography>
                 </Grid>
 
@@ -335,7 +339,7 @@ const ClaimDetail = () => {
               </Typography>
               <Divider sx={{ mb: 2 }} />
 
-              {claim.status === 'draft' && (
+              {(claim.status === 'draft' || claim.status === 'pending') && (
                 <Button
                   fullWidth
                   variant="contained"
@@ -349,7 +353,7 @@ const ClaimDetail = () => {
                 </Button>
               )}
 
-              {claim.status === 'submitted' && (
+              {(claim.status === 'submitted' || claim.status === 'under_review') && (
                 <>
                   <Button
                     fullWidth
@@ -392,7 +396,7 @@ const ClaimDetail = () => {
                     Status
                   </Typography>
                   <Chip
-                    label={claim.matchingStatus.replace('_', ' ').toUpperCase()}
+                    label={formatLabel(claim.matchingStatus)}
                     color={getStatusColor(claim.matchingStatus)}
                     size="small"
                     sx={{ mt: 0.5 }}
