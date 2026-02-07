@@ -266,36 +266,36 @@ const DeductionsList = () => {
                 <TableRow key={deduction.id || deduction._id}>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {deduction.deduction_number || deduction.deductionId || deduction.id || '-'}
+                      {deduction.deductionNumber || deduction.deductionId || deduction.id || '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={formatLabel(deduction.deduction_type || deduction.deductionType || 'unknown')}
+                      label={formatLabel(deduction.deductionType || deduction.deduction_type || 'unknown')}
                       size="small"
                       variant="outlined"
                     />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {deduction.customer_name || deduction.customer?.name || 'Unknown'}
+                      {deduction.customerName || deduction.customer?.name || 'Unknown'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="textSecondary">
-                      {deduction.deduction_date || deduction.deductionDate 
-                        ? formatDate(deduction.deduction_date || deduction.deductionDate)
+                      {deduction.deductionDate
+                        ? formatDate(deduction.deductionDate)
                         : '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="bold">
-                      {formatCurrency(deduction.deduction_amount || deduction.deductionAmount || 0, deduction.currency)}
+                      {formatCurrency(deduction.deductionAmount || 0, deduction.currency)}
                     </Typography>
-                    {(deduction.validated_amount || deduction.validatedAmount) && 
-                     (deduction.validated_amount || deduction.validatedAmount) !== (deduction.deduction_amount || deduction.deductionAmount) && (
+                    {deduction.validatedAmount && 
+                     deduction.validatedAmount !== deduction.deductionAmount && (
                       <Typography variant="caption" color="textSecondary" display="block">
-                        Validated: {formatCurrency(deduction.validated_amount || deduction.validatedAmount, deduction.currency)}
+                        Validated: {formatCurrency(deduction.validatedAmount, deduction.currency)}
                       </Typography>
                     )}
                   </TableCell>
@@ -315,8 +315,8 @@ const DeductionsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={(deduction.matched_amount || 0) > 0 ? 'Matched' : 'Unmatched'}
-                      color={(deduction.matched_amount || 0) > 0 ? 'success' : 'error'}
+                      label={(deduction.matchedAmount || 0) > 0 ? 'Matched' : 'Unmatched'}
+                      color={(deduction.matchedAmount || 0) > 0 ? 'success' : 'error'}
                       size="small"
                     />
                   </TableCell>

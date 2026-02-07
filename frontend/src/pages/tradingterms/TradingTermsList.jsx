@@ -116,7 +116,7 @@ const TradingTermsList = () => {
       loyalty_bonus: 'Loyalty Bonus',
       growth_incentive: 'Growth Incentive'
     };
-    return labels[type] || type;
+    return labels[type] || formatLabel(type);
   };
 
   return (
