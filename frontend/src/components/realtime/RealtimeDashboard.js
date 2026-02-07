@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import io from 'socket.io-client';
+import { formatLabel } from '../../utils/formatters';
 
 const RealtimeDashboard = () => {
   const [socket, setSocket] = useState(null);
@@ -266,7 +267,7 @@ const RealtimeDashboard = () => {
                     disabled={!isConnected}
                   />
                 }
-                label={channel.charAt(0).toUpperCase() + channel.slice(1)}
+                label={formatLabel(channel)}
               />
             ))}
           </Box>
