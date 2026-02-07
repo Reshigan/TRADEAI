@@ -1,6 +1,26 @@
 import apiClient from '../apiClient';
 
 class DeductionService {
+  async getById(id) {
+    const response = await apiClient.get(`/deductions/${id}`);
+    return response.data?.data || response.data;
+  }
+
+  async validate(deductionId, data) {
+    const response = await apiClient.post(`/deductions/${deductionId}/validate`, data || {});
+    return response.data;
+  }
+
+  async dispute(deductionId, data) {
+    const response = await apiClient.post(`/deductions/${deductionId}/dispute`, data || {});
+    return response.data;
+  }
+
+  async resolve(deductionId, data) {
+    const response = await apiClient.post(`/deductions/${deductionId}/resolve`, data || {});
+    return response.data;
+  }
+
   async createDeduction(deductionData) {
     const response = await apiClient.post(`/deductions`, deductionData);
     return response.data;
