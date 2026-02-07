@@ -217,7 +217,7 @@ const RebateAnalytics = () => {
                 </TableHead>
                 <TableBody>
                   {analytics.topRebates?.map((rebate) => (
-                    <TableRow key={rebate._id}>
+                    <TableRow key={rebate.id || rebate._id}>
                       <TableCell>{rebate.name}</TableCell>
                       <TableCell>
                         <Chip label={formatLabel(rebate.type)} size="small" />
@@ -241,7 +241,7 @@ const RebateAnalytics = () => {
             </Typography>
             <Box sx={{ mt: 2 }}>
               {analytics.statusDistribution?.map((status) => (
-                <Box key={status._id} sx={{ mb: 2 }}>
+                <Box key={status.id || status._id} sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                     <Typography variant="body2">{formatLabel(status._id)}</Typography>
                     <Typography variant="body2" fontWeight="bold">
@@ -290,7 +290,7 @@ const RebateAnalytics = () => {
                 </TableHead>
                 <TableBody>
                   {analytics.recentAccruals?.map((accrual) => (
-                    <TableRow key={accrual._id}>
+                    <TableRow key={accrual.id || accrual._id}>
                       <TableCell>
                         {new Date(accrual.date).toLocaleDateString()}
                       </TableCell>

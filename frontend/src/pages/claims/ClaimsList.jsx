@@ -191,7 +191,7 @@ const ClaimsList = () => {
       {statistics && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {statistics.byStatus?.map((stat) => (
-            <Grid item xs={12} sm={6} md={3} key={stat._id}>
+            <Grid item xs={12} sm={6} md={3} key={stat.id || stat._id}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="textSecondary">

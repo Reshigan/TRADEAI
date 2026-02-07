@@ -104,7 +104,7 @@ export default function LineItemsStep({ data, errors, onChange, products }) {
 
     // Auto-populate product details
     if (field === 'productId' && products) {
-      const product = products.find(p => p._id === value);
+      const product = products.find(p => (p.id || p._id) === value);
       if (product) {
         newItems[index].sku = product.sku || '';
         newItems[index].description = product.name || '';
@@ -191,8 +191,8 @@ export default function LineItemsStep({ data, errors, onChange, products }) {
                         size="small"
                         options={products || []}
                         getOptionLabel={(option) => option.name || ''}
-                        value={products?.find(p => p._id === item.productId) || null}
-                        onChange={(e, newValue) => updateItem(index, 'productId', newValue?._id || '')}
+                        value={products?.find(p => (p.id || p._id) === item.productId) || null}
+                        onChange={(e, newValue) => updateItem(index, 'productId', (newValue?.id || newValue?._id) || '')}
                         renderInput={(params) => (
                           <TextField
                             {...params}

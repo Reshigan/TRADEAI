@@ -123,7 +123,7 @@ export default function PoliciesPage() {
     try {
       setSaving(true);
       if (editingPolicy) {
-        await enterpriseApi.companyAdmin.updatePolicy(editingPolicy._id, formData);
+        await enterpriseApi.companyAdmin.updatePolicy((editingPolicy.id || editingPolicy._id), formData);
       } else {
         await enterpriseApi.companyAdmin.createPolicy(formData);
       }
@@ -208,7 +208,7 @@ export default function PoliciesPage() {
               </TableHead>
               <TableBody>
                 {policies.map((policy) => (
-                  <TableRow key={policy._id} hover>
+                  <TableRow key={policy.id || policy._id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Gavel sx={{ mr: 1, color: 'warning.main' }} />

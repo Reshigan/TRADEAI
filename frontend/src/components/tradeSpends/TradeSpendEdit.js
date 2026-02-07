@@ -273,12 +273,12 @@ const TradeSpendEdit = () => {
             <FormControl fullWidth required>
               <InputLabel>Customer</InputLabel>
               <Select
-                value={tradeSpend.customer?._id || tradeSpend.customer || ''}
+                value={tradeSpend.customer?.id || tradeSpend.customer?._id || tradeSpend.customer || ''}
                 onChange={(e) => handleChange('customer', e.target.value)}
                 label="Customer"
               >
                 {customers.map(customer => (
-                  <MenuItem key={customer._id} value={customer._id}>
+                  <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
                     {customer.name}
                   </MenuItem>
                 ))}
@@ -290,7 +290,7 @@ const TradeSpendEdit = () => {
             <FormControl fullWidth>
               <InputLabel>Product (Optional)</InputLabel>
               <Select
-                value={tradeSpend.product?._id || tradeSpend.product || ''}
+                value={tradeSpend.product?.id || tradeSpend.product?._id || tradeSpend.product || ''}
                 onChange={(e) => handleChange('product', e.target.value)}
                 label="Product (Optional)"
               >
@@ -298,7 +298,7 @@ const TradeSpendEdit = () => {
                   <em>None</em>
                 </MenuItem>
                 {products.map(product => (
-                  <MenuItem key={product._id} value={product._id}>
+                  <MenuItem key={product.id || product._id} value={product.id || product._id}>
                     {product.name}
                   </MenuItem>
                 ))}

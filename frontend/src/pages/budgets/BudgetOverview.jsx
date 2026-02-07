@@ -167,7 +167,7 @@ const BudgetOverview = () => {
           const utilization = budget.allocated ? ((budget.spent / budget.allocated) * 100).toFixed(1) : 0;
           
           return (
-            <Grid item xs={12} md={6} lg={4} key={budget._id}>
+            <Grid item xs={12} md={6} lg={4} key={budget.id || budget._id}>
               <Paper 
                 elevation={0} 
                 sx={{ 
@@ -178,7 +178,7 @@ const BudgetOverview = () => {
                   cursor: 'pointer',
                   '&:hover': { borderColor: 'primary.main' }
                 }}
-                onClick={() => navigate(`/budgets/${budget._id}`)}
+                onClick={() => navigate(`/budgets/${budget.id || budget._id}`)}
               >
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                   <Typography variant="h6" fontWeight={600}>
@@ -226,7 +226,7 @@ const BudgetOverview = () => {
                   fullWidth
                   variant="outlined"
                   startIcon={<EditIcon />}
-                  onClick={(e) => { e.stopPropagation(); navigate(`/budgets/${budget._id}/edit`); }}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/budgets/${budget.id || budget._id}/edit`); }}
                   sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
                 >
                   Edit Budget

@@ -107,7 +107,7 @@ export default function LearningCoursesPage() {
     try {
       setSaving(true);
       if (editingCourse) {
-        await enterpriseApi.companyAdmin.updateCourse(editingCourse._id, formData);
+        await enterpriseApi.companyAdmin.updateCourse((editingCourse.id || editingCourse._id), formData);
       } else {
         await enterpriseApi.companyAdmin.createCourse(formData);
       }
@@ -198,7 +198,7 @@ export default function LearningCoursesPage() {
               </TableHead>
               <TableBody>
                 {courses.map((course) => (
-                  <TableRow key={course._id} hover>
+                  <TableRow key={course.id || course._id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <School sx={{ mr: 1, color: 'primary.main' }} />

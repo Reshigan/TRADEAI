@@ -160,7 +160,7 @@ const DataLineageDashboard = () => {
   };
 
   const renderLineageTree = (lineage) => (
-    <Accordion key={lineage._id}>
+    <Accordion key={lineage.id || lineage._id}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
           <Chip
@@ -362,7 +362,7 @@ const DataLineageDashboard = () => {
                 <Typography variant="h6" gutterBottom>Calculation Summary</Typography>
                 <Grid container spacing={2}>
                   {calculationSummary.map((metric) => (
-                    <Grid item xs={12} sm={6} md={3} key={metric._id}>
+                    <Grid item xs={12} sm={6} md={3} key={metric.id || metric._id}>
                       <Paper sx={{ p: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="textSecondary">
                           {formatLabel(metric._id)}
@@ -443,7 +443,7 @@ const DataLineageDashboard = () => {
                     </TableRow>
                   ) : (
                     overriddenCalculations.map((calc) => (
-                      <TableRow key={calc._id}>
+                      <TableRow key={calc.id || calc._id}>
                         <TableCell>
                           <Chip label={formatLabel(calc.entityType)} size="small" variant="outlined" />
                         </TableCell>
@@ -500,7 +500,7 @@ const DataLineageDashboard = () => {
                     </TableRow>
                   ) : (
                     importBatches.map((batch) => (
-                      <TableRow key={batch._id}>
+                      <TableRow key={batch.id || batch._id}>
                         <TableCell>
                           <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
                             {batch.batchId}

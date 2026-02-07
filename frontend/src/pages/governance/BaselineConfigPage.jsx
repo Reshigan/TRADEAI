@@ -146,7 +146,7 @@ const BaselineConfigPage = () => {
 
     try {
       if (editingConfig) {
-        await dataLineageService.updateBaselineConfig(editingConfig._id, formData);
+        await dataLineageService.updateBaselineConfig((editingConfig.id || editingConfig._id), formData);
         enqueueSnackbar('Configuration updated successfully', { variant: 'success' });
       } else {
         await dataLineageService.createBaselineConfig(formData);
@@ -283,7 +283,7 @@ const BaselineConfigPage = () => {
                       </TableRow>
                     ) : (
                       configs.map((config) => (
-                        <TableRow key={config._id}>
+                        <TableRow key={config.id || config._id}>
                           <TableCell>
                             <Typography fontWeight="medium">{config.name}</Typography>
                           </TableCell>

@@ -74,12 +74,12 @@ const ProductHierarchy = () => {
 
   const handleSave = async () => {
     try {
-      if (selectedNode && selectedNode._id) {
-        await apiClient.put(`/products/${selectedNode._id}`, formData);
+      if (selectedNode && (selectedNode.id || selectedNode._id)) {
+        await apiClient.put(`/products/${selectedNode.id || (selectedNode.id || selectedNode._id)}`, formData);
       } else {
         await apiClient.post('/products', {
           ...formData,
-          parentId: selectedNode?._id || null,
+          parentId: (selectedNode?.id || selectedNode?._id) || null,
           sapMaterialId: formData.sku,
         });
       }
@@ -93,7 +93,7 @@ const ProductHierarchy = () => {
   const renderTree = (nodes) => {
     return nodes.map((node) => (
       <TreeItem
-        key={node._id}
+        key={node.id || node._id}
         nodeId={node._id}
         label={
           <Box sx={{ display: 'flex', alignItems: 'center', py: 1 }}>
@@ -178,7 +178,7 @@ const ProductHierarchy = () => {
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {selectedNode && selectedNode._id ? 'Edit Product' : 'Add Product'}
+          {selectedNode && (selectedNode.id || selectedNode._id) ? 'Edit Product' : 'Add Product'}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>

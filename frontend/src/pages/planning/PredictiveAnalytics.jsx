@@ -429,7 +429,7 @@ const PredictiveAnalytics = () => {
                 </TableRow>
               ) : (
                 sortedPredictions.map((prediction) => (
-                  <TableRow key={prediction._id} hover>
+                  <TableRow key={prediction.id || prediction._id} hover>
                     <TableCell>
                       <Typography fontWeight="medium">{prediction.category}</Typography>
                     </TableCell>

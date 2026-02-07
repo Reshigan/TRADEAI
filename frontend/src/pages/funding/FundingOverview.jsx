@@ -209,7 +209,7 @@ const FundingOverview = () => {
                     const utilization = budget.allocated > 0 ? (budget.spent / budget.allocated) * 100 : 0;
                     
                     return (
-                      <TableRow key={budget._id}>
+                      <TableRow key={budget.id || budget._id}>
                         <TableCell>{budget.code}</TableCell>
                         <TableCell>{budget.name}</TableCell>
                         <TableCell align="right">R {(budget.allocated || 0).toLocaleString()}</TableCell>
@@ -245,7 +245,7 @@ const FundingOverview = () => {
                 </TableHead>
                 <TableBody>
                   {fundingSources.wallets.map((wallet) => (
-                    <TableRow key={wallet._id}>
+                    <TableRow key={wallet.id || wallet._id}>
                       <TableCell>{wallet.userId?.name || wallet.userId}</TableCell>
                       <TableCell>
                         {new Date(wallet.period?.startDate).toLocaleDateString()} - {new Date(wallet.period?.endDate).toLocaleDateString()}
@@ -282,7 +282,7 @@ const FundingOverview = () => {
                 </TableHead>
                 <TableBody>
                   {fundingSources.terms.map((term) => (
-                    <TableRow key={term._id}>
+                    <TableRow key={term.id || term._id}>
                       <TableCell>{term.termCode}</TableCell>
                       <TableCell>{term.description}</TableCell>
                       <TableCell>{term.customer?.name || term.customer}</TableCell>

@@ -448,7 +448,7 @@ const PromotionEffectiveness = () => {
                 </TableRow>
               ) : (
                 paginatedPromotions.map((promo) => (
-                  <TableRow key={promo._id} hover sx={{ cursor: 'pointer' }} onClick={() => promo._id && navigate(`/promotions/${promo._id}`)}>
+                  <TableRow key={promo.id || promo._id} hover sx={{ cursor: 'pointer' }} onClick={() => promo._id && navigate(`/promotions/${promo.id || promo._id}`)}>
                     <TableCell>
                       <Typography fontWeight="medium">{promo.name}</Typography>
                     </TableCell>
@@ -485,7 +485,7 @@ const PromotionEffectiveness = () => {
                     </TableCell>
                     <TableCell align="right">
                       <Tooltip title="View Details">
-                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); promo._id && navigate(`/promotions/${promo._id}`); }}>
+                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); promo._id && navigate(`/promotions/${promo.id || promo._id}`); }}>
                           <OpenInNew fontSize="small" />
                         </IconButton>
                       </Tooltip>

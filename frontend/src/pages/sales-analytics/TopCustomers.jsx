@@ -162,7 +162,7 @@ const TopCustomers = () => {
                 cursor: 'pointer',
                 '&:hover': { bgcolor: 'grey.50' }
               }}
-              onClick={() => navigate(`/customers/${customer.customer?._id}`)}
+              onClick={() => navigate(`/customers/${customer.customer?.id || customer.customer?._id || customer.id || customer._id}`)}
             >
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Box display="flex" alignItems="center" gap={2}>

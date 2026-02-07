@@ -287,7 +287,7 @@ const TenantManagement = () => {
         await api.post('/tenants', formData);
         enqueueSnackbar('Tenant created successfully', { variant: 'success' });
       } else {
-        await api.put(`/tenants/${selectedTenant._id}`, formData);
+        await api.put(`/tenants/${selectedTenant.id || (selectedTenant.id || selectedTenant._id)}`, formData);
         enqueueSnackbar('Tenant updated successfully', { variant: 'success' });
       }
       
@@ -309,7 +309,7 @@ const TenantManagement = () => {
     }
     
     try {
-      await api.delete(`/tenants/${tenant._id}`);
+      await api.delete(`/tenants/${tenant.id || tenant._id}`);
       enqueueSnackbar('Tenant deactivated successfully', { variant: 'success' });
       fetchTenants();
       fetchStats();
@@ -889,7 +889,7 @@ const TenantManagement = () => {
                         : 0;
                       
                       return (
-                        <TableRow key={tenant._id} hover>
+                        <TableRow key={tenant.id || tenant._id} hover>
                           <TableCell>
                             <Box>
                               <Typography variant="body2" fontWeight="medium">

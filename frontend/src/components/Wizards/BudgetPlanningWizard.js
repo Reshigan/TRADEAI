@@ -250,7 +250,7 @@ const BudgetPlanningWizard = () => {
       const response = await apiClient.post(`/budgets`, payload);
       
       alert('✅ Budget created successfully! Navigating to budget details...');
-      navigate(`/budgets/${response.data._id}`);
+      navigate(`/budgets/${(response.data.id || response.data._id)}`);
       
     } catch (error) {
       console.error('Error creating budget:', error);

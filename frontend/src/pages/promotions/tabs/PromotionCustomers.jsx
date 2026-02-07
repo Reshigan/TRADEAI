@@ -68,13 +68,13 @@ const PromotionCustomers = ({ promotionId, promotion, onUpdate }) => {
               <TableRow><TableCell colSpan={5} align="center">No customers added yet</TableCell></TableRow>
             ) : (
               customers.map((item) => (
-                <TableRow key={item._id || item.customer?._id}>
+                <TableRow key={item.id || item._id || item.customer?.id || item.customer?._id}>
                   <TableCell>{item.customer?.name || 'N/A'}</TableCell>
                   <TableCell>{item.customer?.code || 'N/A'}</TableCell>
                   <TableCell><Chip label={item.customer?.type || 'N/A'} size="small" /></TableCell>
                   <TableCell>{item.stores?.length || 0} stores</TableCell>
                   <TableCell>
-                    <IconButton size="small" onClick={() => handleDelete(item.customer?._id || item.customer)} disabled={promotion.status !== 'draft'}>
+                    <IconButton size="small" onClick={() => handleDelete(item.customer?.id || item.customer?._id || item.customer)} disabled={promotion.status !== 'draft'}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

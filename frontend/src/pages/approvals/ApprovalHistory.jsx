@@ -334,7 +334,7 @@ const ApprovalHistory = () => {
                 </TableRow>
               ) : (
                 paginatedApprovals.map((approval) => (
-                  <TableRow key={approval._id} hover>
+                  <TableRow key={approval.id || approval._id} hover>
                     <TableCell>
                       <Chip 
                         label={approval.type} 
@@ -366,7 +366,7 @@ const ApprovalHistory = () => {
                       <Tooltip title="View Details">
                         <IconButton 
                           size="small"
-                          onClick={() => navigate(`/approvals/${approval._id}`)}
+                          onClick={() => navigate(`/approvals/${approval.id || approval._id}`)}
                         >
                           <Visibility />
                         </IconButton>

@@ -241,7 +241,7 @@ const ActivityList = () => {
       ) : (
         <Grid container spacing={3}>
           {activities.map(activity => (
-            <Grid item xs={12} sm={6} lg={4} key={activity._id}>
+            <Grid item xs={12} sm={6} lg={4} key={activity.id || activity._id}>
               <Paper
                 elevation={0}
                 sx={{
@@ -259,7 +259,7 @@ const ActivityList = () => {
                     borderColor: 'primary.main'
                   }
                 }}
-                onClick={() => navigate(`/activities/${activity._id}`)}
+                onClick={() => navigate(`/activities/${activity.id || activity._id}`)}
               >
                 <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                   <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1, mr: 1 }}>

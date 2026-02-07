@@ -195,7 +195,7 @@ const ForecastingDashboard = () => {
               >
                 <MenuItem value="">All Products</MenuItem>
                 {products.map(product => (
-                  <MenuItem key={product._id} value={product._id}>
+                  <MenuItem key={product.id || product._id} value={product.id || product._id}>
                     {product.name}
                   </MenuItem>
                 ))}
@@ -213,7 +213,7 @@ const ForecastingDashboard = () => {
               >
                 <MenuItem value="">All Customers</MenuItem>
                 {customers.map(customer => (
-                  <MenuItem key={customer._id} value={customer._id}>
+                  <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
                     {customer.name}
                   </MenuItem>
                 ))}

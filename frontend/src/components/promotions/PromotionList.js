@@ -164,7 +164,7 @@ const PromotionList = () => {
       label: 'Customer',
       format: (customerId) => {
         // Find customer by ID
-        const customer = customers.find(c => c._id === customerId);
+        const customer = customers.find(c => (c.id || c._id) === customerId);
         return customer ? customer.name : customerId;
       }
     },

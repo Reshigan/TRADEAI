@@ -457,7 +457,7 @@ const BudgetVariance = () => {
                 </TableRow>
               ) : (
                 paginatedBudgets.map((budget) => (
-                  <TableRow key={budget._id} hover sx={{ cursor: 'pointer' }} onClick={() => budget._id && navigate(`/budgets/${budget._id}`)}>
+                  <TableRow key={budget.id || budget._id} hover sx={{ cursor: 'pointer' }} onClick={() => budget._id && navigate(`/budgets/${budget.id || budget._id}`)}>
                     <TableCell>
                       <Typography fontWeight="medium">{budget.name}</Typography>
                     </TableCell>
@@ -491,7 +491,7 @@ const BudgetVariance = () => {
                     </TableCell>
                     <TableCell align="right">
                       <Tooltip title="View Details">
-                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); budget._id && navigate(`/budgets/${budget._id}`); }}>
+                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); budget._id && navigate(`/budgets/${budget.id || budget._id}`); }}>
                           <OpenInNew fontSize="small" />
                         </IconButton>
                       </Tooltip>

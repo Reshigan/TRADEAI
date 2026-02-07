@@ -178,7 +178,7 @@ const EnhancedSecurityDashboard = () => {
   const saveRole = async () => {
     try {
       if (selectedRole) {
-        await securityService.updateRole(selectedRole._id, roleForm);
+        await securityService.updateRole((selectedRole.id || selectedRole._id), roleForm);
       } else {
         await securityService.createRole(roleForm);
       }
@@ -200,7 +200,7 @@ const EnhancedSecurityDashboard = () => {
       setRoleForm({
         name: role.name,
         description: role.description,
-        permissions: role.permissions.map(p => p._id),
+        permissions: role.permissions.map(p => p.id || p._id),
         level: role.level
       });
     } else {
@@ -367,7 +367,7 @@ const EnhancedSecurityDashboard = () => {
             </TableHead>
             <TableBody>
               {securityEvents.map((event) => (
-                <TableRow key={event._id}>
+                <TableRow key={event.id || event._id}>
                   <TableCell>
                     {new Date(event.timestamp).toLocaleString()}
                   </TableCell>
@@ -442,7 +442,7 @@ const EnhancedSecurityDashboard = () => {
             </TableHead>
             <TableBody>
               {userSessions.map((session) => (
-                <TableRow key={session._id}>
+                <TableRow key={session.id || session._id}>
                   <TableCell>{session.user?.email}</TableCell>
                   <TableCell>
                     {new Date(session.loginTime).toLocaleString()}
@@ -511,7 +511,7 @@ const EnhancedSecurityDashboard = () => {
             </TableHead>
             <TableBody>
               {roles.map((role) => (
-                <TableRow key={role._id}>
+                <TableRow key={role.id || role._id}>
                   <TableCell>
                     <Typography variant="subtitle2">
                       {role.name}
@@ -657,7 +657,7 @@ const EnhancedSecurityDashboard = () => {
                 renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map((value) => {
-                      const permission = permissions.find(p => p._id === value);
+                      const permission = permissions.find(p => (p.id || p._id) === value);
                       return (
                         <Chip key={value} label={permission?.name} size="small" />
                       );
@@ -666,7 +666,7 @@ const EnhancedSecurityDashboard = () => {
                 )}
               >
                 {permissions.map((permission) => (
-                  <MenuItem key={permission._id} value={permission._id}>
+                  <MenuItem key={permission.id || permission._id} value={permission.id || permission._id}>
                     {permission.name} - {permission.description}
                   </MenuItem>
                 ))}

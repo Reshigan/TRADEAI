@@ -235,7 +235,7 @@ const ReportForm = ({ open, onClose, report, onSave }) => {
       };
 
       let savedReport;
-      if (report?._id) {
+      if (report?.id || report?._id) {
         savedReport = await reportService.updateReport(report._id, reportData);
       } else {
         savedReport = await reportService.createReport(reportData);

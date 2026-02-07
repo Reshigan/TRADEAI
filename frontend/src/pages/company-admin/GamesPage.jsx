@@ -129,7 +129,7 @@ export default function GamesPage() {
     try {
       setSaving(true);
       if (editingGame) {
-        await enterpriseApi.companyAdmin.updateGame(editingGame._id, formData);
+        await enterpriseApi.companyAdmin.updateGame((editingGame.id || editingGame._id), formData);
       } else {
         await enterpriseApi.companyAdmin.createGame(formData);
       }
@@ -205,7 +205,7 @@ export default function GamesPage() {
               </TableHead>
               <TableBody>
                 {games.map((game) => (
-                  <TableRow key={game._id} hover>
+                  <TableRow key={game.id || game._id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <SportsEsports sx={{ mr: 1, color: 'warning.main' }} />

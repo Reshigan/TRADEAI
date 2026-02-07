@@ -123,7 +123,7 @@ const PromotionDocuments = ({ promotionId, promotion, onUpdate }) => {
               </TableRow>
             ) : (
               documents.map((doc) => (
-                <TableRow key={doc._id}>
+                <TableRow key={doc.id || doc._id}>
                   <TableCell>{doc.name || doc.filename || 'Untitled'}</TableCell>
                   <TableCell>
                     <Chip 

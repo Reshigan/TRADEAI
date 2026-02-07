@@ -56,7 +56,7 @@ const PAYMENT_TERMS_LABELS = {
 export default function ReviewSubmitStep({ data, customers, products }) {
   const [submitting] = useState(false);
 
-  const customer = customers?.find(c => c._id === data.customerId);
+  const customer = customers?.find(c => (c.id || c._id) === data.customerId);
   const amount = data.amount || {};
   const requiresApproval = amount.net >= 1000;
 
@@ -219,7 +219,7 @@ export default function ReviewSubmitStep({ data, customers, products }) {
               </TableHead>
               <TableBody>
                 {data.items.map((item, index) => {
-                  const product = products?.find(p => p._id === item.productId);
+                  const product = products?.find(p => (p.id || p._id) === item.productId);
                   return (
                     <TableRow key={index}>
                       <TableCell>

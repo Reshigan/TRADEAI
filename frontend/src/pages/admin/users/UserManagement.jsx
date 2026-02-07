@@ -78,7 +78,7 @@ const UserManagement = () => {
   const handleSaveUser = async () => {
     try {
       if (editingUser) {
-        await api.put(`/admin/users/${editingUser._id}`, formData);
+        await api.put(`/admin/users/${editingUser.id || (editingUser.id || editingUser._id)}`, formData);
       } else {
         await api.post('/admin/users', formData);
       }
@@ -138,7 +138,7 @@ const UserManagement = () => {
           </TableHead>
           <TableBody>
             {users.map((user) => (
-              <TableRow key={user._id}>
+              <TableRow key={user.id || user._id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>

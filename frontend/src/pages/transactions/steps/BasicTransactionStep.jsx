@@ -90,8 +90,8 @@ export default function BasicTransactionStep({ data, errors, onChange, customers
             <Autocomplete
               options={customers || []}
               getOptionLabel={(option) => `${option.name} (${option.code || 'N/A'})`}
-              value={customers?.find(c => c._id === data.customerId) || null}
-              onChange={(e, newValue) => handleChange('customerId', newValue?._id || '')}
+              value={customers?.find(c => (c.id || c._id) === data.customerId) || null}
+              onChange={(e, newValue) => handleChange('customerId', (newValue?.id || newValue?._id) || '')}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -118,8 +118,8 @@ export default function BasicTransactionStep({ data, errors, onChange, customers
             <Autocomplete
               options={vendors || []}
               getOptionLabel={(option) => `${option.name} (${option.code || 'N/A'})`}
-              value={vendors?.find(v => v._id === data.vendorId) || null}
-              onChange={(e, newValue) => handleChange('vendorId', newValue?._id || '')}
+              value={vendors?.find(v => (v.id || v._id) === data.vendorId) || null}
+              onChange={(e, newValue) => handleChange('vendorId', (newValue?.id || newValue?._id) || '')}
               renderInput={(params) => (
                 <TextField
                   {...params}

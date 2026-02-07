@@ -147,7 +147,7 @@ const CustomerList = () => {
       ) : (
         <Grid container spacing={3}>
           {customers.map(customer => (
-            <Grid item xs={12} sm={6} md={4} key={customer._id}>
+            <Grid item xs={12} sm={6} md={4} key={customer.id || customer._id}>
               <Paper
                 elevation={0}
                 sx={{
@@ -165,7 +165,7 @@ const CustomerList = () => {
                     borderColor: 'primary.main'
                   }
                 }}
-                onClick={() => navigate(`/customers/${customer._id}`)}
+                onClick={() => navigate(`/customers/${customer.id || customer._id}`)}
               >
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <Box 
