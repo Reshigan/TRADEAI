@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid } from '@mui/material';
+import { formatLabel } from '../../../utils/formatters';
 
 const CampaignOverview = ({ campaign }) => {
   return (
@@ -13,7 +14,7 @@ const CampaignOverview = ({ campaign }) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Type</Typography>
-            <Typography variant="body1">{campaign.type || 'N/A'}</Typography>
+            <Typography variant="body1">{campaign.campaignType ? formatLabel(campaign.campaignType) : 'N/A'}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Start Date</Typography>
@@ -35,21 +36,21 @@ const CampaignOverview = ({ campaign }) => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={3}>
             <Typography variant="body2" color="text.secondary">Total Budget</Typography>
-            <Typography variant="h6">R {campaign.budget?.total?.toLocaleString() || '0'}</Typography>
+            <Typography variant="h6">R {(campaign.budgetAmount || campaign.budget?.total || 0).toLocaleString()}</Typography>
           </Grid>
           <Grid item xs={12} md={3}>
             <Typography variant="body2" color="text.secondary">Spent</Typography>
-            <Typography variant="h6">R {campaign.budget?.spent?.toLocaleString() || '0'}</Typography>
+            <Typography variant="h6">R {(campaign.spentAmount || campaign.budget?.spent || 0).toLocaleString()}</Typography>
           </Grid>
           <Grid item xs={12} md={3}>
             <Typography variant="body2" color="text.secondary">Remaining</Typography>
             <Typography variant="h6">
-              R {((campaign.budget?.total || 0) - (campaign.budget?.spent || 0)).toLocaleString()}
+              R {((campaign.budgetAmount || campaign.budget?.total || 0) - (campaign.spentAmount || campaign.budget?.spent || 0)).toLocaleString()}
             </Typography>
           </Grid>
           <Grid item xs={12} md={3}>
             <Typography variant="body2" color="text.secondary">Promotions</Typography>
-            <Typography variant="h6">{campaign.promotions?.length || 0}</Typography>
+            <Typography variant="h6">{campaign.promotionIds?.length || campaign.promotions?.length || 0}</Typography>
           </Grid>
         </Grid>
       </Paper>

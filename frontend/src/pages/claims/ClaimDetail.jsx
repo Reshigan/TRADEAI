@@ -239,7 +239,7 @@ const ClaimDetail = () => {
                     Customer
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {claim.customer?.name || 'N/A'}
+                    {claim.customerName || claim.customer?.name || 'N/A'}
                   </Typography>
                 </Grid>
 
@@ -248,7 +248,7 @@ const ClaimDetail = () => {
                     Total Amount
                   </Typography>
                   <Typography variant="body1" fontWeight="medium" color="primary">
-                    {formatCurrency(claim.totalAmount)}
+                    {formatCurrency(claim.claimedAmount || claim.totalAmount)}
                   </Typography>
                 </Grid>
 
@@ -313,7 +313,7 @@ const ClaimDetail = () => {
                         </TableCell>
                         <TableCell align="right">
                           <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                            {formatCurrency(claim.totalAmount)}
+                            {formatCurrency(claim.claimedAmount || claim.totalAmount)}
                           </Typography>
                         </TableCell>
                       </TableRow>

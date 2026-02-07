@@ -98,7 +98,7 @@ const RebateDetail = () => {
       'billback': 'Bill-Back',
       'display': 'Display/Feature'
     };
-    return labels[type] || type;
+    return labels[type] || formatLabel(type);
   };
 
   const formatCurrency = (amount) => {

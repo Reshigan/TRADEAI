@@ -27,24 +27,24 @@ const BudgetOverview = ({ budget }) => {
       </Paper>
 
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>Annual Totals</Typography>
+        <Typography variant="h6" gutterBottom>Budget Summary</Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} md={3}>
-            <Typography variant="body2" color="text.secondary">Total Sales</Typography>
-            <Typography variant="h6">R {budget.annualTotals?.sales?.value?.toLocaleString() || '0'}</Typography>
+            <Typography variant="body2" color="text.secondary">Total Amount</Typography>
+            <Typography variant="h6">R {(budget.amount || budget.annualTotals?.sales?.value || 0).toLocaleString()}</Typography>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Typography variant="body2" color="text.secondary">Total Trade Spend</Typography>
-            <Typography variant="h6">R {budget.annualTotals?.tradeSpend?.total?.toLocaleString() || '0'}</Typography>
+            <Typography variant="body2" color="text.secondary">Utilized</Typography>
+            <Typography variant="h6">R {(budget.utilized || budget.annualTotals?.tradeSpend?.total || 0).toLocaleString()}</Typography>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Typography variant="body2" color="text.secondary">Gross Margin</Typography>
-            <Typography variant="h6">R {budget.annualTotals?.profitability?.grossMargin?.toLocaleString() || '0'}</Typography>
+            <Typography variant="body2" color="text.secondary">Remaining</Typography>
+            <Typography variant="h6">R {((budget.amount || 0) - (budget.utilized || 0)).toLocaleString()}</Typography>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Typography variant="body2" color="text.secondary">ROI</Typography>
-            <Typography variant="h6" color={budget.annualTotals?.profitability?.roi > 0 ? 'success.main' : 'error.main'}>
-              {budget.annualTotals?.profitability?.roi?.toFixed(1) || '0'}%
+            <Typography variant="body2" color="text.secondary">Utilization</Typography>
+            <Typography variant="h6" color={(budget.utilized || 0) / (budget.amount || 1) > 0.8 ? 'error.main' : 'success.main'}>
+              {budget.amount ? ((budget.utilized || 0) / budget.amount * 100).toFixed(1) : '0'}%
             </Typography>
           </Grid>
         </Grid>
