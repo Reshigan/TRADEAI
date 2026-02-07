@@ -222,8 +222,8 @@ const TradingTermsList = () => {
                     <TableCell>Status</TableCell>
                     <TableCell>Valid From</TableCell>
                     <TableCell>Valid To</TableCell>
-                    <TableCell align="right">Est. Annual Value</TableCell>
-                    <TableCell align="right">ROI</TableCell>
+                    <TableCell align="right">Rate</TableCell>
+                    <TableCell align="right">Threshold</TableCell>
                     <TableCell>Priority</TableCell>
                     <TableCell align="center">Actions</TableCell>
                   </TableRow>
@@ -245,29 +245,27 @@ const TradingTermsList = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Chip 
-                          label={formatLabel(term.approvalWorkflow?.status || 'draft')} 
-                          color={getStatusColor(term.approvalWorkflow?.status)}
-                          size="small"
-                        />
+                          <Chip 
+                            label={formatLabel(term.status || 'draft')} 
+                            color={getStatusColor(term.status)}
+                            size="small"
+                          />
                       </TableCell>
                       <TableCell>
-                        {term.validityPeriod?.startDate 
-                          ? new Date(term.validityPeriod.startDate).toLocaleDateString()
-                          : 'N/A'}
+                          {term.startDate 
+                            ? new Date(term.startDate).toLocaleDateString()
+                            : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        {term.validityPeriod?.endDate 
-                          ? new Date(term.validityPeriod.endDate).toLocaleDateString()
-                          : 'N/A'}
+                          {term.endDate 
+                            ? new Date(term.endDate).toLocaleDateString()
+                            : 'N/A'}
                       </TableCell>
                       <TableCell align="right">
-                        R{(term.financialImpact?.estimatedAnnualValue || 0).toLocaleString()}
+                        R{(term.rate || 0).toLocaleString()}{term.rateType === 'percentage' ? '%' : ''}
                       </TableCell>
                       <TableCell align="right">
-                        {term.financialImpact?.expectedROI 
-                          ? `${term.financialImpact.expectedROI.toFixed(1)}%`
-                          : 'N/A'}
+                        {term.threshold ? `${term.threshold.toLocaleString()}` : 'N/A'}
                       </TableCell>
                       <TableCell>
                         <Chip 
