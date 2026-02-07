@@ -16,6 +16,7 @@ import {
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import customerService from '../../services/api/customerService';
 import CustomerForm from './CustomerForm';
+import { formatLabel } from '../../utils/formatters';
 
 const CustomerListEnhanced = () => {
   const navigate = useNavigate();
@@ -190,7 +191,7 @@ const CustomerListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Chip 
-          label={value?.toUpperCase() || 'N/A'} 
+          label={formatLabel(value) || 'N/A'} 
           size="small"
           color={value === 'retail' ? 'primary' : 'secondary'}
           variant="outlined"
@@ -203,7 +204,7 @@ const CustomerListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Chip
-          label={value || 'active'}
+          label={formatLabel(value || 'active')}
           size="small"
           color={value === 'active' ? 'success' : 'default'}
         />
@@ -215,7 +216,7 @@ const CustomerListEnhanced = () => {
       sortable: true,
       render: (value) => (
         <Typography variant="body2" fontWeight="600">
-          ${(value || 0).toLocaleString()}
+          R{(value || 0).toLocaleString()}
         </Typography>
       )
     },

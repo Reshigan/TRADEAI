@@ -40,6 +40,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import dataLineageService from '../../services/dataLineage/dataLineageService';
+import { formatLabel } from '../../utils/formatters';
 
 const DataLineageDashboard = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -163,7 +164,7 @@ const DataLineageDashboard = () => {
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
           <Chip
-            label={lineage.metricType?.replace(/_/g, ' ').toUpperCase()}
+            label={formatLabel(lineage.metricType)}
             size="small"
             color="primary"
             variant="outlined"
@@ -256,7 +257,7 @@ const DataLineageDashboard = () => {
                     {lineage.auditTrail.map((entry, idx) => (
                       <TableRow key={idx}>
                         <TableCell>
-                          <Chip label={entry.action} size="small" />
+                          <Chip label={formatLabel(entry.action)} size="small" />
                         </TableCell>
                         <TableCell>{formatNumber(entry.previousValue)}</TableCell>
                         <TableCell>{formatNumber(entry.newValue)}</TableCell>
@@ -364,7 +365,7 @@ const DataLineageDashboard = () => {
                     <Grid item xs={12} sm={6} md={3} key={metric._id}>
                       <Paper sx={{ p: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="textSecondary">
-                          {metric._id?.replace(/_/g, ' ').toUpperCase()}
+                          {formatLabel(metric._id)}
                         </Typography>
                         <Typography variant="h5">
                           {formatNumber(metric.currentValue)}
@@ -444,9 +445,9 @@ const DataLineageDashboard = () => {
                     overriddenCalculations.map((calc) => (
                       <TableRow key={calc._id}>
                         <TableCell>
-                          <Chip label={calc.entityType} size="small" variant="outlined" />
+                          <Chip label={formatLabel(calc.entityType)} size="small" variant="outlined" />
                         </TableCell>
-                        <TableCell>{calc.metricType?.replace(/_/g, ' ')}</TableCell>
+                        <TableCell>{formatLabel(calc.metricType)}</TableCell>
                         <TableCell>{formatNumber(calc.manualOverride?.originalValue)}</TableCell>
                         <TableCell>{formatNumber(calc.calculatedValue)}</TableCell>
                         <TableCell>{calc.manualOverride?.reason}</TableCell>
@@ -506,12 +507,12 @@ const DataLineageDashboard = () => {
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Chip label={batch.entityType} size="small" variant="outlined" />
+                          <Chip label={formatLabel(batch.entityType)} size="small" variant="outlined" />
                         </TableCell>
                         <TableCell>{batch.source}</TableCell>
                         <TableCell>
                           <Chip
-                            label={batch.status}
+                            label={formatLabel(batch.status)}
                             size="small"
                             color={batch.status === 'completed' ? 'success' : batch.status === 'failed' ? 'error' : 'warning'}
                           />

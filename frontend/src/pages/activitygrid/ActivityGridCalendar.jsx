@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import activityGridService from '../../services/activitygrid/activityGridService';
+import { formatLabel } from '../../utils/formatters';
 
 const ActivityGridCalendar = () => {
   const navigate = useNavigate();
@@ -260,10 +261,10 @@ const ActivityGridCalendar = () => {
                   </Typography>
                 </Box>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                  ${(summary.spend?.total?.planned / 1000 || 0).toFixed(1)}K
+                  R{(summary.spend?.total?.planned / 1000 || 0).toFixed(1)}K
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Actual: ${(summary.spend?.total?.actual / 1000 || 0).toFixed(1)}K
+                  Actual: R{(summary.spend?.total?.actual / 1000 || 0).toFixed(1)}K
                 </Typography>
               </CardContent>
             </Card>
@@ -376,12 +377,12 @@ const ActivityGridCalendar = () => {
                     >
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                         <Chip 
-                          label={activity.activityType} 
+                          label={formatLabel(activity.activityType)} 
                           color={getActivityTypeColor(activity.activityType)}
                           size="small"
                         />
                         <Chip 
-                          label={activity.status} 
+                          label={formatLabel(activity.status)} 
                           size="small"
                           variant="outlined"
                         />
@@ -398,7 +399,7 @@ const ActivityGridCalendar = () => {
                       </Typography>
                       {activity.spend?.total?.planned > 0 && (
                         <Typography variant="body2" color="success.main">
-                          Planned: ${activity.spend.total.planned.toLocaleString()}
+                          Planned: R{activity.spend.total.planned.toLocaleString()}
                         </Typography>
                       )}
                       {activity.indicators?.conflicts && activity.indicators.conflicts.length > 0 && (
@@ -406,7 +407,7 @@ const ActivityGridCalendar = () => {
                           {activity.indicators.conflicts.map((conflict, idx) => (
                             <Chip 
                               key={idx}
-                              label={conflict.type}
+                              label={formatLabel(conflict.type)}
                               color={getConflictSeverityColor(conflict.severity)}
                               size="small"
                               icon={<Warning />}
@@ -443,7 +444,7 @@ const ActivityGridCalendar = () => {
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Chip 
-                        label={conflict.conflictType} 
+                        label={formatLabel(conflict.conflictType)} 
                         color={getConflictSeverityColor(conflict.severity)}
                         size="small"
                       />

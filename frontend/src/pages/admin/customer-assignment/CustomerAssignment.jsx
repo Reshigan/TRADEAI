@@ -51,6 +51,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import api from '../../../services/api';
+import { formatLabel } from '../../../utils/formatters';
 
 const CustomerAssignment = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -442,8 +443,8 @@ const CustomerAssignment = () => {
                     secondary={
                       <>
                         {customer.code && <span>Code: {customer.code}</span>}
-                        {customer.customerType && <span> | Type: {customer.customerType}</span>}
-                        {customer.tier && <span> | Tier: {customer.tier}</span>}
+                        {customer.customerType && <span> | Type: {formatLabel(customer.customerType)}</span>}
+                        {customer.tier && <span> | Tier: {formatLabel(customer.tier)}</span>}
                       </>
                     }
                   />
