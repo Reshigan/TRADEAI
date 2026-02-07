@@ -42,8 +42,7 @@ const PromotionList = () => {
       if (filters.type !== 'all') params.append('promotionType', filters.type);
       if (filters.search) params.append('search', filters.search);
 
-      const response = await api.get(`/promotions?${params}`
-      });
+      const response = await api.get(`/promotions?${params}`);
 
       if (response.data.success) {
         setPromotions(response.data.data);

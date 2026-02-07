@@ -32,8 +32,7 @@ const CustomerList = () => {
   const fetchCustomers = async () => {
     try {
       const params = search ? `?search=${search}` : '';
-      const response = await api.get(`/customers${params}`
-      });
+      const response = await api.get(`/customers${params}`);
 
       if (response.data.success) {
         setCustomers(response.data.data);

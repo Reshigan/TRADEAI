@@ -32,8 +32,7 @@ const RevenueByPeriod = () => {
       if (dateRange.startDate) params.append('startDate', dateRange.startDate);
       if (dateRange.endDate) params.append('endDate', dateRange.endDate);
 
-      const response = await api.get(`/sales-transactions/revenue-by-period?${params}`
-      });
+      const response = await api.get(`/sales-transactions/revenue-by-period?${params}`);
 
       if (response.data.success) {
         setData(response.data.data);

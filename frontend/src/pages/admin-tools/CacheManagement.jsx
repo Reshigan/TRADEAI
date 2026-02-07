@@ -27,8 +27,7 @@ const CacheManagement = () => {
   const fetchCacheStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await api.get('/admin/cache/stats'
-      }).catch(() => ({ data: { data: { hits: 0, misses: 0, keys: 0, memory: 0 } } }));
+      const response = await api.get('/admin/cache/stats').catch(() => ({ data: { data: { hits: 0, misses: 0, keys: 0, memory: 0 } } }));
 
       setCacheStats(response.data.data);
     } catch (err) {

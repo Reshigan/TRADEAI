@@ -122,7 +122,7 @@ const PromotionDetail = () => {
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
           <Box>
             <Typography variant="h4" fontWeight={700} color="text.primary" mb={1}>
-              {promotion.name}
+              {promotion.promotionName || promotion.name}
             </Typography>
             <Box display="flex" gap={1}>
               <Chip 
@@ -195,7 +195,7 @@ const PromotionDetail = () => {
               Type
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {formatLabel(promotion.type)}
+              {formatLabel(promotion.promotionType || promotion.type)}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -227,7 +227,7 @@ const PromotionDetail = () => {
               Start Date
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {promotion.startDate ? new Date(promotion.startDate).toLocaleDateString() : 'N/A'}
+              {(promotion.startDate || promotion.start_date) ? new Date(promotion.startDate || promotion.start_date).toLocaleDateString() : 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -235,7 +235,7 @@ const PromotionDetail = () => {
               End Date
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {promotion.endDate ? new Date(promotion.endDate).toLocaleDateString() : 'N/A'}
+              {(promotion.endDate || promotion.end_date) ? new Date(promotion.endDate || promotion.end_date).toLocaleDateString() : 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -243,8 +243,8 @@ const PromotionDetail = () => {
               Duration
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {promotion.startDate && promotion.endDate
-                ? `${Math.ceil((new Date(promotion.endDate) - new Date(promotion.startDate)) / (1000 * 60 * 60 * 24))} days`
+              {(promotion.startDate || promotion.start_date) && (promotion.endDate || promotion.end_date)
+                ? `${Math.ceil((new Date(promotion.endDate || promotion.end_date) - new Date(promotion.startDate || promotion.start_date)) / (1000 * 60 * 60 * 24))} days`
                 : 'N/A'}
             </Typography>
           </Grid>
@@ -261,7 +261,7 @@ const PromotionDetail = () => {
               Budget
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              R {promotion.budget ? promotion.budget.toLocaleString() : '0'}
+              R {(promotion.estimatedCost || promotion.budget) ? (promotion.estimatedCost || promotion.budget).toLocaleString() : '0'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -269,7 +269,7 @@ const PromotionDetail = () => {
               Spend
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              R {promotion.actualSpend ? promotion.actualSpend.toLocaleString() : '0'}
+              R {(promotion.actualCost || promotion.actualSpend) ? (promotion.actualCost || promotion.actualSpend).toLocaleString() : '0'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -281,9 +281,9 @@ const PromotionDetail = () => {
               fontWeight={500}
               color={promotion.budget && promotion.actualSpend && promotion.actualSpend > promotion.budget ? 'error' : 'text.primary'}
             >
-              R {promotion.budget && promotion.actualSpend
-                ? (promotion.budget - promotion.actualSpend).toLocaleString()
-                : promotion.budget?.toLocaleString() || '0'}
+              R {(promotion.estimatedCost || promotion.budget) && (promotion.actualCost || promotion.actualSpend)
+                ? ((promotion.estimatedCost || promotion.budget) - (promotion.actualCost || promotion.actualSpend)).toLocaleString()
+                : (promotion.estimatedCost || promotion.budget)?.toLocaleString() || '0'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -291,7 +291,7 @@ const PromotionDetail = () => {
               ROI
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {promotion.roi ? `${promotion.roi}%` : 'N/A'}
+              {(promotion.roi || promotion.expectedRoi) ? `${promotion.roi || promotion.expectedRoi}%` : 'N/A'}
             </Typography>
           </Grid>
         </Grid>
