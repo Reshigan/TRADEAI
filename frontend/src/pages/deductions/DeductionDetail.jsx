@@ -245,7 +245,7 @@ const DeductionDetail = () => {
                     Customer
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {deduction.customer?.name || 'N/A'}
+                    {deduction.customerName || deduction.customer?.name || 'N/A'}
                   </Typography>
                 </Grid>
 

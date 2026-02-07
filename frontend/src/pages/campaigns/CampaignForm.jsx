@@ -56,11 +56,11 @@ const CampaignForm = () => {
       
       setFormData({
         name: campaign.name || '',
-        type: campaign.type || '',
+        type: campaign.campaignType || campaign.type || '',
         status: campaign.status || 'planned',
         startDate: campaign.startDate ? new Date(campaign.startDate).toISOString().split('T')[0] : '',
         endDate: campaign.endDate ? new Date(campaign.endDate).toISOString().split('T')[0] : '',
-        budget: campaign.budget || '',
+        budget: campaign.budgetAmount || campaign.budget || '',
         description: campaign.description || ''
       });
       setError(null);
@@ -94,7 +94,8 @@ const CampaignForm = () => {
       const token = localStorage.getItem('token');
       const payload = {
         ...formData,
-        budget: formData.budget ? parseFloat(formData.budget) : 0
+        campaignType: formData.type,
+        budgetAmount: formData.budget ? parseFloat(formData.budget) : 0
       };
 
       if (isEditMode) {
