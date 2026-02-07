@@ -170,7 +170,7 @@ const VendorList = () => {
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <BusinessIcon sx={{ color: 'primary.main', fontSize: 28 }} />
                   <Typography variant="h6" fontWeight={700} color="text.primary">
-                    {vendor.vendorName}
+                    {vendor.name}
                   </Typography>
                 </Box>
 
@@ -180,7 +180,7 @@ const VendorList = () => {
                       Code
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {vendor.vendorCode}
+                      {vendor.code}
                     </Typography>
                   </Box>
 
