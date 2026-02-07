@@ -35,6 +35,7 @@ import { useNavigate } from 'react-router-dom';
 import approvalService from '../../services/approval/approvalService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const ApprovalsList = () => {
   const navigate = useNavigate();
@@ -256,7 +257,7 @@ const ApprovalsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={approval.entityType.replace('_', ' ').toUpperCase()}
+                      label={formatLabel(approval.entityType)}
                       size="small"
                       variant="outlined"
                     />
@@ -278,7 +279,7 @@ const ApprovalsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={approval.status.toUpperCase()}
+                      label={formatLabel(approval.status)}
                       color={getStatusColor(approval.status)}
                       size="small"
                     />

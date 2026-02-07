@@ -27,6 +27,7 @@ import {
   CheckCircle
 } from '@mui/icons-material';
 import rebateService from '../../services/rebateService';
+import { formatLabel } from '../../utils/formatters';
 
 const RebateAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -76,9 +77,9 @@ const RebateAnalytics = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'ZAR'
     }).format(amount || 0);
   };
 
@@ -219,7 +220,7 @@ const RebateAnalytics = () => {
                     <TableRow key={rebate._id}>
                       <TableCell>{rebate.name}</TableCell>
                       <TableCell>
-                        <Chip label={rebate.type} size="small" />
+                        <Chip label={formatLabel(rebate.type)} size="small" />
                       </TableCell>
                       <TableCell align="right">
                         {formatCurrency(rebate.totalAccrued)}
@@ -242,7 +243,7 @@ const RebateAnalytics = () => {
               {analytics.statusDistribution?.map((status) => (
                 <Box key={status._id} sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography variant="body2">{status._id}</Typography>
+                    <Typography variant="body2">{formatLabel(status._id)}</Typography>
                     <Typography variant="body2" fontWeight="bold">
                       {status.count}
                     </Typography>
@@ -299,7 +300,7 @@ const RebateAnalytics = () => {
                         {formatCurrency(accrual.amount)}
                       </TableCell>
                       <TableCell>
-                        <Chip label={accrual.status} size="small" />
+                        <Chip label={formatLabel(accrual.status)} size="small" />
                       </TableCell>
                     </TableRow>
                   ))}

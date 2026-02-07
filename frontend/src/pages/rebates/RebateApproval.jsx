@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import rebateService from '../../services/rebateService';
+import { formatLabel } from '../../utils/formatters';
 
 const RebateApproval = () => {
   const [rebates, setRebates] = useState([]);
@@ -114,14 +115,14 @@ const RebateApproval = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'ZAR'
     }).format(amount || 0);
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('en-ZA', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -174,7 +175,7 @@ const RebateApproval = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Chip label={rebate.type} size="small" />
+                    <Chip label={formatLabel(rebate.type)} size="small" />
                   </TableCell>
                   <TableCell>
                     {rebate.calculation?.method === 'percentage'
@@ -194,7 +195,7 @@ const RebateApproval = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={rebate.status}
+                      label={formatLabel(rebate.status)}
                       color={getStatusColor(rebate.status)}
                       size="small"
                     />
@@ -245,7 +246,7 @@ const RebateApproval = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary">Type</Typography>
-                      <Typography variant="body1">{selectedRebate.type}</Typography>
+                      <Typography variant="body1">{formatLabel(selectedRebate.type)}</Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary">Calculation</Typography>

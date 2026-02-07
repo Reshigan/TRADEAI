@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import tradingTermsService from '../../services/tradingterms/tradingTermsService';
+import { formatLabel } from '../../utils/formatters';
 
 const TradingTermsList = () => {
   const navigate = useNavigate();
@@ -245,7 +246,7 @@ const TradingTermsList = () => {
                       </TableCell>
                       <TableCell>
                         <Chip 
-                          label={term.approvalWorkflow?.status || 'draft'} 
+                          label={formatLabel(term.approvalWorkflow?.status || 'draft')} 
                           color={getStatusColor(term.approvalWorkflow?.status)}
                           size="small"
                         />
@@ -261,7 +262,7 @@ const TradingTermsList = () => {
                           : 'N/A'}
                       </TableCell>
                       <TableCell align="right">
-                        ${(term.financialImpact?.estimatedAnnualValue || 0).toLocaleString()}
+                        R{(term.financialImpact?.estimatedAnnualValue || 0).toLocaleString()}
                       </TableCell>
                       <TableCell align="right">
                         {term.financialImpact?.expectedROI 
@@ -270,7 +271,7 @@ const TradingTermsList = () => {
                       </TableCell>
                       <TableCell>
                         <Chip 
-                          label={term.priority || 'medium'} 
+                          label={formatLabel(term.priority || 'medium')} 
                           size="small"
                           color={term.priority === 'critical' ? 'error' : term.priority === 'high' ? 'warning' : 'default'}
                         />
