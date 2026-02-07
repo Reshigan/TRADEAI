@@ -39,8 +39,7 @@ const ProductList = () => {
       if (filters.search) params.append('search', filters.search);
       if (filters.category !== 'all') params.append('category', filters.category);
 
-      const response = await api.get(`/products?${params}`
-      });
+      const response = await api.get(`/products?${params}`);
 
       if (response.data.success) {
         const normalizedProducts = response.data.data.map(product => ({

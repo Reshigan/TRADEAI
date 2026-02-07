@@ -32,8 +32,7 @@ const TopCustomers = () => {
     try {
       const params = new URLSearchParams({ limit: limit.toString(), sortBy });
 
-      const response = await api.get(`/sales-transactions/top-customers?${params}`
-      });
+      const response = await api.get(`/sales-transactions/top-customers?${params}`);
 
       if (response.data.success) {
         setCustomers(response.data.data);

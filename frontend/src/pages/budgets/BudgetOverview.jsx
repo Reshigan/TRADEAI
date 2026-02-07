@@ -16,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 import BudgetAIInsights from '../../components/ai/budgets/BudgetAIInsights';
+import { formatLabel } from '../../utils/formatters';
 
 
 const BudgetOverview = () => {
@@ -30,8 +31,7 @@ const BudgetOverview = () => {
 
   const fetchBudgets = async () => {
     try {
-      const response = await api.get('/budgets'
-      });
+      const response = await api.get('/budgets');
 
       if (response.data.success) {
         const budgetData = response.data.data;
@@ -182,9 +182,9 @@ const BudgetOverview = () => {
                     {budget.budgetName}
                   </Typography>
                   <Chip 
-                    label={budget.status}
+                    label={formatLabel(budget.status)}
                     size="small"
-                    color={budget.status === 'Active' ? 'success' : 'default'}
+                    color={budget.status === 'active' || budget.status === 'Active' ? 'success' : budget.status === 'approved' ? 'info' : 'default'}
                   />
                 </Box>
                 

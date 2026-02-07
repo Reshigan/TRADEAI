@@ -30,8 +30,7 @@ const TopProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await api.get(`/sales-transactions/top-products?limit=${limit}`
-      });
+      const response = await api.get(`/sales-transactions/top-products?limit=${limit}`);
 
       if (response.data.success) {
         setProducts(response.data.data);
