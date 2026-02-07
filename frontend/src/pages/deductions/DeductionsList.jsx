@@ -31,6 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import deductionService from '../../services/deduction/deductionService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const DeductionsList = () => {
   const navigate = useNavigate();
@@ -188,7 +189,7 @@ const DeductionsList = () => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" color="textSecondary">
-                    {stat._id?.toUpperCase() || 'UNKNOWN'}
+                    {formatLabel(stat._id)}
                   </Typography>
                   <Typography variant="h4">{stat.count}</Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -270,7 +271,7 @@ const DeductionsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={(deduction.deduction_type || deduction.deductionType || 'unknown')?.toUpperCase()}
+                      label={formatLabel(deduction.deduction_type || deduction.deductionType || 'unknown')}
                       size="small"
                       variant="outlined"
                     />
@@ -301,7 +302,7 @@ const DeductionsList = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Chip
-                        label={(deduction.status || 'unknown')?.toUpperCase()}
+                        label={formatLabel(deduction.status || 'unknown')}
                         color={getStatusColor(deduction.status)}
                         size="small"
                       />
@@ -314,7 +315,7 @@ const DeductionsList = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={(deduction.matched_amount || 0) > 0 ? 'MATCHED' : 'UNMATCHED'}
+                      label={(deduction.matched_amount || 0) > 0 ? 'Matched' : 'Unmatched'}
                       color={(deduction.matched_amount || 0) > 0 ? 'success' : 'error'}
                       size="small"
                     />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid, Chip } from '@mui/material';
+import { formatLabel } from '../../../utils/formatters';
 
 const PromotionOverview = ({ promotion }) => {
   return (
@@ -9,11 +10,11 @@ const PromotionOverview = ({ promotion }) => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Promotion Type</Typography>
-            <Typography variant="body1">{promotion.promotionType || 'N/A'}</Typography>
+            <Typography variant="body1">{formatLabel(promotion.promotionType)}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Status</Typography>
-            <Chip label={promotion.status} size="small" />
+            <Chip label={formatLabel(promotion.status)} size="small" />
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Start Date</Typography>

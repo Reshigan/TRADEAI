@@ -31,6 +31,7 @@ import {
 import deductionService from '../../services/deduction/deductionService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 import ProcessShell from '../../components/ProcessShell';
 
 const DeductionDetail = () => {
@@ -205,15 +206,15 @@ const DeductionDetail = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Chip
-            label={deduction.status.toUpperCase()}
+            label={formatLabel(deduction.status)}
             color={getStatusColor(deduction.status)}
             size="large"
           />
           {deduction.matchingStatus && (
             <Chip
-              label={deduction.matchingStatus.replace('_', ' ').toUpperCase()}
-              color={getStatusColor(deduction.matchingStatus)}
-              size="large"
+                            label={formatLabel(deduction.matchingStatus)}
+                            color={getStatusColor(deduction.matchingStatus)}
+                            size="large"
             />
           )}
         </Box>
@@ -235,7 +236,7 @@ const DeductionDetail = () => {
                     Deduction Type
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {deduction.deductionType}
+                    {formatLabel(deduction.deductionType)}
                   </Typography>
                 </Grid>
 
@@ -392,9 +393,9 @@ const DeductionDetail = () => {
                     Status
                   </Typography>
                   <Chip
-                    label={deduction.matchingStatus.replace('_', ' ').toUpperCase()}
-                    color={getStatusColor(deduction.matchingStatus)}
-                    size="small"
+                                        label={formatLabel(deduction.matchingStatus)}
+                                        color={getStatusColor(deduction.matchingStatus)}
+                                        size="small"
                     sx={{ mt: 0.5 }}
                   />
                 </Box>

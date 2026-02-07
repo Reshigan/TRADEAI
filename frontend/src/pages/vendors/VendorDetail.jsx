@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import ProcessShell from '../../components/ProcessShell';
+import { formatLabel } from '../../utils/formatters';
 
 const VendorDetail = () => {
   const { id } = useParams();
@@ -113,7 +114,7 @@ const VendorDetail = () => {
               </Typography>
               {data.status && (
                 <Chip 
-                  label={data.status} 
+                  label={formatLabel(data.status)} 
                   color={getStatusColor(data.status)}
                   size="small"
                 />

@@ -19,6 +19,7 @@ import axios from 'axios';
 import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 
 const PromotionDetail = () => {
   const { id } = useParams();
@@ -129,7 +130,7 @@ const PromotionDetail = () => {
             </Typography>
             <Box display="flex" gap={1}>
               <Chip 
-                label={promotion.status} 
+                label={formatLabel(promotion.status)} 
                 color={getStatusColor(promotion.status)}
                 size="small"
               />
@@ -198,7 +199,7 @@ const PromotionDetail = () => {
               Type
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {promotion.type || 'N/A'}
+              {formatLabel(promotion.type)}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -206,7 +207,7 @@ const PromotionDetail = () => {
               Status
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {promotion.status}
+              {formatLabel(promotion.status)}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>

@@ -29,11 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import claimService from '../../services/claim/claimService';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
-
-const formatLabel = (str) => {
-  if (!str) return 'Unknown';
-  return str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-};
+import { formatLabel } from '../../utils/formatters';
 
 const ClaimsList = () => {
   const navigate = useNavigate();

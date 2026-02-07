@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import tradeSpendService from '../../services/tradespend/tradeSpendService';
+import { formatLabel } from '../../utils/formatters';
 
 const TradeSpendList = () => {
   const navigate = useNavigate();
@@ -310,7 +311,7 @@ const TradeSpendList = () => {
                       </TableCell>
                       <TableCell>
                         <Chip 
-                          label={spend.status} 
+                          label={formatLabel(spend.status)} 
                           color={getStatusColor(spend.status)}
                           size="small"
                         />

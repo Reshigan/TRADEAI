@@ -29,6 +29,7 @@ import {
 import api from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 import ProcessShell from '../../components/ProcessShell';
 
 const RebateDetail = () => {
@@ -175,7 +176,7 @@ const RebateDetail = () => {
               variant="outlined"
             />
             <Chip 
-              label={rebate.status} 
+              label={formatLabel(rebate.status)} 
               color={getStatusColor(rebate.status)}
               size="small"
             />
@@ -238,7 +239,7 @@ const RebateDetail = () => {
                     Status
                   </Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {rebate.status}
+                    {formatLabel(rebate.status)}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
