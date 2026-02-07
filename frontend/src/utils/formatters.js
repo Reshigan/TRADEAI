@@ -174,8 +174,8 @@ export const formatDate = (date, format = 'medium') => {
 export const formatLabel = (str) => {
   if (!str) return 'N/A';
   return str
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/_/g, ' ')
-    .toLowerCase()
     .replace(/\b\w/g, c => c.toUpperCase());
 };
 

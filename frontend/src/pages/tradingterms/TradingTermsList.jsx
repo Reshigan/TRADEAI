@@ -262,7 +262,7 @@ const TradingTermsList = () => {
                             : 'N/A'}
                       </TableCell>
                       <TableCell align="right">
-                        R{(term.rate || 0).toLocaleString()}{term.rateType === 'percentage' ? '%' : ''}
+                        {term.rateType === 'percentage' ? `${term.rate || 0}%` : `R${(term.rate || 0).toLocaleString()}`}
                       </TableCell>
                       <TableCell align="right">
                         {term.threshold ? `${term.threshold.toLocaleString()}` : 'N/A'}
