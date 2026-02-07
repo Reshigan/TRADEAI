@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 // const Customer = require('../models/Customer');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const mlService = require('../services/mlService');
+const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 const logger = require('../utils/logger');
 
 // Create new promotion
@@ -36,6 +37,34 @@ exports.createPromotion = asyncHandler(async (req, res, _next) => {
     }
   }
 
+  // Load tenant business rules
+  const rules = await BusinessRulesConfig.getOrCreate(tenantId);
+
+  // Enforce duration limits
+  const start = new Date(promotionData.period.startDate);
+  const end = new Date(promotionData.period.endDate);
+  const durationDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+  if (rules?.promotions?.duration?.minDays && durationDays < rules.promotions.duration.minDays) {
+    throw new AppError(`Promotion duration (${durationDays} days) below minimum of ${rules.promotions.duration.minDays}`, 400);
+  }
+  if (rules?.promotions?.duration?.maxDays && durationDays > rules.promotions.duration.maxDays) {
+    throw new AppError(`Promotion duration (${durationDays} days) exceeds maximum of ${rules.promotions.duration.maxDays}`, 400);
+  }
+
+  // Enforce discount caps
+  const { discountType, discountValue } = promotionData.mechanics || {};
+  const caps = rules?.promotions?.discountCaps || {};
+  if (discountType === 'percentage' && typeof discountValue === 'number') {
+    if (typeof caps.maxPercent === 'number' && discountValue > caps.maxPercent) {
+      throw new AppError(`Discount ${discountValue}% exceeds cap of ${caps.maxPercent}%`, 400);
+    }
+  }
+  if (discountType === 'fixed_amount' && typeof discountValue === 'number') {
+    if (typeof caps.maxAbsolute === 'number' && caps.maxAbsolute > 0 && discountValue > caps.maxAbsolute) {
+      throw new AppError(`Discount amount exceeds cap of ${caps.maxAbsolute}`, 400);
+    }
+  }
+
   // Check for overlapping promotions
   const overlapping = await Promotion.findOverlapping(
     promotionData.scope.customers[0]?.customer,
@@ -45,6 +74,18 @@ exports.createPromotion = asyncHandler(async (req, res, _next) => {
   );
 
   if (overlapping.length > 0) {
+    const stack = rules?.promotions?.stacking || {};
+    // Enforce stacking/overlap rules
+    if (stack.overlapPolicy === 'disallow' || stack.allowStacking === false) {
+      throw new AppError('Overlapping promotions are not allowed by policy', 400);
+    }
+    if (typeof stack.maxStackedPromotions === 'number' && stack.maxStackedPromotions > 0) {
+      const totalIfCreated = overlapping.length + 1;
+      if (totalIfCreated > stack.maxStackedPromotions) {
+        throw new AppError(`Stacking limit (${stack.maxStackedPromotions}) would be exceeded`, 400);
+      }
+    }
+
     promotionData.conflicts = overlapping.map((p) => ({
       promotion: p._id,
       type: 'overlap',
