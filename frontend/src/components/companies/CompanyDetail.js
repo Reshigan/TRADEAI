@@ -49,8 +49,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-
-// Using real API calls with seeded data
+import api from '../../services/api';
 
 // Currency display mapping
 const currencyDisplay = {
@@ -106,32 +105,15 @@ const CompanyDetail = () => {
   const fetchCompanyData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
+      const [companyRes, budgetsRes, tradeSpendsRes] = await Promise.all([
+        api.get(`/companies/${id}`),
+        api.get(`/budgets?companyId=${id}`),
+        api.get(`/trade-spends?companyId=${id}`)
+      ]);
 
-      // Fetch company details
-      const companyResponse = await fetch(`/api/companies/${id}`);
-      if (companyResponse.ok) {
-        const companyData = await companyResponse.json();
-        setCompany(companyData);
-      }
-
-      // Fetch budgets for this company
-      const budgetsResponse = await fetch(`/api/budgets?companyId=${id}`);
-      if (budgetsResponse.ok) {
-        const budgetsData = await budgetsResponse.json();
-        setBudgets(budgetsData);
-      }
-
-      // Fetch trade spends for this company
-      const tradeSpendsResponse = await fetch(`/api/trade-spends?companyId=${id}`);
-      if (tradeSpendsResponse.ok) {
-        const tradeSpendsData = await tradeSpendsResponse.json();
-        setTradeSpends(tradeSpendsData);
-      }
+      setCompany(companyRes.data?.data || companyRes.data);
+      setBudgets(budgetsRes.data?.data || budgetsRes.data || []);
+      setTradeSpends(tradeSpendsRes.data?.data || tradeSpendsRes.data || []);
 
       setLoading(false);
     } catch (err) {

@@ -22,6 +22,8 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import { formatLabel } from '../../utils/formatters';
+import api from '../../services/api';
 
 const TradingTermsListNew = () => {
   const navigate = useNavigate();
@@ -40,33 +42,17 @@ const TradingTermsListNew = () => {
       setLoading(true);
       setError('');
       
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/trading-terms', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Trading terms API response:', data);
-        
-        // Safely extract the trading terms array
-        let tradingTermsArray = [];
-        if (data && data.data && Array.isArray(data.data.tradingTerms)) {
-          tradingTermsArray = data.data.tradingTerms;
-        } else if (data && Array.isArray(data.data)) {
-          tradingTermsArray = data.data;
-        } else if (Array.isArray(data)) {
-          tradingTermsArray = data;
-        }
-        
-        console.log('Extracted trading terms array:', tradingTermsArray, 'length:', tradingTermsArray.length);
-        setTradingTerms(tradingTermsArray);
-      } else {
-        setError('Failed to fetch trading terms');
+      const response = await api.get('/trading-terms');
+      const data = response.data;
+      let tradingTermsArray = [];
+      if (data?.data?.tradingTerms && Array.isArray(data.data.tradingTerms)) {
+        tradingTermsArray = data.data.tradingTerms;
+      } else if (Array.isArray(data?.data)) {
+        tradingTermsArray = data.data;
+      } else if (Array.isArray(data)) {
+        tradingTermsArray = data;
       }
+      setTradingTerms(tradingTermsArray);
     } catch (error) {
       console.error('Error fetching trading terms:', error);
       setError('Failed to load trading terms');
@@ -144,12 +130,12 @@ const TradingTermsListNew = () => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {term.termType || 'N/A'}
+                        {formatLabel(term.termType) || 'N/A'}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {term.approvalWorkflow?.status || 'N/A'}
+                        {formatLabel(term.approvalWorkflow?.status) || 'N/A'}
                       </Typography>
                     </TableCell>
                     <TableCell>

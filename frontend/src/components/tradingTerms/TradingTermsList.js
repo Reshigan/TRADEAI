@@ -28,6 +28,7 @@ import {
 
 import { PageHeader } from '../common';
 import { formatLabel } from '../../utils/formatters';
+import api from '../../services/api';
 
 const TradingTermsList = () => {
   const navigate = useNavigate();
@@ -44,27 +45,13 @@ const TradingTermsList = () => {
 
   const fetchTradingTerms = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/trading-terms', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Trading terms API response:', data);
-        const tradingTermsArray = data.data?.tradingTerms || data.data || [];
-        console.log('Trading terms array:', tradingTermsArray, 'isArray:', Array.isArray(tradingTermsArray));
-        if (Array.isArray(tradingTermsArray)) {
-          setTradingTerms(tradingTermsArray);
-        } else {
-          console.error('Trading terms is not an array:', tradingTermsArray);
-          setTradingTerms([]);
-        }
+      const response = await api.get('/trading-terms');
+      const data = response.data;
+      const tradingTermsArray = data?.data?.tradingTerms || data?.data || data || [];
+      if (Array.isArray(tradingTermsArray)) {
+        setTradingTerms(tradingTermsArray);
       } else {
-        setError('Failed to fetch trading terms');
+        setTradingTerms([]);
       }
     } catch (error) {
       console.error('Error fetching trading terms:', error);
