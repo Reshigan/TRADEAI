@@ -14,7 +14,7 @@ import {
   Chip,
   IconButton
 } from '@mui/material';
-import {Add, Edit, Delete} from '@mui/icons-material';
+import {Add, Edit, Delete, Visibility} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
@@ -56,6 +56,7 @@ const RebatesList = () => {
     const colors = {
       draft: 'default',
       active: 'success',
+      calculating: 'info',
       inactive: 'warning',
       expired: 'error'
     };
@@ -139,6 +140,9 @@ const RebatesList = () => {
                 <TableCell>R {(rebate.settledAmount || rebate.totalPaid || 0).toLocaleString()}</TableCell>
                 <TableCell align="right">
                   <IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}`)}>
+                    <Visibility />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}/edit`)}>
                     <Edit />
                   </IconButton>
                   <IconButton size="small" color="error" onClick={() => handleDelete(rebate.id || rebate._id)}>
