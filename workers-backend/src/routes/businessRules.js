@@ -136,7 +136,7 @@ function getDefaultRules() {
       approvalThresholds: [
         { maxAmount: 50000, role: 'manager' },
         { maxAmount: 200000, role: 'director' },
-        { maxAmount: Infinity, role: 'admin' }
+        { maxAmount: 999999999, role: 'admin' }
       ],
       minROIPercent: 3
     },
