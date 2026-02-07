@@ -24,6 +24,11 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '/api';
 
+const formatLabel = (str) => {
+  if (!str) return 'N/A';
+  return str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+};
+
 const PromotionList = () => {
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState([]);
@@ -245,7 +250,7 @@ const PromotionList = () => {
                       Type
                     </Typography>
                     <Typography variant="caption" fontWeight={600}>
-                      {promo.promotionType}
+                      {formatLabel(promo.promotionType)}
                     </Typography>
                   </Box>
 
