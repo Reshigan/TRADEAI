@@ -45,7 +45,6 @@ const VendorForm = () => {
     const fetchVendor = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
         const response = await api.get(`/vendors/${id}`);
         const vendor = response.data.data || response.data;
         setFormData({
@@ -80,7 +79,6 @@ const VendorForm = () => {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
       const url = `/vendors${isEditMode ? `/${id}` : ''}`;
       const payload = {
         ...formData,

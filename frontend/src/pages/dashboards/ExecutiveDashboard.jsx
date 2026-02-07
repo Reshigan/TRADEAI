@@ -58,7 +58,6 @@ const ExecutiveDashboard = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await api.get('/dashboards/executive?year=${selectedYear}');
       
       if (response?.data?.success) {
@@ -74,7 +73,6 @@ const ExecutiveDashboard = () => {
   const exportDashboard = async (format) => {
     try {
       setExporting(true);
-      const token = localStorage.getItem('token');
       
       const response = await api.get(
         `/dashboards/executive/export/${format}?year=${selectedYear}`,

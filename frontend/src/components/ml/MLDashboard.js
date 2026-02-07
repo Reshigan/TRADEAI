@@ -66,8 +66,8 @@ const MLDashboard = () => {
     try {
       // Load customers and products for predictions
       const [customersRes, productsRes] = await Promise.all([
-        api.get('/api/customers'),
-        api.get('/api/products')
+        api.get('/customers'),
+        api.get('/products')
       ]);
       
       setCustomers(customersRes.data.slice(0, 50)); // Limit for demo
@@ -79,7 +79,7 @@ const MLDashboard = () => {
 
   const loadModelStatus = async () => {
     try {
-      const response = await api.get('/api/ml/models/status');
+      const response = await api.get('/ml/models/status');
       setModels(response.data.models);
       setModelMetrics(response.data.metrics);
     } catch (error) {

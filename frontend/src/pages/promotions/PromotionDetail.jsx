@@ -38,7 +38,6 @@ const PromotionDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const token = localStorage.getItem('token');
       const response = await api.get(`/promotions/${id}`);
       setPromotion(response.data.data || response.data);
       setError(null);
@@ -64,7 +63,6 @@ const PromotionDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this promotion?')) {
       try {
-        const token = localStorage.getItem('token');
         await api.delete(`/promotions/${id}`);
         analytics.trackEvent('promotion_deleted', { promotionId: id });
         toast.success('Promotion deleted successfully!');

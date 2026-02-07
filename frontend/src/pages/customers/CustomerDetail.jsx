@@ -40,7 +40,6 @@ const CustomerDetail = () => {
     try {
       setLoading(true);
       const startTime = Date.now();
-      const token = localStorage.getItem('token');
       const response = await api.get(`/customers/${id}`);
       setData(response.data.data || response.data);
       setError(null);
@@ -66,7 +65,6 @@ const CustomerDetail = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
-        const token = localStorage.getItem('token');
         await api.delete(`/customers/${id}`);
         analytics.trackEvent('customer_deleted', { customerId: id });
         toast.success('Customer deleted successfully!');

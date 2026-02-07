@@ -66,7 +66,6 @@ const CustomerForm = () => {
   const fetchCustomer = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await api.get(`/customers/${id}`);
       const customer = response.data.data || response.data;
       setFormData({
@@ -106,7 +105,6 @@ const CustomerForm = () => {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem('token');
       const url = `/customers${isEditMode ? `/${id}` : ''}`;
       
       // Transform hierarchy fields to snake_case for backend

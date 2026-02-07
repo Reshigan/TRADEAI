@@ -251,7 +251,7 @@ const AdvancedAnalytics = () => {
 
   const handleExport = async (format) => {
     try {
-      const response = await api.post('/api/analytics/export', {
+      const response = await api.post('/analytics/export', {
         format,
         dateRange,
         filters,
