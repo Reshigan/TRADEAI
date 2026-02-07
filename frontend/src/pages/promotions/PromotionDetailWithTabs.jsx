@@ -19,6 +19,7 @@ import {
 import { toast } from 'react-toastify';
 import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
+import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
 import ProcessShell from '../../components/ProcessShell';
 
@@ -149,7 +150,7 @@ const PromotionDetailWithTabs = () => {
                   {promotion.name}
                 </Typography>
                 <Chip
-                  label={promotion.status}
+                  label={formatLabel(promotion.status)}
                   color={
                     promotion.status === 'active' ? 'success' :
                     promotion.status === 'approved' ? 'primary' :
@@ -160,7 +161,7 @@ const PromotionDetailWithTabs = () => {
                 />
               </Box>
               <Typography variant="body2" color="text.secondary">
-                ID: {promotion.promotionId}
+                ID: {promotion.id || promotion._id || promotion.promotionId}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1.5 }}>

@@ -74,7 +74,91 @@ const COLUMN_MAP = {
   costPrice: 'cost_price',
   sapCustomerId: 'sap_customer_id',
   entityType: 'entity_type',
-  entityId: 'entity_id'
+  entityId: 'entity_id',
+  entityName: 'entity_name',
+  requestedBy: 'requested_by',
+  requestedAt: 'requested_at',
+  assignedTo: 'assigned_to',
+  dueDate: 'due_date',
+  slaHours: 'sla_hours',
+  escalatedTo: 'escalated_to',
+  escalatedAt: 'escalated_at',
+  rebateType: 'rebate_type',
+  tradingTermId: 'trading_term_id',
+  rateType: 'rate_type',
+  accruedAmount: 'accrued_amount',
+  settledAmount: 'settled_amount',
+  calculationBasis: 'calculation_basis',
+  settlementFrequency: 'settlement_frequency',
+  lastCalculatedAt: 'last_calculated_at',
+  claimNumber: 'claim_number',
+  claimType: 'claim_type',
+  rebateId: 'rebate_id',
+  claimedAmount: 'claimed_amount',
+  approvedAmount: 'approved_amount',
+  claimDate: 'claim_date',
+  settlementDate: 'settlement_date',
+  supportingDocuments: 'supporting_documents',
+  reviewedBy: 'reviewed_by',
+  reviewedAt: 'reviewed_at',
+  reviewNotes: 'review_notes',
+  deductionNumber: 'deduction_number',
+  deductionType: 'deduction_type',
+  invoiceNumber: 'invoice_number',
+  invoiceDate: 'invoice_date',
+  deductionAmount: 'deduction_amount',
+  matchedAmount: 'matched_amount',
+  remainingAmount: 'remaining_amount',
+  deductionDate: 'deduction_date',
+  reasonCode: 'reason_code',
+  reasonDescription: 'reason_description',
+  matchedTo: 'matched_to',
+  vendorType: 'vendor_type',
+  paymentTerms: 'payment_terms',
+  taxNumber: 'tax_number',
+  bankDetails: 'bank_details',
+  campaignType: 'campaign_type',
+  budgetAmount: 'budget_amount',
+  spentAmount: 'spent_amount',
+  targetRevenue: 'target_revenue',
+  actualRevenue: 'actual_revenue',
+  targetVolume: 'target_volume',
+  actualVolume: 'actual_volume',
+  termType: 'term_type',
+  paymentFrequency: 'payment_frequency',
+  budgetCategory: 'budget_category',
+  scopeType: 'scope_type',
+  dealType: 'deal_type',
+  productVendor: 'product_vendor',
+  productCategory: 'product_category',
+  productBrand: 'product_brand',
+  productSubBrand: 'product_sub_brand',
+  customerChannel: 'customer_channel',
+  customerSubChannel: 'customer_sub_channel',
+  customerSegmentation: 'customer_segmentation',
+  customerHierarchy1: 'customer_hierarchy_1',
+  customerHierarchy2: 'customer_hierarchy_2',
+  customerHierarchy3: 'customer_hierarchy_3',
+  customerHeadOffice: 'customer_head_office',
+  subChannel: 'sub_channel',
+  headOffice: 'head_office',
+  subBrand: 'sub_brand',
+  forecastType: 'forecast_type',
+  periodType: 'period_type',
+  startPeriod: 'start_period',
+  endPeriod: 'end_period',
+  baseYear: 'base_year',
+  forecastYear: 'forecast_year',
+  totalForecast: 'total_forecast',
+  totalActual: 'total_actual',
+  variancePercent: 'variance_percent',
+  confidenceLevel: 'confidence_level',
+  simulationType: 'simulation_type',
+  allocationType: 'allocation_type',
+  updatedBy: 'updated_by',
+  contactName: 'contact_name',
+  contactEmail: 'contact_email',
+  contactPhone: 'contact_phone'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -89,7 +173,7 @@ const JSON_FIELDS = [
   'contacts', 'address', 'allocations', 'details', 'lineItems',
   // Additional fields that don't have dedicated columns
   'email', 'phone', 'company', 'notes', 'description', 'tags', 'metadata',
-  'contactName', 'contactEmail', 'contactPhone'
+  'notes'
 ];
 
 // Known columns per table (to avoid inserting unknown columns)
@@ -506,6 +590,9 @@ export function getD1Client(c) {
   }
   return c.get('d1');
 }
+
+// Export rowToDocument for routes that use raw SQL
+export { rowToDocument };
 
 // Alias for backward compatibility during migration
 export { getD1Client as getMongoClient };

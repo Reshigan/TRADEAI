@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const deductions = new Hono();
 
@@ -54,7 +55,7 @@ deductions.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -79,7 +80,7 @@ deductions.get('/unmatched', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching unmatched deductions:', error);
@@ -103,7 +104,7 @@ deductions.get('/disputed', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching disputed deductions:', error);
@@ -225,7 +226,7 @@ deductions.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Deduction not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -269,7 +270,7 @@ deductions.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -319,7 +320,7 @@ deductions.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -366,7 +367,7 @@ deductions.post('/:id/review', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error starting review:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -417,7 +418,7 @@ deductions.post('/:id/match', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error matching deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -440,7 +441,7 @@ deductions.post('/:id/dispute', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error disputing deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -464,7 +465,7 @@ deductions.post('/:id/approve', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -490,7 +491,7 @@ deductions.post('/:id/write-off', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error writing off deduction:', error);
     return c.json({ success: false, message: error.message }, 500);

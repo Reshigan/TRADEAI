@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const activityGrid = new Hono();
 
@@ -233,7 +234,7 @@ activityGrid.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM activity_grid WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating activity:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -259,7 +260,7 @@ activityGrid.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Activity not found' }, 404);
     }
     
-    return c.json({ success: true, data: activity });
+    return c.json({ success: true, data: rowToDocument(activity) });
   } catch (error) {
     console.error('Error fetching activity:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -318,7 +319,7 @@ activityGrid.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM activity_grid WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating activity:', error);
     return c.json({ success: false, message: error.message }, 500);

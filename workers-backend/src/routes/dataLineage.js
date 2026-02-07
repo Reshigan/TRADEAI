@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const dataLineage = new Hono();
 
@@ -57,12 +58,15 @@ dataLineage.get('/', async (c) => {
     
     const result = await db.prepare(query).bind(...params).all();
     
-    const formattedRecords = (result.results || []).map(record => ({
-      ...record,
-      changedByName: record.first_name && record.last_name 
-        ? `${record.first_name} ${record.last_name}` 
-        : record.user_email || 'System'
-    }));
+    const formattedRecords = (result.results || []).map(record => {
+      const doc = rowToDocument(record);
+      return {
+        ...doc,
+        changedByName: record.first_name && record.last_name 
+          ? `${record.first_name} ${record.last_name}` 
+          : record.user_email || 'System'
+      };
+    });
     
     return c.json({
       success: true,
@@ -90,12 +94,15 @@ dataLineage.get('/entity/:entityType/:entityId', async (c) => {
       ORDER BY dl.changed_at DESC
     `).bind(companyId, entityType, entityId).all();
     
-    const formattedRecords = (result.results || []).map(record => ({
-      ...record,
-      changedByName: record.first_name && record.last_name 
-        ? `${record.first_name} ${record.last_name}` 
-        : record.user_email || 'System'
-    }));
+    const formattedRecords = (result.results || []).map(record => {
+      const doc = rowToDocument(record);
+      return {
+        ...doc,
+        changedByName: record.first_name && record.last_name 
+          ? `${record.first_name} ${record.last_name}` 
+          : record.user_email || 'System'
+      };
+    });
     
     return c.json({
       success: true,
@@ -196,7 +203,7 @@ dataLineage.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM data_lineage WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error recording lineage:', error);
     return c.json({ success: false, message: error.message }, 500);

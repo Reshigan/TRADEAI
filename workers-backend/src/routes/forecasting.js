@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const forecasting = new Hono();
 
@@ -46,7 +47,7 @@ forecasting.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -97,7 +98,7 @@ forecasting.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Forecast not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching forecast:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -140,7 +141,7 @@ forecasting.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating forecast:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -192,7 +193,7 @@ forecasting.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating forecast:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -297,7 +298,7 @@ forecasting.post('/generate', async (c) => {
     
     return c.json({
       success: true,
-      data: created,
+      data: rowToDocument(created),
       calculation: {
         baseYear,
         baseValue,
@@ -328,7 +329,7 @@ forecasting.post('/:id/activate', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating forecast:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -350,7 +351,7 @@ forecasting.post('/:id/archive', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error archiving forecast:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -395,7 +396,7 @@ forecasting.post('/:id/update-actuals', async (c) => {
     
     return c.json({
       success: true,
-      data: updated,
+      data: rowToDocument(updated),
       analysis: {
         forecast: forecast.total_forecast,
         actual: totalActual,
@@ -433,7 +434,7 @@ forecasting.get('/compare', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error comparing forecasts:', error);

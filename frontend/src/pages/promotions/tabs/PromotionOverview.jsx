@@ -19,13 +19,13 @@ const PromotionOverview = ({ promotion }) => {
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">Start Date</Typography>
             <Typography variant="body1">
-              {promotion.period?.startDate ? new Date(promotion.period.startDate).toLocaleDateString() : 'N/A'}
+              {(promotion.startDate || promotion.period?.startDate) ? new Date(promotion.startDate || promotion.period?.startDate).toLocaleDateString() : 'N/A'}
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="body2" color="text.secondary">End Date</Typography>
             <Typography variant="body1">
-              {promotion.period?.endDate ? new Date(promotion.period.endDate).toLocaleDateString() : 'N/A'}
+              {(promotion.endDate || promotion.period?.endDate) ? new Date(promotion.endDate || promotion.period?.endDate).toLocaleDateString() : 'N/A'}
             </Typography>
           </Grid>
         </Grid>

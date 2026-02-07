@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const vendors = new Hono();
 
@@ -52,7 +53,7 @@ vendors.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: countResult?.total || 0,
       limit: parseInt(limit),
       offset: parseInt(offset)
@@ -77,7 +78,7 @@ vendors.get('/options', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching vendor options:', error);
@@ -100,7 +101,7 @@ vendors.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Vendor not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching vendor:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -144,7 +145,7 @@ vendors.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM vendors WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating vendor:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -197,7 +198,7 @@ vendors.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM vendors WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating vendor:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -243,7 +244,7 @@ vendors.post('/:id/activate', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM vendors WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating vendor:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -265,7 +266,7 @@ vendors.post('/:id/deactivate', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM vendors WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error deactivating vendor:', error);
     return c.json({ success: false, message: error.message }, 500);

@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const claims = new Hono();
 
@@ -54,7 +55,7 @@ claims.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -334,7 +335,7 @@ claims.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Claim not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -376,7 +377,7 @@ claims.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -422,7 +423,7 @@ claims.put('/:id', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -468,7 +469,7 @@ claims.post('/:id/submit', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -506,7 +507,7 @@ claims.post('/:id/approve', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -533,7 +534,7 @@ claims.post('/:id/reject', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -568,7 +569,7 @@ claims.post('/:id/settle', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error settling claim:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -635,7 +636,7 @@ claims.post('/:id/match', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error matching claim:', error);
     return c.json({ success: false, message: error.message }, 500);

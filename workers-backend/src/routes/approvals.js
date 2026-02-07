@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const approvals = new Hono();
 
@@ -48,7 +49,7 @@ approvals.get('/', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || [],
+      data: (result.results || []).map(rowToDocument),
       total: result.results?.length || 0
     });
   } catch (error) {
@@ -78,7 +79,7 @@ approvals.get('/pending', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching pending approvals:', error);
@@ -103,7 +104,7 @@ approvals.get('/overdue', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching overdue approvals:', error);
@@ -126,7 +127,7 @@ approvals.get('/entity/:entityType/:entityId', async (c) => {
     
     return c.json({
       success: true,
-      data: result.results || []
+      data: (result.results || []).map(rowToDocument)
     });
   } catch (error) {
     console.error('Error fetching entity approvals:', error);
@@ -149,7 +150,7 @@ approvals.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Approval not found' }, 404);
     }
     
-    return c.json({ success: true, data: result });
+    return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching approval:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -183,7 +184,7 @@ approvals.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating approval:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -247,7 +248,7 @@ approvals.post('/:id/approve', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -309,7 +310,7 @@ approvals.post('/:id/reject', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -333,7 +334,7 @@ approvals.post('/:id/cancel', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: updated });
+    return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error cancelling:', error);
     return c.json({ success: false, message: error.message }, 500);

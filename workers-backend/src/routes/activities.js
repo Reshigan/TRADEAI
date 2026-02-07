@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
+import { rowToDocument } from '../services/d1.js';
 
 const activities = new Hono();
 
@@ -58,12 +59,15 @@ activities.get('/', async (c) => {
     const result = await db.prepare(query).bind(...params).all();
     
     // Format activities with user names
-    const formattedActivities = (result.results || []).map(activity => ({
-      ...activity,
-      userName: activity.first_name && activity.last_name 
-        ? `${activity.first_name} ${activity.last_name}` 
-        : activity.user_email || 'System'
-    }));
+    const formattedActivities = (result.results || []).map(activity => {
+      const doc = rowToDocument(activity);
+      return {
+        ...doc,
+        userName: activity.first_name && activity.last_name 
+          ? `${activity.first_name} ${activity.last_name}` 
+          : activity.user_email || 'System'
+      };
+    });
     
     return c.json({
       success: true,
@@ -92,12 +96,15 @@ activities.get('/recent', async (c) => {
       LIMIT ?
     `).bind(companyId, parseInt(limit)).all();
     
-    const formattedActivities = (result.results || []).map(activity => ({
-      ...activity,
-      userName: activity.first_name && activity.last_name 
-        ? `${activity.first_name} ${activity.last_name}` 
-        : activity.user_email || 'System'
-    }));
+    const formattedActivities = (result.results || []).map(activity => {
+      const doc = rowToDocument(activity);
+      return {
+        ...doc,
+        userName: activity.first_name && activity.last_name 
+          ? `${activity.first_name} ${activity.last_name}` 
+          : activity.user_email || 'System'
+      };
+    });
     
     return c.json({
       success: true,
@@ -124,12 +131,15 @@ activities.get('/entity/:entityType/:entityId', async (c) => {
       ORDER BY a.created_at DESC
     `).bind(companyId, entityType, entityId).all();
     
-    const formattedActivities = (result.results || []).map(activity => ({
-      ...activity,
-      userName: activity.first_name && activity.last_name 
-        ? `${activity.first_name} ${activity.last_name}` 
-        : activity.user_email || 'System'
-    }));
+    const formattedActivities = (result.results || []).map(activity => {
+      const doc = rowToDocument(activity);
+      return {
+        ...doc,
+        userName: activity.first_name && activity.last_name 
+          ? `${activity.first_name} ${activity.last_name}` 
+          : activity.user_email || 'System'
+      };
+    });
     
     return c.json({
       success: true,
@@ -158,12 +168,15 @@ activities.get('/user/:userId', async (c) => {
       LIMIT ?
     `).bind(companyId, userId, parseInt(limit)).all();
     
-    const formattedActivities = (result.results || []).map(activity => ({
-      ...activity,
-      userName: activity.first_name && activity.last_name 
-        ? `${activity.first_name} ${activity.last_name}` 
-        : activity.user_email || 'System'
-    }));
+    const formattedActivities = (result.results || []).map(activity => {
+      const doc = rowToDocument(activity);
+      return {
+        ...doc,
+        userName: activity.first_name && activity.last_name 
+          ? `${activity.first_name} ${activity.last_name}` 
+          : activity.user_email || 'System'
+      };
+    });
     
     return c.json({
       success: true,
@@ -264,7 +277,7 @@ activities.post('/', async (c) => {
     
     const created = await db.prepare('SELECT * FROM activities WHERE id = ?').bind(id).first();
     
-    return c.json({ success: true, data: created }, 201);
+    return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating activity:', error);
     return c.json({ success: false, message: error.message }, 500);
