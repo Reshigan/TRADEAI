@@ -254,7 +254,7 @@ const DeductionDetail = () => {
                     Amount
                   </Typography>
                   <Typography variant="body1" fontWeight="medium" color="error">
-                    {formatCurrency(deduction.amount)}
+                    {formatCurrency(deduction.deductionAmount || deduction.amount)}
                   </Typography>
                 </Grid>
 
@@ -337,7 +337,7 @@ const DeductionDetail = () => {
               </Typography>
               <Divider sx={{ mb: 2 }} />
 
-              {deduction.status === 'pending' && (
+              {(deduction.status === 'pending' || deduction.status === 'open') && (
                 <>
                   <Button
                     fullWidth
@@ -364,7 +364,7 @@ const DeductionDetail = () => {
                 </>
               )}
 
-              {(deduction.status === 'validated' || deduction.status === 'disputed') && (
+              {(deduction.status === 'validated' || deduction.status === 'disputed' || deduction.status === 'under_review') && (
                 <Button
                   fullWidth
                   variant="contained"

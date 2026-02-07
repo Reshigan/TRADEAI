@@ -163,16 +163,16 @@ const VendorDetail = () => {
             Information
           </Typography>
           <Grid container spacing={3}>
-            {Object.keys(data).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key)).map(key => (
-              <Grid item xs={12} sm={6} md={4} key={key}>
-                <Typography variant="body2" color="text.secondary" mb={0.5}>
-                  {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                </Typography>
-                <Typography variant="body1" fontWeight={500}>
-                  {typeof data[key] === 'object' ? JSON.stringify(data[key]) : (data[key] || 'N/A')}
-                </Typography>
-              </Grid>
-            ))}
+              {Object.keys(data).filter(key => !['_id', 'id', '__v', 'createdAt', 'updatedAt', 'companyId'].includes(key) && data[key] != null && data[key] !== '').map(key => (
+                <Grid item xs={12} sm={6} md={4} key={key}>
+                  <Typography variant="body2" color="text.secondary" mb={0.5}>
+                    {formatLabel(key)}
+                  </Typography>
+                  <Typography variant="body1" fontWeight={500}>
+                    {typeof data[key] === 'object' && data[key] !== null ? JSON.stringify(data[key]) : (data[key] || 'N/A')}
+                  </Typography>
+                </Grid>
+              ))}
           </Grid>
         </Paper>
 
