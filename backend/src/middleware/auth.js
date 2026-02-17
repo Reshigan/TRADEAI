@@ -4,6 +4,7 @@ const config = require('../config');
 const logger = require('../utils/logger');
 const crypto = require('crypto');
 const { SecurityAuditLogger } = require('../utils/security-audit');
+const { cacheService } = require('../services/cacheService');
 
 // Initialize security logger
 const securityLogger = new SecurityAuditLogger({
@@ -510,12 +511,16 @@ const rateLimitByRole = (req, res, next) => {
  * @param {string} token - JWT token
  * @returns {Promise<boolean>} - Whether token is blacklisted
  */
-const isTokenBlacklisted = (_token) => {
-  // In a real implementation, this would check a database or Redis cache
-  // for blacklisted tokens
-
-  // For now, we'll simulate a token blacklist check
-  return false;
+const isTokenBlacklisted = async (token) => {
+  try {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const key = `blacklist:${tokenHash}`;
+    const result = await cacheService.get(key);
+    return result !== null;
+  } catch (error) {
+    logger.error('Token blacklist check error:', error);
+    return false;
+  }
 };
 
 /**
@@ -523,12 +528,20 @@ const isTokenBlacklisted = (_token) => {
  * @param {string} token - JWT token
  * @returns {Promise<boolean>} - Whether token was blacklisted
  */
-const blacklistToken = (_token) => {
-  // In a real implementation, this would add the token to a database or Redis cache
-  // with an expiration time matching the token's expiration
-
-  // For now, we'll simulate token blacklisting
-  return true;
+const blacklistToken = async (token) => {
+  try {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const key = `blacklist:${tokenHash}`;
+    const decoded = jwt.decode(token);
+    const ttl = decoded && decoded.exp
+      ? Math.max(decoded.exp - Math.floor(Date.now() / 1000), 60)
+      : 86400;
+    await cacheService.set(key, { blacklistedAt: new Date().toISOString() }, ttl);
+    return true;
+  } catch (error) {
+    logger.error('Token blacklist error:', error);
+    return false;
+  }
 };
 
 /**
@@ -537,16 +550,26 @@ const blacklistToken = (_token) => {
  * @param {Object} req - Express request object
  * @returns {Promise<boolean>} - Whether activity is suspicious
  */
-const checkForSuspiciousActivity = (_user, _req) => {
-  // In a real implementation, this would check for suspicious activity patterns:
-  // 1. Access from unusual locations
-  // 2. Access at unusual times
-  // 3. Unusual access patterns
-  // 4. Multiple failed login attempts
-  // 5. Rapid succession of sensitive operations
+const checkForSuspiciousActivity = async (user, req) => {
+  try {
+    const key = `activity:${user._id}:${req.ip}`;
+    const recentActivity = await cacheService.get(key);
 
-  // For now, we'll simulate suspicious activity detection
-  return false;
+    if (recentActivity) {
+      const requestCount = (recentActivity.count || 0) + 1;
+      await cacheService.set(key, { count: requestCount, lastSeen: new Date().toISOString() }, 300);
+      if (requestCount > 500) {
+        return true;
+      }
+    } else {
+      await cacheService.set(key, { count: 1, lastSeen: new Date().toISOString() }, 300);
+    }
+
+    return false;
+  } catch (error) {
+    logger.error('Suspicious activity check error:', error);
+    return false;
+  }
 };
 
 /**

@@ -458,18 +458,53 @@ class MLService {
    * Predict promotion performance using ML models
    */
   predictPromotionPerformance(params) {
-    // Placeholder implementation - returns basic prediction
-    const { discountPercent = 0, duration = 0 } = params;
+    const {
+      discountPercent = 0,
+      duration = 0,
+      productCategory,
+      customerSegment,
+      historicalPromotions
+    } = params;
 
-    // Simple heuristic for now
-    const baselineLift = discountPercent * 2; // 10% discount = 20% lift
-    const durationFactor = Math.min(duration / 30, 1); // Normalize duration
+    const discountImpact = Math.log(1 + discountPercent / 10) / Math.log(5);
+    let baselineLift = discountPercent * (1 + discountImpact);
+
+    const optimalDuration = 14;
+    const durationFactor = 1 - Math.abs(duration - optimalDuration) / optimalDuration * 0.3;
+    baselineLift *= Math.max(0.3, durationFactor);
+
+    const categoryFactors = {
+      beverages: 1.2, snacks: 1.15, personal_care: 0.95, household: 0.9
+    };
+    baselineLift *= (categoryFactors[productCategory] || 1.0);
+
+    const segmentFactors = {
+      premium: 0.8, value: 1.2, regular: 1.0
+    };
+    baselineLift *= (segmentFactors[customerSegment] || 1.0);
+
+    let confidence = 0.7;
+    if (historicalPromotions && historicalPromotions.length > 0) {
+      const avgLift = this.calculateAverage(
+        historicalPromotions.map((p) => (p.actualLift || 1) / (p.expectedLift || 1))
+      );
+      baselineLift *= avgLift;
+      confidence = Math.min(0.95, 0.7 + historicalPromotions.length * 0.02);
+    }
+
+    const marginErosion = discountPercent / 100;
+    const revenueImpact = baselineLift * (1 - marginErosion);
 
     return {
-      expectedLift: baselineLift * durationFactor,
-      confidence: 0.75,
-      volumeIncrease: baselineLift * 0.8,
-      revenueImpact: baselineLift * 0.6 // After discount
+      expectedLift: Math.round(baselineLift * 100) / 100,
+      confidence,
+      volumeIncrease: Math.round(baselineLift * 0.85 * 100) / 100,
+      revenueImpact: Math.round(revenueImpact * 100) / 100,
+      recommendations: this.getPromotionRecommendations(
+        { discountPercentage: discountPercent, duration },
+        baselineLift
+      ),
+      risks: this.identifyPromotionRisks({ discountPercentage: discountPercent, duration })
     };
   }
 
@@ -477,19 +512,50 @@ class MLService {
    * Forecast volume using time series models
    */
   forecastVolume(params) {
-    // Placeholder implementation - returns basic forecast
-    const { historicalVolume = 1000, periods = 12 } = params;
+    const {
+      historicalVolume = 1000,
+      periods = 12,
+      historicalData,
+      seasonalityIndices
+    } = params;
+
+    let trendRate = 0.03;
+    let volatility = 0.05;
+
+    if (historicalData && historicalData.length >= 6) {
+      const values = historicalData.map((d) => d.value || d);
+      const trend = this.calculateTrend(values);
+      trendRate = trend === 'increasing' ? 0.04 :
+        trend === 'decreasing' ? -0.02 : 0.01;
+      volatility = this.calculateVolatility(values);
+    }
+
+    const seasonality = seasonalityIndices ||
+      (historicalData && historicalData.length >= 24
+        ? this.calculateSeasonality(historicalData.map((d) => d.value || d))
+        : Array(12).fill(1));
 
     const forecast = [];
+    let currentVolume = historicalVolume;
+
     for (let i = 1; i <= periods; i++) {
-      // Simple trend with random variation
-      const trend = historicalVolume * (1 + 0.05 * i); // 5% growth per period
-      const noise = (Math.random() - 0.5) * historicalVolume * 0.1; // ±10% noise
+      const trendComponent = currentVolume * (1 + trendRate);
+      const seasonalFactor = seasonality[(i - 1) % 12];
+      const adjustedVolume = trendComponent * seasonalFactor;
+
+      const confidenceBand = adjustedVolume * volatility * Math.sqrt(i);
+
       forecast.push({
         period: i,
-        value: Math.max(0, trend + noise),
-        confidence: 0.8 - (i * 0.02) // Confidence decreases over time
+        value: Math.max(0, Math.round(adjustedVolume)),
+        lowerBound: Math.max(0, Math.round(adjustedVolume - 1.96 * confidenceBand)),
+        upperBound: Math.round(adjustedVolume + 1.96 * confidenceBand),
+        confidence: Math.max(0.4, 0.9 - (i * 0.03)),
+        seasonalFactor,
+        trendRate
       });
+
+      currentVolume = trendComponent;
     }
 
     return forecast;

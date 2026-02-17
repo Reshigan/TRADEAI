@@ -1,4 +1,5 @@
 const path = require('path');
+const crypto = require('crypto');
 const dotenv = require('dotenv');
 // Load project root .env first (so production overrides dev), then backend/.env for missing keys
 // Note: dotenv does not override existing keys by default.
@@ -7,6 +8,23 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Import AI configuration
 const { aiConfig, _validateLocalOnlyConfig } = require('./ai.config');
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+const DEFAULT_JWT_SECRET = 'your-super-secret-jwt-key-change-this';
+const DEFAULT_JWT_REFRESH_SECRET = 'your-refresh-secret-key';
+
+if (isProduction) {
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET === DEFAULT_JWT_SECRET) {
+    throw new Error('FATAL: JWT_SECRET must be set to a strong random value in production. Generate one with: node -e "console.log(require(\'crypto\').randomBytes(64).toString(\'hex\'))"');
+  }
+  if (!process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET === DEFAULT_JWT_REFRESH_SECRET) {
+    throw new Error('FATAL: JWT_REFRESH_SECRET must be set to a strong random value in production. Generate one with: node -e "console.log(require(\'crypto\').randomBytes(64).toString(\'hex\'))"');
+  }
+}
+
+const jwtSecret = process.env.JWT_SECRET || (isProduction ? crypto.randomBytes(64).toString('hex') : DEFAULT_JWT_SECRET);
+const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET || (isProduction ? crypto.randomBytes(64).toString('hex') : DEFAULT_JWT_REFRESH_SECRET);
 
 module.exports = {
   // Environment
@@ -42,9 +60,9 @@ module.exports = {
 
   // JWT
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this',
+    secret: jwtSecret,
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
+    refreshSecret: jwtRefreshSecret,
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d'
   },
 

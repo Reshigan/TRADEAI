@@ -110,7 +110,9 @@ const changePasswordValidation = [
 // Routes
 router.post('/register', ...registerValidation, validate, authController.register);
 router.post('/login', ...loginValidation, validate, authController.login);
-router.post('/quick-login', authController.quickLogin); // Demo quick login
+if (process.env.NODE_ENV !== 'production') {
+  router.post('/quick-login', authController.quickLogin);
+}
 router.post('/logout', authenticateToken, authController.logout);
 router.post('/refresh-token', authController.refreshToken);
 router.post('/forgot-password', ...forgotPasswordValidation, validate, authController.forgotPassword);
