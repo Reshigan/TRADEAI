@@ -3,11 +3,11 @@
 
 :root {
   /* Premium Corporate Color Palette */
-  --primary-blue: #1e40af;
-  --primary-blue-light: #3b82f6;
-  --primary-blue-lighter: #60a5fa;
-  --accent-gold: #d4af37;
-  --accent-gold-light: #ffd700;
+  --primary-blue: #7C3AED;
+  --primary-blue-light: #A78BFA;
+  --primary-blue-lighter: #C4B5FD;
+  --accent-gold: #7C3AED;
+  --accent-gold-light: #A78BFA;
   --accent-platinum: #e5e7eb;
   --accent-silver: #9ca3af;
   
@@ -44,7 +44,7 @@
   --border-accent: #cbd5e1;
   
   /* Enterprise Accent Colors */
-  --neon-cyan: #1E40AF;
+  --neon-cyan: #7C3AED;
   --neon-purple: #059669;
   --neon-pink: #DC2626;
   
@@ -81,9 +81,9 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(30, 64, 175, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.03) 0%, transparent 50%);
   z-index: -1;
   animation: premiumFloat 30s ease-in-out infinite;
 }
@@ -219,7 +219,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Premium Input Styles */
 .premium-input {
   background: var(--bg-tertiary);
-  border: 2px solid rgba(30, 64, 175, 0.1);
+  border: 2px solid rgba(124, 58, 237, 0.1);
   border-radius: 12px;
   color: var(--text-primary);
   font-size: 1rem;
@@ -233,7 +233,7 @@ h1, h2, h3, h4, h5, h6 {
 .premium-input:focus {
   outline: none;
   border-color: var(--primary-blue-light);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--shadow-subtle);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1), var(--shadow-subtle);
   background: var(--bg-tertiary);
 }
 
@@ -799,7 +799,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .premium-alert.info {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(124, 58, 237, 0.1);
   color: var(--primary-blue);
   border-left-color: var(--primary-blue);
 }

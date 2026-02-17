@@ -25,7 +25,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #1E40AF, #059669);
+  background: linear-gradient(90deg, #7C3AED, #A78BFA);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -68,8 +68,8 @@
 }
 
 .neon-button:hover {
-  background: rgba(30, 64, 175, 0.1);
-  box-shadow: 0 0 20px rgba(30, 64, 175, 0.3);
+  background: rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
   text-shadow: none;
 }
 
@@ -294,37 +294,7 @@
 }
 
 /* Dark theme overrides for Material-UI */
-.MuiPaper-root {
-  background-color: var(--bg-card) !important;
-  color: var(--text-primary) !important;
-}
 
-.MuiAppBar-root {
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary)) !important;
-  border-bottom: 1px solid var(--border-primary) !important;
-}
-
-.MuiDrawer-paper {
-  background-color: var(--bg-secondary) !important;
-  border-right: 1px solid var(--border-primary) !important;
-}
-
-.MuiListItemButton-root:hover {
-  background-color: rgba(0, 255, 255, 0.1) !important;
-}
-
-.MuiTextField-root .MuiOutlinedInput-root {
-  background-color: var(--bg-tertiary);
-}
-
-.MuiTextField-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: var(--neon-cyan) !important;
-}
-
-.MuiTextField-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: var(--neon-cyan) !important;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-}
 
 /* Fix popup and modal z-index issues */
 .MuiDialog-root {

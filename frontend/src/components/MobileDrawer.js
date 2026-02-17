@@ -13,7 +13,8 @@ import {
   Collapse,
   IconButton,
   Avatar,
-  Chip
+  Chip,
+  alpha,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -170,7 +171,8 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
         sx: {
           width: '85%',
           maxWidth: 320,
-          bgcolor: 'background.paper',
+          bgcolor: '#FFFFFF',
+          borderRight: '1px solid #E5E7EB',
         }
       }}
     >
@@ -201,7 +203,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
         display: 'flex', 
         alignItems: 'center', 
         gap: 1.5,
-        bgcolor: 'action.hover'
+        bgcolor: '#F9FAFB'
       }}>
         <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}>
           {user?.name?.charAt(0) || 'U'}
@@ -240,9 +242,9 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                       py: 1.5,
                       px: 2,
                       '&.Mui-selected': {
-                        bgcolor: 'primary.lighter',
+                        bgcolor: alpha('#7C3AED', 0.08),
                         borderRight: '3px solid',
-                        borderColor: 'primary.main',
+                        borderColor: '#7C3AED',
                       }
                     }}
                   >
@@ -293,7 +295,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                               pl: 7,
                               pr: 2,
                               '&.Mui-selected': {
-                                bgcolor: 'primary.lighter',
+                                bgcolor: alpha('#7C3AED', 0.08),
                               }
                             }}
                           >
@@ -309,7 +311,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                                         height: 18,
                                         fontSize: '0.6rem',
                                         fontWeight: 700,
-                                        backgroundColor: child.badge === 'AI' ? '#1E40AF' : 
+                                        backgroundColor: child.badge === 'AI' ? '#7C3AED' : 
                                                          child.badge === 'NEW' ? '#10b981' :
                                                          child.badge === 'LIVE' ? '#ef4444' : '#f59e0b',
                                         color: 'white',
@@ -347,14 +349,14 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
           }}
           sx={{
             borderRadius: 2,
-            bgcolor: 'error.lighter',
-            color: 'error.main',
+            bgcolor: alpha('#DC2626', 0.08),
+            color: '#DC2626',
             '&:hover': {
-              bgcolor: 'error.light',
+              bgcolor: alpha('#DC2626', 0.12),
             }
           }}
         >
-          <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
+          <ListItemIcon sx={{ minWidth: 40, color: '#DC2626' }}>
             <LogoutIcon />
           </ListItemIcon>
           <ListItemText 

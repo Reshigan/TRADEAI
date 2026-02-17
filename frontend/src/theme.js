@@ -12,10 +12,10 @@ import { createTheme } from '@mui/material/styles';
 
 // Enterprise status colors - more muted and professional
 const statusColors = {
-  ai: '#6366F1',        // Indigo for AI features
+  ai: '#7C3AED',        // Violet for AI features
   new: '#059669',       // Emerald for new features
   live: '#DC2626',      // Red for live/real-time
-  beta: '#2563EB',      // Blue for beta features
+  beta: '#6D28D9',      // Purple for beta features
   experimental: '#D97706', // Amber for experimental
   degraded: '#DC2626',  // Red for degraded status
   production: '#059669', // Emerald for production ready
@@ -39,13 +39,13 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1E40AF', // Deep enterprise blue (more mature than startup blue)
-      light: '#3B82F6',
-      dark: '#1E3A8A',
+      main: '#7C3AED', // Violet purple
+      light: '#A78BFA',
+      dark: '#6D28D9',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#059669', // Professional emerald green
+      main: '#059669',
       light: '#10B981',
       dark: '#047857',
       contrastText: '#FFFFFF',
@@ -71,10 +71,10 @@ const theme = createTheme({
       dark: '#047857',
     },
     background: {
-      default: '#FAFAFA', // Softer, more neutral background
+      default: '#F3F4F6',
       paper: '#FFFFFF',
-      subtle: '#F5F5F5',  // Subtle background for sections
-      elevated: '#FFFFFF', // For elevated cards
+      subtle: '#F9FAFB',
+      elevated: '#FFFFFF',
     },
     text: {
       primary: '#171717', // Near black for maximum readability
@@ -84,12 +84,12 @@ const theme = createTheme({
     },
     divider: '#E5E5E5',
     action: {
-      active: '#1E40AF',
-      hover: 'rgba(30, 64, 175, 0.04)',
-      selected: 'rgba(30, 64, 175, 0.08)',
+      active: '#7C3AED',
+      hover: 'rgba(124, 58, 237, 0.04)',
+      selected: 'rgba(124, 58, 237, 0.08)',
       disabled: '#A3A3A3',
       disabledBackground: '#F5F5F5',
-      focus: 'rgba(30, 64, 175, 0.12)',
+      focus: 'rgba(124, 58, 237, 0.12)',
     },
     // Custom colors
     status: statusColors,
@@ -185,7 +185,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 8, // Slightly less rounded for enterprise feel
+    borderRadius: 12,
   },
   shadows: [
     'none',
@@ -267,9 +267,9 @@ const theme = createTheme({
           },
         },
         containedPrimary: {
-          backgroundColor: '#1E40AF',
+          backgroundColor: '#7C3AED',
           '&:hover': {
-            backgroundColor: '#1E3A8A',
+            backgroundColor: '#6D28D9',
           },
         },
         outlined: {
@@ -363,7 +363,7 @@ const theme = createTheme({
               borderColor: '#D4D4D4',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#1E40AF',
+              borderColor: '#7C3AED',
               borderWidth: 1,
             },
           },
@@ -381,7 +381,7 @@ const theme = createTheme({
             borderColor: '#D4D4D4',
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#1E40AF',
+            borderColor: '#7C3AED',
             borderWidth: 1,
           },
         },
@@ -415,9 +415,9 @@ const theme = createTheme({
             backgroundColor: '#F5F5F5',
           },
           '&.Mui-selected': {
-            backgroundColor: 'rgba(30, 64, 175, 0.08)',
+            backgroundColor: 'rgba(124, 58, 237, 0.08)',
             '&:hover': {
-              backgroundColor: 'rgba(30, 64, 175, 0.12)',
+              backgroundColor: 'rgba(124, 58, 237, 0.12)',
             },
           },
         },
@@ -506,7 +506,7 @@ const theme = createTheme({
         },
         indicator: {
           height: 2,
-          backgroundColor: '#1E40AF',
+          backgroundColor: '#7C3AED',
         },
       },
     },
@@ -518,7 +518,7 @@ const theme = createTheme({
           fontSize: '0.875rem',
           color: '#737373',
           '&.Mui-selected': {
-            color: '#1E40AF',
+            color: '#7C3AED',
           },
         },
       },
@@ -540,8 +540,8 @@ const theme = createTheme({
           borderRadius: 6,
         },
         standardInfo: {
-          backgroundColor: '#EFF6FF',
-          color: '#1E40AF',
+          backgroundColor: '#F5F3FF',
+          color: '#6D28D9',
         },
         standardSuccess: {
           backgroundColor: '#ECFDF5',
