@@ -74,11 +74,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: Install wrangler
-        run: npm install -g wrangler
+      - name: Install dependencies
+        working-directory: workers-backend
+        run: npm install
       - name: Deploy to Cloudflare Workers
         working-directory: workers-backend
-        run: wrangler deploy
+        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
