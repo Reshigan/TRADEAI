@@ -154,59 +154,63 @@ const helpSections = [
 
 const quickStartGuides = [
   {
-    title: 'Getting Started with TRADEAI',
-    duration: '5 min',
-    description: 'Learn the basics of navigating and using the platform',
+    title: 'Navigating the New UI',
+    duration: '3 min',
+    description: 'Learn the icon sidebar, top header, and mobile drawer navigation in the updated TRADEAI interface',
     type: 'guide',
   },
   {
     title: 'Creating Your First Promotion',
     duration: '10 min',
-    description: 'Step-by-step guide to creating and submitting a promotion',
+    description: 'Use the Promotions page to create a promotion — fill in the form, submit for approval, and track status via card-based views',
     type: 'guide',
   },
   {
     title: 'Understanding Budget Allocation',
     duration: '8 min',
-    description: 'Learn how budgets flow through the system',
+    description: 'View budget summary cards, track utilization with progress bars, and manage allocations from the Budgets page',
     type: 'guide',
   },
   {
     title: 'Running a Simulation',
     duration: '7 min',
-    description: 'Use simulations to optimize your promotions',
+    description: 'Use the Simulation Studio to model what-if scenarios, compare ROI across options, and optimize before committing budget',
     type: 'video',
   },
   {
     title: 'Setting Up Rebate Agreements',
     duration: '12 min',
-    description: 'Create and configure rebate programs with customers',
+    description: 'Create rebate programs from the Rebates page — define calculation methods, thresholds, and track accruals',
     type: 'guide',
   },
   {
     title: 'Managing Claims and Deductions',
     duration: '10 min',
-    description: 'Process customer claims and match to deductions',
+    description: 'Process claims and match to deductions using tab-based filtering, auto-match, and card-based record views',
     type: 'guide',
   },
   {
     title: 'Creating Forecasts',
     duration: '8 min',
-    description: 'Generate budget and demand forecasts using AI',
+    description: 'Generate AI-powered forecasts from the Forecasting page — select algorithms, set parameters, and review predictions',
     type: 'guide',
   },
   {
     title: 'Approval Workflow Overview',
     duration: '6 min',
-    description: 'Understand how approvals work across the system',
+    description: 'Review pending approvals, approve or reject with one click, and track audit trails from the Approvals page',
     type: 'video',
   },
 ];
 
 const faqs = [
   {
+    question: 'How do I navigate the platform?',
+    answer: 'Use the icon sidebar on the left to switch between modules — hover over any icon to see its label. On mobile devices, tap the menu icon (top-left) to open the navigation drawer with expandable sections.',
+  },
+  {
     question: 'How do I create a new promotion?',
-    answer: 'Navigate to Promotions > Create New. Fill in the promotion details including name, type, dates, products, and customers. Submit for approval when ready.',
+    answer: 'Click the Promotions icon in the sidebar, then click the "New Promotion" button (top-right). Fill in the promotion details including name, type, dates, products, and customers. Submit for approval when ready.',
   },
   {
     question: 'What is the difference between trade spend types?',
@@ -214,15 +218,15 @@ const faqs = [
   },
   {
     question: 'How do I track budget utilization?',
-    answer: 'Go to Budgets and select a budget to view its utilization. The dashboard shows allocated, spent, and remaining amounts with visual indicators.',
+    answer: 'Click the Budgets icon in the sidebar. Each budget card shows a utilization progress bar. The summary cards at the top show total allocated, remaining, and percentage used across all budgets.',
   },
   {
-    question: 'Can I clone an existing promotion?',
-    answer: 'Yes! Open the promotion you want to clone and click the Clone button. You can optionally shift dates and modify details before saving.',
+    question: 'How do I use the status tabs on list pages?',
+    answer: 'Most list pages (Promotions, Budgets, Claims, etc.) have status tabs at the top of the list — click a tab to filter records by status (e.g., All, Active, Planned, Completed). Use the search box to further filter by name.',
   },
   {
     question: 'How do I export data to CSV?',
-    answer: 'Most list views have an Export button in the toolbar. Click it to download the current filtered data as a CSV file.',
+    answer: 'Click the purple "Export" button in the top header bar. On mobile, open the navigation drawer and use export options from there.',
   },
   {
     question: 'What do the different approval statuses mean?',
@@ -238,19 +242,15 @@ const faqs = [
   },
   {
     question: 'How do I create a forecast?',
-    answer: 'Go to Forecasting > Create New. Select the forecast type (budget, demand, revenue, or volume), choose a forecasting method, and set the parameters. The system will generate predictions based on historical data.',
+    answer: 'Click the Forecasting icon in the sidebar, then click "Create New". Select the forecast type (budget, demand, revenue, or volume), choose a forecasting method, and set the parameters. The system will generate predictions based on historical data.',
   },
   {
     question: 'What forecasting methods are available?',
     answer: 'TRADEAI supports Historical Average, Growth Rate, Weighted Moving Average, Manual Entry, and ML-Predicted methods. ML predictions require at least 12 months of historical data for best accuracy.',
   },
   {
-    question: 'How do I resolve an unauthorized deduction?',
-    answer: 'Mark the deduction as Disputed, document the reason, and contact the customer. Track all communications in the system. If unresolved, escalate to management or collections.',
-  },
-  {
-    question: 'Can I run simulations before creating a promotion?',
-    answer: 'Yes! Use the Simulation Studio to model different scenarios. You can compare ROI, uplift, and other metrics across multiple scenarios before committing to a promotion.',
+    question: 'Can I use TRADEAI on my phone?',
+    answer: 'Yes! The platform is fully responsive. On mobile, the sidebar is replaced by a slide-out navigation drawer. All pages, forms, and dashboards adapt to smaller screens. Tap the menu icon in the top-left corner to navigate.',
   },
 ];
 
@@ -267,12 +267,12 @@ const HelpCenter = () => {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3" gutterBottom sx={{ fontWeight: 600 }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 4 } }}>
+      <Box sx={{ textAlign: 'center', mb: { xs: 2, sm: 4 } }}>
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: 600, fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' } }}>
           Help & Training Center
         </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 3, fontSize: { xs: '0.9rem', sm: '1.25rem' } }}>
           Learn how to get the most out of TRADEAI
         </Typography>
         <TextField

@@ -112,18 +112,18 @@ const ClaimsList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Claims Management</Typography>
+          <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Claims Management</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>Track, match, and manage trade claims</Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button variant="outlined" startIcon={<AutoMatchIcon />} onClick={handleAutoMatch} disabled={loading}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#7C3AED', color: '#7C3AED', '&:hover': { borderColor: '#6D28D9', bgcolor: alpha('#7C3AED', 0.04) } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, borderColor: '#7C3AED', color: '#7C3AED', '&:hover': { borderColor: '#6D28D9', bgcolor: alpha('#7C3AED', 0.04) } }}>
             Auto-Match
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/claims/create')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
             Create Claim
           </Button>
         </Box>

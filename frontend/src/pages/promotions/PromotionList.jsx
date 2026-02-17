@@ -64,15 +64,15 @@ const PromotionList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700} color="text.primary">Promotions</Typography>
+          <Typography variant="h5" fontWeight={700} color="text.primary" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Promotions</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
             {promotions.length} promotion{promotions.length !== 1 ? 's' : ''} across all channels
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/promotions/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           New Promotion
         </Button>
       </Box>

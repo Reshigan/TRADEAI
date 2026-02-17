@@ -227,13 +227,13 @@ const BudgetList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Budgets</Typography>
+          <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Budgets</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>Manage your trade spend budgets</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateBudget}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           Create Budget
         </Button>
       </Box>
@@ -273,7 +273,7 @@ const BudgetList = () => {
           </TextField>
           <TextField fullWidth label="Search" name="search" value={filters.search} onChange={handleFilterChange} size="small"
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
-            sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+            sx={{ flex: 1, minWidth: { xs: 120, sm: 200 }, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
         </Box>
       </Paper>
 

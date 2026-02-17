@@ -113,17 +113,17 @@ const ManagerDashboard = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
+      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 3 }}>
         {tabLabels.map((label, idx) => (
           <Button
             key={label}
             onClick={() => setActiveTab(idx)}
             sx={{
-              px: 3,
+              px: { xs: 2, sm: 3 },
               py: 1,
               borderRadius: '24px',
               fontWeight: 600,
-              fontSize: '0.85rem',
+              fontSize: { xs: '0.75rem', sm: '0.85rem' },
               textTransform: 'none',
               bgcolor: activeTab === idx ? '#7C3AED' : '#fff',
               color: activeTab === idx ? '#fff' : '#6B7280',
@@ -171,7 +171,7 @@ const ManagerDashboard = () => {
               </Box>
 
               <Box display="flex" alignItems="baseline" gap={1} mb={1}>
-                <Typography variant="h2" fontWeight={800} sx={{ color: '#111827', fontSize: '3rem' }}>
+                <Typography variant="h2" fontWeight={800} sx={{ color: '#111827', fontSize: { xs: '2rem', sm: '3rem' } }}>
                   %{budgetUtil}
                 </Typography>
               </Box>
