@@ -1,4 +1,4 @@
-const asyncHandler = require('express-async-handler');
+const { asyncHandler } = require('../middleware/errorHandler');
 const BusinessRulesConfig = require('../models/BusinessRulesConfig');
 
 exports.getConfig = asyncHandler(async (req, res) => {

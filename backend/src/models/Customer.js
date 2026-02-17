@@ -604,4 +604,10 @@ addTenantSupport(customerSchema);
 
 const Customer = mongoose.model('Customer', customerSchema);
 
-module.exports = Customer;
+const USE_MOCK_DB = process.env.USE_MOCK_DB === 'true' || process.env.NODE_ENV === 'mock';
+if (USE_MOCK_DB) {
+  const { MockCustomer } = require('../services/mockDatabase');
+  module.exports = MockCustomer;
+} else {
+  module.exports = Customer;
+}

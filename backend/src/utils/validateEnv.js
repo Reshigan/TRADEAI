@@ -4,15 +4,21 @@
  * Prevents application startup with incomplete configuration
  */
 
-const requiredEnvVars = [
+const baseRequiredEnvVars = [
   'NODE_ENV',
   'PORT',
   'MONGODB_URI',
   'JWT_SECRET',
-  'JWT_REFRESH_SECRET',
-  'REDIS_HOST',
-  'REDIS_PORT'
+  'JWT_REFRESH_SECRET'
 ];
+
+const getRequiredEnvVars = () => {
+  const vars = [...baseRequiredEnvVars];
+  if (process.env.REDIS_ENABLED !== 'false' && process.env.USE_MOCK_DB !== 'true') {
+    vars.push('REDIS_HOST', 'REDIS_PORT');
+  }
+  return vars;
+};
 
 const optionalEnvVars = {
   'FRONTEND_URL': 'http://localhost:3000',
@@ -137,6 +143,7 @@ function validateEnvironment() {
   const warnings = [];
 
   // Check required variables
+  const requiredEnvVars = getRequiredEnvVars();
   for (const varName of requiredEnvVars) {
     const value = process.env[varName];
 
@@ -150,18 +157,27 @@ function validateEnvironment() {
     }
   }
 
-  // Validate JWT secrets
+  // Validate JWT secrets (strict checks only in production)
+  const isProduction = process.env.NODE_ENV === 'production';
   if (process.env.JWT_SECRET) {
     const jwtValidation = validateJWTSecret(process.env.JWT_SECRET);
     if (!jwtValidation.valid) {
-      errors.push(`JWT_SECRET: ${jwtValidation.message}`);
+      if (isProduction) {
+        errors.push(`JWT_SECRET: ${jwtValidation.message}`);
+      } else {
+        warnings.push(`JWT_SECRET: ${jwtValidation.message} (enforced in production)`);
+      }
     }
   }
 
   if (process.env.JWT_REFRESH_SECRET) {
     const refreshValidation = validateJWTSecret(process.env.JWT_REFRESH_SECRET);
     if (!refreshValidation.valid) {
-      errors.push(`JWT_REFRESH_SECRET: ${refreshValidation.message}`);
+      if (isProduction) {
+        errors.push(`JWT_REFRESH_SECRET: ${refreshValidation.message}`);
+      } else {
+        warnings.push(`JWT_REFRESH_SECRET: ${refreshValidation.message} (enforced in production)`);
+      }
     }
   }
 
@@ -180,8 +196,8 @@ function validateEnvironment() {
     }
   }
 
-  // Validate Redis (only if enabled)
-  if (process.env.REDIS_ENABLED !== 'false') {
+  // Validate Redis (only if enabled and not in mock mode)
+  if (process.env.REDIS_ENABLED !== 'false' && process.env.USE_MOCK_DB !== 'true') {
     const redisValidation = validateRedis(
       process.env.REDIS_HOST,
       process.env.REDIS_PORT,
