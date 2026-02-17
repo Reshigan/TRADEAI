@@ -68,18 +68,18 @@ const TradeSpendList = () => {
 
   return (
     <Box sx={{ maxWidth: 1600, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Trade Spend</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>Manage marketing, cash co-op, trading terms, and promotional spend</Typography>
+          <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Trade Spend</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5} sx={{ display: { xs: 'none', sm: 'block' } }}>Manage marketing, cash co-op, trading terms, and promotional spend</Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button variant="outlined" startIcon={<Refresh />} onClick={loadTradeSpends}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/trade-spends/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
             New Trade Spend
           </Button>
         </Box>

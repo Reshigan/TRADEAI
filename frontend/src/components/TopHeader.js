@@ -106,7 +106,7 @@ const TopHeader = ({ onMenuClick }) => {
           sx={{
             fontWeight: 700,
             color: '#111827',
-            fontSize: '1.5rem',
+            fontSize: { xs: '1.15rem', sm: '1.5rem' },
             lineHeight: 1.3,
           }}
         >
@@ -115,6 +115,7 @@ const TopHeader = ({ onMenuClick }) => {
         <Typography
           variant="body2"
           sx={{
+            display: { xs: 'none', sm: 'block' },
             color: '#6B7280',
             fontSize: '0.85rem',
             mt: 0.25,
@@ -128,13 +129,14 @@ const TopHeader = ({ onMenuClick }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
           sx={{
-            display: 'flex',
+            display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
             bgcolor: '#F3F4F6',
             borderRadius: '12px',
             px: 2,
             py: 0.75,
-            minWidth: 240,
+            minWidth: 200,
+            maxWidth: 280,
             transition: 'all 0.2s ease',
             '&:focus-within': {
               bgcolor: '#fff',
@@ -176,6 +178,7 @@ const TopHeader = ({ onMenuClick }) => {
           startIcon={<CalendarIcon sx={{ fontSize: 18 }} />}
           endIcon={<ArrowDownIcon />}
           sx={{
+            display: { xs: 'none', sm: 'inline-flex' },
             bgcolor: '#F3F4F6',
             borderRadius: '12px',
             color: '#374151',
@@ -227,6 +230,7 @@ const TopHeader = ({ onMenuClick }) => {
           variant="contained"
           startIcon={<ExportIcon sx={{ fontSize: 18 }} />}
           sx={{
+            display: { xs: 'none', sm: 'inline-flex' },
             bgcolor: '#7C3AED',
             borderRadius: '12px',
             fontWeight: 600,

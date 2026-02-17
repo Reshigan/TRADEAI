@@ -142,9 +142,9 @@ const Login = ({ onLogin }) => {
       }} />
 
       <Container maxWidth="lg">
-        <Box display="flex" alignItems="center" minHeight="100vh">
+        <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" justifyContent="center" minHeight="100vh" py={{ xs: 4, md: 0 }}>
           {/* Left side - Branding */}
-          <Box flex={1} pr={4} className="slide-in">
+          <Box flex={1} pr={{ xs: 0, md: 4 }} mb={{ xs: 3, md: 0 }} textAlign={{ xs: 'center', md: 'left' }} className="slide-in" sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Box display="flex" alignItems="center" mb={3}>
               <img 
                 src={newLogo} 
@@ -197,12 +197,12 @@ const Login = ({ onLogin }) => {
           </Box>
 
           {/* Right side - Login Form */}
-          <Box flex={1} className="fade-in">
+          <Box flex={1} className="fade-in" sx={{ width: '100%', maxWidth: { xs: '100%', sm: 420 } }}>
             <Paper 
               elevation={0}
               className="glass-card"
               sx={{ 
-                maxWidth: 420,
+                maxWidth: { xs: '100%', sm: 420 },
                 mx: 'auto',
                 background: 'var(--bg-glass)',
                 backdropFilter: 'var(--glass-backdrop)',
@@ -393,12 +393,12 @@ const Login = ({ onLogin }) => {
           </Box>
         </Box>
 
-        {/* Right side content */}
+        {/* Right side content - hidden on all screens (duplicate of left branding) */}
         <Box 
           flex={1} 
           pl={4} 
           className="fade-in"
-          sx={{ display: { xs: 'none', lg: 'block' } }}
+          sx={{ display: 'none' }}
         >
           <Typography 
             variant="h3" 

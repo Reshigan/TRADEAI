@@ -112,9 +112,9 @@ const ApprovalsList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Approvals</Typography>
+          <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Approvals</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>Review and action pending approval requests</Typography>
         </Box>
       </Box>

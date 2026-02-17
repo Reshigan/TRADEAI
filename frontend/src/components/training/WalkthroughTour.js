@@ -28,50 +28,42 @@ import {
 const tourSteps = [
   {
     title: 'Welcome to Trade AI Platform',
-    content: 'This interactive walkthrough will guide you through the key features of the Trade AI Platform. You can access this tour anytime from the Help menu.',
-    image: '/public/images/walkthrough/welcome.png',
+    content: 'Welcome to TRADEAI! This walkthrough will guide you through the platform. Navigate using the icon sidebar on the left — each icon takes you to a different module. On mobile, tap the menu icon in the top-left to open the navigation drawer.',
     icon: <SchoolIcon color="primary" />
   },
   {
     title: 'Dashboard Overview',
-    content: 'The dashboard provides a comprehensive view of your trade spend activities, budget utilization, and key performance metrics. Use the filters to customize your view.',
-    image: '/public/images/walkthrough/dashboard.png',
+    content: 'Your dashboard shows KPI cards for Total Budget, Active Promotions, Customers, and Budget Utilization at a glance. Below you\'ll find the Budget Overview with a progress bar, AI Budget Forecast, Pending Approvals, and Top Customers — all in a clean card-based layout.',
+    icon: <InfoIcon color="primary" />
+  },
+  {
+    title: 'Sidebar Navigation',
+    content: 'The left sidebar uses compact icons for quick access to all modules: Dashboard, Promotions, Budgets, Trade Spends, Analytics, Claims, Deductions, Rebates, Approvals, Forecasting, Simulation Studio, and more. Hover over any icon to see a tooltip with the page name.',
     icon: <InfoIcon color="primary" />
   },
   {
     title: 'AI-Powered Analytics',
-    content: 'Our AI engine analyzes your trade spend data to provide actionable insights and recommendations. Look for the AI insights panel on each page.',
-    image: '/public/images/walkthrough/analytics.png',
+    content: 'The Analytics page features tabbed views for different insights — spend analysis, ROI tracking, customer performance, and AI recommendations. Each page also includes an AI Insights feed on the dashboard for contextual suggestions.',
     icon: <LightbulbIcon color="primary" />
   },
   {
-    title: 'Budget Management',
-    content: 'Create and manage multi-year budgets with ML-powered forecasting. The system will alert you when spending approaches thresholds.',
-    image: '/public/images/walkthrough/budgets.png',
+    title: 'Budget & Promotion Management',
+    content: 'Budgets and Promotions use summary stat cards at the top, tab-based status filtering, and card grids for each record. Click any card to view details, edit, or track spend utilization with progress bars.',
     icon: <InfoIcon color="primary" />
   },
   {
-    title: 'Trade Spend Tracking',
-    content: 'Track all types of trade spend activities from planning to execution. Use the calendar view to visualize your promotional calendar.',
-    image: '/public/images/walkthrough/trade-spend.png',
+    title: 'Claims, Deductions & Rebates',
+    content: 'Manage claims, deductions, and rebate programs from their dedicated pages. Each uses the same modern pattern — summary cards, status tabs, search filters, and clickable record cards with key metrics.',
     icon: <InfoIcon color="primary" />
   },
   {
-    title: 'Promotion Management',
-    content: 'Plan and execute promotions with end-to-end lifecycle management. The ROI calculator helps you estimate the impact of your promotions.',
-    image: '/public/images/walkthrough/promotions.png',
-    icon: <InfoIcon color="primary" />
-  },
-  {
-    title: 'AI Assistant',
-    content: 'Your AI Assistant is available throughout the platform to answer questions, provide insights, and help you optimize your trade spend activities.',
-    image: '/public/images/walkthrough/ai-assistant.png',
+    title: 'Simulation Studio & Forecasting',
+    content: 'Run what-if scenarios in the Simulation Studio to optimize promotions before committing budget. The Forecasting module uses AI algorithms to predict demand, revenue, and budget needs.',
     icon: <LightbulbIcon color="primary" />
   },
   {
     title: 'You\'re All Set!',
-    content: 'You\'ve completed the walkthrough tour. Remember, you can access this tour anytime from the Help menu. Happy planning!',
-    image: '/public/images/walkthrough/complete.png',
+    content: 'You\'ve completed the platform tour! Use the Help Center (question mark icon in the sidebar) for detailed guides on each module. You can restart this tour anytime from the Dashboard.',
     icon: <CheckCircleIcon color="success" />
   }
 ];
@@ -125,13 +117,13 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          bgcolor: 'primary.main',
+          bgcolor: '#7C3AED',
           color: 'white'
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <SchoolIcon />
-          <Typography variant="h6">Trade AI Platform Walkthrough</Typography>
+          <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>TRADEAI Platform Tour</Typography>
         </Box>
         <IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close">
           <CloseIcon />
@@ -143,12 +135,13 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
           {/* Left sidebar with steps */}
           <Box
             sx={{
-              width: { xs: '100%', md: 280 },
+              width: { xs: '100%', md: 260 },
               bgcolor: 'background.paper',
               borderRight: { xs: 0, md: 1 },
               borderBottom: { xs: 1, md: 0 },
               borderColor: 'divider',
-              p: 2
+              p: { xs: 1.5, md: 2 },
+              display: { xs: 'none', md: 'block' },
             }}
           >
             <Stepper activeStep={activeStep} orientation="vertical">
@@ -163,7 +156,7 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
                       variant="subtitle2"
                       sx={{
                         fontWeight: index === activeStep ? 'bold' : 'normal',
-                        color: index === activeStep ? 'primary.main' : 'text.primary'
+                        color: index === activeStep ? '#7C3AED' : 'text.primary'
                       }}
                     >
                       {step.title}
@@ -184,23 +177,26 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
               {tourSteps[activeStep].content}
             </Typography>
             
-            {/* Image placeholder - in a real app, this would be actual screenshots */}
             <Paper
               elevation={0}
               sx={{
-                bgcolor: 'grey.100',
-                height: 300,
+                bgcolor: '#F5F3FF',
+                p: 3,
+                mb: 3,
+                borderRadius: 2,
+                flexGrow: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                mb: 3,
-                borderRadius: 1,
-                flexGrow: 1
+                minHeight: { xs: 120, md: 200 },
               }}
             >
-              <Typography variant="body2" color="text.secondary">
-                {tourSteps[activeStep].image ? 'Screenshot would appear here' : 'No image available'}
-              </Typography>
+              <Box sx={{ textAlign: 'center' }}>
+                {React.cloneElement(tourSteps[activeStep].icon, { sx: { fontSize: 48, color: '#7C3AED', mb: 1 } })}
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                  Step {activeStep + 1} of {tourSteps.length}
+                </Typography>
+              </Box>
             </Paper>
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 'auto' }}>
