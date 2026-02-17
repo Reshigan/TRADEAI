@@ -274,13 +274,13 @@ class CacheService {
     const key = this.generateKey('ratelimit', identifier);
 
     try {
-      const count = await this.incrAsync(key);
+      const count = await this.client.incr(key);
 
       if (count === 1) {
-        await this.expireAsync(key, window);
+        await this.client.expire(key, window);
       }
 
-      const ttl = await this.ttlAsync(key);
+      const ttl = await this.client.ttl(key);
 
       return {
         count,

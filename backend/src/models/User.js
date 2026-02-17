@@ -213,9 +213,8 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 // Static methods
 userSchema.statics.findByCredentials = async function (email, password, companyId = null) {
   const query = { email, isActive: true };
-  // Add company filter for multi-tenant support
   if (companyId) {
-    query.company = companyId;
+    query.companyId = companyId;
   }
 
   const user = await this.findOne(query);

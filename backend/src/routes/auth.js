@@ -71,7 +71,7 @@ const registerValidation = [
     .isLength({ max: 50 })
     .withMessage('Employee ID must be less than 50 characters'),
   body('role')
-    .isIn(['admin', 'board', 'director', 'manager', 'kam', 'sales_rep', 'sales_admin', 'analyst'])
+    .isIn(['super_admin', 'admin', 'manager', 'kam', 'analyst', 'user'])
     .withMessage('Invalid role'),
   body('department')
     .isIn(['sales', 'marketing', 'finance', 'operations', 'admin'])

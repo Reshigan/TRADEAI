@@ -1723,7 +1723,7 @@ function App() {
           } 
         />
         <Route 
-          path="/vendors" 
+          path="/vendor-management" 
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
