@@ -1,3 +1,6 @@
+// DEPRECATED: This module is not used in production. The Workers backend (workers-backend/)
+// is the active production backend. This Express/NestJS controller is retained for reference only.
+
 import { 
   Controller, 
   Get, 

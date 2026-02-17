@@ -566,9 +566,79 @@ export class D1Client {
         }
       }
       if (stage.$group) {
-        // Basic group support - return empty for complex aggregations
-        console.warn('Complex $group aggregations not fully supported in D1');
-        return [];
+        const group = stage.$group;
+        const groupId = group._id;
+        const selectParts = [];
+        const groupByParts = [];
+
+        if (groupId === null) {
+          selectParts.push("'all' as _id");
+        } else if (typeof groupId === 'string' && groupId.startsWith('$')) {
+          const field = groupId.substring(1);
+          const col = COLUMN_MAP[field] || field;
+          selectParts.push(`${col} as _id`);
+          groupByParts.push(col);
+        } else if (typeof groupId === 'object' && groupId !== null) {
+          const idParts = [];
+          for (const [alias, expr] of Object.entries(groupId)) {
+            if (typeof expr === 'string' && expr.startsWith('$')) {
+              const col = COLUMN_MAP[expr.substring(1)] || expr.substring(1);
+              idParts.push(`${col} as ${alias}`);
+              groupByParts.push(col);
+            }
+          }
+          if (idParts.length > 0) {
+            selectParts.push(...idParts);
+          } else {
+            selectParts.push("'all' as _id");
+          }
+        }
+
+        for (const [alias, expr] of Object.entries(group)) {
+          if (alias === '_id') continue;
+          if (typeof expr === 'object' && expr !== null) {
+            if (expr.$sum !== undefined) {
+              if (typeof expr.$sum === 'string' && expr.$sum.startsWith('$')) {
+                const col = COLUMN_MAP[expr.$sum.substring(1)] || expr.$sum.substring(1);
+                selectParts.push(`COALESCE(SUM(${col}), 0) as ${alias}`);
+              } else if (expr.$sum === 1) {
+                selectParts.push(`COUNT(*) as ${alias}`);
+              } else {
+                selectParts.push(`${expr.$sum} as ${alias}`);
+              }
+            } else if (expr.$avg !== undefined && typeof expr.$avg === 'string' && expr.$avg.startsWith('$')) {
+              const col = COLUMN_MAP[expr.$avg.substring(1)] || expr.$avg.substring(1);
+              selectParts.push(`COALESCE(AVG(${col}), 0) as ${alias}`);
+            } else if (expr.$count !== undefined) {
+              selectParts.push(`COUNT(*) as ${alias}`);
+            } else if (expr.$min !== undefined && typeof expr.$min === 'string' && expr.$min.startsWith('$')) {
+              const col = COLUMN_MAP[expr.$min.substring(1)] || expr.$min.substring(1);
+              selectParts.push(`MIN(${col}) as ${alias}`);
+            } else if (expr.$max !== undefined && typeof expr.$max === 'string' && expr.$max.startsWith('$')) {
+              const col = COLUMN_MAP[expr.$max.substring(1)] || expr.$max.substring(1);
+              selectParts.push(`MAX(${col}) as ${alias}`);
+            }
+          }
+        }
+
+        if (selectParts.length === 0) {
+          selectParts.push('*');
+        }
+
+        let groupSql = `SELECT ${selectParts.join(', ')} FROM ${table}`;
+        if (params.length > 0 && pipeline[0]?.$match) {
+          const matchParams = [];
+          const matchWhere = filterToWhere(pipeline[0].$match, matchParams);
+          groupSql += ` WHERE ${matchWhere}`;
+          params.length = 0;
+          params.push(...matchParams);
+        }
+        if (groupByParts.length > 0) {
+          groupSql += ` GROUP BY ${groupByParts.join(', ')}`;
+        }
+
+        const groupResult = await this.db.prepare(groupSql).bind(...params).all();
+        return groupResult.results || [];
       }
     }
     
