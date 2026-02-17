@@ -234,7 +234,7 @@ module.exports = {
       },
       servers: [
         {
-          url: process.env.API_URL || `http://localhost:${process.env.PORT || 5000}`,
+          url: process.env.API_URL || `http://localhost:${process.env.PORT || 5002}`,
           description: 'API Server'
         }
       ]

@@ -97,7 +97,7 @@
       "jsx-a11y/anchor-is-valid": "off"
     }
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:5002",
   "browserslist": {
     "production": [
       ">0.2%",
