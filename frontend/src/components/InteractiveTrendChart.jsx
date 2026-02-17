@@ -72,7 +72,7 @@ const InteractiveTrendChart = ({
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <Paper sx={{ p: 2, border: '2px solid #2196f3' }}>
+        <Paper sx={{ p: 2, border: '2px solid #8B5CF6' }}>
           <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
             {label}
           </Typography>
@@ -213,9 +213,9 @@ const InteractiveTrendChart = ({
             <Line 
               type="monotone" 
               dataKey="actual" 
-              stroke="#2196f3" 
+              stroke="#8B5CF6" 
               strokeWidth={3}
-              dot={{ fill: '#2196f3', r: 5 }}
+              dot={{ fill: '#8B5CF6', r: 5 }}
               name="Actual"
               connectNulls={false}
             />
@@ -225,10 +225,10 @@ const InteractiveTrendChart = ({
               <Line 
                 type="monotone" 
                 dataKey="predicted" 
-                stroke="#1E40AF" 
+                stroke="#6D28D9" 
                 strokeWidth={2}
                 strokeDasharray="5 5"
-                dot={{ fill: '#1E40AF', r: 4 }}
+                dot={{ fill: '#6D28D9', r: 4 }}
                 name="AI Forecast"
               />
             )}
@@ -261,7 +261,7 @@ const InteractiveTrendChart = ({
             <Area 
               type="monotone" 
               dataKey="actual" 
-              stroke="#2196f3" 
+              stroke="#8B5CF6" 
               fill="url(#colorActual)"
               strokeWidth={3}
               name="Actual"
@@ -271,7 +271,7 @@ const InteractiveTrendChart = ({
               <Area 
                 type="monotone" 
                 dataKey="predicted" 
-                stroke="#1E40AF" 
+                stroke="#6D28D9" 
                 fill="url(#colorPredicted)"
                 strokeWidth={2}
                 strokeDasharray="5 5"
@@ -281,12 +281,12 @@ const InteractiveTrendChart = ({
             
             <defs>
               <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#2196f3" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#2196f3" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorPredicted" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#1E40AF" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="#1E40AF" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#6D28D9" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#6D28D9" stopOpacity={0}/>
               </linearGradient>
             </defs>
           </AreaChart>
@@ -320,7 +320,7 @@ const InteractiveTrendChart = ({
 
       {/* Learning Note */}
       <Box sx={{ mt: 2, p: 1.5, bgcolor: '#eff6ff', borderRadius: 2 }}>
-        <Typography variant="caption" sx={{ color: '#1E40AF' }}>
+        <Typography variant="caption" sx={{ color: '#6D28D9' }}>
           💡 <strong>Did you know?</strong> This forecast accuracy improves as you use the system more. Current model accuracy: 87%
         </Typography>
       </Box>

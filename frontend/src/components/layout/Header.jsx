@@ -37,7 +37,7 @@ const Header = () => {
           backgroundColor: '#EFF6FF', 
           borderRadius: '20px',
           fontSize: '14px',
-          color: '#1E40AF',
+          color: '#6D28D9',
           fontWeight: '500'
         }}>
           {user?.role || 'User'}
@@ -46,7 +46,7 @@ const Header = () => {
           width: '40px', 
           height: '40px', 
           borderRadius: '50%', 
-          backgroundColor: '#1E40AF',
+          backgroundColor: '#6D28D9',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

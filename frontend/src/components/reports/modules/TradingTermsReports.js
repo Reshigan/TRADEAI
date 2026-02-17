@@ -335,7 +335,7 @@ const TradingTermsReports = () => {
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                   <Legend />
-                  <Bar dataKey="estimatedValue" fill="#1976d2" name="Estimated Value" />
+                  <Bar dataKey="estimatedValue" fill="#7C3AED" name="Estimated Value" />
                   <Bar dataKey="actualRevenue" fill="#4caf50" name="Actual Revenue" />
                   <Bar dataKey="cost" fill="#ff9800" name="Cost" />
                 </BarChart>

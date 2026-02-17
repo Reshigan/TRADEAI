@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Box, CssBaseline, Toolbar, useMediaQuery, useTheme } from '@mui/material';
-import Breadcrumbs from './common/Breadcrumbs';
-import MegaMenu from './MegaMenu';
+import { Box, CssBaseline, useMediaQuery, useTheme } from '@mui/material';
+import Sidebar, { SIDEBAR_WIDTH } from './Sidebar';
+import TopHeader from './TopHeader';
 import MobileDrawer from './MobileDrawer';
 
 const Layout = ({ children, user, onLogout }) => {
@@ -9,44 +9,42 @@ const Layout = ({ children, user, onLogout }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleMobileMenuToggle = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F3F4F6' }}>
       <CssBaseline />
-      
-      {/* MegaMenu at the top */}
-      <MegaMenu 
-        user={user} 
-        onLogout={onLogout}
-        onMobileMenuToggle={handleMobileMenuToggle}
-      />
 
-      {/* Mobile Navigation Drawer */}
+      {!isMobile && <Sidebar user={user} onLogout={onLogout} />}
+
       <MobileDrawer
         open={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
         user={user}
         onLogout={onLogout}
       />
-      
-      {/* Toolbar spacer for fixed AppBar */}
-      <Toolbar />
-      
+
       <Box
         component="main"
-        sx={{ 
-          flexGrow: 1, 
-          p: { xs: 1.5, sm: 2, md: 3 }, 
-          width: '100%',
-          bgcolor: 'background.default',
-          overflow: 'hidden'
+        sx={{
+          flexGrow: 1,
+          ml: isMobile ? 0 : `${SIDEBAR_WIDTH}px`,
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          width: isMobile ? '100%' : `calc(100% - ${SIDEBAR_WIDTH}px)`,
         }}
       >
-        {!isMobile && <Breadcrumbs />}
-        {children}
+        <TopHeader onMenuClick={() => setMobileMenuOpen(true)} />
+
+        <Box
+          sx={{
+            flex: 1,
+            px: { xs: 2, sm: 3 },
+            pb: 3,
+            overflow: 'auto',
+          }}
+        >
+          {children}
+        </Box>
       </Box>
     </Box>
   );

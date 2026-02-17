@@ -62,7 +62,7 @@ const SuccessTracker = ({ userId }) => {
       <Paper sx={{ 
         p: 3, 
         mb: 2,
-        background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+        background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
         color: 'white'
       }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -135,7 +135,7 @@ const SuccessTracker = ({ userId }) => {
         </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
           <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#eff6ff', borderRadius: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#6D28D9' }}>
               {stats.totalActions}
             </Typography>
             <Typography variant="caption" color="text.secondary">
@@ -143,7 +143,7 @@ const SuccessTracker = ({ userId }) => {
             </Typography>
           </Box>
           <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#eff6ff', borderRadius: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#6D28D9' }}>
               {stats.successRate}%
             </Typography>
             <Typography variant="caption" color="text.secondary">

@@ -147,7 +147,7 @@ export default function EnterpriseDashboard() {
             change="+12.5%"
             trend="up"
             icon={<AccountBalance />}
-            color="#1976d2"
+            color="#7C3AED"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>

@@ -138,7 +138,7 @@ const Sidebar = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    color: active ? '#1E40AF' : '#404040'
+                    color: active ? '#6D28D9' : '#404040'
                   }}
                   onMouseEnter={(e) => {
                     if (!active) {
@@ -153,7 +153,7 @@ const Sidebar = () => {
                 >
                   <IconComponent style={{ 
                     fontSize: '20px',
-                    color: active ? '#1E40AF' : '#737373'
+                    color: active ? '#6D28D9' : '#737373'
                   }} />
                   <span style={{ 
                     fontSize: '14px',

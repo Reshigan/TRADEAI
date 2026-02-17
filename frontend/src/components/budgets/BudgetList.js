@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Grid,
   TextField,
   MenuItem,
   InputAdornment,
-  Alert
+  Alert,
+  Paper,
+  Typography,
+  alpha,
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Search as SearchIcon
+  Search as SearchIcon,
+  AccountBalance as BudgetIcon,
+  CheckCircle as ApprovedIcon,
+  TrendingUp as SpentIcon,
+  Savings as RemainingIcon,
 } from '@mui/icons-material';
-// import { format } from 'date-fns';
 
-import { PageHeader, DataTable, StatusChip } from '../common';
+import { DataTable, StatusChip } from '../common';
 import budgetService from '../../services/api/budgetService';
 import BudgetForm from './BudgetForm';
 import { formatCurrencyCompact } from '../../utils/formatters';
@@ -193,106 +197,85 @@ const BudgetList = () => {
     }
   ];
 
-  // Add error boundary fallback
+  const budgetStats = useMemo(() => {
+    const totalAmount = budgets.reduce((sum, b) => sum + (b.amount || b.totalAmount || 0), 0);
+    const totalUtilized = budgets.reduce((sum, b) => sum + (b.utilized || b.allocated || 0), 0);
+    const totalRemaining = totalAmount - totalUtilized;
+    const approved = budgets.filter(b => b.status === 'approved').length;
+    return { totalAmount, totalUtilized, totalRemaining, approved };
+  }, [budgets]);
+
+  const summaryCards = [
+    { label: 'Total Budget', value: formatCurrencyCompact(budgetStats.totalAmount), icon: <BudgetIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Approved', value: budgetStats.approved, icon: <ApprovedIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
+    { label: 'Utilized', value: formatCurrencyCompact(budgetStats.totalUtilized), icon: <SpentIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
+    { label: 'Remaining', value: formatCurrencyCompact(budgetStats.totalRemaining), icon: <RemainingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
+  ];
+
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
-        <PageHeader
-          title="Budgets"
-          subtitle="Manage your trade spend budgets"
-        />
-        <Alert severity="error" sx={{ mt: 2 }}>
+      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+        <Typography variant="h5" fontWeight={700} mb={2}>Budgets</Typography>
+        <Alert severity="error" sx={{ borderRadius: '12px' }}>
           <strong>Error loading budgets:</strong> {error}
           <br />
-          <Button 
-            variant="outlined" 
-            size="small" 
-            onClick={fetchBudgets}
-            sx={{ mt: 1 }}
-          >
-            Retry
-          </Button>
+          <Button variant="outlined" size="small" onClick={fetchBudgets} sx={{ mt: 1, borderRadius: '10px', textTransform: 'none' }}>Retry</Button>
         </Alert>
       </Box>
     );
   }
 
   return (
-    <Box>
-      <PageHeader
-        title="Budgets"
-        subtitle="Manage your trade spend budgets"
-        action={
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleCreateBudget}
-          >
-            Create Budget
-          </Button>
-        }
-      />
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>Budgets</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>Manage your trade spend budgets</Typography>
+        </Box>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateBudget}
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          Create Budget
+        </Button>
+      </Box>
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={4} md={3}>
-              <TextField
-                fullWidth
-                select
-                label="Year"
-                name="year"
-                value={filters.year}
-                onChange={handleFilterChange}
-                variant="outlined"
-                size="small"
-              >
-                <MenuItem value="">All Years</MenuItem>
-                <MenuItem value="2025">2025</MenuItem>
-                <MenuItem value="2026">2026</MenuItem>
-                <MenuItem value="2027">2027</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={4} md={3}>
-              <TextField
-                fullWidth
-                select
-                label="Status"
-                name="status"
-                value={filters.status}
-                onChange={handleFilterChange}
-                variant="outlined"
-                size="small"
-              >
-                <MenuItem value="">All Statuses</MenuItem>
-                <MenuItem value="draft">Draft</MenuItem>
-                <MenuItem value="pending">Pending</MenuItem>
-                <MenuItem value="approved">Approved</MenuItem>
-                <MenuItem value="rejected">Rejected</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={4} md={6}>
-              <TextField
-                fullWidth
-                label="Search"
-                name="search"
-                value={filters.search}
-                onChange={handleFilterChange}
-                variant="outlined"
-                size="small"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {summaryCards.map((s) => (
+          <Grid item xs={6} md={3} key={s.label}>
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {React.cloneElement(s.icon, { sx: { color: s.color, fontSize: 22 } })}
+              </Box>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>{s.label}</Typography>
+                <Typography variant="h6" fontWeight={700}>{s.value}</Typography>
+              </Box>
+            </Paper>
           </Grid>
-        </CardContent>
-      </Card>
+        ))}
+      </Grid>
+
+      <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', mb: 3, overflow: 'hidden' }}>
+        <Box sx={{ p: 2.5, display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid', borderColor: 'divider' }}>
+          <TextField fullWidth select label="Year" name="year" value={filters.year} onChange={handleFilterChange} size="small"
+            sx={{ maxWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }}>
+            <MenuItem value="">All Years</MenuItem>
+            <MenuItem value="2025">2025</MenuItem>
+            <MenuItem value="2026">2026</MenuItem>
+            <MenuItem value="2027">2027</MenuItem>
+          </TextField>
+          <TextField fullWidth select label="Status" name="status" value={filters.status} onChange={handleFilterChange} size="small"
+            sx={{ maxWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }}>
+            <MenuItem value="">All Statuses</MenuItem>
+            <MenuItem value="draft">Draft</MenuItem>
+            <MenuItem value="pending">Pending</MenuItem>
+            <MenuItem value="approved">Approved</MenuItem>
+            <MenuItem value="rejected">Rejected</MenuItem>
+          </TextField>
+          <TextField fullWidth label="Search" name="search" value={filters.search} onChange={handleFilterChange} size="small"
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
+            sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+        </Box>
+      </Paper>
 
       <DataTable
         columns={columns}

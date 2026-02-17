@@ -1,7 +1,7 @@
 
 export const colors = {
   primary: {
-    main: '#1976d2',
+    main: '#7C3AED',
     light: '#42a5f5',
     dark: '#1565c0',
     contrastText: '#fff',
@@ -196,7 +196,7 @@ export const transitions = {
 export const darkColors = {
   primary: {
     main: '#90caf9',
-    light: '#e3f2fd',
+    light: '#F5F3FF',
     dark: '#42a5f5',
     contrastText: 'rgba(0, 0, 0, 0.87)',
   },

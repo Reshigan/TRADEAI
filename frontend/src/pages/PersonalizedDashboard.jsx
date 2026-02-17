@@ -72,7 +72,7 @@ const PersonalizedDashboard = () => {
         <Box sx={{ mb: 4 }}>
           <Paper sx={{ 
             p: 3,
-            background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+            background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
             color: 'white'
           }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -176,7 +176,7 @@ const PersonalizedDashboard = () => {
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid item xs={12} sm={4}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#6D28D9' }}>
                     R1.2M
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -198,7 +198,7 @@ const PersonalizedDashboard = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Paper sx={{ p: 2, textAlign: 'center' }}>
-                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#1E40AF' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 600, color: '#6D28D9' }}>
                     87%
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -229,17 +229,17 @@ const PersonalizedDashboard = () => {
 
         {/* Learning Progress */}
         <Paper sx={{ p: 2, mt: 2, bgcolor: '#eff6ff' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1E40AF', mb: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#6D28D9', mb: 1 }}>
             Your AI is Getting Smarter
           </Typography>
-          <Typography variant="body2" sx={{ color: '#1E40AF', mb: 1 }}>
+          <Typography variant="body2" sx={{ color: '#6D28D9', mb: 1 }}>
             After analyzing your last 156 decisions, the AI model accuracy has improved to 91% (up from 87% last week).
             The more you use it, the better it gets at understanding your preferences.
           </Typography>
           <Chip 
             label="Model accuracy: 91%" 
             size="small" 
-            sx={{ bgcolor: '#1E40AF', color: 'white', fontWeight: 600 }}
+            sx={{ bgcolor: '#6D28D9', color: 'white', fontWeight: 600 }}
           />
         </Paper>
 

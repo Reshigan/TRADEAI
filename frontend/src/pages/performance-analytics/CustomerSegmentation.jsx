@@ -59,7 +59,7 @@ import {
 } from 'recharts';
 import api from '../../services/api';
 
-const COLORS = ['#4caf50', '#2196f3', '#ff9800', '#f44336', '#9c27b0'];
+const COLORS = ['#4caf50', '#8B5CF6', '#ff9800', '#f44336', '#9c27b0'];
 
 const CustomerSegmentation = () => {
   const { enqueueSnackbar } = useSnackbar();

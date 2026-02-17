@@ -105,7 +105,7 @@ ${backupCodes.map((code, i) => `${i + 1}. ${code}`).join('\n')}
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+      background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
       p: 3
     }}>
       <Paper elevation={3} sx={{ 

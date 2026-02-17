@@ -46,7 +46,7 @@ const helpSections = [
     id: 'promotions',
     title: 'Promotions',
     icon: PromotionsIcon,
-    color: '#1976d2',
+    color: '#7C3AED',
     description: 'Create, manage, and track trade promotions',
     path: '/help/promotions',
     topics: ['Creating promotions', 'Promotion types', 'Approval workflow', 'Performance tracking'],
@@ -362,7 +362,7 @@ const HelpCenter = () => {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
                   <Box
                     sx={{
-                      bgcolor: guide.type === 'video' ? '#d32f2f' : '#1976d2',
+                      bgcolor: guide.type === 'video' ? '#d32f2f' : '#7C3AED',
                       borderRadius: 2,
                       p: 1,
                       mr: 2,
@@ -419,7 +419,7 @@ const HelpCenter = () => {
 
       <Divider sx={{ my: 4 }} />
 
-      <Paper sx={{ p: 3, mb: 4, bgcolor: '#e3f2fd' }}>
+      <Paper sx={{ p: 3, mb: 4, bgcolor: '#F5F3FF' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
           <Box>
             <Typography variant="h6" gutterBottom>

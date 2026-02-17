@@ -101,7 +101,7 @@ const UniversalFlowLayout = ({
         p: 2, 
         mb: 2, 
         borderRadius: 0,
-        borderBottom: '2px solid #1E40AF'
+        borderBottom: '2px solid #6D28D9'
       }}>
         <Box sx={{ 
           display: 'flex', 
@@ -109,7 +109,7 @@ const UniversalFlowLayout = ({
           alignItems: 'center' 
         }}>
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1E40AF' }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, color: '#6D28D9' }}>
               {title}
             </Typography>
             {subtitle && (
@@ -202,10 +202,10 @@ const UniversalFlowLayout = ({
             right: aiPanelOpen ? 0 : 16,
             top: aiPanelOpen ? '50%' : '50%',
             transform: 'translateY(-50%)',
-            bgcolor: '#1E40AF',
+            bgcolor: '#6D28D9',
             color: 'white',
             '&:hover': {
-              bgcolor: '#1E3A8A'
+              bgcolor: '#5B21B6'
             },
             zIndex: 1000,
             boxShadow: '0 4px 12px rgba(30,64,175,0.4)'
@@ -219,7 +219,7 @@ const UniversalFlowLayout = ({
           <Paper sx={{ 
             width: '400px',
             overflow: 'auto',
-            background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+            background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
             color: 'white',
             p: 3,
             borderRadius: 2,

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Container,
   Grid,
   Paper,
   Typography,
@@ -19,7 +18,8 @@ import {
   Chip,
   Snackbar,
   Alert,
-  CircularProgress
+  CircularProgress,
+  alpha,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -38,6 +38,8 @@ import { AIInsightsFeed } from './contextual-ai';
 import {analyticsService} from '../services/api';
 import {safeNumber, safeToFixed, formatPercentage} from '../utils/formatters';
 
+const kpiColors = ['#7C3AED', '#7C3AED', '#10B981', '#F59E0B'];
+
 const Dashboard = ({ user }) => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showWalkthroughSnackbar, setShowWalkthroughSnackbar] = useState(false);
@@ -52,25 +54,18 @@ const Dashboard = ({ user }) => {
   });
 
   const [error, setError] = useState(null);
-  
 
-
-  // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        // Fetch dashboard analytics
         const response = await analyticsService.getDashboard();
-
         if (response.success) {
           setDashboardData(response.data);
         } else {
           throw new Error('Failed to fetch dashboard data');
         }
-
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         setError('Failed to load dashboard data. Please try again.');
@@ -78,59 +73,50 @@ const Dashboard = ({ user }) => {
         setLoading(false);
       }
     };
-
     fetchDashboardData();
   }, []);
 
-  // Check if this is the first login
   useEffect(() => {
     const walkthroughCompleted = localStorage.getItem('walkthroughCompleted');
     const firstLogin = localStorage.getItem('firstLogin');
-    
     if (!walkthroughCompleted && !firstLogin) {
-      // Set first login flag
       localStorage.setItem('firstLogin', 'true');
-      // Show walkthrough snackbar
       setShowWalkthroughSnackbar(true);
     }
   }, []);
-  
+
   const handleStartWalkthrough = () => {
     setShowWalkthrough(true);
     setShowWalkthroughSnackbar(false);
   };
-  
+
   const handleCloseWalkthrough = () => {
     setShowWalkthrough(false);
   };
-  
+
+  const cardSx = {
+    borderRadius: '16px',
+    border: '1px solid #E5E7EB',
+    boxShadow: 'none',
+    '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.06)' },
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* AI Assistant with Ollama */}
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       <AIChatbotFAB pageContext="dashboard" contextData={dashboardData} />
-      
-      {/* Walkthrough Tour */}
-      <WalkthroughTour 
-        open={showWalkthrough} 
-        onClose={handleCloseWalkthrough} 
-      />
-      
-      {/* Walkthrough Snackbar */}
+      <WalkthroughTour open={showWalkthrough} onClose={handleCloseWalkthrough} />
+
       <Snackbar
         open={showWalkthroughSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         autoHideDuration={10000}
         onClose={() => setShowWalkthroughSnackbar(false)}
       >
-        <Alert 
-          severity="info" 
+        <Alert
+          severity="info"
           icon={<SchoolIcon />}
           action={
-            <Button 
-              color="inherit" 
-              size="small" 
-              onClick={handleStartWalkthrough}
-            >
+            <Button color="inherit" size="small" onClick={handleStartWalkthrough}>
               Start Tour
             </Button>
           }
@@ -139,309 +125,349 @@ const Dashboard = ({ user }) => {
           Welcome to Trade AI Platform! Would you like to take a quick tour?
         </Alert>
       </Snackbar>
-      
-      <Typography variant="h4" gutterBottom>
-        Welcome back, {user?.name?.split(' ')[0] || 'User'}
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-        Here's what's happening with your trade spend activities today.
-      </Typography>
-      
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
         <Button
           startIcon={<SchoolIcon />}
           onClick={handleStartWalkthrough}
-          variant="outlined"
-          size="small"
+          sx={{
+            borderRadius: '24px',
+            textTransform: 'none',
+            fontWeight: 600,
+            fontSize: '0.8rem',
+            color: '#7C3AED',
+            border: '1px solid #E5E7EB',
+            px: 2.5,
+            '&:hover': { bgcolor: 'rgba(124,58,237,0.04)', borderColor: '#7C3AED' },
+          }}
         >
           Platform Tour
         </Button>
       </Box>
-      
-      {/* Error Alert */}
+
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
           {error}
         </Alert>
       )}
 
-      {/* Loading State */}
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-          <CircularProgress />
+          <CircularProgress sx={{ color: '#7C3AED' }} />
         </Box>
       ) : (
         <>
-          {/* AI Insights Feed */}
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 3 }}>
             <AIInsightsFeed userId={user?.id} />
           </Box>
 
-          {/* KPI Cards */}
-          <Grid container spacing={3} sx={{ mb: 4, mt: 1 }}>
+          <Grid container spacing={2.5} sx={{ mb: 3 }}>
             {dashboardData.summary && [
               {
                 title: 'Total Budget',
                 value: `${dashboardData.summary.currencySymbol}${safeToFixed(safeNumber(dashboardData.summary.totalBudget) / 1000000, 1)}M`,
-                icon: <AttachMoney color="primary" />,
+                icon: <AttachMoney />,
                 change: '+12%',
                 trend: 'up'
               },
               {
                 title: 'Active Promotions',
                 value: safeNumber(dashboardData.summary.activePromotions, 0).toString(),
-                icon: <LocalOffer color="secondary" />,
+                icon: <LocalOffer />,
                 change: `+${safeNumber(dashboardData.summary.activePromotions, 0)}`,
                 trend: 'up'
               },
               {
                 title: 'Customers',
                 value: safeNumber(dashboardData.summary.totalCustomers, 0).toString(),
-                icon: <ShoppingCart color="success" />,
+                icon: <ShoppingCart />,
                 change: '0',
                 trend: 'neutral'
               },
               {
                 title: 'Budget Utilization',
                 value: formatPercentage(dashboardData.summary.budgetUtilization, 0),
-                icon: <Assessment color="warning" />,
+                icon: <Assessment />,
                 change: '+8%',
                 trend: 'up'
               }
             ].map((kpi, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
-                <Card elevation={2}>
-                  <CardContent sx={{ p: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Avatar sx={{ bgcolor: 'background.paper', mr: 2 }}>
-                        {kpi.icon}
-                      </Avatar>
-                      <Typography variant="h6" component="div">
-                        {kpi.title}
-                      </Typography>
+                <Paper elevation={0} sx={{ ...cardSx, p: 2.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: '12px',
+                        bgcolor: alpha(kpiColors[index], 0.1),
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {React.cloneElement(kpi.icon, { sx: { color: kpiColors[index], fontSize: 22 } })}
                     </Box>
-                    <Typography variant="h4" component="div" sx={{ mb: 1 }}>
-                      {kpi.value}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       {kpi.trend === 'up' ? (
-                        <TrendingUp fontSize="small" color="success" />
+                        <TrendingUp sx={{ fontSize: 16, color: '#10B981' }} />
                       ) : kpi.trend === 'down' ? (
-                        <TrendingDown fontSize="small" color="error" />
-                      ) : (
-                        <span style={{ width: 24 }} />
-                      )}
-                      <Typography 
-                        variant="body2" 
-                        color={
-                          kpi.trend === 'up' ? 'success.main' : 
-                          kpi.trend === 'down' ? 'error.main' : 
-                          'text.secondary'
-                        }
-                        sx={{ ml: 0.5 }}
+                        <TrendingDown sx={{ fontSize: 16, color: '#EF4444' }} />
+                      ) : null}
+                      <Typography
+                        variant="caption"
+                        fontWeight={600}
+                        sx={{
+                          color: kpi.trend === 'up' ? '#10B981' : kpi.trend === 'down' ? '#EF4444' : '#6B7280',
+                        }}
                       >
-                        {kpi.change} from last month
+                        {kpi.change}
                       </Typography>
                     </Box>
-                  </CardContent>
-                </Card>
+                  </Box>
+                  <Typography variant="h4" fontWeight={800} sx={{ color: '#111827', mb: 0.25 }}>
+                    {kpi.value}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                    {kpi.title}
+                  </Typography>
+                </Paper>
               </Grid>
             ))}
-      </Grid>
-      
-      <Grid container spacing={4}>
-          {/* Budget Overview */}
-          <Grid item xs={12} md={6}>
-            <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
-              <Typography variant="h6" gutterBottom>
-                Budget Overview (2025)
-              </Typography>
-              {dashboardData.summary ? (
-                <Box sx={{ my: 3 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2">
-                      {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalUsed) / 1000000, 1)}M Used
-                    </Typography>
-                    <Typography variant="body2">
-                      {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalBudget) / 1000000, 1)}M Total
-                    </Typography>
-                  </Box>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={safeNumber(dashboardData.summary.budgetUtilization, 0)} 
-                    sx={{ height: 10, borderRadius: 5 }}
-                  />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Allocated
-                      </Typography>
-                      <Typography variant="h6">
-                        {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalUsed) / 1000000, 1)}M
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Remaining
-                      </Typography>
-                      <Typography variant="h6">
-                        {dashboardData.summary.currencySymbol}{safeToFixed((safeNumber(dashboardData.summary.totalBudget) - safeNumber(dashboardData.summary.totalUsed)) / 1000000, 1)}M
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
-                        % Used
-                      </Typography>
-                      <Typography variant="h6">
-                        {formatPercentage(dashboardData.summary.budgetUtilization, 0)}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No budget data available
-                  </Typography>
-                </Box>
-              )}
-            <Divider sx={{ my: 2 }} />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="subtitle1">
-                Budget Forecast (AI Prediction)
-              </Typography>
-              <Chip 
-                icon={<Assessment />} 
-                label="View Details" 
-                variant="outlined" 
-                color="primary" 
-                size="small"
-                clickable
-              />
-            </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {dashboardData.forecast?.recommendation || 'Based on current spending patterns, you are projected to exceed your budget by 8% before year end.'}
-            </Typography>
-          </Paper>
-        </Grid>
-        
-        {/* Pending Approvals */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">
-                Pending Approvals
-              </Typography>
-              <Button size="small" variant="outlined">
-                View All
-              </Button>
-            </Box>
-            {dashboardData.pendingApprovals.length > 0 ? (
-              <List sx={{ width: '100%' }}>
-                {dashboardData.pendingApprovals.map((item) => (
-                  <React.Fragment key={item.id}>
-                    <ListItem alignItems="flex-start" sx={{ px: 0 }}>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'warning.light' }}>
-                          <Warning />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography variant="subtitle2">
-                            {item.type} - {item.customer}
-                          </Typography>
-                        }
-                        secondary={
-                          <React.Fragment>
-                            <Typography variant="body2" color="text.secondary">
-                              ${(item.amount || 0).toLocaleString()} • Requested by {item.requestedBy} on {new Date(item.date).toLocaleDateString()}
-                            </Typography>
-                          </React.Fragment>
-                        }
-                      />
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button size="small" variant="contained" color="primary">
-                          Approve
-                        </Button>
-                        <Button size="small" variant="outlined" color="error">
-                          Reject
-                        </Button>
-                      </Box>
-                    </ListItem>
-                    <Divider variant="inset" component="li" />
-                  </React.Fragment>
-                ))}
-              </List>
-            ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }}>
-                <CheckCircle color="success" sx={{ fontSize: 48, mb: 2 }} />
-                <Typography variant="subtitle1">
-                  No pending approvals
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  All requests have been processed
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
-        
-          {/* Top Customers */}
-          <Grid item xs={12}>
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">
-                  Top Customers
-                </Typography>
-                <Button size="small" variant="outlined">
-                  View All
-                </Button>
-              </Box>
-              {dashboardData.topCustomers && dashboardData.topCustomers.length > 0 ? (
-                <Grid container spacing={2}>
-                  {dashboardData.topCustomers.slice(0, 4).map((customer, index) => (
-                    <Grid item xs={12} sm={6} md={3} key={customer.id || index}>
-                      <Card variant="outlined">
-                        <CardHeader
-                          title={customer.name}
-                          subheader={`${customer.totalSpend ? `${dashboardData.summary?.currencySymbol || 'R'}${customer.totalSpend.toLocaleString()}` : 'No spend data'}`}
-                          titleTypographyProps={{ variant: 'subtitle1' }}
-                          subheaderTypographyProps={{ variant: 'body2' }}
-                          action={
-                            <Chip 
-                              label={customer.tier || 'Standard'} 
-                              size="small"
-                              color={customer.tier === 'Premium' ? 'success' : 'default'}
-                            />
-                          }
-                        />
-                        <Divider />
-                        <CardContent sx={{ pt: 1 }}>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Active Promotions: {customer.activePromotions || 0}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Last Activity: {customer.lastActivity ? new Date(customer.lastActivity).toLocaleDateString() : 'N/A'}
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    No customer data available
-                  </Typography>
-                </Box>
-              )}
-            </Paper>
           </Grid>
-        </Grid>
+
+          <Grid container spacing={2.5}>
+            <Grid item xs={12} md={7}>
+              <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7C3AED' }} />
+                    <Typography variant="subtitle2" fontWeight={700}>Budget Overview</Typography>
+                  </Box>
+                  <Chip
+                    icon={<Assessment sx={{ fontSize: '14px !important' }} />}
+                    label="View Details"
+                    variant="outlined"
+                    size="small"
+                    clickable
+                    sx={{ borderRadius: '16px', fontWeight: 600, fontSize: '0.7rem' }}
+                  />
+                </Box>
+                {dashboardData.summary ? (
+                  <Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                        {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalUsed) / 1000000, 1)}M Used
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                        {dashboardData.summary.currencySymbol}{safeToFixed(safeNumber(dashboardData.summary.totalBudget) / 1000000, 1)}M Total
+                      </Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={safeNumber(dashboardData.summary.budgetUtilization, 0)}
+                      sx={{
+                        height: 10,
+                        borderRadius: 5,
+                        bgcolor: '#E5E7EB',
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 5,
+                          background: 'linear-gradient(90deg, #7C3AED, #A78BFA)',
+                        },
+                      }}
+                    />
+                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                      {[
+                        { label: 'Allocated', value: `${dashboardData.summary.currencySymbol}${safeToFixed(safeNumber(dashboardData.summary.totalUsed) / 1000000, 1)}M` },
+                        { label: 'Remaining', value: `${dashboardData.summary.currencySymbol}${safeToFixed((safeNumber(dashboardData.summary.totalBudget) - safeNumber(dashboardData.summary.totalUsed)) / 1000000, 1)}M` },
+                        { label: '% Used', value: formatPercentage(dashboardData.summary.budgetUtilization, 0) },
+                      ].map((stat, idx) => (
+                        <Grid item xs={4} key={idx}>
+                          <Box sx={{ textAlign: 'center', p: 1.5, bgcolor: '#F9FAFB', borderRadius: '12px' }}>
+                            <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+                            <Typography variant="h6" fontWeight={700}>{stat.value}</Typography>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+                    <Typography variant="body2" color="text.secondary">No budget data available</Typography>
+                  </Box>
+                )}
+                <Divider sx={{ my: 2 }} />
+                <Box sx={{ bgcolor: '#F5F3FF', borderRadius: '12px', p: 2 }}>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#7C3AED', mb: 0.5 }}>
+                    AI Budget Forecast
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                    {dashboardData.forecast?.recommendation || 'Based on current spending patterns, you are projected to exceed your budget by 8% before year end.'}
+                  </Typography>
+                </Box>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={5}>
+              <Paper elevation={0} sx={{ ...cardSx, p: 3, height: '100%' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2" fontWeight={700}>Pending Approvals</Typography>
+                  <Button
+                    size="small"
+                    sx={{
+                      borderRadius: '16px',
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                      textTransform: 'none',
+                      color: '#7C3AED',
+                      border: '1px solid #E5E7EB',
+                      px: 2,
+                    }}
+                  >
+                    View All
+                  </Button>
+                </Box>
+                {dashboardData.pendingApprovals.length > 0 ? (
+                  <List sx={{ width: '100%' }}>
+                    {dashboardData.pendingApprovals.map((item) => (
+                      <React.Fragment key={item.id}>
+                        <ListItem alignItems="flex-start" sx={{ px: 0 }}>
+                          <ListItemAvatar>
+                            <Avatar sx={{ bgcolor: '#FEF3C7', width: 40, height: 40, borderRadius: '12px' }}>
+                              <Warning sx={{ color: '#F59E0B', fontSize: 20 }} />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={
+                              <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.8rem' }}>
+                                {item.type} - {item.customer}
+                              </Typography>
+                            }
+                            secondary={
+                              <Typography variant="caption" color="text.secondary">
+                                R{(item.amount || 0).toLocaleString()} · {item.requestedBy}
+                              </Typography>
+                            }
+                          />
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            <Button
+                              size="small"
+                              sx={{
+                                borderRadius: '10px',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                fontSize: '0.7rem',
+                                bgcolor: '#7C3AED',
+                                color: '#fff',
+                                px: 1.5,
+                                minWidth: 0,
+                                '&:hover': { bgcolor: '#6D28D9' },
+                              }}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="small"
+                              sx={{
+                                borderRadius: '10px',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                fontSize: '0.7rem',
+                                border: '1px solid #E5E7EB',
+                                color: '#6B7280',
+                                px: 1.5,
+                                minWidth: 0,
+                              }}
+                            >
+                              Reject
+                            </Button>
+                          </Box>
+                        </ListItem>
+                        <Divider variant="inset" component="li" sx={{ borderColor: '#F3F4F6' }} />
+                      </React.Fragment>
+                    ))}
+                  </List>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }}>
+                    <Box sx={{ width: 56, height: 56, borderRadius: '16px', bgcolor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                      <CheckCircle sx={{ color: '#10B981', fontSize: 28 }} />
+                    </Box>
+                    <Typography variant="subtitle2" fontWeight={700}>No pending approvals</Typography>
+                    <Typography variant="caption" color="text.secondary">All requests have been processed</Typography>
+                  </Box>
+                )}
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2" fontWeight={700}>Top Customers</Typography>
+                  <Button
+                    size="small"
+                    sx={{
+                      borderRadius: '16px',
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                      textTransform: 'none',
+                      color: '#7C3AED',
+                      border: '1px solid #E5E7EB',
+                      px: 2,
+                    }}
+                  >
+                    View All
+                  </Button>
+                </Box>
+                {dashboardData.topCustomers && dashboardData.topCustomers.length > 0 ? (
+                  <Grid container spacing={2}>
+                    {dashboardData.topCustomers.slice(0, 4).map((customer, index) => (
+                      <Grid item xs={12} sm={6} md={3} key={customer.id || index}>
+                        <Card elevation={0} sx={{ border: '1px solid #E5E7EB', borderRadius: '14px', '&:hover': { borderColor: '#7C3AED', boxShadow: '0 2px 8px rgba(124,58,237,0.1)' } }}>
+                          <CardHeader
+                            title={customer.name}
+                            subheader={`${customer.totalSpend ? `${dashboardData.summary?.currencySymbol || 'R'}${customer.totalSpend.toLocaleString()}` : 'No spend data'}`}
+                            titleTypographyProps={{ variant: 'body2', fontWeight: 700, fontSize: '0.85rem' }}
+                            subheaderTypographyProps={{ variant: 'caption' }}
+                            action={
+                              <Chip
+                                label={customer.tier || 'Standard'}
+                                size="small"
+                                sx={{
+                                  bgcolor: customer.tier === 'Premium' ? '#ECFDF5' : '#F3F4F6',
+                                  color: customer.tier === 'Premium' ? '#059669' : '#6B7280',
+                                  fontWeight: 600,
+                                  fontSize: '0.65rem',
+                                  height: 22,
+                                  borderRadius: '8px',
+                                }}
+                              />
+                            }
+                          />
+                          <Divider sx={{ borderColor: '#F3F4F6' }} />
+                          <CardContent sx={{ pt: 1.5 }}>
+                            <Typography variant="caption" color="text.secondary">
+                              Active Promotions: {customer.activePromotions || 0}
+                            </Typography>
+                            <br />
+                            <Typography variant="caption" color="text.secondary">
+                              Last Activity: {customer.lastActivity ? new Date(customer.lastActivity).toLocaleDateString() : 'N/A'}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">No customer data available</Typography>
+                  </Box>
+                )}
+              </Paper>
+            </Grid>
+          </Grid>
         </>
       )}
-    </Container>
+    </Box>
   );
 };
 

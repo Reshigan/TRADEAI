@@ -251,7 +251,7 @@ const ActivityList = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   '&:hover': {
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                    boxShadow: '0 4px 12px rgba(124, 58, 237, 0.15)',
                     borderColor: 'primary.main'
                   }
                 }}

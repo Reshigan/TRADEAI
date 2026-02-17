@@ -12,10 +12,10 @@ import { createTheme } from '@mui/material/styles';
 
 // Enterprise status colors - more muted and professional
 const statusColors = {
-  ai: '#6366F1',        // Indigo for AI features
+  ai: '#7C3AED',        // Violet for AI features
   new: '#059669',       // Emerald for new features
   live: '#DC2626',      // Red for live/real-time
-  beta: '#2563EB',      // Blue for beta features
+  beta: '#6D28D9',      // Purple for beta features
   experimental: '#D97706', // Amber for experimental
   degraded: '#DC2626',  // Red for degraded status
   production: '#059669', // Emerald for production ready
@@ -39,13 +39,13 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1E40AF', // Deep enterprise blue (more mature than startup blue)
-      light: '#3B82F6',
-      dark: '#1E3A8A',
+      main: '#7C3AED', // Violet purple
+      light: '#A78BFA',
+      dark: '#6D28D9',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#059669', // Professional emerald green
+      main: '#059669',
       light: '#10B981',
       dark: '#047857',
       contrastText: '#FFFFFF',
@@ -71,10 +71,10 @@ const theme = createTheme({
       dark: '#047857',
     },
     background: {
-      default: '#FAFAFA', // Softer, more neutral background
+      default: '#F3F4F6',
       paper: '#FFFFFF',
-      subtle: '#F5F5F5',  // Subtle background for sections
-      elevated: '#FFFFFF', // For elevated cards
+      subtle: '#F9FAFB',
+      elevated: '#FFFFFF',
     },
     text: {
       primary: '#171717', // Near black for maximum readability
@@ -84,12 +84,12 @@ const theme = createTheme({
     },
     divider: '#E5E5E5',
     action: {
-      active: '#1E40AF',
-      hover: 'rgba(30, 64, 175, 0.04)',
-      selected: 'rgba(30, 64, 175, 0.08)',
+      active: '#7C3AED',
+      hover: 'rgba(124, 58, 237, 0.04)',
+      selected: 'rgba(124, 58, 237, 0.08)',
       disabled: '#A3A3A3',
       disabledBackground: '#F5F5F5',
-      focus: 'rgba(30, 64, 175, 0.12)',
+      focus: 'rgba(124, 58, 237, 0.12)',
     },
     // Custom colors
     status: statusColors,
@@ -185,7 +185,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 8, // Slightly less rounded for enterprise feel
+    borderRadius: 12,
   },
   shadows: [
     'none',
@@ -249,7 +249,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: 10,
           padding: '8px 16px',
           fontWeight: 500,
           boxShadow: 'none',
@@ -267,9 +267,9 @@ const theme = createTheme({
           },
         },
         containedPrimary: {
-          backgroundColor: '#1E40AF',
+          backgroundColor: '#7C3AED',
           '&:hover': {
-            backgroundColor: '#1E3A8A',
+            backgroundColor: '#6D28D9',
           },
         },
         outlined: {
@@ -299,7 +299,7 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 16,
           boxShadow: 'none',
           border: '1px solid #E5E5E5',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
@@ -313,7 +313,7 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 16,
         },
         outlined: {
           border: '1px solid #E5E5E5',
@@ -335,7 +335,7 @@ const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
+          borderRadius: 8,
           fontWeight: 500,
           fontSize: '0.75rem',
         },
@@ -355,7 +355,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 6,
+            borderRadius: 10,
             '& fieldset': {
               borderColor: '#E5E5E5',
             },
@@ -363,7 +363,7 @@ const theme = createTheme({
               borderColor: '#D4D4D4',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#1E40AF',
+              borderColor: '#7C3AED',
               borderWidth: 1,
             },
           },
@@ -373,7 +373,7 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: 10,
           '& fieldset': {
             borderColor: '#E5E5E5',
           },
@@ -381,7 +381,7 @@ const theme = createTheme({
             borderColor: '#D4D4D4',
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#1E40AF',
+            borderColor: '#7C3AED',
             borderWidth: 1,
           },
         },
@@ -390,14 +390,14 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         outlined: {
-          borderRadius: 6,
+          borderRadius: 10,
         },
       },
     },
     MuiMenu: {
       styleOverrides: {
         paper: {
-          borderRadius: 8,
+          borderRadius: 12,
           border: '1px solid #E5E5E5',
           boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
           marginTop: 4,
@@ -415,9 +415,9 @@ const theme = createTheme({
             backgroundColor: '#F5F5F5',
           },
           '&.Mui-selected': {
-            backgroundColor: 'rgba(30, 64, 175, 0.08)',
+            backgroundColor: 'rgba(124, 58, 237, 0.08)',
             '&:hover': {
-              backgroundColor: 'rgba(30, 64, 175, 0.12)',
+              backgroundColor: 'rgba(124, 58, 237, 0.12)',
             },
           },
         },
@@ -434,7 +434,7 @@ const theme = createTheme({
     MuiTableContainer: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 16,
           border: '1px solid #E5E5E5',
         },
       },
@@ -506,7 +506,7 @@ const theme = createTheme({
         },
         indicator: {
           height: 2,
-          backgroundColor: '#1E40AF',
+          backgroundColor: '#7C3AED',
         },
       },
     },
@@ -514,11 +514,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 500,
+          fontWeight: 600,
           fontSize: '0.875rem',
+          minHeight: 48,
           color: '#737373',
           '&.Mui-selected': {
-            color: '#1E40AF',
+            color: '#7C3AED',
           },
         },
       },
@@ -537,11 +538,11 @@ const theme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: 12,
         },
         standardInfo: {
-          backgroundColor: '#EFF6FF',
-          color: '#1E40AF',
+          backgroundColor: '#F5F3FF',
+          color: '#6D28D9',
         },
         standardSuccess: {
           backgroundColor: '#ECFDF5',
@@ -613,6 +614,52 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderColor: '#E5E5E5',
+        },
+      },
+    },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px !important',
+          border: '1px solid #E5E5E5',
+          boxShadow: 'none',
+          '&:before': { display: 'none' },
+          '&.Mui-expanded': { margin: '0 0 8px 0' },
+        },
+      },
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          fontWeight: 600,
+          minHeight: 52,
+          '&.Mui-expanded': { minHeight: 52 },
+        },
+        content: {
+          '&.Mui-expanded': { margin: '12px 0' },
+        },
+      },
+    },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: '20px 24px',
+          '&:last-child': { paddingBottom: 20 },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+          transition: 'all 0.15s ease',
+        },
+      },
+    },
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
         },
       },
     },

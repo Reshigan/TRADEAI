@@ -126,7 +126,7 @@ const Login = ({ onLogin }) => {
         right: '15%',
         width: '400px',
         height: '400px',
-        background: 'radial-gradient(circle, rgba(30, 64, 175, 0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%)',
         borderRadius: '50%',
         animation: 'premiumFloat 8s ease-in-out infinite'
       }} />
@@ -270,7 +270,7 @@ const Login = ({ onLogin }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         backgroundColor: 'var(--bg-tertiary)',
-                        border: '2px solid rgba(30, 64, 175, 0.1)',
+                        border: '2px solid rgba(124, 58, 237, 0.1)',
                         borderRadius: '12px',
                         color: 'var(--text-primary)',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -279,7 +279,7 @@ const Login = ({ onLogin }) => {
                         },
                         '&.Mui-focused': {
                           borderColor: 'var(--primary-blue-light)',
-                          boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                          boxShadow: '0 0 0 3px rgba(124, 58, 237, 0.1)',
                         },
                         '& fieldset': {
                           border: 'none',
@@ -332,7 +332,7 @@ const Login = ({ onLogin }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         backgroundColor: 'var(--bg-tertiary)',
-                        border: '2px solid rgba(30, 64, 175, 0.1)',
+                        border: '2px solid rgba(124, 58, 237, 0.1)',
                         borderRadius: '12px',
                         color: 'var(--text-primary)',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -341,7 +341,7 @@ const Login = ({ onLogin }) => {
                         },
                         '&.Mui-focused': {
                           borderColor: 'var(--primary-blue-light)',
-                          boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                          boxShadow: '0 0 0 3px rgba(124, 58, 237, 0.1)',
                         },
                         '& fieldset': {
                           border: 'none',

@@ -128,7 +128,7 @@ const AIExplanationPanel = ({
       <Paper sx={{ 
         p: 2, 
         mb: 2, 
-        background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+        background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
         color: 'white'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
@@ -367,7 +367,7 @@ const AIExplanationPanel = ({
       </Paper>
 
       {/* Learning Indicator */}
-      <Box sx={{ mt: 2, p: 1.5, bgcolor: '#e3f2fd', borderRadius: 2 }}>
+      <Box sx={{ mt: 2, p: 1.5, bgcolor: '#F5F3FF', borderRadius: 2 }}>
         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <PsychologyIcon fontSize="small" />
           <strong>AI is learning:</strong> This model improves with every decision you make

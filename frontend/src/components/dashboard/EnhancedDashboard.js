@@ -40,7 +40,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
-const COLORS = ['#1976d2', '#2e7d32', '#ed6c02', '#d32f2f', '#9c27b0'];
+const COLORS = ['#7C3AED', '#2e7d32', '#ed6c02', '#d32f2f', '#9c27b0'];
 
 // Default data (will be replaced by API data)
 const defaultRevenueData = [
@@ -228,7 +228,7 @@ export default function EnhancedDashboard({ user }) {
           mb: 4,
           p: 4,
           borderRadius: 4,
-          background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+          background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
           color: 'white',
           position: 'relative',
           overflow: 'hidden',
@@ -244,7 +244,7 @@ export default function EnhancedDashboard({ user }) {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
-              sx={{ bgcolor: 'white', color: '#1E40AF', '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}
+              sx={{ bgcolor: 'white', color: '#6D28D9', '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}
               endIcon={<ArrowForward />}
               onClick={() => navigate('/enterprise/budget')}
             >
@@ -270,7 +270,7 @@ export default function EnhancedDashboard({ user }) {
             change={12.5}
             trend="up"
             icon={<AccountBalance sx={{ fontSize: 32 }} />}
-            color="#1976d2"
+            color="#7C3AED"
             subtitle="Allocated budget"
             onClick={() => navigate('/analytics')}
           />
@@ -306,7 +306,7 @@ export default function EnhancedDashboard({ user }) {
             change={8.3}
             trend="up"
             icon={<TrendingUp sx={{ fontSize: 32 }} />}
-            color="#1E40AF"
+            color="#6D28D9"
             subtitle="Active accounts"
             onClick={() => navigate('/customers')}
           />
@@ -338,7 +338,7 @@ export default function EnhancedDashboard({ user }) {
                   <XAxis dataKey="month" stroke="#999" />
                   <YAxis stroke="#999" />
                   <RechartsTooltip />
-                  <Line type="monotone" dataKey="revenue" stroke="#1976d2" strokeWidth={3} dot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#7C3AED" strokeWidth={3} dot={{ r: 6 }} />
                   <Line type="monotone" dataKey="target" stroke="#999" strokeWidth={2} strokeDasharray="5 5" />
                 </LineChart>
               </ResponsiveContainer>
@@ -412,8 +412,8 @@ export default function EnhancedDashboard({ user }) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      bgcolor: activity.status === 'success' ? '#e8f5e9' : activity.status === 'warning' ? '#fff3e0' : '#e3f2fd',
-                      color: activity.status === 'success' ? '#2e7d32' : activity.status === 'warning' ? '#ed6c02' : '#1976d2',
+                      bgcolor: activity.status === 'success' ? '#e8f5e9' : activity.status === 'warning' ? '#fff3e0' : '#F5F3FF',
+                      color: activity.status === 'success' ? '#2e7d32' : activity.status === 'warning' ? '#ed6c02' : '#7C3AED',
                       mr: 2,
                     }}
                   >
@@ -442,8 +442,8 @@ export default function EnhancedDashboard({ user }) {
               </Typography>
               <Grid container spacing={2}>
                 {[
-                  { title: 'Create Budget', icon: <AccountBalance />, path: '/budgets/new', color: '#1976d2' },
-                  { title: 'New Promotion', icon: <Campaign />, path: '/promotions/new', color: '#1E40AF' },
+                  { title: 'Create Budget', icon: <AccountBalance />, path: '/budgets/new', color: '#7C3AED' },
+                  { title: 'New Promotion', icon: <Campaign />, path: '/promotions/new', color: '#6D28D9' },
                   { title: 'Run Simulation', icon: <Assessment />, path: '/enterprise/promotions', color: '#ed6c02' },
                   { title: 'View Reports', icon: <TrendingUp />, path: '/reports', color: '#2e7d32' },
                 ].map((action) => (

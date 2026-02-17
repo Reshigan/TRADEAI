@@ -491,7 +491,7 @@ const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
                                     fontSize: '0.65rem',
                                     fontWeight: 700,
                                     borderRadius: 1,
-                                    backgroundColor: item.badge === 'AI' ? '#1E40AF' : 
+                                    backgroundColor: item.badge === 'AI' ? '#6D28D9' : 
                                                      item.badge === 'NEW' ? '#10b981' :
                                                      item.badge === 'LIVE' ? '#ef4444' : '#f59e0b',
                                     color: 'white',

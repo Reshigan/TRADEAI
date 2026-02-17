@@ -199,7 +199,7 @@ const HierarchicalBudgetManager = () => {
             p: 2, 
             ml: level * 3,
             cursor: 'pointer',
-            borderLeft: level > 0 ? '3px solid #1976d2' : 'none',
+            borderLeft: level > 0 ? '3px solid #7C3AED' : 'none',
             '&:hover': { backgroundColor: 'action.hover' }
           }}
           onClick={() => handleNodeSelect(node.id)}

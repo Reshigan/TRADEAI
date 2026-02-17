@@ -41,7 +41,7 @@ const QuickActionsPanel = ({ onAction }) => {
       title: 'New Promotion',
       description: 'Launch promotion in 30 seconds',
       icon: <CampaignIcon />,
-      color: '#1E40AF',
+      color: '#6D28D9',
       url: '/promotions/new-flow',
       badge: 'Popular',
       estimatedTime: '30s'
@@ -51,7 +51,7 @@ const QuickActionsPanel = ({ onAction }) => {
       title: 'Add Customer',
       description: 'Onboard with AI credit scoring',
       icon: <AddIcon />,
-      color: '#2196f3',
+      color: '#8B5CF6',
       url: '/customers/new-flow',
       estimatedTime: '2m'
     },
@@ -301,7 +301,7 @@ const QuickActionsPanel = ({ onAction }) => {
             }}
             autoFocus
           />
-          <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
+          <Box sx={{ mt: 2, p: 2, bgcolor: '#F5F3FF', borderRadius: 2 }}>
             <Typography variant="caption" color="primary">
               Based on average historical ROI of 2.8x for similar investments
             </Typography>
@@ -323,7 +323,7 @@ const QuickActionsPanel = ({ onAction }) => {
 
       {/* Productivity Tip */}
       <Box sx={{ mt: 2, p: 1.5, bgcolor: '#fff3e0', borderRadius: 2 }}>
-        <Typography variant="caption" sx={{ color: '#1E40AF' }}>
+        <Typography variant="caption" sx={{ color: '#6D28D9' }}>
           <strong>Pro tip:</strong> Use keyboard shortcuts: <code>Ctrl+P</code> for new promotion, <code>Ctrl+K</code> for quick search
         </Typography>
       </Box>

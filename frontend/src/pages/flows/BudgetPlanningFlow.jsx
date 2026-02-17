@@ -363,7 +363,7 @@ const BudgetPlanningFlow = () => {
       )}
       
       <Box sx={{ maxWidth: '900px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#1a237e' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
           Budget Configuration
         </Typography>
         
@@ -463,7 +463,7 @@ const BudgetPlanningFlow = () => {
                     max={100}
                     step={5}
                     marks
-                    sx={{ color: '#2196f3' }}
+                    sx={{ color: '#8B5CF6' }}
                   />
                 </Box>
               </Grid>
@@ -479,7 +479,7 @@ const BudgetPlanningFlow = () => {
 
                 {/* Product Hierarchy Section */}
                 <Paper sx={{ p: 3, mt: 4, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#1a237e' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#6D28D9' }}>
                     Product Hierarchy (Optional)
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -527,7 +527,7 @@ const BudgetPlanningFlow = () => {
 
                 {/* Customer Hierarchy Section */}
                 <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#1a237e' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#6D28D9' }}>
                     Customer Hierarchy (Optional)
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -601,7 +601,7 @@ const BudgetPlanningFlow = () => {
                 </Paper>
         
                 {revenueImpact && !isCalculating && (
-          <Paper sx={{ p: 2, mt: 3, bgcolor: '#e3f2fd', border: '2px solid #2196f3' }}>
+          <Paper sx={{ p: 2, mt: 3, bgcolor: '#F5F3FF', border: '2px solid #8B5CF6' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <BudgetIcon color="primary" />
               <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1565c0' }}>
@@ -648,7 +648,7 @@ const BudgetPlanningFlow = () => {
             sx={{
               px: 4,
               py: 1.5,
-              background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+              background: 'linear-gradient(45deg, #8B5CF6 30%, #21cbf3 90%)',
               boxShadow: '0 3px 5px 2px rgba(33, 150, 243, .3)'
             }}
           >

@@ -1,31 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  Button,
-  TextField,
-  MenuItem,
-  Grid,
-  IconButton,
-  Tooltip,
-  Alert
+  Box, Typography, Button, Grid, Paper, Chip, IconButton, Tooltip, Alert,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, alpha,
 } from '@mui/material';
 import {
-  Add as AddIcon,
-  Visibility as ViewIcon,
-  Warning as DisputeIcon,
-  PlayArrow as AutoMatchIcon,
-  Assessment as ReconcileIcon
+  Add as AddIcon, Visibility as ViewIcon, Warning as DisputeIcon,
+  PlayArrow as AutoMatchIcon, Assessment as ReconcileIcon,
+  Receipt as DeductionIcon, ErrorOutline as UnmatchedIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import deductionService from '../../services/deduction/deductionService';
@@ -52,16 +33,10 @@ const DeductionsList = () => {
     try {
       setLoading(true);
       setError(null);
-      
       let response;
-      if (filter === 'unmatched') {
-        response = await deductionService.getUnmatchedDeductions();
-      } else if (filter === 'disputed') {
-        response = await deductionService.getDisputedDeductions();
-      } else {
-        response = await deductionService.getAllDeductions();
-      }
-      
+      if (filter === 'unmatched') response = await deductionService.getUnmatchedDeductions();
+      else if (filter === 'disputed') response = await deductionService.getDisputedDeductions();
+      else response = await deductionService.getAllDeductions();
       setDeductions(response.data || []);
     } catch (err) {
       console.error('Error loading deductions:', err);
@@ -84,11 +59,7 @@ const DeductionsList = () => {
     try {
       setLoading(true);
       const response = await deductionService.autoMatchDeductions();
-      
-      analytics.trackEvent('deductions_auto_matched', {
-        matchCount: response.data?.length || 0
-      });
-      
+      analytics.trackEvent('deductions_auto_matched', { matchCount: response.data?.length || 0 });
       setSuccess(`Successfully matched ${response.data?.length || 0} deductions`);
       loadDeductions();
       loadStatistics();
@@ -100,244 +71,144 @@ const DeductionsList = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'identified':
-        return 'info';
-      case 'under_review':
-        return 'warning';
-      case 'valid':
-        return 'success';
-      case 'invalid':
-        return 'error';
-      case 'disputed':
-        return 'error';
-      case 'resolved':
-        return 'success';
-      case 'written_off':
-        return 'default';
-      default:
-        return 'default';
-    }
-  };
+  const getStatusColor = (status) => ({ identified: 'info', under_review: 'warning', valid: 'success', invalid: 'error', disputed: 'error', resolved: 'success', written_off: 'default' })[status] || 'default';
+  const formatCurrency = (amount, currency = 'ZAR') => new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(amount);
+  const formatDate = (date) => new Date(date).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' });
 
-  const formatCurrency = (amount, currency = 'ZAR') => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
-  };
+  const deductionStats = useMemo(() => {
+    const total = deductions.length;
+    const totalAmount = deductions.reduce((s, d) => s + (d.deductionAmount || 0), 0);
+    const unmatched = deductions.filter(d => !(d.matchedAmount > 0)).length;
+    const disputed = deductions.filter(d => d.dispute?.isDisputed || d.status === 'disputed').length;
+    return { total, totalAmount, unmatched, disputed };
+  }, [deductions]);
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-ZA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+  const summaryCards = [
+    { label: 'Total Deductions', value: deductionStats.total, icon: <DeductionIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Value', value: formatCurrency(deductionStats.totalAmount), icon: <ReconcileIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
+    { label: 'Unmatched', value: deductionStats.unmatched, icon: <UnmatchedIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
+    { label: 'Disputed', value: deductionStats.disputed, icon: <DisputeIcon />, color: '#DC2626', bg: alpha('#DC2626', 0.08) },
+  ];
 
-  if (loading && deductions.length === 0) {
-    return <SkeletonLoader type="table" />;
-  }
+  const filterTabs = ['all', 'unmatched', 'disputed'];
+  const filterTabIndex = filterTabs.indexOf(filter);
+
+  if (loading && deductions.length === 0) return <SkeletonLoader type="table" />;
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4">Deductions Management</Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={<ReconcileIcon />}
-            onClick={() => navigate('/deductions/reconciliation')}
-          >
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>Deductions</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>Track, match, and reconcile deductions</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Button variant="outlined" startIcon={<ReconcileIcon />} onClick={() => navigate('/deductions/reconciliation')}
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
             Reconciliation
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<AutoMatchIcon />}
-            onClick={handleAutoMatch}
-            disabled={loading}
-          >
-            Auto-Match Deductions
+          <Button variant="outlined" startIcon={<AutoMatchIcon />} onClick={handleAutoMatch} disabled={loading}
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            Auto-Match
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/deductions/create')}
-          >
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/deductions/create')}
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
             Create Deduction
           </Button>
         </Box>
       </Box>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError(null)}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setSuccess(null)}>{success}</Alert>}
 
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess(null)}>
-          {success}
-        </Alert>
-      )}
-
-      {statistics && (
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          {statistics.byStatus?.map((stat, index) => (
-            <Grid item xs={12} sm={6} md={3} key={stat.id || stat._id || stat.status || index}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" color="textSecondary">
-                    {formatLabel(stat.status || stat._id || stat.id || 'Unknown')}
-                  </Typography>
-                  <Typography variant="h4">{stat.count}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {formatCurrency(stat.totalAmount)}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
-              <TextField
-                select
-                fullWidth
-                label="Filter"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <MenuItem value="all">All Deductions</MenuItem>
-                <MenuItem value="unmatched">Unmatched Deductions</MenuItem>
-                <MenuItem value="disputed">Disputed Deductions</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Chip
-                  label={`${deductions.length} Deductions`}
-                  color="primary"
-                  variant="outlined"
-                />
-                {statistics?.disputes && (
-                  <Chip
-                    label={`${statistics.disputes.reduce((sum, d) => sum + d.count, 0)} Disputed`}
-                    color="error"
-                    variant="outlined"
-                  />
-                )}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {summaryCards.map((s) => (
+          <Grid item xs={6} md={3} key={s.label}>
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {React.cloneElement(s.icon, { sx: { color: s.color, fontSize: 22 } })}
               </Box>
-            </Grid>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>{s.label}</Typography>
+                <Typography variant="h6" fontWeight={700}>{s.value}</Typography>
+              </Box>
+            </Paper>
           </Grid>
-        </CardContent>
-      </Card>
+        ))}
+      </Grid>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Deduction ID</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell>Deduction Date</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Matched</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {deductions.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center">
-                  <Typography variant="body2" color="textSecondary">
-                    No deductions found
-                  </Typography>
-                </TableCell>
+      <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+        <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Tabs value={filterTabIndex >= 0 ? filterTabIndex : 0} onChange={(_, v) => setFilter(filterTabs[v])}
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            <Tab label="All" />
+            <Tab label="Unmatched" />
+            <Tab label="Disputed" />
+          </Tabs>
+          <Chip label={`${deductions.length} items`} size="small" sx={{ bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED', fontWeight: 600 }} />
+        </Box>
+
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
+                <TableCell>Deduction ID</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Customer</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell align="right">Amount</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Matched</TableCell>
+                <TableCell align="center">Actions</TableCell>
               </TableRow>
-            ) : (
-              deductions.map((deduction) => (
-                <TableRow key={deduction.id || deduction._id}>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                      {deduction.deductionNumber || deduction.deductionId || deduction.id || '-'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={formatLabel(deduction.deductionType || deduction.deduction_type || 'unknown')}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {deduction.customerName || deduction.customer?.name || 'Unknown'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="textSecondary">
-                      {deduction.deductionDate
-                        ? formatDate(deduction.deductionDate)
-                        : '-'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight="bold">
-                      {formatCurrency(deduction.deductionAmount || 0, deduction.currency)}
-                    </Typography>
-                    {deduction.validatedAmount && 
-                     deduction.validatedAmount !== deduction.deductionAmount && (
-                      <Typography variant="caption" color="textSecondary" display="block">
-                        Validated: {formatCurrency(deduction.validatedAmount, deduction.currency)}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Chip
-                        label={formatLabel(deduction.status || 'unknown')}
-                        color={getStatusColor(deduction.status)}
-                        size="small"
-                      />
-                      {deduction.dispute?.isDisputed && (
-                        <Tooltip title="Disputed">
-                          <DisputeIcon color="error" fontSize="small" />
-                        </Tooltip>
-                      )}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={(deduction.matchedAmount || 0) > 0 ? 'Matched' : 'Unmatched'}
-                      color={(deduction.matchedAmount || 0) > 0 ? 'success' : 'error'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                      <Tooltip title="View Details">
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/deductions/${deduction.id || deduction._id}`)}
-                        >
-                          <ViewIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
+            </TableHead>
+            <TableBody>
+              {deductions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
+                    <DeductionIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                    <Typography variant="body2" color="text.secondary">No deductions found</Typography>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                deductions.map((deduction) => (
+                  <TableRow key={deduction.id || deduction._id} hover sx={{ '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}>
+                    <TableCell><Typography variant="body2" fontWeight={600} sx={{ fontFamily: 'monospace' }}>{deduction.deductionNumber || deduction.deductionId || deduction.id || '-'}</Typography></TableCell>
+                    <TableCell><Chip label={formatLabel(deduction.deductionType || deduction.deduction_type || 'unknown')} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
+                    <TableCell><Typography variant="body2">{deduction.customerName || deduction.customer?.name || 'Unknown'}</Typography></TableCell>
+                    <TableCell><Typography variant="body2" color="text.secondary">{deduction.deductionDate ? formatDate(deduction.deductionDate) : '-'}</Typography></TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2" fontWeight={700}>{formatCurrency(deduction.deductionAmount || 0, deduction.currency)}</Typography>
+                      {deduction.validatedAmount && deduction.validatedAmount !== deduction.deductionAmount && (
+                        <Typography variant="caption" color="text.secondary" display="block">Validated: {formatCurrency(deduction.validatedAmount, deduction.currency)}</Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Chip label={formatLabel(deduction.status || 'unknown')} color={getStatusColor(deduction.status)} size="small" sx={{ borderRadius: '6px', height: 24, fontWeight: 600 }} />
+                        {deduction.dispute?.isDisputed && <Tooltip title="Disputed"><DisputeIcon color="error" sx={{ fontSize: 16 }} /></Tooltip>}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip label={(deduction.matchedAmount || 0) > 0 ? 'Matched' : 'Unmatched'}
+                        color={(deduction.matchedAmount || 0) > 0 ? 'success' : 'error'} size="small"
+                        sx={{ borderRadius: '6px', height: 24, fontWeight: 600 }} />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="View Details">
+                        <IconButton size="small" onClick={() => navigate(`/deductions/${deduction.id || deduction._id}`)}
+                          sx={{ color: '#6B7280', '&:hover': { bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED' } }}>
+                          <ViewIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 };

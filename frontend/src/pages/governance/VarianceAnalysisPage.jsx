@@ -53,13 +53,13 @@ import {
 import dataLineageService from '../../services/dataLineage/dataLineageService';
 import api from '../../services/api';
 
-const COLORS = ['#f44336', '#ff9800', '#4caf50', '#2196f3', '#9c27b0', '#00bcd4'];
+const COLORS = ['#f44336', '#ff9800', '#4caf50', '#8B5CF6', '#9c27b0', '#00bcd4'];
 
 const VARIANCE_CATEGORIES = [
   { value: 'spend_variance', label: 'Spend Variance', color: '#f44336' },
   { value: 'volume_variance', label: 'Volume Variance', color: '#ff9800' },
   { value: 'revenue_variance', label: 'Revenue Variance', color: '#4caf50' },
-  { value: 'roi_variance', label: 'ROI Variance', color: '#2196f3' },
+  { value: 'roi_variance', label: 'ROI Variance', color: '#8B5CF6' },
   { value: 'timing_variance', label: 'Timing Variance', color: '#9c27b0' },
   { value: 'execution_variance', label: 'Execution Variance', color: '#00bcd4' }
 ];
@@ -417,7 +417,7 @@ const VarianceAnalysisPage = () => {
                             <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} fontSize={10} />
                             <YAxis />
                             <RechartsTooltip />
-                            <Bar dataKey="count" fill="#2196f3" name="Count" />
+                            <Bar dataKey="count" fill="#8B5CF6" name="Count" />
                           </BarChart>
                         </ResponsiveContainer>
                       ) : (

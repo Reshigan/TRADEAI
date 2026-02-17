@@ -140,7 +140,7 @@ const CustomerEntryFlow = () => {
         if (creditLimit > 100000) {
           setSegment({ name: 'High-Value', color: '#4caf50' });
         } else if (creditLimit > 50000) {
-          setSegment({ name: 'Mid-Market', color: '#2196f3' });
+          setSegment({ name: 'Mid-Market', color: '#8B5CF6' });
         } else {
           setSegment({ name: 'Standard', color: '#9e9e9e' });
         }
@@ -431,7 +431,7 @@ const CustomerEntryFlow = () => {
       )}
       
       <Box sx={{ maxWidth: '800px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#1a237e' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
           Customer Information
         </Typography>
         

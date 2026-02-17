@@ -257,7 +257,7 @@ const EnhancedWorkflowDashboard = () => {
                   <RechartsTooltip />
                   <Legend />
                   <Line type="monotone" dataKey="completed" stroke="#4caf50" name="Completed" />
-                  <Line type="monotone" dataKey="started" stroke="#2196f3" name="Started" />
+                  <Line type="monotone" dataKey="started" stroke="#8B5CF6" name="Started" />
                   <Line type="monotone" dataKey="overdue" stroke="#f44336" name="Overdue" />
                 </LineChart>
               </ResponsiveContainer>
@@ -373,7 +373,7 @@ const EnhancedWorkflowDashboard = () => {
                           <div style={{
                             width: `${(workflow.progress || 0) * 100}%`,
                             height: '100%',
-                            backgroundColor: '#1976d2',
+                            backgroundColor: '#7C3AED',
                             transition: 'width 0.3s ease'
                           }} />
                         </div>
