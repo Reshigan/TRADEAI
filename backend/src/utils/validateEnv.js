@@ -6,14 +6,27 @@
 
 const baseRequiredEnvVars = [
   'NODE_ENV',
+  'MONGODB_URI'
+];
+
+const productionRequiredEnvVars = [
   'PORT',
-  'MONGODB_URI',
   'JWT_SECRET',
   'JWT_REFRESH_SECRET'
 ];
 
+const envDefaults = {
+  'PORT': '5002',
+  'JWT_SECRET': 'dev-jwt-secret-not-for-production-use-only',
+  'JWT_REFRESH_SECRET': 'dev-jwt-refresh-secret-not-for-production'
+};
+
 const getRequiredEnvVars = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
   const vars = [...baseRequiredEnvVars];
+  if (isProduction) {
+    vars.push(...productionRequiredEnvVars);
+  }
   if (process.env.REDIS_ENABLED !== 'false' && process.env.USE_MOCK_DB !== 'true') {
     vars.push('REDIS_HOST', 'REDIS_PORT');
   }
@@ -233,6 +246,15 @@ function validateEnvironment() {
     // Warn about missing optional but recommended variables
     if (!process.env.SENTRY_DSN && !process.env.ERROR_REPORTING_URL) {
       warnings.push('No error reporting configured (SENTRY_DSN or ERROR_REPORTING_URL)');
+    }
+  }
+
+  if (!isProduction) {
+    for (const [varName, defaultValue] of Object.entries(envDefaults)) {
+      if (!process.env[varName]) {
+        process.env[varName] = defaultValue;
+        warnings.push(`Using default value for ${varName}: ${defaultValue}`);
+      }
     }
   }
 
