@@ -29,7 +29,8 @@ import { formatLabel } from '../../utils/formatters';
 const PromotionEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const isCreateMode = !id;
+  const [loading, setLoading] = useState(!isCreateMode);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -61,19 +62,29 @@ const PromotionEdit = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [promotionRes, customersRes, productsRes] = await Promise.all([
-        apiClient.get(`/promotions/${id}`),
+      const requests = [
         apiClient.get(`/customers`),
         apiClient.get(`/products`)
-      ]);
+      ];
+      if (!isCreateMode) {
+        requests.unshift(apiClient.get(`/promotions/${id}`));
+      }
+      const results = await Promise.all(requests);
       
-      setPromotion({
-        ...promotionRes.data,
-        startDate: promotionRes.data.startDate?.split('T')[0] || '',
-        endDate: promotionRes.data.endDate?.split('T')[0] || ''
-      });
-      setCustomers(customersRes.data);
-      setProducts(productsRes.data);
+      if (!isCreateMode) {
+        const promotionRes = results[0];
+        const promoData = promotionRes.data?.data || promotionRes.data;
+        setPromotion({
+          ...promoData,
+          startDate: promoData.startDate?.split('T')[0] || '',
+          endDate: promoData.endDate?.split('T')[0] || ''
+        });
+        setCustomers((results[1].data?.data || results[1].data) || []);
+        setProducts((results[2].data?.data || results[2].data) || []);
+      } else {
+        setCustomers((results[0].data?.data || results[0].data) || []);
+        setProducts((results[1].data?.data || results[1].data) || []);
+      }
     } catch (err) {
       setError('Error loading data: ' + (err.response?.data?.message || err.message));
     } finally {
@@ -109,12 +120,20 @@ const PromotionEdit = () => {
       setSaving(true);
       setError('');
 
-      await apiClient.put(`/promotions/${id}`, promotion);
-      
-      setSuccess('Promotion updated successfully!');
-      setTimeout(() => {
-        navigate(`/promotions/${id}`);
-      }, 1500);
+      if (isCreateMode) {
+        const res = await apiClient.post('/promotions', promotion);
+        const newId = res.data?.data?.id || res.data?.id;
+        setSuccess('Promotion created successfully!');
+        setTimeout(() => {
+          navigate(newId ? `/promotions/${newId}` : '/promotions');
+        }, 1500);
+      } else {
+        await apiClient.put(`/promotions/${id}`, promotion);
+        setSuccess('Promotion updated successfully!');
+        setTimeout(() => {
+          navigate(`/promotions/${id}`);
+        }, 1500);
+      }
     } catch (err) {
       setError('Error updating promotion: ' + (err.response?.data?.message || err.message));
     } finally {
@@ -153,7 +172,7 @@ const PromotionEdit = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
             <EditIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-            Edit Promotion
+            {isCreateMode ? 'Create Promotion' : 'Edit Promotion'}
           </Typography>
           <Chip 
             label={promotion.status || 'Draft'} 
@@ -410,7 +429,7 @@ const PromotionEdit = () => {
               <Button
                 variant="outlined"
                 startIcon={<CancelIcon />}
-                onClick={() => navigate(`/promotions/${id}`)}
+                onClick={() => navigate(isCreateMode ? '/promotions' : `/promotions/${id}`)}
               >
                 Cancel
               </Button>
@@ -420,7 +439,7 @@ const PromotionEdit = () => {
                 onClick={handleSubmit}
                 disabled={saving}
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? 'Saving...' : isCreateMode ? 'Create Promotion' : 'Save Changes'}
               </Button>
             </Box>
           </Grid>

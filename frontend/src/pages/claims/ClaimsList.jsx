@@ -90,7 +90,7 @@ const ClaimsList = () => {
     const total = claims.length;
     const approved = claims.filter(c => c.status === 'approved' || c.status === 'paid').length;
     const pending = claims.filter(c => c.status === 'submitted' || c.status === 'under_review').length;
-    const totalAmount = claims.reduce((sum, c) => sum + (c.claimAmount || c.claimed_amount || 0), 0);
+    const totalAmount = claims.reduce((sum, c) => sum + (c.claimAmount || c.claimedAmount || c.claimed_amount || 0), 0);
     return { total, approved, pending, totalAmount };
   }, [claims]);
 
@@ -199,9 +199,9 @@ const ClaimsList = () => {
                     <TableCell><Typography variant="body2">{claim.customerName || claim.customer?.name || 'Unknown'}</Typography></TableCell>
                     <TableCell><Typography variant="body2" color="text.secondary">{formatDate(claim.claimDate)}</Typography></TableCell>
                     <TableCell align="right">
-                      <Typography variant="body2" fontWeight={700}>{formatCurrency(claim.claimAmount || claim.claimed_amount || 0, claim.currency)}</Typography>
-                      {(claim.approvedAmount || claim.approved_amount) > 0 && (claim.approvedAmount || claim.approved_amount) !== (claim.claimAmount || claim.claimed_amount) && (
-                        <Typography variant="caption" color="text.secondary" display="block">Approved: {formatCurrency(claim.approvedAmount || claim.approved_amount, claim.currency)}</Typography>
+                                            <Typography variant="body2" fontWeight={700}>{formatCurrency(claim.claimAmount || claim.claimedAmount || claim.claimed_amount || 0, claim.currency)}</Typography>
+                                            {(claim.approvedAmount || claim.approved_amount) > 0 && (claim.approvedAmount || claim.approved_amount) !== (claim.claimAmount || claim.claimedAmount || claim.claimed_amount) && (
+                                              <Typography variant="caption" color="text.secondary" display="block">Approved: {formatCurrency(claim.approvedAmount || claim.approved_amount, claim.currency)}</Typography>
                       )}
                     </TableCell>
                     <TableCell><Chip label={formatLabel(claim.status)} color={getStatusColor(claim.status)} size="small" sx={{ borderRadius: '6px', height: 24, fontWeight: 600 }} /></TableCell>
