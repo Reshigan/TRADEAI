@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
-import { analyticsService } from '../../services/api';
+import api, { analyticsService } from '../../services/api';
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
@@ -52,23 +52,27 @@ const ManagerDashboard = () => {
     setLoading(true);
     try {
       const [dashRes, analyticsRes] = await Promise.all([
-        fetch(`${window._env_?.REACT_APP_API_URL || ''}/api/dashboard`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        }).then(r => r.json()).catch(() => null),
-        analyticsService.getAnalytics().catch(() => null),
+        api.get('/dashboard').then(r => r.data).catch(() => null),
+        analyticsService.getDashboard().catch(() => null),
       ]);
 
       if (dashRes?.success) {
         setLiveData(dashRes.data);
       }
 
+      const budgetData = dashRes?.data?.budget || {};
+      const analyticsData = analyticsRes?.data || {};
+      const remaining = budgetData.remaining || (analyticsData.totalBudget - analyticsData.totalSpend) || 0;
+      const promoCount = analyticsData.promotionCount || 0;
+      const activePromos = analyticsData.activePromotions || 0;
+
       setDashboardData({
         budgetRecommendations: [],
         portfolioKPIs: {
-          totalReallocation: 0,
-          expectedRevenueGain: 0,
-          underperformingCount: 0,
-          highPerformingCount: 0
+          totalReallocation: remaining,
+          expectedRevenueGain: remaining > 0 ? Math.round(remaining * 0.12) : 0,
+          underperformingCount: Math.max(0, promoCount - activePromos),
+          highPerformingCount: activePromos
         }
       });
     } catch (error) {
