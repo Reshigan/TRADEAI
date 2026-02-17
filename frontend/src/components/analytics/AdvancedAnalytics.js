@@ -642,7 +642,7 @@ const AdvancedAnalytics = () => {
                           dataKey="upperBound"
                           stackId="1"
                           stroke="none"
-                          fill="#e3f2fd"
+                          fill="#F5F3FF"
                           fillOpacity={0.3}
                         />
                         <Area
@@ -655,7 +655,7 @@ const AdvancedAnalytics = () => {
                         <Line
                           type="monotone"
                           dataKey="actual"
-                          stroke="#2196f3"
+                          stroke="#8B5CF6"
                           strokeWidth={2}
                         />
                         <Line

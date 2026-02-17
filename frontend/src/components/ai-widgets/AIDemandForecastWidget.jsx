@@ -169,8 +169,8 @@ const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 
               <AreaChart data={forecast.predictions}>
                 <defs>
                   <linearGradient id="demandGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1976d2" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#1976d2" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#7C3AED" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -187,7 +187,7 @@ const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 
                 <Area
                   type="monotone"
                   dataKey="value"
-                  stroke="#1976d2"
+                  stroke="#7C3AED"
                   fillOpacity={1}
                   fill="url(#demandGradient)"
                 />

@@ -272,7 +272,7 @@ const BudgetReports = () => {
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                   <Legend />
-                  <Bar dataKey="allocated" fill="#1976d2" name="Allocated" />
+                  <Bar dataKey="allocated" fill="#7C3AED" name="Allocated" />
                   <Bar dataKey="spent" fill="#ff9800" name="Spent" />
                   <Bar dataKey="remaining" fill="#4caf50" name="Remaining" />
                 </BarChart>
@@ -389,8 +389,8 @@ const BudgetReports = () => {
                     type="monotone"
                     dataKey="allocated"
                     stackId="1"
-                    stroke="#1976d2"
-                    fill="#1976d2"
+                    stroke="#7C3AED"
+                    fill="#7C3AED"
                     name="Allocated"
                   />
                 </AreaChart>
@@ -425,7 +425,7 @@ const BudgetReports = () => {
                   <Line
                     type="monotone"
                     dataKey="allocated"
-                    stroke="#1976d2"
+                    stroke="#7C3AED"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     name="Budget Limit"

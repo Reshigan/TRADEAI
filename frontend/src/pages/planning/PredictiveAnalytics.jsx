@@ -350,7 +350,7 @@ const PredictiveAnalytics = () => {
                     <YAxis label={{ value: 'Value ($K)', angle: -90, position: 'insideLeft' }} />
                     <RechartsTooltip formatter={(value) => [`$${value}K`, '']} />
                     <Legend />
-                    <Bar dataKey="current" fill="#2196f3" name="Current" />
+                    <Bar dataKey="current" fill="#8B5CF6" name="Current" />
                     <Bar dataKey="predicted" fill="#4caf50" name="Predicted" />
                   </BarChart>
                 </ResponsiveContainer>

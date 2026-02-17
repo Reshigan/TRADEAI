@@ -460,7 +460,7 @@ const ProductEntryFlow = () => {
       )}
       
       <Box sx={{ maxWidth: '800px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#1a237e' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
           Product Details
         </Typography>
         

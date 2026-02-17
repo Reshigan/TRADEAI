@@ -342,7 +342,7 @@ const ForecastingDashboard = () => {
                       dataKey="confidenceUpper"
                       stackId="1"
                       stroke="none"
-                      fill="#e3f2fd"
+                      fill="#F5F3FF"
                       fillOpacity={0.6}
                     />
                     <Area
@@ -355,9 +355,9 @@ const ForecastingDashboard = () => {
                     <Line
                       type="monotone"
                       dataKey="value"
-                      stroke="#1976d2"
+                      stroke="#7C3AED"
                       strokeWidth={3}
-                      dot={{ fill: '#1976d2', strokeWidth: 2, r: 4 }}
+                      dot={{ fill: '#7C3AED', strokeWidth: 2, r: 4 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>

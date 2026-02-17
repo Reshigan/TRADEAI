@@ -57,7 +57,7 @@ const AdminLayout = ({ user, onLogout }) => {
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: '#1976d2'
+          backgroundColor: '#7C3AED'
         }}
       >
         <Toolbar>

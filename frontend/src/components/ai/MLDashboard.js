@@ -424,7 +424,7 @@ const MLDashboard = () => {
             <Line 
               type="monotone" 
               dataKey="predicted_demand" 
-              stroke="#2196f3" 
+              stroke="#8B5CF6" 
               strokeWidth={2}
               name="Predicted Demand"
               dot={false}
@@ -530,7 +530,7 @@ const MLDashboard = () => {
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ bgcolor: '#e3f2fd', borderColor: '#2196f3' }}>
+            <Card variant="outlined" sx={{ bgcolor: '#F5F3FF', borderColor: '#8B5CF6' }}>
               <CardContent>
                 <Typography variant="h4" gutterBottom>
                   R {data.optimal_price?.toFixed(2) || 'N/A'}
@@ -601,7 +601,7 @@ const MLDashboard = () => {
                     <XAxis dataKey="metric" />
                     <YAxis label={{ value: '% Change', angle: -90, position: 'insideLeft' }} />
                     <RechartsTooltip formatter={(value) => `${value.toFixed(1)}%`} />
-                    <Bar dataKey="change" fill="#2196f3" />
+                    <Bar dataKey="change" fill="#8B5CF6" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

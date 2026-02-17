@@ -63,7 +63,7 @@ import {
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
-const COLORS = ['#4caf50', '#2196f3', '#ff9800', '#f44336', '#9c27b0'];
+const COLORS = ['#4caf50', '#8B5CF6', '#ff9800', '#f44336', '#9c27b0'];
 
 const BudgetVariance = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -321,7 +321,7 @@ const BudgetVariance = () => {
                                         <YAxis label={{ value: 'Amount (R K)', angle: -90, position: 'insideLeft' }} />
                                         <RechartsTooltip formatter={(value) => [`R${value}K`, '']} />
                     <Legend />
-                    <Bar dataKey="allocated" fill="#2196f3" name="Allocated" />
+                    <Bar dataKey="allocated" fill="#8B5CF6" name="Allocated" />
                     <Bar dataKey="spent" fill="#ff9800" name="Spent" />
                   </BarChart>
                 </ResponsiveContainer>

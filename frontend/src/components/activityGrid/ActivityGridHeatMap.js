@@ -54,10 +54,10 @@ const ActivityGridHeatMap = ({ year, month }) => {
   const getIntensityColor = (intensity) => {
     if (intensity === 0) return '#f5f5f5';
     
-    if (intensity < 25) return '#e3f2fd';
+    if (intensity < 25) return '#F5F3FF';
     if (intensity < 50) return '#90caf9';
     if (intensity < 75) return '#42a5f5';
-    return '#1976d2';
+    return '#7C3AED';
   };
   
   // Get days in month
@@ -182,7 +182,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
           <Box sx={{ width: 20, height: 20, bgcolor: '#f5f5f5', mr: 0.5 }} />
           <Typography variant="caption" sx={{ mr: 1 }}>None</Typography>
           
-          <Box sx={{ width: 20, height: 20, bgcolor: '#e3f2fd', mr: 0.5 }} />
+          <Box sx={{ width: 20, height: 20, bgcolor: '#F5F3FF', mr: 0.5 }} />
           <Typography variant="caption" sx={{ mr: 1 }}>Low</Typography>
           
           <Box sx={{ width: 20, height: 20, bgcolor: '#90caf9', mr: 0.5 }} />
@@ -191,7 +191,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
           <Box sx={{ width: 20, height: 20, bgcolor: '#42a5f5', mr: 0.5 }} />
           <Typography variant="caption" sx={{ mr: 1 }}>High</Typography>
           
-          <Box sx={{ width: 20, height: 20, bgcolor: '#1976d2', mr: 0.5 }} />
+          <Box sx={{ width: 20, height: 20, bgcolor: '#7C3AED', mr: 0.5 }} />
           <Typography variant="caption">Very High</Typography>
         </Box>
       </Box>

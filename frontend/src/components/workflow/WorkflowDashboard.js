@@ -260,7 +260,7 @@ const WorkflowDashboard = () => {
               <PieChart>
                 <Pie
                   data={[
-                    { name: 'Running', value: workflowStats.running || 0, fill: '#1976d2' },
+                    { name: 'Running', value: workflowStats.running || 0, fill: '#7C3AED' },
                     { name: 'Completed', value: workflowStats.completed || 0, fill: '#2e7d32' },
                     { name: 'Pending', value: workflowStats.pending || 0, fill: '#ed6c02' },
                     { name: 'Failed', value: workflowStats.failed || 0, fill: '#d32f2f' }
@@ -293,7 +293,7 @@ const WorkflowDashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Line type="monotone" dataKey="completed" stroke="#2e7d32" name="Completed" />
-                <Line type="monotone" dataKey="created" stroke="#1976d2" name="Created" />
+                <Line type="monotone" dataKey="created" stroke="#7C3AED" name="Created" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

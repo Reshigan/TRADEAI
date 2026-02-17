@@ -38,7 +38,7 @@ import { AIInsightsFeed } from './contextual-ai';
 import {analyticsService} from '../services/api';
 import {safeNumber, safeToFixed, formatPercentage} from '../utils/formatters';
 
-const kpiColors = ['#7C3AED', '#3B82F6', '#10B981', '#F59E0B'];
+const kpiColors = ['#7C3AED', '#7C3AED', '#10B981', '#F59E0B'];
 
 const Dashboard = ({ user }) => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);

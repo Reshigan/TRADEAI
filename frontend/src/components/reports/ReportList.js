@@ -44,7 +44,7 @@ const ReportList = () => {
       id: 'budget',
       name: 'Marketing Budget Reports',
       icon: <BudgetIcon />,
-      color: '#1976d2',
+      color: '#7C3AED',
       description: 'Budget allocation, utilization, and performance analysis',
       reports: [
         { name: 'Budget Performance Dashboard', type: 'dashboard', status: 'active' },

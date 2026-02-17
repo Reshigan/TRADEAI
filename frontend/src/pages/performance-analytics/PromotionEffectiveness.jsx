@@ -62,7 +62,7 @@ import {
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
-const COLORS = ['#4caf50', '#2196f3', '#ff9800', '#f44336', '#9c27b0'];
+const COLORS = ['#4caf50', '#8B5CF6', '#ff9800', '#f44336', '#9c27b0'];
 
 const PromotionEffectiveness = () => {
   const { enqueueSnackbar } = useSnackbar();

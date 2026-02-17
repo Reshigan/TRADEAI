@@ -48,7 +48,7 @@ const PromotionsHelp = () => {
       </Breadcrumbs>
 
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <Box sx={{ bgcolor: '#1976d2', borderRadius: 2, p: 1.5, mr: 2 }}>
+        <Box sx={{ bgcolor: '#7C3AED', borderRadius: 2, p: 1.5, mr: 2 }}>
           <PromotionsIcon sx={{ color: 'white', fontSize: 32 }} />
         </Box>
         <Box>

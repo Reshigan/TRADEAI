@@ -35,7 +35,7 @@ import api from '../../services/api';
 
 const COLORS = {
   highValue: '#4caf50',
-  medium: '#2196f3',
+  medium: '#8B5CF6',
   lowValue: '#ff9800',
   atRisk: '#f44336'
 };

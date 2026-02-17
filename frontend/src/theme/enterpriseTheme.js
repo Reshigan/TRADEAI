@@ -40,7 +40,7 @@ const enterpriseTheme = createTheme({
       contrastText: '#ffffff',
     },
     info: {
-      main: '#3B82F6',      // Modern blue
+      main: '#7C3AED',      // Modern blue
       light: '#60A5FA',
       dark: '#2563EB',
       contrastText: '#ffffff',

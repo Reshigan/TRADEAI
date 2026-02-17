@@ -330,7 +330,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
                   <Line 
                     type="monotone" 
                     dataKey="predicted_demand" 
-                    stroke="#2196f3" 
+                    stroke="#8B5CF6" 
                     strokeWidth={2}
                     dot={false}
                   />

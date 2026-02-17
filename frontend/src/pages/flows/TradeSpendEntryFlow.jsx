@@ -297,7 +297,7 @@ const TradeSpendEntryFlow = () => {
       )}
       
       <Box sx={{ maxWidth: '800px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#1a237e' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
           Trade Spend Details
         </Typography>
         
@@ -401,7 +401,7 @@ const TradeSpendEntryFlow = () => {
                 </Grid>
 
                                 {/* Hierarchy Selection */}
-                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#1a237e' }}>
+                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#6D28D9' }}>
                                   Trade Spend Scope (Optional)
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

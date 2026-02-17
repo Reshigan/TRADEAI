@@ -72,7 +72,7 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
       case 'warning':
         return <WarningIcon sx={{ color: '#ff9800' }} />;
       case 'trend':
-        return <TrendingUpIcon sx={{ color: '#2196f3' }} />;
+        return <TrendingUpIcon sx={{ color: '#8B5CF6' }} />;
       case 'anomaly':
         return <WarningIcon sx={{ color: '#f44336' }} />;
       case 'success':
@@ -242,7 +242,7 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
                   sx={{
                     background: insight.priority === 'high' 
                       ? 'linear-gradient(45deg, #ff9800 30%, #ffb74d 90%)'
-                      : 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+                      : 'linear-gradient(45deg, #8B5CF6 30%, #21cbf3 90%)',
                   }}
                 >
                   {insight.action}
@@ -256,7 +256,7 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
 
       {/* Footer */}
       {insights.length > 0 && (
-        <Box sx={{ mt: 2, p: 1.5, bgcolor: '#e3f2fd', borderRadius: 2 }}>
+        <Box sx={{ mt: 2, p: 1.5, bgcolor: '#F5F3FF', borderRadius: 2 }}>
           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <InfoIcon fontSize="small" />
             Insights refresh every 5 minutes. AI monitors your business 24/7.

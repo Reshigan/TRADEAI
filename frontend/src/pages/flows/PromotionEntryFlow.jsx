@@ -492,7 +492,7 @@ const PromotionEntryFlow = () => {
 
       {/* Form Fields */}
       <Box sx={{ maxWidth: '800px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#1a237e' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
           Promotion Details
         </Typography>
         
@@ -553,12 +553,12 @@ const PromotionEntryFlow = () => {
           <Paper sx={{ 
             p: 2, 
             mb: 3, 
-            bgcolor: '#e3f2fd',
-            border: '2px solid #2196f3'
+            bgcolor: '#F5F3FF',
+            border: '2px solid #8B5CF6'
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <TrendingUpIcon color="primary" />
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1976d2' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#7C3AED' }}>
                 💡 ML Impact Calculation
               </Typography>
             </Box>
@@ -615,7 +615,7 @@ const PromotionEntryFlow = () => {
                 </Box>
 
                                 {/* Hierarchy Selection */}
-                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#1a237e' }}>
+                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#6D28D9' }}>
                                   Promotion Scope (Optional)
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -665,7 +665,7 @@ const PromotionEntryFlow = () => {
             sx={{
               px: 4,
               py: 1.5,
-              background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+              background: 'linear-gradient(45deg, #8B5CF6 30%, #21cbf3 90%)',
               boxShadow: '0 3px 5px 2px rgba(33, 150, 243, .3)'
             }}
           >
