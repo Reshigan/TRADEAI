@@ -1,3 +1,6 @@
+// DEPRECATED: This module is not used in production. The Workers backend (workers-backend/)
+// is the active production backend. This Express/NestJS service is retained for reference only.
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

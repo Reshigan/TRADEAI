@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { signJWT, verifyJWT, authMiddleware } from '../middleware/auth.js';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 export const authRoutes = new Hono();
+
+const authRateLimit = rateLimit({ limit: 5, windowMs: 60000 });
 
 // Password hashing using Web Crypto API (bcrypt alternative for Workers)
 async function hashPassword(password) {
@@ -19,7 +22,7 @@ async function verifyPassword(password, hash) {
 }
 
 // Login endpoint
-authRoutes.post('/login', async (c) => {
+authRoutes.post('/login', authRateLimit, async (c) => {
   try {
     const { email, password } = await c.req.json();
 
@@ -67,7 +70,10 @@ authRoutes.post('/login', async (c) => {
     });
 
     // Generate tokens
-    const secret = c.env.JWT_SECRET || 'your-secret-key';
+    const secret = c.env.JWT_SECRET;
+    if (!secret) {
+      return c.json({ success: false, message: 'Server configuration error: JWT_SECRET not set' }, 500);
+    }
     const accessToken = await signJWT({
       userId: user._id.$oid || user._id,
       email: user.email,
@@ -113,10 +119,10 @@ authRoutes.post('/login', async (c) => {
 });
 
 // Refresh token endpoint (both paths for frontend compatibility)
-authRoutes.post('/refresh', async (c) => {
+authRoutes.post('/refresh', authRateLimit, async (c) => {
   return handleRefreshToken(c);
 });
-authRoutes.post('/refresh-token', async (c) => {
+authRoutes.post('/refresh-token', authRateLimit, async (c) => {
   return handleRefreshToken(c);
 });
 
@@ -128,7 +134,10 @@ async function handleRefreshToken(c) {
       return c.json({ success: false, message: 'Refresh token is required' }, 400);
     }
 
-    const secret = c.env.JWT_SECRET || 'your-secret-key';
+    const secret = c.env.JWT_SECRET;
+    if (!secret) {
+      return c.json({ success: false, message: 'Server configuration error: JWT_SECRET not set' }, 500);
+    }
     const decoded = await verifyJWT(refreshToken, secret);
 
     if (decoded.type !== 'refresh') {
@@ -238,7 +247,7 @@ authRoutes.post('/change-password', authMiddleware, async (c) => {
 });
 
 // Register (admin only)
-authRoutes.post('/register', async (c) => {
+authRoutes.post('/register', authRateLimit, async (c) => {
   try {
     const { email, password, firstName, lastName, role, companyId } = await c.req.json();
 

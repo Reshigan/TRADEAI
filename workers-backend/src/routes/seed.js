@@ -1,7 +1,11 @@
 import { Hono } from 'hono';
 import { getD1Client } from '../services/d1.js';
+import { authMiddleware, requireRole } from '../middleware/auth.js';
 
 const seedRoutes = new Hono();
+
+seedRoutes.use('*', authMiddleware);
+seedRoutes.use('*', requireRole('admin'));
 
 // Comprehensive seed data for ML testing
 seedRoutes.post('/ml-data', async (c) => {

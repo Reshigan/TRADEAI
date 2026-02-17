@@ -92,7 +92,10 @@ export async function authMiddleware(c, next) {
     }
 
     const token = authHeader.substring(7);
-    const secret = c.env.JWT_SECRET || 'your-secret-key';
+    const secret = c.env.JWT_SECRET;
+    if (!secret) {
+      return c.json({ success: false, message: 'Server configuration error: JWT_SECRET not set' }, 500);
+    }
 
     const decoded = await verifyJWT(token, secret);
     
