@@ -1,35 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  Button,
-  TextField,
-  MenuItem,
-  Grid,
-  IconButton,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Alert
+  Box, Typography, Button, TextField, Grid, Paper, Chip,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions,
+  Alert, alpha, Tabs, Tab,
 } from '@mui/material';
 import {
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
-  Visibility as ViewIcon,
-  Warning as WarningIcon,
-  AccessTime as ClockIcon
+  CheckCircle as ApproveIcon, Cancel as RejectIcon, Visibility as ViewIcon,
+  Warning as WarningIcon, AccessTime as ClockIcon, AssignmentTurnedIn as ApprovalIcon,
+  HourglassEmpty as PendingIcon, ErrorOutline as OverdueIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import approvalService from '../../services/approval/approvalService';
@@ -57,14 +36,9 @@ const ApprovalsList = () => {
     try {
       setLoading(true);
       setError(null);
-      
       let response;
-      if (filter === 'pending') {
-        response = await approvalService.getPendingApprovals();
-      } else if (filter === 'overdue') {
-        response = await approvalService.getOverdueApprovals();
-      }
-      
+      if (filter === 'pending') response = await approvalService.getPendingApprovals();
+      else if (filter === 'overdue') response = await approvalService.getOverdueApprovals();
       setApprovals(response.data || []);
     } catch (err) {
       console.error('Error loading approvals:', err);
@@ -78,12 +52,7 @@ const ApprovalsList = () => {
     try {
       setActionLoading(true);
       await approvalService.approveApproval((selectedApproval.id || selectedApproval._id), actionComment);
-      
-      analytics.trackEvent('approval_approved', {
-        approvalId: (selectedApproval.id || selectedApproval._id),
-        entityType: selectedApproval.entityType
-      });
-      
+      analytics.trackEvent('approval_approved', { approvalId: (selectedApproval.id || selectedApproval._id), entityType: selectedApproval.entityType });
       setActionDialog({ open: false, type: null });
       setActionComment('');
       setSelectedApproval(null);
@@ -100,12 +69,7 @@ const ApprovalsList = () => {
     try {
       setActionLoading(true);
       await approvalService.rejectApproval((selectedApproval.id || selectedApproval._id), actionComment);
-      
-      analytics.trackEvent('approval_rejected', {
-        approvalId: (selectedApproval.id || selectedApproval._id),
-        entityType: selectedApproval.entityType
-      });
-      
+      analytics.trackEvent('approval_rejected', { approvalId: (selectedApproval.id || selectedApproval._id), entityType: selectedApproval.entityType });
       setActionDialog({ open: false, type: null });
       setActionComment('');
       setSelectedApproval(null);
@@ -124,260 +88,151 @@ const ApprovalsList = () => {
     setActionComment('');
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'warning';
-      case 'approved':
-        return 'success';
-      case 'rejected':
-        return 'error';
-      case 'cancelled':
-        return 'default';
-      case 'expired':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
+  const getStatusColor = (status) => ({ pending: 'warning', approved: 'success', rejected: 'error', cancelled: 'default', expired: 'error' })[status] || 'default';
   const isOverdue = (approval) => {
     const dueDate = approval.dueDate || approval.sla?.dueDate;
     return approval.sla?.isOverdue || (dueDate && new Date(dueDate) < new Date());
   };
+  const formatCurrency = (amount, currency = 'ZAR') => new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(amount);
+  const formatDate = (date) => new Date(date).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-  const formatCurrency = (amount, currency = 'ZAR') => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
-  };
+  const approvalStats = useMemo(() => ({
+    total: approvals.length,
+    overdue: approvals.filter(a => isOverdue(a)).length,
+    pending: approvals.filter(a => a.status === 'pending').length,
+  }), [approvals]);
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-ZA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  if (loading) return <SkeletonLoader type="table" />;
 
-  if (loading) {
-    return <SkeletonLoader type="table" />;
-  }
+  const summaryCards = [
+    { label: 'Total Pending', value: approvalStats.total, icon: <ApprovalIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Awaiting Action', value: approvalStats.pending, icon: <PendingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
+    { label: 'Overdue', value: approvalStats.overdue, icon: <OverdueIcon />, color: '#DC2626', bg: alpha('#DC2626', 0.08) },
+  ];
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4">Approvals Management</Typography>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>Approvals</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>Review and action pending approval requests</Typography>
+        </Box>
       </Box>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError(null)}>{error}</Alert>}
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
-              <TextField
-                select
-                fullWidth
-                label="Filter"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <MenuItem value="pending">Pending Approvals</MenuItem>
-                <MenuItem value="overdue">Overdue Approvals</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Chip
-                  label={`${approvals.length} Total`}
-                  color="primary"
-                  variant="outlined"
-                />
-                <Chip
-                  label={`${approvals.filter(a => isOverdue(a)).length} Overdue`}
-                  color="error"
-                  variant="outlined"
-                />
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {summaryCards.map((s) => (
+          <Grid item xs={12} sm={4} key={s.label}>
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {React.cloneElement(s.icon, { sx: { color: s.color, fontSize: 22 } })}
               </Box>
-            </Grid>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>{s.label}</Typography>
+                <Typography variant="h6" fontWeight={700}>{s.value}</Typography>
+              </Box>
+            </Paper>
           </Grid>
-        </CardContent>
-      </Card>
+        ))}
+      </Grid>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Approval ID</TableCell>
-              <TableCell>Entity Type</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Requested By</TableCell>
-              <TableCell>Requested At</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Level</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {approvals.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} align="center">
-                  <Typography variant="body2" color="textSecondary">
-                    No approvals found
-                  </Typography>
-                </TableCell>
+      <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+        <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
+          <Tabs value={filter === 'pending' ? 0 : 1} onChange={(_, v) => setFilter(v === 0 ? 'pending' : 'overdue')}
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            <Tab label="Pending" />
+            <Tab label="Overdue" />
+          </Tabs>
+          <Chip label={`${approvals.length} items`} size="small" sx={{ bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED', fontWeight: 600 }} />
+        </Box>
+
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
+                <TableCell>Request</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell align="right">Amount</TableCell>
+                <TableCell>Requested By</TableCell>
+                <TableCell>Due</TableCell>
+                <TableCell>Priority</TableCell>
+                <TableCell align="center">Actions</TableCell>
               </TableRow>
-            ) : (
-              approvals.map((approval) => (
-                <TableRow
-                  key={approval.id || approval._id}
-                  sx={{
-                    backgroundColor: isOverdue(approval) ? 'rgba(211, 47, 47, 0.08)' : 'inherit'
-                  }}
-                >
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {isOverdue(approval) && (
-                        <Tooltip title="Overdue">
-                          <WarningIcon color="error" fontSize="small" />
-                        </Tooltip>
-                      )}
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                        {approval.approvalId}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={formatLabel(approval.entityType)}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight="bold">
-                      {formatCurrency(approval.amount, approval.currency)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {typeof approval.requestedBy === 'object' ? (approval.requestedBy?.name || 'Unknown') : (approval.requestedByName || approval.requestedBy || 'Unknown')}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="textSecondary">
-                      {formatDate(approval.requestedAt)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={formatLabel(approval.status)}
-                      color={getStatusColor(approval.status)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={approval.currentApprovalLevel != null ? `Level ${approval.currentApprovalLevel}/${approval.approvalChain?.length || 0}` : formatLabel(approval.priority || 'normal')}
-                      size="small"
-                      color={approval.priority === 'high' ? 'error' : approval.priority === 'medium' ? 'warning' : 'default'}
-                      icon={<ClockIcon />}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {(approval.dueDate || approval.sla?.dueDate) && (
-                      <Typography
-                        variant="body2"
-                        color={isOverdue(approval) ? 'error' : 'textSecondary'}
-                      >
-                        {formatDate(approval.dueDate || approval.sla.dueDate)}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                      <Tooltip title="View Details">
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/approvals/${approval.id || approval._id}`)}
-                        >
-                          <ViewIcon />
-                        </IconButton>
-                      </Tooltip>
-                      {approval.status === 'pending' && (
-                        <>
-                          <Tooltip title="Approve">
-                            <IconButton
-                              size="small"
-                              color="success"
-                              onClick={() => openActionDialog(approval, 'approve')}
-                            >
-                              <ApproveIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Reject">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => openActionDialog(approval, 'reject')}
-                            >
-                              <RejectIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </>
-                      )}
-                    </Box>
+            </TableHead>
+            <TableBody>
+              {approvals.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                    <ApprovalIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                    <Typography variant="body2" color="text.secondary">No approvals found</Typography>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                approvals.map((approval) => (
+                  <TableRow key={approval.id || approval._id} hover
+                    sx={{ bgcolor: isOverdue(approval) ? alpha('#DC2626', 0.03) : 'inherit', '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {isOverdue(approval) && <Tooltip title="Overdue"><WarningIcon color="error" sx={{ fontSize: 18 }} /></Tooltip>}
+                        <Typography variant="body2" fontWeight={600}>{approval.approvalId}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell><Chip label={formatLabel(approval.entityType)} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
+                    <TableCell align="right"><Typography variant="body2" fontWeight={700}>{formatCurrency(approval.amount, approval.currency)}</Typography></TableCell>
+                    <TableCell><Typography variant="body2">{typeof approval.requestedBy === 'object' ? (approval.requestedBy?.name || 'Unknown') : (approval.requestedByName || approval.requestedBy || 'Unknown')}</Typography></TableCell>
+                    <TableCell>
+                      {(approval.dueDate || approval.sla?.dueDate) && (
+                        <Typography variant="body2" color={isOverdue(approval) ? 'error' : 'text.secondary'} fontWeight={isOverdue(approval) ? 600 : 400}>
+                          {formatDate(approval.dueDate || approval.sla.dueDate)}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Chip label={approval.currentApprovalLevel != null ? `Level ${approval.currentApprovalLevel}/${approval.approvalChain?.length || 0}` : formatLabel(approval.priority || 'normal')}
+                        size="small" icon={<ClockIcon />}
+                        color={approval.priority === 'high' ? 'error' : approval.priority === 'medium' ? 'warning' : 'default'}
+                        sx={{ borderRadius: '6px', height: 24 }} />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                        <Tooltip title="View"><IconButton size="small" onClick={() => navigate(`/approvals/${approval.id || approval._id}`)}
+                          sx={{ color: '#6B7280', '&:hover': { bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED' } }}><ViewIcon fontSize="small" /></IconButton></Tooltip>
+                        {approval.status === 'pending' && (
+                          <>
+                            <Tooltip title="Approve"><IconButton size="small" onClick={() => openActionDialog(approval, 'approve')}
+                              sx={{ color: '#059669', '&:hover': { bgcolor: alpha('#059669', 0.08) } }}><ApproveIcon fontSize="small" /></IconButton></Tooltip>
+                            <Tooltip title="Reject"><IconButton size="small" onClick={() => openActionDialog(approval, 'reject')}
+                              sx={{ color: '#DC2626', '&:hover': { bgcolor: alpha('#DC2626', 0.08) } }}><RejectIcon fontSize="small" /></IconButton></Tooltip>
+                          </>
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
 
-      <Dialog
-        open={actionDialog.open}
-        onClose={() => !actionLoading && setActionDialog({ open: false, type: null })}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {actionDialog.type === 'approve' ? 'Approve Request' : 'Reject Request'}
-        </DialogTitle>
+      <Dialog open={actionDialog.open} onClose={() => !actionLoading && setActionDialog({ open: false, type: null })} maxWidth="sm" fullWidth
+        PaperProps={{ sx: { borderRadius: '16px' } }}>
+        <DialogTitle sx={{ fontWeight: 700 }}>{actionDialog.type === 'approve' ? 'Approve Request' : 'Reject Request'}</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
+          <TextField fullWidth multiline rows={4}
             label={actionDialog.type === 'approve' ? 'Comments (Optional)' : 'Reason for Rejection'}
-            value={actionComment}
-            onChange={(e) => setActionComment(e.target.value)}
-            sx={{ mt: 2 }}
-            required={actionDialog.type === 'reject'}
-          />
+            value={actionComment} onChange={(e) => setActionComment(e.target.value)}
+            sx={{ mt: 2, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+            required={actionDialog.type === 'reject'} />
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setActionDialog({ open: false, type: null })}
-            disabled={actionLoading}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={actionDialog.type === 'approve' ? handleApprove : handleReject}
-            variant="contained"
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={() => setActionDialog({ open: false, type: null })} disabled={actionLoading}
+            sx={{ borderRadius: '10px', textTransform: 'none' }}>Cancel</Button>
+          <Button onClick={actionDialog.type === 'approve' ? handleApprove : handleReject} variant="contained"
             color={actionDialog.type === 'approve' ? 'success' : 'error'}
             disabled={actionLoading || (actionDialog.type === 'reject' && !actionComment)}
-          >
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>
             {actionLoading ? 'Processing...' : actionDialog.type === 'approve' ? 'Approve' : 'Reject'}
           </Button>
         </DialogActions>

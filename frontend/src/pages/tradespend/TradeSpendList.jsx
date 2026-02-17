@@ -1,35 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  IconButton,
-  TextField,
-  MenuItem,
-  CircularProgress,
-  Alert,
-  Tooltip
+  Box, Grid, Typography, Button, Paper, Chip, IconButton, TextField, MenuItem,
+  CircularProgress, Tooltip, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, alpha,
 } from '@mui/material';
 import {
-  Add,
-  Refresh,
-  Edit,
-  Delete,
-  CheckCircle,
-  Visibility,
-  AttachMoney,
-  TrendingUp
+  Add, Refresh, Edit, Delete, Visibility, AttachMoney, TrendingUp,
+  CheckCircle, PieChart as PieChartIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import tradeSpendService from '../../services/tradespend/tradeSpendService';
@@ -40,18 +17,12 @@ const TradeSpendList = () => {
   const [loading, setLoading] = useState(true);
   const [tradeSpends, setTradeSpends] = useState([]);
   const [summary, setSummary] = useState(null);
-  const [filters, setFilters] = useState({
-    spendType: '',
-    status: '',
-    page: 1,
-    limit: 20
-  });
+  const [filters, setFilters] = useState({ spendType: '', status: '', page: 1, limit: 20 });
 
   const loadTradeSpends = async () => {
     setLoading(true);
     try {
       const response = await tradeSpendService.getTradeSpends(filters);
-      // API returns {success: true, data: [...]} or {tradeSpends: [...]}
       setTradeSpends(response.data || response.tradeSpends || []);
     } catch (error) {
       console.error('Failed to load trade spends:', error);
@@ -70,286 +41,145 @@ const TradeSpendList = () => {
     }
   };
 
-  useEffect(() => {
-    loadTradeSpends();
-    loadSummary();
-  }, [filters]);
+  useEffect(() => { loadTradeSpends(); loadSummary(); }, [filters]);
 
-  const handleFilterChange = (field, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [field]: value,
-      page: 1 // Reset to first page on filter change
-    }));
-  };
-
-  const handleCreateNew = () => {
-    navigate('/trade-spends/new');
-  };
-
-  const handleView = (id) => {
-    navigate(`/trade-spends/${id}`);
-  };
-
-  const handleEdit = (id) => {
-    navigate(`/trade-spends/${id}/edit`);
-  };
-
+  const handleFilterChange = (field, value) => setFilters(prev => ({ ...prev, [field]: value, page: 1 }));
+  const handleView = (id) => navigate(`/trade-spends/${id}`);
+  const handleEdit = (id) => navigate(`/trade-spends/${id}/edit`);
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this trade spend?')) {
-      try {
-        await tradeSpendService.deleteTradeSpend(id);
-        loadTradeSpends();
-      } catch (error) {
-        console.error('Failed to delete trade spend:', error);
-      }
+      try { await tradeSpendService.deleteTradeSpend(id); loadTradeSpends(); } catch (error) { console.error('Failed to delete:', error); }
     }
   };
 
-  const getStatusColor = (status) => {
-    const colors = {
-      draft: 'default',
-      submitted: 'info',
-      approved: 'success',
-      active: 'primary',
-      completed: 'success',
-      cancelled: 'error',
-      rejected: 'error'
-    };
-    return colors[status] || 'default';
-  };
+  const getStatusColor = (status) => ({ draft: 'default', submitted: 'info', approved: 'success', active: 'primary', completed: 'success', cancelled: 'error', rejected: 'error' })[status] || 'default';
+  const getSpendTypeLabel = (type) => ({ marketing: 'Marketing', cash_coop: 'Cash Co-op', trading_terms: 'Trading Terms', rebate: 'Rebate', promotion: 'Promotion' })[type] || formatLabel(type);
 
-  const getSpendTypeLabel = (type) => {
-    const labels = {
-      marketing: 'Marketing',
-      cash_coop: 'Cash Co-op',
-      trading_terms: 'Trading Terms',
-      rebate: 'Rebate',
-      promotion: 'Promotion'
-    };
-    return labels[type] || formatLabel(type);
-  };
+  const summaryCards = useMemo(() => {
+    if (!summary) return [];
+    const utilization = summary.totalApproved > 0 ? ((summary.totalSpent / summary.totalApproved) * 100).toFixed(1) : 0;
+    return [
+      { label: 'Total Requested', value: `R${((summary.totalRequested || 0) / 1000).toFixed(1)}K`, icon: <AttachMoney />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+      { label: 'Total Approved', value: `R${((summary.totalApproved || 0) / 1000).toFixed(1)}K`, icon: <CheckCircle />, color: '#059669', bg: alpha('#059669', 0.08) },
+      { label: 'Total Spent', value: `R${((summary.totalSpent || 0) / 1000).toFixed(1)}K`, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
+      { label: 'Utilization', value: `${utilization}%`, icon: <PieChartIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
+    ];
+  }, [summary]);
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1600, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <div>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
-            Trade Spend Management
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage marketing, cash co-op, trading terms, and promotional spend
-          </Typography>
-        </div>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={<Refresh />}
-            onClick={loadTradeSpends}
-          >
+    <Box sx={{ maxWidth: 1600, mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>Trade Spend</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>Manage marketing, cash co-op, trading terms, and promotional spend</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={loadTradeSpends}
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
             Refresh
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleCreateNew}
-          >
+          <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/trade-spends/new')}
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
             New Trade Spend
           </Button>
         </Box>
       </Box>
 
-      {summary && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <AttachMoney color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    Total Requested
-                  </Typography>
+      {summaryCards.length > 0 && (
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          {summaryCards.map((s) => (
+            <Grid item xs={6} md={3} key={s.label}>
+              <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {React.cloneElement(s.icon, { sx: { color: s.color, fontSize: 22 } })}
                 </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  R{(summary.totalRequested / 1000 || 0).toFixed(1)}K
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    Total Approved
-                  </Typography>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" fontWeight={500}>{s.label}</Typography>
+                  <Typography variant="h6" fontWeight={700}>{s.value}</Typography>
                 </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                  R{(summary.totalApproved / 1000 || 0).toFixed(1)}K
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <TrendingUp color="info" sx={{ mr: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    Total Spent
-                  </Typography>
-                </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.main' }}>
-                  R{(summary.totalSpent / 1000 || 0).toFixed(1)}K
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Utilization
-                  </Typography>
-                </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                  {summary.totalApproved > 0 
-                    ? ((summary.totalSpent / summary.totalApproved) * 100).toFixed(1)
-                    : 0}%
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       )}
 
-      <Card>
-        <CardContent>
-          <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-            <TextField
-              select
-              label="Spend Type"
-              value={filters.spendType}
-              onChange={(e) => handleFilterChange('spendType', e.target.value)}
-              sx={{ minWidth: 200 }}
-              size="small"
-            >
-              <MenuItem value="">All Types</MenuItem>
-              <MenuItem value="marketing">Marketing</MenuItem>
-              <MenuItem value="cash_coop">Cash Co-op</MenuItem>
-              <MenuItem value="trading_terms">Trading Terms</MenuItem>
-              <MenuItem value="rebate">Rebate</MenuItem>
-              <MenuItem value="promotion">Promotion</MenuItem>
-            </TextField>
-            <TextField
-              select
-              label="Status"
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              sx={{ minWidth: 200 }}
-              size="small"
-            >
-              <MenuItem value="">All Statuses</MenuItem>
-              <MenuItem value="draft">Draft</MenuItem>
-              <MenuItem value="submitted">Submitted</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="active">Active</MenuItem>
-              <MenuItem value="completed">Completed</MenuItem>
-              <MenuItem value="cancelled">Cancelled</MenuItem>
-              <MenuItem value="rejected">Rejected</MenuItem>
-            </TextField>
-          </Box>
+      <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+        <Box sx={{ p: 2.5, display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid', borderColor: 'divider' }}>
+          <TextField select label="Spend Type" value={filters.spendType} onChange={(e) => handleFilterChange('spendType', e.target.value)}
+            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} size="small">
+            <MenuItem value="">All Types</MenuItem>
+            <MenuItem value="marketing">Marketing</MenuItem>
+            <MenuItem value="cash_coop">Cash Co-op</MenuItem>
+            <MenuItem value="trading_terms">Trading Terms</MenuItem>
+            <MenuItem value="rebate">Rebate</MenuItem>
+            <MenuItem value="promotion">Promotion</MenuItem>
+          </TextField>
+          <TextField select label="Status" value={filters.status} onChange={(e) => handleFilterChange('status', e.target.value)}
+            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} size="small">
+            <MenuItem value="">All Statuses</MenuItem>
+            <MenuItem value="draft">Draft</MenuItem>
+            <MenuItem value="submitted">Submitted</MenuItem>
+            <MenuItem value="approved">Approved</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="completed">Completed</MenuItem>
+            <MenuItem value="cancelled">Cancelled</MenuItem>
+            <MenuItem value="rejected">Rejected</MenuItem>
+          </TextField>
+          <Chip label={`${tradeSpends.length} records`} sx={{ alignSelf: 'center', bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED', fontWeight: 600 }} />
+        </Box>
 
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-              <CircularProgress />
-            </Box>
-          ) : tradeSpends.length === 0 ? (
-            <Alert severity="info">
-              No trade spends found. Create your first trade spend to get started.
-            </Alert>
-          ) : (
-            <TableContainer component={Paper} variant="outlined">
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Spend ID</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Requested</TableCell>
-                    <TableCell align="right">Approved</TableCell>
-                    <TableCell align="right">Spent</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Period</TableCell>
-                    <TableCell align="center">Actions</TableCell>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: '#7C3AED' }} /></Box>
+        ) : tradeSpends.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <AttachMoney sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+            <Typography variant="body2" color="text.secondary">No trade spends found. Create your first trade spend to get started.</Typography>
+          </Box>
+        ) : (
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
+                  <TableCell>Spend ID</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Customer</TableCell>
+                  <TableCell align="right">Requested</TableCell>
+                  <TableCell align="right">Approved</TableCell>
+                  <TableCell align="right">Spent</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Period</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tradeSpends.map((spend) => (
+                  <TableRow key={spend.id || spend._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}
+                    onClick={() => handleView(spend._id)}>
+                    <TableCell><Typography variant="body2" fontWeight={600}>{spend.spendId}</Typography></TableCell>
+                    <TableCell><Chip label={getSpendTypeLabel(spend.spendType)} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
+                    <TableCell>{spend.customer?.name || spend.customerName || 'N/A'}</TableCell>
+                    <TableCell align="right"><Typography variant="body2" fontWeight={600}>R{(spend.amount?.requested || spend.requestedAmount || spend.amount || 0).toLocaleString()}</Typography></TableCell>
+                    <TableCell align="right">R{(spend.amount?.approved || spend.approvedAmount || 0).toLocaleString()}</TableCell>
+                    <TableCell align="right">R{(spend.amount?.spent || spend.spentAmount || 0).toLocaleString()}</TableCell>
+                    <TableCell><Chip label={formatLabel(spend.status)} color={getStatusColor(spend.status)} size="small" sx={{ borderRadius: '6px', height: 24, fontWeight: 600 }} /></TableCell>
+                    <TableCell><Typography variant="body2" color="text.secondary">{(spend.period?.startDate || spend.startDate) ? new Date(spend.period?.startDate || spend.startDate).toLocaleDateString() : 'N/A'}</Typography></TableCell>
+                    <TableCell align="center" onClick={(e) => e.stopPropagation()}>
+                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                        <Tooltip title="View"><IconButton size="small" onClick={() => handleView(spend._id)}
+                          sx={{ color: '#6B7280', '&:hover': { color: '#7C3AED', bgcolor: alpha('#7C3AED', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
+                        <Tooltip title="Edit"><IconButton size="small" onClick={() => handleEdit(spend._id)}
+                          sx={{ color: '#6B7280', '&:hover': { color: '#7C3AED', bgcolor: alpha('#7C3AED', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
+                        <Tooltip title="Delete"><IconButton size="small" onClick={() => handleDelete(spend._id)}
+                          sx={{ color: '#6B7280', '&:hover': { color: '#DC2626', bgcolor: alpha('#DC2626', 0.08) } }}><Delete fontSize="small" /></IconButton></Tooltip>
+                      </Box>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tradeSpends.map((spend) => (
-                    <TableRow key={spend.id || spend._id} hover>
-                      <TableCell>{spend.spendId}</TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={getSpendTypeLabel(spend.spendType)} 
-                          size="small"
-                          variant="outlined"
-                        />
-                      </TableCell>
-                      <TableCell>{spend.category}</TableCell>
-                      <TableCell>{spend.customer?.name || spend.customerName || 'N/A'}</TableCell>
-                      <TableCell align="right">
-                        R{(spend.amount?.requested || spend.requestedAmount || spend.amount || 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell align="right">
-                        R{(spend.amount?.approved || spend.approvedAmount || 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell align="right">
-                        R{(spend.amount?.spent || spend.spentAmount || 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={formatLabel(spend.status)} 
-                          color={getStatusColor(spend.status)}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {(spend.period?.startDate || spend.startDate)
-                          ? new Date(spend.period?.startDate || spend.startDate).toLocaleDateString()
-                          : 'N/A'}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Tooltip title="View">
-                          <IconButton size="small" onClick={() => handleView(spend._id)}>
-                            <Visibility fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Edit">
-                          <IconButton size="small" onClick={() => handleEdit(spend._id)}>
-                            <Edit fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                          <IconButton 
-                            size="small" 
-                            onClick={() => handleDelete(spend._id)}
-                            color="error"
-                          >
-                            <Delete fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Paper>
     </Box>
   );
 };
