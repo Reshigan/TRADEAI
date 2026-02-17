@@ -155,7 +155,7 @@ const JAMDashboard = () => {
               bgcolor: 'background.paper',
               transition: 'all 0.2s',
               '&:hover': {
-                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)',
+                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.15)',
                 borderColor: 'primary.main'
               }
             }}
@@ -331,7 +331,7 @@ const JAMDashboard = () => {
                       cursor: 'pointer',
                       '&:hover': { 
                         borderColor: 'primary.main',
-                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.1)'
+                        boxShadow: '0 2px 8px rgba(124, 58, 237, 0.1)'
                       }
                     }}
                   >
@@ -525,7 +525,7 @@ const JAMDashboard = () => {
                       transition: 'all 0.2s',
                       '&:hover': { 
                         borderColor: 'primary.main',
-                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.1)'
+                        boxShadow: '0 2px 8px rgba(124, 58, 237, 0.1)'
                       }
                     }}
                   >

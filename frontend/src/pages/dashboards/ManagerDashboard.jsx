@@ -196,7 +196,7 @@ const ManagerDashboard = () => {
                           width: '60%',
                           height: `${30 + (i + 1) * 15}%`,
                           borderRadius: '8px 8px 0 0',
-                          bgcolor: i === 0 ? '#7C3AED' : i === 1 ? '#3B82F6' : '#FB923C',
+                          bgcolor: i === 0 ? '#7C3AED' : i === 1 ? '#7C3AED' : '#FB923C',
                           opacity: 0.8,
                         }}
                       />
@@ -365,7 +365,7 @@ const ManagerDashboard = () => {
               </Typography>
               {[
                 { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#7C3AED' },
-                { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#3B82F6' },
+                { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#7C3AED' },
                 { label: 'Total Products', value: overview.totalProducts || 0, color: '#10B981' },
               ].map((metric, idx) => (
                 <Box key={idx} display="flex" alignItems="center" justifyContent="space-between" sx={{ py: 1.25, borderBottom: idx < 2 ? '1px solid #F3F4F6' : 'none' }}>

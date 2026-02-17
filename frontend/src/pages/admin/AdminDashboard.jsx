@@ -1,21 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Container,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Tab,
-  Tabs
-} from '@mui/material';
-import {
-  Settings,
-  People,
-  LocalOffer,
-  AccountTree,
-  Security
-} from '@mui/icons-material';
+import { Box, Grid, Typography, Paper, Tab, Tabs, alpha } from '@mui/material';
+import { Settings, People, LocalOffer, AccountTree, Security } from '@mui/icons-material';
 import SystemSettings from './system/SystemSettings';
 import UserManagement from './users/UserManagement';
 import RebateConfiguration from './rebates/RebateConfiguration';
@@ -25,137 +10,58 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const adminSections = [
-    {
-      id: 'system',
-      label: 'System Settings',
-      icon: <Settings />,
-      component: SystemSettings,
-      description: 'Configure system-wide settings'
-    },
-    {
-      id: 'users',
-      label: 'User Management',
-      icon: <People />,
-      component: UserManagement,
-      description: 'Manage users, roles, and permissions'
-    },
-    {
-      id: 'rebates',
-      label: 'Rebate Configuration',
-      icon: <LocalOffer />,
-      component: RebateConfiguration,
-      description: 'Configure rebate types and rules'
-    },
-    {
-      id: 'workflows',
-      label: 'Workflow Automation',
-      icon: <AccountTree />,
-      component: WorkflowAutomation,
-      description: 'Setup approval chains and notifications'
-    }
+    { id: 'system', label: 'System Settings', icon: <Settings />, component: SystemSettings },
+    { id: 'users', label: 'User Management', icon: <People />, component: UserManagement },
+    { id: 'rebates', label: 'Rebate Configuration', icon: <LocalOffer />, component: RebateConfiguration },
+    { id: 'workflows', label: 'Workflow Automation', icon: <AccountTree />, component: WorkflowAutomation }
+  ];
+
+  const statCards = [
+    { label: 'Active Users', value: '45', icon: <People />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Rebate Types', value: '8', icon: <LocalOffer />, color: '#059669', bg: alpha('#059669', 0.08) },
+    { label: 'Active Workflows', value: '12', icon: <AccountTree />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
+    { label: 'System Health', value: '100%', icon: <Security />, color: '#D97706', bg: alpha('#D97706', 0.08) },
   ];
 
   const ActiveComponent = adminSections[activeTab].component;
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          System Administration
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Configure and manage Trade AI platform settings
-        </Typography>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" fontWeight={700}>System Administration</Typography>
+        <Typography variant="body2" color="text.secondary" mt={0.5}>Configure and manage Trade AI platform settings</Typography>
       </Box>
 
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <People color="primary" sx={{ fontSize: 40 }} />
-                <Box>
-                  <Typography variant="h4">45</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Active Users
-                  </Typography>
-                </Box>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {statCards.map((s) => (
+          <Grid item xs={6} md={3} key={s.label}>
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {React.cloneElement(s.icon, { sx: { color: s.color, fontSize: 22 } })}
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <LocalOffer color="success" sx={{ fontSize: 40 }} />
-                <Box>
-                  <Typography variant="h4">8</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Rebate Types
-                  </Typography>
-                </Box>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>{s.label}</Typography>
+                <Typography variant="h6" fontWeight={700}>{s.value}</Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <AccountTree color="info" sx={{ fontSize: 40 }} />
-                <Box>
-                  <Typography variant="h4">12</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Active Workflows
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Security color="warning" sx={{ fontSize: 40 }} />
-                <Box>
-                  <Typography variant="h4">100%</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    System Health
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+            </Paper>
+          </Grid>
+        ))}
       </Grid>
 
-      {/* Tabs */}
-      <Card>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={activeTab}
-            onChange={(e, newValue) => setActiveTab(newValue)}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            {adminSections.map((section, index) => (
-              <Tab
-                key={section.id}
-                label={section.label}
-                icon={section.icon}
-                iconPosition="start"
-              />
+      <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+        <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 1 }}>
+          <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} variant="scrollable" scrollButtons="auto"
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 52 }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            {adminSections.map((section) => (
+              <Tab key={section.id} label={section.label} icon={section.icon} iconPosition="start" />
             ))}
           </Tabs>
         </Box>
-        <CardContent>
+        <Box sx={{ p: 3 }}>
           <ActiveComponent />
-        </CardContent>
-      </Card>
-    </Container>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

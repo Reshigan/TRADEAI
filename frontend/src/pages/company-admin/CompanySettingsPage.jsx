@@ -42,7 +42,7 @@ export default function CompanySettingsPage() {
   const [settings, setSettings] = useState({
     branding: {
       logoUrl: '',
-      primaryColor: '#1E40AF',
+      primaryColor: '#6D28D9',
       secondaryColor: '#059669',
       showCompanyLogo: true
     },

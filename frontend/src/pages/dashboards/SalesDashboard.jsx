@@ -71,7 +71,7 @@ const SalesDashboard = () => {
             sx={{
               p: 3,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+              background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
               color: 'white',
               border: '1px solid',
               borderColor: 'divider'
@@ -119,7 +119,7 @@ const SalesDashboard = () => {
             sx={{
               p: 3,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
+              background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
               color: 'white',
               border: '1px solid',
               borderColor: 'divider'
