@@ -179,7 +179,7 @@ approvals.post('/', async (c) => {
     `).bind(
       id, companyId,
       body.entityType || body.entity_type || 'promotion',
-      body.entityId || body.entity_id || null,
+      body.entityId || body.entity_id || generateId(),
       body.entityName || body.entity_name || '',
       body.amount || 0,
       body.priority || 'normal',
