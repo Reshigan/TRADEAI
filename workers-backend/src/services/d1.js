@@ -185,7 +185,7 @@ const JSON_FIELDS = [
 // Known columns per table (to avoid inserting unknown columns)
 const TABLE_COLUMNS = {
   customers: ['id', 'company_id', 'name', 'code', 'sap_customer_id', 'customer_type', 'channel', 'tier', 'status', 'region', 'city', 'data', 'created_at', 'updated_at', 'sub_channel', 'segmentation', 'hierarchy_1', 'hierarchy_2', 'hierarchy_3', 'head_office'],
-  products: ['id', 'company_id', 'name', 'code', 'sku', 'category', 'brand', 'unit_price', 'cost_price', 'status', 'data', 'created_at', 'updated_at', 'vendor', 'sub_brand'],
+  products: ['id', 'company_id', 'name', 'code', 'sku', 'barcode', 'category', 'subcategory', 'brand', 'unit_price', 'cost_price', 'status', 'data', 'created_at', 'updated_at', 'vendor', 'sub_brand'],
   budgets: ['id', 'company_id', 'name', 'year', 'amount', 'utilized', 'budget_type', 'status', 'created_by', 'data', 'created_at', 'updated_at', 'budget_category', 'scope_type', 'deal_type', 'claim_type', 'product_vendor', 'product_category', 'product_brand', 'product_sub_brand', 'product_id', 'customer_channel', 'customer_sub_channel', 'customer_segmentation', 'customer_hierarchy_1', 'customer_hierarchy_2', 'customer_hierarchy_3', 'customer_head_office', 'customer_id'],
   promotions: ['id', 'company_id', 'name', 'description', 'promotion_type', 'status', 'start_date', 'end_date', 'sell_in_start_date', 'sell_in_end_date', 'budget_id', 'created_by', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'data', 'created_at', 'updated_at'],
   trade_spends: ['id', 'company_id', 'spend_id', 'budget_id', 'promotion_id', 'customer_id', 'product_id', 'amount', 'spend_type', 'activity_type', 'status', 'description', 'created_by', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'data', 'created_at', 'updated_at'],
@@ -203,8 +203,15 @@ const TABLE_COLUMNS = {
   business_rules_config: ['id', 'company_id', 'category', 'rules', 'updated_by', 'data', 'created_at', 'updated_at'],
   allocations: ['id', 'company_id', 'name', 'budget_id', 'customer_id', 'product_id', 'amount', 'status', 'allocation_type', 'created_by', 'data', 'created_at', 'updated_at'],
   settings: ['id', 'company_id', 'key', 'value', 'data', 'created_at', 'updated_at'],
-  simulations: ['id', 'company_id', 'name', 'description', 'simulation_type', 'status', 'parameters', 'results', 'created_by', 'data', 'created_at', 'updated_at'],
-  forecasts: ['id', 'company_id', 'name', 'forecast_type', 'status', 'period_type', 'start_period', 'end_period', 'base_year', 'forecast_year', 'total_forecast', 'total_actual', 'variance', 'variance_percent', 'method', 'confidence_level', 'created_by', 'data', 'created_at', 'updated_at']
+  simulations: ['id', 'company_id', 'name', 'description', 'simulation_type', 'status', 'config', 'results', 'scenarios', 'constraints', 'created_by', 'applied_to', 'parameters', 'data', 'created_at', 'updated_at'],
+  forecasts: ['id', 'company_id', 'name', 'forecast_type', 'status', 'period_type', 'start_period', 'end_period', 'base_year', 'forecast_year', 'total_forecast', 'total_actual', 'variance', 'variance_percent', 'method', 'confidence_level', 'created_by', 'data', 'created_at', 'updated_at'],
+  activity_grid: ['id', 'company_id', 'activity_name', 'activity_type', 'status', 'start_date', 'end_date', 'customer_id', 'product_id', 'vendor_id', 'budget_allocated', 'budget_spent', 'performance', 'notes', 'source_type', 'source_id', 'created_by', 'created_at', 'updated_at'],
+  data_lineage: ['id', 'company_id', 'entity_type', 'entity_id', 'field_name', 'old_value', 'new_value', 'change_type', 'source', 'source_details', 'changed_by', 'changed_at', 'data'],
+  report_runs: ['id', 'company_id', 'report_type', 'status', 'date_range', 'filters', 'data', 'created_by', 'completed_at', 'created_at', 'updated_at'],
+  saved_views: ['id', 'company_id', 'user_id', 'name', 'entity_type', 'filters', 'columns', 'sort_by', 'sort_order', 'is_default', 'created_at', 'updated_at'],
+  data_quality_issues: ['id', 'company_id', 'entity_type', 'entity_id', 'field_name', 'issue_type', 'severity', 'message', 'resolved', 'resolved_at', 'resolved_by', 'created_at'],
+  kam_wallets: ['id', 'company_id', 'user_id', 'year', 'quarter', 'month', 'allocated_amount', 'utilized_amount', 'committed_amount', 'available_amount', 'status', 'data', 'created_at', 'updated_at'],
+  import_jobs: ['id', 'company_id', 'import_type', 'status', 'file_name', 'file_url', 'total_rows', 'processed_rows', 'success_rows', 'error_rows', 'errors', 'mapping', 'options', 'started_at', 'completed_at', 'created_by', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
