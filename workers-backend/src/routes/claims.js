@@ -365,13 +365,13 @@ claims.post('/', async (c) => {
     `).bind(
       id, companyId, claimNumber,
       body.claimType || body.claim_type || 'promotion',
-      body.customerId || body.customer_id || null,
+      body.customerId || body.customer_id || body.customer || null,
       body.promotionId || body.promotion_id || null,
       body.rebateId || body.rebate_id || null,
-      body.claimedAmount || body.claimed_amount || 0,
+      body.claimedAmount || body.claimed_amount || body.claimAmount || body.amount || 0,
       body.claimDate || body.claim_date || now,
       body.dueDate || body.due_date || null,
-      body.reason || '',
+      body.reason || body.notes || '',
       JSON.stringify(body.supportingDocuments || body.supporting_documents || []),
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
@@ -410,13 +410,13 @@ claims.put('/:id', async (c) => {
       WHERE id = ?
     `).bind(
       body.claimType || body.claim_type || existing.claim_type,
-      body.customerId || body.customer_id || existing.customer_id,
+      body.customerId || body.customer_id || body.customer || existing.customer_id,
       body.promotionId || body.promotion_id || existing.promotion_id,
       body.rebateId || body.rebate_id || existing.rebate_id,
-      body.claimedAmount || body.claimed_amount || existing.claimed_amount,
+      body.claimedAmount || body.claimed_amount || body.claimAmount || body.amount || existing.claimed_amount,
       body.claimDate || body.claim_date || existing.claim_date,
       body.dueDate || body.due_date || existing.due_date,
-      body.reason || existing.reason,
+      body.reason || body.notes || existing.reason,
       JSON.stringify(body.supportingDocuments || body.supporting_documents || []),
       JSON.stringify(body.data || {}),
       now, id
