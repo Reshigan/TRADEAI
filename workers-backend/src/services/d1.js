@@ -353,33 +353,32 @@ function documentToRow(document, tableName = null, isUpdate = false) {
   const validColumns = tableName ? TABLE_COLUMNS[tableName] : null;
   
   for (const [field, value] of Object.entries(document)) {
-    // Skip internal fields
     if (field === '_id' || field === 'id' || field === 'createdAt' || field === 'updatedAt') continue;
     
-    // Check if this field should go in JSON data column
-    if (JSON_FIELDS.includes(field)) {
-      jsonData[field] = value;
-      continue;
-    }
-    
-    // Map field name to column
     const column = COLUMN_MAP[field] || field;
     
-    // If we know the valid columns for this table, check if this column exists
-    // If not, store it in the JSON data column
-    if (validColumns && !validColumns.includes(column)) {
-      jsonData[field] = value;
-      continue;
-    }
+    const isValidColumn = validColumns && validColumns.includes(column);
     
-    // Handle special types
-    if (typeof value === 'boolean') {
-      row[column] = value ? 1 : 0;
-    } else if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
-      // Store complex objects in JSON data
+    if (isValidColumn) {
+      if (typeof value === 'boolean') {
+        row[column] = value ? 1 : 0;
+      } else if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+        jsonData[field] = value;
+      } else {
+        row[column] = value;
+      }
+    } else if (JSON_FIELDS.includes(field)) {
+      jsonData[field] = value;
+    } else if (validColumns && !isValidColumn) {
       jsonData[field] = value;
     } else {
-      row[column] = value;
+      if (typeof value === 'boolean') {
+        row[column] = value ? 1 : 0;
+      } else if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+        jsonData[field] = value;
+      } else {
+        row[column] = value;
+      }
     }
   }
   

@@ -46,12 +46,14 @@ analyticsRoutes.get('/dashboard', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
 
-    const [promotions, tradeSpends, budgets, customers, products] = await Promise.all([
+    const [promotions, tradeSpends, budgets, customers, products, claims, deductions] = await Promise.all([
       mongodb.find('promotions', { companyId: tenantId }),
       mongodb.find('tradespends', { companyId: tenantId }),
       mongodb.find('budgets', { companyId: tenantId }),
       mongodb.find('customers', { companyId: tenantId }),
-      mongodb.find('products', { companyId: tenantId })
+      mongodb.find('products', { companyId: tenantId }),
+      mongodb.find('claims', { companyId: tenantId }),
+      mongodb.find('deductions', { companyId: tenantId })
     ]);
 
     const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
@@ -59,22 +61,26 @@ analyticsRoutes.get('/dashboard', async (c) => {
     const avgROI = promotions.length > 0 
       ? promotions.reduce((sum, p) => sum + (p.performance?.roi || 0), 0) / promotions.length 
       : 0;
+    const utilization = totalBudget ? parseFloat(((totalSpend / totalBudget) * 100).toFixed(2)) : 0;
 
     return c.json({
       success: true,
       data: {
         totalSpend,
         totalBudget,
-        budgetUtilization: totalBudget ? ((totalSpend / totalBudget) * 100).toFixed(2) : 0,
-        averageROI: avgROI.toFixed(2),
+        budgetUtilization: utilization,
+        averageROI: parseFloat(avgROI.toFixed(2)),
         promotionCount: promotions.length,
+        totalPromotions: promotions.length,
         activePromotions: promotions.filter(p => p.status === 'active').length,
+        totalClaims: claims.length,
+        totalDeductions: deductions.length,
         totalCustomers: customers.length,
         totalProducts: products.length,
         summary: {
           totalBudget,
           totalUsed: totalSpend,
-          budgetUtilization: totalBudget ? ((totalSpend / totalBudget) * 100).toFixed(2) : 0,
+          budgetUtilization: utilization,
           activePromotions: promotions.filter(p => p.status === 'active').length,
           totalCustomers: customers.length,
           currencySymbol: 'R'
