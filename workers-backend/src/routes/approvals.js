@@ -167,7 +167,8 @@ approvals.post('/', async (c) => {
     
     const id = generateId();
     const now = new Date().toISOString();
-    const dueDate = body.due_date || new Date(Date.now() + (body.sla_hours || 48) * 60 * 60 * 1000).toISOString();
+    const slaHours = body.slaHours || body.sla_hours || 48;
+    const dueDate = body.dueDate || body.due_date || new Date(Date.now() + slaHours * 60 * 60 * 1000).toISOString();
     
     await db.prepare(`
       INSERT INTO approvals (
@@ -176,10 +177,16 @@ approvals.post('/', async (c) => {
         due_date, sla_hours, data, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      id, companyId, body.entityType, body.entityId, body.entityName || '',
-      body.amount || 0, body.priority || 'normal', userId, now,
-      body.assignedTo || null, dueDate, body.slaHours || 48,
-      JSON.stringify(body.metadata || {}), now, now
+      id, companyId,
+      body.entityType || body.entity_type || 'promotion',
+      body.entityId || body.entity_id || null,
+      body.entityName || body.entity_name || '',
+      body.amount || 0,
+      body.priority || 'normal',
+      userId, now,
+      body.assignedTo || body.assigned_to || null,
+      dueDate, slaHours,
+      JSON.stringify(body.metadata || body.data || {}), now, now
     ).run();
     
     const created = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
@@ -213,12 +220,12 @@ approvals.put('/:id', async (c) => {
 
     if (body.status !== undefined) { fields.push('status = ?'); values.push(body.status); }
     if (body.priority !== undefined) { fields.push('priority = ?'); values.push(body.priority); }
-    if (body.assignedTo !== undefined) { fields.push('assigned_to = ?'); values.push(body.assignedTo); }
-    if (body.entityName !== undefined) { fields.push('entity_name = ?'); values.push(body.entityName); }
+    if (body.assignedTo !== undefined || body.assigned_to !== undefined) { fields.push('assigned_to = ?'); values.push(body.assignedTo || body.assigned_to); }
+    if (body.entityName !== undefined || body.entity_name !== undefined) { fields.push('entity_name = ?'); values.push(body.entityName || body.entity_name); }
     if (body.amount !== undefined) { fields.push('amount = ?'); values.push(body.amount); }
     if (body.comments !== undefined) { fields.push('comments = ?'); values.push(body.comments); }
-    if (body.dueDate !== undefined) { fields.push('due_date = ?'); values.push(body.dueDate); }
-    if (body.slaHours !== undefined) { fields.push('sla_hours = ?'); values.push(body.slaHours); }
+    if (body.dueDate !== undefined || body.due_date !== undefined) { fields.push('due_date = ?'); values.push(body.dueDate || body.due_date); }
+    if (body.slaHours !== undefined || body.sla_hours !== undefined) { fields.push('sla_hours = ?'); values.push(body.slaHours || body.sla_hours); }
 
     if (fields.length === 0) {
       return c.json({ success: false, message: 'No fields to update' }, 400);
