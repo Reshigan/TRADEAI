@@ -244,7 +244,7 @@ deductions.post('/', async (c) => {
     const id = generateId();
     const deductionNumber = `DED-${Date.now().toString(36).toUpperCase()}`;
     const now = new Date().toISOString();
-    const amount = body.deductionAmount || body.deduction_amount || 0;
+    const amount = body.deductionAmount || body.deduction_amount || body.amount || 0;
     
     await db.prepare(`
       INSERT INTO deductions (
@@ -257,14 +257,14 @@ deductions.post('/', async (c) => {
     `).bind(
       id, companyId, deductionNumber,
       body.deductionType || body.deduction_type || 'promotion',
-      body.customerId || body.customer_id || null,
+      body.customerId || body.customer_id || body.customer || null,
       body.invoiceNumber || body.invoice_number || null,
       body.invoiceDate || body.invoice_date || null,
       amount, amount,
       body.deductionDate || body.deduction_date || now,
       body.dueDate || body.due_date || null,
-      body.reasonCode || body.reason_code || null,
-      body.reasonDescription || body.reason_description || '',
+      body.reasonCode || body.reason_code || body.reason || null,
+      body.reasonDescription || body.reason_description || body.description || '',
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
     
@@ -294,7 +294,7 @@ deductions.put('/:id', async (c) => {
       return c.json({ success: false, message: 'Deduction not found' }, 404);
     }
     
-    const amount = body.deductionAmount || body.deduction_amount || existing.deduction_amount;
+    const amount = body.deductionAmount || body.deduction_amount || body.amount || existing.deduction_amount;
     const matchedAmount = body.matchedAmount || body.matched_amount || existing.matched_amount;
     
     await db.prepare(`
@@ -306,14 +306,14 @@ deductions.put('/:id', async (c) => {
       WHERE id = ?
     `).bind(
       body.deductionType || body.deduction_type || existing.deduction_type,
-      body.customerId || body.customer_id || existing.customer_id,
+      body.customerId || body.customer_id || body.customer || existing.customer_id,
       body.invoiceNumber || body.invoice_number || existing.invoice_number,
       body.invoiceDate || body.invoice_date || existing.invoice_date,
       amount, matchedAmount, amount - matchedAmount,
       body.deductionDate || body.deduction_date || existing.deduction_date,
       body.dueDate || body.due_date || existing.due_date,
-      body.reasonCode || body.reason_code || existing.reason_code,
-      body.reasonDescription || body.reason_description || existing.reason_description,
+      body.reasonCode || body.reason_code || body.reason || existing.reason_code,
+      body.reasonDescription || body.reason_description || body.description || existing.reason_description,
       JSON.stringify(body.data || {}),
       now, id
     ).run();

@@ -411,7 +411,19 @@ function App() {
           } 
         />
         <Route 
-          path="/budgets/:id/edit" 
+          path="/budgets/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetPlanningWizard />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/budgets/:id/edit"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
@@ -611,7 +623,19 @@ function App() {
           } 
         />
         <Route 
-          path="/customers/:id/edit" 
+          path="/customers/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <CustomerEntryFlow />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/customers/:id/edit"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
@@ -669,7 +693,19 @@ function App() {
           } 
         />
         <Route 
-          path="/products/:id/edit" 
+          path="/products/new" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ProductEntryFlow />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/products/:id/edit"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
