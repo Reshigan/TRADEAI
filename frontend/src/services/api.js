@@ -739,4 +739,62 @@ export const forecastingService = {
   },
 };
 
+export const aiCopilotService = {
+  ask: async (question, context) => {
+    const response = await api.post('/ai-copilot/ask', { question, context });
+    return response.data;
+  },
+  suggestActions: async () => {
+    const response = await api.post('/ai-copilot/suggest-actions', {});
+    return response.data;
+  },
+};
+
+export const smartApprovalsService = {
+  evaluate: async (approvalId) => {
+    const response = await api.post('/smart-approvals/evaluate', { approvalId });
+    return response.data;
+  },
+  bulkEvaluate: async () => {
+    const response = await api.post('/smart-approvals/bulk-evaluate', {});
+    return response.data;
+  },
+};
+
+export const deductionMatchService = {
+  autoMatch: async () => {
+    const response = await api.post('/deduction-match/auto-match', {});
+    return response.data;
+  },
+  summary: async () => {
+    const response = await api.get('/deduction-match/summary');
+    return response.data;
+  },
+};
+
+export const postEventAnalysisService = {
+  getAnalysis: async (promotionId) => {
+    const response = await api.get(`/post-event-analysis/${promotionId}`);
+    return response.data;
+  },
+  compare: async () => {
+    const response = await api.get('/post-event-analysis/compare');
+    return response.data;
+  },
+};
+
+export const anomalyDetectionService = {
+  scan: async () => {
+    const response = await api.get('/anomaly-detection/scan');
+    return response.data;
+  },
+};
+
+export const promotionConflictService = {
+  check: async (params) => {
+    const response = await api.post('/promotion-conflict/check', params);
+    return response.data;
+  },
+};
+
 export default api;

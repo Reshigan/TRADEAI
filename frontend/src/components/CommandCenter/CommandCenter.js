@@ -29,11 +29,13 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/api/apiClient';
+import { anomalyDetectionService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const CommandCenter = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [anomalies, setAnomalies] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     aiInsight: {
       type: 'info',
@@ -56,7 +58,19 @@ const CommandCenter = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    fetchAnomalies();
   }, []);
+
+  const fetchAnomalies = async () => {
+    try {
+      const res = await anomalyDetectionService.scan();
+      if (res.success && res.data?.anomalies) {
+        setAnomalies(res.data.anomalies.filter(a => a.severity === 'critical' || a.severity === 'high').slice(0, 5));
+      }
+    } catch (err) {
+      console.error('Error fetching anomalies:', err);
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -454,6 +468,37 @@ const CommandCenter = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Anomaly Alerts */}
+      {anomalies.length > 0 && (
+        <Box mt={4}>
+          <Paper sx={{ p: 3, border: '1px solid', borderColor: 'error.light', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+              <WarningIcon sx={{ mr: 1, color: 'error.main' }} />
+              Anomaly Alerts ({anomalies.length})
+            </Typography>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              AI-detected issues requiring attention
+            </Typography>
+            {anomalies.map((anomaly, idx) => (
+              <Alert
+                key={idx}
+                severity={anomaly.severity === 'critical' ? 'error' : 'warning'}
+                sx={{ mb: 1, borderRadius: 1 }}
+              >
+                <Typography variant="body2" fontWeight="medium">
+                  {anomaly.type}: {anomaly.description || anomaly.message}
+                </Typography>
+                {anomaly.entity && (
+                  <Typography variant="caption" color="textSecondary">
+                    {anomaly.entityType} — {anomaly.entity}
+                  </Typography>
+                )}
+              </Alert>
+            ))}
+          </Paper>
+        </Box>
+      )}
 
       {/* AI Recommendations Section */}
       <Box mt={4}>
