@@ -6,7 +6,11 @@ const transactions = new Hono();
 transactions.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
-const getCompanyId = (c) => c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 transactions.get('/', async (c) => {
   try {
@@ -33,11 +37,12 @@ transactions.get('/', async (c) => {
       total: countResult?.total || 0
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
 
-transactions.get('/:id', async (c) => {
+transactions.get('/:id',async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
@@ -46,15 +51,17 @@ transactions.get('/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'Transaction not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
 
-transactions.post('/', async (c) => {
+transactions.post('/',async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
+    if (!body.amount && body.amount !== 0) return c.json({ success: false, message: 'amount is required' }, 400);
     const userId = c.get('userId') || 'system';
     const id = generateId();
     const now = new Date().toISOString();

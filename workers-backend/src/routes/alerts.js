@@ -6,7 +6,11 @@ const alerts = new Hono();
 alerts.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
-const getCompanyId = (c) => c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 alerts.get('/', async (c) => {
   try {
@@ -58,6 +62,8 @@ alerts.post('/', async (c) => {
     const id = generateId();
     const now = new Date().toISOString();
 
+    if (!body.title) return c.json({ success: false, message: 'title is required' }, 400);
+
     await db.prepare(`
       INSERT INTO alerts (id, company_id, alert_type, severity, status, title, message, entity_type, entity_id, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?)
@@ -65,7 +71,7 @@ alerts.post('/', async (c) => {
       id, companyId,
       body.alertType || body.alert_type || 'system',
       body.severity || 'medium',
-      body.title || 'Alert',
+      body.title,
       body.message || '',
       body.entityType || body.entity_type || null,
       body.entityId || body.entity_id || null,

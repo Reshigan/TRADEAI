@@ -6,7 +6,11 @@ const importExport = new Hono();
 importExport.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
-const getCompanyId = (c) => c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 const TEMPLATE_COLUMNS = {
   customers: ['name', 'code', 'customer_type', 'channel', 'tier', 'status', 'region', 'city'],

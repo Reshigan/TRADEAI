@@ -5,15 +5,19 @@ import { rowToDocument } from '../services/d1.js';
 const perfAnalytics = new Hono();
 perfAnalytics.use('*', authMiddleware);
 
-const getCompanyId = (c) => c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 perfAnalytics.get('/promotion-effectiveness', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
 
-    const promotions = await db.prepare('SELECT * FROM promotions WHERE company_id = ?').bind(companyId).all();
-    const tradeSpends = await db.prepare('SELECT * FROM trade_spends WHERE company_id = ?').bind(companyId).all();
+    const promotions = await db.prepare('SELECT * FROM promotions WHERE company_id = ? LIMIT 500').bind(companyId).all();
+    const tradeSpends = await db.prepare('SELECT * FROM trade_spends WHERE company_id = ? LIMIT 500').bind(companyId).all();
 
     const promoList = (promotions.results || []).map(rowToDocument);
     const spendList = (tradeSpends.results || []).map(rowToDocument);
@@ -75,8 +79,8 @@ perfAnalytics.get('/budget-variance', async (c) => {
     const { year } = c.req.query();
     const targetYear = year || new Date().getFullYear();
 
-    const budgets = await db.prepare('SELECT * FROM budgets WHERE company_id = ? AND year = ?').bind(companyId, targetYear).all();
-    const tradeSpends = await db.prepare('SELECT * FROM trade_spends WHERE company_id = ?').bind(companyId).all();
+    const budgets = await db.prepare('SELECT * FROM budgets WHERE company_id = ? AND year = ? LIMIT 500').bind(companyId, targetYear).all();
+    const tradeSpends = await db.prepare('SELECT * FROM trade_spends WHERE company_id = ? LIMIT 500').bind(companyId).all();
 
     const budgetList = (budgets.results || []).map(rowToDocument);
     const spendList = (tradeSpends.results || []).map(rowToDocument);
@@ -137,9 +141,9 @@ perfAnalytics.get('/customer-segmentation', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
 
-    const customers = await db.prepare('SELECT * FROM customers WHERE company_id = ?').bind(companyId).all();
-    const tradeSpends = await db.prepare('SELECT * FROM trade_spends WHERE company_id = ?').bind(companyId).all();
-    const claims = await db.prepare('SELECT * FROM claims WHERE company_id = ?').bind(companyId).all();
+    const customers = await db.prepare('SELECT * FROM customers WHERE company_id = ? LIMIT 500').bind(companyId).all();
+    const tradeSpends = await db.prepare('SELECT * FROM trade_spends WHERE company_id = ? LIMIT 500').bind(companyId).all();
+    const claims = await db.prepare('SELECT * FROM claims WHERE company_id = ? LIMIT 500').bind(companyId).all();
 
     const customerList = (customers.results || []).map(rowToDocument);
     const spendList = (tradeSpends.results || []).map(rowToDocument);

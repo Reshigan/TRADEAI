@@ -6,7 +6,11 @@ const customerAssignment = new Hono();
 customerAssignment.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
-const getCompanyId = (c) => c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 customerAssignment.get('/', async (c) => {
   try {
@@ -54,8 +58,8 @@ customerAssignment.post('/assign', async (c) => {
       VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?)
     `).bind(
       id, companyId,
-      body.customerId || body.customer_id,
-      body.userId || body.user_id,
+      body.customerId || body.customer_id || (() => { throw new Error('customerId is required'); })(),
+      body.userId || body.user_id || (() => { throw new Error('userId is required'); })(),
       body.role || 'kam',
       JSON.stringify(body.data || {}),
       now, now

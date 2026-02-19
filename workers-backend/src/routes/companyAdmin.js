@@ -6,7 +6,11 @@ const companyAdmin = new Hono();
 companyAdmin.use('*', authMiddleware);
 
 const generateId = () => crypto.randomUUID();
-const getCompanyId = (c) => c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code') || 'default';
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 // Dashboard stats
 companyAdmin.get('/dashboard/stats', async (c) => {
@@ -85,8 +89,9 @@ companyAdmin.post('/announcements', async (c) => {
     const body = await c.req.json();
     const id = generateId();
     const now = new Date().toISOString();
+    if (!body.title) return c.json({ success: false, message: 'title is required' }, 400);
     await db.prepare(`INSERT INTO announcements (id, company_id, title, content, category, priority, status, target_audience, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)`).bind(
-      id, companyId, body.title, body.content || '', body.category || 'general', body.priority || 'medium', body.targetAudience || body.target_audience || 'all', c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
+      id, companyId, body.title, body.content || '',body.category || 'general', body.priority || 'medium', body.targetAudience || body.target_audience || 'all', c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
     const created = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
@@ -176,8 +181,9 @@ companyAdmin.post('/policies', async (c) => {
     const body = await c.req.json();
     const id = generateId();
     const now = new Date().toISOString();
+    if (!body.title) return c.json({ success: false, message: 'title is required' }, 400);
     await db.prepare(`INSERT INTO policies (id, company_id, title, content, category, version, status, effective_date, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)`).bind(
-      id, companyId, body.title, body.content || '', body.category || 'general', body.version || '1.0', body.effectiveDate || body.effective_date || now, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
+      id, companyId, body.title, body.content || '',body.category || 'general', body.version || '1.0', body.effectiveDate || body.effective_date || now, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
     const created = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
@@ -267,8 +273,9 @@ companyAdmin.post('/courses', async (c) => {
     const body = await c.req.json();
     const id = generateId();
     const now = new Date().toISOString();
+    if (!body.title) return c.json({ success: false, message: 'title is required' }, 400);
     await db.prepare(`INSERT INTO courses (id, company_id, title, description, category, difficulty, duration_minutes, status, content_url, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)`).bind(
-      id, companyId, body.title, body.description || '', body.category || 'general', body.difficulty || 'beginner', body.durationMinutes || body.duration_minutes || 30, body.contentUrl || body.content_url || null, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
+      id, companyId, body.title,body.description || '', body.category || 'general', body.difficulty || 'beginner', body.durationMinutes || body.duration_minutes || 30, body.contentUrl || body.content_url || null, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
     const created = await db.prepare('SELECT * FROM courses WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
@@ -344,8 +351,9 @@ companyAdmin.post('/games', async (c) => {
     const body = await c.req.json();
     const id = generateId();
     const now = new Date().toISOString();
+    if (!body.title) return c.json({ success: false, message: 'title is required' }, 400);
     await db.prepare(`INSERT INTO games (id, company_id, title, description, game_type, difficulty, points, status, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?)`).bind(
-      id, companyId, body.title, body.description || '', body.gameType || body.game_type || 'quiz', body.difficulty || 'medium', body.points || 100, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
+      id, companyId, body.title,body.description || '', body.gameType || body.game_type || 'quiz', body.difficulty || 'medium', body.points || 100, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
     const created = await db.prepare('SELECT * FROM games WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);

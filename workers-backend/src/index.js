@@ -126,7 +126,6 @@ app.route('/api/transactions', transactionRoutes);
 app.route('/api/kam-wallets', kamWalletRoutes);
 app.route('/api/performance-analytics', performanceAnalyticsRoutes);
 app.route('/api/import', importExportRoutes);
-app.route('/api/export', exportRoutes);
 app.route('/api/hierarchy', hierarchyRoutes);
 app.route('/api/alerts', alertRoutes);
 app.route('/api/customer-assignment', customerAssignmentRoutes);
