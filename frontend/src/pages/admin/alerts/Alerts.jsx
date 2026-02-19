@@ -78,8 +78,8 @@ const Alerts = () => {
         const data = response.data;
         
         // Transform API data to match component format
-        const transformedAlerts = (data.alerts || []).map((alert, index) => ({
-          _id: alert._id || index.toString(),
+        const transformedAlerts = (data.data || data.alerts || []).map((alert, index) => ({
+          _id: alert.id || alert._id || index.toString(),
           type: alert.severity === 'critical' ? 'error' : alert.severity || 'info',
           title: alert.title || 'Alert',
           message: alert.message || '',
