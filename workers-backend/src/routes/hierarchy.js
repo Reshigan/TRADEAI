@@ -25,6 +25,7 @@ hierarchy.get('/regions', async (c) => {
     });
     return c.json({ success: true, data: Object.values(regionMap) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -41,6 +42,7 @@ hierarchy.get('/districts', async (c) => {
     }));
     return c.json({ success: true, data: districts });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -58,6 +60,7 @@ hierarchy.get('/stores', async (c) => {
     const result = await db.prepare(query).bind(...params).all();
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -67,6 +70,7 @@ hierarchy.post('/regions', async (c) => {
     const body = await c.req.json();
     return c.json({ success: true, data: { id: `region-${(body.name || '').toLowerCase().replace(/\s+/g, '-')}`, name: body.name, cities: [] } }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -76,6 +80,7 @@ hierarchy.post('/districts', async (c) => {
     const body = await c.req.json();
     return c.json({ success: true, data: { id: `district-${(body.name || '').toLowerCase().replace(/\s+/g, '-')}`, name: body.name, region: body.region } }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -85,6 +90,7 @@ hierarchy.post('/stores', async (c) => {
     const body = await c.req.json();
     return c.json({ success: true, data: { id: generateId(), name: body.name, region: body.region, city: body.city } }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -94,6 +100,7 @@ hierarchy.put('/regions/:id', async (c) => {
     const body = await c.req.json();
     return c.json({ success: true, data: { id: c.req.param('id'), ...body } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -103,6 +110,7 @@ hierarchy.put('/districts/:id', async (c) => {
     const body = await c.req.json();
     return c.json({ success: true, data: { id: c.req.param('id'), ...body } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -112,6 +120,7 @@ hierarchy.put('/stores/:id', async (c) => {
     const body = await c.req.json();
     return c.json({ success: true, data: { id: c.req.param('id'), ...body } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

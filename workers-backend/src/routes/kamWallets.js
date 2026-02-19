@@ -37,6 +37,7 @@ kamWallets.get('/', async (c) => {
       total: countResult?.total || 0
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -50,11 +51,12 @@ kamWallets.get('/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'KAM Wallet not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
 
-kamWallets.get('/:id/balance', async (c) => {
+kamWallets.get('/:id/balance',async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
@@ -72,6 +74,7 @@ kamWallets.get('/:id/balance', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -90,6 +93,7 @@ kamWallets.get('/customer/:customerId/allocations', async (c) => {
     `).bind(companyId, customerId).all();
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -120,6 +124,7 @@ kamWallets.post('/', async (c) => {
     const created = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -144,6 +149,7 @@ kamWallets.post('/:id/allocate', async (c) => {
     const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -168,6 +174,7 @@ kamWallets.post('/:id/record-usage', async (c) => {
     const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -184,6 +191,7 @@ kamWallets.patch('/:id/status', async (c) => {
     const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -198,6 +206,7 @@ kamWallets.delete('/:id', async (c) => {
     await db.prepare('DELETE FROM kam_wallets WHERE id = ?').bind(id).run();
     return c.json({ success: true, message: 'KAM Wallet deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

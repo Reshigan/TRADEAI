@@ -65,6 +65,7 @@ importExport.get('/template/:module', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -101,6 +102,7 @@ importExport.get('/:module', async (c) => {
 
     return c.json({ success: true, data, total: data.length });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -163,6 +165,7 @@ importExport.post('/', async (c) => {
       }
     }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -201,6 +204,7 @@ importExport.post('/:module', async (c) => {
       data: { importId: id, status: 'completed', totalRows, processedRows: totalRows, successRows: totalRows, errorRows: 0 }
     }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -212,6 +216,7 @@ importExport.get('/jobs', async (c) => {
     const result = await db.prepare('SELECT * FROM import_jobs WHERE company_id = ? ORDER BY created_at DESC LIMIT 50').bind(companyId).all();
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

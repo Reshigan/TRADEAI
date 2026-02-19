@@ -37,6 +37,7 @@ alerts.get('/', async (c) => {
       total: countResult?.total || 0
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -50,6 +51,7 @@ alerts.get('/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'Alert not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -82,6 +84,7 @@ alerts.post('/', async (c) => {
     const created = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -98,6 +101,7 @@ alerts.put('/:id', async (c) => {
     const updated = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -113,6 +117,7 @@ alerts.post('/:id/dismiss', async (c) => {
     const updated = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -129,6 +134,7 @@ alerts.post('/:id/acknowledge', async (c) => {
     const updated = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -141,6 +147,7 @@ alerts.delete('/:id', async (c) => {
     await db.prepare('DELETE FROM alerts WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Alert deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

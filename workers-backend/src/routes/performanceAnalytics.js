@@ -68,6 +68,7 @@ perfAnalytics.get('/promotion-effectiveness', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -132,6 +133,7 @@ perfAnalytics.get('/budget-variance', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -198,6 +200,7 @@ perfAnalytics.get('/customer-segmentation', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

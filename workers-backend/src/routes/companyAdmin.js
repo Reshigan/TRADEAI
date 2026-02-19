@@ -46,6 +46,7 @@ companyAdmin.get('/dashboard/stats', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -65,6 +66,7 @@ companyAdmin.get('/announcements', async (c) => {
     const countResult = await db.prepare('SELECT COUNT(*) as total FROM announcements WHERE company_id = ?').bind(companyId).first();
     return c.json({ success: true, data: { announcements: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -78,6 +80,7 @@ companyAdmin.get('/announcements/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'Announcement not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -96,6 +99,7 @@ companyAdmin.post('/announcements', async (c) => {
     const created = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -113,6 +117,7 @@ companyAdmin.put('/announcements/:id', async (c) => {
     const updated = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -125,6 +130,7 @@ companyAdmin.delete('/announcements/:id', async (c) => {
     await db.prepare('DELETE FROM announcements WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Announcement deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -139,6 +145,7 @@ companyAdmin.post('/announcements/:id/publish', async (c) => {
     const updated = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -158,6 +165,7 @@ companyAdmin.get('/policies', async (c) => {
     const countResult = await db.prepare('SELECT COUNT(*) as total FROM policies WHERE company_id = ?').bind(companyId).first();
     return c.json({ success: true, data: { policies: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -170,6 +178,7 @@ companyAdmin.get('/policies/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'Policy not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -188,6 +197,7 @@ companyAdmin.post('/policies', async (c) => {
     const created = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -205,6 +215,7 @@ companyAdmin.put('/policies/:id', async (c) => {
     const updated = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -217,6 +228,7 @@ companyAdmin.delete('/policies/:id', async (c) => {
     await db.prepare('DELETE FROM policies WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Policy deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -231,6 +243,7 @@ companyAdmin.post('/policies/:id/publish', async (c) => {
     const updated = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -250,6 +263,7 @@ companyAdmin.get('/courses', async (c) => {
     const countResult = await db.prepare('SELECT COUNT(*) as total FROM courses WHERE company_id = ?').bind(companyId).first();
     return c.json({ success: true, data: { courses: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -262,6 +276,7 @@ companyAdmin.get('/courses/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'Course not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -280,6 +295,7 @@ companyAdmin.post('/courses', async (c) => {
     const created = await db.prepare('SELECT * FROM courses WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -297,6 +313,7 @@ companyAdmin.put('/courses/:id', async (c) => {
     const updated = await db.prepare('SELECT * FROM courses WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -309,6 +326,7 @@ companyAdmin.delete('/courses/:id', async (c) => {
     await db.prepare('DELETE FROM courses WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Course deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -328,6 +346,7 @@ companyAdmin.get('/games', async (c) => {
     const countResult = await db.prepare('SELECT COUNT(*) as total FROM games WHERE company_id = ?').bind(companyId).first();
     return c.json({ success: true, data: { games: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -340,6 +359,7 @@ companyAdmin.get('/games/:id', async (c) => {
     if (!result) return c.json({ success: false, message: 'Game not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -358,6 +378,7 @@ companyAdmin.post('/games', async (c) => {
     const created = await db.prepare('SELECT * FROM games WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -375,6 +396,7 @@ companyAdmin.put('/games/:id', async (c) => {
     const updated = await db.prepare('SELECT * FROM games WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -387,6 +409,7 @@ companyAdmin.delete('/games/:id', async (c) => {
     await db.prepare('DELETE FROM games WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Game deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -408,6 +431,7 @@ companyAdmin.get('/settings', async (c) => {
       }
     });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -436,6 +460,7 @@ companyAdmin.put('/settings', async (c) => {
 
     return c.json({ success: true, message: 'Settings updated' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -444,6 +469,7 @@ companyAdmin.post('/settings/logo', async (c) => {
   try {
     return c.json({ success: true, message: 'Logo upload received', data: { url: '/assets/logo.png' } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -457,6 +483,7 @@ companyAdmin.get('/azure-ad', async (c) => {
     const config = result ? JSON.parse(result.value || '{}') : { enabled: false, tenantId: '', clientId: '', clientSecret: '', syncEnabled: false, syncSchedule: 'daily', lastSyncAt: null };
     return c.json({ success: true, data: config });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -476,6 +503,7 @@ companyAdmin.post('/azure-ad', async (c) => {
     }
     return c.json({ success: true, message: 'Azure AD config saved' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -497,6 +525,7 @@ companyAdmin.get('/erp-settings', async (c) => {
     const config = result ? JSON.parse(result.value || '{}') : { provider: 'sap', enabled: false, host: '', port: '', client: '', username: '', syncEnabled: false, lastSyncAt: null, mappings: {} };
     return c.json({ success: true, data: config });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -516,6 +545,7 @@ companyAdmin.post('/erp-settings', async (c) => {
     }
     return c.json({ success: true, message: 'ERP settings saved' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -542,6 +572,7 @@ companyAdmin.post('/erp-settings/field-mapping', async (c) => {
     }
     return c.json({ success: true, message: 'Field mappings saved' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -563,6 +594,7 @@ companyAdmin.get('/users', async (c) => {
     const countResult = await db.prepare('SELECT COUNT(*) as total FROM users WHERE company_id = ?').bind(companyId).first();
     return c.json({ success: true, data: { users: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

@@ -26,6 +26,7 @@ customerAssignment.get('/', async (c) => {
     `).bind(companyId).all();
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -41,6 +42,7 @@ customerAssignment.get('/unassigned', async (c) => {
     `).bind(companyId, companyId).all();
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -50,6 +52,10 @@ customerAssignment.post('/assign', async (c) => {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const body = await c.req.json();
+    const customerId = body.customerId || body.customer_id;
+    const userId = body.userId || body.user_id;
+    if (!customerId) return c.json({ success: false, message: 'customerId is required' }, 400);
+    if (!userId) return c.json({ success: false, message: 'userId is required' }, 400);
     const id = generateId();
     const now = new Date().toISOString();
 
@@ -58,8 +64,8 @@ customerAssignment.post('/assign', async (c) => {
       VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?)
     `).bind(
       id, companyId,
-      body.customerId || body.customer_id || (() => { throw new Error('customerId is required'); })(),
-      body.userId || body.user_id || (() => { throw new Error('userId is required'); })(),
+      customerId,
+      userId,
       body.role || 'kam',
       JSON.stringify(body.data || {}),
       now, now
@@ -68,6 +74,7 @@ customerAssignment.post('/assign', async (c) => {
     const created = await db.prepare('SELECT * FROM customer_assignments WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -84,6 +91,7 @@ customerAssignment.post('/unassign', async (c) => {
 
     return c.json({ success: true, message: 'Customer unassigned' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
@@ -96,6 +104,7 @@ customerAssignment.delete('/:id', async (c) => {
     await db.prepare('DELETE FROM customer_assignments WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Assignment deleted' });
   } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
   }
 });
