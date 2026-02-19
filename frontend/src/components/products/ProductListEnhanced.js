@@ -103,13 +103,13 @@ const ProductListEnhanced = () => {
       icon: '💰',
       label: 'Optimize Pricing',
       description: 'Run AI-powered price optimization across portfolio',
-      action: () => navigate('/simulations?type=pricing')
+      action: () => navigate('/simulation-studio')
     },
     {
       icon: '📦',
       label: 'Inventory Analysis',
       description: 'Analyze stock levels and reorder points',
-      action: () => navigate('/analytics?view=inventory')
+      action: () => navigate('/analytics')
     },
     {
       icon: '🎯',

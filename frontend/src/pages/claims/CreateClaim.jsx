@@ -7,6 +7,7 @@ import { Add as AddIcon, Delete as DeleteIcon, Save as SaveIcon, Cancel as Cance
 import { useNavigate } from 'react-router-dom';
 import claimService from '../../services/claim/claimService';
 import customerService from '../../services/customer/customerService';
+import productService from '../../services/product/productService';
 import analytics from '../../utils/analytics';
 
 const CreateClaim = () => {
@@ -14,23 +15,29 @@ const CreateClaim = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     claimType: 'promotion', customer: '', claimDate: new Date().toISOString().split('T')[0],
     claimAmount: 0, currency: 'ZAR', notes: '', lineItems: []
   });
 
-  useEffect(() => { loadCustomers(); }, []);
+  useEffect(() => { loadCustomers(); loadProducts(); }, []);
 
   const loadCustomers = async () => {
     try { const response = await customerService.getCustomers(); setCustomers(response.data || []); }
     catch (err) { console.error('Error loading customers:', err); }
   };
 
+  const loadProducts = async () => {
+    try { const response = await productService.getProducts(); setProducts(response.data || []); }
+    catch (err) { console.error('Error loading products:', err); }
+  };
+
   const handleChange = (field, value) => { setFormData(prev => ({ ...prev, [field]: value })); };
 
   const addLineItem = () => {
     setFormData(prev => ({
-      ...prev, lineItems: [...prev.lineItems, { productCode: '', productName: '', quantity: 0, unitPrice: 0, claimRate: 0, claimAmount: 0 }]
+      ...prev, lineItems: [...prev.lineItems, { productId: '', productCode: '', productName: '', quantity: 0, unitPrice: 0, claimRate: 0, claimAmount: 0 }]
     }));
   };
 
@@ -130,7 +137,7 @@ const CreateClaim = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
-                      <TableCell>Product Code</TableCell><TableCell>Product Name</TableCell>
+                      <TableCell colSpan={2}>Product</TableCell>
                       <TableCell>Qty</TableCell><TableCell>Unit Price</TableCell>
                       <TableCell>Rate (%)</TableCell><TableCell>Amount</TableCell><TableCell></TableCell>
                     </TableRow>
@@ -138,8 +145,21 @@ const CreateClaim = () => {
                   <TableBody>
                     {formData.lineItems.map((item, index) => (
                       <TableRow key={index}>
-                        <TableCell><TextField size="small" value={item.productCode} onChange={(e) => updateLineItem(index, 'productCode', e.target.value)} placeholder="Code" /></TableCell>
-                        <TableCell><TextField size="small" value={item.productName} onChange={(e) => updateLineItem(index, 'productName', e.target.value)} placeholder="Name" /></TableCell>
+                        <TableCell colSpan={2}>
+                          <TextField select size="small" fullWidth value={item.productId} onChange={(e) => {
+                            const prod = products.find(p => (p.id || p._id) === e.target.value);
+                            if (prod) {
+                              const updated = [...formData.lineItems];
+                              updated[index] = { ...updated[index], productId: e.target.value, productCode: prod.code || prod.sku || '', productName: prod.name || '', unitPrice: prod.price || prod.unitPrice || 0 };
+                              const amt = (updated[index].quantity || 0) * (updated[index].unitPrice || 0) * (updated[index].claimRate || 0) / 100;
+                              updated[index].claimAmount = amt;
+                              setFormData(prev => ({ ...prev, lineItems: updated, claimAmount: updated.reduce((s, i) => s + (i.claimAmount || 0), 0) }));
+                            }
+                          }} displayEmpty>
+                            <MenuItem value="" disabled>Select product</MenuItem>
+                            {products.map(p => <MenuItem key={p.id || p._id} value={p.id || p._id}>{p.name} ({p.code || p.sku || (p.id || '').slice(-6)})</MenuItem>)}
+                          </TextField>
+                        </TableCell>
                         <TableCell><TextField size="small" type="number" value={item.quantity} onChange={(e) => updateLineItem(index, 'quantity', parseFloat(e.target.value) || 0)} sx={{ width: 80 }} /></TableCell>
                         <TableCell><TextField size="small" type="number" value={item.unitPrice} onChange={(e) => updateLineItem(index, 'unitPrice', parseFloat(e.target.value) || 0)} sx={{ width: 100 }} /></TableCell>
                         <TableCell><TextField size="small" type="number" value={item.claimRate} onChange={(e) => updateLineItem(index, 'claimRate', parseFloat(e.target.value) || 0)} sx={{ width: 70 }} /></TableCell>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import apiClient from '../services/apiClient';
 import {
   Box,
   Typography,
@@ -56,6 +57,14 @@ const TopHeader = ({ onMenuClick }) => {
   const location = useLocation();
   const [dateAnchor, setDateAnchor] = useState(null);
   const [selectedRange, setSelectedRange] = useState('This Month');
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    apiClient.get('/approvals/pending').then(res => {
+      const data = res?.data?.data || res?.data || [];
+      setPendingCount(Array.isArray(data) ? data.length : 0);
+    }).catch(() => {});
+  }, [location.pathname]);
 
   const pageInfo = getPageInfo(location.pathname);
 
@@ -168,7 +177,7 @@ const TopHeader = ({ onMenuClick }) => {
             '&:hover': { bgcolor: '#E5E7EB' },
           }}
         >
-          <Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', minWidth: 18, height: 18 } }}>
+          <Badge badgeContent={pendingCount} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', minWidth: 18, height: 18 } }}>
             <NotificationsIcon sx={{ fontSize: 20, color: '#6B7280' }} />
           </Badge>
         </IconButton>

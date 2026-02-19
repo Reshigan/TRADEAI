@@ -21,7 +21,6 @@ import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
-import ProcessShell from '../../components/ProcessShell';
 
 import PromotionOverview from './tabs/PromotionOverview';
 import PromotionProducts from './tabs/PromotionProducts';
@@ -127,7 +126,6 @@ const PromotionDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="promotion" entityId={id} entity={promotion}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         {/* Modern Header */}
         <Box sx={{ mb: 4 }}>
@@ -238,7 +236,6 @@ const PromotionDetailWithTabs = () => {
           {activeTab === 'history' && <PromotionHistory promotionId={id} promotion={promotion} />}
         </Box>
       </Container>
-    </ProcessShell>
   );
 };
 

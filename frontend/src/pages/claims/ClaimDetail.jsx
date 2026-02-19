@@ -34,7 +34,6 @@ import claimService from '../../services/claim/claimService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
-import ProcessShell from '../../components/ProcessShell';
 
 const ClaimDetail = () => {
   const { id } = useParams();
@@ -183,7 +182,6 @@ const ClaimDetail = () => {
   }
 
   return (
-    <ProcessShell module="claim" entityId={id} entity={claim}>
       <Box sx={{ p: 3 }}>
         {/* Header */}
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -455,7 +453,6 @@ const ClaimDetail = () => {
         </DialogActions>
       </Dialog>
       </Box>
-    </ProcessShell>
   );
 };
 

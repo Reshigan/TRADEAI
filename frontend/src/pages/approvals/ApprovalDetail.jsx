@@ -33,7 +33,6 @@ import {
 import approvalService from '../../services/approval/approvalService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
-import ProcessShell from '../../components/ProcessShell';
 import { formatLabel } from '../../utils/formatters';
 
 const ApprovalDetail = () => {
@@ -163,7 +162,6 @@ const ApprovalDetail = () => {
   }
 
   return (
-    <ProcessShell module="approval" entityId={id} entity={approval}>
       <Box sx={{ p: 3 }}>
         {/* Header */}
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -405,7 +403,6 @@ const ApprovalDetail = () => {
         </DialogActions>
       </Dialog>
       </Box>
-    </ProcessShell>
   );
 };
 

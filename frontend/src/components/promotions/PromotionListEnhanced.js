@@ -83,7 +83,7 @@ const PromotionListEnhanced = () => {
       icon: '',
       label: 'Run Simulation',
       description: 'Forecast promotion impact before launch',
-      action: () => navigate('/simulations?type=promotion')
+      action: () => navigate('/simulation-studio')
     }
   ];
 
