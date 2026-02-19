@@ -44,6 +44,12 @@ import { hierarchyRoutes } from './routes/hierarchy.js';
 import { alertRoutes } from './routes/alerts.js';
 import { customerAssignmentRoutes } from './routes/customerAssignment.js';
 import { companyAdminRoutes } from './routes/companyAdmin.js';
+import { aiCopilotRoutes } from './routes/aiCopilot.js';
+import { smartApprovalsRoutes } from './routes/smartApprovals.js';
+import { deductionMatchRoutes } from './routes/deductionMatch.js';
+import { postEventAnalysisRoutes } from './routes/postEventAnalysis.js';
+import { anomalyDetectionRoutes } from './routes/anomalyDetection.js';
+import { promotionConflictRoutes } from './routes/promotionConflict.js';
 
 const app = new Hono();
 
@@ -130,6 +136,12 @@ app.route('/api/hierarchy', hierarchyRoutes);
 app.route('/api/alerts', alertRoutes);
 app.route('/api/customer-assignment', customerAssignmentRoutes);
 app.route('/api/company-admin', companyAdminRoutes);
+app.route('/api/ai-copilot', aiCopilotRoutes);
+app.route('/api/smart-approvals', smartApprovalsRoutes);
+app.route('/api/deduction-match', deductionMatchRoutes);
+app.route('/api/post-event-analysis', postEventAnalysisRoutes);
+app.route('/api/anomaly-detection', anomalyDetectionRoutes);
+app.route('/api/promotion-conflict', promotionConflictRoutes);
 
 // 404 handler
 app.notFound((c) => {

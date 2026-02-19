@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Typography, Button, Grid, Paper, Chip, IconButton, Tooltip, Alert,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab, alpha,
+  Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress,
 } from '@mui/material';
 import {
   Add as AddIcon, Visibility as ViewIcon, Warning as DisputeIcon,
@@ -10,6 +11,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import deductionService from '../../services/deduction/deductionService';
+import { deductionMatchService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -22,6 +24,7 @@ const DeductionsList = () => {
   const [success, setSuccess] = useState(null);
   const [filter, setFilter] = useState('all');
   const [statistics, setStatistics] = useState(null);
+  const [matchDialog, setMatchDialog] = useState({ open: false, results: [], loading: false });
 
   useEffect(() => {
     loadDeductions();
@@ -57,17 +60,18 @@ const DeductionsList = () => {
 
   const handleAutoMatch = async () => {
     try {
-      setLoading(true);
-      const response = await deductionService.autoMatchDeductions();
-      analytics.trackEvent('deductions_auto_matched', { matchCount: response.data?.length || 0 });
-      setSuccess(`Successfully matched ${response.data?.length || 0} deductions`);
-      loadDeductions();
-      loadStatistics();
+      setMatchDialog({ open: true, results: [], loading: true });
+      const response = await deductionMatchService.autoMatch();
+      if (response.success && response.data?.matches) {
+        setMatchDialog({ open: true, results: response.data.matches, loading: false });
+        analytics.trackEvent('deductions_ai_matched', { matchCount: response.data.matches.length });
+      } else {
+        setMatchDialog({ open: true, results: [], loading: false });
+      }
     } catch (err) {
-      console.error('Error auto-matching deductions:', err);
-      setError(err.message || 'Failed to auto-match deductions');
-    } finally {
-      setLoading(false);
+      console.error('Error AI-matching deductions:', err);
+      setMatchDialog({ open: false, results: [], loading: false });
+      setError(err.message || 'Failed to AI-match deductions');
     }
   };
 
@@ -209,6 +213,49 @@ const DeductionsList = () => {
           </Table>
         </TableContainer>
       </Paper>
+
+      <Dialog open={matchDialog.open} onClose={() => !matchDialog.loading && setMatchDialog({ open: false, results: [], loading: false })}
+        maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
+        <DialogTitle sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <AutoMatchIcon /> AI Match Results
+        </DialogTitle>
+        <DialogContent>
+          {matchDialog.loading ? (
+            <Box sx={{ py: 4, textAlign: 'center' }}>
+              <LinearProgress sx={{ mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">Analyzing deductions and finding matches...</Typography>
+            </Box>
+          ) : matchDialog.results.length === 0 ? (
+            <Alert severity="info" sx={{ borderRadius: '12px' }}>No match candidates found for current deductions.</Alert>
+          ) : (
+            matchDialog.results.map((match, idx) => (
+              <Paper key={idx} elevation={0} sx={{ p: 2, mb: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="body2" fontWeight={700}>{match.deductionId || `Deduction ${idx + 1}`}</Typography>
+                  <Chip label={`${match.confidence || match.score || 0}% confidence`} size="small"
+                    sx={{ borderRadius: '6px', fontWeight: 600,
+                      bgcolor: alpha((match.confidence || match.score || 0) >= 80 ? '#059669' : (match.confidence || match.score || 0) >= 50 ? '#D97706' : '#DC2626', 0.1),
+                      color: (match.confidence || match.score || 0) >= 80 ? '#059669' : (match.confidence || match.score || 0) >= 50 ? '#D97706' : '#DC2626'
+                    }} />
+                </Box>
+                {match.candidates && match.candidates.map((c, ci) => (
+                  <Box key={ci} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.5, pl: 2 }}>
+                    <Typography variant="caption" color="text.secondary">{c.promotionName || c.promotionId || `Candidate ${ci + 1}`}</Typography>
+                    <Chip label={`${c.score || 0}%`} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 20, fontSize: '0.7rem' }} />
+                  </Box>
+                ))}
+                {match.matchedPromotion && (
+                  <Typography variant="caption" color="success.main" fontWeight={600}>Matched to: {match.matchedPromotion}</Typography>
+                )}
+              </Paper>
+            ))
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={() => { setMatchDialog({ open: false, results: [], loading: false }); loadDeductions(); }}
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

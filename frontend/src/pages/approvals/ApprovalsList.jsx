@@ -12,6 +12,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import approvalService from '../../services/approval/approvalService';
+import { smartApprovalsService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -26,11 +27,35 @@ const ApprovalsList = () => {
   const [actionDialog, setActionDialog] = useState({ open: false, type: null });
   const [actionComment, setActionComment] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [riskScores, setRiskScores] = useState({});
+  const [smartLoading, setSmartLoading] = useState(false);
 
   useEffect(() => {
     loadApprovals();
     analytics.trackEvent('approvals_list_viewed', { filter });
   }, [filter]);
+
+  useEffect(() => {
+    if (approvals.length > 0 && Object.keys(riskScores).length === 0) {
+      loadSmartEvaluations();
+    }
+  }, [approvals]);
+
+  const loadSmartEvaluations = async () => {
+    try {
+      setSmartLoading(true);
+      const res = await smartApprovalsService.bulkEvaluate();
+      if (res.success && res.data?.evaluations) {
+        const scores = {};
+        res.data.evaluations.forEach(ev => { scores[ev.id] = ev; });
+        setRiskScores(scores);
+      }
+    } catch (err) {
+      console.error('Error loading smart evaluations:', err);
+    } finally {
+      setSmartLoading(false);
+    }
+  };
 
   const loadApprovals = async () => {
     try {
@@ -154,6 +179,7 @@ const ApprovalsList = () => {
                 <TableCell>Request</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell align="right">Amount</TableCell>
+                <TableCell>Risk</TableCell>
                 <TableCell>Requested By</TableCell>
                 <TableCell>Due</TableCell>
                 <TableCell>Priority</TableCell>
@@ -180,6 +206,27 @@ const ApprovalsList = () => {
                     </TableCell>
                     <TableCell><Chip label={formatLabel(approval.entityType)} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
                     <TableCell align="right"><Typography variant="body2" fontWeight={700}>{formatCurrency(approval.amount, approval.currency)}</Typography></TableCell>
+                    <TableCell>
+                      {riskScores[approval.id || approval._id] ? (
+                        <Chip
+                          label={`${riskScores[approval.id || approval._id].riskScore || 0} — ${riskScores[approval.id || approval._id].recommendation || 'review'}`}
+                          size="small"
+                          sx={{
+                            borderRadius: '6px', height: 24, fontWeight: 600, fontSize: '0.7rem',
+                            bgcolor: alpha(
+                              (riskScores[approval.id || approval._id].riskScore || 0) <= 20 ? '#059669' :
+                              (riskScores[approval.id || approval._id].riskScore || 0) <= 40 ? '#D97706' :
+                              (riskScores[approval.id || approval._id].riskScore || 0) <= 70 ? '#EA580C' : '#DC2626', 0.1),
+                            color:
+                              (riskScores[approval.id || approval._id].riskScore || 0) <= 20 ? '#059669' :
+                              (riskScores[approval.id || approval._id].riskScore || 0) <= 40 ? '#D97706' :
+                              (riskScores[approval.id || approval._id].riskScore || 0) <= 70 ? '#EA580C' : '#DC2626'
+                          }}
+                        />
+                      ) : (
+                        <Typography variant="caption" color="text.disabled">—</Typography>
+                      )}
+                    </TableCell>
                     <TableCell><Typography variant="body2">{typeof approval.requestedBy === 'object' ? (approval.requestedBy?.name || 'Unknown') : (approval.requestedByName || approval.requestedBy || 'Unknown')}</Typography></TableCell>
                     <TableCell>
                       {(approval.dueDate || approval.sla?.dueDate) && (
