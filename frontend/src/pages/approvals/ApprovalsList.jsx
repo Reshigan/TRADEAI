@@ -45,9 +45,9 @@ const ApprovalsList = () => {
     try {
       setSmartLoading(true);
       const res = await smartApprovalsService.bulkEvaluate();
-      if (res.success && res.data?.evaluations) {
+      if (res.success && res.data?.results) {
         const scores = {};
-        res.data.evaluations.forEach(ev => { scores[ev.id] = ev; });
+        res.data.results.forEach(ev => { scores[ev.id] = ev; });
         setRiskScores(scores);
       }
     } catch (err) {
