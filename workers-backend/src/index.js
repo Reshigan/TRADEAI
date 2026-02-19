@@ -36,6 +36,14 @@ import { seedRoutes } from './routes/seed.js';
 import { businessRulesRoutes } from './routes/businessRules.js';
 import { allocationRoutes } from './routes/allocations.js';
 import { settingsRoutes } from './routes/settings.js';
+import { transactionRoutes } from './routes/transactions.js';
+import { kamWalletRoutes } from './routes/kamWallets.js';
+import { performanceAnalyticsRoutes } from './routes/performanceAnalytics.js';
+import { importExportRoutes } from './routes/importExport.js';
+import { hierarchyRoutes } from './routes/hierarchy.js';
+import { alertRoutes } from './routes/alerts.js';
+import { customerAssignmentRoutes } from './routes/customerAssignment.js';
+import { companyAdminRoutes } from './routes/companyAdmin.js';
 
 const app = new Hono();
 
@@ -114,6 +122,15 @@ app.route('/api/seed', seedRoutes);
 app.route('/api/business-rules', businessRulesRoutes);
 app.route('/api/allocations', allocationRoutes);
 app.route('/api/settings', settingsRoutes);
+app.route('/api/transactions', transactionRoutes);
+app.route('/api/kam-wallets', kamWalletRoutes);
+app.route('/api/performance-analytics', performanceAnalyticsRoutes);
+app.route('/api/import', importExportRoutes);
+app.route('/api/export', exportRoutes);
+app.route('/api/hierarchy', hierarchyRoutes);
+app.route('/api/alerts', alertRoutes);
+app.route('/api/customer-assignment', customerAssignmentRoutes);
+app.route('/api/company-admin', companyAdminRoutes);
 
 // 404 handler
 app.notFound((c) => {

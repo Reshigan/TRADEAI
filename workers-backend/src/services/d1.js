@@ -211,7 +211,14 @@ const TABLE_COLUMNS = {
   saved_views: ['id', 'company_id', 'user_id', 'name', 'entity_type', 'filters', 'columns', 'sort_by', 'sort_order', 'is_default', 'created_at', 'updated_at'],
   data_quality_issues: ['id', 'company_id', 'entity_type', 'entity_id', 'field_name', 'issue_type', 'severity', 'message', 'resolved', 'resolved_at', 'resolved_by', 'created_at'],
   kam_wallets: ['id', 'company_id', 'user_id', 'year', 'quarter', 'month', 'allocated_amount', 'utilized_amount', 'committed_amount', 'available_amount', 'status', 'data', 'created_at', 'updated_at'],
-  import_jobs: ['id', 'company_id', 'import_type', 'status', 'file_name', 'file_url', 'total_rows', 'processed_rows', 'success_rows', 'error_rows', 'errors', 'mapping', 'options', 'started_at', 'completed_at', 'created_by', 'created_at', 'updated_at']
+  import_jobs: ['id', 'company_id', 'import_type', 'status', 'file_name', 'file_url', 'total_rows', 'processed_rows', 'success_rows', 'error_rows', 'errors', 'mapping', 'options', 'started_at', 'completed_at', 'created_by', 'created_at', 'updated_at'],
+  transactions: ['id', 'company_id', 'transaction_number', 'transaction_type', 'status', 'customer_id', 'product_id', 'amount', 'description', 'reference', 'payment_reference', 'created_by', 'approved_by', 'approved_at', 'rejected_by', 'rejected_at', 'rejection_reason', 'settled_at', 'data', 'created_at', 'updated_at'],
+  alerts: ['id', 'company_id', 'alert_type', 'severity', 'status', 'title', 'message', 'entity_type', 'entity_id', 'acknowledged_by', 'acknowledged_at', 'dismissed_at', 'data', 'created_at', 'updated_at'],
+  customer_assignments: ['id', 'company_id', 'customer_id', 'user_id', 'role', 'status', 'data', 'created_at', 'updated_at'],
+  announcements: ['id', 'company_id', 'title', 'content', 'category', 'priority', 'status', 'target_audience', 'published_at', 'created_by', 'data', 'created_at', 'updated_at'],
+  policies: ['id', 'company_id', 'title', 'content', 'category', 'version', 'status', 'effective_date', 'published_at', 'created_by', 'data', 'created_at', 'updated_at'],
+  courses: ['id', 'company_id', 'title', 'description', 'category', 'difficulty', 'duration_minutes', 'status', 'content_url', 'created_by', 'data', 'created_at', 'updated_at'],
+  games: ['id', 'company_id', 'title', 'description', 'game_type', 'difficulty', 'points', 'status', 'created_by', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
