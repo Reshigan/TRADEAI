@@ -147,7 +147,7 @@ const ActivityGridCalendar = () => {
   };
 
   const handleCreateActivity = () => {
-    navigate('/activity-grid/new');
+    navigate('/activities/new');
   };
 
   const handleSyncActivities = async () => {

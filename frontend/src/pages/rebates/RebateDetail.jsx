@@ -30,7 +30,6 @@ import api from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
-import ProcessShell from '../../components/ProcessShell';
 
 const RebateDetail = () => {
   const { id } = useParams();
@@ -161,7 +160,6 @@ const RebateDetail = () => {
   }
 
   return (
-    <ProcessShell module="rebate" entityId={id} entity={rebate}>
       <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -461,7 +459,6 @@ const RebateDetail = () => {
         </Grid>
       </Grid>
       </Box>
-    </ProcessShell>
   );
 };
 

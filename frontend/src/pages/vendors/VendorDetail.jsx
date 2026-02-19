@@ -18,7 +18,6 @@ import {
   AccountBalance as TradeSpendIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
-import ProcessShell from '../../components/ProcessShell';
 import { formatLabel } from '../../utils/formatters';
 
 const VendorDetail = () => {
@@ -98,7 +97,6 @@ const VendorDetail = () => {
   };
 
   return (
-    <ProcessShell module="vendor" entityId={id} entity={data}>
       <Box sx={{ p: 3 }}>
         <Box sx={{ mb: 4 }}>
           <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
@@ -198,7 +196,6 @@ const VendorDetail = () => {
           </Grid>
         </Paper>
       </Box>
-    </ProcessShell>
   );
 };
 

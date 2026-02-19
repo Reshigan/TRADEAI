@@ -7,7 +7,6 @@ import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
-import ProcessShell from '../../components/ProcessShell';
 
 import CampaignOverview from './tabs/CampaignOverview';
 import CampaignBudget from './tabs/CampaignBudget';
@@ -78,7 +77,6 @@ const CampaignDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="campaign" entityId={id} entity={campaign}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Button
@@ -115,7 +113,6 @@ const CampaignDetailWithTabs = () => {
           {activeTab === 'history' && <CampaignHistory campaignId={id} campaign={campaign} />}
         </Box>
       </Container>
-    </ProcessShell>
   );
 };
 

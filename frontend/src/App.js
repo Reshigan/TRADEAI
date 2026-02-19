@@ -398,18 +398,7 @@ function App() {
             )
           } 
         />
-        <Route 
-          path="/budgets/new-flow" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetPlanningWizard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
+        <Route path="/budgets/new-flow" element={<Navigate to="/budgets/new" replace />} />
         <Route 
           path="/budgets/new" 
           element={
@@ -482,16 +471,7 @@ function App() {
             )
           } 
         />
-        <Route 
-          path="/trade-spends/new-flow" 
-          element={
-            isAuthenticated ? (
-              <TradeSpendEntryFlow />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
+        <Route path="/trade-spends/new-flow" element={<Navigate to="/trade-spends/new" replace />} />
         <Route 
           path="/trade-spends/:id/edit"
           element={
@@ -545,18 +525,6 @@ function App() {
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
-                <PromotionEdit />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/promotions/new-flow" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
                 <PromotionWizard />
               </Layout>
             ) : (
@@ -564,6 +532,7 @@ function App() {
             )
           } 
         />
+        <Route path="/promotions/new-flow" element={<Navigate to="/promotions/new" replace />} />
         <Route 
           path="/promotions/:id/edit" 
           element={
@@ -612,16 +581,7 @@ function App() {
             )
           } 
         />
-        <Route 
-          path="/customers/new-flow" 
-          element={
-            isAuthenticated ? (
-              <CustomerEntryFlow />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
+        <Route path="/customers/new-flow" element={<Navigate to="/customers/new" replace />} />
         <Route 
           path="/customers/new" 
           element={
@@ -682,16 +642,7 @@ function App() {
             )
           } 
         />
-        <Route 
-          path="/products/new-flow" 
-          element={
-            isAuthenticated ? (
-              <ProductEntryFlow />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
+        <Route path="/products/new-flow" element={<Navigate to="/products/new" replace />} />
         <Route 
           path="/products/new" 
           element={

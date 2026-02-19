@@ -32,7 +32,6 @@ import deductionService from '../../services/deduction/deductionService';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
-import ProcessShell from '../../components/ProcessShell';
 
 const DeductionDetail = () => {
   const { id } = useParams();
@@ -185,7 +184,6 @@ const DeductionDetail = () => {
   }
 
   return (
-    <ProcessShell module="deduction" entityId={id} entity={deduction}>
       <Box sx={{ p: 3 }}>
         {/* Header */}
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -532,7 +530,6 @@ const DeductionDetail = () => {
         </DialogActions>
       </Dialog>
       </Box>
-    </ProcessShell>
   );
 };
 

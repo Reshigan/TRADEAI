@@ -156,7 +156,7 @@ const CommandCenter = () => {
         description: 'AI-powered annual planning ready',
         iconType: 'calendar',
         color: 'primary',
-        route: '/budgets/new-flow',
+        route: '/budgets/new',
         badge: 'AI Ready'
       },
       {
@@ -164,7 +164,7 @@ const CommandCenter = () => {
         description: 'Start AI-assisted promotion wizard',
         iconType: 'rocket',
         color: 'secondary',
-        route: '/promotions/new-flow',
+        route: '/promotions/new',
         badge: 'Recommended'
       },
       {
@@ -484,7 +484,7 @@ const CommandCenter = () => {
                 <Typography variant="body2">
                   Create Black Friday promotion for beverages (predicted ROI: 165%)
                 </Typography>
-                <Button size="small" variant="outlined" sx={{ mt: 1 }} onClick={() => navigate('/promotions/new-flow')}>
+                <Button size="small" variant="outlined" sx={{ mt: 1 }} onClick={() => navigate('/promotions/new')}>
                   Create Promotion
                 </Button>
               </Box>

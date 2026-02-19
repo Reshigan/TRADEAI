@@ -8,7 +8,6 @@ import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
 import { useCompanyType } from '../../contexts/CompanyTypeContext';
-import ProcessShell from '../../components/ProcessShell';
 
 import CustomerOverview from './tabs/CustomerOverview';
 import CustomerPromotions from './tabs/CustomerPromotions';
@@ -88,7 +87,6 @@ const CustomerDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="customer" entityId={id} entity={customer}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Button
@@ -129,7 +127,6 @@ const CustomerDetailWithTabs = () => {
           {activeTab === 'sales-history' && <CustomerSalesHistory customerId={id} customer={customer} />}
         </Box>
       </Container>
-    </ProcessShell>
   );
 };
 

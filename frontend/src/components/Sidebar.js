@@ -26,11 +26,11 @@ const SIDEBAR_WIDTH = 72;
 
 const navItems = [
   { key: 'home', label: 'Home', icon: <HomeIcon />, path: '/dashboard' },
+  { key: 'budgets', label: 'Budgets', icon: <BudgetsIcon />, path: '/budgets' },
   { key: 'promotions', label: 'Promotions', icon: <PromotionsIcon />, path: '/promotions' },
-  { key: 'budgets', label: 'Budgets & Spend', icon: <BudgetsIcon />, path: '/budgets' },
-  { key: 'insights', label: 'Insights', icon: <InsightsIcon />, path: '/analytics' },
+  { key: 'claims', label: 'Claims', icon: <ClaimsIcon />, path: '/claims' },
   { key: 'approvals', label: 'Approvals', icon: <ApprovalsIcon />, path: '/approvals' },
-  { key: 'claims', label: 'Claims & Rebates', icon: <ClaimsIcon />, path: '/claims' },
+  { key: 'insights', label: 'Insights', icon: <InsightsIcon />, path: '/analytics' },
   { key: 'planning', label: 'Planning', icon: <PlanningIcon />, path: '/simulation-studio' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];

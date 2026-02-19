@@ -103,8 +103,8 @@ const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
         {
           title: 'Quick Actions',
           items: [
-            isKAM && { text: 'New Promotion', path: '/promotions/new-flow', badge: 'AI', description: 'AI-guided promotion creation' },
-            isKAM && { text: 'New Budget', path: '/budgets/new-flow', badge: 'AI', description: 'AI-guided budget planning' },
+            isKAM && { text: 'New Promotion', path: '/promotions/new', badge: 'AI', description: 'AI-guided promotion creation' },
+            isKAM && { text: 'New Budget', path: '/budgets/new', badge: 'AI', description: 'AI-guided budget planning' },
             isKAM && { text: 'Submit Claim', path: '/claims/create', description: 'Submit a customer claim' },
           ].filter(Boolean)
         }
@@ -120,7 +120,7 @@ const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Promotion Management',
           items: [
             { text: 'All Promotions', path: '/promotions', description: 'View and manage all promotions' },
-            { text: 'New Promotion', path: '/promotions/new-flow', badge: 'AI', description: 'AI-guided promotion creation' },
+            { text: 'New Promotion', path: '/promotions/new', badge: 'AI', description: 'AI-guided promotion creation' },
             { text: 'Promotion Planner', path: '/promotion-planner', badge: 'AI', description: 'AI-powered promotion planning' },
           ]
         },
@@ -143,7 +143,7 @@ const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Budget Management',
           items: [
             { text: 'All Budgets', path: '/budgets', description: 'View and manage all budgets' },
-            { text: 'New Budget', path: '/budgets/new-flow', badge: 'AI', description: 'AI-guided budget planning' },
+            { text: 'New Budget', path: '/budgets/new', badge: 'AI', description: 'AI-guided budget planning' },
             { text: 'Budget Console', path: '/budget-console', badge: 'AI', description: 'AI-powered budget optimization' },
           ]
         },
@@ -151,7 +151,7 @@ const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Trade Spend',
           items: [
             { text: 'Trade Spends', path: '/trade-spends', description: 'Manage trade spend activities' },
-            { text: 'New Trade Spend', path: '/trade-spends/new-flow', badge: 'AI', description: 'AI-guided trade spend entry' },
+            { text: 'New Trade Spend', path: '/trade-spends/new', badge: 'AI', description: 'AI-guided trade spend entry' },
             { text: 'Trading Terms', path: '/trading-terms', description: 'Configure trading terms' },
           ]
         }
@@ -246,9 +246,9 @@ const MegaMenu= ({ user, onLogout, onMobileMenuToggle }) => {
           title: 'Master Data',
           items: [
             { text: 'Customers', path: '/customers', description: 'Manage customer master data' },
-            { text: 'New Customer', path: '/customers/new-flow', badge: 'AI', description: 'AI-guided customer entry' },
+            { text: 'New Customer', path: '/customers/new', badge: 'AI', description: 'AI-guided customer entry' },
             { text: 'Products', path: '/products', description: 'Manage product master data' },
-            { text: 'New Product', path: '/products/new-flow', badge: 'AI', description: 'AI-guided product entry' },
+            { text: 'New Product', path: '/products/new', badge: 'AI', description: 'AI-guided product entry' },
           ]
         },
         {

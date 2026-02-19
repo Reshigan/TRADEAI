@@ -42,7 +42,7 @@ const QuickActionsPanel = ({ onAction }) => {
       description: 'Launch promotion in 30 seconds',
       icon: <CampaignIcon />,
       color: '#6D28D9',
-      url: '/promotions/new-flow',
+      url: '/promotions/new',
       badge: 'Popular',
       estimatedTime: '30s'
     },
@@ -52,7 +52,7 @@ const QuickActionsPanel = ({ onAction }) => {
       description: 'Onboard with AI credit scoring',
       icon: <AddIcon />,
       color: '#8B5CF6',
-      url: '/customers/new-flow',
+      url: '/customers/new',
       estimatedTime: '2m'
     },
     {
@@ -71,7 +71,7 @@ const QuickActionsPanel = ({ onAction }) => {
       description: 'AI-powered allocation',
       icon: <MoneyIcon />,
       color: '#ff9800',
-      url: '/budgets/new-flow',
+      url: '/budgets/new',
       estimatedTime: '3m'
     },
     {

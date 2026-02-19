@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Skeleton } from '@mui/material';
 import ActivityDetail from '../../components/activityGrid/ActivityDetail';
-import ProcessShell from '../../components/ProcessShell';
 import apiClient from '../../services/api/apiClient';
 
 /**
@@ -58,7 +57,6 @@ const ActivityDetailPage = () => {
   }
 
   return (
-    <ProcessShell module="activity" entityId={id} entity={activity}>
       <ActivityDetail
         open={true}
         onClose={handleClose}
@@ -66,7 +64,6 @@ const ActivityDetailPage = () => {
         onUpdate={handleUpdate}
         onDelete={handleDelete}
       />
-    </ProcessShell>
   );
 };
 

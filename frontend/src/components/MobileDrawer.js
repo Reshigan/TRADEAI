@@ -60,8 +60,8 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
         isKAM && { label: 'My Dashboard', path: '/dashboard' },
         isKAM && { label: 'My Wallet', path: '/kamwallet', badge: 'NEW' },
         isManager && { label: 'Pending Approvals', path: '/approvals' },
-        isKAM && { label: 'New Promotion', path: '/promotions/new-flow', badge: 'AI' },
-        isKAM && { label: 'New Budget', path: '/budgets/new-flow', badge: 'AI' },
+        isKAM && { label: 'New Promotion', path: '/promotions/new', badge: 'AI' },
+        isKAM && { label: 'New Budget', path: '/budgets/new', badge: 'AI' },
         isKAM && { label: 'Submit Claim', path: '/claims/create' },
       ].filter(Boolean)
     },
@@ -71,7 +71,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
       icon: <LightbulbIcon />,
       children: [
         { label: 'All Promotions', path: '/promotions' },
-        { label: 'New Promotion', path: '/promotions/new-flow', badge: 'AI' },
+        { label: 'New Promotion', path: '/promotions/new', badge: 'AI' },
         { label: 'Promotion Planner', path: '/promotion-planner', badge: 'AI' },
         { label: 'Timeline', path: '/promotions-timeline' },
         { label: 'Activity Calendar', path: '/activity-grid' },
@@ -83,10 +83,10 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
       icon: <RocketIcon />,
       children: [
         { label: 'All Budgets', path: '/budgets' },
-        { label: 'New Budget', path: '/budgets/new-flow', badge: 'AI' },
+        { label: 'New Budget', path: '/budgets/new', badge: 'AI' },
         { label: 'Budget Console', path: '/budget-console', badge: 'AI' },
         { label: 'Trade Spends', path: '/trade-spends' },
-        { label: 'New Trade Spend', path: '/trade-spends/new-flow', badge: 'AI' },
+        { label: 'New Trade Spend', path: '/trade-spends/new', badge: 'AI' },
         { label: 'Trading Terms', path: '/trading-terms' },
       ]
     },
@@ -141,9 +141,9 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
       icon: <DataIcon />,
       children: [
         { label: 'Customers', path: '/customers' },
-        { label: 'New Customer', path: '/customers/new-flow', badge: 'AI' },
+        { label: 'New Customer', path: '/customers/new', badge: 'AI' },
         { label: 'Products', path: '/products' },
-        { label: 'New Product', path: '/products/new-flow', badge: 'AI' },
+        { label: 'New Product', path: '/products/new', badge: 'AI' },
         isAdmin && { label: 'Import/Export', path: '/data/import-export' },
       ].filter(Boolean)
     },

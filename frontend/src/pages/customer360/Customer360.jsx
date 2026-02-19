@@ -217,7 +217,7 @@ const Customer360 = () => {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => navigate('/promotions/new-flow', { state: { customerId: id } })}
+            onClick={() => navigate('/promotions/new', { state: { customerId: id } })}
           >
             Create Promotion
           </Button>

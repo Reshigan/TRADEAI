@@ -7,7 +7,6 @@ import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
-import ProcessShell from '../../components/ProcessShell';
 
 import TradeSpendOverview from './tabs/TradeSpendOverview';
 import TradeSpendAccruals from './tabs/TradeSpendAccruals';
@@ -82,7 +81,6 @@ const TradeSpendDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="tradespend" entityId={id} entity={tradeSpend}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Button
@@ -121,7 +119,6 @@ const TradeSpendDetailWithTabs = () => {
           {activeTab === 'history' && <TradeSpendHistory tradeSpendId={id} tradeSpend={tradeSpend} />}
         </Box>
       </Container>
-    </ProcessShell>
   );
 };
 

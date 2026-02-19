@@ -405,7 +405,7 @@ const PromotionsTimeline = () => {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => navigate('/promotions/new-flow')}
+            onClick={() => navigate('/promotions/new')}
           >
             New Promotion
           </Button>

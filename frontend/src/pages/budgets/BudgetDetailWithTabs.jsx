@@ -7,7 +7,6 @@ import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
-import ProcessShell from '../../components/ProcessShell';
 
 import BudgetOverview from './tabs/BudgetOverview';
 import BudgetAllocations from './tabs/BudgetAllocations';
@@ -86,7 +85,6 @@ const BudgetDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="budget" entityId={id} entity={budget}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Button
@@ -127,7 +125,6 @@ const BudgetDetailWithTabs = () => {
           {activeTab === 'history' && <BudgetHistory budgetId={id} budget={budget} />}
         </Box>
       </Container>
-    </ProcessShell>
   );
 };
 
