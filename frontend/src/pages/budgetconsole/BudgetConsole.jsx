@@ -243,7 +243,7 @@ const BudgetConsole = () => {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => navigate('/budgets/new-flow')}
+            onClick={() => navigate('/budgets/new')}
           >
             New Budget
           </Button>

@@ -164,7 +164,7 @@ const SimulationStudio = () => {
     if (!scenario || !scenario.results) return;
 
     if (window.confirm(`Apply "${scenario.name}" and create promotion?`)) {
-      navigate('/promotions/new-flow', {
+      navigate('/promotions/new', {
         state: {
           prefill: {
             customers: selectedCustomers,

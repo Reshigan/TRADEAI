@@ -76,13 +76,13 @@ const TradeSpendListEnhanced = () => {
       icon: '🎯',
       label: 'Optimize Allocation',
       description: 'AI-powered spend optimization',
-      action: () => navigate('/simulations?type=tradespend')
+      action: () => navigate('/simulation-studio')
     },
     {
       icon: '📊',
       label: 'Forecast Impact',
       description: 'Predict trade spend effectiveness',
-      action: () => navigate('/forecasting?view=tradespend')
+      action: () => navigate('/forecasting')
     }
   ];
 

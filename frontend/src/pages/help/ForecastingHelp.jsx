@@ -380,10 +380,10 @@ const ForecastingHelp = () => {
               <ListItem button onClick={() => navigate('/forecasting')}>
                 <ListItemText primary="View All Forecasts" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/forecasting/new')}>
+              <ListItem button onClick={() => navigate('/forecasting')}>
                 <ListItemText primary="Create New Forecast" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/forecasting/dashboard')}>
+              <ListItem button onClick={() => navigate('/forecasting')}>
                 <ListItemText primary="Forecasting Dashboard" />
               </ListItem>
             </List>

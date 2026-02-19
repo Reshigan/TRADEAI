@@ -7,7 +7,6 @@ import apiClient from '../../services/api/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
-import ProcessShell from '../../components/ProcessShell';
 
 import ProductOverview from './tabs/ProductOverview';
 import ProductPromotions from './tabs/ProductPromotions';
@@ -80,7 +79,6 @@ const ProductDetailWithTabs = () => {
   }
 
   return (
-    <ProcessShell module="product" entityId={id} entity={product}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Button
@@ -118,7 +116,6 @@ const ProductDetailWithTabs = () => {
           {activeTab === 'sales-history' && <ProductSalesHistory productId={id} product={product} />}
         </Box>
       </Container>
-    </ProcessShell>
   );
 };
 
