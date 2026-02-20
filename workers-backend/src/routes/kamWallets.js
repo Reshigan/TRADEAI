@@ -179,6 +179,45 @@ kamWallets.post('/:id/record-usage', async (c) => {
   }
 });
 
+kamWallets.put('/:id', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { id } = c.req.param();
+    const body = await c.req.json();
+    const now = new Date().toISOString();
+
+    const existing = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!existing) return c.json({ success: false, message: 'KAM Wallet not found' }, 404);
+
+    await db.prepare(`
+      UPDATE kam_wallets SET
+        user_id = ?, year = ?, quarter = ?, month = ?,
+        allocated_amount = ?, utilized_amount = ?, committed_amount = ?, available_amount = ?,
+        status = ?, data = ?, updated_at = ?
+      WHERE id = ? AND company_id = ?
+    `).bind(
+      body.userId || body.user_id || existing.user_id,
+      body.year || existing.year,
+      body.quarter ?? existing.quarter,
+      body.month ?? existing.month,
+      body.allocatedAmount || body.allocated_amount || body.totalAllocation || existing.allocated_amount,
+      body.utilizedAmount || body.utilized_amount || existing.utilized_amount,
+      body.committedAmount || body.committed_amount || existing.committed_amount,
+      body.availableAmount || body.available_amount || existing.available_amount,
+      body.status || existing.status,
+      JSON.stringify(body.data || (existing.data ? JSON.parse(existing.data) : {})),
+      now, id, companyId
+    ).run();
+
+    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
+    return c.json({ success: true, data: rowToDocument(updated) });
+  } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 kamWallets.patch('/:id/status', async (c) => {
   try {
     const db = c.env.DB;

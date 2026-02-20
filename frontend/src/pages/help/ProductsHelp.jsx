@@ -327,7 +327,7 @@ const ProductsHelp = () => {
               <ListItem button onClick={() => navigate('/products/new')}>
                 <ListItemText primary="Add New Product" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/hierarchy')}>
+              <ListItem button onClick={() => navigate('/hierarchy/products')}>
                 <ListItemText primary="Product Hierarchy" />
               </ListItem>
             </List>

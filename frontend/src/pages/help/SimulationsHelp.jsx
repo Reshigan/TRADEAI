@@ -383,13 +383,13 @@ const SimulationsHelp = () => {
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>Quick Links</Typography>
             <List dense>
-              <ListItem button onClick={() => navigate('/simulation')}>
+              <ListItem button onClick={() => navigate('/simulation-studio')}>
                 <ListItemText primary="Simulation Studio" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/simulation/history')}>
+              <ListItem button onClick={() => navigate('/simulations')}>
                 <ListItemText primary="Simulation History" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/optimizer')}>
+              <ListItem button onClick={() => navigate('/simulation-studio')}>
                 <ListItemText primary="Optimizer" />
               </ListItem>
             </List>

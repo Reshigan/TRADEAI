@@ -56,6 +56,37 @@ forecasting.get('/', async (c) => {
   }
 });
 
+// Get forecast comparison (multiple forecasts)
+forecasting.get('/compare', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { ids, type } = c.req.query();
+    
+    let query = 'SELECT * FROM forecasts WHERE company_id = ?';
+    const params = [companyId];
+    
+    if (ids) {
+      const idList = ids.split(',');
+      query += ` AND id IN (${idList.map(() => '?').join(',')})`;
+      params.push(...idList);
+    } else if (type) {
+      query += ' AND forecast_type = ? ORDER BY forecast_year DESC LIMIT 5';
+      params.push(type);
+    }
+    
+    const result = await db.prepare(query).bind(...params).all();
+    
+    return c.json({
+      success: true,
+      data: (result.results || []).map(rowToDocument)
+    });
+  } catch (error) {
+    console.error('Error comparing forecasts:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 // Get forecast types/options
 forecasting.get('/options', async (c) => {
   return c.json({
@@ -407,37 +438,6 @@ forecasting.post('/:id/update-actuals', async (c) => {
     });
   } catch (error) {
     console.error('Error updating actuals:', error);
-    return c.json({ success: false, message: error.message }, 500);
-  }
-});
-
-// Get forecast comparison (multiple forecasts)
-forecasting.get('/compare', async (c) => {
-  try {
-    const db = c.env.DB;
-    const companyId = getCompanyId(c);
-    const { ids, type } = c.req.query();
-    
-    let query = 'SELECT * FROM forecasts WHERE company_id = ?';
-    const params = [companyId];
-    
-    if (ids) {
-      const idList = ids.split(',');
-      query += ` AND id IN (${idList.map(() => '?').join(',')})`;
-      params.push(...idList);
-    } else if (type) {
-      query += ' AND forecast_type = ? ORDER BY forecast_year DESC LIMIT 5';
-      params.push(type);
-    }
-    
-    const result = await db.prepare(query).bind(...params).all();
-    
-    return c.json({
-      success: true,
-      data: (result.results || []).map(rowToDocument)
-    });
-  } catch (error) {
-    console.error('Error comparing forecasts:', error);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

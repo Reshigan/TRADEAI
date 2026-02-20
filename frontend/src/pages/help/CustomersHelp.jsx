@@ -329,7 +329,7 @@ const CustomersHelp = () => {
               <ListItem button onClick={() => navigate('/customers/new')}>
                 <ListItemText primary="Add New Customer" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/customer-360')}>
+              <ListItem button onClick={() => navigate('/customers')}>
                 <ListItemText primary="Customer 360" />
               </ListItem>
             </List>

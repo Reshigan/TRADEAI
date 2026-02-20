@@ -341,7 +341,7 @@ const AnalyticsHelp = () => {
               <ListItem button onClick={() => navigate('/reports')}>
                 <ListItemText primary="Reports" />
               </ListItem>
-              <ListItem button onClick={() => navigate('/governance/variance')}>
+              <ListItem button onClick={() => navigate('/analytics')}>
                 <ListItemText primary="Variance Analysis" />
               </ListItem>
             </List>

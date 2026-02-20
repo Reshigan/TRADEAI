@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import apiClient from '../services/apiClient';
 import {
   Box,
   Typography,
@@ -19,7 +20,6 @@ import {
   KeyboardArrowDown as ArrowDownIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material';
-import apiClient from '../services/apiClient';
 
 const pageTitles = {
   '/dashboard': { title: 'Dashboard', subtitle: 'Overview of your trade spend performance' },

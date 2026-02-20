@@ -119,7 +119,7 @@ export default function CompanyAdminDashboard() {
             subtitle={`${stats?.users?.active || 0} active`}
             icon={People}
             color="primary"
-            onClick={() => navigate('/company-admin/users')}
+            onClick={() => navigate('/admin/company-users')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -129,7 +129,7 @@ export default function CompanyAdminDashboard() {
             subtitle={`${stats?.courses?.published || 0} published`}
             icon={School}
             color="success"
-            onClick={() => navigate('/company-admin/courses')}
+            onClick={() => navigate('/admin/dashboard')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -139,7 +139,7 @@ export default function CompanyAdminDashboard() {
             subtitle="Gamification"
             icon={SportsEsports}
             color="warning"
-            onClick={() => navigate('/company-admin/games')}
+            onClick={() => navigate('/admin/dashboard')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -149,7 +149,7 @@ export default function CompanyAdminDashboard() {
             subtitle="Active"
             icon={Campaign}
             color="info"
-            onClick={() => navigate('/company-admin/announcements')}
+            onClick={() => navigate('/admin/dashboard')}
           />
         </Grid>
       </Grid>
@@ -164,28 +164,28 @@ export default function CompanyAdminDashboard() {
                 description="Add new training content for employees"
                 icon={School}
                 color="success"
-                onClick={() => navigate('/company-admin/courses/new')}
+                onClick={() => navigate('/admin/dashboard')}
               />
               <QuickAction
                 title="Post Announcement"
                 description="Share important updates with your team"
                 icon={Campaign}
                 color="info"
-                onClick={() => navigate('/company-admin/announcements/new')}
+                onClick={() => navigate('/admin/dashboard')}
               />
               <QuickAction
                 title="Manage Policies"
                 description="Create or update company policies"
                 icon={Policy}
                 color="warning"
-                onClick={() => navigate('/company-admin/policies')}
+                onClick={() => navigate('/admin/dashboard')}
               />
               <QuickAction
                 title="Setup Gamification"
                 description="Configure games and leaderboards"
                 icon={SportsEsports}
                 color="secondary"
-                onClick={() => navigate('/company-admin/games')}
+                onClick={() => navigate('/admin/dashboard')}
               />
             </Box>
           </Paper>
@@ -199,25 +199,25 @@ export default function CompanyAdminDashboard() {
                 title="Company Settings"
                 description="Branding, logo, and general settings"
                 icon={Settings}
-                onClick={() => navigate('/company-admin/settings')}
+                onClick={() => navigate('/admin/settings')}
               />
               <QuickAction
                 title="Azure AD Integration"
                 description="Connect and sync employees from Azure AD"
                 icon={Sync}
-                onClick={() => navigate('/company-admin/azure-ad')}
+                onClick={() => navigate('/admin/azure-ad')}
               />
               <QuickAction
                 title="User Management"
                 description="Manage user accounts and permissions"
                 icon={People}
-                onClick={() => navigate('/company-admin/users')}
+                onClick={() => navigate('/admin/company-users')}
               />
               <QuickAction
                 title="Departments"
                 description="Manage organizational structure"
                 icon={Business}
-                onClick={() => navigate('/company-admin/departments')}
+                onClick={() => navigate('/admin/dashboard')}
               />
             </Box>
           </Paper>
@@ -232,7 +232,7 @@ export default function CompanyAdminDashboard() {
             subtitle="From Azure AD"
             icon={People}
             color="secondary"
-            onClick={() => navigate('/company-admin/employees')}
+            onClick={() => navigate('/admin/company-users')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -242,7 +242,7 @@ export default function CompanyAdminDashboard() {
             subtitle="Active"
             icon={Business}
             color="primary"
-            onClick={() => navigate('/company-admin/departments')}
+            onClick={() => navigate('/admin/dashboard')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -252,7 +252,7 @@ export default function CompanyAdminDashboard() {
             subtitle="Published"
             icon={Policy}
             color="warning"
-            onClick={() => navigate('/company-admin/policies')}
+            onClick={() => navigate('/admin/dashboard')}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -262,7 +262,7 @@ export default function CompanyAdminDashboard() {
             subtitle="Activity history"
             icon={Settings}
             color="info"
-            onClick={() => navigate('/company-admin/audit-logs')}
+            onClick={() => navigate('/admin/dashboard')}
           />
         </Grid>
       </Grid>
