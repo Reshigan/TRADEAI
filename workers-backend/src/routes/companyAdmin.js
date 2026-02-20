@@ -512,14 +512,26 @@ companyAdmin.post('/azure-ad/test', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const result = await db.prepare("SELECT * FROM settings WHERE company_id = ? AND key = 'azure_ad_config'").bind(companyId).first();
-    if (!result) return c.json({ success: false, data: { connected: false, message: 'Azure AD not configured. Save configuration first.' } }, 400);
+    const result = await db.prepare("SELECT value FROM settings WHERE company_id = ? AND key = 'azure_ad_config'").bind(companyId).first();
+    if (!result) return c.json({ success: false, data: { connected: false, message: 'Azure AD not configured' } }, 400);
     const config = JSON.parse(result.value || '{}');
-    if (!config.tenantId || !config.clientId) return c.json({ success: false, data: { connected: false, message: 'Azure AD tenantId and clientId are required' } }, 400);
-    return c.json({ success: true, data: { connected: true, message: `Azure AD configuration validated for tenant ${config.tenantId}` } });
+    if (!config.tenantId || !config.clientId || !config.clientSecret) {
+      return c.json({ success: false, data: { connected: false, message: 'Missing required fields: tenantId, clientId, clientSecret' } }, 400);
+    }
+    const tokenUrl = `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`;
+    const tokenResp = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: config.clientId, client_secret: config.clientSecret, scope: 'https://graph.microsoft.com/.default', grant_type: 'client_credentials' })
+    });
+    const tokenData = await tokenResp.json();
+    if (tokenData.error) {
+      return c.json({ success: false, data: { connected: false, message: `Azure AD auth failed: ${tokenData.error_description || tokenData.error}` } }, 400);
+    }
+    return c.json({ success: true, data: { connected: true, message: 'Azure AD connection successful', tokenType: tokenData.token_type, expiresIn: tokenData.expires_in } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return c.json({ success: false, data: { connected: false, message: error.message } }, 500);
   }
 });
 
@@ -527,15 +539,51 @@ companyAdmin.post('/azure-ad/sync', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const result = await db.prepare("SELECT * FROM settings WHERE company_id = ? AND key = 'azure_ad_config'").bind(companyId).first();
+    const result = await db.prepare("SELECT value FROM settings WHERE company_id = ? AND key = 'azure_ad_config'").bind(companyId).first();
     if (!result) return c.json({ success: false, message: 'Azure AD not configured' }, 400);
     const config = JSON.parse(result.value || '{}');
-    if (!config.enabled) return c.json({ success: false, message: 'Azure AD sync is not enabled' }, 400);
+    if (!config.tenantId || !config.clientId || !config.clientSecret) {
+      return c.json({ success: false, message: 'Azure AD config incomplete' }, 400);
+    }
+    const tokenUrl = `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`;
+    const tokenResp = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: config.clientId, client_secret: config.clientSecret, scope: 'https://graph.microsoft.com/.default', grant_type: 'client_credentials' })
+    });
+    const tokenData = await tokenResp.json();
+    if (tokenData.error) return c.json({ success: false, message: `Auth failed: ${tokenData.error_description || tokenData.error}` }, 400);
+    const graphResp = await fetch('https://graph.microsoft.com/v1.0/users?$select=id,displayName,mail,givenName,surname,department,jobTitle&$top=999', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` }
+    });
+    const graphData = await graphResp.json();
+    if (graphData.error) return c.json({ success: false, message: `Graph API error: ${graphData.error.message}` }, 400);
+    const adUsers = graphData.value || [];
+    let created = 0, updated = 0, skipped = 0;
     const now = new Date().toISOString();
-    config.lastSyncAt = now;
-    await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(config), now, result.id).run();
-    const userCount = await db.prepare('SELECT COUNT(*) as total FROM users WHERE company_id = ?').bind(companyId).first();
-    return c.json({ success: true, data: { synced: userCount?.total || 0, lastSyncAt: now, message: 'Azure AD sync completed' } });
+    for (const adUser of adUsers) {
+      if (!adUser.mail) { skipped++; continue; }
+      const existing = await db.prepare('SELECT id FROM users WHERE email = ? AND company_id = ?').bind(adUser.mail.toLowerCase(), companyId).first();
+      if (existing) {
+        await db.prepare('UPDATE users SET first_name = ?, last_name = ?, department = ?, updated_at = ? WHERE id = ?').bind(
+          adUser.givenName || '', adUser.surname || '', adUser.department || '', now, existing.id
+        ).run();
+        updated++;
+      } else {
+        await db.prepare('INSERT INTO users (id, company_id, email, first_name, last_name, role, department, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)').bind(
+          `ad-${generateId()}`, companyId, adUser.mail.toLowerCase(), adUser.givenName || '', adUser.surname || '', 'viewer', adUser.department || '', now, now
+        ).run();
+        created++;
+      }
+    }
+    const settingRow = await db.prepare("SELECT id, value FROM settings WHERE company_id = ? AND key = 'azure_ad_config'").bind(companyId).first();
+    if (settingRow) {
+      const cfg = JSON.parse(settingRow.value || '{}');
+      cfg.lastSyncAt = now;
+      cfg.lastSyncStats = { created, updated, skipped, total: adUsers.length };
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(cfg), now, settingRow.id).run();
+    }
+    return c.json({ success: true, data: { synced: created + updated, created, updated, skipped, total: adUsers.length, message: `Synced ${created + updated} users (${created} new, ${updated} updated, ${skipped} skipped)` } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
@@ -580,14 +628,21 @@ companyAdmin.post('/erp-settings/test', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const result = await db.prepare("SELECT * FROM settings WHERE company_id = ? AND key = 'erp_config'").bind(companyId).first();
-    if (!result) return c.json({ success: false, data: { connected: false, message: 'ERP not configured. Save configuration first.' } }, 400);
+    const result = await db.prepare("SELECT value FROM settings WHERE company_id = ? AND key = 'erp_config'").bind(companyId).first();
+    if (!result) return c.json({ success: false, data: { connected: false, message: 'ERP not configured' } }, 400);
     const config = JSON.parse(result.value || '{}');
-    if (!config.host) return c.json({ success: false, data: { connected: false, message: 'ERP host is required' } }, 400);
-    return c.json({ success: true, data: { connected: true, message: `ERP configuration validated for ${config.provider || 'sap'} at ${config.host}` } });
+    if (!config.host) return c.json({ success: false, data: { connected: false, message: 'ERP host URL is required' } }, 400);
+    const healthUrl = config.host.replace(/\/$/, '') + (config.healthEndpoint || '/api/health');
+    const headers = {};
+    if (config.apiKey) headers['X-API-Key'] = config.apiKey;
+    if (config.username && config.password) headers['Authorization'] = 'Basic ' + btoa(`${config.username}:${config.password}`);
+    const resp = await fetch(healthUrl, { method: 'GET', headers, signal: AbortSignal.timeout(10000) });
+    if (!resp.ok) return c.json({ success: false, data: { connected: false, message: `ERP returned HTTP ${resp.status}: ${resp.statusText}` } }, 400);
+    return c.json({ success: true, data: { connected: true, message: `ERP connection successful (${config.provider || 'generic'})`, status: resp.status } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    const msg = error.name === 'TimeoutError' ? 'ERP connection timed out (10s)' : error.message;
+    return c.json({ success: false, data: { connected: false, message: msg } }, 500);
   }
 });
 
@@ -595,18 +650,70 @@ companyAdmin.post('/erp-settings/sync', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const result = await db.prepare("SELECT * FROM settings WHERE company_id = ? AND key = 'erp_config'").bind(companyId).first();
+    const result = await db.prepare("SELECT value FROM settings WHERE company_id = ? AND key = 'erp_config'").bind(companyId).first();
     if (!result) return c.json({ success: false, message: 'ERP not configured' }, 400);
     const config = JSON.parse(result.value || '{}');
-    if (!config.enabled) return c.json({ success: false, message: 'ERP sync is not enabled' }, 400);
+    if (!config.host) return c.json({ success: false, message: 'ERP host URL is required' }, 400);
+    const baseUrl = config.host.replace(/\/$/, '');
+    const headers = { 'Content-Type': 'application/json' };
+    if (config.apiKey) headers['X-API-Key'] = config.apiKey;
+    if (config.username && config.password) headers['Authorization'] = 'Basic ' + btoa(`${config.username}:${config.password}`);
     const now = new Date().toISOString();
-    config.lastSyncAt = now;
-    await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(config), now, result.id).run();
-    const [customers, products] = await Promise.all([
-      db.prepare('SELECT COUNT(*) as total FROM customers WHERE company_id = ?').bind(companyId).first(),
-      db.prepare('SELECT COUNT(*) as total FROM products WHERE company_id = ?').bind(companyId).first()
-    ]);
-    return c.json({ success: true, data: { synced: (customers?.total || 0) + (products?.total || 0), lastSyncAt: now, message: 'ERP sync completed', details: { customers: customers?.total || 0, products: products?.total || 0 } } });
+    let customersSync = { created: 0, updated: 0 };
+    let productsSync = { created: 0, updated: 0 };
+    try {
+      const custResp = await fetch(`${baseUrl}${config.customersEndpoint || '/api/customers'}`, { headers, signal: AbortSignal.timeout(30000) });
+      if (custResp.ok) {
+        const custData = await custResp.json();
+        const erpCustomers = custData.data || custData.results || custData || [];
+        for (const ec of (Array.isArray(erpCustomers) ? erpCustomers : [])) {
+          const name = ec.name || ec.customerName || ec.description || '';
+          const code = ec.code || ec.customerCode || ec.id || '';
+          if (!name) continue;
+          const existing = await db.prepare('SELECT id FROM customers WHERE code = ? AND company_id = ?').bind(code, companyId).first();
+          if (existing) {
+            await db.prepare('UPDATE customers SET name = ?, updated_at = ? WHERE id = ?').bind(name, now, existing.id).run();
+            customersSync.updated++;
+          } else {
+            await db.prepare('INSERT INTO customers (id, company_id, name, code, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(
+              `erp-${generateId()}`, companyId, name, code, 'active', now, now
+            ).run();
+            customersSync.created++;
+          }
+        }
+      }
+    } catch (e) { console.error('ERP customer sync error:', e); }
+    try {
+      const prodResp = await fetch(`${baseUrl}${config.productsEndpoint || '/api/products'}`, { headers, signal: AbortSignal.timeout(30000) });
+      if (prodResp.ok) {
+        const prodData = await prodResp.json();
+        const erpProducts = prodData.data || prodData.results || prodData || [];
+        for (const ep of (Array.isArray(erpProducts) ? erpProducts : [])) {
+          const name = ep.name || ep.productName || ep.description || '';
+          const code = ep.code || ep.productCode || ep.sku || ep.id || '';
+          if (!name) continue;
+          const existing = await db.prepare('SELECT id FROM products WHERE code = ? AND company_id = ?').bind(code, companyId).first();
+          if (existing) {
+            await db.prepare('UPDATE products SET name = ?, updated_at = ? WHERE id = ?').bind(name, now, existing.id).run();
+            productsSync.updated++;
+          } else {
+            await db.prepare('INSERT INTO products (id, company_id, name, code, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(
+              `erp-${generateId()}`, companyId, name, code, 'active', now, now
+            ).run();
+            productsSync.created++;
+          }
+        }
+      }
+    } catch (e) { console.error('ERP product sync error:', e); }
+    const settingRow = await db.prepare("SELECT id, value FROM settings WHERE company_id = ? AND key = 'erp_config'").bind(companyId).first();
+    if (settingRow) {
+      const cfg = JSON.parse(settingRow.value || '{}');
+      cfg.lastSyncAt = now;
+      cfg.lastSyncStats = { customers: customersSync, products: productsSync };
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(cfg), now, settingRow.id).run();
+    }
+    const totalSynced = customersSync.created + customersSync.updated + productsSync.created + productsSync.updated;
+    return c.json({ success: true, data: { synced: totalSynced, customers: customersSync, products: productsSync, message: `Synced ${totalSynced} records from ERP` } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);

@@ -60,11 +60,17 @@ const TopHeader = ({ onMenuClick }) => {
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
-    apiClient.get('/approvals/pending').then(res => {
-      const data = res?.data?.data || res?.data || [];
-      setPendingCount(Array.isArray(data) ? data.length : 0);
-    }).catch(() => {});
-  }, [location.pathname]);
+    const fetchPendingCount = async () => {
+      try {
+        const resp = await apiClient.get('/approvals/pending');
+        const items = resp.data?.data || resp.data || [];
+        setPendingCount(Array.isArray(items) ? items.length : 0);
+      } catch (e) { /* ignore */ }
+    };
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const pageInfo = getPageInfo(location.pathname);
 
@@ -177,7 +183,7 @@ const TopHeader = ({ onMenuClick }) => {
             '&:hover': { bgcolor: '#E5E7EB' },
           }}
         >
-          <Badge badgeContent={pendingCount} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', minWidth: 18, height: 18 } }}>
+          <Badge badgeContent={pendingCount} color="error" invisible={pendingCount === 0} sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', minWidth: 18, height: 18 } }}>
             <NotificationsIcon sx={{ fontSize: 20, color: '#6B7280' }} />
           </Badge>
         </IconButton>
