@@ -218,7 +218,9 @@ const TABLE_COLUMNS = {
   announcements: ['id', 'company_id', 'title', 'content', 'category', 'priority', 'status', 'target_audience', 'published_at', 'created_by', 'data', 'created_at', 'updated_at'],
   policies: ['id', 'company_id', 'title', 'content', 'category', 'version', 'status', 'effective_date', 'published_at', 'created_by', 'data', 'created_at', 'updated_at'],
   courses: ['id', 'company_id', 'title', 'description', 'category', 'difficulty', 'duration_minutes', 'status', 'content_url', 'created_by', 'data', 'created_at', 'updated_at'],
-  games: ['id', 'company_id', 'title', 'description', 'game_type', 'difficulty', 'points', 'status', 'created_by', 'data', 'created_at', 'updated_at']
+  games: ['id', 'company_id', 'title', 'description', 'game_type', 'difficulty', 'points', 'status', 'created_by', 'data', 'created_at', 'updated_at'],
+  regions: ['id', 'company_id', 'name', 'code', 'status', 'data', 'created_at', 'updated_at'],
+  districts: ['id', 'company_id', 'name', 'region_id', 'region_name', 'code', 'status', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

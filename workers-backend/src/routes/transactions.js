@@ -62,6 +62,7 @@ transactions.post('/',async (c) => {
     const companyId = getCompanyId(c);
     const body = await c.req.json();
     if (!body.amount && body.amount !== 0) return c.json({ success: false, message: 'amount is required' }, 400);
+    if (typeof body.amount !== 'number') return c.json({ success: false, message: 'amount must be a number' }, 400);
     const userId = c.get('userId') || 'system';
     const id = generateId();
     const now = new Date().toISOString();
@@ -199,7 +200,46 @@ transactions.post('/:id/settle', async (c) => {
 
 transactions.post('/bulk-upload', async (c) => {
   try {
-    return c.json({ success: true, message: 'Bulk upload endpoint ready. Submit CSV or JSON array of transactions.', data: { supportedFormats: ['csv', 'json'], maxRows: 1000 } });
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const body = await c.req.json();
+    const items = body.transactions || body.items || body;
+    if (!Array.isArray(items) || items.length === 0) return c.json({ success: false, message: 'Request body must contain a non-empty array of transactions (as "transactions", "items", or root array)' }, 400);
+    if (items.length > 1000) return c.json({ success: false, message: 'Maximum 1000 transactions per upload' }, 400);
+
+    const userId = c.get('userId') || 'system';
+    const now = new Date().toISOString();
+    const results = { created: 0, errors: [] };
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!item.amount && item.amount !== 0) { results.errors.push({ row: i + 1, message: 'amount is required' }); continue; }
+      if (typeof item.amount !== 'number') { results.errors.push({ row: i + 1, message: 'amount must be a number' }); continue; }
+      try {
+        const id = generateId();
+        const txnNumber = `TXN-${Date.now().toString(36).toUpperCase()}-${i}`;
+        await db.prepare(`
+          INSERT INTO transactions (id, company_id, transaction_number, transaction_type, status, customer_id, product_id, amount, description, reference, created_by, data, created_at, updated_at)
+          VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          id, companyId, txnNumber,
+          item.type || item.transactionType || 'accrual',
+          item.customerId || item.customer_id || null,
+          item.productId || item.product_id || null,
+          item.amount,
+          item.description || null,
+          item.reference || null,
+          userId,
+          JSON.stringify(item.data || {}),
+          now, now
+        ).run();
+        results.created++;
+      } catch (err) {
+        results.errors.push({ row: i + 1, message: err.message });
+      }
+    }
+
+    return c.json({ success: true, data: { total: items.length, created: results.created, failed: results.errors.length, errors: results.errors } }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return c.json({ success: false, message: error.message }, 500);
