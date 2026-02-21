@@ -35,7 +35,7 @@ const navItems = [
   { key: 'accrue', label: 'Accrue', icon: <AccrueIcon />, path: '/accruals' },
   { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/settlements' },
   { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
-  { key: 'insights', label: 'Analyze', icon: <InsightsIcon />, path: '/analytics' },
+  { key: 'pnl', label: 'P&L', icon: <InsightsIcon />, path: '/pnl' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];
 

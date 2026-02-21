@@ -177,6 +177,9 @@ import AccrualManagement from './pages/accruals/AccrualManagement';
 // Settlement Management
 import SettlementManagement from './pages/settlements/SettlementManagement';
 
+// P&L Management
+import PnLManagement from './pages/pnl/PnLManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1138,6 +1141,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <SettlementManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/pnl" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PnLManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />
