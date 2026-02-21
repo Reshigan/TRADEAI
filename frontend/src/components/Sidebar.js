@@ -10,12 +10,13 @@ import {
 } from '@mui/material';
 import {
   Home as HomeIcon,
-  Campaign as PromotionsIcon,
+  Timeline as PlanIcon,
   AccountBalance as BudgetsIcon,
-  BarChart as InsightsIcon,
+  Campaign as PromotionsIcon,
+  ShoppingCart as ExecuteIcon,
+  Receipt as SettleIcon,
   CheckCircle as ApprovalsIcon,
-  Receipt as ClaimsIcon,
-  TrendingUp as PlanningIcon,
+  BarChart as InsightsIcon,
   Storage as DataIcon,
   Settings as SettingsIcon,
   HelpOutline as HelpIcon,
@@ -26,12 +27,13 @@ const SIDEBAR_WIDTH = 72;
 
 const navItems = [
   { key: 'home', label: 'Home', icon: <HomeIcon />, path: '/dashboard' },
-  { key: 'budgets', label: 'Budgets', icon: <BudgetsIcon />, path: '/budgets' },
-  { key: 'promotions', label: 'Promotions', icon: <PromotionsIcon />, path: '/promotions' },
-  { key: 'claims', label: 'Claims', icon: <ClaimsIcon />, path: '/claims' },
-  { key: 'approvals', label: 'Approvals', icon: <ApprovalsIcon />, path: '/approvals' },
-  { key: 'insights', label: 'Insights', icon: <InsightsIcon />, path: '/analytics' },
-  { key: 'planning', label: 'Planning', icon: <PlanningIcon />, path: '/simulation-studio' },
+  { key: 'plan', label: 'Plan', icon: <PlanIcon />, path: '/baselines' },
+  { key: 'budgets', label: 'Budget', icon: <BudgetsIcon />, path: '/budgets' },
+  { key: 'promotions', label: 'Promote', icon: <PromotionsIcon />, path: '/promotions' },
+  { key: 'execute', label: 'Execute', icon: <ExecuteIcon />, path: '/trade-spends' },
+  { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/claims' },
+  { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
+  { key: 'insights', label: 'Analyze', icon: <InsightsIcon />, path: '/analytics' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];
 
