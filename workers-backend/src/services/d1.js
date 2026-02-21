@@ -31,7 +31,10 @@ const TABLE_MAP = {
   business_rules_config: 'business_rules_config',
   allocations: 'allocations',
   activity_grid: 'activity_grid',
-  settings: 'settings'
+  settings: 'settings',
+  baselines: 'baselines',
+  baseline_periods: 'baseline_periods',
+  volume_decomposition: 'volume_decomposition'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -164,7 +167,48 @@ const COLUMN_MAP = {
   activityName: 'activity_name',
   budgetAllocated: 'budget_allocated',
   budgetSpent: 'budget_spent',
-  claimId: 'claim_id'
+  claimId: 'claim_id',
+  baselineType: 'baseline_type',
+  calculationMethod: 'calculation_method',
+  periodsUsed: 'periods_used',
+  seasonalityEnabled: 'seasonality_enabled',
+  trendEnabled: 'trend_enabled',
+  outlierRemovalEnabled: 'outlier_removal_enabled',
+  outlierThreshold: 'outlier_threshold',
+  totalBaseVolume: 'total_base_volume',
+  totalBaseRevenue: 'total_base_revenue',
+  avgWeeklyVolume: 'avg_weekly_volume',
+  avgWeeklyRevenue: 'avg_weekly_revenue',
+  seasonalityIndex: 'seasonality_index',
+  trendCoefficient: 'trend_coefficient',
+  rSquared: 'r_squared',
+  baselineId: 'baseline_id',
+  periodStart: 'period_start',
+  periodEnd: 'period_end',
+  periodNumber: 'period_number',
+  periodLabel: 'period_label',
+  baseVolume: 'base_volume',
+  baseRevenue: 'base_revenue',
+  baseUnits: 'base_units',
+  seasonalityFactor: 'seasonality_factor',
+  trendAdjustment: 'trend_adjustment',
+  varianceVolume: 'variance_volume',
+  varianceRevenue: 'variance_revenue',
+  variancePct: 'variance_pct',
+  isPromoted: 'is_promoted',
+  incrementalVolume: 'incremental_volume',
+  incrementalRevenue: 'incremental_revenue',
+  totalVolume: 'total_volume',
+  cannibalizationVolume: 'cannibalization_volume',
+  pantryLoadingVolume: 'pantry_loading_volume',
+  haloVolume: 'halo_volume',
+  pullForwardVolume: 'pull_forward_volume',
+  postPromoDipVolume: 'post_promo_dip_volume',
+  totalRevenue: 'total_revenue',
+  tradeSpend: 'trade_spend',
+  incrementalProfit: 'incremental_profit',
+  liftPct: 'lift_pct',
+  efficiencyScore: 'efficiency_score'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -220,7 +264,10 @@ const TABLE_COLUMNS = {
   courses: ['id', 'company_id', 'title', 'description', 'category', 'difficulty', 'duration_minutes', 'status', 'content_url', 'created_by', 'data', 'created_at', 'updated_at'],
   games: ['id', 'company_id', 'title', 'description', 'game_type', 'difficulty', 'points', 'status', 'created_by', 'data', 'created_at', 'updated_at'],
   regions: ['id', 'company_id', 'name', 'code', 'status', 'data', 'created_at', 'updated_at'],
-  districts: ['id', 'company_id', 'name', 'region_id', 'region_name', 'code', 'status', 'data', 'created_at', 'updated_at']
+  districts: ['id', 'company_id', 'name', 'region_id', 'region_name', 'code', 'status', 'data', 'created_at', 'updated_at'],
+  baselines: ['id', 'company_id', 'name', 'description', 'status', 'baseline_type', 'calculation_method', 'granularity', 'customer_id', 'product_id', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'base_year', 'periods_used', 'seasonality_enabled', 'trend_enabled', 'outlier_removal_enabled', 'outlier_threshold', 'confidence_level', 'total_base_volume', 'total_base_revenue', 'avg_weekly_volume', 'avg_weekly_revenue', 'seasonality_index', 'trend_coefficient', 'r_squared', 'mape', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  baseline_periods: ['id', 'company_id', 'baseline_id', 'period_start', 'period_end', 'period_number', 'period_label', 'base_volume', 'base_revenue', 'base_units', 'seasonality_factor', 'trend_adjustment', 'actual_volume', 'actual_revenue', 'variance_volume', 'variance_revenue', 'variance_pct', 'is_promoted', 'promotion_id', 'incremental_volume', 'incremental_revenue', 'data', 'created_at', 'updated_at'],
+  volume_decomposition: ['id', 'company_id', 'baseline_id', 'promotion_id', 'customer_id', 'product_id', 'period_start', 'period_end', 'total_volume', 'base_volume', 'incremental_volume', 'cannibalization_volume', 'pantry_loading_volume', 'halo_volume', 'pull_forward_volume', 'post_promo_dip_volume', 'total_revenue', 'base_revenue', 'incremental_revenue', 'trade_spend', 'incremental_profit', 'roi', 'lift_pct', 'efficiency_score', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

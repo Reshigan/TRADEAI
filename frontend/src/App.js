@@ -168,6 +168,9 @@ import CustomerSegmentation from './pages/performance-analytics/CustomerSegmenta
 // Predictive Analytics
 import PredictiveAnalytics from './pages/planning/PredictiveAnalytics';
 
+// Baseline Management
+import BaselineManagement from './pages/baselines/BaselineManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1100,7 +1103,19 @@ function App() {
           } 
         />
         <Route 
-          path="/customer-360/:id" 
+          path="/baselines" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BaselineManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/customer-360/:id"
           element={
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>

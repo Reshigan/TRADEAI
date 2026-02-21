@@ -797,4 +797,51 @@ export const promotionConflictService = {
   },
 };
 
+export const baselineService = {
+  getAll: async (params) => {
+    const response = await api.get('/baselines', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/baselines/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/baselines', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/baselines/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/baselines/${id}`);
+    return response.data;
+  },
+  calculate: async (id) => {
+    const response = await api.post(`/baselines/${id}/calculate`);
+    return response.data;
+  },
+  decompose: async (id, data) => {
+    const response = await api.post(`/baselines/${id}/decompose`, data);
+    return response.data;
+  },
+  approve: async (id) => {
+    const response = await api.post(`/baselines/${id}/approve`);
+    return response.data;
+  },
+  getDecompositions: async (id) => {
+    const response = await api.get(`/baselines/${id}/decompositions`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/baselines/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/baselines/options');
+    return response.data;
+  },
+};
+
 export default api;

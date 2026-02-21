@@ -50,6 +50,7 @@ import { deductionMatchRoutes } from './routes/deductionMatch.js';
 import { postEventAnalysisRoutes } from './routes/postEventAnalysis.js';
 import { anomalyDetectionRoutes } from './routes/anomalyDetection.js';
 import { promotionConflictRoutes } from './routes/promotionConflict.js';
+import { baselineRoutes } from './routes/baselines.js';
 
 const app = new Hono();
 
@@ -142,6 +143,7 @@ app.route('/api/deduction-match', deductionMatchRoutes);
 app.route('/api/post-event-analysis', postEventAnalysisRoutes);
 app.route('/api/anomaly-detection', anomalyDetectionRoutes);
 app.route('/api/promotion-conflict', promotionConflictRoutes);
+app.route('/api/baselines', baselineRoutes);
 
 // 404 handler
 app.notFound((c) => {
