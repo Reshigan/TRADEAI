@@ -844,4 +844,55 @@ export const baselineService = {
   },
 };
 
+export const accrualService = {
+  getAll: async (params) => {
+    const response = await api.get('/accruals', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/accruals/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/accruals', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/accruals/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/accruals/${id}`);
+    return response.data;
+  },
+  calculate: async (id) => {
+    const response = await api.post(`/accruals/${id}/calculate`);
+    return response.data;
+  },
+  post: async (id) => {
+    const response = await api.post(`/accruals/${id}/post`);
+    return response.data;
+  },
+  reverse: async (id, data) => {
+    const response = await api.post(`/accruals/${id}/reverse`, data);
+    return response.data;
+  },
+  approve: async (id) => {
+    const response = await api.post(`/accruals/${id}/approve`);
+    return response.data;
+  },
+  getJournals: async (id) => {
+    const response = await api.get(`/accruals/${id}/journals`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/accruals/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/accruals/options');
+    return response.data;
+  },
+};
+
 export default api;
