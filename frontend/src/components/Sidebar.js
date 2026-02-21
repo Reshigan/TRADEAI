@@ -33,7 +33,7 @@ const navItems = [
   { key: 'promotions', label: 'Promote', icon: <PromotionsIcon />, path: '/promotions' },
   { key: 'execute', label: 'Execute', icon: <ExecuteIcon />, path: '/trade-spends' },
   { key: 'accrue', label: 'Accrue', icon: <AccrueIcon />, path: '/accruals' },
-  { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/claims' },
+  { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/settlements' },
   { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
   { key: 'insights', label: 'Analyze', icon: <InsightsIcon />, path: '/analytics' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },

@@ -174,6 +174,9 @@ import BaselineManagement from './pages/baselines/BaselineManagement';
 // Accrual Management
 import AccrualManagement from './pages/accruals/AccrualManagement';
 
+// Settlement Management
+import SettlementManagement from './pages/settlements/SettlementManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1123,6 +1126,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <AccrualManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/settlements" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <SettlementManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />
