@@ -895,4 +895,59 @@ export const accrualService = {
   },
 };
 
+export const settlementService = {
+  getAll: async (params) => {
+    const response = await api.get('/settlements', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/settlements/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/settlements', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/settlements/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/settlements/${id}`);
+    return response.data;
+  },
+  process: async (id) => {
+    const response = await api.post(`/settlements/${id}/process`);
+    return response.data;
+  },
+  approve: async (id, data) => {
+    const response = await api.post(`/settlements/${id}/approve`, data);
+    return response.data;
+  },
+  reject: async (id, data) => {
+    const response = await api.post(`/settlements/${id}/reject`, data);
+    return response.data;
+  },
+  pay: async (id, data) => {
+    const response = await api.post(`/settlements/${id}/pay`, data);
+    return response.data;
+  },
+  getLines: async (id) => {
+    const response = await api.get(`/settlements/${id}/lines`);
+    return response.data;
+  },
+  getPayments: async (id) => {
+    const response = await api.get(`/settlements/${id}/payments`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/settlements/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/settlements/options');
+    return response.data;
+  },
+};
+
 export default api;
