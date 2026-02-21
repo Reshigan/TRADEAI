@@ -42,7 +42,9 @@ const TABLE_MAP = {
   settlement_lines: 'settlement_lines',
   settlement_payments: 'settlement_payments',
   pnl_reports: 'pnl_reports',
-  pnl_line_items: 'pnl_line_items'
+  pnl_line_items: 'pnl_line_items',
+  budget_allocations: 'budget_allocations',
+  budget_allocation_lines: 'budget_allocation_lines'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -291,7 +293,26 @@ const COLUMN_MAP = {
   reportId: 'report_id',
   lineType: 'line_type',
   lineLabel: 'line_label',
-  sortOrder: 'sort_order'
+  sortOrder: 'sort_order',
+  allocationMethod: 'allocation_method',
+  sourceAmount: 'source_amount',
+  allocatedAmount: 'allocated_amount',
+  remainingAmount: 'remaining_amount',
+  utilizedAmount: 'utilized_amount',
+  utilizationPct: 'utilization_pct',
+  fiscalYear: 'fiscal_year',
+  lockedBy: 'locked_by',
+  lockedAt: 'locked_at',
+  allocationId: 'allocation_id',
+  dimensionType: 'dimension_type',
+  dimensionId: 'dimension_id',
+  dimensionName: 'dimension_name',
+  parentLineId: 'parent_line_id',
+  allocatedPct: 'allocated_pct',
+  committedAmount: 'committed_amount',
+  priorYearAmount: 'prior_year_amount',
+  priorYearGrowthPct: 'prior_year_growth_pct',
+  forecastAmount: 'forecast_amount'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -358,7 +379,9 @@ const TABLE_COLUMNS = {
   settlement_lines: ['id', 'company_id', 'settlement_id', 'line_number', 'product_id', 'product_name', 'category', 'description', 'quantity', 'unit_price', 'accrued_amount', 'claimed_amount', 'approved_amount', 'adjustment_amount', 'adjustment_reason', 'settled_amount', 'status', 'data', 'created_at', 'updated_at'],
   settlement_payments: ['id', 'company_id', 'settlement_id', 'payment_type', 'payment_date', 'amount', 'currency', 'reference', 'bank_reference', 'erp_reference', 'status', 'notes', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
   pnl_reports: ['id', 'company_id', 'name', 'description', 'status', 'report_type', 'period_type', 'start_date', 'end_date', 'customer_id', 'promotion_id', 'product_id', 'category', 'channel', 'region', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'budget_variance_pct', 'roi', 'currency', 'generated_at', 'generated_by', 'data', 'created_at', 'updated_at'],
-  pnl_line_items: ['id', 'company_id', 'report_id', 'line_type', 'line_label', 'sort_order', 'customer_id', 'customer_name', 'promotion_id', 'promotion_name', 'product_id', 'product_name', 'period_start', 'period_end', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'roi', 'data', 'created_at', 'updated_at']
+  pnl_line_items: ['id', 'company_id', 'report_id', 'line_type', 'line_label', 'sort_order', 'customer_id', 'customer_name', 'promotion_id', 'promotion_name', 'product_id', 'product_name', 'period_start', 'period_end', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'roi', 'data', 'created_at', 'updated_at'],
+  budget_allocations: ['id', 'company_id', 'name', 'description', 'status', 'allocation_method', 'budget_id', 'source_amount', 'allocated_amount', 'remaining_amount', 'utilized_amount', 'utilization_pct', 'fiscal_year', 'period_type', 'start_date', 'end_date', 'dimension', 'currency', 'locked', 'locked_by', 'locked_at', 'approved_by', 'approved_at', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
+  budget_allocation_lines: ['id', 'company_id', 'allocation_id', 'line_number', 'dimension_type', 'dimension_id', 'dimension_name', 'parent_line_id', 'level', 'source_amount', 'allocated_amount', 'allocated_pct', 'utilized_amount', 'committed_amount', 'remaining_amount', 'utilization_pct', 'prior_year_amount', 'prior_year_growth_pct', 'forecast_amount', 'variance_amount', 'variance_pct', 'status', 'notes', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

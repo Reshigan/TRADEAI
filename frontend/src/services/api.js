@@ -997,4 +997,63 @@ export const pnlService = {
   },
 };
 
+export const budgetAllocationService = {
+  getAll: async (params) => {
+    const response = await api.get('/budget-allocations', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/budget-allocations/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/budget-allocations', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/budget-allocations/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/budget-allocations/${id}`);
+    return response.data;
+  },
+  distribute: async (id, overrides) => {
+    const response = await api.post(`/budget-allocations/${id}/distribute`, { overrides });
+    return response.data;
+  },
+  lock: async (id) => {
+    const response = await api.post(`/budget-allocations/${id}/lock`);
+    return response.data;
+  },
+  unlock: async (id) => {
+    const response = await api.post(`/budget-allocations/${id}/unlock`);
+    return response.data;
+  },
+  refreshUtilization: async (id) => {
+    const response = await api.post(`/budget-allocations/${id}/refresh-utilization`);
+    return response.data;
+  },
+  getLines: async (id) => {
+    const response = await api.get(`/budget-allocations/${id}/lines`);
+    return response.data;
+  },
+  updateLine: async (id, lineId, data) => {
+    const response = await api.put(`/budget-allocations/${id}/lines/${lineId}`, data);
+    return response.data;
+  },
+  getWaterfall: async (params) => {
+    const response = await api.get('/budget-allocations/waterfall', { params });
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/budget-allocations/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/budget-allocations/options');
+    return response.data;
+  },
+};
+
 export default api;

@@ -54,6 +54,7 @@ import { baselineRoutes } from './routes/baselines.js';
 import { accrualRoutes } from './routes/accruals.js';
 import { settlementRoutes } from './routes/settlements.js';
 import { pnlRoutes } from './routes/pnl.js';
+import { budgetAllocationRoutes } from './routes/budgetAllocations.js';
 
 const app = new Hono();
 
@@ -150,6 +151,7 @@ app.route('/api/baselines', baselineRoutes);
 app.route('/api/accruals', accrualRoutes);
 app.route('/api/settlements', settlementRoutes);
 app.route('/api/pnl', pnlRoutes);
+app.route('/api/budget-allocations', budgetAllocationRoutes);
 
 // 404 handler
 app.notFound((c) => {

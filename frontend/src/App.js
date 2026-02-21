@@ -180,6 +180,9 @@ import SettlementManagement from './pages/settlements/SettlementManagement';
 // P&L Management
 import PnLManagement from './pages/pnl/PnLManagement';
 
+// Budget Allocation Engine
+import BudgetAllocationManagement from './pages/budget-allocations/BudgetAllocationManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1153,6 +1156,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <PnLManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/budget-allocations" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <BudgetAllocationManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />
