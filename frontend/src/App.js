@@ -171,6 +171,9 @@ import PredictiveAnalytics from './pages/planning/PredictiveAnalytics';
 // Baseline Management
 import BaselineManagement from './pages/baselines/BaselineManagement';
 
+// Accrual Management
+import AccrualManagement from './pages/accruals/AccrualManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1108,6 +1111,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <BaselineManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/accruals" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <AccrualManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />

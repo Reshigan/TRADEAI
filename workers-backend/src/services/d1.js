@@ -34,7 +34,10 @@ const TABLE_MAP = {
   settings: 'settings',
   baselines: 'baselines',
   baseline_periods: 'baseline_periods',
-  volume_decomposition: 'volume_decomposition'
+  volume_decomposition: 'volume_decomposition',
+  accruals: 'accruals',
+  accrual_periods: 'accrual_periods',
+  accrual_journals: 'accrual_journals'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -208,7 +211,38 @@ const COLUMN_MAP = {
   tradeSpend: 'trade_spend',
   incrementalProfit: 'incremental_profit',
   liftPct: 'lift_pct',
-  efficiencyScore: 'efficiency_score'
+  efficiencyScore: 'efficiency_score',
+  accrualType: 'accrual_type',
+  accrualId: 'accrual_id',
+  glAccount: 'gl_account',
+  costCenter: 'cost_center',
+  rateType: 'rate_type',
+  baseAmount: 'base_amount',
+  accruedAmount: 'accrued_amount',
+  postedAmount: 'posted_amount',
+  reversedAmount: 'reversed_amount',
+  remainingAmount: 'remaining_amount',
+  lastCalculatedAt: 'last_calculated_at',
+  lastPostedAt: 'last_posted_at',
+  autoCalculate: 'auto_calculate',
+  autoPost: 'auto_post',
+  baseSales: 'base_sales',
+  accrualRate: 'accrual_rate',
+  calculatedAmount: 'calculated_amount',
+  adjustedAmount: 'adjusted_amount',
+  varianceAmount: 'variance_amount',
+  postedAt: 'posted_at',
+  postedBy: 'posted_by',
+  glJournalRef: 'gl_journal_ref',
+  accrualPeriodId: 'accrual_period_id',
+  journalType: 'journal_type',
+  journalDate: 'journal_date',
+  debitAccount: 'debit_account',
+  creditAccount: 'credit_account',
+  reversedBy: 'reversed_by',
+  reversedAt: 'reversed_at',
+  reversalJournalId: 'reversal_journal_id',
+  narration: 'narration'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -267,7 +301,10 @@ const TABLE_COLUMNS = {
   districts: ['id', 'company_id', 'name', 'region_id', 'region_name', 'code', 'status', 'data', 'created_at', 'updated_at'],
   baselines: ['id', 'company_id', 'name', 'description', 'status', 'baseline_type', 'calculation_method', 'granularity', 'customer_id', 'product_id', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'base_year', 'periods_used', 'seasonality_enabled', 'trend_enabled', 'outlier_removal_enabled', 'outlier_threshold', 'confidence_level', 'total_base_volume', 'total_base_revenue', 'avg_weekly_volume', 'avg_weekly_revenue', 'seasonality_index', 'trend_coefficient', 'r_squared', 'mape', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
   baseline_periods: ['id', 'company_id', 'baseline_id', 'period_start', 'period_end', 'period_number', 'period_label', 'base_volume', 'base_revenue', 'base_units', 'seasonality_factor', 'trend_adjustment', 'actual_volume', 'actual_revenue', 'variance_volume', 'variance_revenue', 'variance_pct', 'is_promoted', 'promotion_id', 'incremental_volume', 'incremental_revenue', 'data', 'created_at', 'updated_at'],
-  volume_decomposition: ['id', 'company_id', 'baseline_id', 'promotion_id', 'customer_id', 'product_id', 'period_start', 'period_end', 'total_volume', 'base_volume', 'incremental_volume', 'cannibalization_volume', 'pantry_loading_volume', 'halo_volume', 'pull_forward_volume', 'post_promo_dip_volume', 'total_revenue', 'base_revenue', 'incremental_revenue', 'trade_spend', 'incremental_profit', 'roi', 'lift_pct', 'efficiency_score', 'data', 'created_at', 'updated_at']
+  volume_decomposition: ['id', 'company_id', 'baseline_id', 'promotion_id', 'customer_id', 'product_id', 'period_start', 'period_end', 'total_volume', 'base_volume', 'incremental_volume', 'cannibalization_volume', 'pantry_loading_volume', 'halo_volume', 'pull_forward_volume', 'post_promo_dip_volume', 'total_revenue', 'base_revenue', 'incremental_revenue', 'trade_spend', 'incremental_profit', 'roi', 'lift_pct', 'efficiency_score', 'data', 'created_at', 'updated_at'],
+  accruals: ['id', 'company_id', 'name', 'description', 'status', 'accrual_type', 'calculation_method', 'frequency', 'customer_id', 'product_id', 'promotion_id', 'budget_id', 'trading_term_id', 'baseline_id', 'gl_account', 'cost_center', 'start_date', 'end_date', 'rate', 'rate_type', 'base_amount', 'accrued_amount', 'posted_amount', 'reversed_amount', 'settled_amount', 'remaining_amount', 'currency', 'last_calculated_at', 'last_posted_at', 'auto_calculate', 'auto_post', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  accrual_periods: ['id', 'company_id', 'accrual_id', 'period_start', 'period_end', 'period_number', 'period_label', 'base_sales', 'accrual_rate', 'calculated_amount', 'adjusted_amount', 'posted_amount', 'variance_amount', 'variance_pct', 'status', 'posted_at', 'posted_by', 'gl_journal_ref', 'data', 'created_at', 'updated_at'],
+  accrual_journals: ['id', 'company_id', 'accrual_id', 'accrual_period_id', 'journal_type', 'journal_date', 'debit_account', 'credit_account', 'amount', 'currency', 'reference', 'narration', 'status', 'posted_by', 'reversed_by', 'reversed_at', 'reversal_journal_id', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
