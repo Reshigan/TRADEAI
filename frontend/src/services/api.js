@@ -950,4 +950,51 @@ export const settlementService = {
   },
 };
 
+export const pnlService = {
+  getAll: async (params) => {
+    const response = await api.get('/pnl', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/pnl/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/pnl', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/pnl/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/pnl/${id}`);
+    return response.data;
+  },
+  generate: async (id) => {
+    const response = await api.post(`/pnl/${id}/generate`);
+    return response.data;
+  },
+  getLineItems: async (id) => {
+    const response = await api.get(`/pnl/${id}/line-items`);
+    return response.data;
+  },
+  getLiveByCustomer: async (params) => {
+    const response = await api.get('/pnl/live-by-customer', { params });
+    return response.data;
+  },
+  getLiveByPromotion: async (params) => {
+    const response = await api.get('/pnl/live-by-promotion', { params });
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/pnl/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/pnl/options');
+    return response.data;
+  },
+};
+
 export default api;

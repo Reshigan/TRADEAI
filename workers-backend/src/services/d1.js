@@ -40,7 +40,9 @@ const TABLE_MAP = {
   accrual_journals: 'accrual_journals',
   settlements: 'settlements',
   settlement_lines: 'settlement_lines',
-  settlement_payments: 'settlement_payments'
+  settlement_payments: 'settlement_payments',
+  pnl_reports: 'pnl_reports',
+  pnl_line_items: 'pnl_line_items'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -270,7 +272,26 @@ const COLUMN_MAP = {
   erpReference: 'erp_reference',
   claimId: 'claim_id',
   deductionId: 'deduction_id',
-  settlementId: 'settlement_id'
+  settlementId: 'settlement_id',
+  reportType: 'report_type',
+  periodType: 'period_type',
+  grossSales: 'gross_sales',
+  tradeSpend: 'trade_spend',
+  netSales: 'net_sales',
+  cogs: 'cogs',
+  grossProfit: 'gross_profit',
+  grossMarginPct: 'gross_margin_pct',
+  netTradeCost: 'net_trade_cost',
+  netProfit: 'net_profit',
+  netMarginPct: 'net_margin_pct',
+  budgetVariance: 'budget_variance',
+  budgetVariancePct: 'budget_variance_pct',
+  generatedAt: 'generated_at',
+  generatedBy: 'generated_by',
+  reportId: 'report_id',
+  lineType: 'line_type',
+  lineLabel: 'line_label',
+  sortOrder: 'sort_order'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -335,7 +356,9 @@ const TABLE_COLUMNS = {
   accrual_journals: ['id', 'company_id', 'accrual_id', 'accrual_period_id', 'journal_type', 'journal_date', 'debit_account', 'credit_account', 'amount', 'currency', 'reference', 'narration', 'status', 'posted_by', 'reversed_by', 'reversed_at', 'reversal_journal_id', 'data', 'created_at', 'updated_at'],
   settlements: ['id', 'company_id', 'settlement_number', 'name', 'description', 'status', 'settlement_type', 'customer_id', 'promotion_id', 'accrual_id', 'claim_id', 'deduction_id', 'budget_id', 'gl_account', 'cost_center', 'settlement_date', 'due_date', 'accrued_amount', 'claimed_amount', 'approved_amount', 'settled_amount', 'variance_amount', 'variance_pct', 'payment_method', 'payment_reference', 'payment_date', 'currency', 'notes', 'created_by', 'approved_by', 'approved_at', 'processed_by', 'processed_at', 'data', 'created_at', 'updated_at'],
   settlement_lines: ['id', 'company_id', 'settlement_id', 'line_number', 'product_id', 'product_name', 'category', 'description', 'quantity', 'unit_price', 'accrued_amount', 'claimed_amount', 'approved_amount', 'adjustment_amount', 'adjustment_reason', 'settled_amount', 'status', 'data', 'created_at', 'updated_at'],
-  settlement_payments: ['id', 'company_id', 'settlement_id', 'payment_type', 'payment_date', 'amount', 'currency', 'reference', 'bank_reference', 'erp_reference', 'status', 'notes', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at']
+  settlement_payments: ['id', 'company_id', 'settlement_id', 'payment_type', 'payment_date', 'amount', 'currency', 'reference', 'bank_reference', 'erp_reference', 'status', 'notes', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  pnl_reports: ['id', 'company_id', 'name', 'description', 'status', 'report_type', 'period_type', 'start_date', 'end_date', 'customer_id', 'promotion_id', 'product_id', 'category', 'channel', 'region', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'budget_variance_pct', 'roi', 'currency', 'generated_at', 'generated_by', 'data', 'created_at', 'updated_at'],
+  pnl_line_items: ['id', 'company_id', 'report_id', 'line_type', 'line_label', 'sort_order', 'customer_id', 'customer_name', 'promotion_id', 'promotion_name', 'product_id', 'product_name', 'period_start', 'period_end', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'roi', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
