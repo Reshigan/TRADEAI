@@ -54,7 +54,9 @@ const TABLE_MAP = {
   scenario_results: 'scenario_results',
   promotion_optimizations: 'promotion_optimizations',
   optimization_recommendations: 'optimization_recommendations',
-  optimization_constraints: 'optimization_constraints'
+  optimization_constraints: 'optimization_constraints',
+  customer_360_profiles: 'customer_360_profiles',
+  customer_360_insights: 'customer_360_insights'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -407,7 +409,50 @@ const COLUMN_MAP = {
   constraintName: 'constraint_name',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
-  isViolated: 'is_violated'
+  isViolated: 'is_violated',
+  customerName: 'customer_name',
+  customerCode: 'customer_code',
+  subChannel: 'sub_channel',
+  totalRevenue: 'total_revenue',
+  totalSpend: 'total_spend',
+  totalClaims: 'total_claims',
+  totalDeductions: 'total_deductions',
+  netRevenue: 'net_revenue',
+  grossMarginPct: 'gross_margin_pct',
+  tradeSpendPct: 'trade_spend_pct',
+  revenueGrowthPct: 'revenue_growth_pct',
+  avgOrderValue: 'avg_order_value',
+  orderFrequency: 'order_frequency',
+  lastOrderDate: 'last_order_date',
+  activePromotions: 'active_promotions',
+  completedPromotions: 'completed_promotions',
+  activeClaims: 'active_claims',
+  pendingDeductions: 'pending_deductions',
+  ltvScore: 'ltv_score',
+  churnRisk: 'churn_risk',
+  churnReason: 'churn_reason',
+  priceSensitivity: 'price_sensitivity',
+  promoResponsiveness: 'promo_responsiveness',
+  nextBestAction: 'next_best_action',
+  healthScore: 'health_score',
+  satisfactionScore: 'satisfaction_score',
+  engagementScore: 'engagement_score',
+  paymentReliability: 'payment_reliability',
+  topProducts: 'top_products',
+  topCategories: 'top_categories',
+  monthlyRevenue: 'monthly_revenue',
+  monthlySpend: 'monthly_spend',
+  insightType: 'insight_type',
+  metricName: 'metric_name',
+  metricValue: 'metric_value',
+  metricUnit: 'metric_unit',
+  benchmarkValue: 'benchmark_value',
+  variancePct: 'variance_pct',
+  trendDirection: 'trend_direction',
+  actionDate: 'action_date',
+  actionBy: 'action_by',
+  validFrom: 'valid_from',
+  validUntil: 'valid_until'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -486,7 +531,9 @@ const TABLE_COLUMNS = {
   scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
   promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
   optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
-  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  customer_360_profiles: ['id', 'company_id', 'customer_id', 'customer_name', 'customer_code', 'channel', 'sub_channel', 'tier', 'region', 'status', 'total_revenue', 'total_spend', 'total_claims', 'total_deductions', 'net_revenue', 'gross_margin_pct', 'trade_spend_pct', 'revenue_growth_pct', 'avg_order_value', 'order_frequency', 'last_order_date', 'active_promotions', 'completed_promotions', 'active_claims', 'pending_deductions', 'ltv_score', 'churn_risk', 'churn_reason', 'segment', 'price_sensitivity', 'promo_responsiveness', 'next_best_action', 'health_score', 'satisfaction_score', 'engagement_score', 'payment_reliability', 'top_products', 'top_categories', 'monthly_revenue', 'monthly_spend', 'last_calculated_at', 'notes', 'data', 'created_at', 'updated_at'],
+  customer_360_insights: ['id', 'company_id', 'customer_id', 'insight_type', 'category', 'severity', 'title', 'description', 'metric_name', 'metric_value', 'metric_unit', 'benchmark_value', 'variance_pct', 'trend_direction', 'recommendation', 'action_taken', 'action_date', 'action_by', 'valid_from', 'valid_until', 'confidence', 'source', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

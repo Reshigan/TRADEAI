@@ -1235,6 +1235,18 @@ function App() {
           } 
         />
         <Route 
+          path="/customer-360"
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <Customer360New />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
           path="/customer-360/:id"
           element={
             isAuthenticated ? (

@@ -23,6 +23,7 @@ import {
   Receipt as SettleIcon,
   CheckCircle as ApprovalsIcon,
   BarChart as InsightsIcon,
+  Person as CustomerIcon,
   Storage as DataIcon,
   Settings as SettingsIcon,
   HelpOutline as HelpIcon,
@@ -46,6 +47,7 @@ const navItems = [
   { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/settlements' },
   { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
   { key: 'pnl', label: 'P&L', icon: <InsightsIcon />, path: '/pnl' },
+  { key: 'customer360', label: 'Customer 360', icon: <CustomerIcon />, path: '/customer-360' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];
 
