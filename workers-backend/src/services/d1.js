@@ -54,7 +54,11 @@ const TABLE_MAP = {
   scenario_results: 'scenario_results',
   promotion_optimizations: 'promotion_optimizations',
   optimization_recommendations: 'optimization_recommendations',
-  optimization_constraints: 'optimization_constraints'
+  optimization_constraints: 'optimization_constraints',
+  compliance_rules: 'compliance_rules',
+  audit_trails: 'audit_trails',
+  compliance_violations: 'compliance_violations',
+  compliance_reports: 'compliance_reports'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -407,7 +411,51 @@ const COLUMN_MAP = {
   constraintName: 'constraint_name',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
-  isViolated: 'is_violated'
+  isViolated: 'is_violated',
+  ruleType: 'rule_type',
+  fieldName: 'field_name',
+  thresholdValue: 'threshold_value',
+  thresholdMin: 'threshold_min',
+  thresholdMax: 'threshold_max',
+  actionOnViolation: 'action_on_violation',
+  autoEnforce: 'auto_enforce',
+  notificationRoles: 'notification_roles',
+  escalationHours: 'escalation_hours',
+  effectiveDate: 'effective_date',
+  expiryDate: 'expiry_date',
+  violationCount: 'violation_count',
+  lastViolationAt: 'last_violation_at',
+  actionType: 'action_type',
+  oldValue: 'old_value',
+  newValue: 'new_value',
+  changeReason: 'change_reason',
+  userName: 'user_name',
+  userRole: 'user_role',
+  ipAddress: 'ip_address',
+  sessionId: 'session_id',
+  approvalId: 'approval_id',
+  complianceRuleId: 'compliance_rule_id',
+  riskScore: 'risk_score',
+  flagReason: 'flag_reason',
+  violationType: 'violation_type',
+  expectedValue: 'expected_value',
+  actualValue: 'actual_value',
+  detectedAt: 'detected_at',
+  detectedBy: 'detected_by',
+  resolutionNotes: 'resolution_notes',
+  resolutionAction: 'resolution_action',
+  financialImpact: 'financial_impact',
+  totalRules: 'total_rules',
+  activeRules: 'active_rules',
+  totalViolations: 'total_violations',
+  openViolations: 'open_violations',
+  resolvedViolations: 'resolved_violations',
+  criticalViolations: 'critical_violations',
+  totalAudits: 'total_audits',
+  flaggedAudits: 'flagged_audits',
+  avgRiskScore: 'avg_risk_score',
+  totalFinancialImpact: 'total_financial_impact',
+  complianceScore: 'compliance_score'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -486,7 +534,11 @@ const TABLE_COLUMNS = {
   scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
   promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
   optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
-  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  compliance_rules: ['id', 'company_id', 'name', 'description', 'rule_type', 'category', 'severity', 'status', 'entity_type', 'field_name', 'operator', 'threshold_value', 'threshold_min', 'threshold_max', 'action_on_violation', 'auto_enforce', 'notification_roles', 'escalation_hours', 'effective_date', 'expiry_date', 'is_active', 'violation_count', 'last_violation_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
+  audit_trails: ['id', 'company_id', 'entity_type', 'entity_id', 'entity_name', 'action', 'action_type', 'field_name', 'old_value', 'new_value', 'change_reason', 'user_id', 'user_name', 'user_role', 'ip_address', 'session_id', 'approval_id', 'compliance_rule_id', 'risk_score', 'flagged', 'flag_reason', 'reviewed', 'reviewed_by', 'reviewed_at', 'data', 'created_at'],
+  compliance_violations: ['id', 'company_id', 'rule_id', 'rule_name', 'entity_type', 'entity_id', 'entity_name', 'violation_type', 'severity', 'status', 'description', 'field_name', 'expected_value', 'actual_value', 'variance_amount', 'variance_pct', 'detected_at', 'detected_by', 'assigned_to', 'resolved_by', 'resolved_at', 'resolution_notes', 'resolution_action', 'escalated', 'escalated_to', 'escalated_at', 'risk_score', 'financial_impact', 'data', 'created_at', 'updated_at'],
+  compliance_reports: ['id', 'company_id', 'name', 'description', 'report_type', 'status', 'period_start', 'period_end', 'total_rules', 'active_rules', 'total_violations', 'open_violations', 'resolved_violations', 'critical_violations', 'total_audits', 'flagged_audits', 'avg_risk_score', 'total_financial_impact', 'compliance_score', 'generated_at', 'generated_by', 'approved_by', 'approved_at', 'notes', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
