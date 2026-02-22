@@ -1292,4 +1292,59 @@ export const tradeCalendarService = {
   },
 };
 
+export const customer360Service = {
+  getSummary: async () => {
+    const response = await api.get('/customer-360/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/customer-360/options');
+    return response.data;
+  },
+  getProfiles: async (params) => {
+    const response = await api.get('/customer-360/profiles', { params });
+    return response.data;
+  },
+  getProfileById: async (id) => {
+    const response = await api.get(`/customer-360/profiles/${id}`);
+    return response.data;
+  },
+  createProfile: async (data) => {
+    const response = await api.post('/customer-360/profiles', data);
+    return response.data;
+  },
+  updateProfile: async (id, data) => {
+    const response = await api.put(`/customer-360/profiles/${id}`, data);
+    return response.data;
+  },
+  deleteProfile: async (id) => {
+    const response = await api.delete(`/customer-360/profiles/${id}`);
+    return response.data;
+  },
+  getInsights: async (profileId, params) => {
+    const response = await api.get(`/customer-360/profiles/${profileId}/insights`, { params });
+    return response.data;
+  },
+  createInsight: async (data) => {
+    const response = await api.post('/customer-360/insights', data);
+    return response.data;
+  },
+  deleteInsight: async (id) => {
+    const response = await api.delete(`/customer-360/insights/${id}`);
+    return response.data;
+  },
+  recalculate: async (profileId) => {
+    const response = await api.post(`/customer-360/profiles/${profileId}/recalculate`);
+    return response.data;
+  },
+  getLeaderboard: async (params) => {
+    const response = await api.get('/customer-360/leaderboard', { params });
+    return response.data;
+  },
+  getAtRisk: async (params) => {
+    const response = await api.get('/customer-360/at-risk', { params });
+    return response.data;
+  },
+};
+
 export default api;
