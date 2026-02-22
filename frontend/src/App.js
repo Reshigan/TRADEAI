@@ -195,6 +195,9 @@ import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManage
 // Promotion Optimization Engine
 import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
 
+// Trade Fund Management
+import TradeFundManagement from './pages/trade-funds/TradeFundManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1228,6 +1231,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <PromotionOptimizerManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trade-funds" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeFundManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />

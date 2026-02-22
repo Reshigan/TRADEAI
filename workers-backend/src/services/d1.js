@@ -54,7 +54,10 @@ const TABLE_MAP = {
   scenario_results: 'scenario_results',
   promotion_optimizations: 'promotion_optimizations',
   optimization_recommendations: 'optimization_recommendations',
-  optimization_constraints: 'optimization_constraints'
+  optimization_constraints: 'optimization_constraints',
+  trade_funds: 'trade_funds',
+  trade_fund_transactions: 'trade_fund_transactions',
+  trade_fund_rules: 'trade_fund_rules'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -407,7 +410,42 @@ const COLUMN_MAP = {
   constraintName: 'constraint_name',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
-  isViolated: 'is_violated'
+  isViolated: 'is_violated',
+  fundId: 'fund_id',
+  fundName: 'fund_name',
+  fundCode: 'fund_code',
+  fundType: 'fund_type',
+  parentFundId: 'parent_fund_id',
+  originalAmount: 'original_amount',
+  allocatedAmount: 'allocated_amount',
+  drawnAmount: 'drawn_amount',
+  remainingAmount: 'remaining_amount',
+  committedAmount: 'committed_amount',
+  carryoverAmount: 'carryover_amount',
+  carryoverPolicy: 'carryover_policy',
+  maxCarryoverPct: 'max_carryover_pct',
+  ownerId: 'owner_id',
+  ownerName: 'owner_name',
+  effectiveDate: 'effective_date',
+  expiryDate: 'expiry_date',
+  transactionType: 'transaction_type',
+  runningBalance: 'running_balance',
+  referenceType: 'reference_type',
+  referenceId: 'reference_id',
+  referenceName: 'reference_name',
+  fromFundId: 'from_fund_id',
+  toFundId: 'to_fund_id',
+  postedBy: 'posted_by',
+  postedAt: 'posted_at',
+  reversalId: 'reversal_id',
+  promotionName: 'promotion_name',
+  ruleName: 'rule_name',
+  ruleType: 'rule_type',
+  conditionField: 'condition_field',
+  conditionOperator: 'condition_operator',
+  conditionValue: 'condition_value',
+  actionType: 'action_type',
+  actionValue: 'action_value'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -486,7 +524,10 @@ const TABLE_COLUMNS = {
   scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
   promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
   optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
-  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  trade_funds: ['id', 'company_id', 'fund_name', 'fund_code', 'fund_type', 'parent_fund_id', 'budget_id', 'fiscal_year', 'currency', 'original_amount', 'allocated_amount', 'drawn_amount', 'remaining_amount', 'committed_amount', 'carryover_amount', 'status', 'owner_id', 'owner_name', 'region', 'channel', 'customer_id', 'customer_name', 'product_category', 'effective_date', 'expiry_date', 'carryover_policy', 'max_carryover_pct', 'notes', 'data', 'created_by', 'created_at', 'updated_at'],
+  trade_fund_transactions: ['id', 'company_id', 'fund_id', 'transaction_type', 'amount', 'running_balance', 'reference_type', 'reference_id', 'reference_name', 'from_fund_id', 'to_fund_id', 'customer_id', 'customer_name', 'product_id', 'product_name', 'promotion_id', 'promotion_name', 'description', 'posted_by', 'posted_at', 'reversal_id', 'status', 'data', 'created_at', 'updated_at'],
+  trade_fund_rules: ['id', 'company_id', 'fund_id', 'rule_name', 'rule_type', 'condition_field', 'condition_operator', 'condition_value', 'action_type', 'action_value', 'priority', 'is_active', 'effective_date', 'expiry_date', 'description', 'data', 'created_by', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
