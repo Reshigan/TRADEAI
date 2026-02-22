@@ -409,7 +409,6 @@ const COLUMN_MAP = {
   budgetLimit: 'budget_limit',
   minRoiThreshold: 'min_roi_threshold',
   minLiftThreshold: 'min_lift_threshold',
-  maxDiscountPct: 'max_discount_pct',
   optimizedSpend: 'optimized_spend',
   optimizedRevenue: 'optimized_revenue',
   optimizedRoi: 'optimized_roi',
@@ -430,7 +429,6 @@ const COLUMN_MAP = {
   actionTaken: 'action_taken',
   appliedAt: 'applied_at',
   constraintName: 'constraint_name',
-  constraintType: 'constraint_type',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
   isViolated: 'is_violated'
