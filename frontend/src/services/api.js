@@ -1292,4 +1292,79 @@ export const tradeCalendarService = {
   },
 };
 
+export const complianceAuditService = {
+  getSummary: async () => {
+    const response = await api.get('/compliance/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/compliance/options');
+    return response.data;
+  },
+  getRules: async (params) => {
+    const response = await api.get('/compliance/rules', { params });
+    return response.data;
+  },
+  getRuleById: async (id) => {
+    const response = await api.get(`/compliance/rules/${id}`);
+    return response.data;
+  },
+  createRule: async (data) => {
+    const response = await api.post('/compliance/rules', data);
+    return response.data;
+  },
+  updateRule: async (id, data) => {
+    const response = await api.put(`/compliance/rules/${id}`, data);
+    return response.data;
+  },
+  deleteRule: async (id) => {
+    const response = await api.delete(`/compliance/rules/${id}`);
+    return response.data;
+  },
+  getAuditTrails: async (params) => {
+    const response = await api.get('/compliance/audit-trails', { params });
+    return response.data;
+  },
+  getAuditTrailById: async (id) => {
+    const response = await api.get(`/compliance/audit-trails/${id}`);
+    return response.data;
+  },
+  createAuditTrail: async (data) => {
+    const response = await api.post('/compliance/audit-trails', data);
+    return response.data;
+  },
+  reviewAuditTrail: async (id) => {
+    const response = await api.post(`/compliance/audit-trails/${id}/review`);
+    return response.data;
+  },
+  getViolations: async (params) => {
+    const response = await api.get('/compliance/violations', { params });
+    return response.data;
+  },
+  getViolationById: async (id) => {
+    const response = await api.get(`/compliance/violations/${id}`);
+    return response.data;
+  },
+  resolveViolation: async (id, data) => {
+    const response = await api.post(`/compliance/violations/${id}/resolve`, data);
+    return response.data;
+  },
+  escalateViolation: async (id, data) => {
+    const response = await api.post(`/compliance/violations/${id}/escalate`, data);
+    return response.data;
+  },
+  runCheck: async (data) => {
+    const response = await api.post('/compliance/check', data);
+    return response.data;
+  },
+  getReports: async (params) => {
+    const response = await api.get('/compliance/reports', { params });
+    return response.data;
+  },
+  generateReport: async (data) => {
+    const response = await api.post('/compliance/reports/generate', data);
+    return response.data;
+  },
+};
+
 export default api;

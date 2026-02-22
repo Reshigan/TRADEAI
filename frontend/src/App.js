@@ -195,6 +195,9 @@ import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManage
 // Promotion Optimization Engine
 import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
 
+// Compliance & Audit Engine
+import ComplianceAuditManagement from './pages/compliance/ComplianceAuditManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -2025,6 +2028,18 @@ function App() {
                   )
                 } 
               />
+        <Route 
+          path="/compliance" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ComplianceAuditManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
               <Route path="*" element={<NotFound />} />
             </Routes>
                 </UserSkillProvider>
