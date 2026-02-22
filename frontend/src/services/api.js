@@ -1292,4 +1292,71 @@ export const tradeCalendarService = {
   },
 };
 
+export const tradeFundService = {
+  getAll: async (params) => {
+    const response = await api.get('/trade-funds', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/trade-funds/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/trade-funds', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/trade-funds/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/trade-funds/${id}`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/trade-funds/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/trade-funds/options');
+    return response.data;
+  },
+  drawdown: async (id, data) => {
+    const response = await api.post(`/trade-funds/${id}/drawdown`, data);
+    return response.data;
+  },
+  topup: async (id, data) => {
+    const response = await api.post(`/trade-funds/${id}/topup`, data);
+    return response.data;
+  },
+  transfer: async (data) => {
+    const response = await api.post('/trade-funds/transfer', data);
+    return response.data;
+  },
+  carryover: async (id, data) => {
+    const response = await api.post(`/trade-funds/${id}/carryover`, data);
+    return response.data;
+  },
+  getTransactions: async (id, params) => {
+    const response = await api.get(`/trade-funds/${id}/transactions`, { params });
+    return response.data;
+  },
+  getRules: async (id) => {
+    const response = await api.get(`/trade-funds/${id}/rules`);
+    return response.data;
+  },
+  createRule: async (id, data) => {
+    const response = await api.post(`/trade-funds/${id}/rules`, data);
+    return response.data;
+  },
+  updateRule: async (ruleId, data) => {
+    const response = await api.put(`/trade-funds/rules/${ruleId}`, data);
+    return response.data;
+  },
+  deleteRule: async (ruleId) => {
+    const response = await api.delete(`/trade-funds/rules/${ruleId}`);
+    return response.data;
+  },
+};
+
 export default api;
