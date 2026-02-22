@@ -1056,4 +1056,67 @@ export const budgetAllocationService = {
   },
 };
 
+export const tradeCalendarService = {
+  getAll: async (params) => {
+    const response = await api.get('/trade-calendar', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/trade-calendar/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/trade-calendar', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/trade-calendar/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/trade-calendar/${id}`);
+    return response.data;
+  },
+  syncPromotion: async (id) => {
+    const response = await api.post(`/trade-calendar/${id}/sync-promotion`);
+    return response.data;
+  },
+  checkConstraints: async (data) => {
+    const response = await api.post('/trade-calendar/check-constraints', data);
+    return response.data;
+  },
+  getTimeline: async (params) => {
+    const response = await api.get('/trade-calendar/timeline', { params });
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/trade-calendar/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/trade-calendar/options');
+    return response.data;
+  },
+  getConstraints: async (params) => {
+    const response = await api.get('/trade-calendar/constraints/list', { params });
+    return response.data;
+  },
+  getConstraintById: async (id) => {
+    const response = await api.get(`/trade-calendar/constraints/${id}`);
+    return response.data;
+  },
+  createConstraint: async (data) => {
+    const response = await api.post('/trade-calendar/constraints', data);
+    return response.data;
+  },
+  updateConstraint: async (id, data) => {
+    const response = await api.put(`/trade-calendar/constraints/${id}`, data);
+    return response.data;
+  },
+  deleteConstraint: async (id) => {
+    const response = await api.delete(`/trade-calendar/constraints/${id}`);
+    return response.data;
+  },
+};
+
 export default api;
