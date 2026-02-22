@@ -44,7 +44,9 @@ const TABLE_MAP = {
   pnl_reports: 'pnl_reports',
   pnl_line_items: 'pnl_line_items',
   budget_allocations: 'budget_allocations',
-  budget_allocation_lines: 'budget_allocation_lines'
+  budget_allocation_lines: 'budget_allocation_lines',
+  trade_calendar_events: 'trade_calendar_events',
+  trade_calendar_constraints: 'trade_calendar_constraints'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -312,7 +314,25 @@ const COLUMN_MAP = {
   committedAmount: 'committed_amount',
   priorYearAmount: 'prior_year_amount',
   priorYearGrowthPct: 'prior_year_growth_pct',
-  forecastAmount: 'forecast_amount'
+  forecastAmount: 'forecast_amount',
+  eventType: 'event_type',
+  allDay: 'all_day',
+  plannedSpend: 'planned_spend',
+  actualSpend: 'actual_spend',
+  plannedVolume: 'planned_volume',
+  actualVolume: 'actual_volume',
+  plannedRevenue: 'planned_revenue',
+  actualRevenue: 'actual_revenue',
+  liftPct: 'lift_pct',
+  constraintType: 'constraint_type',
+  dayOfWeek: 'day_of_week',
+  maxConcurrentPromotions: 'max_concurrent_promotions',
+  maxSpendAmount: 'max_spend_amount',
+  minGapDays: 'min_gap_days',
+  maxDiscountPct: 'max_discount_pct',
+  minLeadTimeDays: 'min_lead_time_days',
+  requireApproval: 'require_approval',
+  violationAction: 'violation_action'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -381,7 +401,9 @@ const TABLE_COLUMNS = {
   pnl_reports: ['id', 'company_id', 'name', 'description', 'status', 'report_type', 'period_type', 'start_date', 'end_date', 'customer_id', 'promotion_id', 'product_id', 'category', 'channel', 'region', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'budget_variance_pct', 'roi', 'currency', 'generated_at', 'generated_by', 'data', 'created_at', 'updated_at'],
   pnl_line_items: ['id', 'company_id', 'report_id', 'line_type', 'line_label', 'sort_order', 'customer_id', 'customer_name', 'promotion_id', 'promotion_name', 'product_id', 'product_name', 'period_start', 'period_end', 'gross_sales', 'trade_spend', 'net_sales', 'cogs', 'gross_profit', 'gross_margin_pct', 'accruals', 'settlements', 'claims', 'deductions', 'net_trade_cost', 'net_profit', 'net_margin_pct', 'budget_amount', 'budget_variance', 'roi', 'data', 'created_at', 'updated_at'],
   budget_allocations: ['id', 'company_id', 'name', 'description', 'status', 'allocation_method', 'budget_id', 'source_amount', 'allocated_amount', 'remaining_amount', 'utilized_amount', 'utilization_pct', 'fiscal_year', 'period_type', 'start_date', 'end_date', 'dimension', 'currency', 'locked', 'locked_by', 'locked_at', 'approved_by', 'approved_at', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
-  budget_allocation_lines: ['id', 'company_id', 'allocation_id', 'line_number', 'dimension_type', 'dimension_id', 'dimension_name', 'parent_line_id', 'level', 'source_amount', 'allocated_amount', 'allocated_pct', 'utilized_amount', 'committed_amount', 'remaining_amount', 'utilization_pct', 'prior_year_amount', 'prior_year_growth_pct', 'forecast_amount', 'variance_amount', 'variance_pct', 'status', 'notes', 'data', 'created_at', 'updated_at']
+  budget_allocation_lines: ['id', 'company_id', 'allocation_id', 'line_number', 'dimension_type', 'dimension_id', 'dimension_name', 'parent_line_id', 'level', 'source_amount', 'allocated_amount', 'allocated_pct', 'utilized_amount', 'committed_amount', 'remaining_amount', 'utilization_pct', 'prior_year_amount', 'prior_year_growth_pct', 'forecast_amount', 'variance_amount', 'variance_pct', 'status', 'notes', 'data', 'created_at', 'updated_at'],
+  trade_calendar_events: ['id', 'company_id', 'name', 'description', 'event_type', 'status', 'start_date', 'end_date', 'all_day', 'recurrence', 'color', 'customer_id', 'customer_name', 'product_id', 'product_name', 'promotion_id', 'budget_id', 'channel', 'region', 'category', 'brand', 'planned_spend', 'actual_spend', 'planned_volume', 'actual_volume', 'planned_revenue', 'actual_revenue', 'roi', 'lift_pct', 'priority', 'tags', 'notes', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
+  trade_calendar_constraints: ['id', 'company_id', 'name', 'description', 'constraint_type', 'status', 'scope', 'start_date', 'end_date', 'day_of_week', 'customer_id', 'customer_name', 'product_id', 'product_name', 'channel', 'region', 'category', 'brand', 'max_concurrent_promotions', 'max_spend_amount', 'min_gap_days', 'max_discount_pct', 'min_lead_time_days', 'require_approval', 'priority', 'violation_action', 'notes', 'created_by', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

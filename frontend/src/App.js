@@ -183,6 +183,9 @@ import PnLManagement from './pages/pnl/PnLManagement';
 // Budget Allocation Engine
 import BudgetAllocationManagement from './pages/budget-allocations/BudgetAllocationManagement';
 
+// Trade Calendar & Constraint Planning
+import TradeCalendarManagement from './pages/trade-calendar/TradeCalendarManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1168,6 +1171,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <BudgetAllocationManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/trade-calendar" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <TradeCalendarManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />
