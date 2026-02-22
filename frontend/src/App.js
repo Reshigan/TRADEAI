@@ -192,6 +192,9 @@ import DemandSignalManagement from './pages/demand-signals/DemandSignalManagemen
 // Scenario Planning / What-If Simulator
 import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManagement';
 
+// Promotion Optimization Engine
+import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1213,6 +1216,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <ScenarioPlanningManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/promotion-optimizer" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <PromotionOptimizerManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />

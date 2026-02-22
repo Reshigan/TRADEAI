@@ -51,7 +51,10 @@ const TABLE_MAP = {
   demand_signal_sources: 'demand_signal_sources',
   scenarios: 'scenarios',
   scenario_variables: 'scenario_variables',
-  scenario_results: 'scenario_results'
+  scenario_results: 'scenario_results',
+  promotion_optimizations: 'promotion_optimizations',
+  optimization_recommendations: 'optimization_recommendations',
+  optimization_constraints: 'optimization_constraints'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -401,7 +404,36 @@ const COLUMN_MAP = {
   variancePct: 'variance_pct',
   confidenceLow: 'confidence_low',
   confidenceHigh: 'confidence_high',
-  confidencePct: 'confidence_pct'
+  confidencePct: 'confidence_pct',
+  optimizationType: 'optimization_type',
+  budgetLimit: 'budget_limit',
+  minRoiThreshold: 'min_roi_threshold',
+  minLiftThreshold: 'min_lift_threshold',
+  maxDiscountPct: 'max_discount_pct',
+  optimizedSpend: 'optimized_spend',
+  optimizedRevenue: 'optimized_revenue',
+  optimizedRoi: 'optimized_roi',
+  optimizedLiftPct: 'optimized_lift_pct',
+  optimizedMarginPct: 'optimized_margin_pct',
+  optimizedIncrementalRevenue: 'optimized_incremental_revenue',
+  optimizedNetProfit: 'optimized_net_profit',
+  improvementPct: 'improvement_pct',
+  modelVersion: 'model_version',
+  runCount: 'run_count',
+  lastRunAt: 'last_run_at',
+  recommendationType: 'recommendation_type',
+  recommendedValue: 'recommended_value',
+  expectedImpactRevenue: 'expected_impact_revenue',
+  expectedImpactRoi: 'expected_impact_roi',
+  expectedImpactUnits: 'expected_impact_units',
+  expectedImpactMargin: 'expected_impact_margin',
+  actionTaken: 'action_taken',
+  appliedAt: 'applied_at',
+  constraintName: 'constraint_name',
+  constraintType: 'constraint_type',
+  thresholdValue: 'threshold_value',
+  currentValue: 'current_value',
+  isViolated: 'is_violated'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -477,7 +509,10 @@ const TABLE_COLUMNS = {
   demand_signal_sources: ['id', 'company_id', 'name', 'description', 'source_type', 'provider', 'frequency', 'status', 'last_sync_at', 'next_sync_at', 'record_count', 'config', 'credentials', 'created_by', 'data', 'created_at', 'updated_at'],
   scenarios: ['id', 'company_id', 'name', 'description', 'scenario_type', 'status', 'base_promotion_id', 'base_promotion_name', 'base_budget_id', 'base_budget_name', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'projected_revenue', 'projected_units', 'projected_spend', 'projected_roi', 'projected_lift_pct', 'projected_margin_pct', 'projected_incremental_revenue', 'projected_incremental_units', 'projected_net_profit', 'confidence_score', 'risk_level', 'recommendation', 'comparison_scenario_id', 'is_favorite', 'tags', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
   scenario_variables: ['id', 'company_id', 'scenario_id', 'variable_name', 'variable_type', 'category', 'base_value', 'adjusted_value', 'change_pct', 'min_value', 'max_value', 'step_size', 'unit', 'impact_on_revenue', 'impact_on_units', 'impact_on_roi', 'sensitivity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
-  scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at']
+  scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
+  promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
+  optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
