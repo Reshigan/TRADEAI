@@ -1174,6 +1174,61 @@ export const scenarioService = {
   },
 };
 
+export const promotionOptimizerService = {
+  getAll: async (params) => {
+    const response = await api.get('/promotion-optimizer', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/promotion-optimizer/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/promotion-optimizer', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/promotion-optimizer/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/promotion-optimizer/${id}`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/promotion-optimizer/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/promotion-optimizer/options');
+    return response.data;
+  },
+  optimize: async (id) => {
+    const response = await api.post(`/promotion-optimizer/${id}/optimize`);
+    return response.data;
+  },
+  getRecommendations: async (id) => {
+    const response = await api.get(`/promotion-optimizer/${id}/recommendations`);
+    return response.data;
+  },
+  updateRecommendationAction: async (id, recId, data) => {
+    const response = await api.put(`/promotion-optimizer/${id}/recommendations/${recId}/action`, data);
+    return response.data;
+  },
+  getConstraints: async (id) => {
+    const response = await api.get(`/promotion-optimizer/${id}/constraints`);
+    return response.data;
+  },
+  addConstraint: async (id, data) => {
+    const response = await api.post(`/promotion-optimizer/${id}/constraints`, data);
+    return response.data;
+  },
+  deleteConstraint: async (id, conId) => {
+    const response = await api.delete(`/promotion-optimizer/${id}/constraints/${conId}`);
+    return response.data;
+  },
+};
+
 export const tradeCalendarService = {
   getAll: async (params) => {
     const response = await api.get('/trade-calendar', { params });
