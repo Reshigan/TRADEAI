@@ -195,6 +195,9 @@ import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManage
 // Promotion Optimization Engine
 import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
 
+// Document Management
+import DocumentManagement from './pages/documents/DocumentManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -2025,6 +2028,18 @@ function App() {
                   )
                 } 
               />
+        <Route 
+          path="/documents" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DocumentManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
               <Route path="*" element={<NotFound />} />
             </Routes>
                 </UserSkillProvider>

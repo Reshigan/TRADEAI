@@ -1292,4 +1292,71 @@ export const tradeCalendarService = {
   },
 };
 
+export const documentService = {
+  getSummary: async () => {
+    const response = await api.get('/documents/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/documents/options');
+    return response.data;
+  },
+  getDocuments: async (params) => {
+    const response = await api.get('/documents/list', { params });
+    return response.data;
+  },
+  getDocumentById: async (id) => {
+    const response = await api.get(`/documents/${id}`);
+    return response.data;
+  },
+  createDocument: async (data) => {
+    const response = await api.post('/documents', data);
+    return response.data;
+  },
+  updateDocument: async (id, data) => {
+    const response = await api.put(`/documents/${id}`, data);
+    return response.data;
+  },
+  deleteDocument: async (id) => {
+    const response = await api.delete(`/documents/${id}`);
+    return response.data;
+  },
+  getDocumentsByEntity: async (entityType, entityId) => {
+    const response = await api.get(`/documents/entity/${entityType}/${entityId}`);
+    return response.data;
+  },
+  getFolders: async (params) => {
+    const response = await api.get('/documents/folders/list', { params });
+    return response.data;
+  },
+  createFolder: async (data) => {
+    const response = await api.post('/documents/folders', data);
+    return response.data;
+  },
+  updateFolder: async (id, data) => {
+    const response = await api.put(`/documents/folders/${id}`, data);
+    return response.data;
+  },
+  deleteFolder: async (id) => {
+    const response = await api.delete(`/documents/folders/${id}`);
+    return response.data;
+  },
+  getComments: async (documentId) => {
+    const response = await api.get(`/documents/${documentId}/comments`);
+    return response.data;
+  },
+  addComment: async (documentId, data) => {
+    const response = await api.post(`/documents/${documentId}/comments`, data);
+    return response.data;
+  },
+  resolveComment: async (commentId) => {
+    const response = await api.post(`/documents/comments/${commentId}/resolve`);
+    return response.data;
+  },
+  deleteComment: async (commentId) => {
+    const response = await api.delete(`/documents/comments/${commentId}`);
+    return response.data;
+  },
+};
+
 export default api;
