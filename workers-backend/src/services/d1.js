@@ -54,7 +54,10 @@ const TABLE_MAP = {
   scenario_results: 'scenario_results',
   promotion_optimizations: 'promotion_optimizations',
   optimization_recommendations: 'optimization_recommendations',
-  optimization_constraints: 'optimization_constraints'
+  optimization_constraints: 'optimization_constraints',
+  deduction_resolution_rules: 'deduction_resolution_rules',
+  deduction_resolution_runs: 'deduction_resolution_runs',
+  deduction_resolution_matches: 'deduction_resolution_matches'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -407,7 +410,46 @@ const COLUMN_MAP = {
   constraintName: 'constraint_name',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
-  isViolated: 'is_violated'
+  isViolated: 'is_violated',
+  matchField: 'match_field',
+  matchOperator: 'match_operator',
+  matchValue: 'match_value',
+  matchTolerancePct: 'match_tolerance_pct',
+  minConfidence: 'min_confidence',
+  autoApproveThreshold: 'auto_approve_threshold',
+  maxAmount: 'max_amount',
+  deductionTypes: 'deduction_types',
+  customerScope: 'customer_scope',
+  actionOnMatch: 'action_on_match',
+  lastMatchedAt: 'last_matched_at',
+  matchCount: 'match_count',
+  runNumber: 'run_number',
+  runType: 'run_type',
+  triggeredBy: 'triggered_by',
+  startedAt: 'started_at',
+  completedAt: 'completed_at',
+  totalDeductions: 'total_deductions',
+  matchedCount: 'matched_count',
+  autoResolvedCount: 'auto_resolved_count',
+  needsReviewCount: 'needs_review_count',
+  noMatchCount: 'no_match_count',
+  totalAmount: 'total_amount',
+  resolvedAmount: 'resolved_amount',
+  avgConfidence: 'avg_confidence',
+  rulesApplied: 'rules_applied',
+  processingTimeMs: 'processing_time_ms',
+  errorMessage: 'error_message',
+  runId: 'run_id',
+  deductionNumber: 'deduction_number',
+  matchedEntityType: 'matched_entity_type',
+  matchedEntityId: 'matched_entity_id',
+  matchedEntityName: 'matched_entity_name',
+  confidenceScore: 'confidence_score',
+  matchReasons: 'match_reasons',
+  ruleId: 'rule_id',
+  ruleName: 'rule_name',
+  resolutionType: 'resolution_type',
+  autoApproved: 'auto_approved'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -486,7 +528,10 @@ const TABLE_COLUMNS = {
   scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
   promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
   optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
-  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  deduction_resolution_rules: ['id', 'company_id', 'name', 'description', 'rule_type', 'status', 'priority', 'match_field', 'match_operator', 'match_value', 'match_tolerance_pct', 'min_confidence', 'auto_approve_threshold', 'max_amount', 'deduction_types', 'customer_scope', 'action_on_match', 'gl_account', 'cost_center', 'effective_date', 'expiry_date', 'is_active', 'match_count', 'last_matched_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
+  deduction_resolution_runs: ['id', 'company_id', 'run_number', 'status', 'run_type', 'triggered_by', 'started_at', 'completed_at', 'total_deductions', 'matched_count', 'auto_resolved_count', 'needs_review_count', 'no_match_count', 'total_amount', 'matched_amount', 'resolved_amount', 'avg_confidence', 'rules_applied', 'processing_time_ms', 'error_message', 'notes', 'data', 'created_at', 'updated_at'],
+  deduction_resolution_matches: ['id', 'company_id', 'run_id', 'deduction_id', 'deduction_number', 'deduction_amount', 'matched_entity_type', 'matched_entity_id', 'matched_entity_name', 'matched_amount', 'confidence_score', 'match_reasons', 'rule_id', 'rule_name', 'status', 'reviewed_by', 'reviewed_at', 'review_notes', 'resolution_type', 'gl_account', 'cost_center', 'auto_approved', 'customer_id', 'customer_name', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
