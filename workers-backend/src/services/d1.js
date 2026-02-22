@@ -46,7 +46,9 @@ const TABLE_MAP = {
   budget_allocations: 'budget_allocations',
   budget_allocation_lines: 'budget_allocation_lines',
   trade_calendar_events: 'trade_calendar_events',
-  trade_calendar_constraints: 'trade_calendar_constraints'
+  trade_calendar_constraints: 'trade_calendar_constraints',
+  demand_signals: 'demand_signals',
+  demand_signal_sources: 'demand_signal_sources'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -332,7 +334,33 @@ const COLUMN_MAP = {
   maxDiscountPct: 'max_discount_pct',
   minLeadTimeDays: 'min_lead_time_days',
   requireApproval: 'require_approval',
-  violationAction: 'violation_action'
+  violationAction: 'violation_action',
+  signalType: 'signal_type',
+  signalDate: 'signal_date',
+  periodStart: 'period_start',
+  periodEnd: 'period_end',
+  sourceType: 'source_type',
+  unitsSold: 'units_sold',
+  avgPrice: 'avg_price',
+  baselineUnits: 'baseline_units',
+  baselineRevenue: 'baseline_revenue',
+  incrementalUnits: 'incremental_units',
+  incrementalRevenue: 'incremental_revenue',
+  promoFlag: 'promo_flag',
+  inventoryLevel: 'inventory_level',
+  outOfStockFlag: 'out_of_stock_flag',
+  distributionPct: 'distribution_pct',
+  priceIndex: 'price_index',
+  competitorPrice: 'competitor_price',
+  marketSharePct: 'market_share_pct',
+  weatherCondition: 'weather_condition',
+  sentimentScore: 'sentiment_score',
+  trendDirection: 'trend_direction',
+  anomalyFlag: 'anomaly_flag',
+  anomalyType: 'anomaly_type',
+  lastSyncAt: 'last_sync_at',
+  nextSyncAt: 'next_sync_at',
+  recordCount: 'record_count'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -403,7 +431,9 @@ const TABLE_COLUMNS = {
   budget_allocations: ['id', 'company_id', 'name', 'description', 'status', 'allocation_method', 'budget_id', 'source_amount', 'allocated_amount', 'remaining_amount', 'utilized_amount', 'utilization_pct', 'fiscal_year', 'period_type', 'start_date', 'end_date', 'dimension', 'currency', 'locked', 'locked_by', 'locked_at', 'approved_by', 'approved_at', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
   budget_allocation_lines: ['id', 'company_id', 'allocation_id', 'line_number', 'dimension_type', 'dimension_id', 'dimension_name', 'parent_line_id', 'level', 'source_amount', 'allocated_amount', 'allocated_pct', 'utilized_amount', 'committed_amount', 'remaining_amount', 'utilization_pct', 'prior_year_amount', 'prior_year_growth_pct', 'forecast_amount', 'variance_amount', 'variance_pct', 'status', 'notes', 'data', 'created_at', 'updated_at'],
   trade_calendar_events: ['id', 'company_id', 'name', 'description', 'event_type', 'status', 'start_date', 'end_date', 'all_day', 'recurrence', 'color', 'customer_id', 'customer_name', 'product_id', 'product_name', 'promotion_id', 'budget_id', 'channel', 'region', 'category', 'brand', 'planned_spend', 'actual_spend', 'planned_volume', 'actual_volume', 'planned_revenue', 'actual_revenue', 'roi', 'lift_pct', 'priority', 'tags', 'notes', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
-  trade_calendar_constraints: ['id', 'company_id', 'name', 'description', 'constraint_type', 'status', 'scope', 'start_date', 'end_date', 'day_of_week', 'customer_id', 'customer_name', 'product_id', 'product_name', 'channel', 'region', 'category', 'brand', 'max_concurrent_promotions', 'max_spend_amount', 'min_gap_days', 'max_discount_pct', 'min_lead_time_days', 'require_approval', 'priority', 'violation_action', 'notes', 'created_by', 'data', 'created_at', 'updated_at']
+  trade_calendar_constraints: ['id', 'company_id', 'name', 'description', 'constraint_type', 'status', 'scope', 'start_date', 'end_date', 'day_of_week', 'customer_id', 'customer_name', 'product_id', 'product_name', 'channel', 'region', 'category', 'brand', 'max_concurrent_promotions', 'max_spend_amount', 'min_gap_days', 'max_discount_pct', 'min_lead_time_days', 'require_approval', 'priority', 'violation_action', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
+  demand_signals: ['id', 'company_id', 'source_id', 'source_name', 'signal_type', 'signal_date', 'period_start', 'period_end', 'granularity', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'store_id', 'store_name', 'units_sold', 'revenue', 'volume', 'avg_price', 'baseline_units', 'baseline_revenue', 'incremental_units', 'incremental_revenue', 'lift_pct', 'promo_flag', 'promotion_id', 'inventory_level', 'out_of_stock_flag', 'distribution_pct', 'price_index', 'competitor_price', 'market_share_pct', 'weather_condition', 'temperature', 'sentiment_score', 'trend_direction', 'confidence', 'anomaly_flag', 'anomaly_type', 'notes', 'data', 'created_at', 'updated_at'],
+  demand_signal_sources: ['id', 'company_id', 'name', 'description', 'source_type', 'provider', 'frequency', 'status', 'last_sync_at', 'next_sync_at', 'record_count', 'config', 'credentials', 'created_by', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records
