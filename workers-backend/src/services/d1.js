@@ -54,7 +54,10 @@ const TABLE_MAP = {
   scenario_results: 'scenario_results',
   promotion_optimizations: 'promotion_optimizations',
   optimization_recommendations: 'optimization_recommendations',
-  optimization_constraints: 'optimization_constraints'
+  optimization_constraints: 'optimization_constraints',
+  documents: 'documents',
+  document_folders: 'document_folders',
+  document_comments: 'document_comments'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -407,7 +410,27 @@ const COLUMN_MAP = {
   constraintName: 'constraint_name',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
-  isViolated: 'is_violated'
+  isViolated: 'is_violated',
+  documentType: 'document_type',
+  fileName: 'file_name',
+  fileType: 'file_type',
+  fileSize: 'file_size',
+  fileUrl: 'file_url',
+  storageKey: 'storage_key',
+  isLatest: 'is_latest',
+  parentId: 'parent_id',
+  accessLevel: 'access_level',
+  sharedWith: 'shared_with',
+  downloadCount: 'download_count',
+  lastAccessedAt: 'last_accessed_at',
+  uploadedBy: 'uploaded_by',
+  expiresAt: 'expires_at',
+  documentId: 'document_id',
+  userName: 'user_name',
+  isResolved: 'is_resolved',
+  resolvedBy: 'resolved_by',
+  resolvedAt: 'resolved_at',
+  documentCount: 'document_count'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -486,7 +509,10 @@ const TABLE_COLUMNS = {
   scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
   promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
   optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
-  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  documents: ['id', 'company_id', 'name', 'description', 'document_type', 'category', 'status', 'file_name', 'file_type', 'file_size', 'file_url', 'storage_key', 'entity_type', 'entity_id', 'entity_name', 'version', 'is_latest', 'parent_id', 'tags', 'access_level', 'shared_with', 'download_count', 'last_accessed_at', 'uploaded_by', 'approved_by', 'approved_at', 'expires_at', 'notes', 'data', 'created_at', 'updated_at'],
+  document_folders: ['id', 'company_id', 'name', 'description', 'parent_id', 'path', 'level', 'color', 'icon', 'access_level', 'shared_with', 'document_count', 'created_by', 'data', 'created_at', 'updated_at'],
+  document_comments: ['id', 'company_id', 'document_id', 'user_id', 'user_name', 'content', 'parent_id', 'is_resolved', 'resolved_by', 'resolved_at', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

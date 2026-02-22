@@ -27,6 +27,7 @@ import {
   Settings as SettingsIcon,
   HelpOutline as HelpIcon,
   Logout as LogoutIcon,
+  Description as DocumentsIcon,
 } from '@mui/icons-material';
 
 const SIDEBAR_WIDTH = 72;
@@ -46,6 +47,7 @@ const navItems = [
   { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/settlements' },
   { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
   { key: 'pnl', label: 'P&L', icon: <InsightsIcon />, path: '/pnl' },
+  { key: 'documents', label: 'Documents', icon: <DocumentsIcon />, path: '/documents' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];
 
