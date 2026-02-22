@@ -57,6 +57,7 @@ import { pnlRoutes } from './routes/pnl.js';
 import { budgetAllocationRoutes } from './routes/budgetAllocations.js';
 import { tradeCalendarRoutes } from './routes/tradeCalendar.js';
 import { demandSignalRoutes } from './routes/demandSignals.js';
+import { scenarioRoutes } from './routes/scenarios.js';
 
 const app = new Hono();
 
@@ -156,6 +157,7 @@ app.route('/api/pnl', pnlRoutes);
 app.route('/api/budget-allocations', budgetAllocationRoutes);
 app.route('/api/trade-calendar', tradeCalendarRoutes);
 app.route('/api/demand-signals', demandSignalRoutes);
+app.route('/api/scenarios', scenarioRoutes);
 
 // 404 handler
 app.notFound((c) => {

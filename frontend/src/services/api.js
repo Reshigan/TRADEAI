@@ -1115,6 +1115,65 @@ export const demandSignalService = {
   },
 };
 
+export const scenarioService = {
+  getAll: async (params) => {
+    const response = await api.get('/scenarios', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/scenarios/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/scenarios', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/scenarios/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/scenarios/${id}`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/scenarios/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/scenarios/options');
+    return response.data;
+  },
+  compare: async (scenarioA, scenarioB) => {
+    const response = await api.get('/scenarios/compare', { params: { scenario_a: scenarioA, scenario_b: scenarioB } });
+    return response.data;
+  },
+  simulate: async (id) => {
+    const response = await api.post(`/scenarios/${id}/simulate`);
+    return response.data;
+  },
+  getVariables: async (id) => {
+    const response = await api.get(`/scenarios/${id}/variables`);
+    return response.data;
+  },
+  addVariable: async (id, data) => {
+    const response = await api.post(`/scenarios/${id}/variables`, data);
+    return response.data;
+  },
+  updateVariable: async (id, varId, data) => {
+    const response = await api.put(`/scenarios/${id}/variables/${varId}`, data);
+    return response.data;
+  },
+  deleteVariable: async (id, varId) => {
+    const response = await api.delete(`/scenarios/${id}/variables/${varId}`);
+    return response.data;
+  },
+  getResults: async (id) => {
+    const response = await api.get(`/scenarios/${id}/results`);
+    return response.data;
+  },
+};
+
 export const tradeCalendarService = {
   getAll: async (params) => {
     const response = await api.get('/trade-calendar', { params });

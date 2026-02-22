@@ -48,7 +48,10 @@ const TABLE_MAP = {
   trade_calendar_events: 'trade_calendar_events',
   trade_calendar_constraints: 'trade_calendar_constraints',
   demand_signals: 'demand_signals',
-  demand_signal_sources: 'demand_signal_sources'
+  demand_signal_sources: 'demand_signal_sources',
+  scenarios: 'scenarios',
+  scenario_variables: 'scenario_variables',
+  scenario_results: 'scenario_results'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -360,7 +363,45 @@ const COLUMN_MAP = {
   anomalyType: 'anomaly_type',
   lastSyncAt: 'last_sync_at',
   nextSyncAt: 'next_sync_at',
-  recordCount: 'record_count'
+  recordCount: 'record_count',
+  scenarioType: 'scenario_type',
+  basePromotionId: 'base_promotion_id',
+  basePromotionName: 'base_promotion_name',
+  baseBudgetId: 'base_budget_id',
+  baseBudgetName: 'base_budget_name',
+  baselineMarginPct: 'baseline_margin_pct',
+  projectedRevenue: 'projected_revenue',
+  projectedUnits: 'projected_units',
+  projectedSpend: 'projected_spend',
+  projectedRoi: 'projected_roi',
+  projectedLiftPct: 'projected_lift_pct',
+  projectedMarginPct: 'projected_margin_pct',
+  projectedIncrementalRevenue: 'projected_incremental_revenue',
+  projectedIncrementalUnits: 'projected_incremental_units',
+  projectedNetProfit: 'projected_net_profit',
+  confidenceScore: 'confidence_score',
+  riskLevel: 'risk_level',
+  comparisonScenarioId: 'comparison_scenario_id',
+  isFavorite: 'is_favorite',
+  variableName: 'variable_name',
+  variableType: 'variable_type',
+  baseValue: 'base_value',
+  adjustedValue: 'adjusted_value',
+  changePct: 'change_pct',
+  minValue: 'min_value',
+  maxValue: 'max_value',
+  stepSize: 'step_size',
+  impactOnRevenue: 'impact_on_revenue',
+  impactOnUnits: 'impact_on_units',
+  impactOnRoi: 'impact_on_roi',
+  resultType: 'result_type',
+  metricName: 'metric_name',
+  metricValue: 'metric_value',
+  baselineValue: 'baseline_value',
+  variancePct: 'variance_pct',
+  confidenceLow: 'confidence_low',
+  confidenceHigh: 'confidence_high',
+  confidencePct: 'confidence_pct'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -433,7 +474,10 @@ const TABLE_COLUMNS = {
   trade_calendar_events: ['id', 'company_id', 'name', 'description', 'event_type', 'status', 'start_date', 'end_date', 'all_day', 'recurrence', 'color', 'customer_id', 'customer_name', 'product_id', 'product_name', 'promotion_id', 'budget_id', 'channel', 'region', 'category', 'brand', 'planned_spend', 'actual_spend', 'planned_volume', 'actual_volume', 'planned_revenue', 'actual_revenue', 'roi', 'lift_pct', 'priority', 'tags', 'notes', 'created_by', 'approved_by', 'approved_at', 'data', 'created_at', 'updated_at'],
   trade_calendar_constraints: ['id', 'company_id', 'name', 'description', 'constraint_type', 'status', 'scope', 'start_date', 'end_date', 'day_of_week', 'customer_id', 'customer_name', 'product_id', 'product_name', 'channel', 'region', 'category', 'brand', 'max_concurrent_promotions', 'max_spend_amount', 'min_gap_days', 'max_discount_pct', 'min_lead_time_days', 'require_approval', 'priority', 'violation_action', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
   demand_signals: ['id', 'company_id', 'source_id', 'source_name', 'signal_type', 'signal_date', 'period_start', 'period_end', 'granularity', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'store_id', 'store_name', 'units_sold', 'revenue', 'volume', 'avg_price', 'baseline_units', 'baseline_revenue', 'incremental_units', 'incremental_revenue', 'lift_pct', 'promo_flag', 'promotion_id', 'inventory_level', 'out_of_stock_flag', 'distribution_pct', 'price_index', 'competitor_price', 'market_share_pct', 'weather_condition', 'temperature', 'sentiment_score', 'trend_direction', 'confidence', 'anomaly_flag', 'anomaly_type', 'notes', 'data', 'created_at', 'updated_at'],
-  demand_signal_sources: ['id', 'company_id', 'name', 'description', 'source_type', 'provider', 'frequency', 'status', 'last_sync_at', 'next_sync_at', 'record_count', 'config', 'credentials', 'created_by', 'data', 'created_at', 'updated_at']
+  demand_signal_sources: ['id', 'company_id', 'name', 'description', 'source_type', 'provider', 'frequency', 'status', 'last_sync_at', 'next_sync_at', 'record_count', 'config', 'credentials', 'created_by', 'data', 'created_at', 'updated_at'],
+  scenarios: ['id', 'company_id', 'name', 'description', 'scenario_type', 'status', 'base_promotion_id', 'base_promotion_name', 'base_budget_id', 'base_budget_name', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'projected_revenue', 'projected_units', 'projected_spend', 'projected_roi', 'projected_lift_pct', 'projected_margin_pct', 'projected_incremental_revenue', 'projected_incremental_units', 'projected_net_profit', 'confidence_score', 'risk_level', 'recommendation', 'comparison_scenario_id', 'is_favorite', 'tags', 'notes', 'created_by', 'data', 'created_at', 'updated_at'],
+  scenario_variables: ['id', 'company_id', 'scenario_id', 'variable_name', 'variable_type', 'category', 'base_value', 'adjusted_value', 'change_pct', 'min_value', 'max_value', 'step_size', 'unit', 'impact_on_revenue', 'impact_on_units', 'impact_on_roi', 'sensitivity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

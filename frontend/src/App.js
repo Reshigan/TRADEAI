@@ -189,6 +189,9 @@ import TradeCalendarManagement from './pages/trade-calendar/TradeCalendarManagem
 // Demand Signal Repository
 import DemandSignalManagement from './pages/demand-signals/DemandSignalManagement';
 
+// Scenario Planning / What-If Simulator
+import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1198,6 +1201,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <DemandSignalManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/scenarios" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <ScenarioPlanningManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />
