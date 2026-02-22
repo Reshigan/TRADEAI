@@ -1292,4 +1292,67 @@ export const tradeCalendarService = {
   },
 };
 
+export const predictiveAnalyticsService = {
+  getSummary: async () => {
+    const response = await api.get('/predictive-analytics/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/predictive-analytics/options');
+    return response.data;
+  },
+  getModels: async (params) => {
+    const response = await api.get('/predictive-analytics/models', { params });
+    return response.data;
+  },
+  getModelById: async (id) => {
+    const response = await api.get(`/predictive-analytics/models/${id}`);
+    return response.data;
+  },
+  createModel: async (data) => {
+    const response = await api.post('/predictive-analytics/models', data);
+    return response.data;
+  },
+  updateModel: async (id, data) => {
+    const response = await api.put(`/predictive-analytics/models/${id}`, data);
+    return response.data;
+  },
+  deleteModel: async (id) => {
+    const response = await api.delete(`/predictive-analytics/models/${id}`);
+    return response.data;
+  },
+  trainModel: async (id) => {
+    const response = await api.post(`/predictive-analytics/models/${id}/train`);
+    return response.data;
+  },
+  generatePredictions: async (id, data) => {
+    const response = await api.post(`/predictive-analytics/models/${id}/predict`, data);
+    return response.data;
+  },
+  getPredictions: async (params) => {
+    const response = await api.get('/predictive-analytics/predictions', { params });
+    return response.data;
+  },
+  getPredictionById: async (id) => {
+    const response = await api.get(`/predictive-analytics/predictions/${id}`);
+    return response.data;
+  },
+  updatePrediction: async (id, data) => {
+    const response = await api.put(`/predictive-analytics/predictions/${id}`, data);
+    return response.data;
+  },
+  deletePrediction: async (id) => {
+    const response = await api.delete(`/predictive-analytics/predictions/${id}`);
+    return response.data;
+  },
+  getAccuracyReport: async () => {
+    const response = await api.get('/predictive-analytics/accuracy-report');
+    return response.data;
+  },
+  getAnomalies: async (params) => {
+    const response = await api.get('/predictive-analytics/anomalies', { params });
+    return response.data;
+  },
+};
+
 export default api;

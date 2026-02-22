@@ -46,6 +46,7 @@ const navItems = [
   { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/settlements' },
   { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
   { key: 'pnl', label: 'P&L', icon: <InsightsIcon />, path: '/pnl' },
+  { key: 'predict', label: 'Predict', icon: <InsightsIcon />, path: '/predictive-analytics' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];
 

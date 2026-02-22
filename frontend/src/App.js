@@ -165,8 +165,8 @@ import PromotionEffectiveness from './pages/performance-analytics/PromotionEffec
 import BudgetVariance from './pages/performance-analytics/BudgetVariance';
 import CustomerSegmentation from './pages/performance-analytics/CustomerSegmentation';
 
-// Predictive Analytics
-import PredictiveAnalytics from './pages/planning/PredictiveAnalytics';
+// Predictive Analytics Engine (Feature 16)
+import PredictiveAnalyticsManagement from './pages/predictive-analytics/PredictiveAnalyticsManagement';
 
 // Baseline Management
 import BaselineManagement from './pages/baselines/BaselineManagement';
@@ -1432,7 +1432,7 @@ function App() {
                   element={
                     isAuthenticated ? (
                       <Layout user={user} onLogout={handleLogout}>
-                        <PredictiveAnalytics />
+                        <PredictiveAnalyticsManagement />
                       </Layout>
                     ) : (
                       <Navigate to="/" replace />
