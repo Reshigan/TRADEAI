@@ -195,6 +195,9 @@ import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManage
 // Promotion Optimization Engine
 import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
 
+// Deduction Auto-Resolution
+import DeductionResolutionManagement from './pages/deduction-resolution/DeductionResolutionManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1228,6 +1231,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <PromotionOptimizerManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/deduction-resolution" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DeductionResolutionManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />

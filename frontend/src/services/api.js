@@ -1292,4 +1292,59 @@ export const tradeCalendarService = {
   },
 };
 
+export const deductionResolutionService = {
+  getSummary: async () => {
+    const response = await api.get('/deduction-resolution/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/deduction-resolution/options');
+    return response.data;
+  },
+  getRules: async (params) => {
+    const response = await api.get('/deduction-resolution/rules', { params });
+    return response.data;
+  },
+  getRuleById: async (id) => {
+    const response = await api.get(`/deduction-resolution/rules/${id}`);
+    return response.data;
+  },
+  createRule: async (data) => {
+    const response = await api.post('/deduction-resolution/rules', data);
+    return response.data;
+  },
+  updateRule: async (id, data) => {
+    const response = await api.put(`/deduction-resolution/rules/${id}`, data);
+    return response.data;
+  },
+  deleteRule: async (id) => {
+    const response = await api.delete(`/deduction-resolution/rules/${id}`);
+    return response.data;
+  },
+  getRuns: async (params) => {
+    const response = await api.get('/deduction-resolution/runs', { params });
+    return response.data;
+  },
+  getRunById: async (id) => {
+    const response = await api.get(`/deduction-resolution/runs/${id}`);
+    return response.data;
+  },
+  resolve: async (data) => {
+    const response = await api.post('/deduction-resolution/resolve', data);
+    return response.data;
+  },
+  getMatches: async (params) => {
+    const response = await api.get('/deduction-resolution/matches', { params });
+    return response.data;
+  },
+  approveMatch: async (id) => {
+    const response = await api.post(`/deduction-resolution/matches/${id}/approve`);
+    return response.data;
+  },
+  rejectMatch: async (id, data) => {
+    const response = await api.post(`/deduction-resolution/matches/${id}/reject`, data);
+    return response.data;
+  },
+};
+
 export default api;
