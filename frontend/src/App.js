@@ -195,6 +195,9 @@ import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManage
 // Promotion Optimization Engine
 import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
 
+// Workflow Automation Engine
+import WorkflowAutomationManagement from './pages/workflows/WorkflowAutomationManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -2025,6 +2028,18 @@ function App() {
                   )
                 } 
               />
+        <Route 
+          path="/workflows" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <WorkflowAutomationManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
               <Route path="*" element={<NotFound />} />
             </Routes>
                 </UserSkillProvider>

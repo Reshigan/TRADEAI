@@ -1292,4 +1292,75 @@ export const tradeCalendarService = {
   },
 };
 
+export const workflowAutomationService = {
+  getSummary: async () => {
+    const response = await api.get('/workflows/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/workflows/options');
+    return response.data;
+  },
+  getTemplates: async (params) => {
+    const response = await api.get('/workflows/templates', { params });
+    return response.data;
+  },
+  getTemplateById: async (id) => {
+    const response = await api.get(`/workflows/templates/${id}`);
+    return response.data;
+  },
+  createTemplate: async (data) => {
+    const response = await api.post('/workflows/templates', data);
+    return response.data;
+  },
+  updateTemplate: async (id, data) => {
+    const response = await api.put(`/workflows/templates/${id}`, data);
+    return response.data;
+  },
+  deleteTemplate: async (id) => {
+    const response = await api.delete(`/workflows/templates/${id}`);
+    return response.data;
+  },
+  getInstances: async (params) => {
+    const response = await api.get('/workflows/instances', { params });
+    return response.data;
+  },
+  getInstanceById: async (id) => {
+    const response = await api.get(`/workflows/instances/${id}`);
+    return response.data;
+  },
+  triggerWorkflow: async (data) => {
+    const response = await api.post('/workflows/trigger', data);
+    return response.data;
+  },
+  approveStep: async (id, data) => {
+    const response = await api.post(`/workflows/steps/${id}/approve`, data);
+    return response.data;
+  },
+  rejectStep: async (id, data) => {
+    const response = await api.post(`/workflows/steps/${id}/reject`, data);
+    return response.data;
+  },
+  cancelInstance: async (id, data) => {
+    const response = await api.post(`/workflows/instances/${id}/cancel`, data);
+    return response.data;
+  },
+  getRules: async (params) => {
+    const response = await api.get('/workflows/rules', { params });
+    return response.data;
+  },
+  createRule: async (data) => {
+    const response = await api.post('/workflows/rules', data);
+    return response.data;
+  },
+  updateRule: async (id, data) => {
+    const response = await api.put(`/workflows/rules/${id}`, data);
+    return response.data;
+  },
+  deleteRule: async (id) => {
+    const response = await api.delete(`/workflows/rules/${id}`);
+    return response.data;
+  },
+};
+
 export default api;

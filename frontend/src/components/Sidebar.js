@@ -24,6 +24,7 @@ import {
   CheckCircle as ApprovalsIcon,
   BarChart as InsightsIcon,
   Storage as DataIcon,
+  AccountTree as WorkflowsIcon,
   Settings as SettingsIcon,
   HelpOutline as HelpIcon,
   Logout as LogoutIcon,
@@ -46,6 +47,7 @@ const navItems = [
   { key: 'settle', label: 'Settle', icon: <SettleIcon />, path: '/settlements' },
   { key: 'approvals', label: 'Approve', icon: <ApprovalsIcon />, path: '/approvals' },
   { key: 'pnl', label: 'P&L', icon: <InsightsIcon />, path: '/pnl' },
+  { key: 'workflows', label: 'Workflows', icon: <WorkflowsIcon />, path: '/workflows' },
   { key: 'data', label: 'Master Data', icon: <DataIcon />, path: '/customers' },
 ];
 

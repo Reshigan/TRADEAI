@@ -54,7 +54,11 @@ const TABLE_MAP = {
   scenario_results: 'scenario_results',
   promotion_optimizations: 'promotion_optimizations',
   optimization_recommendations: 'optimization_recommendations',
-  optimization_constraints: 'optimization_constraints'
+  optimization_constraints: 'optimization_constraints',
+  workflow_templates: 'workflow_templates',
+  workflow_instances: 'workflow_instances',
+  workflow_steps: 'workflow_steps',
+  automation_rules: 'automation_rules'
 };
 
 // Column mapping for common fields (MongoDB field -> D1 column)
@@ -407,7 +411,61 @@ const COLUMN_MAP = {
   constraintName: 'constraint_name',
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
-  isViolated: 'is_violated'
+  isViolated: 'is_violated',
+  workflowType: 'workflow_type',
+  triggerEntity: 'trigger_entity',
+  triggerEvent: 'trigger_event',
+  triggerConditions: 'trigger_conditions',
+  stepsJson: 'steps_json',
+  escalationEnabled: 'escalation_enabled',
+  escalationAfterHours: 'escalation_after_hours',
+  notificationEnabled: 'notification_enabled',
+  autoApproveBelow: 'auto_approve_below',
+  requireAllApprovers: 'require_all_approvers',
+  maxRetries: 'max_retries',
+  usageCount: 'usage_count',
+  lastTriggeredAt: 'last_triggered_at',
+  templateId: 'template_id',
+  templateName: 'template_name',
+  entityAmount: 'entity_amount',
+  currentStep: 'current_step',
+  totalSteps: 'total_steps',
+  initiatedBy: 'initiated_by',
+  initiatedAt: 'initiated_at',
+  completedAt: 'completed_at',
+  completedBy: 'completed_by',
+  cancelledAt: 'cancelled_at',
+  cancelledBy: 'cancelled_by',
+  cancellationReason: 'cancellation_reason',
+  slaDeadline: 'sla_deadline',
+  slaBreached: 'sla_breached',
+  outcomeNotes: 'outcome_notes',
+  processingTimeMs: 'processing_time_ms',
+  instanceId: 'instance_id',
+  stepNumber: 'step_number',
+  stepType: 'step_type',
+  stepName: 'step_name',
+  assignedRole: 'assigned_role',
+  assignedAt: 'assigned_at',
+  actionBy: 'action_by',
+  actionAt: 'action_at',
+  actionNotes: 'action_notes',
+  conditionMet: 'condition_met',
+  conditionExpression: 'condition_expression',
+  reminderSent: 'reminder_sent',
+  reminderSentAt: 'reminder_sent_at',
+  retryCount: 'retry_count',
+  ruleType: 'rule_type',
+  triggerField: 'trigger_field',
+  triggerOperator: 'trigger_operator',
+  triggerValue: 'trigger_value',
+  actionType: 'action_type',
+  actionTarget: 'action_target',
+  actionConfig: 'action_config',
+  executionCount: 'execution_count',
+  lastExecutedAt: 'last_executed_at',
+  errorCount: 'error_count',
+  lastError: 'last_error'
 };
 
 // Reverse column mapping (D1 column -> MongoDB field)
@@ -486,7 +544,11 @@ const TABLE_COLUMNS = {
   scenario_results: ['id', 'company_id', 'scenario_id', 'result_type', 'period', 'metric_name', 'metric_value', 'baseline_value', 'variance', 'variance_pct', 'confidence_low', 'confidence_high', 'confidence_pct', 'sort_order', 'data', 'created_at', 'updated_at'],
   promotion_optimizations: ['id', 'company_id', 'name', 'description', 'optimization_type', 'status', 'objective', 'customer_id', 'customer_name', 'product_id', 'product_name', 'category', 'brand', 'channel', 'region', 'start_date', 'end_date', 'budget_limit', 'min_roi_threshold', 'min_lift_threshold', 'max_discount_pct', 'baseline_revenue', 'baseline_units', 'baseline_margin_pct', 'optimized_spend', 'optimized_revenue', 'optimized_roi', 'optimized_lift_pct', 'optimized_margin_pct', 'optimized_incremental_revenue', 'optimized_net_profit', 'improvement_pct', 'confidence_score', 'model_version', 'run_count', 'last_run_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
   optimization_recommendations: ['id', 'company_id', 'optimization_id', 'recommendation_type', 'priority', 'title', 'description', 'current_value', 'recommended_value', 'change_pct', 'expected_impact_revenue', 'expected_impact_roi', 'expected_impact_units', 'expected_impact_margin', 'confidence', 'risk_level', 'category', 'metric_name', 'rationale', 'action_taken', 'applied_at', 'sort_order', 'data', 'created_at', 'updated_at'],
-  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at']
+  optimization_constraints: ['id', 'company_id', 'optimization_id', 'constraint_name', 'constraint_type', 'operator', 'threshold_value', 'current_value', 'is_violated', 'severity', 'sort_order', 'notes', 'data', 'created_at', 'updated_at'],
+  workflow_templates: ['id', 'company_id', 'name', 'description', 'workflow_type', 'category', 'status', 'trigger_entity', 'trigger_event', 'trigger_conditions', 'steps_json', 'sla_hours', 'escalation_enabled', 'escalation_after_hours', 'escalation_to', 'notification_enabled', 'auto_approve_below', 'require_all_approvers', 'max_retries', 'is_active', 'version', 'usage_count', 'last_triggered_at', 'created_by', 'notes', 'data', 'created_at', 'updated_at'],
+  workflow_instances: ['id', 'company_id', 'template_id', 'template_name', 'workflow_type', 'status', 'entity_type', 'entity_id', 'entity_name', 'entity_amount', 'current_step', 'total_steps', 'priority', 'initiated_by', 'initiated_at', 'completed_at', 'completed_by', 'cancelled_at', 'cancelled_by', 'cancellation_reason', 'sla_deadline', 'sla_breached', 'escalated', 'escalated_at', 'escalated_to', 'outcome', 'outcome_notes', 'processing_time_ms', 'data', 'created_at', 'updated_at'],
+  workflow_steps: ['id', 'company_id', 'instance_id', 'template_id', 'step_number', 'step_type', 'step_name', 'status', 'assigned_to', 'assigned_role', 'assigned_at', 'action_taken', 'action_by', 'action_at', 'action_notes', 'condition_met', 'condition_expression', 'sla_hours', 'sla_deadline', 'sla_breached', 'reminder_sent', 'reminder_sent_at', 'retry_count', 'data', 'created_at', 'updated_at'],
+  automation_rules: ['id', 'company_id', 'name', 'description', 'rule_type', 'status', 'trigger_entity', 'trigger_event', 'trigger_field', 'trigger_operator', 'trigger_value', 'action_type', 'action_target', 'action_config', 'priority', 'is_active', 'execution_count', 'last_executed_at', 'error_count', 'last_error', 'created_by', 'notes', 'data', 'created_at', 'updated_at']
 };
 
 // Generate a UUID for new records

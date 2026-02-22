@@ -59,6 +59,7 @@ import { tradeCalendarRoutes } from './routes/tradeCalendar.js';
 import { demandSignalRoutes } from './routes/demandSignals.js';
 import { scenarioRoutes } from './routes/scenarios.js';
 import { promotionOptimizerRoutes } from './routes/promotionOptimizer.js';
+import { workflowAutomationRoutes } from './routes/workflowAutomation.js';
 
 const app = new Hono();
 
@@ -160,6 +161,7 @@ app.route('/api/trade-calendar', tradeCalendarRoutes);
 app.route('/api/demand-signals', demandSignalRoutes);
 app.route('/api/scenarios', scenarioRoutes);
 app.route('/api/promotion-optimizer', promotionOptimizerRoutes);
+app.route('/api/workflows', workflowAutomationRoutes);
 
 // 404 handler
 app.notFound((c) => {
