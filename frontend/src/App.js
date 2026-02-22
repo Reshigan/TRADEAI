@@ -186,6 +186,9 @@ import BudgetAllocationManagement from './pages/budget-allocations/BudgetAllocat
 // Trade Calendar & Constraint Planning
 import TradeCalendarManagement from './pages/trade-calendar/TradeCalendarManagement';
 
+// Demand Signal Repository
+import DemandSignalManagement from './pages/demand-signals/DemandSignalManagement';
+
 // Help & Training Pages
 import {
   HelpCenter,
@@ -1183,6 +1186,18 @@ function App() {
             isAuthenticated ? (
               <Layout user={user} onLogout={handleLogout}>
                 <TradeCalendarManagement />
+              </Layout>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/demand-signals" 
+          element={
+            isAuthenticated ? (
+              <Layout user={user} onLogout={handleLogout}>
+                <DemandSignalManagement />
               </Layout>
             ) : (
               <Navigate to="/" replace />

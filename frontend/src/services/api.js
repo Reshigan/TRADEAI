@@ -1056,6 +1056,65 @@ export const budgetAllocationService = {
   },
 };
 
+export const demandSignalService = {
+  getAll: async (params) => {
+    const response = await api.get('/demand-signals', { params });
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/demand-signals/${id}`);
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/demand-signals', data);
+    return response.data;
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/demand-signals/${id}`, data);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/demand-signals/${id}`);
+    return response.data;
+  },
+  getSummary: async () => {
+    const response = await api.get('/demand-signals/summary');
+    return response.data;
+  },
+  getOptions: async () => {
+    const response = await api.get('/demand-signals/options');
+    return response.data;
+  },
+  getTrends: async (params) => {
+    const response = await api.get('/demand-signals/trends', { params });
+    return response.data;
+  },
+  getAnomalies: async (params) => {
+    const response = await api.get('/demand-signals/anomalies', { params });
+    return response.data;
+  },
+  getSources: async (params) => {
+    const response = await api.get('/demand-signals/sources/list', { params });
+    return response.data;
+  },
+  getSourceById: async (id) => {
+    const response = await api.get(`/demand-signals/sources/${id}`);
+    return response.data;
+  },
+  createSource: async (data) => {
+    const response = await api.post('/demand-signals/sources', data);
+    return response.data;
+  },
+  updateSource: async (id, data) => {
+    const response = await api.put(`/demand-signals/sources/${id}`, data);
+    return response.data;
+  },
+  deleteSource: async (id) => {
+    const response = await api.delete(`/demand-signals/sources/${id}`);
+    return response.data;
+  },
+};
+
 export const tradeCalendarService = {
   getAll: async (params) => {
     const response = await api.get('/trade-calendar', { params });
