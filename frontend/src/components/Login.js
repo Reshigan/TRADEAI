@@ -388,7 +388,22 @@ const Login = ({ onLogin }) => {
                 </Button>
               </form>
 
-              {/* Demo credentials removed for production security */}
+              <Box sx={{ textAlign: 'center', mt: 2 }}>
+                <Typography
+                  variant="body2"
+                  component="a"
+                  href="/forgot-password"
+                  sx={{
+                    color: 'var(--primary-blue-light)',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    '&:hover': { textDecoration: 'underline' }
+                  }}
+                >
+                  Forgot your password?
+                </Typography>
+              </Box>
             </Paper>
           </Box>
         </Box>
