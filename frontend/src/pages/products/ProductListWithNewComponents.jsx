@@ -125,23 +125,17 @@ const ProductListWithNewComponents = () => {
     {
       label: 'Activate',
       icon: <EditIcon />,
-      onClick: (selectedIds) => {
-        console.log('Activating products:', selectedIds);
-      }
+      onClick: () => {}
     },
     {
       label: 'Deactivate',
       icon: <EditIcon />,
-      onClick: (selectedIds) => {
-        console.log('Deactivating products:', selectedIds);
-      }
+      onClick: () => {}
     },
     {
       label: 'Delete',
       icon: <DeleteIcon />,
-      onClick: (selectedIds) => {
-        console.log('Deleting products:', selectedIds);
-      }
+      onClick: () => {}
     }
   ];
 
@@ -224,9 +218,7 @@ const ProductListWithNewComponents = () => {
     }
   };
 
-  const handleExport = () => {
-    console.log('Exporting products...');
-  };
+  const handleExport = () => {};
 
   return (
     <PageLayout

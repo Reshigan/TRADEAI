@@ -84,9 +84,7 @@ const MLDashboard = () => {
     const health = await mlService.checkMLHealth();
     setMlHealthy(health.success);
     
-    if (health.success) {
-      console.log('[ML Dashboard] ML API is healthy:', health.data);
-    } else {
+    if (!health.success) {
       console.warn('[ML Dashboard] ML API unavailable, using fallback mode');
     }
   };

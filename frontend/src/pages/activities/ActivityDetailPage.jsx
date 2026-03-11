@@ -35,12 +35,10 @@ const ActivityDetailPage = () => {
   };
 
   const handleUpdate = (updatedActivity) => {
-    console.log('Activity updated:', updatedActivity);
     setActivity(updatedActivity);
   };
 
-  const handleDelete = (deletedId) => {
-    console.log('Activity deleted:', deletedId);
+  const handleDelete = () => {
     navigate('/activities');
   };
 

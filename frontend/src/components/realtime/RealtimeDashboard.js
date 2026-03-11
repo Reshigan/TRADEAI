@@ -83,7 +83,6 @@ const RealtimeDashboard = () => {
     });
 
     newSocket.on('connect', () => {
-      console.log('Connected to real-time analytics');
       setIsConnected(true);
       
       // Subscribe to channels based on current subscriptions
@@ -95,7 +94,6 @@ const RealtimeDashboard = () => {
     });
 
     newSocket.on('disconnect', () => {
-      console.log('Disconnected from real-time analytics');
       setIsConnected(false);
     });
 

@@ -226,7 +226,6 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
         data: JSON.stringify({ notes: formData.notes })
       };
       
-      console.log('Transformed budget data:', transformedData);
       await onSubmit(transformedData);
       setLoading(false);
     } catch (error) {

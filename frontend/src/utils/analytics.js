@@ -31,7 +31,6 @@ class Analytics {
 
   trackEvent(eventName, properties = {}) {
     if (!ANALYTICS_ENABLED) {
-      console.log('[Analytics]', eventName, properties);
       return;
     }
 

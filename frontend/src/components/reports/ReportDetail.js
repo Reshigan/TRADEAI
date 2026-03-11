@@ -103,7 +103,6 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
       });
       
       // Handle the generated report (download, display, etc.)
-      console.log('Report generated:', response);
     } catch (error) {
       console.error('Error generating report:', error);
     } finally {

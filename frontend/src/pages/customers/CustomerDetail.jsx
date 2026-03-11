@@ -169,15 +169,9 @@ const CustomerDetail = () => {
       <Box sx={{ mb: 3 }}>
         <CustomerAIInsights 
           customer={data}
-          onApplySegmentation={(segmentData) => {
-            console.log('Apply segmentation:', segmentData);
-          }}
-          onApplyNextBestAction={(actionData) => {
-            console.log('Apply next best action:', actionData);
-          }}
-          onApplyRecommendations={(recommendations) => {
-            console.log('Apply recommendations:', recommendations);
-          }}
+          onApplySegmentation={() => {}}
+          onApplyNextBestAction={() => {}}
+          onApplyRecommendations={() => {}}
         />
       </Box>
 

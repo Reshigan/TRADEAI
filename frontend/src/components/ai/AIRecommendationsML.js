@@ -216,7 +216,7 @@ const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, au
                         variant="contained"
                         size="small"
                         startIcon={<ShoppingCart />}
-                        onClick={() => console.log('Add to cart:', rec.product_id)}
+                        onClick={() => {}}
                       >
                         Add
                       </Button>
