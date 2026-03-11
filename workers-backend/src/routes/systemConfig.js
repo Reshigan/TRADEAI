@@ -7,6 +7,16 @@ config.use('*', authMiddleware);
 const generateId = () => crypto.randomUUID();
 const getCompanyId = (c) => c.get('tenantId') || c.get('companyId') || c.req.header('X-Company-Code') || 'default';
 
+config.get('/', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const configStats = await db.prepare('SELECT COUNT(*) as total, COUNT(DISTINCT category) as categories FROM system_config WHERE company_id = ?').bind(companyId).first();
+    const tenantStats = await db.prepare("SELECT COUNT(*) as total, SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active FROM tenants").first();
+    return c.json({ success: true, data: { config: configStats, tenants: tenantStats } });
+  } catch (e) { return c.json({ success: false, message: e.message }, 500); }
+});
+
 config.get('/summary', async (c) => {
   try {
     const db = c.env.DB;
