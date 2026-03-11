@@ -36,8 +36,6 @@ const TradingTermsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  console.log('TradingTermsList render - tradingTerms:', tradingTerms, 'type:', typeof tradingTerms, 'isArray:', Array.isArray(tradingTerms));
-  // Debug: Force rebuild with different hash v2
 
   useEffect(() => {
     fetchTradingTerms();
