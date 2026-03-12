@@ -25,7 +25,7 @@ import {
   AttachMoney
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import activityGridService from '../../services/activitygrid/activityGridService';
+import { activityGridService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const ActivityGridCalendar = () => {

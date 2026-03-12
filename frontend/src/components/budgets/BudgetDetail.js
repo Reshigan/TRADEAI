@@ -30,8 +30,8 @@ import {
 import { formatCurrency } from '../../utils/formatters';
 
 import { PageHeader, StatusChip, ConfirmDialog } from '../common';
-import budgetService from '../../services/api/budgetService';
-import tradeSpendService from '../../services/api/tradeSpendService';
+import budgetService from '../../services/api';
+import tradeSpendService from '../../services/api';
 import BudgetForm from './BudgetForm';
 import { useToast } from '../common/ToastNotification';
 import analytics from '../../utils/analytics';

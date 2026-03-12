@@ -18,7 +18,7 @@ import {
   Close as CloseIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import aiOrchestratorService from '../../services/ai/aiOrchestratorService';
+import { aiOrchestratorService } from '../../services/api';
 
 const AIInsightPanel = ({ 
   intent,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, IconButton, CircularProgress, Chip } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 
 const PromotionCustomers = ({ promotionId, promotion, onUpdate }) => {
   const [customers, setCustomers] = useState([]);

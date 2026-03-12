@@ -34,8 +34,8 @@ import {
   AutoFixHigh
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import activityGridService from '../../services/activitygrid/activityGridService';
-import simulationService from '../../services/simulation/simulationService';
+import { activityGridService } from '../../services/api';
+import { simulationService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const PromotionsTimeline = () => {

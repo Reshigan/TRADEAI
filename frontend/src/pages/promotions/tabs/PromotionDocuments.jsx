@@ -21,7 +21,7 @@ import {
   InsertDriveFile as FileIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 
 const PromotionDocuments = ({ promotionId, promotion, onUpdate }) => {
   const [documents, setDocuments] = useState([]);

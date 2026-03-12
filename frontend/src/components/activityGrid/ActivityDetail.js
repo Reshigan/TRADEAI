@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 
-import activityGridService from '../../services/api/activityGridService';
+import activityGridService from '../../services/api';
 import ActivityForm from './ActivityForm';
 import { formatLabel } from '../../utils/formatters';
 

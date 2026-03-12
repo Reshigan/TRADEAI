@@ -46,7 +46,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-import mlService from '../../services/ai/mlService';
+import { mlService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const CustomerIntelligencePanel = ({ customerId, customerData }) => {

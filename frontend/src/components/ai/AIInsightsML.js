@@ -35,7 +35,7 @@ import {
   Error as ErrorIcon
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
+import { mlService } from '../../services/api';
 
 const AIInsightsML = ({ productId, customerId, refreshInterval = 300000 }) => {
   const [loading, setLoading] = useState(true);

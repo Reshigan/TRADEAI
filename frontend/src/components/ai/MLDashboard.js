@@ -52,7 +52,7 @@ import {
 } from 'recharts';
 
 // Import our ML service
-import mlService from '../../services/ai/mlService';
+import { mlService } from '../../services/api';
 
 const MLDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);

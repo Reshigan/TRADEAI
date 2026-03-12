@@ -27,7 +27,7 @@ import {
   TrendingDown
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import simulationService from '../../services/simulation/simulationService';
+import { simulationService } from '../../services/api';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 
 const SimulationStudio = () => {

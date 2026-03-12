@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-import tradingTermsService from '../../services/tradingterms/tradingTermsService';
+import { tradingTermsService as tradingTermsService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const TradingTermDetail = () => {

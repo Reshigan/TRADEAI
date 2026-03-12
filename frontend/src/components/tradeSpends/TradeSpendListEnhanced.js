@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, Chip, Typography, useTheme } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
-import tradeSpendService from '../../services/api/tradeSpendService';
+import tradeSpendService from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const TradeSpendListEnhanced = () => {

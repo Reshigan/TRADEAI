@@ -28,7 +28,7 @@ import {
   ArrowForward as ArrowIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../services/api/apiClient';
+import apiClient from '../../services/apiClient';
 import { anomalyDetectionService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
