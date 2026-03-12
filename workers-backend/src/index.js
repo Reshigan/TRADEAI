@@ -73,6 +73,7 @@ import { searchRoutes } from './routes/search.js';
 import { vendorFundRoutes } from './routes/vendorFunds.js';
 import { sapExportRoutes } from './routes/sapExport.js';
 import { wasteDetectionRoutes } from './routes/wasteDetection.js';
+import { jobRoutes } from './routes/jobs.js';
 
 const app = new Hono();
 
@@ -188,6 +189,7 @@ app.route('/api/search', searchRoutes);
 app.route('/api/vendor-funds', vendorFundRoutes);
 app.route('/api/sap-export', sapExportRoutes);
 app.route('/api/waste-detection', wasteDetectionRoutes);
+app.route('/api/jobs', jobRoutes);
 
 // 404 handler
 app.notFound((c) => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Skeleton } from '@mui/material';
 import ActivityDetail from '../../components/activityGrid/ActivityDetail';
-import apiClient from '../../services/api/apiClient';
+import apiClient from '../../services/apiClient';
 
 /**
  * Page wrapper for ActivityDetail component with ProcessShell integration

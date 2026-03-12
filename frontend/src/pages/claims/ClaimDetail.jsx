@@ -30,7 +30,7 @@ import {
   Cancel as RejectIcon,
   ArrowBack as BackIcon
 } from '@mui/icons-material';
-import claimService from '../../services/claim/claimService';
+import { claimService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';

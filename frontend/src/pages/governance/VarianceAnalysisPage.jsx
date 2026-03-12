@@ -50,7 +50,7 @@ import {
   Cell,
   Legend
 } from 'recharts';
-import dataLineageService from '../../services/dataLineage/dataLineageService';
+import { dataLineageService } from '../../services/api';
 import api from '../../services/api';
 
 const COLORS = ['#f44336', '#ff9800', '#4caf50', '#8B5CF6', '#9c27b0', '#00bcd4'];

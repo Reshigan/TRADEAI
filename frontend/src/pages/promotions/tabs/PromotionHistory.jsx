@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 
 const PromotionHistory = ({ promotionId, promotion }) => {
   const [history, setHistory] = useState([]);

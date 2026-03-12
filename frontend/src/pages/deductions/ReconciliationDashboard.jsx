@@ -23,9 +23,9 @@ import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon
 } from '@mui/icons-material';
-import deductionService from '../../services/deduction/deductionService';
-import claimService from '../../services/claim/claimService';
-import customerService from '../../services/customer/customerService';
+import { deductionService } from '../../services/api';
+import { claimService } from '../../services/api';
+import { customerService as customerService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';

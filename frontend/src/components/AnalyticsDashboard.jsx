@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiClient from '../services/api/apiClient';
+import apiClient from '../services/apiClient';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './AnalyticsDashboard.css';
 

@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import simulationService from '../../services/simulation/simulationService';
+import { simulationService } from '../../services/api';
 import analytics from '../../utils/analytics';
 
 

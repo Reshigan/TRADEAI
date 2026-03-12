@@ -10,7 +10,7 @@ import {
   AttachMoney as MoneyIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import claimService from '../../services/claim/claimService';
+import { claimService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';

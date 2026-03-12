@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware } from '../middleware/auth.js';
-import { BudgetEnforcementService } from '../services/budgetEnforcement.js';
+import { BudgetEnforcementService, checkBudgetAvailability } from '../services/budgetEnforcement.js';
 import { routeApproval } from '../services/approvalRouting.js';
 
 export const promotionRoutes = new Hono();
@@ -62,7 +62,12 @@ promotionRoutes.post('/', async (c) => {
     const data = await c.req.json();
     const mongodb = getMongoClient(c);
 
-    if (data.budget_id || data.budgetId) {
+    if (data.budgetId && data.budgetAmount) {
+      const check = await checkBudgetAvailability(c.env.DB, data.budgetId, data.budgetAmount, tenantId);
+      if (!check.available) {
+        return c.json({ success: false, message: check.reason, budgetInfo: { totalBudget: check.totalBudget, committed: check.committed, spent: check.spent, available: check.availableAmount } }, 400);
+      }
+    } else if (data.budget_id || data.budgetId) {
       const budgetId = data.budget_id || data.budgetId;
       const expectedSpend = data.expected_spend || data.expectedSpend || 0;
       if (expectedSpend > 0) {
@@ -75,18 +80,21 @@ promotionRoutes.post('/', async (c) => {
       }
     }
 
-    const productIds = JSON.parse(data.data || '{}').products?.map(p => p.productId || p.id) || [];
     let warnings = [];
-    if (productIds.length > 0 && data.start_date && data.end_date) {
-      const conflicts = await c.env.DB.prepare(`
-        SELECT id, name, start_date, end_date FROM promotions
-        WHERE company_id = ? AND status IN ('approved','active')
-        AND start_date <= ? AND end_date >= ?
-      `).bind(tenantId, data.end_date, data.start_date).all();
-      warnings = (conflicts.results || []).map(cp => ({
-        type: 'conflict', message: `Overlapping promotion "${cp.name}" (${cp.start_date} to ${cp.end_date})`
-      }));
-    }
+    try {
+      const productIds = JSON.parse(data.data || '{}').products?.map(p => p.productId || p.id) || [];
+      if (productIds.length > 0 && data.start_date && data.end_date) {
+        const conflicts = await c.env.DB.prepare(`
+          SELECT id, name, start_date, end_date FROM promotions
+          WHERE company_id = ? AND status IN ('approved','active')
+          AND start_date <= ? AND end_date >= ?
+        `).bind(tenantId, data.end_date, data.start_date).all();
+        warnings = (conflicts.results || []).map(cp => ({
+          type: 'conflict', message: `Overlapping promotion "${cp.name}" (${cp.start_date} to ${cp.end_date})`
+        }));
+      }
+    } catch (e) { /* conflict check is optional */ }
+
 
     const promotionId = await mongodb.insertOne('promotions', {
       ...data,

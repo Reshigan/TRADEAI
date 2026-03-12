@@ -9,7 +9,7 @@ import {
   Lightbulb as LightbulbIcon, Speed as SpeedIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 import { postEventAnalysisService } from '../../../services/api';
 
 const PromotionPerformance = ({ promotionId, promotion }) => {

@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 
 const PromotionProducts = ({ promotionId, promotion, onUpdate }) => {
   const [products, setProducts] = useState([]);

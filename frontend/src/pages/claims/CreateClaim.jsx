@@ -5,9 +5,9 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import claimService from '../../services/claim/claimService';
-import customerService from '../../services/customer/customerService';
-import productService from '../../services/product/productService';
+import { claimService } from '../../services/api';
+import { customerService as customerService } from '../../services/api';
+import { productService as productService } from '../../services/api';
 import analytics from '../../utils/analytics';
 
 const CreateClaim = () => {

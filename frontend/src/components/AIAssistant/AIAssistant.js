@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import apiClient from '../../services/api/apiClient';
+import apiClient from '../../services/apiClient';
 import './AIAssistant.css';
 
 const AIAssistant = () => {

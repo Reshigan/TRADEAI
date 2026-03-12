@@ -9,7 +9,7 @@ import {
   CheckCircle, PieChart as PieChartIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import tradeSpendService from '../../services/tradespend/tradeSpendService';
+import { tradeSpendService as tradeSpendService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const TradeSpendList = () => {

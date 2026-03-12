@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
-import simulationService from '../../services/simulation/simulationService';
+import { simulationService } from '../../services/api';
 import { promotionService } from '../../services/api';
 import { useSnackbar } from 'notistack';
 

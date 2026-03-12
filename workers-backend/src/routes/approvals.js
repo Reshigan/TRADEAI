@@ -3,6 +3,9 @@ import { authMiddleware } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { BudgetEnforcementService } from '../services/budgetEnforcement.js';
 import { createNotification } from '../services/notifications.js';
+import { commitFunds, releaseFunds } from '../services/budgetEnforcement.js';
+import { notifyApprovalDecision } from '../services/notificationService.js';
+import { routeApproval } from '../services/approvalRouting.js';
 
 const approvals = new Hono();
 
@@ -330,6 +333,18 @@ approvals.post('/:id/approve', async (c) => {
           console.log('Could not update entity status:', e.message);
         }
       }
+
+      // Budget enforcement: commit funds when promotion is approved
+      if (approval.entity_type === 'promotion') {
+        try {
+          const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
+          if (promo && promo.budget_id && promo.budget_amount) {
+            await commitFunds(db, promo.budget_id, promo.budget_amount, 'promotion', promo.id, promo.name, userId, companyId);
+          }
+        } catch (e) {
+          console.log('Budget commit on approval:', e.message);
+        }
+      }
     }
     
     if (approval.entity_type === 'promotion') {
@@ -352,6 +367,9 @@ approvals.post('/:id/approve', async (c) => {
 
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
+    // Notify requester of approval decision
+    try { await notifyApprovalDecision(db, companyId, approval, 'approved', userId); } catch (e) { console.log('Notification error:', e.message); }
+
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving:', error);
@@ -410,6 +428,18 @@ approvals.post('/:id/reject', async (c) => {
           console.log('Could not update entity status:', e.message);
         }
       }
+
+      // Budget enforcement: release committed funds when promotion is rejected
+      if (approval.entity_type === 'promotion') {
+        try {
+          const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
+          if (promo && promo.budget_id && promo.budget_amount) {
+            await releaseFunds(db, promo.budget_id, promo.budget_amount, 'promotion', promo.id, promo.name, userId, companyId);
+          }
+        } catch (e) {
+          console.log('Budget release on rejection:', e.message);
+        }
+      }
     }
     
     if (approval.entity_type === 'promotion') {
@@ -432,9 +462,26 @@ approvals.post('/:id/reject', async (c) => {
 
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
+    // Notify requester of rejection
+    try { await notifyApprovalDecision(db, companyId, approval, 'rejected', userId); } catch (e) { console.log('Notification error:', e.message); }
+
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Route approval - create with threshold-based routing
+approvals.post('/route', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const body = await c.req.json();
+    const userId = getUserId(c);
+    const result = await routeApproval(db, companyId, { ...body, requestedBy: userId });
+    return c.json({ success: true, data: result });
+  } catch (error) {
     return c.json({ success: false, message: error.message }, 500);
   }
 });
