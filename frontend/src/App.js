@@ -148,6 +148,10 @@ const RoleManagement = lazy(() => import('./pages/role-management/RoleManagement
 const SystemConfig = lazy(() => import('./pages/system-config/SystemConfig'));
 const WorkflowEngine = lazy(() => import('./pages/workflow-engine/WorkflowEngine'));
 
+const VendorFundManagement = lazy(() => import('./pages/vendor-funds/VendorFundManagement'));
+const SAPExportManagement = lazy(() => import('./pages/sap-export/SAPExportManagement'));
+const WasteDetectionManagement = lazy(() => import('./pages/waste-detection/WasteDetectionManagement'));
+
 const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
 const PromotionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.PromotionsHelp })));
 const BudgetsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.BudgetsHelp })));
@@ -433,6 +437,11 @@ function App() {
             <Route path="/role-management" element={<P requiredRoles={['admin', 'super_admin']}><RoleManagement /></P>} />
             <Route path="/system-config" element={<P requiredRoles={['admin', 'super_admin']}><SystemConfig /></P>} />
             <Route path="/workflow-engine" element={<P requiredRoles={['admin', 'super_admin']}><WorkflowEngine /></P>} />
+
+            <Route path="/vendor-funds" element={<P><VendorFundManagement /></P>} />
+            <Route path="/vendor-funds/:id" element={<P><VendorFundManagement /></P>} />
+            <Route path="/sap-export" element={<P><SAPExportManagement /></P>} />
+            <Route path="/waste-detection" element={<P><WasteDetectionManagement /></P>} />
 
             <Route path="/help" element={<P><HelpCenter /></P>} />
             <Route path="/help/promotions" element={<P><PromotionsHelp /></P>} />

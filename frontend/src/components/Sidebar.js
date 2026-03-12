@@ -47,6 +47,7 @@ const getNavGroups = (userRole) => {
         { label: 'Trade Calendar', path: '/trade-calendar' },
         { label: 'Scenarios', path: '/scenarios' },
         { label: 'KAM Wallet', path: '/kamwallet' },
+        { label: 'Vendor Funds', path: '/vendor-funds' },
       ],
     },
     {
@@ -91,6 +92,7 @@ const getNavGroups = (userRole) => {
         { label: 'RGM', path: '/revenue-growth' },
         { label: 'Demand Signals', path: '/demand-signals' },
         { label: 'Forecasting', path: '/forecasting' },
+        { label: 'Waste Detection', path: '/waste-detection' },
       ],
     },
     {
@@ -121,6 +123,7 @@ const getNavGroups = (userRole) => {
         { label: 'Integrations', path: '/integration-hub' },
         { label: 'Documents', path: '/document-management' },
         { label: 'Notifications', path: '/notification-center' },
+        { label: 'SAP Export', path: '/sap-export' },
       ],
     });
   }
