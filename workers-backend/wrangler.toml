@@ -21,12 +21,6 @@ bucket_name = "tradeai-storage"
 binding = "CACHE"
 id = "898dfed622044c399facd725f8815f55"
 
-[env.production]
-vars = { ENVIRONMENT = "production" }
-
-[env.staging]
-vars = { ENVIRONMENT = "staging" }
-
 [triggers]
 crons = [
   "0 1 * * *",
