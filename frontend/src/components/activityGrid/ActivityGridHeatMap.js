@@ -57,7 +57,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
     if (intensity < 25) return '#F5F3FF';
     if (intensity < 50) return '#90caf9';
     if (intensity < 75) return '#42a5f5';
-    return '#7C3AED';
+    return '#1E40AF';
   };
   
   // Get days in month
@@ -191,7 +191,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
           <Box sx={{ width: 20, height: 20, bgcolor: '#42a5f5', mr: 0.5 }} />
           <Typography variant="caption" sx={{ mr: 1 }}>High</Typography>
           
-          <Box sx={{ width: 20, height: 20, bgcolor: '#7C3AED', mr: 0.5 }} />
+          <Box sx={{ width: 20, height: 20, bgcolor: '#1E40AF', mr: 0.5 }} />
           <Typography variant="caption">Very High</Typography>
         </Box>
       </Box>

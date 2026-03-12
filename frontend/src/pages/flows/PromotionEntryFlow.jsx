@@ -486,7 +486,7 @@ const PromotionEntryFlow = () => {
 
       {/* Form Fields */}
       <Box sx={{ maxWidth: '800px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#1E3A8A' }}>
           Promotion Details
         </Typography>
         
@@ -552,7 +552,7 @@ const PromotionEntryFlow = () => {
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <TrendingUpIcon color="primary" />
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#7C3AED' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1E40AF' }}>
                 💡 ML Impact Calculation
               </Typography>
             </Box>
@@ -609,7 +609,7 @@ const PromotionEntryFlow = () => {
                 </Box>
 
                                 {/* Hierarchy Selection */}
-                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#6D28D9' }}>
+                                <Typography variant="h6" sx={{ mt: 4, mb: 2, color: '#1E3A8A' }}>
                                   Promotion Scope (Optional)
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

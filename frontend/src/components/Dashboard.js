@@ -38,7 +38,7 @@ import { AIInsightsFeed } from './contextual-ai';
 import {analyticsService} from '../services/api';
 import {safeNumber, safeToFixed, formatPercentage} from '../utils/formatters';
 
-const kpiColors = ['#7C3AED', '#7C3AED', '#10B981', '#F59E0B'];
+const kpiColors = ['#1E40AF', '#1E40AF', '#10B981', '#F59E0B'];
 
 const Dashboard = ({ user }) => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
@@ -135,10 +135,10 @@ const Dashboard = ({ user }) => {
             textTransform: 'none',
             fontWeight: 600,
             fontSize: '0.8rem',
-            color: '#7C3AED',
+            color: '#1E40AF',
             border: '1px solid #E5E7EB',
             px: 2.5,
-            '&:hover': { bgcolor: 'rgba(124,58,237,0.04)', borderColor: '#7C3AED' },
+            '&:hover': { bgcolor: 'rgba(124,58,237,0.04)', borderColor: '#1E40AF' },
           }}
         >
           Platform Tour
@@ -153,7 +153,7 @@ const Dashboard = ({ user }) => {
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-          <CircularProgress sx={{ color: '#7C3AED' }} />
+          <CircularProgress sx={{ color: '#1E40AF' }} />
         </Box>
       ) : (
         <>
@@ -241,7 +241,7 @@ const Dashboard = ({ user }) => {
               <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Box display="flex" alignItems="center" gap={1}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7C3AED' }} />
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
                     <Typography variant="subtitle2" fontWeight={700}>Budget Overview</Typography>
                   </Box>
                   <Chip
@@ -272,7 +272,7 @@ const Dashboard = ({ user }) => {
                         bgcolor: '#E5E7EB',
                         '& .MuiLinearProgress-bar': {
                           borderRadius: 5,
-                          background: 'linear-gradient(90deg, #7C3AED, #A78BFA)',
+                          background: 'linear-gradient(90deg, #1E40AF, #A78BFA)',
                         },
                       }}
                     />
@@ -298,7 +298,7 @@ const Dashboard = ({ user }) => {
                 )}
                 <Divider sx={{ my: 2 }} />
                 <Box sx={{ bgcolor: '#F5F3FF', borderRadius: '12px', p: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#7C3AED', mb: 0.5 }}>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#1E40AF', mb: 0.5 }}>
                     AI Budget Forecast
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
@@ -319,7 +319,7 @@ const Dashboard = ({ user }) => {
                       fontWeight: 600,
                       fontSize: '0.75rem',
                       textTransform: 'none',
-                      color: '#7C3AED',
+                      color: '#1E40AF',
                       border: '1px solid #E5E7EB',
                       px: 2,
                     }}
@@ -357,11 +357,11 @@ const Dashboard = ({ user }) => {
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 fontSize: '0.7rem',
-                                bgcolor: '#7C3AED',
+                                bgcolor: '#1E40AF',
                                 color: '#fff',
                                 px: 1.5,
                                 minWidth: 0,
-                                '&:hover': { bgcolor: '#6D28D9' },
+                                '&:hover': { bgcolor: '#1E3A8A' },
                               }}
                             >
                               Approve
@@ -410,7 +410,7 @@ const Dashboard = ({ user }) => {
                       fontWeight: 600,
                       fontSize: '0.75rem',
                       textTransform: 'none',
-                      color: '#7C3AED',
+                      color: '#1E40AF',
                       border: '1px solid #E5E7EB',
                       px: 2,
                     }}
@@ -422,7 +422,7 @@ const Dashboard = ({ user }) => {
                   <Grid container spacing={2}>
                     {dashboardData.topCustomers.slice(0, 4).map((customer, index) => (
                       <Grid item xs={12} sm={6} md={3} key={customer.id || index}>
-                        <Card elevation={0} sx={{ border: '1px solid #E5E7EB', borderRadius: '14px', '&:hover': { borderColor: '#7C3AED', boxShadow: '0 2px 8px rgba(124,58,237,0.1)' } }}>
+                        <Card elevation={0} sx={{ border: '1px solid #E5E7EB', borderRadius: '14px', '&:hover': { borderColor: '#1E40AF', boxShadow: '0 2px 8px rgba(124,58,237,0.1)' } }}>
                           <CardHeader
                             title={customer.name}
                             subheader={`${customer.totalSpend ? `${dashboardData.summary?.currencySymbol || 'R'}${customer.totalSpend.toLocaleString()}` : 'No spend data'}`}

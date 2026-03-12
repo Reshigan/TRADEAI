@@ -80,7 +80,7 @@ const PromotionPerformance = ({ promotionId, promotion }) => {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { label: 'ROI', value: `${(kpis.roi || 0).toFixed(1)}x`, color: (kpis.roi || 0) > 1 ? '#059669' : '#DC2626', icon: <TrendingUpIcon /> },
-          { label: 'Uplift', value: formatPercentage(kpis.uplift), color: '#7C3AED', icon: <ChartIcon /> },
+          { label: 'Uplift', value: formatPercentage(kpis.uplift), color: '#1E40AF', icon: <ChartIcon /> },
           { label: 'Incremental Sales', value: formatCurrency(kpis.incrementalSales), color: '#2563EB', icon: <AssessmentIcon /> },
           { label: 'Actual Spend', value: formatCurrency(kpis.actualSpend), color: '#D97706', icon: <SpeedIcon /> },
           { label: 'Margin Impact', value: formatCurrency(kpis.marginImpact), color: (kpis.marginImpact || 0) > 0 ? '#059669' : '#DC2626', icon: <TrendingUpIcon /> },
@@ -116,7 +116,7 @@ const PromotionPerformance = ({ promotionId, promotion }) => {
                     <Typography variant="caption" fontWeight={700}>{item.score || 0}/100</Typography>
                   </Box>
                   <LinearProgress variant="determinate" value={item.score || 0}
-                    sx={{ height: 6, borderRadius: 3, bgcolor: alpha('#7C3AED', 0.08),
+                    sx={{ height: 6, borderRadius: 3, bgcolor: alpha('#1E40AF', 0.08),
                       '& .MuiLinearProgress-bar': { bgcolor: (item.score || 0) > 70 ? '#059669' : (item.score || 0) > 40 ? '#D97706' : '#DC2626', borderRadius: 3 } }} />
                 </Box>
               </Grid>

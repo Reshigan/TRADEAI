@@ -50,7 +50,7 @@ const TradingTermsList = () => {
   }), [tradingTerms]);
 
   const summaryCards = [
-    { label: 'Total Terms', value: stats.total, icon: <Gavel />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Terms', value: stats.total, icon: <Gavel />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Approved', value: stats.approved, icon: <CheckCircle />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Active', value: stats.active, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
@@ -64,11 +64,11 @@ const TradingTermsList = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button variant="outlined" startIcon={<Refresh />} onClick={loadTradingTerms}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/trading-terms/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             New Trading Term
           </Button>
         </Box>
@@ -120,11 +120,11 @@ const TradingTermsList = () => {
             <MenuItem value="true">Active</MenuItem>
             <MenuItem value="false">Inactive</MenuItem>
           </TextField>
-          <Chip label={`${tradingTerms.length} terms`} sx={{ alignSelf: 'center', bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED', fontWeight: 600 }} />
+          <Chip label={`${tradingTerms.length} terms`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF', fontWeight: 600 }} />
         </Box>
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: '#7C3AED' }} /></Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>
         ) : tradingTerms.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Gavel sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
@@ -148,7 +148,7 @@ const TradingTermsList = () => {
               </TableHead>
               <TableBody>
                 {tradingTerms.map((term) => (
-                  <TableRow key={term.id || term._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}
+                  <TableRow key={term.id || term._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}
                     onClick={() => handleView(term.id || term._id)}>
                     <TableCell><Typography variant="body2" fontWeight={600}>{term.code}</Typography></TableCell>
                     <TableCell>{term.name}</TableCell>
@@ -165,9 +165,9 @@ const TradingTermsList = () => {
                     <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                         <Tooltip title="View"><IconButton size="small" onClick={() => handleView(term.id || term._id)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#7C3AED', bgcolor: alpha('#7C3AED', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
                         <Tooltip title="Edit"><IconButton size="small" onClick={() => handleEdit(term.id || term._id)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#7C3AED', bgcolor: alpha('#7C3AED', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
                         <Tooltip title="Delete"><IconButton size="small" onClick={() => handleDelete(term.id || term._id)}
                           sx={{ color: '#6B7280', '&:hover': { color: '#DC2626', bgcolor: alpha('#DC2626', 0.08) } }}><Delete fontSize="small" /></IconButton></Tooltip>
                       </Box>

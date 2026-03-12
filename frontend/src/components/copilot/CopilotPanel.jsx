@@ -90,7 +90,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
     <Drawer anchor="right" open={isOpen} onClose={onClose}
       PaperProps={{ sx: { width: { xs: '100%', sm: 420 }, bgcolor: '#FAFBFC' } }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box sx={{ p: 2, background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ p: 2, background: 'linear-gradient(135deg, #1E40AF 0%, #4F46E5 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <SparklesIcon />
             <Box>
@@ -106,13 +106,13 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
             <Box key={i} sx={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, maxWidth: '90%' }}>
                 {msg.role === 'assistant' && (
-                  <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: alpha('#7C3AED', 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, mt: 0.5 }}>
-                    <AIIcon sx={{ fontSize: 16, color: '#7C3AED' }} />
+                  <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: alpha('#1E40AF', 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, mt: 0.5 }}>
+                    <AIIcon sx={{ fontSize: 16, color: '#1E40AF' }} />
                   </Box>
                 )}
                 <Paper elevation={0} sx={{
                   p: 1.5, borderRadius: '12px',
-                  bgcolor: msg.role === 'user' ? '#7C3AED' : 'white',
+                  bgcolor: msg.role === 'user' ? '#1E40AF' : 'white',
                   color: msg.role === 'user' ? 'white' : 'text.primary',
                   border: msg.role === 'assistant' ? '1px solid' : 'none',
                   borderColor: 'divider'
@@ -120,7 +120,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{msg.content}</Typography>
 
                   {msg.data && typeof msg.data === 'object' && (
-                    <Box sx={{ mt: 1.5, p: 1.5, bgcolor: alpha('#7C3AED', 0.04), borderRadius: '8px' }}>
+                    <Box sx={{ mt: 1.5, p: 1.5, bgcolor: alpha('#1E40AF', 0.04), borderRadius: '8px' }}>
                       {Object.entries(msg.data).slice(0, 6).map(([k, v]) => (
                         <Box key={k} sx={{ display: 'flex', justifyContent: 'space-between', py: 0.3 }}>
                           <Typography variant="caption" color="text.secondary">{k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ')}</Typography>
@@ -135,13 +135,13 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
                       {msg.suggestions.map((s, j) => (
                         <Chip key={j} label={typeof s === 'string' ? s : s.text || s.title} size="small"
                           onClick={() => handleSend(typeof s === 'string' ? s : s.text || s.title)}
-                          sx={{ borderRadius: '8px', fontSize: '0.7rem', bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED', cursor: 'pointer', '&:hover': { bgcolor: alpha('#7C3AED', 0.15) } }} />
+                          sx={{ borderRadius: '8px', fontSize: '0.7rem', bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF', cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.15) } }} />
                       ))}
                     </Box>
                   )}
                 </Paper>
                 {msg.role === 'user' && (
-                  <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: alpha('#7C3AED', 0.8), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, mt: 0.5 }}>
+                  <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: alpha('#1E40AF', 0.8), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, mt: 0.5 }}>
                     <PersonIcon sx={{ fontSize: 16, color: 'white' }} />
                   </Box>
                 )}
@@ -151,7 +151,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
 
           {loading && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pl: 4.5 }}>
-              <CircularProgress size={16} sx={{ color: '#7C3AED' }} />
+              <CircularProgress size={16} sx={{ color: '#1E40AF' }} />
               <Typography variant="caption" color="text.secondary">Analyzing...</Typography>
             </Box>
           )}
@@ -166,7 +166,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
                 <Chip key={i} label={s.title || s} size="small"
                   icon={i % 2 === 0 ? <TrendingUpIcon sx={{ fontSize: '14px !important' }} /> : <ChartIcon sx={{ fontSize: '14px !important' }} />}
                   onClick={() => handleSend(s.title || s)}
-                  sx={{ borderRadius: '8px', fontSize: '0.7rem', bgcolor: alpha('#7C3AED', 0.06), '&:hover': { bgcolor: alpha('#7C3AED', 0.12) }, cursor: 'pointer' }} />
+                  sx={{ borderRadius: '8px', fontSize: '0.7rem', bgcolor: alpha('#1E40AF', 0.06), '&:hover': { bgcolor: alpha('#1E40AF', 0.12) }, cursor: 'pointer' }} />
               ))}
             </Box>
           </Box>
@@ -179,7 +179,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
             variant="outlined" size="small"
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: 'white', fontSize: '0.875rem' } }} />
           <IconButton onClick={() => handleSend()} disabled={!input.trim() || loading}
-            sx={{ bgcolor: '#7C3AED', color: 'white', borderRadius: '10px', width: 38, height: 38, '&:hover': { bgcolor: '#6D28D9' }, '&.Mui-disabled': { bgcolor: alpha('#7C3AED', 0.3), color: 'white' } }}>
+            sx={{ bgcolor: '#1E40AF', color: 'white', borderRadius: '10px', width: 38, height: 38, '&:hover': { bgcolor: '#1E3A8A' }, '&.Mui-disabled': { bgcolor: alpha('#1E40AF', 0.3), color: 'white' } }}>
             <SendIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Box>

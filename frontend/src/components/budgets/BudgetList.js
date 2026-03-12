@@ -206,7 +206,7 @@ const BudgetList = () => {
   }, [budgets]);
 
   const summaryCards = [
-    { label: 'Total Budget', value: formatCurrencyCompact(budgetStats.totalAmount), icon: <BudgetIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Budget', value: formatCurrencyCompact(budgetStats.totalAmount), icon: <BudgetIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Approved', value: budgetStats.approved, icon: <ApprovedIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Utilized', value: formatCurrencyCompact(budgetStats.totalUtilized), icon: <SpentIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'Remaining', value: formatCurrencyCompact(budgetStats.totalRemaining), icon: <RemainingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
@@ -233,7 +233,7 @@ const BudgetList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>Manage your trade spend budgets</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateBudget}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           Create Budget
         </Button>
       </Box>

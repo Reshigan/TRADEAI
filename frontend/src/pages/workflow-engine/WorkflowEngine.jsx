@@ -12,7 +12,7 @@ import {
 } from '@mui/icons-material';
 import { workflowEngineService } from '../../services/api';
 
-const SummaryCard = ({ title, value, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
     <CardContent sx={{ py: 2, px: 3, '&:last-child': { pb: 2 } }}>
       <Typography variant="caption" color="text.secondary">{title}</Typography>
@@ -113,7 +113,7 @@ export default function WorkflowEngine() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>New Template</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Template</Button>
         </Box>
       </Box>
 
@@ -147,7 +147,7 @@ export default function WorkflowEngine() {
               <TableBody>
                 {templates.map((t) => (
                   <TableRow key={t.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><WfIcon sx={{ fontSize: 18, color: '#7C3AED' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><WfIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography></Box></TableCell>
                     <TableCell><Chip label={t.workflow_type} size="small" /></TableCell>
                     <TableCell>{t.entity_type || '-'}</TableCell>
                     <TableCell>{t.trigger_event}</TableCell>
@@ -216,7 +216,7 @@ export default function WorkflowEngine() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#7C3AED' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

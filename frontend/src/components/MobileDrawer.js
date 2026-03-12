@@ -300,7 +300,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                                         height: 18,
                                         fontSize: '0.6rem',
                                         fontWeight: 700,
-                                        backgroundColor: child.badge === 'AI' ? '#7C3AED' : 
+                                        backgroundColor: child.badge === 'AI' ? '#1E40AF' : 
                                                          child.badge === 'NEW' ? '#10b981' :
                                                          child.badge === 'LIVE' ? '#ef4444' : '#f59e0b',
                                         color: 'white',

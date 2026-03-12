@@ -104,7 +104,7 @@ const ClaimsList = () => {
   if (loading && claims.length === 0) return <SkeletonLoader type="table" />;
 
   const summaryCards = [
-    { label: 'Total Claims', value: claimStats.total, icon: <ClaimsIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Claims', value: claimStats.total, icon: <ClaimsIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Approved', value: claimStats.approved, icon: <ApprovedIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Pending', value: claimStats.pending, icon: <PendingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
     { label: 'Total Value', value: formatCurrency(claimStats.totalAmount), icon: <MoneyIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
@@ -119,11 +119,11 @@ const ClaimsList = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button variant="outlined" startIcon={<AutoMatchIcon />} onClick={handleAutoMatch} disabled={loading}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, borderColor: '#7C3AED', color: '#7C3AED', '&:hover': { borderColor: '#6D28D9', bgcolor: alpha('#7C3AED', 0.04) } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, borderColor: '#1E40AF', color: '#1E40AF', '&:hover': { borderColor: '#1E3A8A', bgcolor: alpha('#1E40AF', 0.04) } }}>
             Auto-Match
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/claims/create')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, fontSize: { xs: '0.8rem', sm: '0.875rem' }, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Create Claim
           </Button>
         </Box>
@@ -151,7 +151,7 @@ const ClaimsList = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Tabs value={statusTab} onChange={(_, v) => setStatusTab(v)}
-            sx={{ px: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            sx={{ px: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
             {statusTabs.map((t) => <Tab key={t} label={t} />)}
           </Tabs>
           <Box sx={{ pr: 2 }}>
@@ -188,7 +188,7 @@ const ClaimsList = () => {
                 </TableRow>
               ) : (
                 filteredByTab.map((claim) => (
-                  <TableRow key={claim.id || claim._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}
+                  <TableRow key={claim.id || claim._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}
                     onClick={() => navigate(`/claims/${claim.id || claim._id}`)}>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
@@ -209,7 +209,7 @@ const ClaimsList = () => {
                     <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                       <Tooltip title="View Details">
                         <IconButton size="small" onClick={() => navigate(`/claims/${claim.id || claim._id}`)}
-                          sx={{ color: '#7C3AED', '&:hover': { bgcolor: alpha('#7C3AED', 0.08) } }}>
+                          sx={{ color: '#1E40AF', '&:hover': { bgcolor: alpha('#1E40AF', 0.08) } }}>
                           <ViewIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>

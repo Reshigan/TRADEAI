@@ -126,7 +126,7 @@ const CreateDeduction = () => {
               </Box>
             )}
             <Button variant="contained" fullWidth onClick={handleSubmit} disabled={loading} startIcon={<SaveIcon />}
-              sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+              sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
               {loading ? 'Creating...' : 'Create Deduction'}
             </Button>
           </Paper>

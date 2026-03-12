@@ -13,7 +13,7 @@ import {
 } from '@mui/icons-material';
 import { notificationCenterService } from '../../services/api';
 
-const SummaryCard = ({ title, value, subtitle, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, subtitle, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', border: '1px solid #F3F4F6' }}>
     <CardContent sx={{ p: 2.5 }}>
       <Typography variant="body2" color="text.secondary" gutterBottom>{title}</Typography>

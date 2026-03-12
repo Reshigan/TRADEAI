@@ -373,7 +373,7 @@ const EnhancedWorkflowDashboard = () => {
                           <div style={{
                             width: `${(workflow.progress || 0) * 100}%`,
                             height: '100%',
-                            backgroundColor: '#7C3AED',
+                            backgroundColor: '#1E40AF',
                             transition: 'width 0.3s ease'
                           }} />
                         </div>

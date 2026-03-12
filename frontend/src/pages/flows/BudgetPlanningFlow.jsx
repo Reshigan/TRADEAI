@@ -363,7 +363,7 @@ const BudgetPlanningFlow = () => {
       )}
       
       <Box sx={{ maxWidth: '900px' }}>
-        <Typography variant="h6" sx={{ mb: 3, color: '#6D28D9' }}>
+        <Typography variant="h6" sx={{ mb: 3, color: '#1E3A8A' }}>
           Budget Configuration
         </Typography>
         
@@ -479,7 +479,7 @@ const BudgetPlanningFlow = () => {
 
                 {/* Product Hierarchy Section */}
                 <Paper sx={{ p: 3, mt: 4, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#6D28D9' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#1E3A8A' }}>
                     Product Hierarchy (Optional)
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -527,7 +527,7 @@ const BudgetPlanningFlow = () => {
 
                 {/* Customer Hierarchy Section */}
                 <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
-                  <Typography variant="h6" sx={{ mb: 2, color: '#6D28D9' }}>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#1E3A8A' }}>
                     Customer Hierarchy (Optional)
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

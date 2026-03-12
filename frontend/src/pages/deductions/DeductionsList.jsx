@@ -88,7 +88,7 @@ const DeductionsList = () => {
   }, [deductions]);
 
   const summaryCards = [
-    { label: 'Total Deductions', value: deductionStats.total, icon: <DeductionIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Deductions', value: deductionStats.total, icon: <DeductionIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Total Value', value: formatCurrency(deductionStats.totalAmount), icon: <ReconcileIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'Unmatched', value: deductionStats.unmatched, icon: <UnmatchedIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
     { label: 'Disputed', value: deductionStats.disputed, icon: <DisputeIcon />, color: '#DC2626', bg: alpha('#DC2626', 0.08) },
@@ -108,15 +108,15 @@ const DeductionsList = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button variant="outlined" startIcon={<ReconcileIcon />} onClick={() => navigate('/deductions/reconciliation')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
             Reconciliation
           </Button>
           <Button variant="outlined" startIcon={<AutoMatchIcon />} onClick={handleAutoMatch} disabled={loading}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
             Auto-Match
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/deductions/create')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Create Deduction
           </Button>
         </Box>
@@ -144,12 +144,12 @@ const DeductionsList = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Tabs value={filterTabIndex >= 0 ? filterTabIndex : 0} onChange={(_, v) => setFilter(filterTabs[v])}
-            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
             <Tab label="All" />
             <Tab label="Unmatched" />
             <Tab label="Disputed" />
           </Tabs>
-          <Chip label={`${deductions.length} items`} size="small" sx={{ bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED', fontWeight: 600 }} />
+          <Chip label={`${deductions.length} items`} size="small" sx={{ bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF', fontWeight: 600 }} />
         </Box>
 
         <TableContainer>
@@ -176,7 +176,7 @@ const DeductionsList = () => {
                 </TableRow>
               ) : (
                 deductions.map((deduction) => (
-                  <TableRow key={deduction.id || deduction._id} hover sx={{ '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}>
+                  <TableRow key={deduction.id || deduction._id} hover sx={{ '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}>
                     <TableCell><Typography variant="body2" fontWeight={600} sx={{ fontFamily: 'monospace' }}>{deduction.deductionNumber || deduction.deductionId || deduction.id || '-'}</Typography></TableCell>
                     <TableCell><Chip label={formatLabel(deduction.deductionType || deduction.deduction_type || 'unknown')} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
                     <TableCell><Typography variant="body2">{deduction.customerName || deduction.customer?.name || 'Unknown'}</Typography></TableCell>
@@ -201,7 +201,7 @@ const DeductionsList = () => {
                     <TableCell align="center">
                       <Tooltip title="View Details">
                         <IconButton size="small" onClick={() => navigate(`/deductions/${deduction.id || deduction._id}`)}
-                          sx={{ color: '#6B7280', '&:hover': { bgcolor: alpha('#7C3AED', 0.08), color: '#7C3AED' } }}>
+                          sx={{ color: '#6B7280', '&:hover': { bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF' } }}>
                           <ViewIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>

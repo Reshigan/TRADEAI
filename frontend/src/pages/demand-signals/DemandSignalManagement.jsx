@@ -39,7 +39,7 @@ const formatDate = (d) => {
   return new Date(d).toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' });
 };
 
-const SummaryCard = ({ title, value, subtitle, icon, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', height: '100%' }}>
     <CardContent sx={{ p: 2.5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -380,18 +380,18 @@ const DemandSignalManagement = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchSignals(); fetchSources(); fetchSummary(); fetchTrends(); fetchAnomalies(); }}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
             Refresh
           </Button>
           {tab === 0 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateSignal}
-              sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
               New Signal
             </Button>
           )}
           {tab === 3 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateSource}
-              sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
               New Source
             </Button>
           )}
@@ -404,7 +404,7 @@ const DemandSignalManagement = () => {
         <Grid item xs={12} sm={6} md={3}>
           <SummaryCard title="Total Signals" value={formatNumber(summary?.signals?.total)}
             subtitle={`${summary?.signals?.sourceCount || 0} sources`}
-            icon={<SignalIcon />} color="#7C3AED" />
+            icon={<SignalIcon />} color="#1E40AF" />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <SummaryCard title="Total Revenue" value={formatCurrency(summary?.signals?.totalRevenue)}
@@ -423,7 +423,7 @@ const DemandSignalManagement = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
         <Tab label={`Signals (${signals.length})`} />
         <Tab label="Trends" />
         <Tab label={`Anomalies (${anomalies.length})`} />
@@ -469,7 +469,7 @@ const DemandSignalManagement = () => {
                     </TableCell>
                     <TableCell>
                       <Chip label={typeInfo?.label || (sig.signalType || sig.signal_type)} size="small"
-                        sx={{ bgcolor: '#EDE9FE', color: '#7C3AED', fontWeight: 500, fontSize: '0.7rem' }} />
+                        sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontWeight: 500, fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">{sig.customerName || sig.customer_name || '-'}</Typography>
@@ -580,7 +580,7 @@ const DemandSignalManagement = () => {
                   <TableRow key={a.id} hover sx={{ bgcolor: '#FEF2F2' }}>
                     <TableCell>{formatDate(a.signalDate || a.signal_date)}</TableCell>
                     <TableCell>
-                      <Chip label={a.signalType || a.signal_type} size="small" sx={{ bgcolor: '#EDE9FE', color: '#7C3AED', fontSize: '0.7rem' }} />
+                      <Chip label={a.signalType || a.signal_type} size="small" sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>{a.customerName || a.customer_name || '-'}</TableCell>
                     <TableCell>{a.productName || a.product_name || '-'}</TableCell>
@@ -781,7 +781,7 @@ const DemandSignalManagement = () => {
           <Button onClick={() => setSignalDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSignal}
             disabled={!signalForm.signalDate}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             {editingSignalId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -833,7 +833,7 @@ const DemandSignalManagement = () => {
           <Button onClick={() => setSourceDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSource}
             disabled={!sourceForm.name}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             {editingSourceId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -870,7 +870,7 @@ const DemandSignalManagement = () => {
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Revenue</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 700, color: '#7C3AED' }}>{formatCurrency(detailSignal.revenue)}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatCurrency(detailSignal.revenue)}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Baseline Revenue</Typography>
@@ -918,7 +918,7 @@ const DemandSignalManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="contained" onClick={() => { setDetailDialog(false); handleEditSignal(detailSignal); }}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Edit
           </Button>
         </DialogActions>

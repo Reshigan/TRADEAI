@@ -301,7 +301,7 @@ const SettlementManagement = () => {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Handshake sx={{ mr: 1, color: '#7C3AED' }} />
+                <Handshake sx={{ mr: 1, color: '#1E40AF' }} />
                 <Typography variant="body2" color="text.secondary">Settlements</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>{s.total || 0}</Typography>
@@ -757,7 +757,7 @@ const SettlementManagement = () => {
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => { resetForm(); setCreateOpen(true); }}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             New Settlement
           </Button>
         </Box>
@@ -803,7 +803,7 @@ const SettlementManagement = () => {
         <DialogActions>
           <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleCreate} disabled={actionLoading || !form.name}
-            sx={{ bgcolor: '#7C3AED' }}>
+            sx={{ bgcolor: '#1E40AF' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Create'}
           </Button>
         </DialogActions>
@@ -816,7 +816,7 @@ const SettlementManagement = () => {
         <DialogActions>
           <Button onClick={() => setEditOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleUpdate} disabled={actionLoading || !form.name}
-            sx={{ bgcolor: '#7C3AED' }}>
+            sx={{ bgcolor: '#1E40AF' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Save'}
           </Button>
         </DialogActions>

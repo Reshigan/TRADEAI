@@ -12,7 +12,7 @@ import {
 } from '@mui/icons-material';
 import { roleManagementService } from '../../services/api';
 
-const SummaryCard = ({ title, value, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
     <CardContent sx={{ py: 2, px: 3, '&:last-child': { pb: 2 } }}>
       <Typography variant="caption" color="text.secondary">{title}</Typography>
@@ -92,7 +92,7 @@ export default function RoleManagement() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>New Role</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Role</Button>
         </Box>
       </Box>
 
@@ -126,7 +126,7 @@ export default function RoleManagement() {
               <TableBody>
                 {roles.map((r) => (
                   <TableRow key={r.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><RoleIcon sx={{ fontSize: 18, color: '#7C3AED' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{r.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><RoleIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{r.name}</Typography></Box></TableCell>
                     <TableCell><Chip label={r.role_type} size="small" color={r.role_type === 'system' ? 'primary' : 'default'} /></TableCell>
                     <TableCell>{r.level}</TableCell>
                     <TableCell>{r.max_approval_amount ? `R${Number(r.max_approval_amount).toLocaleString()}` : 'Unlimited'}</TableCell>
@@ -179,7 +179,7 @@ export default function RoleManagement() {
               <TableBody>
                 {permGroups.map((g) => (
                   <TableRow key={g.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><PermIcon sx={{ fontSize: 18, color: '#7C3AED' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{g.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><PermIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{g.name}</Typography></Box></TableCell>
                     <TableCell>{g.module || '-'}</TableCell>
                     <TableCell>{(() => { try { return JSON.parse(g.permissions || '[]').length; } catch { return 0; } })()}</TableCell>
                     <TableCell>{g.is_system ? 'Yes' : 'No'}</TableCell>
@@ -206,7 +206,7 @@ export default function RoleManagement() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#7C3AED' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

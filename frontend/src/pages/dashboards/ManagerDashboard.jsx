@@ -121,12 +121,12 @@ const ManagerDashboard = () => {
               fontWeight: 600,
               fontSize: { xs: '0.75rem', sm: '0.85rem' },
               textTransform: 'none',
-              bgcolor: activeTab === idx ? '#7C3AED' : '#fff',
+              bgcolor: activeTab === idx ? '#1E40AF' : '#fff',
               color: activeTab === idx ? '#fff' : '#6B7280',
               border: activeTab === idx ? 'none' : '1px solid #E5E7EB',
               boxShadow: activeTab === idx ? '0 2px 8px rgba(124,58,237,0.25)' : 'none',
               '&:hover': {
-                bgcolor: activeTab === idx ? '#6D28D9' : '#F9FAFB',
+                bgcolor: activeTab === idx ? '#1E3A8A' : '#F9FAFB',
               },
             }}
           >
@@ -137,7 +137,7 @@ const ManagerDashboard = () => {
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress sx={{ color: '#7C3AED' }} />
+          <CircularProgress sx={{ color: '#1E40AF' }} />
         </Box>
       ) : (
         <Grid container spacing={2.5}>
@@ -153,7 +153,7 @@ const ManagerDashboard = () => {
             >
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7C3AED' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
                   <Typography variant="subtitle2" fontWeight={700} color="text.primary">
                     Sales Target
                   </Typography>
@@ -196,7 +196,7 @@ const ManagerDashboard = () => {
                           width: '60%',
                           height: `${30 + (i + 1) * 15}%`,
                           borderRadius: '8px 8px 0 0',
-                          bgcolor: i === 0 ? '#7C3AED' : i === 1 ? '#7C3AED' : '#FB923C',
+                          bgcolor: i === 0 ? '#1E40AF' : i === 1 ? '#1E40AF' : '#FB923C',
                           opacity: 0.8,
                         }}
                       />
@@ -209,7 +209,7 @@ const ManagerDashboard = () => {
               </Box>
 
               <Box display="flex" alignItems="center" gap={1} sx={{ bgcolor: '#F9FAFB', borderRadius: '10px', p: 1.5 }}>
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7C3AED' }} />
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
                 <Typography variant="caption" color="text.secondary">
                   Period: {new Date().toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' })} - {new Date(Date.now() + 30*86400000).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </Typography>
@@ -301,7 +301,7 @@ const ManagerDashboard = () => {
                 <Button
                   size="small"
                   onClick={() => navigate('/approvals')}
-                  sx={{ color: '#7C3AED', fontWeight: 600, fontSize: '0.75rem', textTransform: 'none' }}
+                  sx={{ color: '#1E40AF', fontWeight: 600, fontSize: '0.75rem', textTransform: 'none' }}
                 >
                   Review
                 </Button>
@@ -345,7 +345,7 @@ const ManagerDashboard = () => {
                       bgcolor: '#FDE68A',
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 4,
-                        background: 'linear-gradient(90deg, #7C3AED, #A78BFA)',
+                        background: 'linear-gradient(90deg, #1E40AF, #A78BFA)',
                       },
                     }}
                   />
@@ -364,8 +364,8 @@ const ManagerDashboard = () => {
                 Key Metrics
               </Typography>
               {[
-                { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#7C3AED' },
-                { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#7C3AED' },
+                { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#1E40AF' },
+                { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#1E40AF' },
                 { label: 'Total Products', value: overview.totalProducts || 0, color: '#10B981' },
               ].map((metric, idx) => (
                 <Box key={idx} display="flex" alignItems="center" justifyContent="space-between" sx={{ py: 1.25, borderBottom: idx < 2 ? '1px solid #F3F4F6' : 'none' }}>
@@ -394,7 +394,7 @@ const ManagerDashboard = () => {
                       justifyContent: 'space-between',
                       py: 1,
                       cursor: 'pointer',
-                      '&:hover': { '& .nav-label': { color: '#7C3AED' } },
+                      '&:hover': { '& .nav-label': { color: '#1E40AF' } },
                     }}
                   >
                     <Typography className="nav-label" variant="body2" fontWeight={500} sx={{ transition: 'color 0.15s' }}>
@@ -418,7 +418,7 @@ const ManagerDashboard = () => {
             >
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#7C3AED' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
                   <Typography variant="subtitle2" fontWeight={700}>Portfolio Analysis</Typography>
                 </Box>
                 <Box display="flex" gap={1}>
@@ -438,7 +438,7 @@ const ManagerDashboard = () => {
 
               <Grid container spacing={3}>
                 {[
-                  { label: 'Reallocation Opportunity', value: `R${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K`, icon: <MonetizationOn />, color: '#7C3AED', sub: 'Available to optimize' },
+                  { label: 'Reallocation Opportunity', value: `R${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K`, icon: <MonetizationOn />, color: '#1E40AF', sub: 'Available to optimize' },
                   { label: 'Expected Revenue Gain', value: `R${(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K`, icon: <AttachMoney />, color: '#10B981', sub: 'Projected uplift' },
                   { label: 'Underperforming', value: dashboardData.portfolioKPIs.underperformingCount || 0, icon: <TrendingDown />, color: '#EF4444', sub: 'Need attention' },
                   { label: 'High Performing', value: dashboardData.portfolioKPIs.highPerformingCount || 0, icon: <ShowChart />, color: '#10B981', sub: 'Exceeding targets' },
@@ -468,8 +468,8 @@ const ManagerDashboard = () => {
             >
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1.5}>
-                  <Box sx={{ p: 0.75, borderRadius: '8px', bgcolor: alpha('#7C3AED', 0.1), display: 'flex' }}>
-                    <MonetizationOn sx={{ color: '#7C3AED', fontSize: 20 }} />
+                  <Box sx={{ p: 0.75, borderRadius: '8px', bgcolor: alpha('#1E40AF', 0.1), display: 'flex' }}>
+                    <MonetizationOn sx={{ color: '#1E40AF', fontSize: 20 }} />
                   </Box>
                   <Box>
                     <Typography variant="subtitle2" fontWeight={700}>AI Recommendations</Typography>

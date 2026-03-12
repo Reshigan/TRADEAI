@@ -112,8 +112,8 @@ const DetailPage = ({
                   fontWeight: 600,
                   fontSize: '0.8125rem',
                   bgcolor: '#F5F3FF',
-                  color: '#7C3AED',
-                  '&:hover': { bgcolor: '#EDE9FE' },
+                  color: '#1E40AF',
+                  '&:hover': { bgcolor: '#EFF6FF' },
                 }}
               >
                 AI Insights
@@ -175,7 +175,7 @@ const DetailPage = ({
         >
           <Box sx={{ p: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <AIIcon sx={{ color: '#7C3AED', fontSize: 20 }} />
+              <AIIcon sx={{ color: '#1E40AF', fontSize: 20 }} />
               <Typography sx={{ fontWeight: 600, fontSize: '0.9375rem' }}>AI Insights</Typography>
             </Box>
             <IconButton onClick={() => setAiOpen(false)} size="small">

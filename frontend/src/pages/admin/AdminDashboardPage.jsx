@@ -59,7 +59,7 @@ const AdminDashboardPage = () => {
       title: 'Total Users',
       value: stats.totalUsers,
       icon: <UsersIcon sx={{ fontSize: 40 }} />,
-      color: '#7C3AED',
+      color: '#1E40AF',
       action: () => navigate('/admin/users')
     },
     {

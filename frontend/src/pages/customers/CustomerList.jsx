@@ -45,7 +45,7 @@ const CustomerList = () => {
   }, [customers]);
 
   const summaryCards = [
-    { label: 'Total Customers', value: stats.total, icon: <PeopleIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Customers', value: stats.total, icon: <PeopleIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'With Credit', value: stats.withCredit, icon: <ActiveIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Regions', value: stats.regions, icon: <LocationIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
@@ -53,7 +53,7 @@ const CustomerList = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: '#7C3AED' }} />
+        <CircularProgress sx={{ color: '#1E40AF' }} />
       </Box>
     );
   }
@@ -66,7 +66,7 @@ const CustomerList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{customers.length} customer{customers.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/customers/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
           New Customer
         </Button>
       </Box>
@@ -99,7 +99,7 @@ const CustomerList = () => {
           <BusinessIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No customers found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/customers/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Add Customer
           </Button>
         </Paper>
@@ -110,11 +110,11 @@ const CustomerList = () => {
               <Paper elevation={0}
                 sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', cursor: 'pointer',
                   transition: 'all 0.2s', height: '100%', display: 'flex', flexDirection: 'column',
-                  '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#7C3AED', transform: 'translateY(-2px)' } }}
+                  '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#1E40AF', transform: 'translateY(-2px)' } }}
                 onClick={() => navigate(`/customers/${customer.id || customer._id}`)}>
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
-                  <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: alpha('#7C3AED', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <BusinessIcon sx={{ color: '#7C3AED', fontSize: 20 }} />
+                  <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: alpha('#1E40AF', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <BusinessIcon sx={{ color: '#1E40AF', fontSize: 20 }} />
                   </Box>
                   <Typography variant="subtitle1" fontWeight={700}>{customer.name || customer.customerName}</Typography>
                 </Box>
@@ -134,9 +134,9 @@ const CustomerList = () => {
                     </Typography>
                   </Box>
                   {customer.creditLimit > 0 && (
-                    <Box sx={{ p: 1.5, bgcolor: alpha('#7C3AED', 0.06), borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Typography variant="caption" fontWeight={600} color="#7C3AED">Credit Limit</Typography>
-                      <Typography variant="caption" fontWeight={700} color="#7C3AED">{formatCurrency(customer.creditLimit)}</Typography>
+                    <Box sx={{ p: 1.5, bgcolor: alpha('#1E40AF', 0.06), borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="caption" fontWeight={600} color="#1E40AF">Credit Limit</Typography>
+                      <Typography variant="caption" fontWeight={700} color="#1E40AF">{formatCurrency(customer.creditLimit)}</Typography>
                     </Box>
                   )}
                 </Box>
