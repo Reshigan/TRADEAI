@@ -69,6 +69,7 @@ import { integrationHubRoutes } from './routes/integrationHub.js';
 import { roleManagementRoutes } from './routes/roleManagement.js';
 import { systemConfigRoutes } from './routes/systemConfig.js';
 import { workflowEngineRoutes } from './routes/workflowEngine.js';
+import { jobRoutes } from './routes/jobs.js';
 
 const app = new Hono();
 
@@ -180,6 +181,7 @@ app.route('/api/integration-hub', integrationHubRoutes);
 app.route('/api/role-management', roleManagementRoutes);
 app.route('/api/system-config', systemConfigRoutes);
 app.route('/api/workflow-engine', workflowEngineRoutes);
+app.route('/api/jobs', jobRoutes);
 
 // 404 handler
 app.notFound((c) => {

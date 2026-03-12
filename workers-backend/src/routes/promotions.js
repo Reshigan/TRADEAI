@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
 
 export const promotionRoutes = new Hono();
 
@@ -59,6 +60,13 @@ promotionRoutes.post('/', async (c) => {
     const userId = c.get('userId');
     const data = await c.req.json();
     const mongodb = getMongoClient(c);
+
+    if (data.budgetId && data.budgetAmount) {
+      const check = await checkBudgetAvailability(c.env.DB, data.budgetId, data.budgetAmount, tenantId);
+      if (!check.available) {
+        return c.json({ success: false, message: check.reason, budgetInfo: { totalBudget: check.totalBudget, committed: check.committed, spent: check.spent, available: check.availableAmount } }, 400);
+      }
+    }
 
     const promotionId = await mongodb.insertOne('promotions', {
       ...data,
