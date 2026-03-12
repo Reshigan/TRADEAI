@@ -97,7 +97,6 @@ const CustomerDetailEnhanced = () => {
         });
       }
     } catch (error) {
-      console.log('AI insights unavailable');
     }
 
     setAiInsights(insights);

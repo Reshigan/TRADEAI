@@ -15,8 +15,6 @@ const activityGridService = {
    * @returns {Promise} - Promise with activity grid data
    */
   getActivityGrid: (params = {}) => {
-    console.log('[activityGridService] getActivityGrid called with params:', params);
-    console.log('[activityGridService] localStorage token:', localStorage.getItem('token') ? 'EXISTS' : 'MISSING');
     return apiClient.get('/activity-grid', { params });
   },
 

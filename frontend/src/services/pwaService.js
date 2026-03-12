@@ -19,8 +19,6 @@ class PWAService {
 
   async initializeService() {
     try {
-      console.log('Initializing PWA Service...');
-      
       // Register service worker
       await this.registerServiceWorker();
       
@@ -42,7 +40,6 @@ class PWAService {
       // Initialize app shortcuts
       this.initializeAppShortcuts();
       
-      console.log('PWA Service initialized successfully');
     } catch (error) {
       console.error('Failed to initialize PWA Service:', error);
     }
@@ -77,7 +74,6 @@ class PWAService {
           this.handleServiceWorkerMessage(event);
         });
 
-        console.log('Service Worker registered successfully');
         return registration;
       } catch (error) {
         console.error('Service Worker registration failed:', error);
@@ -113,8 +109,6 @@ class PWAService {
    * Handle online status change
    */
   handleOnlineStatusChange(isOnline) {
-    console.log(`Network status changed: ${isOnline ? 'online' : 'offline'}`);
-    
     if (isOnline) {
       // Process offline queue when back online
       this.processOfflineQueue();
@@ -230,7 +224,6 @@ class PWAService {
       // Send subscription to server
       await this.sendSubscriptionToServer(subscription);
       
-      console.log('Push subscription setup complete');
     } catch (error) {
       console.error('Failed to setup push subscription:', error);
     }
@@ -329,7 +322,6 @@ class PWAService {
     });
 
     window.addEventListener('appinstalled', () => {
-      console.log('PWA was installed');
       this.installPrompt = null;
       this.hideInstallButton();
       
@@ -389,8 +381,6 @@ class PWAService {
     // Wait for the user to respond
     const { outcome } = await this.installPrompt.userChoice;
     
-    console.log(`User response to install prompt: ${outcome}`);
-    
     // Track user choice
     this.trackEvent('pwa_install_prompt', { outcome });
     
@@ -404,8 +394,6 @@ class PWAService {
    */
   initializeBackgroundSync() {
     if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-      console.log('Background Sync supported');
-      
       // Register sync events
       this.registerSyncEvents();
     } else {
@@ -425,7 +413,6 @@ class PWAService {
       await registration.sync.register('data-sync');
       await registration.sync.register('offline-actions');
       
-      console.log('Background sync events registered');
     } catch (error) {
       console.error('Failed to register sync events:', error);
     }
@@ -452,7 +439,6 @@ class PWAService {
     // Schedule background sync
     this.scheduleBackgroundSync('offline-actions');
     
-    console.log('Added request to offline queue:', queueItem);
   }
 
   /**
@@ -463,8 +449,6 @@ class PWAService {
       return;
     }
 
-    console.log(`Processing ${this.offlineQueue.length} offline requests`);
-    
     const processedItems = [];
     
     for (const item of this.offlineQueue) {
@@ -477,7 +461,6 @@ class PWAService {
 
         if (response.ok) {
           processedItems.push(item);
-          console.log('Successfully processed offline request:', item.url);
         }
       } catch (error) {
         console.error('Failed to process offline request:', error);
@@ -507,7 +490,6 @@ class PWAService {
     try {
       const registration = await navigator.serviceWorker.ready;
       await registration.sync.register(tag);
-      console.log(`Background sync scheduled: ${tag}`);
     } catch (error) {
       console.error('Failed to schedule background sync:', error);
     }
@@ -539,7 +521,6 @@ class PWAService {
       this.cacheStrategies.set(strategy.name, strategy);
     });
 
-    console.log('Cache strategies configured:', strategies.length);
   }
 
   /**
@@ -574,7 +555,6 @@ class PWAService {
     ];
 
     this.appShortcuts = shortcuts;
-    console.log('App shortcuts initialized:', shortcuts.length);
   }
 
   /**
@@ -585,24 +565,20 @@ class PWAService {
 
     switch (type) {
       case 'CACHE_UPDATED':
-        console.log('Cache updated:', payload);
         break;
         
       case 'BACKGROUND_SYNC':
-        console.log('Background sync completed:', payload);
         this.handleBackgroundSyncComplete(payload);
         break;
         
       case 'PUSH_RECEIVED':
-        console.log('Push notification received:', payload);
         break;
         
       case 'OFFLINE_FALLBACK':
-        console.log('Offline fallback served:', payload);
         break;
         
       default:
-        console.log('Unknown service worker message:', event.data);
+        break;
     }
   }
 
@@ -797,8 +773,6 @@ class PWAService {
         // Implementation depends on your IndexedDB usage
       }
 
-      console.log('App data cleared successfully');
-      
       this.showNotification('Data Cleared', {
         body: 'All app data has been cleared',
         tag: 'data-cleared'
@@ -824,7 +798,6 @@ class PWAService {
       window.analytics.track(eventName, data);
     }
 
-    console.log('PWA Event tracked:', eventName, data);
   }
 
   /**

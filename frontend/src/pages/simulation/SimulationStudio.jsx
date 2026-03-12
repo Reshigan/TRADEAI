@@ -152,7 +152,6 @@ const SimulationStudio = () => {
 
     try {
       const response = await simulationService.compareScenarios(scenariosToCompare);
-      console.log('Comparison results:', response);
       setCompareMode(true);
     } catch (error) {
       console.error('Failed to compare scenarios:', error);

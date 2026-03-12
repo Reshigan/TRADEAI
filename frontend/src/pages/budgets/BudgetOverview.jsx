@@ -147,15 +147,9 @@ const BudgetOverview = () => {
             remainingAmount: summary.remaining,
             performance: budgets.map(b => ({ id: b._id, name: b.budgetName, roi: b.roi || 0 }))
           }}
-          onApplyReallocation={(reallocationData) => {
-            console.log('Apply reallocation:', reallocationData);
-          }}
-          onApplyOptimization={(optimizationData) => {
-            console.log('Apply optimization:', optimizationData);
-          }}
-          onApplyForecasting={(forecastData) => {
-            console.log('Apply forecasting:', forecastData);
-          }}
+          onApplyReallocation={() => {}}
+          onApplyOptimization={() => {}}
+          onApplyForecasting={() => {}}
         />
       </Box>
 

@@ -469,20 +469,14 @@ const PromotionEntryFlow = () => {
       <Box sx={{ mb: 4 }}>
         <PromotionAIInsights 
           promotion={formData}
-          onApplyUplift={(upliftData) => {
-            console.log('Apply uplift prediction:', upliftData);
-          }}
+          onApplyUplift={() => {}}
           onApplyPricing={(pricingData) => {
-            console.log('Apply pricing recommendation:', pricingData);
             if (pricingData.optimalPrice) {
               setFormData({ ...formData, discount: pricingData.optimalDiscount || formData.discount });
             }
           }}
-          onApplyTiming={(timingData) => {
-            console.log('Apply timing recommendation:', timingData);
-          }}
+          onApplyTiming={() => {}}
           onApplyBudget={(budgetData) => {
-            console.log('Apply budget recommendation:', budgetData);
             if (budgetData.recommendedBudget) {
               setFormData({ ...formData, budget: budgetData.recommendedBudget });
             }

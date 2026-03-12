@@ -151,14 +151,8 @@ const HierarchicalBudgetManager = () => {
   const handleFormSubmit = async () => {
     try {
       if (dialogMode === 'create') {
-        // Create new budget node
-        console.log('Creating budget node:', formData);
       } else if (dialogMode === 'edit') {
-        // Update existing budget node
-        console.log('Updating budget node:', formData);
       } else if (dialogMode === 'allocate') {
-        // Handle budget allocation
-        console.log('Allocating budget for node:', selectedNode);
       }
       
       setOpenDialog(false);

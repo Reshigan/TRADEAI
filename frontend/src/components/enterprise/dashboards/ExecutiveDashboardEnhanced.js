@@ -94,10 +94,7 @@ export default function ExecutiveDashboardEnhanced() {
     loadDashboardData();
   };
 
-  const handleExport = () => {
-    // TODO: Implement export functionality
-    console.log('Exporting dashboard data...');
-  };
+  const handleExport = () => {};
 
   if (loading && !data) {
     return (

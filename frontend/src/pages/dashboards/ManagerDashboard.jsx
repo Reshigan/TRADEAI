@@ -91,17 +91,13 @@ const ManagerDashboard = () => {
     }
   };
 
-  const handleApplyReallocation = (recommendation) => {
-    console.log('Apply reallocation:', recommendation);
-  };
+  const handleApplyReallocation = () => {};
 
   const handleSimulateReallocation = (recommendation) => {
     navigate('/scenarios', { state: { recommendation } });
   };
 
-  const handleExplainReallocation = (recommendation) => {
-    console.log('Explain reallocation:', recommendation);
-  };
+  const handleExplainReallocation = () => {};
 
   const overview = liveData?.overview || {};
   const budget = liveData?.budget || {};

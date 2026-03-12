@@ -56,8 +56,6 @@ const ReportBuilder = () => {
         document.body.appendChild(link);
         link.click();
         link.remove();
-      } else {
-        console.log('Report data:', response.data);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to generate report');

@@ -86,7 +86,6 @@ const authService = {
       const maxAge = 24 * 60 * 60 * 1000; // 24 hours
       
       if (sessionAge > maxAge) {
-        console.log('Session expired, clearing auth data');
         authService.clearAuthData();
         return false;
       }

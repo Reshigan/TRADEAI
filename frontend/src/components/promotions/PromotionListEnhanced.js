@@ -77,7 +77,7 @@ const PromotionListEnhanced = () => {
       icon: '',
       label: 'Clone Best Performers',
       description: 'Replicate successful promotions',
-      action: () => console.log('Clone')
+      action: () => {}
     },
     {
       icon: '',

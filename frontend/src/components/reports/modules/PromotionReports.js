@@ -135,8 +135,7 @@ const PromotionReports = () => {
     setAnchorEl(null);
   };
 
-  const handleExport = (format) => {
-    console.log(`Exporting promotion reports in ${format} format`);
+  const handleExport = () => {
     handleMenuClose();
   };
 
