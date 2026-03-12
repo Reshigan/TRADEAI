@@ -6,8 +6,8 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { claimService } from '../../services/api';
-import { customerService as customerService } from '../../services/api';
-import { productService as productService } from '../../services/api';
+import { customerService } from '../../services/api';
+import { productService } from '../../services/api';
 import analytics from '../../utils/analytics';
 
 const CreateClaim = () => {
@@ -129,7 +129,7 @@ const CreateClaim = () => {
                 sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>Add Line Item</Button>
             </Box>
             {formData.lineItems.length === 0 ? (
-              <Paper elevation={0} sx={{ p: 4, borderRadius: '12px', bgcolor: alpha('#7C3AED', 0.04), textAlign: 'center' }}>
+              <Paper elevation={0} sx={{ p: 4, borderRadius: '12px', bgcolor: alpha('#1E40AF', 0.04), textAlign: 'center' }}>
                 <Typography variant="body2" color="text.secondary">No line items added. Click "Add Line Item" to add products to this claim.</Typography>
               </Paper>
             ) : (
@@ -186,7 +186,7 @@ const CreateClaim = () => {
               <Button variant="outlined" fullWidth onClick={() => handleSubmit(false)} disabled={loading} startIcon={<SaveIcon />}
                 sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600 }}>Save as Draft</Button>
               <Button variant="contained" fullWidth onClick={() => handleSubmit(true)} disabled={loading}
-                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
                 {loading ? 'Creating...' : 'Create & Submit'}
               </Button>
             </Box>

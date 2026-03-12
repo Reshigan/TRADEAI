@@ -51,7 +51,7 @@ const ProductList = () => {
   }, [products]);
 
   const summaryCards = [
-    { label: 'Total Products', value: stats.total, icon: <InventoryIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Products', value: stats.total, icon: <InventoryIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Categories', value: stats.categories, icon: <CategoryIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Avg Price', value: formatCurrency(stats.avgPrice), icon: <PriceIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
@@ -59,7 +59,7 @@ const ProductList = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: '#7C3AED' }} />
+        <CircularProgress sx={{ color: '#1E40AF' }} />
       </Box>
     );
   }
@@ -72,7 +72,7 @@ const ProductList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{products.length} product{products.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/products/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
           New Product
         </Button>
       </Box>
@@ -115,7 +115,7 @@ const ProductList = () => {
           <InventoryIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No products found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/products/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Add Product
           </Button>
         </Paper>
@@ -126,7 +126,7 @@ const ProductList = () => {
               <Paper elevation={0}
                 sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', cursor: 'pointer',
                   transition: 'all 0.2s', height: '100%', display: 'flex', flexDirection: 'column',
-                  '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#7C3AED', transform: 'translateY(-2px)' } }}
+                  '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#1E40AF', transform: 'translateY(-2px)' } }}
                 onClick={() => navigate(`/products/${product.id || product._id}`)}>
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: alpha('#059669', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

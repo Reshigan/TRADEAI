@@ -231,9 +231,9 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                       py: 1.5,
                       px: 2,
                       '&.Mui-selected': {
-                        bgcolor: alpha('#7C3AED', 0.08),
+                        bgcolor: alpha('#1E40AF', 0.08),
                         borderRight: '3px solid',
-                        borderColor: '#7C3AED',
+                        borderColor: '#1E40AF',
                       }
                     }}
                   >
@@ -284,7 +284,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                               pl: 7,
                               pr: 2,
                               '&.Mui-selected': {
-                                bgcolor: alpha('#7C3AED', 0.08),
+                                bgcolor: alpha('#1E40AF', 0.08),
                               }
                             }}
                           >
@@ -300,7 +300,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                                         height: 18,
                                         fontSize: '0.6rem',
                                         fontWeight: 700,
-                                        backgroundColor: child.badge === 'AI' ? '#7C3AED' : 
+                                        backgroundColor: child.badge === 'AI' ? '#1E40AF' : 
                                                          child.badge === 'NEW' ? '#10b981' :
                                                          child.badge === 'LIVE' ? '#ef4444' : '#f59e0b',
                                         color: 'white',

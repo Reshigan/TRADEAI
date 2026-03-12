@@ -13,9 +13,9 @@ import {
 } from '@mui/icons-material';
 import { customer360Service } from '../../services/api';
 
-const tierColors = { platinum: '#7C3AED', gold: '#F59E0B', silver: '#6B7280', bronze: '#92400E' };
+const tierColors = { platinum: '#1E40AF', gold: '#F59E0B', silver: '#6B7280', bronze: '#92400E' };
 const severityColors = { critical: '#EF4444', warning: '#F59E0B', info: '#3B82F6', success: '#10B981' };
-const segmentColors = { strategic: '#7C3AED', key_account: '#3B82F6', growth: '#10B981', maintain: '#6B7280', at_risk: '#EF4444' };
+const segmentColors = { strategic: '#1E40AF', key_account: '#3B82F6', growth: '#10B981', maintain: '#6B7280', at_risk: '#EF4444' };
 
 const formatCurrency = (val) => {
   if (!val) return 'R0';
@@ -188,7 +188,7 @@ const Customer360Dashboard = () => {
             { label: 'Net Revenue', value: formatCurrency(p.netRevenue), icon: <TrendingUp />, color: '#3B82F6' },
             { label: 'Trade Spend %', value: `${(p.tradeSpendPct || 0).toFixed(1)}%`, icon: <BarChart />, color: '#F59E0B' },
             { label: 'Health Score', value: `${Math.round(p.healthScore || 0)}/100`, icon: <Speed />, color: p.healthScore >= 60 ? '#10B981' : '#EF4444' },
-            { label: 'LTV Score', value: formatCurrency(p.ltvScore), icon: <Star />, color: '#7C3AED' },
+            { label: 'LTV Score', value: formatCurrency(p.ltvScore), icon: <Star />, color: '#1E40AF' },
             { label: 'Churn Risk', value: `${((p.churnRisk || 0) * 100).toFixed(0)}%`, icon: <Warning />, color: (p.churnRisk || 0) > 0.5 ? '#EF4444' : '#F59E0B' },
           ].map((card, i) => (
             <Grid item xs={12} sm={6} md={2} key={i}>
@@ -262,7 +262,7 @@ const Customer360Dashboard = () => {
                     <Typography variant="body2">{prod.name || `Product ${i + 1}`}</Typography>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{formatCurrency(prod.revenue)}</Typography>
                   </Box>
-                  <LinearProgress variant="determinate" value={Math.min(100, (prod.share || 0) * 100)} sx={{ height: 6, borderRadius: 3, bgcolor: '#F3F4F6', '& .MuiLinearProgress-bar': { bgcolor: '#7C3AED', borderRadius: 3 } }} />
+                  <LinearProgress variant="determinate" value={Math.min(100, (prod.share || 0) * 100)} sx={{ height: 6, borderRadius: 3, bgcolor: '#F3F4F6', '& .MuiLinearProgress-bar': { bgcolor: '#1E40AF', borderRadius: 3 } }} />
                 </Box>
               )) : <Typography variant="body2" color="text.secondary">No product data available</Typography>}
             </Paper>
@@ -277,7 +277,7 @@ const Customer360Dashboard = () => {
                     const pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
                     return (
                       <Tooltip key={i} title={`${m.label || `Month ${i + 1}`}: ${formatCurrency(val)}`}>
-                        <Box sx={{ flex: 1, height: `${pct}%`, bgcolor: '#7C3AED', borderRadius: '4px 4px 0 0', minHeight: 4, transition: 'height 0.3s ease', '&:hover': { bgcolor: '#6D28D9' } }} />
+                        <Box sx={{ flex: 1, height: `${pct}%`, bgcolor: '#1E40AF', borderRadius: '4px 4px 0 0', minHeight: 4, transition: 'height 0.3s ease', '&:hover': { bgcolor: '#1E3A8A' } }} />
                       </Tooltip>
                     );
                   })}
@@ -319,14 +319,14 @@ const Customer360Dashboard = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<Refresh />} onClick={() => { loadSummary(); loadProfiles(); loadAtRisk(); loadLeaderboard(); }}>Refresh</Button>
-          <Button variant="contained" startIcon={<Add />} onClick={handleCreate} sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>Add Profile</Button>
+          <Button variant="contained" startIcon={<Add />} onClick={handleCreate} sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>Add Profile</Button>
         </Box>
       </Box>
 
       {summary && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {[
-            { label: 'Total Customers', value: summary.totalCustomers, icon: <Person />, color: '#7C3AED' },
+            { label: 'Total Customers', value: summary.totalCustomers, icon: <Person />, color: '#1E40AF' },
             { label: 'Active', value: summary.activeCustomers, icon: <ThumbUp />, color: '#10B981' },
             { label: 'At Risk', value: summary.atRiskCustomers, icon: <Warning />, color: '#EF4444' },
             { label: 'Avg Health', value: `${summary.avgHealthScore}/100`, icon: <Speed />, color: '#3B82F6' },
@@ -525,7 +525,7 @@ const Customer360Dashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave} sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          <Button variant="contained" onClick={handleSave} sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             {dialogMode === 'create' ? 'Create' : 'Save'}
           </Button>
         </DialogActions>

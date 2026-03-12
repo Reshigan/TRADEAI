@@ -43,12 +43,12 @@ const RebatesList = () => {
   }, [rebates]);
 
   const summaryCards = [
-    { label: 'Total Rebates', value: stats.total, icon: <AccountBalance />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Rebates', value: stats.total, icon: <AccountBalance />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Active', value: stats.active, icon: <CheckCircle />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Total Accrued', value: `R${(stats.totalAccrued / 1000).toFixed(1)}K`, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
 
-  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress sx={{ color: '#7C3AED' }} /></Box>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>;
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
@@ -58,7 +58,7 @@ const RebatesList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>Configure and manage all rebate programs</Typography>
         </Box>
         <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/rebates/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
           New Rebate
         </Button>
       </Box>
@@ -104,7 +104,7 @@ const RebatesList = () => {
                 </TableRow>
               ) : (
                 rebates.map((rebate) => (
-                  <TableRow key={rebate.id || rebate._id} hover sx={{ '&:hover': { bgcolor: alpha('#7C3AED', 0.02) } }}>
+                  <TableRow key={rebate.id || rebate._id} hover sx={{ '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}>
                     <TableCell><Typography variant="body2" fontWeight={600}>{rebate.name}</Typography></TableCell>
                     <TableCell><Chip label={getTypeLabel(rebate.rebateType || rebate.type)} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
                     <TableCell><Chip label={formatLabel(rebate.status)} color={getStatusColor(rebate.status)} size="small" sx={{ borderRadius: '6px', height: 24, fontWeight: 600 }} /></TableCell>
@@ -115,9 +115,9 @@ const RebatesList = () => {
                     <TableCell align="center">
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                         <Tooltip title="View"><IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}`)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#7C3AED', bgcolor: alpha('#7C3AED', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
                         <Tooltip title="Edit"><IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}/edit`)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#7C3AED', bgcolor: alpha('#7C3AED', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
                         <Tooltip title="Delete"><IconButton size="small" onClick={() => handleDelete(rebate.id || rebate._id)}
                           sx={{ color: '#6B7280', '&:hover': { color: '#DC2626', bgcolor: alpha('#DC2626', 0.08) } }}><Delete fontSize="small" /></IconButton></Tooltip>
                       </Box>

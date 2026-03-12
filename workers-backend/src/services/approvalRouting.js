@@ -1,3 +1,5 @@
+import { createNotification } from './notifications.js';
+
 const generateId = () => crypto.randomUUID();
 
 const THRESHOLDS = [
@@ -34,16 +36,26 @@ export async function routeApproval(db, companyId, { entityType, entityId, entit
   }
 
   const id = generateId();
-  await db.prepare(`
+  await db.prepare(\`
     INSERT INTO approvals (id, company_id, entity_type, entity_id, entity_name, amount, status, priority, requested_by, requested_at, assigned_to, due_date, sla_hours, data, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(
+  \`).bind(
     id, companyId, entityType, entityId, entityName || '', amount,
     amount >= 200000 ? 'high' : 'normal',
     requestedBy, now, assignedTo, dueDate, slaHours,
     JSON.stringify({ approvalLevel: level.label, requiredRole: level.role }),
     now, now
   ).run();
+
+  try {
+    await createNotification(db, {
+      companyId, userId: assignedTo,
+      title: \`Approval Required: \${entityName}\`,
+      message: \`R\${Math.round(amount).toLocaleString()} \${entityType} requires your approval.\`,
+      type: 'warning', category: 'approval', priority: 'high',
+      entityType: 'approval', entityId: id, actionUrl: \`/approve/\${id}\`
+    });
+  } catch (e) { console.log('Notification error:', e.message); }
 
   return {
     approvalId: id,
@@ -57,10 +69,10 @@ export async function routeApproval(db, companyId, { entityType, entityId, entit
 
 export async function checkEscalation(db, companyId) {
   const now = new Date().toISOString();
-  const overdue = await db.prepare(`
+  const overdue = await db.prepare(\`
     SELECT * FROM approvals 
     WHERE company_id = ? AND status = 'pending' AND due_date < ? AND (escalated_to IS NULL OR escalated_to = '')
-  `).bind(companyId, now).all();
+  \`).bind(companyId, now).all();
 
   const escalated = [];
   for (const approval of (overdue.results || [])) {
@@ -73,10 +85,10 @@ export async function checkEscalation(db, companyId) {
     ).bind(companyId, nextRole).first();
 
     if (nextApprover) {
-      await db.prepare(`
+      await db.prepare(\`
         UPDATE approvals SET escalated_to = ?, escalated_at = ?, updated_at = ?, priority = 'urgent'
         WHERE id = ?
-      `).bind(nextApprover.id, now, now, approval.id).run();
+      \`).bind(nextApprover.id, now, now, approval.id).run();
       escalated.push({ approvalId: approval.id, escalatedTo: nextApprover.id, role: nextRole });
     }
   }

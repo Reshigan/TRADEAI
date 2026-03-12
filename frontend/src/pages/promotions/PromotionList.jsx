@@ -52,11 +52,11 @@ const PromotionList = () => {
   }, [promotions, statusTab]);
 
   if (loading) {
-    return (<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: '#7C3AED' }} /></Box>);
+    return (<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>);
   }
 
   const statCards = [
-    { label: 'Total Promotions', value: promotions.length, icon: <CampaignIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Promotions', value: promotions.length, icon: <CampaignIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Active', value: stats.active, icon: <ActiveIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Planned', value: stats.planned, icon: <PlannedIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'Total Budget', value: formatCurrency(stats.totalBudget), icon: <TrendingUpIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
@@ -72,7 +72,7 @@ const PromotionList = () => {
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/promotions/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           New Promotion
         </Button>
       </Box>
@@ -96,7 +96,7 @@ const PromotionList = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', mb: 3, overflow: 'hidden' }}>
         <Box sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
           <Tabs value={statusTab} onChange={(_, v) => setStatusTab(v)}
-            sx={{ px: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            sx={{ px: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
             {statusTabs.map((t) => <Tab key={t} label={t} />)}
           </Tabs>
         </Box>
@@ -121,7 +121,7 @@ const PromotionList = () => {
           <Typography variant="h6" color="text.secondary" mb={1}>No promotions found</Typography>
           <Typography variant="body2" color="text.disabled" mb={3}>Try adjusting your filters or create a new promotion.</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/promotions/new')}
-            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Create Promotion
           </Button>
         </Paper>
@@ -136,7 +136,7 @@ const PromotionList = () => {
                 <Paper elevation={0}
                   sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', cursor: 'pointer',
                     transition: 'all 0.2s ease', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-                    '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#7C3AED', transform: 'translateY(-2px)' } }}
+                    '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#1E40AF', transform: 'translateY(-2px)' } }}
                   onClick={() => navigate(`/promotions/${promo.id || promo._id}`)}>
                   <Box sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box display="flex" justifyContent="space-between" alignItems="start" mb={1.5}>
@@ -167,8 +167,8 @@ const PromotionList = () => {
                             <Typography variant="caption" fontWeight={600}>{utilPct.toFixed(0)}%</Typography>
                           </Box>
                           <LinearProgress variant="determinate" value={utilPct}
-                            sx={{ height: 6, borderRadius: 3, bgcolor: alpha('#7C3AED', 0.08),
-                              '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: utilPct > 90 ? '#DC2626' : utilPct > 70 ? '#D97706' : '#7C3AED' } }} />
+                            sx={{ height: 6, borderRadius: 3, bgcolor: alpha('#1E40AF', 0.08),
+                              '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: utilPct > 90 ? '#DC2626' : utilPct > 70 ? '#D97706' : '#1E40AF' } }} />
                         </Box>
                       )}
                     </Box>

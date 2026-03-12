@@ -46,7 +46,7 @@ const helpSections = [
     id: 'promotions',
     title: 'Promotions',
     icon: PromotionsIcon,
-    color: '#7C3AED',
+    color: '#1E40AF',
     description: 'Create, manage, and track trade promotions',
     path: '/help/promotions',
     topics: ['Creating promotions', 'Promotion types', 'Approval workflow', 'Performance tracking'],
@@ -362,7 +362,7 @@ const HelpCenter = () => {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
                   <Box
                     sx={{
-                      bgcolor: guide.type === 'video' ? '#d32f2f' : '#7C3AED',
+                      bgcolor: guide.type === 'video' ? '#d32f2f' : '#1E40AF',
                       borderRadius: 2,
                       p: 1,
                       mr: 2,

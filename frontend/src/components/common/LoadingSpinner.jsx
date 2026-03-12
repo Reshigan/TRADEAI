@@ -21,7 +21,7 @@ const LoadingSpinner = ({ size = 'medium', message = 'Loading...' }) => {
         width: `${spinner}px`,
         height: `${spinner}px`,
         border: `${border}px solid #E5E5E5`,
-        borderTop: `${border}px solid #6D28D9`,
+        borderTop: `${border}px solid #1E3A8A`,
         borderRadius: '50%',
         animation: 'spin 1s linear infinite'
       }} />

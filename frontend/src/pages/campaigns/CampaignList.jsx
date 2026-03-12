@@ -44,12 +44,12 @@ const CampaignList = () => {
   }), [campaigns]);
 
   const summaryCards = [
-    { label: 'Total Campaigns', value: stats.total, icon: <CampaignIcon />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Total Campaigns', value: stats.total, icon: <CampaignIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Active', value: stats.active, icon: <ActiveIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Total Budget', value: formatCurrency(stats.totalBudget), icon: <BudgetIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
 
-  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: '#7C3AED' }} /></Box>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>;
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
@@ -59,7 +59,7 @@ const CampaignList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/campaigns/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
           New Campaign
         </Button>
       </Box>
@@ -104,7 +104,7 @@ const CampaignList = () => {
           <CampaignIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No campaigns found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/campaigns/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Create Campaign
           </Button>
         </Paper>
@@ -115,7 +115,7 @@ const CampaignList = () => {
               <Paper elevation={0}
                 sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', cursor: 'pointer',
                   transition: 'all 0.2s', height: '100%', display: 'flex', flexDirection: 'column',
-                  '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#7C3AED', transform: 'translateY(-2px)' } }}
+                  '&:hover': { boxShadow: '0 4px 20px rgba(124,58,237,0.12)', borderColor: '#1E40AF', transform: 'translateY(-2px)' } }}
                 onClick={() => navigate(`/campaigns/${campaign.id || campaign._id}`)}>
                 <Box display="flex" justifyContent="space-between" alignItems="start" mb={2}>
                   <Box display="flex" alignItems="center" gap={1.5} sx={{ flex: 1, mr: 1 }}>
@@ -141,9 +141,9 @@ const CampaignList = () => {
                     <Typography variant="caption" fontWeight={600}>{formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}</Typography>
                   </Box>
                   {campaign.promotions && campaign.promotions.length > 0 && (
-                    <Box sx={{ p: 1.5, bgcolor: alpha('#7C3AED', 0.06), borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Typography variant="caption" fontWeight={600} color="#7C3AED">Promotions</Typography>
-                      <Chip label={campaign.promotions.length} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: alpha('#7C3AED', 0.12), color: '#7C3AED' }} />
+                    <Box sx={{ p: 1.5, bgcolor: alpha('#1E40AF', 0.06), borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="caption" fontWeight={600} color="#1E40AF">Promotions</Typography>
+                      <Chip label={campaign.promotions.length} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: alpha('#1E40AF', 0.12), color: '#1E40AF' }} />
                     </Box>
                   )}
                 </Box>

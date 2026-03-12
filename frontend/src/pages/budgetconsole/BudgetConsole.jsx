@@ -399,7 +399,7 @@ const BudgetConsole = () => {
                               `${(p.budget / 600000) * 300},${200 - (p.roi / 3.5) * 200}`
                             ).join(' ')}
                             fill="none"
-                            stroke="#7C3AED"
+                            stroke="#1E40AF"
                             strokeWidth="2"
                           />
                           <line

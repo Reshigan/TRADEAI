@@ -355,9 +355,9 @@ const ForecastingDashboard = () => {
                     <Line
                       type="monotone"
                       dataKey="value"
-                      stroke="#7C3AED"
+                      stroke="#1E40AF"
                       strokeWidth={3}
-                      dot={{ fill: '#7C3AED', strokeWidth: 2, r: 4 }}
+                      dot={{ fill: '#1E40AF', strokeWidth: 2, r: 4 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>

@@ -11,7 +11,7 @@ import {
 } from '@mui/icons-material';
 import { documentManagementService } from '../../services/api';
 
-const SummaryCard = ({ title, value, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
     <CardContent sx={{ py: 2, px: 3, '&:last-child': { pb: 2 } }}>
       <Typography variant="caption" color="text.secondary">{title}</Typography>
@@ -87,7 +87,7 @@ export default function DocumentManagement() {
   };
 
   const typeColor = (t) => {
-    const map = { contract: '#7C3AED', invoice: '#2563EB', proof_of_performance: '#059669', claim_support: '#D97706', agreement: '#DC2626', report: '#6366F1', general: '#6B7280' };
+    const map = { contract: '#1E40AF', invoice: '#2563EB', proof_of_performance: '#059669', claim_support: '#D97706', agreement: '#DC2626', report: '#6366F1', general: '#6B7280' };
     return map[t] || '#6B7280';
   };
 
@@ -100,7 +100,7 @@ export default function DocumentManagement() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>New Document</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Document</Button>
         </Box>
       </Box>
 
@@ -194,7 +194,7 @@ export default function DocumentManagement() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#7C3AED' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

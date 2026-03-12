@@ -117,7 +117,7 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          bgcolor: '#7C3AED',
+          bgcolor: '#1E40AF',
           color: 'white'
         }}
       >
@@ -156,7 +156,7 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
                       variant="subtitle2"
                       sx={{
                         fontWeight: index === activeStep ? 'bold' : 'normal',
-                        color: index === activeStep ? '#7C3AED' : 'text.primary'
+                        color: index === activeStep ? '#1E40AF' : 'text.primary'
                       }}
                     >
                       {step.title}
@@ -192,7 +192,7 @@ const WalkthroughTour = ({ open, onClose, startAtStep = 0 }) => {
               }}
             >
               <Box sx={{ textAlign: 'center' }}>
-                {React.cloneElement(tourSteps[activeStep].icon, { sx: { fontSize: 48, color: '#7C3AED', mb: 1 } })}
+                {React.cloneElement(tourSteps[activeStep].icon, { sx: { fontSize: 48, color: '#1E40AF', mb: 1 } })}
                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
                   Step {activeStep + 1} of {tourSteps.length}
                 </Typography>

@@ -38,7 +38,7 @@ const StatusChip = ({ status }) => {
     draft: { bg: '#F3F4F6', color: '#6B7280' },
     planned: { bg: '#DBEAFE', color: '#2563EB' },
     approved: { bg: '#D1FAE5', color: '#059669' },
-    active: { bg: '#EDE9FE', color: '#7C3AED' },
+    active: { bg: '#EFF6FF', color: '#1E40AF' },
     completed: { bg: '#E0E7FF', color: '#4338CA' },
     cancelled: { bg: '#FEE2E2', color: '#DC2626' },
   };
@@ -69,7 +69,7 @@ const PriorityChip = ({ priority }) => {
   );
 };
 
-const SummaryCard = ({ title, value, subtitle, icon, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', height: '100%' }}>
     <CardContent sx={{ p: 2.5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -96,7 +96,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#7C3AED' }) => (
 
 const EMPTY_EVENT = {
   name: '', description: '', eventType: 'promotion', status: 'draft',
-  startDate: '', endDate: '', allDay: true, color: '#7C3AED',
+  startDate: '', endDate: '', allDay: true, color: '#1E40AF',
   customerId: '', customerName: '', productId: '', productName: '',
   promotionId: '', budgetId: '', channel: '', region: '', category: '', brand: '',
   plannedSpend: 0, plannedVolume: 0, plannedRevenue: 0,
@@ -224,7 +224,7 @@ const TradeCalendarManagement = () => {
       startDate: (ev.startDate || ev.start_date || '').split('T')[0],
       endDate: (ev.endDate || ev.end_date || '').split('T')[0],
       allDay: ev.allDay !== undefined ? ev.allDay : true,
-      color: ev.color || '#7C3AED',
+      color: ev.color || '#1E40AF',
       customerId: ev.customerId || ev.customer_id || '',
       customerName: ev.customerName || ev.customer_name || '',
       productId: ev.productId || ev.product_id || '',
@@ -417,18 +417,18 @@ const TradeCalendarManagement = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchEvents(); fetchConstraints(); fetchSummary(); fetchTimeline(); }}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#7C3AED', color: '#7C3AED' } }}>
+            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
             Refresh
           </Button>
           {tab === 0 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateEvent}
-              sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
               New Event
             </Button>
           )}
           {tab === 2 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateConstraint}
-              sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
               New Constraint
             </Button>
           )}
@@ -441,7 +441,7 @@ const TradeCalendarManagement = () => {
         <Grid item xs={12} sm={6} md={3}>
           <SummaryCard title="Total Events" value={summary?.events?.total || 0}
             subtitle={`${summary?.events?.active || 0} active`}
-            icon={<CalendarIcon />} color="#7C3AED" />
+            icon={<CalendarIcon />} color="#1E40AF" />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <SummaryCard title="Upcoming" value={summary?.events?.upcoming || 0}
@@ -460,7 +460,7 @@ const TradeCalendarManagement = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
         <Tab label={`Calendar Events (${events.length})`} />
         <Tab label="Timeline View" />
         <Tab label={`Constraints (${constraints.length})`} />
@@ -499,13 +499,13 @@ const TradeCalendarManagement = () => {
                   <TableRow key={ev.id} hover sx={{ '&:hover': { bgcolor: '#F9FAFB' } }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: ev.color || typeInfo?.color || '#7C3AED', flexShrink: 0 }} />
+                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: ev.color || typeInfo?.color || '#1E40AF', flexShrink: 0 }} />
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>{ev.name}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Chip label={typeInfo?.label || (ev.eventType || ev.event_type)} size="small"
-                        sx={{ bgcolor: `${typeInfo?.color || '#7C3AED'}20`, color: typeInfo?.color || '#7C3AED', fontWeight: 500, fontSize: '0.7rem' }} />
+                        sx={{ bgcolor: `${typeInfo?.color || '#1E40AF'}20`, color: typeInfo?.color || '#1E40AF', fontWeight: 500, fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>
                       <Typography variant="caption" sx={{ color: '#374151' }}>
@@ -553,7 +553,7 @@ const TradeCalendarManagement = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant="h6" sx={{ fontWeight: 700 }}>{month.label}</Typography>
                   <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Chip label={`${month.count} events`} size="small" sx={{ bgcolor: '#EDE9FE', color: '#7C3AED' }} />
+                    <Chip label={`${month.count} events`} size="small" sx={{ bgcolor: '#EFF6FF', color: '#1E40AF' }} />
                     <Typography variant="body2" sx={{ color: '#6B7280' }}>
                       Spend: {formatCurrency(month.totalPlannedSpend)}
                     </Typography>
@@ -564,7 +564,7 @@ const TradeCalendarManagement = () => {
                     const typeInfo = eventTypes.find(t => t.value === (ev.eventType || ev.event_type));
                     return (
                       <Box key={ev.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, borderRadius: 2, bgcolor: '#F9FAFB', '&:hover': { bgcolor: '#F3F4F6' } }}>
-                        <Box sx={{ width: 4, height: 32, borderRadius: 1, bgcolor: ev.color || typeInfo?.color || '#7C3AED' }} />
+                        <Box sx={{ width: 4, height: 32, borderRadius: 1, bgcolor: ev.color || typeInfo?.color || '#1E40AF' }} />
                         <Box sx={{ flex: 1 }}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>{ev.name}</Typography>
                           <Typography variant="caption" sx={{ color: '#6B7280' }}>
@@ -771,7 +771,7 @@ const TradeCalendarManagement = () => {
           <Button onClick={() => setEventDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveEvent}
             disabled={!eventForm.name || !eventForm.startDate || !eventForm.endDate}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             {editingEventId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -881,7 +881,7 @@ const TradeCalendarManagement = () => {
           <Button onClick={() => setConstraintDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveConstraint}
             disabled={!constraintForm.name}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             {editingConstraintId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -926,7 +926,7 @@ const TradeCalendarManagement = () => {
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Planned Spend</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 700, color: '#7C3AED' }}>{formatCurrency(detailEvent.plannedSpend || detailEvent.planned_spend)}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatCurrency(detailEvent.plannedSpend || detailEvent.planned_spend)}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Actual Spend</Typography>
@@ -968,7 +968,7 @@ const TradeCalendarManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="contained" onClick={() => { setDetailDialog(false); handleEditEvent(detailEvent); }}
-            sx={{ bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}>
+            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
             Edit
           </Button>
         </DialogActions>

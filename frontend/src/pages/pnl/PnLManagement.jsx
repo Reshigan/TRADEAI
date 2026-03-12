@@ -39,7 +39,7 @@ const StatusChip = ({ status }) => {
     generating: { bg: '#FEF3C7', color: '#D97706' },
     generated: { bg: '#D1FAE5', color: '#059669' },
     approved: { bg: '#DBEAFE', color: '#2563EB' },
-    published: { bg: '#EDE9FE', color: '#7C3AED' },
+    published: { bg: '#EFF6FF', color: '#1E40AF' },
     archived: { bg: '#F3F4F6', color: '#9CA3AF' },
   };
   const c = colorMap[status] || colorMap.draft;
@@ -52,7 +52,7 @@ const StatusChip = ({ status }) => {
   );
 };
 
-const SummaryCard = ({ title, value, subtitle, icon, color = '#7C3AED' }) => (
+const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
     <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -315,7 +315,7 @@ const PnLManagement = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleCreate}
-            sx={{ borderRadius: 2, textTransform: 'none', bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}
+            sx={{ borderRadius: 2, textTransform: 'none', bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}
           >
             New Report
           </Button>
@@ -335,7 +335,7 @@ const PnLManagement = () => {
             value={summary?.reports?.total || 0}
             subtitle={`${summary?.reports?.generated || 0} generated`}
             icon={<ReportIcon />}
-            color="#7C3AED"
+            color="#1E40AF"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -374,8 +374,8 @@ const PnLManagement = () => {
           sx={{
             px: 2, pt: 1,
             '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 44 },
-            '& .Mui-selected': { color: '#7C3AED' },
-            '& .MuiTabs-indicator': { bgcolor: '#7C3AED' },
+            '& .Mui-selected': { color: '#1E40AF' },
+            '& .MuiTabs-indicator': { bgcolor: '#1E40AF' },
           }}
         >
           <Tab icon={<ReportIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Reports" />
@@ -386,7 +386,7 @@ const PnLManagement = () => {
         {activeTab === 0 && (
           <TableContainer>
             {loading ? (
-              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#7C3AED' }} /></Box>
+              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#1E40AF' }} /></Box>
             ) : reports.length === 0 ? (
               <Box sx={{ p: 4, textAlign: 'center' }}>
                 <Typography color="text.secondary">No P&L reports yet. Click &quot;New Report&quot; to create one.</Typography>
@@ -478,7 +478,7 @@ const PnLManagement = () => {
         {activeTab === 1 && (
           <TableContainer>
             {liveLoading ? (
-              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#7C3AED' }} /></Box>
+              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#1E40AF' }} /></Box>
             ) : liveCustomerData.length === 0 ? (
               <Box sx={{ p: 4, textAlign: 'center' }}>
                 <Typography color="text.secondary">No customer trade spend data found. Create trade spends to see live P&L.</Typography>
@@ -532,7 +532,7 @@ const PnLManagement = () => {
         {activeTab === 2 && (
           <TableContainer>
             {liveLoading ? (
-              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#7C3AED' }} /></Box>
+              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#1E40AF' }} /></Box>
             ) : livePromoData.length === 0 ? (
               <Box sx={{ p: 4, textAlign: 'center' }}>
                 <Typography color="text.secondary">No promotion trade spend data found. Create trade spends linked to promotions to see live P&L.</Typography>
@@ -734,7 +734,7 @@ const PnLManagement = () => {
             variant="contained"
             onClick={handleSave}
             disabled={saving || !form.name}
-            sx={{ textTransform: 'none', bgcolor: '#7C3AED', '&:hover': { bgcolor: '#6D28D9' } }}
+            sx={{ textTransform: 'none', bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}
           >
             {saving ? <CircularProgress size={20} /> : editingReport ? 'Update' : 'Create'}
           </Button>
@@ -743,12 +743,12 @@ const PnLManagement = () => {
 
       <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="lg" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
         <DialogTitle sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <PnLIcon sx={{ color: '#7C3AED' }} />
+          <PnLIcon sx={{ color: '#1E40AF' }} />
           {detailReport?.name || 'P&L Report Details'}
         </DialogTitle>
         <DialogContent dividers>
           {detailLoading ? (
-            <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#7C3AED' }} /></Box>
+            <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>
           ) : detailReport ? (
             <Box>
               <Grid container spacing={2} sx={{ mb: 3 }}>

@@ -128,7 +128,7 @@ const AIExplanationPanel = ({
       <Paper sx={{ 
         p: 2, 
         mb: 2, 
-        background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #5B21B6 100%)',
         color: 'white'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>

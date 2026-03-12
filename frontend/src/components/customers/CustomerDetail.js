@@ -181,7 +181,7 @@ const CustomerDetail = () => {
   // Get avatar color based on customer name
   const getAvatarColor = (name) => {
     const colors = [
-      '#7C3AED', // blue
+      '#1E40AF', // blue
       '#388e3c', // green
       '#d32f2f', // red
       '#f57c00', // orange

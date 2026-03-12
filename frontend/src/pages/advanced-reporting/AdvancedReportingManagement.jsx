@@ -219,7 +219,7 @@ const AdvancedReportingManagement = () => {
   const fmtPct = (v) => v != null ? `${Number(v).toFixed(1)}%` : '—';
 
   const summaryCards = summary ? [
-    { label: 'Templates', value: summary.templates?.total || 0, color: '#7C3AED' },
+    { label: 'Templates', value: summary.templates?.total || 0, color: '#1E40AF' },
     { label: 'Active Templates', value: summary.templates?.active || 0, color: '#10B981' },
     { label: 'Saved Reports', value: summary.reports?.total || 0, color: '#3B82F6' },
     { label: 'Favorites', value: summary.reports?.favorites || 0, color: '#F59E0B' },
@@ -594,7 +594,7 @@ const AdvancedReportingManagement = () => {
                 { label: 'Settlements', data: crossModule.settlements, fields: [{ k: 'totalSettled', l: 'Settled', fmt: 'R' }, { k: 'count', l: 'Count' }] },
               ].map((section, i) => (
                 <Grid item xs={12} md={6} key={i}>
-                  <Paper sx={{ p: 3, borderTop: '3px solid #7C3AED' }}>
+                  <Paper sx={{ p: 3, borderTop: '3px solid #1E40AF' }}>
                     <Typography variant="h6" fontWeight={700} gutterBottom>{section.label}</Typography>
                     {section.fields.map((f, fi) => (
                       <Box key={fi} sx={{ display: 'flex', justifyContent: 'space-between', py: 0.5 }}>

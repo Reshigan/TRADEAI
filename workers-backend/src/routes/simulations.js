@@ -1,10 +1,12 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
-import { getD1Client } from '../services/d1.js';
+import { getD1Client, rowToDocument } from '../services/d1.js';
 
 const simulationsRoutes = new Hono();
 
 simulationsRoutes.use('*', authMiddleware);
+
+const getCompanyId = (c) => c.get('tenantId') || c.get('companyId') || c.req.header('X-Company-Code') || 'default';
 
 simulationsRoutes.get('/', async (c) => {
   try {
@@ -14,6 +16,70 @@ simulationsRoutes.get('/', async (c) => {
     return c.json({ success: true, data: simulations });
   } catch (error) {
     return c.json({ success: true, data: [] });
+  }
+});
+
+simulationsRoutes.post('/run-simulation', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const body = await c.req.json();
+    const { promotionType, discountValue, durationWeeks, products, customers, budgetAmount } = body;
+
+    const elasticity = { price_discount: 1.5, volume_discount: 1.2, bogo: 0.8, bundle: 1.0, display: 0.6, sampling: 0.5 };
+    const elast = elasticity[promotionType] || 1.0;
+    const lift = (discountValue * elast) / 100;
+
+    const details = [];
+    let totalIncrementalRevenue = 0;
+    const totalCost = budgetAmount || 0;
+
+    const custList = customers && customers.length > 0 ? customers : [null];
+    const prodList = products && products.length > 0 ? products : [null];
+
+    for (const custId of custList) {
+      for (const prodId of prodList) {
+        let baselineQuery = `SELECT AVG(quantity) as avg_qty, AVG(net_amount) as avg_rev, COUNT(*) as weeks
+          FROM sales_transactions WHERE company_id = ? AND is_promotional = 0
+          AND transaction_date >= date('now', '-52 weeks')`;
+        const params = [companyId];
+        if (custId) { baselineQuery += ' AND customer_id = ?'; params.push(custId); }
+        if (prodId) { baselineQuery += ' AND product_id = ?'; params.push(prodId); }
+
+        const baseline = await db.prepare(baselineQuery).bind(...params).first();
+        const weeklyBaseline = baseline?.avg_rev || 5000;
+        const forecastWeekly = weeklyBaseline * (1 + lift);
+        const incrementalRevenue = (forecastWeekly - weeklyBaseline) * (durationWeeks || 4);
+        totalIncrementalRevenue += incrementalRevenue;
+
+        details.push({
+          customerId: custId, productId: prodId,
+          weeklyBaseline: Math.round(weeklyBaseline * 100) / 100,
+          forecastWeekly: Math.round(forecastWeekly * 100) / 100,
+          incrementalRevenue: Math.round(incrementalRevenue * 100) / 100,
+          lift: Math.round(lift * 10000) / 100
+        });
+      }
+    }
+
+    const projectedROI = totalCost > 0 ? ((totalIncrementalRevenue - totalCost) / totalCost) * 100 : 0;
+    const breakEvenWeek = totalCost > 0 && totalIncrementalRevenue > 0
+      ? Math.ceil((durationWeeks || 4) * totalCost / totalIncrementalRevenue) : null;
+
+    return c.json({
+      success: true,
+      data: {
+        totalIncrementalRevenue: Math.round(totalIncrementalRevenue * 100) / 100,
+        totalCost,
+        projectedROI: Math.round(projectedROI * 100) / 100,
+        projectedLift: Math.round(lift * 10000) / 100,
+        breakEvenWeek,
+        details
+      }
+    });
+  } catch (error) {
+    console.error('Run simulation error:', error);
+    return c.json({ success: false, message: error.message }, 500);
   }
 });
 

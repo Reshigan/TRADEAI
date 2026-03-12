@@ -350,7 +350,7 @@ const CustomerReports = () => {
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                   <Legend />
-                  <Bar dataKey="revenue" fill="#7C3AED" name="Revenue" />
+                  <Bar dataKey="revenue" fill="#1E40AF" name="Revenue" />
                 </BarChart>
               </ResponsiveContainer>
             </Paper>

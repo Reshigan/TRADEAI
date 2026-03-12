@@ -1,0 +1,6 @@
+ALTER TABLE budgets ADD COLUMN committed REAL DEFAULT 0;
+ALTER TABLE budgets ADD COLUMN spent REAL DEFAULT 0;
+ALTER TABLE budgets ADD COLUMN alerts_sent TEXT DEFAULT '[]';
+
+ALTER TABLE promotions ADD COLUMN expected_spend REAL DEFAULT 0;
+ALTER TABLE promotions ADD COLUMN actual_spend REAL DEFAULT 0;

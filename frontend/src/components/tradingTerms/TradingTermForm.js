@@ -21,7 +21,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-import { tradingTermsService as tradingTermsService } from '../../services/api';
+import { tradingTermsService } from '../../services/api';
 
 const TradingTermForm = () => {
   const { id } = useParams();

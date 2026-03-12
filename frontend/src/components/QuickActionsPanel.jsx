@@ -41,7 +41,7 @@ const QuickActionsPanel = ({ onAction }) => {
       title: 'New Promotion',
       description: 'Launch promotion in 30 seconds',
       icon: <CampaignIcon />,
-      color: '#6D28D9',
+      color: '#1E3A8A',
       url: '/promotions/new',
       badge: 'Popular',
       estimatedTime: '30s'
@@ -323,7 +323,7 @@ const QuickActionsPanel = ({ onAction }) => {
 
       {/* Productivity Tip */}
       <Box sx={{ mt: 2, p: 1.5, bgcolor: '#fff3e0', borderRadius: 2 }}>
-        <Typography variant="caption" sx={{ color: '#6D28D9' }}>
+        <Typography variant="caption" sx={{ color: '#1E3A8A' }}>
           <strong>Pro tip:</strong> Use keyboard shortcuts: <code>Ctrl+P</code> for new promotion, <code>Ctrl+K</code> for quick search
         </Typography>
       </Box>

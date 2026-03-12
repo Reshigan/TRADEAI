@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   ];
 
   const statCards = [
-    { label: 'Active Users', value: '45', icon: <People />, color: '#7C3AED', bg: alpha('#7C3AED', 0.08) },
+    { label: 'Active Users', value: '45', icon: <People />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Rebate Types', value: '8', icon: <LocalOffer />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Active Workflows', value: '12', icon: <AccountTree />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'System Health', value: '100%', icon: <Security />, color: '#D97706', bg: alpha('#D97706', 0.08) },
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 1 }}>
           <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} variant="scrollable" scrollButtons="auto"
-            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 52 }, '& .Mui-selected': { color: '#7C3AED' }, '& .MuiTabs-indicator': { bgcolor: '#7C3AED' } }}>
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 52 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
             {adminSections.map((section) => (
               <Tab key={section.id} label={section.label} icon={section.icon} iconPosition="start" />
             ))}

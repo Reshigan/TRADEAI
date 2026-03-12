@@ -68,6 +68,7 @@ const TABLE_MAP = {
   kpi_targets: 'kpi_targets',
   kpi_actuals: 'kpi_actuals',
   executive_scorecards: 'executive_scorecards',
+  sales_transactions: 'sales_transactions',
   notifications: 'notifications',
   alert_rules: 'alert_rules',
   alert_history: 'alert_history',

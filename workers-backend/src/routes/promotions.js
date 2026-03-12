@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware } from '../middleware/auth.js';
-import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
+import { BudgetEnforcementService, checkBudgetAvailability } from '../services/budgetEnforcement.js';
+import { routeApproval } from '../services/approvalRouting.js';
 
 export const promotionRoutes = new Hono();
 
@@ -66,7 +67,34 @@ promotionRoutes.post('/', async (c) => {
       if (!check.available) {
         return c.json({ success: false, message: check.reason, budgetInfo: { totalBudget: check.totalBudget, committed: check.committed, spent: check.spent, available: check.availableAmount } }, 400);
       }
+    } else if (data.budget_id || data.budgetId) {
+      const budgetId = data.budget_id || data.budgetId;
+      const expectedSpend = data.expected_spend || data.expectedSpend || 0;
+      if (expectedSpend > 0) {
+        const enforcement = new BudgetEnforcementService(c.env.DB);
+        try {
+          await enforcement.checkAvailability(budgetId, expectedSpend);
+        } catch (err) {
+          return c.json({ success: false, message: err.message }, 400);
+        }
+      }
     }
+
+    let warnings = [];
+    try {
+      const productIds = JSON.parse(data.data || '{}').products?.map(p => p.productId || p.id) || [];
+      if (productIds.length > 0 && data.start_date && data.end_date) {
+        const conflicts = await c.env.DB.prepare(`
+          SELECT id, name, start_date, end_date FROM promotions
+          WHERE company_id = ? AND status IN ('approved','active')
+          AND start_date <= ? AND end_date >= ?
+        `).bind(tenantId, data.end_date, data.start_date).all();
+        warnings = (conflicts.results || []).map(cp => ({
+          type: 'conflict', message: `Overlapping promotion "${cp.name}" (${cp.start_date} to ${cp.end_date})`
+        }));
+      }
+    } catch (e) { /* conflict check is optional */ }
+
 
     const promotionId = await mongodb.insertOne('promotions', {
       ...data,
@@ -75,7 +103,7 @@ promotionRoutes.post('/', async (c) => {
       status: data.status || 'draft'
     });
 
-    return c.json({ success: true, data: { id: promotionId }, message: 'Promotion created successfully' }, 201);
+    return c.json({ success: true, data: { id: promotionId }, warnings, message: 'Promotion created successfully' }, 201);
   } catch (error) {
     return c.json({ success: false, message: 'Failed to create promotion', error: error.message }, 500);
   }
@@ -355,8 +383,61 @@ promotionRoutes.get('/:id/history', async (c) => {
   }
 });
 
+// Trade Calendar
+promotionRoutes.get('/calendar', async (c) => {
+  try {
+    const companyId = c.get('tenantId');
+    const { from, to } = c.req.query();
+    const promos = await c.env.DB.prepare(`
+      SELECT id, name, promotion_type, status, start_date, end_date, budget_id, data
+      FROM promotions WHERE company_id = ? AND status IN ('approved','active','completed')
+      AND start_date <= ? AND end_date >= ?
+      ORDER BY start_date
+    `).bind(companyId, to || '2099-12-31', from || '2000-01-01').all();
+
+    const colors = { price_discount: '#3B82F6', volume_discount: '#059669', bogo: '#F59E0B', bundle: '#7C3AED' };
+    const events = (promos.results || []).map(p => ({
+      id: p.id, title: p.name, start: p.start_date, end: p.end_date,
+      color: colors[p.promotion_type] || '#6B7280', status: p.status,
+      extendedProps: { type: p.promotion_type, budgetId: p.budget_id }
+    }));
+
+    return c.json({ success: true, data: events });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Submit for approval
+promotionRoutes.put('/:id/submit', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const companyId = c.get('tenantId');
+    const userId = c.get('userId');
+
+    const promo = await c.env.DB.prepare(
+      'SELECT * FROM promotions WHERE id = ? AND company_id = ?'
+    ).bind(id, companyId).first();
+
+    if (!promo) return c.json({ success: false, message: 'Not found' }, 404);
+
+    await c.env.DB.prepare(
+      "UPDATE promotions SET status = 'pending_approval', updated_at = datetime('now') WHERE id = ?"
+    ).bind(id).run();
+
+    const approvalId = await routeApproval(c.env.DB, {
+      companyId, entityType: 'promotion', entityId: id,
+      entityName: promo.name, amount: promo.expected_spend || 0, createdBy: userId
+    });
+
+    return c.json({ success: true, data: { approvalId }, message: 'Submitted for approval' });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 // Get promotion performance
-promotionRoutes.get('/:id/performance', async (c) => {
+promotionRoutes.get('/:id/performance',async (c) => {
   try {
     const { id } = c.req.param();
     const tenantId = c.get('tenantId');
