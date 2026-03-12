@@ -69,6 +69,7 @@ import { integrationHubRoutes } from './routes/integrationHub.js';
 import { roleManagementRoutes } from './routes/roleManagement.js';
 import { systemConfigRoutes } from './routes/systemConfig.js';
 import { workflowEngineRoutes } from './routes/workflowEngine.js';
+import { searchRoutes } from './routes/search.js';
 
 const app = new Hono();
 
@@ -180,6 +181,7 @@ app.route('/api/integration-hub', integrationHubRoutes);
 app.route('/api/role-management', roleManagementRoutes);
 app.route('/api/system-config', systemConfigRoutes);
 app.route('/api/workflow-engine', workflowEngineRoutes);
+app.route('/api/search', searchRoutes);
 
 // 404 handler
 app.notFound((c) => {
@@ -200,4 +202,10 @@ app.onError((err, c) => {
   }, 500);
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(event, env, ctx) {
+    const { scheduledJobs } = await import('./jobs/scheduled.js');
+    ctx.waitUntil(scheduledJobs(event, env));
+  }
+};

@@ -352,6 +352,61 @@ seedRoutes.get('/ml-stats', async (c) => {
   }
 });
 
+seedRoutes.post('/sales-transactions', async (c) => {
+  try {
+    const db = getD1Client(c);
+    const user = c.get('user');
+    const companyId = user.companyId;
+
+    const existingCustomers = await db.find('customers', { company_id: companyId }, { limit: 20 });
+    const existingProducts = await db.find('products', { company_id: companyId }, { limit: 20 });
+    const custIds = existingCustomers.map(r => r.id);
+    const prodIds = existingProducts.map(r => r.id);
+
+    if (custIds.length === 0 || prodIds.length === 0) {
+      return c.json({ success: false, message: 'No customers or products found. Seed demo data first.' }, 400);
+    }
+
+    const channels = ['retail', 'wholesale', 'ecommerce', 'convenience'];
+    let count = 0;
+    const now = new Date();
+
+    for (const custId of custIds) {
+      for (const prodId of prodIds) {
+        const product = existingProducts.find(p => p.id === prodId);
+        const unitPrice = product?.unit_price || product?.unitPrice || (50 + Math.random() * 200);
+
+        for (let week = 0; week < 52; week++) {
+          const txDate = new Date(now);
+          txDate.setDate(txDate.getDate() - (week * 7) - Math.floor(Math.random() * 7));
+          const dateStr = txDate.toISOString().split('T')[0];
+
+          const baseQty = 50 + Math.floor(Math.random() * 450);
+          const variance = 0.8 + Math.random() * 0.4;
+          const quantity = Math.round(baseQty * variance);
+          const grossAmount = +(quantity * unitPrice).toFixed(2);
+          const isPromo = Math.random() < 0.15 ? 1 : 0;
+          const discountPct = isPromo ? (5 + Math.random() * 25) : 0;
+          const discountAmount = +(grossAmount * discountPct / 100).toFixed(2);
+          const netAmount = +(grossAmount - discountAmount).toFixed(2);
+
+          const id = crypto.randomUUID();
+          await c.env.DB.prepare(`
+            INSERT INTO sales_transactions (id, company_id, customer_id, product_id, transaction_date, quantity, unit_price, gross_amount, discount_amount, net_amount, channel, is_promotional, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+          `).bind(id, companyId, custId, prodId, dateStr, quantity, unitPrice, grossAmount, discountAmount, netAmount, channels[Math.floor(Math.random() * channels.length)], isPromo).run();
+          count++;
+        }
+      }
+    }
+
+    return c.json({ success: true, message: `Seeded ${count} sales transactions`, data: { count, customers: custIds.length, products: prodIds.length } });
+  } catch (error) {
+    console.error('Seed sales transactions error:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 seedRoutes.post('/comprehensive', async (c) => {
   try {
     const db = getD1Client(c);

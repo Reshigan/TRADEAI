@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { BudgetEnforcementService } from '../services/budgetEnforcement.js';
+import { createNotification } from '../services/notifications.js';
 
 const approvals = new Hono();
 
@@ -330,6 +332,24 @@ approvals.post('/:id/approve', async (c) => {
       }
     }
     
+    if (approval.entity_type === 'promotion') {
+      try {
+        const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
+        if (promo && promo.budget_id && promo.expected_spend > 0) {
+          const enforcement = new BudgetEnforcementService(db);
+          await enforcement.commitFunds(promo.budget_id, promo.expected_spend);
+        }
+      } catch (e) { console.log('Budget commit:', e.message); }
+    }
+
+    try {
+      await createNotification(db, {
+        companyId, userId: approval.created_by || approval.requested_by,
+        title: 'Approval Granted', message: `"${approval.entity_name}" has been approved.`,
+        type: 'success', category: 'approval', entityType: 'approval', entityId: id
+      });
+    } catch (e) { console.log('Notification error:', e.message); }
+
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
@@ -392,6 +412,24 @@ approvals.post('/:id/reject', async (c) => {
       }
     }
     
+    if (approval.entity_type === 'promotion') {
+      try {
+        const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
+        if (promo && promo.budget_id && promo.expected_spend > 0) {
+          const enforcement = new BudgetEnforcementService(db);
+          await enforcement.releaseFunds(promo.budget_id, promo.expected_spend);
+        }
+      } catch (e) { console.log('Budget release:', e.message); }
+    }
+
+    try {
+      await createNotification(db, {
+        companyId, userId: approval.created_by || approval.requested_by,
+        title: 'Approval Rejected', message: `"${approval.entity_name}" was rejected. Reason: ${body.reason || 'Not specified'}`,
+        type: 'error', category: 'approval', entityType: 'approval', entityId: id
+      });
+    } catch (e) { console.log('Notification error:', e.message); }
+
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });

@@ -269,8 +269,30 @@ deductions.post('/', async (c) => {
     ).run();
     
     const created = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
-    
-    return c.json({ success: true, data: rowToDocument(created) }, 201);
+
+    let autoMatch = null;
+    try {
+      const claims = await db.prepare(`
+        SELECT id, claimed_amount FROM claims
+        WHERE company_id = ? AND customer_id = ? AND status IN ('submitted','approved')
+      `).bind(companyId, body.customerId || body.customer_id || body.customer).all();
+
+      for (const claim of claims.results || []) {
+        const tolerance = Math.abs(amount - claim.claimed_amount) / Math.max(amount, 1);
+        if (tolerance < 0.05) {
+          await db.prepare(`
+            UPDATE deductions SET status = 'matched', matched_to = ?, updated_at = ? WHERE id = ?
+          `).bind(JSON.stringify([{ entityType: 'claim', entityId: claim.id, amount }]), now, id).run();
+          await db.prepare(`
+            UPDATE claims SET status = 'matched', data = json_set(COALESCE(data,'{}'), '$.matchedDeductionId', ?) WHERE id = ?
+          `).bind(id, claim.id).run();
+          autoMatch = { claimId: claim.id, claimAmount: claim.claimed_amount, deductionAmount: amount, tolerance: Math.round(tolerance * 100) + '%' };
+          break;
+        }
+      }
+    } catch (e) { console.log('Auto-match error:', e.message); }
+
+    return c.json({ success: true, data: rowToDocument(created), autoMatch }, 201);
   } catch (error) {
     console.error('Error creating deduction:', error);
     return c.json({ success: false, message: error.message }, 500);
