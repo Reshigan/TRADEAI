@@ -110,7 +110,7 @@ const CustomerListEnhanced = () => {
       icon: '',
       label: 'Bulk Update Status',
       description: 'Update multiple customer statuses at once',
-      action: () => console.log('Bulk update')
+      action: () => {}
     }
   ];
 

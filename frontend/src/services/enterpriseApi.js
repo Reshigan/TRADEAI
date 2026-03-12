@@ -16,16 +16,12 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const tenantId = localStorage.getItem('tenantId');
-    console.log('[apiClient] Request interceptor - checking localStorage for token...');
-    console.log('[apiClient] Token found:', token ? 'YES (length: ' + token.length + ')' : 'NO');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('[apiClient] Authorization header set');
     }
     if (tenantId) {
       config.headers['X-Tenant-ID'] = tenantId;
     }
-    console.log('[apiClient] Final headers:', config.headers);
     return config;
   },
   (error) => {

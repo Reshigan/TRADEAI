@@ -51,17 +51,13 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      console.log('Attempting login with:', { email: credentials.email });
-      
       // Use authService for consistent API handling
       const data = await authService.login({
         email: credentials.email,
         password: credentials.password
       });
 
-      console.log('Login response:', data);
-
-      if (data.token || data.data?.token || data.data?.tokens?.accessToken) {
+      if(data.token || data.data?.token || data.data?.tokens?.accessToken) {
         const userData = data.user || data.data?.user || data.data;
         const token = data.token || data.data?.token || data.data?.tokens?.accessToken;
         const accessToken = data.data?.tokens?.accessToken || data.token || data.data?.token;
@@ -73,27 +69,17 @@ const Login = ({ onLogin }) => {
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('isAuthenticated', 'true');
         
-        console.log('Login successful, stored token and user data');
-        console.log('Login successful, calling onLogin with:', userData);
-        if (typeof onLogin === 'function') {
+        if(typeof onLogin === 'function') {
           onLogin(userData);
         }
         
         // Navigate to dashboard
-        console.log('Navigating to dashboard');
         navigate('/dashboard', { replace: true });
       } else {
-        console.error('No token in response:', data);
         setError('Invalid credentials. Please try again.');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      if (error.response && error.response.data && error.response.data.message) {
+      if(error.response && error.response.data && error.response.data.message) {
         setError(error.response.data.message);
       } else if (error.message) {
         setError(error.message);
@@ -388,7 +374,22 @@ const Login = ({ onLogin }) => {
                 </Button>
               </form>
 
-              {/* Demo credentials removed for production security */}
+              <Box sx={{ textAlign: 'center', mt: 2 }}>
+                <Typography
+                  variant="body2"
+                  component="a"
+                  href="/forgot-password"
+                  sx={{
+                    color: 'var(--primary-blue-light)',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    '&:hover': { textDecoration: 'underline' }
+                  }}
+                >
+                  Forgot your password?
+                </Typography>
+              </Box>
             </Paper>
           </Box>
         </Box>

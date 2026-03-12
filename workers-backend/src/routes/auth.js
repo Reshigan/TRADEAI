@@ -317,6 +317,79 @@ authRoutes.post('/2fa/disable', authMiddleware, async (c) => {
   }
 });
 
+// Forgot password - generate reset token
+authRoutes.post('/forgot-password', authRateLimit, async (c) => {
+  try {
+    const { email } = await c.req.json();
+    if (!email) {
+      return c.json({ success: false, message: 'Email is required' }, 400);
+    }
+
+    const mongodb = getMongoClient(c);
+    const user = await mongodb.findOne('users', { email: email.toLowerCase() });
+
+    if (!user) {
+      return c.json({ success: true, message: 'If an account exists with that email, a password reset link has been sent.' });
+    }
+
+    const tokenBytes = new Uint8Array(32);
+    crypto.getRandomValues(tokenBytes);
+    const resetToken = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    await mongodb.updateOne('users', { _id: user._id }, {
+      resetPasswordToken: resetToken,
+      resetPasswordExpiry: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+    });
+
+    return c.json({
+      success: true,
+      message: 'If an account exists with that email, a password reset link has been sent.',
+      data: { token: resetToken }
+    });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to process request', error: error.message }, 500);
+  }
+});
+
+// Reset password using token
+authRoutes.post('/reset-password', authRateLimit, async (c) => {
+  try {
+    const { token, password } = await c.req.json();
+    if (!token || !password) {
+      return c.json({ success: false, message: 'Token and password are required' }, 400);
+    }
+
+    if (password.length < 8) {
+      return c.json({ success: false, message: 'Password must be at least 8 characters' }, 400);
+    }
+
+    const mongodb = getMongoClient(c);
+    const user = await mongodb.findOne('users', { resetPasswordToken: token });
+
+    if (!user) {
+      return c.json({ success: false, message: 'Invalid or expired reset token' }, 400);
+    }
+
+    if (user.resetPasswordExpiry && new Date(user.resetPasswordExpiry) < new Date()) {
+      return c.json({ success: false, message: 'Reset token has expired. Please request a new one.' }, 400);
+    }
+
+    const hashedPassword = await hashPassword(password);
+    await mongodb.updateOne('users', { _id: user._id }, {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpiry: null,
+      passwordChangedAt: new Date().toISOString(),
+      refreshToken: null,
+      loginAttempts: 0,
+      lockUntil: null
+    });
+
+    return c.json({ success: true, message: 'Password reset successfully' });
+  } catch (error) {
+    return c.json({ success: false, message: 'Failed to reset password', error: error.message }, 500);
+  }
+});
 // Register (admin only)
 authRoutes.post('/register', authRateLimit, async (c) => {
   try {

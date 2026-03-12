@@ -146,8 +146,7 @@ const TradeSpendReports = () => {
     setAnchorEl(null);
   };
 
-  const handleExport = (format) => {
-    console.log(`Exporting trade spend reports in ${format} format`);
+  const handleExport = () => {
     handleMenuClose();
   };
 

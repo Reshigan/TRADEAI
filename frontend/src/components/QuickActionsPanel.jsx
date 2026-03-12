@@ -101,14 +101,14 @@ const QuickActionsPanel = ({ onAction }) => {
       id: 'morning-review',
       title: 'Morning Review',
       description: 'Check overnight performance',
-      action: () => console.log('Morning review'),
+      action: () => {},
       time: 'morning'
     },
     {
       id: 'weekly-planning',
       title: 'Plan Next Week',
       description: 'AI suggests best actions',
-      action: () => console.log('Weekly planning'),
+      action: () => {},
       time: 'friday'
     }
   ];

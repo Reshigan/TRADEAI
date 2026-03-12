@@ -83,11 +83,6 @@ const CommandCenter = () => {
         apiClient.get('/trade-spends')
       ]);
 
-      console.log('CommandCenter - Raw API responses:', { budgets, promotions, tradeSpends });
-      console.log('CommandCenter - budgets type:', typeof budgets, 'isArray:', Array.isArray(budgets));
-      console.log('CommandCenter - budgets.data type:', typeof budgets?.data, 'isArray:', Array.isArray(budgets?.data));
-      console.log('CommandCenter - budgets.data.data type:', typeof budgets?.data?.data, 'isArray:', Array.isArray(budgets?.data?.data));
-      
       const toArray = (response) => {
         if (Array.isArray(response)) return response;
         if (Array.isArray(response?.data?.data)) return response.data.data;
@@ -100,16 +95,7 @@ const CommandCenter = () => {
       const promotionsArray = toArray(promotions);
       const tradeSpendsArray = toArray(tradeSpends);
       
-      console.log('CommandCenter - Extracted arrays:', { 
-        budgetsArray: budgetsArray.length + ' items', 
-        promotionsArray: promotionsArray.length + ' items', 
-        tradeSpendsArray: tradeSpendsArray.length + ' items' 
-      });
-      
       const data = processDashboardData(budgetsArray, promotionsArray, tradeSpendsArray);
-      console.log('CommandCenter - Processed dashboard data:', data);
-      console.log('CommandCenter - quickActions type:', Array.isArray(data.quickActions), 'length:', data.quickActions?.length);
-      console.log('CommandCenter - activeWorkflows type:', Array.isArray(data.activeWorkflows), 'length:', data.activeWorkflows?.length);
       setDashboardData(data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -119,12 +105,6 @@ const CommandCenter = () => {
   };
 
   const processDashboardData = (budgets, promotions, tradeSpends) => {
-    console.log('processDashboardData - Input types:', {
-      budgets: Array.isArray(budgets) ? `array[${budgets.length}]` : typeof budgets,
-      promotions: Array.isArray(promotions) ? `array[${promotions.length}]` : typeof promotions,
-      tradeSpends: Array.isArray(tradeSpends) ? `array[${tradeSpends.length}]` : typeof tradeSpends
-    });
-    
     const budgetsArray = Array.isArray(budgets) ? budgets : [];
     const promotionsArray = Array.isArray(promotions) ? promotions : [];
     const tradeSpendsArray = Array.isArray(tradeSpends) ? tradeSpends : [];

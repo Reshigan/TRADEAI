@@ -225,10 +225,7 @@ export default function TransactionManagement() {
     }
   ];
 
-  const handleView = (transaction) => {
-    // Navigate to detail view
-    console.log('View transaction:', transaction);
-  };
+  const handleView = () => {};
 
   return (
     <Box sx={{ p: 3 }}>

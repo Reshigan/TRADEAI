@@ -27,7 +27,6 @@ const mlApi = axios.create({
 // Request interceptor for logging
 mlApi.interceptors.request.use(
   (config) => {
-    console.log(`[ML API] ${config.method?.toUpperCase()} ${config.url}`, config.data);
     return config;
   },
   (error) => {
@@ -39,7 +38,6 @@ mlApi.interceptors.request.use(
 // Response interceptor for error handling
 mlApi.interceptors.response.use(
   (response) => {
-    console.log(`[ML API] Response from ${response.config.url}:`, response.data);
     return response;
   },
   (error) => {

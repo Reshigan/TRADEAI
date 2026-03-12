@@ -122,8 +122,7 @@ const ProductReports = () => {
     setAnchorEl(null);
   };
 
-  const handleExport = (format) => {
-    console.log(`Exporting product reports in ${format} format`);
+  const handleExport = () => {
     handleMenuClose();
   };
 

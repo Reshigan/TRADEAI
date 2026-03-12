@@ -86,10 +86,6 @@ api.interceptors.response.use(
     
     // Handle 401 Unauthorized errors
     if (error.response && error.response.status === 401) {
-      console.log('[api.js] 401 interceptor triggered for:', originalRequest.url);
-      console.log('[api.js] Has refreshToken:', !!localStorage.getItem('refreshToken'));
-      console.log('[api.js] Already retried:', !!originalRequest._retry);
-      
       // If token expired and we have refresh token, try to refresh
       const refreshToken = localStorage.getItem('refreshToken');
       
@@ -97,7 +93,6 @@ api.interceptors.response.use(
         originalRequest._retry = true;
         
         if (isRefreshing) {
-          console.log('[api.js] Already refreshing, queuing request');
           // If already refreshing, wait for it to complete
           return new Promise((resolve) => {
             subscribeTokenRefresh((token) => {
@@ -108,7 +103,6 @@ api.interceptors.response.use(
         }
         
         isRefreshing = true;
-        console.log('[api.js] Attempting token refresh...');
         
         try {
           const response = await axios.post(
@@ -123,13 +117,11 @@ api.interceptors.response.use(
           isRefreshing = false;
           onTokenRefreshed(newToken);
           
-          console.log('[api.js] Token refresh successful, retrying request');
           // Retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return axios(originalRequest);
         } catch (refreshError) {
           isRefreshing = false;
-          console.error('[api.js] Token refresh failed, logging out:', refreshError);
           localStorage.removeItem('token');
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
@@ -140,16 +132,12 @@ api.interceptors.response.use(
           const isOnLoginPage = window.location.pathname === '/' || window.location.pathname === '/login';
           
           if (!isOnLoginPage && !isAuthEndpoint) {
-            console.log('[api.js] Redirecting to login page');
             window.location.href = '/';
-          } else {
-            console.log('[api.js] Already on login page or auth endpoint, not redirecting');
           }
           
           return Promise.reject(refreshError);
         }
       } else {
-        console.log('[api.js] No refresh token or already retried, logging out');
         // No refresh token or already tried refresh, log out
         localStorage.removeItem('token');
         localStorage.removeItem('accessToken');
@@ -161,10 +149,7 @@ api.interceptors.response.use(
         const isOnLoginPage = window.location.pathname === '/' || window.location.pathname === '/login';
         
         if (!isOnLoginPage && !isAuthEndpoint) {
-          console.log('[api.js] Redirecting to login page');
           window.location.href = '/';
-        } else {
-          console.log('[api.js] Already on login page or auth endpoint, not redirecting');
         }
       }
     }
@@ -217,27 +202,13 @@ export const getErrorMessage = (error) => {
 export const authService = {
   login: async (credentials) => {
     try {
-      console.log('authService.login called with:', { email: credentials.email, password: credentials.password ? '***' : 'empty' });
-      console.log('API base URL:', api.defaults.baseURL);
-      console.log('Making POST request to /auth/login...');
-      
       const response = await api.post('/auth/login', credentials);
-      
-      console.log('✅ Login API response received');
-      console.log('Response status:', response.status);
-      console.log('Response data:', response.data);
-      console.log('Response data structure:', JSON.stringify(response.data, null, 2));
       
       // Backend response structure: { success: true, token: "...", data: { user: {...}, tokens: {...} } }
       const { token, data } = response.data;
       const user = data?.user;
       const tokens = data?.tokens || {};
       const refreshToken = tokens.refreshToken || data.refreshToken;
-      
-      console.log('Extracted token:', token ? 'YES' : 'NO');
-      console.log('Extracted refreshToken:', refreshToken ? 'YES' : 'NO');
-      console.log('Extracted data:', data);
-      console.log('Extracted user:', user);
       
       if (!token || !user) {
         console.error('❌ Invalid response structure:', response.data);
@@ -253,13 +224,8 @@ export const authService = {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(user));
       
-      console.log('✅ Login successful, stored token and user data');
-      
       return { token, refreshToken, user, tokens };
     } catch (error) {
-      console.error('authService.login error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
       throw error;
     }
   },

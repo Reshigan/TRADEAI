@@ -31,7 +31,6 @@ const TradingTermsListNew = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  console.log('TradingTermsListNew render - tradingTerms:', tradingTerms, 'type:', typeof tradingTerms, 'isArray:', Array.isArray(tradingTerms));
 
   useEffect(() => {
     fetchTradingTerms();

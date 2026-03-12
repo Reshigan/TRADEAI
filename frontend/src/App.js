@@ -1,204 +1,182 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/App.css';
 
-// Import components
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { ToastProvider } from './components/common/ToastNotification';
 import analytics from './utils/analytics';
-import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
 import Layout from './components/Layout';
 import NotFound from './components/NotFound';
-import {BudgetPage} from './components/budgets';
-import { PromotionList } from './components/promotions';
-import {CustomerList} from './components/customers';
-import {ProductList} from './components/products';
-import { SettingsPage } from './components/settings';
-import { UserList, UserDetail, UserForm } from './components/users';
-import { ReportList } from './components/reports';
-import { CompanyList, CompanyDetail, CompanyForm } from './components/companies';
-import {TradingTermDetail, TradingTermForm} from './components/tradingTerms';
-import TransactionManagement from './components/enterprise/transactions/TransactionManagement';
-import ForecastingDashboard from './components/forecasting/ForecastingDashboard';
-
-
-// AI-Powered Flow Components (Refactored UX)
-import CustomerEntryFlow from './pages/flows/CustomerEntryFlow';
-import ProductEntryFlow from './pages/flows/ProductEntryFlow';
-import TradeSpendEntryFlow from './pages/flows/TradeSpendEntryFlow';
-
-// Transaction Components (Feature 2)
-import TransactionEntryFlow from './pages/transactions/TransactionEntryFlow';
-import BulkUploadTransactions from './pages/transactions/BulkUploadTransactions';
-
-
-import JAMDashboard from './pages/dashboards/JAMDashboard';
-import HierarchyManager from './pages/hierarchy/HierarchyManager';
-import ManagerDashboard from './pages/dashboards/ManagerDashboard';
-
-// World-Class Redesign Components
-import CommandBar from './components/command/CommandBar';
-import CopilotPanel from './components/copilot/CopilotPanel';
-
-// AI Assistant Component
-
-// Command Center (New Home Dashboard)
-import CommandCenter from './components/CommandCenter/CommandCenter';
-import BudgetPlanningWizard from './components/Wizards/BudgetPlanningWizard';
-import PromotionWizard from './components/Wizards/PromotionWizard';
-
-// Edit Components for CRUD operations
-import BudgetEdit from './components/budgets/BudgetEdit';
-import PromotionEdit from './components/promotions/PromotionEdit';
-import TradeSpendEdit from './components/tradeSpends/TradeSpendEdit';
-import CustomerEdit from './components/customers/CustomerEdit';
-import ProductEdit from './components/products/ProductEdit';
-
-import TradeSpendListNew from './pages/tradespend/TradeSpendList';
-import TradingTermsListNew from './pages/tradingterms/TradingTermsList';
-import Customer360New from './pages/customer360/Customer360';
-import AdvancedReportingManagement from './pages/advanced-reporting/AdvancedReportingManagement';
-import RevenueGrowthManagement from './pages/revenue-growth/RevenueGrowthManagement';
-import ExecutiveKpiDashboard from './pages/executive-kpi/ExecutiveKpiDashboard';
-
-// Approvals, Claims, and Deductions Components
-import ApprovalsList from './pages/approvals/ApprovalsList';
-import ApprovalDetail from './pages/approvals/ApprovalDetail';
-import ClaimsList from './pages/claims/ClaimsList';
-import ClaimDetail from './pages/claims/ClaimDetail';
-import CreateClaim from './pages/claims/CreateClaim';
-import DeductionsList from './pages/deductions/DeductionsList';
-import DeductionDetail from './pages/deductions/DeductionDetail';
-import CreateDeduction from './pages/deductions/CreateDeduction';
-import ReconciliationDashboard from './pages/deductions/ReconciliationDashboard';
-
-// Campaign Components
-import CampaignList from './pages/campaigns/CampaignList';
-import CampaignForm from './pages/campaigns/CampaignForm';
-
-// Level 3 Tabbed Detail Components
-import PromotionDetailWithTabs from './pages/promotions/PromotionDetailWithTabs';
-import BudgetDetailWithTabs from './pages/budgets/BudgetDetailWithTabs';
-import TradeSpendDetailWithTabs from './pages/trade-spends/TradeSpendDetailWithTabs';
-import CustomerDetailWithTabs from './pages/customers/CustomerDetailWithTabs';
-import ProductDetailWithTabs from './pages/products/ProductDetailWithTabs';
-import CampaignDetailWithTabs from './pages/campaigns/CampaignDetailWithTabs';
-
-// Activities Components
-import ActivityList from './pages/activities/ActivityList';
-
-// Rebates Components
-import RebatesList from './pages/rebates/RebatesList';
-import RebateDetail from './pages/rebates/RebateDetail';
-import RebateForm from './pages/rebates/RebateForm';
-
-// Vendors Components
-import VendorList from './pages/vendors/VendorList';
-import VendorDetail from './pages/vendors/VendorDetail';
-import VendorForm from './pages/vendors/VendorForm';
-
-// Admin Users Components
-import AdminUserList from './pages/admin/users/UserList';
-import AdminLayout from './components/admin/AdminLayout';
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
-import TenantManagement from './pages/admin/tenants/TenantManagement';
-
-// Data Import/Export
-import DataImportExport from './pages/data/DataImportExport';
-
-// Company Admin Pages
-import AzureADPage from './pages/company-admin/AzureADPage';
-import ERPSettingsPage from './pages/company-admin/ERPSettingsPage';
-import CompanyAdminUsersPage from './pages/company-admin/UsersPage';
-
-// Activity Page Wrappers
-import ActivityDetailPage from './pages/activities/ActivityDetailPage';
-import ActivityFormPage from './pages/activities/ActivityFormPage';
-
-// Auth Components
-import Register from './pages/auth/Register';
-
-// KAM Wallet Components
-import KAMWalletManagement from './pages/kamwallet/KAMWalletManagement';
-import KAMWalletAllocate from './pages/kamwallet/KAMWalletAllocate';
-
-// Hierarchy Components
-import CustomerHierarchy from './pages/hierarchy/CustomerHierarchy';
-import ProductHierarchy from './pages/hierarchy/ProductHierarchy';
-
-// Import Center
-import ImportCenter from './pages/import/ImportCenter';
-
 
 import { CompanyTypeProvider } from './contexts/CompanyTypeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { UserSkillProvider } from './hooks/useUserSkillContext';
 
+const LoadingFallback = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 12 }}>
+    <div style={{ width: 40, height: 40, border: '3px solid #e2e8f0', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+  </div>
+);
 
-// Admin Pages - Customer Assignment & Alerts
-import CustomerAssignment from './pages/admin/customer-assignment/CustomerAssignment';
-import Alerts from './pages/admin/alerts/Alerts';
+const OnboardingWizard = lazy(() => import('./components/onboarding/OnboardingWizard'));
+const CommandBar = lazy(() => import('./components/command/CommandBar'));
+const CopilotPanel = lazy(() => import('./components/copilot/CopilotPanel'));
 
-// Approval History
-import ApprovalHistory from './pages/approvals/ApprovalHistory';
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const CommandCenter = lazy(() => import('./components/CommandCenter/CommandCenter'));
+const JAMDashboard = lazy(() => import('./pages/dashboards/JAMDashboard'));
+const ManagerDashboard = lazy(() => import('./pages/dashboards/ManagerDashboard'));
+const ExecutiveKpiDashboard = lazy(() => import('./pages/executive-kpi/ExecutiveKpiDashboard'));
 
+const BudgetPage = lazy(() => import('./components/budgets').then(m => ({ default: m.BudgetPage })));
+const BudgetPlanningWizard = lazy(() => import('./components/Wizards/BudgetPlanningWizard'));
+const BudgetEdit = lazy(() => import('./components/budgets/BudgetEdit'));
+const BudgetDetailWithTabs = lazy(() => import('./pages/budgets/BudgetDetailWithTabs'));
 
+const PromotionList = lazy(() => import('./components/promotions').then(m => ({ default: m.PromotionList })));
+const PromotionWizard = lazy(() => import('./components/Wizards/PromotionWizard'));
+const PromotionEdit = lazy(() => import('./components/promotions/PromotionEdit'));
+const PromotionDetailWithTabs = lazy(() => import('./pages/promotions/PromotionDetailWithTabs'));
 
-// Baseline Management
-import BaselineManagement from './pages/baselines/BaselineManagement';
+const TradeSpendListNew = lazy(() => import('./pages/tradespend/TradeSpendList'));
+const TradeSpendEntryFlow = lazy(() => import('./pages/flows/TradeSpendEntryFlow'));
+const TradeSpendEdit = lazy(() => import('./components/tradeSpends/TradeSpendEdit'));
+const TradeSpendDetailWithTabs = lazy(() => import('./pages/trade-spends/TradeSpendDetailWithTabs'));
 
-// Accrual Management
-import AccrualManagement from './pages/accruals/AccrualManagement';
+const CustomerList = lazy(() => import('./components/customers').then(m => ({ default: m.CustomerList })));
+const CustomerEntryFlow = lazy(() => import('./pages/flows/CustomerEntryFlow'));
+const CustomerEdit = lazy(() => import('./components/customers/CustomerEdit'));
+const CustomerDetailWithTabs = lazy(() => import('./pages/customers/CustomerDetailWithTabs'));
 
-// Settlement Management
-import SettlementManagement from './pages/settlements/SettlementManagement';
+const ProductList = lazy(() => import('./components/products').then(m => ({ default: m.ProductList })));
+const ProductEntryFlow = lazy(() => import('./pages/flows/ProductEntryFlow'));
+const ProductEdit = lazy(() => import('./components/products/ProductEdit'));
+const ProductDetailWithTabs = lazy(() => import('./pages/products/ProductDetailWithTabs'));
 
-// P&L Management
-import PnLManagement from './pages/pnl/PnLManagement';
+const CampaignList = lazy(() => import('./pages/campaigns/CampaignList'));
+const CampaignForm = lazy(() => import('./pages/campaigns/CampaignForm'));
+const CampaignDetailWithTabs = lazy(() => import('./pages/campaigns/CampaignDetailWithTabs'));
 
-// Budget Allocation Engine
-import BudgetAllocationManagement from './pages/budget-allocations/BudgetAllocationManagement';
+const SettingsPage = lazy(() => import('./components/settings').then(m => ({ default: m.SettingsPage })));
+const UserList = lazy(() => import('./components/users').then(m => ({ default: m.UserList })));
+const UserDetail = lazy(() => import('./components/users').then(m => ({ default: m.UserDetail })));
+const UserForm = lazy(() => import('./components/users').then(m => ({ default: m.UserForm })));
+const ReportList = lazy(() => import('./components/reports').then(m => ({ default: m.ReportList })));
 
-// Trade Calendar & Constraint Planning
-import TradeCalendarManagement from './pages/trade-calendar/TradeCalendarManagement';
+const CompanyList = lazy(() => import('./components/companies').then(m => ({ default: m.CompanyList })));
+const CompanyDetail = lazy(() => import('./components/companies').then(m => ({ default: m.CompanyDetail })));
+const CompanyForm = lazy(() => import('./components/companies').then(m => ({ default: m.CompanyForm })));
 
-// Demand Signal Repository
-import DemandSignalManagement from './pages/demand-signals/DemandSignalManagement';
+const TradingTermsListNew = lazy(() => import('./pages/tradingterms/TradingTermsList'));
+const TradingTermDetail = lazy(() => import('./components/tradingTerms').then(m => ({ default: m.TradingTermDetail })));
+const TradingTermForm = lazy(() => import('./components/tradingTerms').then(m => ({ default: m.TradingTermForm })));
 
-// Scenario Planning / What-If Simulator
-import ScenarioPlanningManagement from './pages/scenarios/ScenarioPlanningManagement';
+const TransactionManagement = lazy(() => import('./components/enterprise/transactions/TransactionManagement'));
+const TransactionEntryFlow = lazy(() => import('./pages/transactions/TransactionEntryFlow'));
+const BulkUploadTransactions = lazy(() => import('./pages/transactions/BulkUploadTransactions'));
 
-// Promotion Optimization Engine
-import PromotionOptimizerManagement from './pages/promotion-optimizer/PromotionOptimizerManagement';
+const ApprovalsList = lazy(() => import('./pages/approvals/ApprovalsList'));
+const ApprovalDetail = lazy(() => import('./pages/approvals/ApprovalDetail'));
+const ApprovalHistory = lazy(() => import('./pages/approvals/ApprovalHistory'));
+const ClaimsList = lazy(() => import('./pages/claims/ClaimsList'));
+const ClaimDetail = lazy(() => import('./pages/claims/ClaimDetail'));
+const CreateClaim = lazy(() => import('./pages/claims/CreateClaim'));
+const DeductionsList = lazy(() => import('./pages/deductions/DeductionsList'));
+const DeductionDetail = lazy(() => import('./pages/deductions/DeductionDetail'));
+const CreateDeduction = lazy(() => import('./pages/deductions/CreateDeduction'));
+const ReconciliationDashboard = lazy(() => import('./pages/deductions/ReconciliationDashboard'));
 
-// Phase 5-6 Features
-import NotificationCenter from './pages/notification-center/NotificationCenter';
-import DocumentManagement from './pages/document-management/DocumentManagement';
-import IntegrationHub from './pages/integration-hub/IntegrationHub';
-import RoleManagement from './pages/role-management/RoleManagement';
-import SystemConfig from './pages/system-config/SystemConfig';
-import WorkflowEngine from './pages/workflow-engine/WorkflowEngine';
+const RebatesList = lazy(() => import('./pages/rebates/RebatesList'));
+const RebateDetail = lazy(() => import('./pages/rebates/RebateDetail'));
+const RebateForm = lazy(() => import('./pages/rebates/RebateForm'));
 
-// Help & Training Pages
-import {
-  HelpCenter,
-  PromotionsHelp,
-  BudgetsHelp,
-  TradeSpendsHelp,
-  CustomersHelp,
-  ProductsHelp,
-  AnalyticsHelp,
-  SimulationsHelp,
-  ApprovalsHelp,
-  RebatesHelp,
-  ClaimsHelp,
-  DeductionsHelp,
-  ForecastingHelp,
-  BusinessProcessGuide,
-} from './pages/help';
+const VendorList = lazy(() => import('./pages/vendors/VendorList'));
+const VendorDetail = lazy(() => import('./pages/vendors/VendorDetail'));
+const VendorForm = lazy(() => import('./pages/vendors/VendorForm'));
+
+const ActivityList = lazy(() => import('./pages/activities/ActivityList'));
+const ActivityDetailPage = lazy(() => import('./pages/activities/ActivityDetailPage'));
+const ActivityFormPage = lazy(() => import('./pages/activities/ActivityFormPage'));
+
+const AdvancedReportingManagement = lazy(() => import('./pages/advanced-reporting/AdvancedReportingManagement'));
+const RevenueGrowthManagement = lazy(() => import('./pages/revenue-growth/RevenueGrowthManagement'));
+const ForecastingDashboard = lazy(() => import('./components/forecasting/ForecastingDashboard'));
+const Customer360New = lazy(() => import('./pages/customer360/Customer360'));
+
+const BaselineManagement = lazy(() => import('./pages/baselines/BaselineManagement'));
+const AccrualManagement = lazy(() => import('./pages/accruals/AccrualManagement'));
+const SettlementManagement = lazy(() => import('./pages/settlements/SettlementManagement'));
+const PnLManagement = lazy(() => import('./pages/pnl/PnLManagement'));
+const BudgetAllocationManagement = lazy(() => import('./pages/budget-allocations/BudgetAllocationManagement'));
+const TradeCalendarManagement = lazy(() => import('./pages/trade-calendar/TradeCalendarManagement'));
+const DemandSignalManagement = lazy(() => import('./pages/demand-signals/DemandSignalManagement'));
+const ScenarioPlanningManagement = lazy(() => import('./pages/scenarios/ScenarioPlanningManagement'));
+const PromotionOptimizerManagement = lazy(() => import('./pages/promotion-optimizer/PromotionOptimizerManagement'));
+
+const KAMWalletManagement = lazy(() => import('./pages/kamwallet/KAMWalletManagement'));
+const KAMWalletAllocate = lazy(() => import('./pages/kamwallet/KAMWalletAllocate'));
+
+const HierarchyManager = lazy(() => import('./pages/hierarchy/HierarchyManager'));
+const CustomerHierarchy = lazy(() => import('./pages/hierarchy/CustomerHierarchy'));
+const ProductHierarchy = lazy(() => import('./pages/hierarchy/ProductHierarchy'));
+
+const AdminUserList = lazy(() => import('./pages/admin/users/UserList'));
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
+const TenantManagement = lazy(() => import('./pages/admin/tenants/TenantManagement'));
+const CustomerAssignment = lazy(() => import('./pages/admin/customer-assignment/CustomerAssignment'));
+const Alerts = lazy(() => import('./pages/admin/alerts/Alerts'));
+
+const AzureADPage = lazy(() => import('./pages/company-admin/AzureADPage'));
+const ERPSettingsPage = lazy(() => import('./pages/company-admin/ERPSettingsPage'));
+const CompanyAdminUsersPage = lazy(() => import('./pages/company-admin/UsersPage'));
+
+const DataImportExport = lazy(() => import('./pages/data/DataImportExport'));
+const ImportCenter = lazy(() => import('./pages/import/ImportCenter'));
+
+const Register = lazy(() => import('./pages/auth/Register'));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
+
+const NotificationCenter = lazy(() => import('./pages/notification-center/NotificationCenter'));
+const DocumentManagement = lazy(() => import('./pages/document-management/DocumentManagement'));
+const IntegrationHub = lazy(() => import('./pages/integration-hub/IntegrationHub'));
+const RoleManagement = lazy(() => import('./pages/role-management/RoleManagement'));
+const SystemConfig = lazy(() => import('./pages/system-config/SystemConfig'));
+const WorkflowEngine = lazy(() => import('./pages/workflow-engine/WorkflowEngine'));
+
+const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
+const PromotionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.PromotionsHelp })));
+const BudgetsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.BudgetsHelp })));
+const TradeSpendsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.TradeSpendsHelp })));
+const CustomersHelp = lazy(() => import('./pages/help').then(m => ({ default: m.CustomersHelp })));
+const ProductsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.ProductsHelp })));
+const AnalyticsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.AnalyticsHelp })));
+const SimulationsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.SimulationsHelp })));
+const ApprovalsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.ApprovalsHelp })));
+const RebatesHelp = lazy(() => import('./pages/help').then(m => ({ default: m.RebatesHelp })));
+const ClaimsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.ClaimsHelp })));
+const DeductionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.DeductionsHelp })));
+const ForecastingHelp = lazy(() => import('./pages/help').then(m => ({ default: m.ForecastingHelp })));
+const BusinessProcessGuide = lazy(() => import('./pages/help').then(m => ({ default: m.BusinessProcessGuide })));
+
+function ProtectedRoute({ children, user, onLogout, requiredRoles }) {
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (requiredRoles && user && !requiredRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return (
+    <Layout user={user} onLogout={onLogout}>
+      <Suspense fallback={<LoadingFallback />}>
+        {children}
+      </Suspense>
+    </Layout>
+  );
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -213,35 +191,24 @@ function App() {
   const [copilotContext, setCopilotContext] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Effect to check for authentication changes
   useEffect(() => {
     const checkAuth = () => {
       const authStatus = localStorage.getItem('isAuthenticated') === 'true';
       const userDataString = localStorage.getItem('user');
       const userData = userDataString ? JSON.parse(userDataString) : null;
-      console.log('App.js useEffect - checking auth:', { authStatus, userData });
       setIsAuthenticated(authStatus);
       setUser(userData);
-      
       if (userData && (userData.id || userData._id) && userData.tenantId) {
         analytics.setUser(userData.id || userData._id, userData.tenantId);
-        
         const onboardingCompleted = localStorage.getItem('onboarding_completed');
         if (!onboardingCompleted && authStatus) {
           setShowOnboarding(true);
         }
       }
     };
-
-    // Check on mount
     checkAuth();
-
-    // Listen for storage changes (in case of multiple tabs)
     window.addEventListener('storage', checkAuth);
-    
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-    };
+    return () => window.removeEventListener('storage', checkAuth);
   }, []);
 
   useEffect(() => {
@@ -251,7 +218,6 @@ function App() {
         setIsCommandBarOpen(prev => !prev);
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
@@ -260,33 +226,20 @@ function App() {
     if (result.type === 'navigate') {
       window.location.href = result.path;
     } else if (result.type === 'api') {
-      setCopilotContext({
-        explanation: `Command "${result.command}" executed successfully`,
-        data: result.data
-      });
+      setCopilotContext({ explanation: `Command "${result.command}" executed successfully`, data: result.data });
       setIsCopilotOpen(true);
     } else if (result.type === 'error') {
-      setCopilotContext({
-        explanation: `Error: ${result.error}`,
-        risks: [{ level: 'high', message: result.error }]
-      });
+      setCopilotContext({ explanation: `Error: ${result.error}`, risks: [{ level: 'high', message: result.error }] });
       setIsCopilotOpen(true);
     }
   };
 
   const handleLogin = (userData) => {
-    console.log('handleLogin called with userData:', userData);
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
     setIsAuthenticated(true);
     setUser(userData);
-    console.log('handleLogin completed, isAuthenticated should now be true');
-    // Force a re-render by updating state after a brief delay
-    setTimeout(() => {
-      setIsAuthenticated(true);
-      setUser(userData);
-      console.log('handleLogin - forced state update completed');
-    }, 100);
+    setTimeout(() => { setIsAuthenticated(true); setUser(userData); }, 100);
   };
 
   const handleLogout = () => {
@@ -296,6 +249,12 @@ function App() {
     localStorage.removeItem('user');
   };
 
+  const P = ({ children, requiredRoles }) => (
+    <ProtectedRoute user={user} onLogout={handleLogout} requiredRoles={requiredRoles}>
+      {children}
+    </ProtectedRoute>
+  );
+
   return (
     <ErrorBoundary>
       <ToastProvider>
@@ -304,1499 +263,222 @@ function App() {
             <CompanyTypeProvider user={user}>
               <Router>
                 <UserSkillProvider>
-          {/* Global Command Bar */}
           {isAuthenticated && (
-            <>
-              <CommandBar
-                isOpen={isCommandBarOpen}
-                onClose={() => setIsCommandBarOpen(false)}
-                onExecute={handleCommandExecute}
-              />
-              <CopilotPanel
-                isOpen={isCopilotOpen}
-                onClose={() => setIsCopilotOpen(false)}
-                context={copilotContext}
-                recommendations={copilotContext?.recommendations}
-              />
-              <OnboardingWizard
-                open={showOnboarding}
-                onClose={() => setShowOnboarding(false)}
-                userRole={user?.role}
-              />
-            </>
+            <Suspense fallback={null}>
+              <CommandBar isOpen={isCommandBarOpen} onClose={() => setIsCommandBarOpen(false)} onExecute={handleCommandExecute} />
+              <CopilotPanel isOpen={isCopilotOpen} onClose={() => setIsCopilotOpen(false)} context={copilotContext} recommendations={copilotContext?.recommendations} />
+              <OnboardingWizard open={showOnboarding} onClose={() => setShowOnboarding(false)} userRole={user?.role} />
+            </Suspense>
           )}
+          <Suspense fallback={<LoadingFallback />}>
           <Routes>
-        <Route 
-          path="/" 
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Login onLogin={handleLogin} />
-            )
-          } 
-        />
-        <Route 
-          path="/login" 
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Login onLogin={handleLogin} />
-            )
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                {user?.role === 'jam' || user?.role === 'key_account_manager' ? (
-                  <JAMDashboard />
-                ) : user?.role === 'manager' || user?.role === 'admin' || user?.role === 'super_admin' ? (
-                  <ManagerDashboard />
-                ) : (
-                  <CommandCenter user={user} />
-                )}
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/dashboard/jam" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <JAMDashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/dashboard/manager" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ManagerDashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/dashboard/classic" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <Dashboard user={user} />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/budgets" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetPage />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route path="/budgets/new-flow" element={<Navigate to="/budgets/new" replace />} />
-        <Route 
-          path="/budgets/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetPlanningWizard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/budgets/:id/edit"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetEdit />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/budgets/:id/:tab" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/budgets/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trade-spends" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendListNew />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trade-spends/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendEntryFlow />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route path="/trade-spends/new-flow" element={<Navigate to="/trade-spends/new" replace />} />
-        <Route 
-          path="/trade-spends/:id/edit"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendEdit />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trade-spends/:id/:tab" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trade-spends/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradeSpendDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/promotions" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PromotionList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/promotions/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PromotionWizard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route path="/promotions/new-flow" element={<Navigate to="/promotions/new" replace />} />
-        <Route 
-          path="/promotions/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PromotionEdit />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/promotions/:id/:tab" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PromotionDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/promotions/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PromotionDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/customers" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CustomerList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route path="/customers/new-flow" element={<Navigate to="/customers/new" replace />} />
-        <Route 
-          path="/customers/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CustomerEntryFlow />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/customers/:id/edit"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CustomerEdit />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/customers/:id/:tab" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CustomerDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/customers/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CustomerDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/products" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ProductList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route path="/products/new-flow" element={<Navigate to="/products/new" replace />} />
-        <Route 
-          path="/products/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ProductEntryFlow />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/products/:id/edit"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ProductEdit />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/products/:id/:tab" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ProductDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/products/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ProductDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/settings" 
-          element={
-            isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <SettingsPage />
-              </Layout>
-            ) : (
-              <Navigate to="/dashboard" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/users" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/users/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/users/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/users/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/reports" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ReportList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/companies" 
-          element={
-            isAuthenticated && user?.role === 'super_admin' ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CompanyList />
-              </Layout>
-            ) : (
-              <Navigate to="/dashboard" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/companies/:id" 
-          element={
-            isAuthenticated && user?.role === 'super_admin' ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CompanyDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/dashboard" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/companies/:id/edit" 
-          element={
-            isAuthenticated && user?.role === 'super_admin' ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CompanyForm />
-              </Layout>
-            ) : (
-              <Navigate to="/dashboard" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/companies/new" 
-          element={
-            isAuthenticated && user?.role === 'super_admin' ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CompanyForm />
-              </Layout>
-            ) : (
-              <Navigate to="/dashboard" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/campaigns" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CampaignList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/campaigns/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CampaignForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/campaigns/:id/:tab" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CampaignDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/campaigns/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CampaignDetailWithTabs />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/campaigns/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CampaignForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trading-terms" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradingTermsListNew />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trading-terms/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradingTermDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trading-terms/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradingTermForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trading-terms/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradingTermForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/baselines" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BaselineManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/accruals" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <AccrualManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/settlements" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <SettlementManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/pnl" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PnLManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/budget-allocations" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BudgetAllocationManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/trade-calendar" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TradeCalendarManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/demand-signals" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <DemandSignalManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/scenarios" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ScenarioPlanningManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/promotion-optimizer" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <PromotionOptimizerManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/customer-360"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <Customer360New />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/customer-360/:id"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <Customer360New />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/advanced-reporting"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <AdvancedReportingManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/advanced-reporting/:id"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <AdvancedReportingManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/revenue-growth"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <RevenueGrowthManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/revenue-growth/:id"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <RevenueGrowthManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/executive-kpi"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ExecutiveKpiDashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/executive-kpi/:id"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ExecutiveKpiDashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/forecasting"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ForecastingDashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/transactions" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TransactionManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/transactions/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <TransactionEntryFlow />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/transactions/bulk-upload" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <BulkUploadTransactions />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        {/* New World-Class UI Routes */}
-        <Route 
-          path="/approvals" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ApprovalsList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-                <Route 
-                  path="/approvals/:id" 
-                  element={
-                    isAuthenticated ? (
-                      <Layout user={user} onLogout={handleLogout}>
-                        <ApprovalDetail />
-                      </Layout>
-                    ) : (
-                      <Navigate to="/" replace />
-                    )
-                  } 
-                />
-                <Route 
-                  path="/approvals/history" 
-                  element={
-                    isAuthenticated ? (
-                      <Layout user={user} onLogout={handleLogout}>
-                        <ApprovalHistory />
-                      </Layout>
-                    ) : (
-                      <Navigate to="/" replace />
-                    )
-                  } 
-                />
-                <Route 
-                  path="/customer-assignment" 
-                  element={
-                    isAuthenticated ? (
-                      <Layout user={user} onLogout={handleLogout}>
-                        <CustomerAssignment />
-                      </Layout>
-                    ) : (
-                      <Navigate to="/" replace />
-                    )
-                  } 
-                />
-                <Route 
-                  path="/alerts" 
-                  element={
-                    isAuthenticated ? (
-                      <Layout user={user} onLogout={handleLogout}>
-                        <Alerts />
-                      </Layout>
-                    ) : (
-                      <Navigate to="/" replace />
-                    )
-                  } 
-                />
-                <Route 
-                  path="/claims"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ClaimsList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/claims/create" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CreateClaim />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/claims/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ClaimDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/deductions" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <DeductionsList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/deductions/create" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CreateDeduction />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/deductions/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <DeductionDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/deductions/reconciliation"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ReconciliationDashboard />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/activities" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ActivityList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/activities/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ActivityFormPage />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/activities/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ActivityDetailPage />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/activities/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ActivityFormPage />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/rebates"
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <RebatesList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/rebates/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <RebateForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/rebates/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <RebateDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/rebates/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <RebateForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/vendors" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <VendorList />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/vendors/new" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <VendorForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/vendors/:id" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <VendorDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/vendors/:id/edit" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <VendorForm />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/register" 
-          element={<Register />} 
-        />
-        <Route 
-          path="/profile" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <UserDetail />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/kamwallet" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <KAMWalletManagement />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/kamwallet/:id/allocate" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <KAMWalletAllocate />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        {/* Admin Routes with AdminLayout */}
-        <Route 
-          path="/admin/*"
-          element={
-            isAuthenticated ? (
-              <AdminLayout user={user} onLogout={handleLogout} />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        >
-          <Route path="dashboard" element={<AdminDashboardPage />} />
-          <Route path="users" element={<AdminUserList />} />
-          <Route path="tenants" element={<TenantManagement />} />
-          <Route path="users/new" element={<UserForm />} />
-          <Route path="users/:id" element={<UserDetail />} />
-          <Route path="users/:id/edit" element={<UserForm />} />
-          <Route path="companies" element={<CompanyList />} />
-          <Route path="companies/new" element={<CompanyForm />} />
-          <Route path="companies/:id" element={<CompanyDetail />} />
-          <Route path="companies/:id/edit" element={<CompanyForm />} />
-          <Route path="hierarchy" element={<HierarchyManager />} />
-          <Route path="security" element={<SettingsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          {/* Company Admin Routes */}
-          <Route path="azure-ad" element={<AzureADPage />} />
-          <Route path="erp-settings" element={<ERPSettingsPage />} />
-          <Route path="company-users" element={<CompanyAdminUsersPage />} />
-        </Route>
-        <Route 
-          path="/import-center" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ImportCenter />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/data/import-export" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <DataImportExport />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/hierarchy/customers" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <CustomerHierarchy />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-        <Route 
-          path="/hierarchy/products" 
-          element={
-            isAuthenticated ? (
-              <Layout user={user} onLogout={handleLogout}>
-                <ProductHierarchy />
-              </Layout>
-            ) : (
-              <Navigate to="/" replace />
-            )
-          } 
-        />
-              {/* Help & Training Routes */}
-              <Route 
-                path="/help" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <HelpCenter />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/promotions" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <PromotionsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/budgets" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <BudgetsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/trade-spends" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <TradeSpendsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/customers" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <CustomersHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/products" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <ProductsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/analytics" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <AnalyticsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/simulations" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <SimulationsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/approvals" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <ApprovalsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/rebates" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <RebatesHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/claims" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <ClaimsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/deductions" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <DeductionsHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/forecasting" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <ForecastingHelp />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route 
-                path="/help/business-process-guide" 
-                element={
-                  isAuthenticated ? (
-                    <Layout user={user} onLogout={handleLogout}>
-                      <BusinessProcessGuide />
-                    </Layout>
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                } 
-              />
-              <Route path="/notification-center" element={isAuthenticated ? (<Layout user={user} onLogout={handleLogout}><NotificationCenter /></Layout>) : (<Navigate to="/" replace />)} />
-              <Route path="/document-management" element={isAuthenticated ? (<Layout user={user} onLogout={handleLogout}><DocumentManagement /></Layout>) : (<Navigate to="/" replace />)} />
-              <Route path="/integration-hub" element={isAuthenticated ? (<Layout user={user} onLogout={handleLogout}><IntegrationHub /></Layout>) : (<Navigate to="/" replace />)} />
-              <Route path="/role-management" element={isAuthenticated ? (<Layout user={user} onLogout={handleLogout}><RoleManagement /></Layout>) : (<Navigate to="/" replace />)} />
-              <Route path="/system-config" element={isAuthenticated ? (<Layout user={user} onLogout={handleLogout}><SystemConfig /></Layout>) : (<Navigate to="/" replace />)} />
-              <Route path="/workflow-engine" element={isAuthenticated ? (<Layout user={user} onLogout={handleLogout}><WorkflowEngine /></Layout>) : (<Navigate to="/" replace />)} />
-              {/* Redirect duplicate/legacy routes to canonical paths */}
-              <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />
-              <Route path="/simulation-studio" element={<Navigate to="/scenarios" replace />} />
-              <Route path="/promotion-planner" element={<Navigate to="/promotions" replace />} />
-              <Route path="/promotions-timeline" element={<Navigate to="/trade-calendar" replace />} />
-              <Route path="/activity-grid" element={<Navigate to="/trade-calendar" replace />} />
-              <Route path="/realtime-dashboard" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/executive-dashboard" element={<Navigate to="/executive-kpi" replace />} />
-              <Route path="/analytics" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports/budget" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports/customers" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports/products" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports/promotions" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports/tradespend" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/reports/tradingterms" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/vendor-management" element={<Navigate to="/vendors" replace />} />
-              <Route path="/data/import-export" element={<Navigate to="/import-center" replace />} />
-              <Route path="/predictive-analytics" element={<Navigate to="/forecasting" replace />} />
-              <Route path="/ai-dashboard" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/budget-console" element={<Navigate to="/budgets" replace />} />
-              <Route path="/funding-overview" element={<Navigate to="/budgets" replace />} />
-              <Route path="/enterprise/budget" element={<Navigate to="/budgets" replace />} />
-              <Route path="/enterprise/promotions" element={<Navigate to="/promotions" replace />} />
-              <Route path="/enterprise/trade-spend" element={<Navigate to="/trade-spends" replace />} />
-              <Route path="/performance-analytics/promotion-effectiveness" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/performance-analytics/budget-variance" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/performance-analytics/customer-segmentation" element={<Navigate to="/advanced-reporting" replace />} />
-              <Route path="/flows/promotion" element={<Navigate to="/promotions/new" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />} />
+            <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+            <Route path="/dashboard" element={
+              <P>{user?.role === 'jam' || user?.role === 'key_account_manager' ? <JAMDashboard /> : user?.role === 'manager' || user?.role === 'admin' || user?.role === 'super_admin' ? <ManagerDashboard /> : <CommandCenter user={user} />}</P>
+            } />
+            <Route path="/dashboard/jam" element={<P><JAMDashboard /></P>} />
+            <Route path="/dashboard/manager" element={<P><ManagerDashboard /></P>} />
+            <Route path="/dashboard/classic" element={<P><Dashboard user={user} /></P>} />
+            <Route path="/executive-kpi" element={<P><ExecutiveKpiDashboard /></P>} />
+            <Route path="/executive-kpi/:id" element={<P><ExecutiveKpiDashboard /></P>} />
+
+            <Route path="/budgets" element={<P><BudgetPage /></P>} />
+            <Route path="/budgets/new-flow" element={<Navigate to="/budgets/new" replace />} />
+            <Route path="/budgets/new" element={<P><BudgetPlanningWizard /></P>} />
+            <Route path="/budgets/:id/edit" element={<P><BudgetEdit /></P>} />
+            <Route path="/budgets/:id/:tab" element={<P><BudgetDetailWithTabs /></P>} />
+            <Route path="/budgets/:id" element={<P><BudgetDetailWithTabs /></P>} />
+
+            <Route path="/trade-spends" element={<P><TradeSpendListNew /></P>} />
+            <Route path="/trade-spends/new" element={<P><TradeSpendEntryFlow /></P>} />
+            <Route path="/trade-spends/new-flow" element={<Navigate to="/trade-spends/new" replace />} />
+            <Route path="/trade-spends/:id/edit" element={<P><TradeSpendEdit /></P>} />
+            <Route path="/trade-spends/:id/:tab" element={<P><TradeSpendDetailWithTabs /></P>} />
+            <Route path="/trade-spends/:id" element={<P><TradeSpendDetailWithTabs /></P>} />
+
+            <Route path="/promotions" element={<P><PromotionList /></P>} />
+            <Route path="/promotions/new" element={<P><PromotionWizard /></P>} />
+            <Route path="/promotions/new-flow" element={<Navigate to="/promotions/new" replace />} />
+            <Route path="/promotions/:id/edit" element={<P><PromotionEdit /></P>} />
+            <Route path="/promotions/:id/:tab" element={<P><PromotionDetailWithTabs /></P>} />
+            <Route path="/promotions/:id" element={<P><PromotionDetailWithTabs /></P>} />
+
+            <Route path="/customers" element={<P><CustomerList /></P>} />
+            <Route path="/customers/new-flow" element={<Navigate to="/customers/new" replace />} />
+            <Route path="/customers/new" element={<P><CustomerEntryFlow /></P>} />
+            <Route path="/customers/:id/edit" element={<P><CustomerEdit /></P>} />
+            <Route path="/customers/:id/:tab" element={<P><CustomerDetailWithTabs /></P>} />
+            <Route path="/customers/:id" element={<P><CustomerDetailWithTabs /></P>} />
+
+            <Route path="/products" element={<P><ProductList /></P>} />
+            <Route path="/products/new-flow" element={<Navigate to="/products/new" replace />} />
+            <Route path="/products/new" element={<P><ProductEntryFlow /></P>} />
+            <Route path="/products/:id/edit" element={<P><ProductEdit /></P>} />
+            <Route path="/products/:id/:tab" element={<P><ProductDetailWithTabs /></P>} />
+            <Route path="/products/:id" element={<P><ProductDetailWithTabs /></P>} />
+
+            <Route path="/campaigns" element={<P><CampaignList /></P>} />
+            <Route path="/campaigns/new" element={<P><CampaignForm /></P>} />
+            <Route path="/campaigns/:id/:tab" element={<P><CampaignDetailWithTabs /></P>} />
+            <Route path="/campaigns/:id" element={<P><CampaignDetailWithTabs /></P>} />
+            <Route path="/campaigns/:id/edit" element={<P><CampaignForm /></P>} />
+
+            <Route path="/trading-terms" element={<P><TradingTermsListNew /></P>} />
+            <Route path="/trading-terms/:id" element={<P><TradingTermDetail /></P>} />
+            <Route path="/trading-terms/:id/edit" element={<P><TradingTermForm /></P>} />
+            <Route path="/trading-terms/new" element={<P><TradingTermForm /></P>} />
+
+            <Route path="/baselines" element={<P><BaselineManagement /></P>} />
+            <Route path="/accruals" element={<P><AccrualManagement /></P>} />
+            <Route path="/settlements" element={<P><SettlementManagement /></P>} />
+            <Route path="/pnl" element={<P><PnLManagement /></P>} />
+            <Route path="/budget-allocations" element={<P><BudgetAllocationManagement /></P>} />
+
+            <Route path="/trade-calendar" element={<P><TradeCalendarManagement /></P>} />
+            <Route path="/demand-signals" element={<P><DemandSignalManagement /></P>} />
+            <Route path="/scenarios" element={<P><ScenarioPlanningManagement /></P>} />
+            <Route path="/promotion-optimizer" element={<P><PromotionOptimizerManagement /></P>} />
+            <Route path="/forecasting" element={<P><ForecastingDashboard /></P>} />
+
+            <Route path="/customer-360" element={<P><Customer360New /></P>} />
+            <Route path="/customer-360/:id" element={<P><Customer360New /></P>} />
+            <Route path="/advanced-reporting" element={<P><AdvancedReportingManagement /></P>} />
+            <Route path="/advanced-reporting/:id" element={<P><AdvancedReportingManagement /></P>} />
+            <Route path="/revenue-growth" element={<P><RevenueGrowthManagement /></P>} />
+            <Route path="/revenue-growth/:id" element={<P><RevenueGrowthManagement /></P>} />
+
+            <Route path="/transactions" element={<P><TransactionManagement /></P>} />
+            <Route path="/transactions/new" element={<P><TransactionEntryFlow /></P>} />
+            <Route path="/transactions/bulk-upload" element={<P><BulkUploadTransactions /></P>} />
+
+            <Route path="/approvals" element={<P><ApprovalsList /></P>} />
+            <Route path="/approvals/history" element={<P><ApprovalHistory /></P>} />
+            <Route path="/approvals/:id" element={<P><ApprovalDetail /></P>} />
+
+            <Route path="/claims" element={<P><ClaimsList /></P>} />
+            <Route path="/claims/create" element={<P><CreateClaim /></P>} />
+            <Route path="/claims/:id" element={<P><ClaimDetail /></P>} />
+            <Route path="/deductions" element={<P><DeductionsList /></P>} />
+            <Route path="/deductions/create" element={<P><CreateDeduction /></P>} />
+            <Route path="/deductions/reconciliation" element={<P><ReconciliationDashboard /></P>} />
+            <Route path="/deductions/:id" element={<P><DeductionDetail /></P>} />
+
+            <Route path="/activities" element={<P><ActivityList /></P>} />
+            <Route path="/activities/new" element={<P><ActivityFormPage /></P>} />
+            <Route path="/activities/:id" element={<P><ActivityDetailPage /></P>} />
+            <Route path="/activities/:id/edit" element={<P><ActivityFormPage /></P>} />
+
+            <Route path="/rebates" element={<P><RebatesList /></P>} />
+            <Route path="/rebates/new" element={<P><RebateForm /></P>} />
+            <Route path="/rebates/:id" element={<P><RebateDetail /></P>} />
+            <Route path="/rebates/:id/edit" element={<P><RebateForm /></P>} />
+
+            <Route path="/vendors" element={<P><VendorList /></P>} />
+            <Route path="/vendors/new" element={<P><VendorForm /></P>} />
+            <Route path="/vendors/:id" element={<P><VendorDetail /></P>} />
+            <Route path="/vendors/:id/edit" element={<P><VendorForm /></P>} />
+
+            <Route path="/kamwallet" element={<P><KAMWalletManagement /></P>} />
+            <Route path="/kamwallet/:id/allocate" element={<P><KAMWalletAllocate /></P>} />
+
+            <Route path="/settings" element={<P requiredRoles={['admin', 'super_admin']}><SettingsPage /></P>} />
+            <Route path="/users" element={<P><UserList /></P>} />
+            <Route path="/users/new" element={<P><UserForm /></P>} />
+            <Route path="/users/:id" element={<P><UserDetail /></P>} />
+            <Route path="/users/:id/edit" element={<P><UserForm /></P>} />
+            <Route path="/reports" element={<P><ReportList /></P>} />
+            <Route path="/profile" element={<P><UserDetail /></P>} />
+
+            <Route path="/companies" element={<P requiredRoles={['super_admin']}><CompanyList /></P>} />
+            <Route path="/companies/new" element={<P requiredRoles={['super_admin']}><CompanyForm /></P>} />
+            <Route path="/companies/:id" element={<P requiredRoles={['super_admin']}><CompanyDetail /></P>} />
+            <Route path="/companies/:id/edit" element={<P requiredRoles={['super_admin']}><CompanyForm /></P>} />
+
+            <Route path="/customer-assignment" element={<P><CustomerAssignment /></P>} />
+            <Route path="/alerts" element={<P><Alerts /></P>} />
+            <Route path="/admin/*" element={isAuthenticated ? (
+              <Suspense fallback={<LoadingFallback />}><AdminLayout user={user} onLogout={handleLogout} /></Suspense>
+            ) : (<Navigate to="/" replace />)}>
+              <Route path="dashboard" element={<Suspense fallback={<LoadingFallback />}><AdminDashboardPage /></Suspense>} />
+              <Route path="users" element={<Suspense fallback={<LoadingFallback />}><AdminUserList /></Suspense>} />
+              <Route path="tenants" element={<Suspense fallback={<LoadingFallback />}><TenantManagement /></Suspense>} />
+              <Route path="users/new" element={<Suspense fallback={<LoadingFallback />}><UserForm /></Suspense>} />
+              <Route path="users/:id" element={<Suspense fallback={<LoadingFallback />}><UserDetail /></Suspense>} />
+              <Route path="users/:id/edit" element={<Suspense fallback={<LoadingFallback />}><UserForm /></Suspense>} />
+              <Route path="companies" element={<Suspense fallback={<LoadingFallback />}><CompanyList /></Suspense>} />
+              <Route path="companies/new" element={<Suspense fallback={<LoadingFallback />}><CompanyForm /></Suspense>} />
+              <Route path="companies/:id" element={<Suspense fallback={<LoadingFallback />}><CompanyDetail /></Suspense>} />
+              <Route path="companies/:id/edit" element={<Suspense fallback={<LoadingFallback />}><CompanyForm /></Suspense>} />
+              <Route path="hierarchy" element={<Suspense fallback={<LoadingFallback />}><HierarchyManager /></Suspense>} />
+              <Route path="security" element={<Suspense fallback={<LoadingFallback />}><SettingsPage /></Suspense>} />
+              <Route path="settings" element={<Suspense fallback={<LoadingFallback />}><SettingsPage /></Suspense>} />
+              <Route path="azure-ad" element={<Suspense fallback={<LoadingFallback />}><AzureADPage /></Suspense>} />
+              <Route path="erp-settings" element={<Suspense fallback={<LoadingFallback />}><ERPSettingsPage /></Suspense>} />
+              <Route path="company-users" element={<Suspense fallback={<LoadingFallback />}><CompanyAdminUsersPage /></Suspense>} />
+            </Route>
+
+            <Route path="/import-center" element={<P><ImportCenter /></P>} />
+            <Route path="/data/import-export" element={<P><DataImportExport /></P>} />
+            <Route path="/hierarchy/customers" element={<P><CustomerHierarchy /></P>} />
+            <Route path="/hierarchy/products" element={<P><ProductHierarchy /></P>} />
+
+            <Route path="/notification-center" element={<P><NotificationCenter /></P>} />
+            <Route path="/document-management" element={<P><DocumentManagement /></P>} />
+            <Route path="/integration-hub" element={<P><IntegrationHub /></P>} />
+            <Route path="/role-management" element={<P requiredRoles={['admin', 'super_admin']}><RoleManagement /></P>} />
+            <Route path="/system-config" element={<P requiredRoles={['admin', 'super_admin']}><SystemConfig /></P>} />
+            <Route path="/workflow-engine" element={<P requiredRoles={['admin', 'super_admin']}><WorkflowEngine /></P>} />
+
+            <Route path="/help" element={<P><HelpCenter /></P>} />
+            <Route path="/help/promotions" element={<P><PromotionsHelp /></P>} />
+            <Route path="/help/budgets" element={<P><BudgetsHelp /></P>} />
+            <Route path="/help/trade-spends" element={<P><TradeSpendsHelp /></P>} />
+            <Route path="/help/customers" element={<P><CustomersHelp /></P>} />
+            <Route path="/help/products" element={<P><ProductsHelp /></P>} />
+            <Route path="/help/analytics" element={<P><AnalyticsHelp /></P>} />
+            <Route path="/help/simulations" element={<P><SimulationsHelp /></P>} />
+            <Route path="/help/approvals" element={<P><ApprovalsHelp /></P>} />
+            <Route path="/help/rebates" element={<P><RebatesHelp /></P>} />
+            <Route path="/help/claims" element={<P><ClaimsHelp /></P>} />
+            <Route path="/help/deductions" element={<P><DeductionsHelp /></P>} />
+            <Route path="/help/forecasting" element={<P><ForecastingHelp /></P>} />
+            <Route path="/help/business-process-guide" element={<P><BusinessProcessGuide /></P>} />
+
+            <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />
+            <Route path="/simulation-studio" element={<Navigate to="/scenarios" replace />} />
+            <Route path="/promotion-planner" element={<Navigate to="/promotions" replace />} />
+            <Route path="/promotions-timeline" element={<Navigate to="/trade-calendar" replace />} />
+            <Route path="/activity-grid" element={<Navigate to="/trade-calendar" replace />} />
+            <Route path="/realtime-dashboard" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/executive-dashboard" element={<Navigate to="/executive-kpi" replace />} />
+            <Route path="/analytics" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/reports/budget" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/reports/customers" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/reports/products" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/reports/promotions" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/reports/tradespend" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/reports/tradingterms" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/vendor-management" element={<Navigate to="/vendors" replace />} />
+            <Route path="/predictive-analytics" element={<Navigate to="/forecasting" replace />} />
+            <Route path="/ai-dashboard" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/budget-console" element={<Navigate to="/budgets" replace />} />
+            <Route path="/funding-overview" element={<Navigate to="/budgets" replace />} />
+            <Route path="/enterprise/budget" element={<Navigate to="/budgets" replace />} />
+            <Route path="/enterprise/promotions" element={<Navigate to="/promotions" replace />} />
+            <Route path="/enterprise/trade-spend" element={<Navigate to="/trade-spends" replace />} />
+            <Route path="/performance-analytics/promotion-effectiveness" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/performance-analytics/budget-variance" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/performance-analytics/customer-segmentation" element={<Navigate to="/advanced-reporting" replace />} />
+            <Route path="/flows/promotion" element={<Navigate to="/promotions/new" replace />} />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          </Suspense>
                 </UserSkillProvider>
               </Router>
             </CompanyTypeProvider>
