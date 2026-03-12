@@ -39,7 +39,7 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import dataLineageService from '../../services/dataLineage/dataLineageService';
+import { dataLineageService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const DataLineageDashboard = () => {

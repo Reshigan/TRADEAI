@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import mlService from '../services/ai/mlService';
+import { mlService } from '../services/api';
 
 const useRealtimeMLPrediction = (type, params, options = {}) => {
   const {

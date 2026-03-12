@@ -38,7 +38,7 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import dataLineageService from '../../services/dataLineage/dataLineageService';
+import { dataLineageService } from '../../services/api';
 
 const METHODOLOGIES = [
   { value: 'pre_period_average', label: 'Pre-Period Average', description: 'Simple average of pre-promotion period sales' },

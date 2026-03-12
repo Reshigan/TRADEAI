@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Grid, Card, CardContent } from '@mui/material';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 
 const fmt = (v) => typeof v === 'number' ? `R ${v.toLocaleString()}` : v || 'N/A';
 const pct = (v) => typeof v === 'number' ? `${v.toFixed(1)}%` : v || 'N/A';

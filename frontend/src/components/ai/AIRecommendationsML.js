@@ -28,7 +28,7 @@ import {
   ShoppingCart
 } from '@mui/icons-material';
 
-import mlService from '../../services/ai/mlService';
+import { mlService } from '../../services/api';
 
 const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, autoRefresh = false }) => {
   const [loading, setLoading] = useState(true);

@@ -28,7 +28,7 @@ import {
   ArrowBack as BackIcon,
   Link as LinkIcon
 } from '@mui/icons-material';
-import deductionService from '../../services/deduction/deductionService';
+import { deductionService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';

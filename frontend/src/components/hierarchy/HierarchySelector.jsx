@@ -33,8 +33,8 @@ import {
   Category,
   Inventory
 } from '@mui/icons-material';
-import customerService from '../../services/customer/customerService';
-import productService from '../../services/product/productService';
+import { customerService as customerService } from '../../services/api';
+import { productService as productService } from '../../services/api';
 
 // Get currency symbol from user's company settings
 const getCurrencySymbol = () => {

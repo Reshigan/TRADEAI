@@ -30,7 +30,7 @@ import {
   ArrowBack as BackIcon,
   AccessTime as ClockIcon
 } from '@mui/icons-material';
-import approvalService from '../../services/approval/approvalService';
+import { approvalService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';

@@ -11,7 +11,7 @@ import {
   HourglassEmpty as PendingIcon, ErrorOutline as OverdueIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import approvalService from '../../services/approval/approvalService';
+import { approvalService } from '../../services/api';
 import { smartApprovalsService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Alert, Box } from '@mui/material';
-import roleService from '../../services/auth/roleService';
+import { roleService } from '../../services/api';
 
 /**
  * ProtectedRoute component for role-based access control

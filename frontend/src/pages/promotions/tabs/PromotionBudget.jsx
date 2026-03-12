@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import apiClient from '../../../services/api/apiClient';
+import apiClient from '../../../services/apiClient';
 
 const PromotionBudget = ({ promotionId, promotion, onUpdate }) => {
   const [budget, setBudget] = useState(null);

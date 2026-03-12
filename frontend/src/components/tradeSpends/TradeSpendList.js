@@ -18,9 +18,9 @@ import {
 import { format } from 'date-fns';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
-import tradeSpendService from '../../services/api/tradeSpendService';
-import budgetService from '../../services/api/budgetService';
-import customerService from '../../services/api/customerService';
+import tradeSpendService from '../../services/api';
+import budgetService from '../../services/api';
+import customerService from '../../services/api';
 import { vendorService } from '../../services/api';
 import { formatCurrency, formatLabel } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';

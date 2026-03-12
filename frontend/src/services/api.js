@@ -1625,4 +1625,93 @@ export const workflowEngineService = {
   rejectStep: async (id, data) => { const r = await api.put(`/workflow-engine/steps/${id}/reject`, data); return r.data; },
 };
 
+export const claimService = {
+  getAll: async (params) => { const r = await api.get('/claims', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/claims/${id}`); return r.data; },
+  create: async (data) => { const r = await api.post('/claims', data); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/claims/${id}`, data); return r.data; },
+  delete: async (id) => { const r = await api.delete(`/claims/${id}`); return r.data; },
+  getSummary: async () => { const r = await api.get('/claims/summary'); return r.data; },
+};
+
+export const deductionService = {
+  getAll: async (params) => { const r = await api.get('/deductions', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/deductions/${id}`); return r.data; },
+  create: async (data) => { const r = await api.post('/deductions', data); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/deductions/${id}`, data); return r.data; },
+  delete: async (id) => { const r = await api.delete(`/deductions/${id}`); return r.data; },
+  getSummary: async () => { const r = await api.get('/deductions/summary'); return r.data; },
+};
+
+export const approvalService = {
+  getAll: async (params) => { const r = await api.get('/approvals', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/approvals/${id}`); return r.data; },
+  approve: async (id, data) => { const r = await api.patch(`/approvals/${id}/approve`, data); return r.data; },
+  reject: async (id, data) => { const r = await api.patch(`/approvals/${id}/reject`, data); return r.data; },
+  getSummary: async () => { const r = await api.get('/approvals/summary'); return r.data; },
+};
+
+export const kamWalletService = {
+  getAll: async (params) => { const r = await api.get('/kam-wallets', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/kam-wallets/${id}`); return r.data; },
+  create: async (data) => { const r = await api.post('/kam-wallets', data); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/kam-wallets/${id}`, data); return r.data; },
+  allocate: async (data) => { const r = await api.post('/kam-wallets/allocate', data); return r.data; },
+  getSummary: async () => { const r = await api.get('/kam-wallets/summary'); return r.data; },
+};
+
+export const simulationService = {
+  run: async (data) => { const r = await api.post('/simulations/run', data); return r.data; },
+  getAll: async (params) => { const r = await api.get('/simulations', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/simulations/${id}`); return r.data; },
+  getSummary: async () => { const r = await api.get('/simulations/summary'); return r.data; },
+};
+
+export const activityGridService = {
+  getAll: async (params) => { const r = await api.get('/activity-grid', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/activity-grid/${id}`); return r.data; },
+  create: async (data) => { const r = await api.post('/activity-grid', data); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/activity-grid/${id}`, data); return r.data; },
+};
+
+export const dataLineageService = {
+  getLineage: async (params) => { const r = await api.get('/data-lineage', { params }); return r.data; },
+  getImpact: async (id) => { const r = await api.get(`/data-lineage/${id}/impact`); return r.data; },
+};
+
+export const mlService = {
+  predict: async (data) => { const r = await api.post('/ml/predict', data); return r.data; },
+  getModels: async () => { const r = await api.get('/ml/models'); return r.data; },
+  getStatus: async () => { const r = await api.get('/ml/status'); return r.data; },
+};
+
+export const aiOrchestratorService = {
+  getInsights: async (params) => { const r = await api.get('/ai/insights', { params }); return r.data; },
+  getRecommendations: async (params) => { const r = await api.get('/ai/recommendations', { params }); return r.data; },
+};
+
+export const reportService = {
+  getAll: async (params) => { const r = await api.get('/reports', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/reports/${id}`); return r.data; },
+  generate: async (data) => { const r = await api.post('/reports/generate', data); return r.data; },
+  getDefinitions: async () => { const r = await api.get('/reports/definitions'); return r.data; },
+};
+
+export const securityService = {
+  getEvents: async (params) => { const r = await api.get('/security/events', { params }); return r.data; },
+  getStatus: async () => { const r = await api.get('/security/status'); return r.data; },
+};
+
+export const vendorService = {
+  getAll: async (params) => { const r = await api.get('/vendors', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/vendors/${id}`); return r.data; },
+  create: async (data) => { const r = await api.post('/vendors', data); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/vendors/${id}`, data); return r.data; },
+};
+
+export const workflowService = {
+  getAll: async (params) => { const r = await api.get('/workflows', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/workflows/${id}`); return r.data; },
+};
+
 export default api;

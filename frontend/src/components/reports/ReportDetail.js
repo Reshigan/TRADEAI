@@ -34,7 +34,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
-import { reportService } from '../../services/api/reportService';
+import { reportService } from '../../services/api';
 import ReportForm from './ReportForm';
 import { formatLabel } from '../../utils/formatters';
 

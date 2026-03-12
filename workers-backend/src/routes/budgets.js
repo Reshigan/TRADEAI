@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { checkBudgetAvailability, checkBudgetAlerts, fundKamWallets } from '../services/budgetEnforcement.js';
 
 export const budgetRoutes = new Hono();
 
@@ -322,6 +323,96 @@ budgetRoutes.get('/:id/forecast', async (c) => {
     }));
     forecast.forEach(f => { f.variance = f.planned - f.actual; });
     return c.json({ success: true, data: forecast });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Check budget availability for a given amount
+budgetRoutes.get('/:id/availability', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const { amount } = c.req.query();
+    const result = await checkBudgetAvailability(c.env.DB, id, parseFloat(amount || '0'), tenantId);
+    return c.json({ success: true, data: result });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get budget alerts
+budgetRoutes.get('/:id/alerts', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const alerts = await c.env.DB.prepare(
+      'SELECT * FROM budget_alerts WHERE budget_id = ? AND company_id = ? ORDER BY created_at DESC'
+    ).bind(id, tenantId).all();
+    return c.json({ success: true, data: alerts.results || [] });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Get budget transaction audit log
+budgetRoutes.get('/:id/transactions', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const txns = await c.env.DB.prepare(
+      'SELECT * FROM budget_transactions WHERE budget_id = ? AND company_id = ? ORDER BY created_at DESC'
+    ).bind(id, tenantId).all();
+    return c.json({ success: true, data: txns.results || [] });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Approve budget and fund KAM wallets
+budgetRoutes.post('/:id/approve', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const userId = c.get('userId');
+    const mongodb = getMongoClient(c);
+    const now = new Date().toISOString();
+
+    const budget = await mongodb.findOne('budgets', { _id: { $oid: id }, companyId: tenantId });
+    if (!budget) return c.json({ success: false, message: 'Budget not found' }, 404);
+
+    await mongodb.updateOne('budgets', { _id: { $oid: id }, companyId: tenantId }, {
+      status: 'approved',
+      approvedBy: userId,
+      approvedAt: now,
+      totalAvailable: budget.amount || 0
+    });
+
+    // Fund KAM wallets from this budget
+    let walletResult = { funded: 0 };
+    try {
+      walletResult = await fundKamWallets(c.env.DB, id, tenantId, userId);
+    } catch (e) {
+      console.log('KAM wallet funding:', e.message);
+    }
+
+    return c.json({
+      success: true,
+      message: 'Budget approved and KAM wallets funded',
+      data: { budgetId: id, status: 'approved', walletsFunded: walletResult.funded, perKam: walletResult.perKam }
+    });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// Run budget alert check
+budgetRoutes.post('/:id/check-alerts', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const alerts = await checkBudgetAlerts(c.env.DB, id, tenantId);
+    return c.json({ success: true, data: { alerts, count: alerts.length } });
   } catch (error) {
     return c.json({ success: false, message: error.message }, 500);
   }

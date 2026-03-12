@@ -10,7 +10,7 @@ import {
   Receipt as DeductionIcon, ErrorOutline as UnmatchedIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import deductionService from '../../services/deduction/deductionService';
+import { deductionService } from '../../services/api';
 import { deductionMatchService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
