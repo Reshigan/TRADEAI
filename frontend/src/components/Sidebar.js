@@ -6,104 +6,96 @@ import {
   Avatar,
   Typography,
   Collapse,
-  alpha,
+  Badge,
 } from '@mui/material';
 import {
-  Home as HomeIcon,
-  Campaign as PromotionsIcon,
-  AccountBalance as BudgetsIcon,
-  CheckCircle as ApprovalsIcon,
-  BarChart as InsightsIcon,
-  Receipt as ClaimsIcon,
+  Dashboard as DashboardIcon,
+  AccountBalance as PlanIcon,
+  Campaign as ExecuteIcon,
+  CheckCircle as ApproveIcon,
+  Receipt as SettleIcon,
+  Insights as AnalyzeIcon,
   Storage as DataIcon,
+  AdminPanelSettings as AdminIcon,
   Settings as SettingsIcon,
   HelpOutline as HelpIcon,
   Logout as LogoutIcon,
   ExpandMore as ExpandIcon,
   ExpandLess as CollapseIcon,
-  SwapHoriz as TransactionsIcon,
-  AdminPanelSettings as AdminIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 
-const SIDEBAR_WIDTH = 220;
+const SIDEBAR_WIDTH = 260;
 
 const getNavGroups = (userRole) => {
   const isAdmin = userRole === 'admin' || userRole === 'super_admin';
 
   const groups = [
     {
-      key: 'home',
-      label: 'Home',
-      icon: <HomeIcon />,
+      key: 'dashboard',
+      label: 'Dashboard',
+      icon: <DashboardIcon />,
       path: '/dashboard',
     },
     {
-      key: 'promotions',
-      label: 'Promotions',
-      icon: <PromotionsIcon />,
+      key: 'plan',
+      label: 'Plan',
+      icon: <PlanIcon />,
       children: [
-        { label: 'All Promotions', path: '/promotions' },
-        { label: 'Campaigns', path: '/campaigns' },
+        { label: 'Budgets', path: '/budgets' },
+        { label: 'Allocations', path: '/budget-allocations' },
         { label: 'Trade Calendar', path: '/trade-calendar' },
         { label: 'Scenarios', path: '/scenarios' },
+        { label: 'KAM Wallet', path: '/kamwallet' },
+      ],
+    },
+    {
+      key: 'execute',
+      label: 'Execute',
+      icon: <ExecuteIcon />,
+      children: [
+        { label: 'Promotions', path: '/promotions' },
+        { label: 'Trade Spends', path: '/trade-spends' },
+        { label: 'Campaigns', path: '/campaigns' },
         { label: 'Optimizer', path: '/promotion-optimizer' },
       ],
     },
     {
-      key: 'budgets',
-      label: 'Budgets & Spend',
-      icon: <BudgetsIcon />,
+      key: 'approve',
+      label: 'Approve',
+      icon: <ApproveIcon />,
+      path: '/approvals',
+      badge: true,
+    },
+    {
+      key: 'settle',
+      label: 'Settle',
+      icon: <SettleIcon />,
       children: [
-        { label: 'Budgets', path: '/budgets' },
-        { label: 'Allocations', path: '/budget-allocations' },
-        { label: 'Trade Spends', path: '/trade-spends' },
-        { label: 'KAM Wallet', path: '/kamwallet' },
+        { label: 'Claims', path: '/claims' },
+        { label: 'Deductions', path: '/deductions' },
+        { label: 'Reconciliation', path: '/deductions/reconciliation' },
         { label: 'Accruals', path: '/accruals' },
         { label: 'Settlements', path: '/settlements' },
       ],
     },
     {
-      key: 'approvals',
-      label: 'Approvals',
-      icon: <ApprovalsIcon />,
-      path: '/approvals',
-    },
-    {
-      key: 'claims',
-      label: 'Claims & Deductions',
-      icon: <ClaimsIcon />,
-      children: [
-        { label: 'Claims', path: '/claims' },
-        { label: 'Deductions', path: '/deductions' },
-        { label: 'Reconciliation', path: '/deductions/reconciliation' },
-      ],
-    },
-    {
-      key: 'insights',
-      label: 'Insights',
-      icon: <InsightsIcon />,
+      key: 'analyze',
+      label: 'Analyze',
+      icon: <AnalyzeIcon />,
       children: [
         { label: 'P&L', path: '/pnl' },
         { label: 'Customer 360', path: '/customer-360' },
         { label: 'Reports', path: '/advanced-reporting' },
-        { label: 'RGM', path: '/revenue-growth' },
         { label: 'Executive KPIs', path: '/executive-kpi' },
+        { label: 'RGM', path: '/revenue-growth' },
         { label: 'Demand Signals', path: '/demand-signals' },
         { label: 'Forecasting', path: '/forecasting' },
       ],
     },
     {
-      key: 'transactions',
-      label: 'Transactions',
-      icon: <TransactionsIcon />,
-      children: [
-        { label: 'All Transactions', path: '/transactions' },
-        { label: 'Import Center', path: '/import-center' },
-      ],
-    },
-    {
       key: 'data',
-      label: 'Master Data',
+      label: 'Data',
       icon: <DataIcon />,
       children: [
         { label: 'Customers', path: '/customers' },
@@ -111,6 +103,7 @@ const getNavGroups = (userRole) => {
         { label: 'Vendors', path: '/vendors' },
         { label: 'Trading Terms', path: '/trading-terms' },
         { label: 'Baselines', path: '/baselines' },
+        { label: 'Hierarchy', path: '/hierarchy/customers' },
       ],
     },
   ];
@@ -118,11 +111,12 @@ const getNavGroups = (userRole) => {
   if (isAdmin) {
     groups.push({
       key: 'admin',
-      label: 'Administration',
+      label: 'Admin',
       icon: <AdminIcon />,
       children: [
         { label: 'Users', path: '/users' },
         { label: 'Roles', path: '/role-management' },
+        { label: 'Config', path: '/system-config' },
         { label: 'Workflows', path: '/workflow-engine' },
         { label: 'Integrations', path: '/integration-hub' },
         { label: 'Documents', path: '/document-management' },
@@ -133,11 +127,6 @@ const getNavGroups = (userRole) => {
 
   return groups;
 };
-
-const bottomItems = [
-  { key: 'settings', label: 'Settings', icon: <SettingsIcon />, path: '/system-config' },
-  { key: 'help', label: 'Help', icon: <HelpIcon />, path: '/help' },
-];
 
 const Sidebar = ({ user, onLogout }) => {
   const navigate = useNavigate();
@@ -173,9 +162,8 @@ const Sidebar = ({ user, onLogout }) => {
         zIndex: 1200,
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: '#FFFFFF',
-        borderRight: '1px solid',
-        borderColor: 'divider',
+        bgcolor: '#0F172A',
+        color: '#94A3B8',
       }}
     >
       <Box
@@ -194,7 +182,7 @@ const Sidebar = ({ user, onLogout }) => {
             width: 34,
             height: 34,
             borderRadius: '10px',
-            bgcolor: '#7C3AED',
+            bgcolor: '#1E40AF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -203,12 +191,12 @@ const Sidebar = ({ user, onLogout }) => {
         >
           <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: '0.95rem' }}>T</Typography>
         </Box>
-        <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#111827', letterSpacing: '-0.02em' }}>
+        <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#F1F5F9', letterSpacing: '-0.02em' }}>
           TRADEAI
         </Typography>
       </Box>
 
-      <Box sx={{ flex: 1, overflow: 'auto', px: 1.5, py: 0.5 }}>
+      <Box sx={{ flex: 1, overflow: 'auto', px: 1.5, py: 0.5, '&::-webkit-scrollbar': { width: 4 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2 } }}>
         {navGroups.map((group) => {
           const active = isGroupActive(group);
           const isOpen = expanded[group.key] !== undefined ? expanded[group.key] : active;
@@ -227,21 +215,25 @@ const Sidebar = ({ user, onLogout }) => {
                   mb: 0.25,
                   borderRadius: '8px',
                   cursor: 'pointer',
-                  color: active ? '#7C3AED' : '#4B5563',
-                  bgcolor: active ? (theme) => alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                  color: active ? '#FFFFFF' : '#94A3B8',
+                  bgcolor: active ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  borderLeft: active ? '3px solid #3B82F6' : '3px solid transparent',
                   fontWeight: active ? 600 : 500,
                   fontSize: '0.875rem',
                   transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: active ? (theme) => alpha(theme.palette.primary.main, 0.12) : '#F3F4F6',
-                    color: '#7C3AED',
+                    bgcolor: 'rgba(255,255,255,0.06)',
+                    color: '#E2E8F0',
                   },
                 }}
               >
                 {React.cloneElement(group.icon, { sx: { fontSize: 20 } })}
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 'inherit', color: 'inherit' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 'inherit', color: 'inherit', flex: 1 }}>
                   {group.label}
                 </Typography>
+                {group.badge && (
+                  <Badge color="error" variant="dot" sx={{ '& .MuiBadge-badge': { top: 2, right: 2 } }} />
+                )}
               </Box>
             );
           }
@@ -258,12 +250,13 @@ const Sidebar = ({ user, onLogout }) => {
                   py: 1,
                   borderRadius: '8px',
                   cursor: 'pointer',
-                  color: active ? '#7C3AED' : '#4B5563',
-                  bgcolor: active && !isOpen ? (theme) => alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                  color: active ? '#FFFFFF' : '#94A3B8',
+                  bgcolor: active && !isOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  borderLeft: active && !isOpen ? '3px solid #3B82F6' : '3px solid transparent',
                   transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: '#F3F4F6',
-                    color: '#7C3AED',
+                    bgcolor: 'rgba(255,255,255,0.06)',
+                    color: '#E2E8F0',
                   },
                 }}
               >
@@ -287,13 +280,13 @@ const Sidebar = ({ user, onLogout }) => {
                           borderRadius: '6px',
                           cursor: 'pointer',
                           fontSize: '0.8125rem',
-                          color: childActive ? '#7C3AED' : '#6B7280',
+                          color: childActive ? '#FFFFFF' : '#64748B',
                           fontWeight: childActive ? 600 : 400,
-                          bgcolor: childActive ? (theme) => alpha(theme.palette.primary.main, 0.06) : 'transparent',
+                          bgcolor: childActive ? 'rgba(255,255,255,0.06)' : 'transparent',
                           transition: 'all 0.15s ease',
                           '&:hover': {
-                            bgcolor: '#F3F4F6',
-                            color: '#7C3AED',
+                            bgcolor: 'rgba(255,255,255,0.04)',
+                            color: '#CBD5E1',
                           },
                         }}
                       >
@@ -308,8 +301,35 @@ const Sidebar = ({ user, onLogout }) => {
         })}
       </Box>
 
-      <Box sx={{ px: 1.5, pb: 1, borderTop: '1px solid', borderColor: 'divider', pt: 1 }}>
-        {bottomItems.map((item) => {
+      <Box sx={{ px: 1.5, py: 1 }}>
+        <Box
+          onClick={() => navigate('/promotions/new')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1,
+            py: 1,
+            borderRadius: '8px',
+            cursor: 'pointer',
+            bgcolor: '#1E40AF',
+            color: '#FFFFFF',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            transition: 'all 0.15s ease',
+            '&:hover': { bgcolor: '#1E3A8A' },
+          }}
+        >
+          <AddIcon sx={{ fontSize: 18 }} />
+          Quick Create
+        </Box>
+      </Box>
+
+      <Box sx={{ px: 1.5, pb: 1, borderTop: '1px solid rgba(255,255,255,0.06)', pt: 1 }}>
+        {[
+          { key: 'settings', label: 'Settings', icon: <SettingsIcon />, path: '/system-config' },
+          { key: 'help', label: 'Help', icon: <HelpIcon />, path: '/help' },
+        ].map((item) => {
           const active = isActive(item.path);
           return (
             <Box
@@ -323,11 +343,11 @@ const Sidebar = ({ user, onLogout }) => {
                 py: 0.75,
                 borderRadius: '8px',
                 cursor: 'pointer',
-                color: active ? '#7C3AED' : '#9CA3AF',
+                color: active ? '#FFFFFF' : '#64748B',
                 fontSize: '0.8125rem',
                 fontWeight: active ? 600 : 500,
                 transition: 'all 0.15s ease',
-                '&:hover': { bgcolor: '#F3F4F6', color: '#7C3AED' },
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.04)', color: '#CBD5E1' },
               }}
             >
               {React.cloneElement(item.icon, { sx: { fontSize: 18 } })}
@@ -348,10 +368,10 @@ const Sidebar = ({ user, onLogout }) => {
             py: 0.75,
             borderRadius: '8px',
             cursor: 'pointer',
-            color: '#9CA3AF',
+            color: '#64748B',
             fontSize: '0.8125rem',
             transition: 'all 0.15s ease',
-            '&:hover': { bgcolor: '#FEF2F2', color: '#DC2626' },
+            '&:hover': { bgcolor: 'rgba(239,68,68,0.1)', color: '#EF4444' },
           }}
         >
           <LogoutIcon sx={{ fontSize: 18 }} />
@@ -377,7 +397,7 @@ const Sidebar = ({ user, onLogout }) => {
               sx={{
                 width: 32,
                 height: 32,
-                bgcolor: '#7C3AED',
+                bgcolor: '#1E40AF',
                 fontSize: '0.8rem',
                 fontWeight: 600,
               }}
@@ -385,10 +405,10 @@ const Sidebar = ({ user, onLogout }) => {
               {userInitial.toUpperCase()}
             </Avatar>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#111827', lineHeight: 1.2 }} noWrap>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#E2E8F0', lineHeight: 1.2 }} noWrap>
                 {user?.name || 'User'}
               </Typography>
-              <Typography sx={{ fontSize: '0.7rem', color: '#9CA3AF', lineHeight: 1.2 }} noWrap>
+              <Typography sx={{ fontSize: '0.7rem', color: '#64748B', lineHeight: 1.2 }} noWrap>
                 {user?.email || ''}
               </Typography>
             </Box>

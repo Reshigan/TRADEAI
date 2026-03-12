@@ -231,9 +231,9 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                       py: 1.5,
                       px: 2,
                       '&.Mui-selected': {
-                        bgcolor: alpha('#7C3AED', 0.08),
+                        bgcolor: alpha('#1E40AF', 0.08),
                         borderRight: '3px solid',
-                        borderColor: '#7C3AED',
+                        borderColor: '#1E40AF',
                       }
                     }}
                   >
@@ -284,7 +284,7 @@ const MobileDrawer= ({ open, onClose, user, onLogout }) => {
                               pl: 7,
                               pr: 2,
                               '&.Mui-selected': {
-                                bgcolor: alpha('#7C3AED', 0.08),
+                                bgcolor: alpha('#1E40AF', 0.08),
                               }
                             }}
                           >

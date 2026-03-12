@@ -10,7 +10,7 @@ const Layout = ({ children, user, onLogout }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F3F4F6' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F8FAFC' }}>
       <CssBaseline />
 
       {!isMobile && <Sidebar user={user} onLogout={onLogout} />}
@@ -33,7 +33,7 @@ const Layout = ({ children, user, onLogout }) => {
           width: isMobile ? '100%' : `calc(100% - ${SIDEBAR_WIDTH}px)`,
         }}
       >
-        <TopHeader onMenuClick={() => setMobileMenuOpen(true)} />
+        <TopHeader onMenuClick={() => setMobileMenuOpen(true)} user={user} />
 
         <Box
           sx={{

@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
 import {
   Box,
   Typography,
-  InputBase,
   IconButton,
   Badge,
-  Button,
-  Menu,
-  MenuItem,
-  alpha,
+  Breadcrumbs,
+  Link,
+  Avatar,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   Notifications as NotificationsIcon,
-  CalendarMonth as CalendarIcon,
-  FileDownload as ExportIcon,
-  KeyboardArrowDown as ArrowDownIcon,
   Menu as MenuIcon,
+  NavigateNext as BreadcrumbIcon,
 } from '@mui/icons-material';
 
 const pageTitles = {
@@ -72,10 +68,23 @@ const getPageInfo = (pathname) => {
   return { title: 'TRADEAI', subtitle: 'Trade Spend Management Platform' };
 };
 
-const TopHeader = ({ onMenuClick }) => {
+const getBreadcrumbs = (pathname) => {
+  const parts = pathname.split('/').filter(Boolean);
+  const crumbs = [{ label: 'Home', path: '/dashboard' }];
+  let currentPath = '';
+  for (const part of parts) {
+    currentPath += '/' + part;
+    const info = pageTitles[currentPath];
+    if (info) {
+      crumbs.push({ label: info.title, path: currentPath });
+    }
+  }
+  return crumbs;
+};
+
+const TopHeader = ({ onMenuClick, user }) => {
   const location = useLocation();
-  const [dateAnchor, setDateAnchor] = useState(null);
-  const [selectedRange, setSelectedRange] = useState('This Month');
+  const navigate = useNavigate();
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
@@ -91,21 +100,8 @@ const TopHeader = ({ onMenuClick }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const pageInfo = getPageInfo(location.pathname);
-
-  const dateRanges = ['Today', 'This Week', 'This Month', 'This Quarter', 'This Year', 'Last 30 Days', 'Last 90 Days'];
-
-  const handleDateSelect = (range) => {
-    setSelectedRange(range);
-    setDateAnchor(null);
-  };
-
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString('en-ZA', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  });
+  const breadcrumbs = getBreadcrumbs(location.pathname);
+  const userInitial = user?.name?.[0] || user?.email?.[0] || 'U';
 
   return (
     <Box
@@ -114,173 +110,107 @@ const TopHeader = ({ onMenuClick }) => {
         alignItems: 'center',
         justifyContent: 'space-between',
         px: { xs: 2, sm: 3 },
-        py: 2,
-        minHeight: 72,
+        height: 56,
+        minHeight: 56,
+        borderBottom: '1px solid #E2E8F0',
+        bgcolor: '#FFFFFF',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
         <IconButton
           onClick={onMenuClick}
           sx={{
             display: { xs: 'inline-flex', md: 'none' },
-            bgcolor: '#F3F4F6',
-            borderRadius: '12px',
-            width: 40,
-            height: 40,
-            mt: 0.25,
-            '&:hover': { bgcolor: '#E5E7EB' },
+            width: 36,
+            height: 36,
           }}
         >
-          <MenuIcon sx={{ fontSize: 20, color: '#6B7280' }} />
+          <MenuIcon sx={{ fontSize: 20, color: '#64748B' }} />
         </IconButton>
 
-        <Box>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 700,
-            color: '#111827',
-            fontSize: { xs: '1.15rem', sm: '1.5rem' },
-            lineHeight: 1.3,
-          }}
-        >
-          {pageInfo.title}
+        <Breadcrumbs separator={<BreadcrumbIcon sx={{ fontSize: 16, color: '#94A3B8' }} />} sx={{ '& .MuiBreadcrumbs-ol': { flexWrap: 'nowrap' } }}>
+          {breadcrumbs.map((crumb, i) => (
+            i < breadcrumbs.length - 1 ? (
+              <Link
+                key={crumb.path}
+                underline="hover"
+                onClick={() => navigate(crumb.path)}
+                sx={{ fontSize: '0.8125rem', color: '#64748B', cursor: 'pointer', fontWeight: 500 }}
+              >
+                {crumb.label}
+              </Link>
+            ) : (
+              <Typography key={crumb.path} sx={{ fontSize: '0.8125rem', color: '#0F172A', fontWeight: 600 }}>
+                {crumb.label}
+              </Typography>
+            )
+          ))}
+        </Breadcrumbs>
+      </Box>
+
+      <Box
+        onClick={() => {
+          const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true });
+          window.dispatchEvent(event);
+        }}
+        sx={{
+          display: { xs: 'none', md: 'flex' },
+          alignItems: 'center',
+          bgcolor: '#F1F5F9',
+          borderRadius: '10px',
+          border: '1px solid #E2E8F0',
+          px: 2,
+          py: 0.625,
+          minWidth: 240,
+          maxWidth: 320,
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          '&:hover': {
+            bgcolor: '#E2E8F0',
+          },
+        }}
+      >
+        <SearchIcon sx={{ color: '#94A3B8', fontSize: 18, mr: 1 }} />
+        <Typography sx={{ fontSize: '0.8125rem', color: '#94A3B8', flex: 1 }}>
+          Search...
         </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            color: '#6B7280',
-            fontSize: '0.85rem',
-            mt: 0.25,
-          }}
-        >
-          {pageInfo.subtitle}
-        </Typography>
+        <Box sx={{ display: 'flex', gap: 0.25 }}>
+          <Box sx={{ px: 0.5, py: 0.125, bgcolor: '#FFFFFF', borderRadius: '4px', border: '1px solid #CBD5E1', fontSize: '0.6875rem', color: '#64748B', lineHeight: 1.5, fontWeight: 500 }}>
+            {navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}
+          </Box>
+          <Box sx={{ px: 0.5, py: 0.125, bgcolor: '#FFFFFF', borderRadius: '4px', border: '1px solid #CBD5E1', fontSize: '0.6875rem', color: '#64748B', lineHeight: 1.5, fontWeight: 500 }}>
+            K
+          </Box>
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            bgcolor: '#F3F4F6',
-            borderRadius: '12px',
-            px: 2,
-            py: 0.75,
-            minWidth: 200,
-            maxWidth: 280,
-            transition: 'all 0.2s ease',
-            '&:focus-within': {
-              bgcolor: '#fff',
-              boxShadow: '0 0 0 2px rgba(124, 58, 237, 0.2)',
-            },
-          }}
-        >
-          <SearchIcon sx={{ color: '#9CA3AF', fontSize: 20, mr: 1 }} />
-          <InputBase
-            placeholder="Search everything..."
-            sx={{
-              fontSize: '0.875rem',
-              color: '#374151',
-              flex: 1,
-              '& input::placeholder': {
-                color: '#9CA3AF',
-                opacity: 1,
-              },
-            }}
-          />
-        </Box>
-
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <IconButton
+          onClick={() => navigate('/notification-center')}
           sx={{
-            bgcolor: '#F3F4F6',
-            borderRadius: '12px',
-            width: 40,
-            height: 40,
-            '&:hover': { bgcolor: '#E5E7EB' },
+            width: 36,
+            height: 36,
           }}
         >
-          <Badge badgeContent={pendingCount} color="error" invisible={pendingCount === 0} sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', minWidth: 18, height: 18 } }}>
-            <NotificationsIcon sx={{ fontSize: 20, color: '#6B7280' }} />
+          <Badge badgeContent={pendingCount} color="error" invisible={pendingCount === 0} sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 16, height: 16 } }}>
+            <NotificationsIcon sx={{ fontSize: 20, color: '#64748B' }} />
           </Badge>
         </IconButton>
 
-        <Button
-          onClick={(e) => setDateAnchor(e.currentTarget)}
-          startIcon={<CalendarIcon sx={{ fontSize: 18 }} />}
-          endIcon={<ArrowDownIcon />}
+        <Avatar
+          onClick={() => navigate('/settings')}
           sx={{
-            display: { xs: 'none', sm: 'inline-flex' },
-            bgcolor: '#F3F4F6',
-            borderRadius: '12px',
-            color: '#374151',
-            fontWeight: 500,
-            fontSize: '0.85rem',
-            px: 2,
-            py: 0.75,
-            textTransform: 'none',
-            '&:hover': { bgcolor: '#E5E7EB' },
-          }}
-        >
-          {formattedDate}
-        </Button>
-        <Menu
-          anchorEl={dateAnchor}
-          open={Boolean(dateAnchor)}
-          onClose={() => setDateAnchor(null)}
-          PaperProps={{
-            sx: {
-              borderRadius: '12px',
-              mt: 1,
-              minWidth: 180,
-              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)',
-            },
-          }}
-        >
-          {dateRanges.map((range) => (
-            <MenuItem
-              key={range}
-              selected={range === selectedRange}
-              onClick={() => handleDateSelect(range)}
-              sx={{
-                fontSize: '0.85rem',
-                py: 1,
-                borderRadius: '8px',
-                mx: 0.5,
-                '&.Mui-selected': {
-                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                  color: '#7C3AED',
-                },
-              }}
-            >
-              {range}
-            </MenuItem>
-          ))}
-        </Menu>
-
-        <Button
-          variant="contained"
-          startIcon={<ExportIcon sx={{ fontSize: 18 }} />}
-          sx={{
-            display: { xs: 'none', sm: 'inline-flex' },
-            bgcolor: '#7C3AED',
-            borderRadius: '12px',
+            width: 32,
+            height: 32,
+            bgcolor: '#1E40AF',
+            fontSize: '0.75rem',
             fontWeight: 600,
-            fontSize: '0.85rem',
-            px: 2.5,
-            py: 0.85,
-            textTransform: 'none',
-            boxShadow: 'none',
-            '&:hover': {
-              bgcolor: '#6D28D9',
-              boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)',
-            },
+            cursor: 'pointer',
+            '&:hover': { opacity: 0.9 },
           }}
         >
-          Export
-        </Button>
+          {userInitial.toUpperCase()}
+        </Avatar>
       </Box>
     </Box>
   );

@@ -39,9 +39,9 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#7C3AED', // Violet purple
-      light: '#A78BFA',
-      dark: '#6D28D9',
+      main: '#1E40AF',
+      light: '#3B82F6',
+      dark: '#1E3A8A',
       contrastText: '#FFFFFF',
     },
     secondary: {
@@ -71,25 +71,25 @@ const theme = createTheme({
       dark: '#047857',
     },
     background: {
-      default: '#F3F4F6',
+      default: '#F8FAFC',
       paper: '#FFFFFF',
-      subtle: '#F9FAFB',
+      subtle: '#F1F5F9',
       elevated: '#FFFFFF',
     },
     text: {
-      primary: '#171717', // Near black for maximum readability
-      secondary: '#525252', // Medium gray for secondary text
-      disabled: '#A3A3A3',
-      hint: '#737373',
+      primary: '#0F172A',
+      secondary: '#64748B',
+      disabled: '#94A3B8',
+      hint: '#64748B',
     },
-    divider: '#E5E5E5',
+    divider: '#E2E8F0',
     action: {
-      active: '#7C3AED',
-      hover: 'rgba(124, 58, 237, 0.04)',
-      selected: 'rgba(124, 58, 237, 0.08)',
-      disabled: '#A3A3A3',
-      disabledBackground: '#F5F5F5',
-      focus: 'rgba(124, 58, 237, 0.12)',
+      active: '#1E40AF',
+      hover: 'rgba(30, 64, 175, 0.04)',
+      selected: 'rgba(30, 64, 175, 0.08)',
+      disabled: '#94A3B8',
+      disabledBackground: '#F1F5F9',
+      focus: 'rgba(30, 64, 175, 0.12)',
     },
     // Custom colors
     status: statusColors,
@@ -266,12 +266,12 @@ const theme = createTheme({
             boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
           },
         },
-        containedPrimary: {
-          backgroundColor: '#7C3AED',
-          '&:hover': {
-            backgroundColor: '#6D28D9',
+          containedPrimary: {
+            backgroundColor: '#1E40AF',
+            '&:hover': {
+              backgroundColor: '#1E3A8A',
+            },
           },
-        },
         outlined: {
           borderColor: '#E5E5E5',
           color: '#404040',
@@ -363,7 +363,7 @@ const theme = createTheme({
               borderColor: '#D4D4D4',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#7C3AED',
+              borderColor: '#1E40AF',
               borderWidth: 1,
             },
           },
@@ -375,13 +375,13 @@ const theme = createTheme({
         root: {
           borderRadius: 10,
           '& fieldset': {
-            borderColor: '#E5E5E5',
+            borderColor: '#E2E8F0',
           },
           '&:hover fieldset': {
-            borderColor: '#D4D4D4',
+            borderColor: '#CBD5E1',
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#7C3AED',
+            borderColor: '#1E40AF',
             borderWidth: 1,
           },
         },
@@ -415,9 +415,9 @@ const theme = createTheme({
             backgroundColor: '#F5F5F5',
           },
           '&.Mui-selected': {
-            backgroundColor: 'rgba(124, 58, 237, 0.08)',
+            backgroundColor: 'rgba(30, 64, 175, 0.08)',
             '&:hover': {
-              backgroundColor: 'rgba(124, 58, 237, 0.12)',
+              backgroundColor: 'rgba(30, 64, 175, 0.12)',
             },
           },
         },
@@ -506,7 +506,7 @@ const theme = createTheme({
         },
         indicator: {
           height: 2,
-          backgroundColor: '#7C3AED',
+          backgroundColor: '#1E40AF',
         },
       },
     },
@@ -519,7 +519,7 @@ const theme = createTheme({
           minHeight: 48,
           color: '#737373',
           '&.Mui-selected': {
-            color: '#7C3AED',
+            color: '#1E40AF',
           },
         },
       },
