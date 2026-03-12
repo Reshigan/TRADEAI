@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { Add, Refresh, Edit, Delete, Visibility, Gavel, CheckCircle, TrendingUp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { tradingTermsService as tradingTermsService } from '../../services/api';
+import { tradingTermsService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 
 const TradingTermsList = () => {

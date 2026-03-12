@@ -25,7 +25,7 @@ import {
 import { Add as AddIcon, ArrowBack as BackIcon } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { kamWalletService } from '../../services/api';
-import { customerService as customerService } from '../../services/api';
+import { customerService } from '../../services/api';
 import { useCurrency } from '../../contexts/CurrencyContext';
 
 const KAMWalletAllocate = () => {

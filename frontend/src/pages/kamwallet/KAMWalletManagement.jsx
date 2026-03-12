@@ -25,7 +25,7 @@ import {
 import { Add as AddIcon, Visibility as ViewIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { kamWalletService } from '../../services/api';
-import { userService as userService } from '../../services/api';
+import { userService } from '../../services/api';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { formatLabel } from '../../utils/formatters';
 

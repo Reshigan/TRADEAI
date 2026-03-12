@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button, Grid, MenuItem, Alert, Paper } from
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { deductionService } from '../../services/api';
-import { customerService as customerService } from '../../services/api';
+import { customerService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
