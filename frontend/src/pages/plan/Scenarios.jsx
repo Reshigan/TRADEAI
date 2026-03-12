@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button, Grid, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, Alert } from '@mui/material';
-import { Plus, Search, Play, Copy } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Button, Grid, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Plus } from 'lucide-react';
 import { scenarioService } from '../../services/api';
 
 export default function Scenarios() {

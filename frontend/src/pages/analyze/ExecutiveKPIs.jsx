@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, LinearProgress, Chip } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, LinearProgress } from '@mui/material';
 import { TrendingUp, TrendingDown, DollarSign, Target, BarChart, Megaphone, Users, AlertTriangle } from 'lucide-react';
 import { analyticsService } from '../../services/api';
 

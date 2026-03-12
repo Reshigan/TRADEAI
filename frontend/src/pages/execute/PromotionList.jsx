@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, IconButton, MenuItem, Tabs, Tab } from '@mui/material';
-import { Plus, Search, Eye, Trash2, Filter } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, IconButton, MenuItem } from '@mui/material';
+import { Plus, Search, Eye, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
 

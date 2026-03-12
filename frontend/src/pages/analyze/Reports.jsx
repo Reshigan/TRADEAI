@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Button, Chip, LinearProgress } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, Button, Chip } from '@mui/material';
 import { FileSpreadsheet, Download, Play, Clock } from 'lucide-react';
 import { reportService } from '../../services/api';
 

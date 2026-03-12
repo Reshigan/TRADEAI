@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Chip, Grid, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { Calendar, List, Grid as GridIcon } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Chip, Button, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Calendar, List } from 'lucide-react';
 import { promotionService } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 

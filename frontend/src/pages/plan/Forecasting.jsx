@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, TextField, MenuItem, LinearProgress } from '@mui/material';
 import { TrendingUp, BarChart } from 'lucide-react';
 import { forecastingService } from '../../services/api';

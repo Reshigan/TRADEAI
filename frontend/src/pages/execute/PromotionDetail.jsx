@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { ArrowLeft, Edit2, Send, Copy, Trash2 } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Tabs, Tab } from '@mui/material';
+import { ArrowLeft, Edit2, Send } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
 

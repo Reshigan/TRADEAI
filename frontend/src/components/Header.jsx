@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, IconButton, Typography, InputBase, Badge, Avatar, Chip } from '@mui/material';
+import { Box, IconButton, InputBase, Badge, Avatar, Chip } from '@mui/material';
 import { Search, Bell, Sparkles, Menu } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 

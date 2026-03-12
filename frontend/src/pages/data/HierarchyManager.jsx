@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Tabs, Tab, Button, TextField, LinearProgress, List, ListItemButton, ListItemIcon, ListItemText, Collapse, Alert } from '@mui/material';
-import { Layers, ChevronDown, ChevronRight, Plus, FolderTree } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Tabs, Tab, LinearProgress, List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
+import { ChevronDown, ChevronRight, FolderTree } from 'lucide-react';
 import api from '../../services/api';
 
 function HierarchyTree({ items, level = 0 }) {

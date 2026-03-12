@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Button, Chip, Switch, FormControlLabel, TextField, Alert } from '@mui/material';
-import { Link2, CheckCircle, XCircle, Settings } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Grid, Button, Chip, Switch, FormControlLabel } from '@mui/material';
+import { CheckCircle, XCircle, Settings } from 'lucide-react';
 
 const integrations = [
   { id: 'sap', name: 'SAP ERP', description: 'Bi-directional data sync with SAP S/4HANA', status: 'configured', icon: '🔗' },

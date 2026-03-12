@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, TextField, Button, MenuItem, Switch, FormControlLabel, Divider, Alert } from '@mui/material';
-import { Save, Settings } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Grid, TextField, Button, MenuItem, Switch, FormControlLabel, Alert } from '@mui/material';
+import { Save } from 'lucide-react';
 import api from '../../services/api';
 
 export default function SystemConfig() {
