@@ -11,6 +11,29 @@ const getCompanyId = (c) => {
   return id;
 };
 
+perfAnalytics.get('/summary', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const promos = await db.prepare('SELECT COUNT(*) as total, SUM(CASE WHEN status = \'active\' THEN 1 ELSE 0 END) as active FROM promotions WHERE company_id = ?').bind(companyId).first();
+    const budgets = await db.prepare('SELECT COUNT(*) as total, SUM(amount) as totalBudget, SUM(utilized) as totalUtilized FROM budgets WHERE company_id = ?').bind(companyId).first();
+    const customers = await db.prepare('SELECT COUNT(*) as total FROM customers WHERE company_id = ?').bind(companyId).first();
+    const spends = await db.prepare('SELECT COUNT(*) as total, SUM(amount) as totalSpend FROM trade_spends WHERE company_id = ?').bind(companyId).first();
+    return c.json({
+      success: true,
+      data: {
+        promotions: { total: promos?.total || 0, active: promos?.active || 0 },
+        budgets: { total: budgets?.total || 0, totalBudget: budgets?.totalBudget || 0, totalUtilized: budgets?.totalUtilized || 0 },
+        customers: { total: customers?.total || 0 },
+        tradeSpends: { total: spends?.total || 0, totalSpend: spends?.totalSpend || 0 }
+      }
+    });
+  } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 perfAnalytics.get('/promotion-effectiveness', async (c) => {
   try {
     const db = c.env.DB;

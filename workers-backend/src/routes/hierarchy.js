@@ -16,17 +16,16 @@ hierarchy.get('/', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const [regions, districts, stores] = await Promise.all([
-      db.prepare('SELECT COUNT(*) as count FROM regions WHERE company_id = ?').bind(companyId).first(),
-      db.prepare('SELECT COUNT(*) as count FROM districts WHERE company_id = ?').bind(companyId).first(),
-      db.prepare('SELECT COUNT(*) as count FROM stores WHERE company_id = ?').bind(companyId).first(),
-    ]);
+    let regionCount = 0, districtCount = 0, storeCount = 0;
+    try { const r = await db.prepare('SELECT COUNT(*) as count FROM regions WHERE company_id = ?').bind(companyId).first(); regionCount = r?.count || 0; } catch (e) {}
+    try { const d = await db.prepare('SELECT COUNT(*) as count FROM districts WHERE company_id = ?').bind(companyId).first(); districtCount = d?.count || 0; } catch (e) {}
+    try { const s = await db.prepare("SELECT COUNT(*) as count FROM customers WHERE company_id = ? AND (customer_type = 'store' OR customer_type IS NOT NULL)").bind(companyId).first(); storeCount = s?.count || 0; } catch (e) {}
     return c.json({
       success: true,
       data: {
-        regions: regions?.count || 0,
-        districts: districts?.count || 0,
-        stores: stores?.count || 0,
+        regions: regionCount,
+        districts: districtCount,
+        stores: storeCount,
         levels: ['Region', 'District', 'Store']
       }
     });

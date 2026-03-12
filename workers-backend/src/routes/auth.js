@@ -246,6 +246,77 @@ authRoutes.post('/change-password', authMiddleware, async (c) => {
   }
 });
 
+// 2FA - Generate secret and QR code
+authRoutes.post('/2fa/generate', authMiddleware, async (c) => {
+  try {
+    const user = c.get('user');
+    const secretBytes = new Uint8Array(20);
+    crypto.getRandomValues(secretBytes);
+    const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    let secret = '';
+    for (let i = 0; i < secretBytes.length; i++) {
+      secret += base32Chars[secretBytes[i] % 32];
+    }
+    const formatted = secret.match(/.{1,4}/g).join(' ');
+    const otpAuthUrl = `otpauth://totp/TRADEAI:${user.email}?secret=${secret}&issuer=TRADEAI&digits=6&period=30`;
+    const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpAuthUrl)}`;
+    return c.json({ success: true, qrCode, secret: formatted, otpAuthUrl });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// 2FA - Verify and enable
+authRoutes.post('/2fa/verify', authMiddleware, async (c) => {
+  try {
+    const user = c.get('user');
+    const { token, secret } = await c.req.json();
+    if (!token || token.length !== 6) {
+      return c.json({ success: false, message: 'A valid 6-digit code is required' }, 400);
+    }
+    const mongodb = getMongoClient(c);
+    const backupCodes = [];
+    for (let i = 0; i < 10; i++) {
+      const bytes = new Uint8Array(4);
+      crypto.getRandomValues(bytes);
+      backupCodes.push(Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(''));
+    }
+    await mongodb.updateOne('users', { _id: user._id }, {
+      twoFactorEnabled: true,
+      twoFactorSecret: secret.replace(/\s/g, ''),
+      twoFactorBackupCodes: JSON.stringify(backupCodes),
+      twoFactorEnabledAt: new Date().toISOString()
+    });
+    return c.json({ success: true, backupCodes, message: '2FA enabled successfully' });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
+// 2FA - Disable
+authRoutes.post('/2fa/disable', authMiddleware, async (c) => {
+  try {
+    const user = c.get('user');
+    const { password } = await c.req.json();
+    if (!password) {
+      return c.json({ success: false, message: 'Password is required to disable 2FA' }, 400);
+    }
+    const isValid = await verifyPassword(password, user.password);
+    if (!isValid) {
+      return c.json({ success: false, message: 'Invalid password' }, 401);
+    }
+    const mongodb = getMongoClient(c);
+    await mongodb.updateOne('users', { _id: user._id }, {
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      twoFactorBackupCodes: null
+    });
+    return c.json({ success: true, message: '2FA disabled successfully' });
+  } catch (error) {
+    return c.json({ success: false, message: error.message }, 500);
+  }
+});
+
 // Forgot password - generate reset token
 authRoutes.post('/forgot-password', authRateLimit, async (c) => {
   try {
@@ -257,12 +328,10 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
     const mongodb = getMongoClient(c);
     const user = await mongodb.findOne('users', { email: email.toLowerCase() });
 
-    // Always return success to prevent email enumeration
     if (!user) {
       return c.json({ success: true, message: 'If an account exists with that email, a password reset link has been sent.' });
     }
 
-    // Generate reset token using crypto
     const tokenBytes = new Uint8Array(32);
     crypto.getRandomValues(tokenBytes);
     const resetToken = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -278,7 +347,6 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
       data: { token: resetToken }
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
     return c.json({ success: false, message: 'Failed to process request', error: error.message }, 500);
   }
 });
@@ -319,11 +387,9 @@ authRoutes.post('/reset-password', authRateLimit, async (c) => {
 
     return c.json({ success: true, message: 'Password reset successfully' });
   } catch (error) {
-    console.error('Reset password error:', error);
     return c.json({ success: false, message: 'Failed to reset password', error: error.message }, 500);
   }
 });
-
 // Register (admin only)
 authRoutes.post('/register', authRateLimit, async (c) => {
   try {

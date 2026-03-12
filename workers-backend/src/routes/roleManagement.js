@@ -7,6 +7,23 @@ roles.use('*', authMiddleware);
 const generateId = () => crypto.randomUUID();
 const getCompanyId = (c) => c.get('tenantId') || c.get('companyId') || c.req.header('X-Company-Code') || 'default';
 
+roles.get('/roles', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { role_type, is_active, limit = 50, offset = 0 } = c.req.query();
+    let query = 'SELECT * FROM roles WHERE company_id = ?';
+    const params = [companyId];
+    if (role_type) { query += ' AND role_type = ?'; params.push(role_type); }
+    if (is_active !== undefined) { query += ' AND is_active = ?'; params.push(parseInt(is_active)); }
+    query += ' ORDER BY level ASC, name ASC LIMIT ? OFFSET ?';
+    params.push(parseInt(limit), parseInt(offset));
+    const result = await db.prepare(query).bind(...params).all();
+    const countResult = await db.prepare('SELECT COUNT(*) as total FROM roles WHERE company_id = ?').bind(companyId).first();
+    return c.json({ success: true, data: result.results || [], total: countResult?.total || 0 });
+  } catch (e) { return c.json({ success: false, message: e.message }, 500); }
+});
+
 roles.get('/summary', async (c) => {
   try {
     const db = c.env.DB;
