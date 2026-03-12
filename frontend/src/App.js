@@ -152,6 +152,41 @@ const VendorFundManagement = lazy(() => import('./pages/vendor-funds/VendorFundM
 const SAPExportManagement = lazy(() => import('./pages/sap-export/SAPExportManagement'));
 const WasteDetectionManagement = lazy(() => import('./pages/waste-detection/WasteDetectionManagement'));
 
+const PlanBudgetList = lazy(() => import('./pages/plan/BudgetList'));
+const PlanBudgetDetail = lazy(() => import('./pages/plan/BudgetDetail'));
+const PlanVendorFundList = lazy(() => import('./pages/plan/VendorFundList'));
+const PlanKAMWallet = lazy(() => import('./pages/plan/KAMWallet'));
+const PlanTradeCalendar = lazy(() => import('./pages/plan/TradeCalendar'));
+const PlanScenarios = lazy(() => import('./pages/plan/Scenarios'));
+const PlanForecasting = lazy(() => import('./pages/plan/Forecasting'));
+const ExecPromotionList = lazy(() => import('./pages/execute/PromotionList'));
+const ExecPromotionWizard = lazy(() => import('./pages/execute/PromotionWizard'));
+const ExecPromotionDetail = lazy(() => import('./pages/execute/PromotionDetail'));
+const ExecTradeSpendList = lazy(() => import('./pages/execute/TradeSpendList'));
+const ExecCampaignList = lazy(() => import('./pages/execute/CampaignList'));
+const ApprovalQueue = lazy(() => import('./pages/approve/ApprovalQueue'));
+const SettleClaimList = lazy(() => import('./pages/settle/ClaimList'));
+const SettleDeductionList = lazy(() => import('./pages/settle/DeductionList'));
+const SettleReconciliation = lazy(() => import('./pages/settle/Reconciliation'));
+const SettleAccrualList = lazy(() => import('./pages/settle/AccrualList'));
+const SettleSettlementList = lazy(() => import('./pages/settle/SettlementList'));
+const AnalyzePnL = lazy(() => import('./pages/analyze/PnLAnalysis'));
+const AnalyzeCustomer360 = lazy(() => import('./pages/analyze/Customer360'));
+const AnalyzeReports = lazy(() => import('./pages/analyze/Reports'));
+const AnalyzeExecutiveKPIs = lazy(() => import('./pages/analyze/ExecutiveKPIs'));
+const AnalyzeWasteDetection = lazy(() => import('./pages/analyze/WasteDetection'));
+const DataCustomerList = lazy(() => import('./pages/data/CustomerList'));
+const DataProductList = lazy(() => import('./pages/data/ProductList'));
+const DataVendorList = lazy(() => import('./pages/data/VendorList'));
+const DataTradingTermsList = lazy(() => import('./pages/data/TradingTermsList'));
+const DataBaselineList = lazy(() => import('./pages/data/BaselineList'));
+const DataHierarchyManager = lazy(() => import('./pages/data/HierarchyManager'));
+const AdminUserListNew = lazy(() => import('./pages/admin/UserList'));
+const AdminRoleList = lazy(() => import('./pages/admin/RoleList'));
+const AdminSystemConfig = lazy(() => import('./pages/admin/SystemConfig'));
+const AdminSAPExport = lazy(() => import('./pages/admin/SAPExport'));
+const AdminIntegrations = lazy(() => import('./pages/admin/Integrations'));
+
 const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
 const PromotionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.PromotionsHelp })));
 const BudgetsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.BudgetsHelp })));
@@ -457,6 +492,50 @@ function App() {
             <Route path="/help/deductions" element={<P><DeductionsHelp /></P>} />
             <Route path="/help/forecasting" element={<P><ForecastingHelp /></P>} />
             <Route path="/help/business-process-guide" element={<P><BusinessProcessGuide /></P>} />
+
+            <Route path="/plan/budgets" element={<P><PlanBudgetList /></P>} />
+            <Route path="/plan/budgets/:id" element={<P><PlanBudgetDetail /></P>} />
+            <Route path="/plan/vendor-funds" element={<P><PlanVendorFundList /></P>} />
+            <Route path="/plan/wallet" element={<P><PlanKAMWallet /></P>} />
+            <Route path="/plan/calendar" element={<P><PlanTradeCalendar /></P>} />
+            <Route path="/plan/scenarios" element={<P><PlanScenarios /></P>} />
+            <Route path="/plan/forecasting" element={<P><PlanForecasting /></P>} />
+
+            <Route path="/execute/promotions" element={<P><ExecPromotionList /></P>} />
+            <Route path="/execute/promotions/new" element={<P><ExecPromotionWizard /></P>} />
+            <Route path="/execute/promotions/:id" element={<P><ExecPromotionDetail /></P>} />
+            <Route path="/execute/trade-spends" element={<P><ExecTradeSpendList /></P>} />
+            <Route path="/execute/trade-spends/new" element={<P><TradeSpendEntryFlow /></P>} />
+            <Route path="/execute/campaigns" element={<P><ExecCampaignList /></P>} />
+
+            <Route path="/approve" element={<P><ApprovalQueue /></P>} />
+
+            <Route path="/settle/claims" element={<P><SettleClaimList /></P>} />
+            <Route path="/settle/claims/new" element={<P><CreateClaim /></P>} />
+            <Route path="/settle/deductions" element={<P><SettleDeductionList /></P>} />
+            <Route path="/settle/deductions/new" element={<P><CreateDeduction /></P>} />
+            <Route path="/settle/reconciliation" element={<P><SettleReconciliation /></P>} />
+            <Route path="/settle/accruals" element={<P><SettleAccrualList /></P>} />
+            <Route path="/settle/settlements" element={<P><SettleSettlementList /></P>} />
+
+            <Route path="/analyze/pnl" element={<P><AnalyzePnL /></P>} />
+            <Route path="/analyze/customer-360" element={<P><AnalyzeCustomer360 /></P>} />
+            <Route path="/analyze/reports" element={<P><AnalyzeReports /></P>} />
+            <Route path="/analyze/forecast" element={<P><AnalyzeExecutiveKPIs /></P>} />
+            <Route path="/analyze/waste" element={<P><AnalyzeWasteDetection /></P>} />
+
+            <Route path="/data/customers" element={<P><DataCustomerList /></P>} />
+            <Route path="/data/products" element={<P><DataProductList /></P>} />
+            <Route path="/data/vendors" element={<P><DataVendorList /></P>} />
+            <Route path="/data/trading-terms" element={<P><DataTradingTermsList /></P>} />
+            <Route path="/data/baselines" element={<P><DataBaselineList /></P>} />
+            <Route path="/data/hierarchy" element={<P><DataHierarchyManager /></P>} />
+
+            <Route path="/admin/users" element={<P><AdminUserListNew /></P>} />
+            <Route path="/admin/roles" element={<P><AdminRoleList /></P>} />
+            <Route path="/admin/config" element={<P><AdminSystemConfig /></P>} />
+            <Route path="/admin/sap-export" element={<P><AdminSAPExport /></P>} />
+            <Route path="/admin/integrations" element={<P><AdminIntegrations /></P>} />
 
             <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />
             <Route path="/simulation-studio" element={<Navigate to="/scenarios" replace />} />

@@ -1,426 +1,191 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Box,
-  Tooltip,
-  Avatar,
-  Typography,
-  Collapse,
-  Badge,
-} from '@mui/material';
-import {
-  Dashboard as DashboardIcon,
-  AccountBalance as PlanIcon,
-  Campaign as ExecuteIcon,
-  CheckCircle as ApproveIcon,
-  Receipt as SettleIcon,
-  Insights as AnalyzeIcon,
-  Storage as DataIcon,
-  AdminPanelSettings as AdminIcon,
-  Settings as SettingsIcon,
-  HelpOutline as HelpIcon,
-  Logout as LogoutIcon,
-  ExpandMore as ExpandIcon,
-  ExpandLess as CollapseIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+import { Box, Typography, Collapse, Badge, Button, Popover, List, ListItemButton, ListItemIcon, ListItemText, Avatar, Divider, IconButton, Tooltip } from '@mui/material';
+import { LayoutDashboard, CalendarRange, Zap, CheckSquare, Landmark, BarChart3, Database, Shield, Plus, Settings, HelpCircle, LogOut, ChevronDown, ChevronRight, ChevronLeft, DollarSign, Wallet, LineChart, TrendingUp, ShoppingCart, Megaphone, FileText, Receipt, Scale, BookOpen, PieChart, Users as UsersIcon, Package, Store, FileSpreadsheet, Layers, BarChart, AlertTriangle, Target, Building2, Link2, Lock } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
-const SIDEBAR_WIDTH = 260;
+export const SIDEBAR_WIDTH = 256;
+const COLLAPSED_WIDTH = 64;
 
-const getNavGroups = (userRole) => {
-  const isAdmin = userRole === 'admin' || userRole === 'super_admin';
+const navGroups = [
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', single: true },
+  { label: 'Plan', icon: CalendarRange, items: [
+    { label: 'Budgets', icon: DollarSign, path: '/plan/budgets' },
+    { label: 'Vendor Funds', icon: Building2, path: '/plan/vendor-funds' },
+    { label: 'KAM Wallet', icon: Wallet, path: '/plan/wallet' },
+    { label: 'Trade Calendar', icon: CalendarRange, path: '/plan/calendar' },
+    { label: 'Scenarios', icon: Target, path: '/plan/scenarios' },
+    { label: 'Forecasting', icon: TrendingUp, path: '/plan/forecasting' },
+  ]},
+  { label: 'Execute', icon: Zap, items: [
+    { label: 'Promotions', icon: Megaphone, path: '/execute/promotions' },
+    { label: 'Trade Spends', icon: ShoppingCart, path: '/execute/trade-spends' },
+    { label: 'Campaigns', icon: Target, path: '/execute/campaigns' },
+  ]},
+  { label: 'Approve', icon: CheckSquare, path: '/approve', single: true, badge: true },
+  { label: 'Settle', icon: Landmark, items: [
+    { label: 'Claims', icon: FileText, path: '/settle/claims' },
+    { label: 'Deductions', icon: Receipt, path: '/settle/deductions' },
+    { label: 'Reconciliation', icon: Scale, path: '/settle/reconciliation' },
+    { label: 'Accruals', icon: BookOpen, path: '/settle/accruals' },
+    { label: 'Settlements', icon: Landmark, path: '/settle/settlements' },
+  ]},
+  { label: 'Analyze', icon: BarChart3, items: [
+    { label: 'P&L Analysis', icon: PieChart, path: '/analyze/pnl' },
+    { label: 'Customer 360', icon: UsersIcon, path: '/analyze/customer-360' },
+    { label: 'Reports', icon: FileSpreadsheet, path: '/analyze/reports' },
+    { label: 'Executive KPIs', icon: BarChart, path: '/analyze/forecast' },
+    { label: 'Waste Detection', icon: AlertTriangle, path: '/analyze/waste' },
+  ]},
+  { label: 'Data', icon: Database, items: [
+    { label: 'Customers', icon: UsersIcon, path: '/data/customers' },
+    { label: 'Products', icon: Package, path: '/data/products' },
+    { label: 'Vendors', icon: Store, path: '/data/vendors' },
+    { label: 'Trading Terms', icon: FileText, path: '/data/trading-terms' },
+    { label: 'Baselines', icon: LineChart, path: '/data/baselines' },
+    { label: 'Hierarchy', icon: Layers, path: '/data/hierarchy' },
+  ]},
+  { label: 'Admin', icon: Shield, adminOnly: true, items: [
+    { label: 'Users', icon: UsersIcon, path: '/admin/users' },
+    { label: 'Roles', icon: Lock, path: '/admin/roles' },
+    { label: 'Config', icon: Settings, path: '/admin/config' },
+    { label: 'SAP Export', icon: FileSpreadsheet, path: '/admin/sap-export' },
+    { label: 'Integrations', icon: Link2, path: '/admin/integrations' },
+  ]},
+];
 
-  const groups = [
-    {
-      key: 'dashboard',
-      label: 'Dashboard',
-      icon: <DashboardIcon />,
-      path: '/dashboard',
-    },
-    {
-      key: 'plan',
-      label: 'Plan',
-      icon: <PlanIcon />,
-      children: [
-        { label: 'Budgets', path: '/budgets' },
-        { label: 'Allocations', path: '/budget-allocations' },
-        { label: 'Trade Calendar', path: '/trade-calendar' },
-        { label: 'Scenarios', path: '/scenarios' },
-        { label: 'KAM Wallet', path: '/kamwallet' },
-        { label: 'Vendor Funds', path: '/vendor-funds' },
-      ],
-    },
-    {
-      key: 'execute',
-      label: 'Execute',
-      icon: <ExecuteIcon />,
-      children: [
-        { label: 'Promotions', path: '/promotions' },
-        { label: 'Trade Spends', path: '/trade-spends' },
-        { label: 'Campaigns', path: '/campaigns' },
-        { label: 'Optimizer', path: '/promotion-optimizer' },
-      ],
-    },
-    {
-      key: 'approve',
-      label: 'Approve',
-      icon: <ApproveIcon />,
-      path: '/approvals',
-      badge: true,
-    },
-    {
-      key: 'settle',
-      label: 'Settle',
-      icon: <SettleIcon />,
-      children: [
-        { label: 'Claims', path: '/claims' },
-        { label: 'Deductions', path: '/deductions' },
-        { label: 'Reconciliation', path: '/deductions/reconciliation' },
-        { label: 'Accruals', path: '/accruals' },
-        { label: 'Settlements', path: '/settlements' },
-      ],
-    },
-    {
-      key: 'analyze',
-      label: 'Analyze',
-      icon: <AnalyzeIcon />,
-      children: [
-        { label: 'P&L', path: '/pnl' },
-        { label: 'Customer 360', path: '/customer-360' },
-        { label: 'Reports', path: '/advanced-reporting' },
-        { label: 'Executive KPIs', path: '/executive-kpi' },
-        { label: 'RGM', path: '/revenue-growth' },
-        { label: 'Demand Signals', path: '/demand-signals' },
-        { label: 'Forecasting', path: '/forecasting' },
-        { label: 'Waste Detection', path: '/waste-detection' },
-      ],
-    },
-    {
-      key: 'data',
-      label: 'Data',
-      icon: <DataIcon />,
-      children: [
-        { label: 'Customers', path: '/customers' },
-        { label: 'Products', path: '/products' },
-        { label: 'Vendors', path: '/vendors' },
-        { label: 'Trading Terms', path: '/trading-terms' },
-        { label: 'Baselines', path: '/baselines' },
-        { label: 'Hierarchy', path: '/hierarchy/customers' },
-      ],
-    },
-  ];
+function NavGroup({ group, collapsed, location, navigate, pendingCount }) {
+  const isActive = group.single ? location.pathname === group.path : group.items?.some(i => location.pathname.startsWith(i.path));
+  const [open, setOpen] = useState(isActive);
+  useEffect(() => { if (isActive) setOpen(true); }, [isActive]);
 
-  if (isAdmin) {
-    groups.push({
-      key: 'admin',
-      label: 'Admin',
-      icon: <AdminIcon />,
-      children: [
-        { label: 'Users', path: '/users' },
-        { label: 'Roles', path: '/role-management' },
-        { label: 'Config', path: '/system-config' },
-        { label: 'Workflows', path: '/workflow-engine' },
-        { label: 'Integrations', path: '/integration-hub' },
-        { label: 'Documents', path: '/document-management' },
-        { label: 'Notifications', path: '/notification-center' },
-        { label: 'SAP Export', path: '/sap-export' },
-      ],
-    });
+  if (group.single) {
+    const Icon = group.icon;
+    return (
+      <Tooltip title={collapsed ? group.label : ''} placement="right">
+        <ListItemButton onClick={() => navigate(group.path)}
+          sx={{ mx: 1, borderRadius: 1.5, mb: 0.5, minHeight: 40, pl: collapsed ? 2.5 : 2,
+            bgcolor: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+            borderLeft: isActive ? '2.5px solid #3B82F6' : '2.5px solid transparent',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' } }}>
+          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 36, color: isActive ? '#fff' : 'rgba(255,255,255,0.5)' }}>
+            {group.badge ? <Badge badgeContent={pendingCount} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 18, height: 18 } }}><Icon size={20} /></Badge> : <Icon size={20} />}
+          </ListItemIcon>
+          {!collapsed && <ListItemText primary={group.label} primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: isActive ? 600 : 400, color: isActive ? '#fff' : 'rgba(255,255,255,0.5)' }} />}
+        </ListItemButton>
+      </Tooltip>
+    );
   }
 
-  return groups;
-};
+  const Icon = group.icon;
+  return (
+    <Box sx={{ mb: 0.5 }}>
+      <Tooltip title={collapsed ? group.label : ''} placement="right">
+        <ListItemButton onClick={() => collapsed ? navigate(group.items[0].path) : setOpen(!open)}
+          sx={{ mx: 1, borderRadius: 1.5, minHeight: 40, pl: collapsed ? 2.5 : 2,
+            bgcolor: isActive && collapsed ? 'rgba(255,255,255,0.08)' : 'transparent',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' } }}>
+          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 36, color: isActive ? '#fff' : 'rgba(255,255,255,0.5)' }}><Icon size={20} /></ListItemIcon>
+          {!collapsed && (<>
+            <ListItemText primary={group.label} primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: isActive ? 600 : 400, color: isActive ? '#fff' : 'rgba(255,255,255,0.5)' }} />
+            {open ? <ChevronDown size={16} color="rgba(255,255,255,0.3)" /> : <ChevronRight size={16} color="rgba(255,255,255,0.3)" />}
+          </>)}
+        </ListItemButton>
+      </Tooltip>
+      {!collapsed && <Collapse in={open}>
+        {group.items.map(item => {
+          const ItemIcon = item.icon;
+          const itemActive = location.pathname.startsWith(item.path);
+          return (
+            <ListItemButton key={item.path} onClick={() => navigate(item.path)}
+              sx={{ mx: 1, borderRadius: 1.5, minHeight: 36, pl: 5.5,
+                bgcolor: itemActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                borderLeft: itemActive ? '2.5px solid #3B82F6' : '2.5px solid transparent',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' } }}>
+              <ListItemIcon sx={{ minWidth: 28, color: itemActive ? '#fff' : 'rgba(255,255,255,0.4)' }}><ItemIcon size={16} /></ListItemIcon>
+              <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: itemActive ? 600 : 400, color: itemActive ? '#fff' : 'rgba(255,255,255,0.5)' }} />
+            </ListItemButton>
+          );
+        })}
+      </Collapse>}
+    </Box>
+  );
+}
 
-const Sidebar = ({ user, onLogout }) => {
+export default function Sidebar({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [expanded, setExpanded] = useState({});
-  const navGroups = getNavGroups(user?.role);
-
-  const isActive = (path) => {
-    if (path === '/dashboard') return location.pathname === '/dashboard' || location.pathname === '/';
-    return location.pathname.startsWith(path);
-  };
-
-  const isGroupActive = (group) => {
-    if (group.path) return isActive(group.path);
-    return group.children?.some(c => isActive(c.path));
-  };
-
-  const toggleExpand = (key) => {
-    setExpanded(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const userInitial = user?.name?.[0] || user?.email?.[0] || 'U';
+  const { logout } = useAuth();
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
+  const [quickAnchor, setQuickAnchor] = useState(null);
+  const pendingCount = 0;
+  const userRole = user?.role || 'kam';
+  useEffect(() => { localStorage.setItem('sidebar_collapsed', collapsed); }, [collapsed]);
+  const width = collapsed ? COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
-    <Box
-      sx={{
-        width: SIDEBAR_WIDTH,
-        minWidth: SIDEBAR_WIDTH,
-        height: '100vh',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        zIndex: 1200,
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: '#0F172A',
-        color: '#94A3B8',
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          px: 2.5,
-          py: 2.5,
-          cursor: 'pointer',
-        }}
-        onClick={() => navigate('/dashboard')}
-      >
-        <Box
-          sx={{
-            width: 34,
-            height: 34,
-            borderRadius: '10px',
-            bgcolor: '#1E40AF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: '0.95rem' }}>T</Typography>
+    <Box sx={{ width, minWidth: width, height: '100vh', position: 'fixed', left: 0, top: 0, zIndex: 1200, bgcolor: '#0F172A', display: 'flex', flexDirection: 'column', transition: 'width 0.2s ease', overflowX: 'hidden' }}>
+      <Box sx={{ p: collapsed ? 1.5 : 2, display: 'flex', alignItems: 'center', gap: 1.5, minHeight: 64 }}>
+        <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>T</Typography>
         </Box>
-        <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#F1F5F9', letterSpacing: '-0.02em' }}>
-          TRADEAI
-        </Typography>
+        {!collapsed && <Box>
+          <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>TradeAI</Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 500 }}>Trade Intelligence</Typography>
+        </Box>}
       </Box>
 
-      <Box sx={{ flex: 1, overflow: 'auto', px: 1.5, py: 0.5, '&::-webkit-scrollbar': { width: 4 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2 } }}>
-        {navGroups.map((group) => {
-          const active = isGroupActive(group);
-          const isOpen = expanded[group.key] !== undefined ? expanded[group.key] : active;
-
-          if (group.path) {
-            return (
-              <Box
-                key={group.key}
-                onClick={() => navigate(group.path)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  px: 1.5,
-                  py: 1,
-                  mb: 0.25,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  color: active ? '#FFFFFF' : '#94A3B8',
-                  bgcolor: active ? 'rgba(255,255,255,0.08)' : 'transparent',
-                  borderLeft: active ? '3px solid #3B82F6' : '3px solid transparent',
-                  fontWeight: active ? 600 : 500,
-                  fontSize: '0.875rem',
-                  transition: 'all 0.15s ease',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.06)',
-                    color: '#E2E8F0',
-                  },
-                }}
-              >
-                {React.cloneElement(group.icon, { sx: { fontSize: 20 } })}
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 'inherit', color: 'inherit', flex: 1 }}>
-                  {group.label}
-                </Typography>
-                {group.badge && (
-                  <Badge color="error" variant="dot" sx={{ '& .MuiBadge-badge': { top: 2, right: 2 } }} />
-                )}
-              </Box>
-            );
-          }
-
-          return (
-            <Box key={group.key} sx={{ mb: 0.25 }}>
-              <Box
-                onClick={() => toggleExpand(group.key)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  px: 1.5,
-                  py: 1,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  color: active ? '#FFFFFF' : '#94A3B8',
-                  bgcolor: active && !isOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
-                  borderLeft: active && !isOpen ? '3px solid #3B82F6' : '3px solid transparent',
-                  transition: 'all 0.15s ease',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.06)',
-                    color: '#E2E8F0',
-                  },
-                }}
-              >
-                {React.cloneElement(group.icon, { sx: { fontSize: 20 } })}
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: active ? 600 : 500, color: 'inherit', flex: 1 }}>
-                  {group.label}
-                </Typography>
-                {isOpen ? <CollapseIcon sx={{ fontSize: 18, opacity: 0.5 }} /> : <ExpandIcon sx={{ fontSize: 18, opacity: 0.5 }} />}
-              </Box>
-              <Collapse in={isOpen} timeout="auto">
-                <Box sx={{ pl: 4.5, py: 0.25 }}>
-                  {group.children.map((child) => {
-                    const childActive = isActive(child.path);
-                    return (
-                      <Box
-                        key={child.path}
-                        onClick={() => navigate(child.path)}
-                        sx={{
-                          py: 0.75,
-                          px: 1,
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.8125rem',
-                          color: childActive ? '#FFFFFF' : '#64748B',
-                          fontWeight: childActive ? 600 : 400,
-                          bgcolor: childActive ? 'rgba(255,255,255,0.06)' : 'transparent',
-                          transition: 'all 0.15s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(255,255,255,0.04)',
-                            color: '#CBD5E1',
-                          },
-                        }}
-                      >
-                        {child.label}
-                      </Box>
-                    );
-                  })}
-                </Box>
-              </Collapse>
-            </Box>
-          );
-        })}
-      </Box>
-
-      <Box sx={{ px: 1.5, py: 1 }}>
-        <Box
-          onClick={() => navigate('/promotions/new')}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1,
-            py: 1,
-            borderRadius: '8px',
-            cursor: 'pointer',
-            bgcolor: '#1E40AF',
-            color: '#FFFFFF',
-            fontSize: '0.8125rem',
-            fontWeight: 600,
-            transition: 'all 0.15s ease',
-            '&:hover': { bgcolor: '#1E3A8A' },
-          }}
-        >
-          <AddIcon sx={{ fontSize: 18 }} />
-          Quick Create
-        </Box>
-      </Box>
-
-      <Box sx={{ px: 1.5, pb: 1, borderTop: '1px solid rgba(255,255,255,0.06)', pt: 1 }}>
-        {[
-          { key: 'settings', label: 'Settings', icon: <SettingsIcon />, path: '/system-config' },
-          { key: 'help', label: 'Help', icon: <HelpIcon />, path: '/help' },
-        ].map((item) => {
-          const active = isActive(item.path);
-          return (
-            <Box
-              key={item.key}
-              onClick={() => navigate(item.path)}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                px: 1.5,
-                py: 0.75,
-                borderRadius: '8px',
-                cursor: 'pointer',
-                color: active ? '#FFFFFF' : '#64748B',
-                fontSize: '0.8125rem',
-                fontWeight: active ? 600 : 500,
-                transition: 'all 0.15s ease',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.04)', color: '#CBD5E1' },
-              }}
-            >
-              {React.cloneElement(item.icon, { sx: { fontSize: 18 } })}
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 'inherit', color: 'inherit' }}>
-                {item.label}
-              </Typography>
-            </Box>
-          );
-        })}
-
-        <Box
-          onClick={onLogout}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            px: 1.5,
-            py: 0.75,
-            borderRadius: '8px',
-            cursor: 'pointer',
-            color: '#64748B',
-            fontSize: '0.8125rem',
-            transition: 'all 0.15s ease',
-            '&:hover': { bgcolor: 'rgba(239,68,68,0.1)', color: '#EF4444' },
-          }}
-        >
-          <LogoutIcon sx={{ fontSize: 18 }} />
-          <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: 'inherit' }}>
-            Logout
-          </Typography>
-        </Box>
-      </Box>
-
-      <Box sx={{ px: 2, pb: 2, pt: 1 }}>
-        <Tooltip title={user?.name || user?.email || 'Profile'} placement="right" arrow>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              cursor: 'pointer',
-              '&:hover': { opacity: 0.85 },
-            }}
-            onClick={() => navigate('/settings')}
-          >
-            <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: '#1E40AF',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-              }}
-            >
-              {userInitial.toUpperCase()}
-            </Avatar>
-            <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#E2E8F0', lineHeight: 1.2 }} noWrap>
-                {user?.name || 'User'}
-              </Typography>
-              <Typography sx={{ fontSize: '0.7rem', color: '#64748B', lineHeight: 1.2 }} noWrap>
-                {user?.email || ''}
-              </Typography>
+      {!collapsed && user && (
+        <Box sx={{ mx: 2, mb: 1.5, p: 1.5, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.04)' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: '#2563EB', fontSize: 13 }}>{(user.name || user.email || '?')[0].toUpperCase()}</Avatar>
+            <Box sx={{ overflow: 'hidden' }}>
+              <Typography sx={{ color: '#fff', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.name || user.email}</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, textTransform: 'capitalize' }}>{(user.role || 'user').replace('_', ' ')}</Typography>
             </Box>
           </Box>
-        </Tooltip>
+        </Box>
+      )}
+
+      <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mx: 2 }} />
+
+      <Box sx={{ flex: 1, overflow: 'auto', py: 1, '&::-webkit-scrollbar': { width: 0 } }}>
+        <List disablePadding>
+          {navGroups.map(group => {
+            if (group.adminOnly && !['admin', 'super_admin'].includes(userRole)) return null;
+            return <NavGroup key={group.label} group={group} collapsed={collapsed} location={location} navigate={navigate} pendingCount={pendingCount} />;
+          })}
+        </List>
+      </Box>
+
+      {!collapsed && (<>
+        <Box sx={{ px: 2, pb: 1 }}>
+          <Button fullWidth variant="contained" startIcon={<Plus size={16} />} onClick={(e) => setQuickAnchor(e.currentTarget)}
+            sx={{ bgcolor: '#2563EB', borderRadius: 2, py: 1, fontSize: 13, '&:hover': { bgcolor: '#1D4ED8' } }}>Quick Create</Button>
+          <Popover open={Boolean(quickAnchor)} anchorEl={quickAnchor} onClose={() => setQuickAnchor(null)}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }} transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+            <List sx={{ minWidth: 200, p: 1 }}>
+              {[{ label: 'New Promotion', path: '/execute/promotions/new' }, { label: 'New Trade Spend', path: '/execute/trade-spends/new' }, { label: 'New Claim', path: '/settle/claims/new' }].map(item => (
+                <ListItemButton key={item.path} onClick={() => { navigate(item.path); setQuickAnchor(null); }} sx={{ borderRadius: 1, py: 0.75 }}>
+                  <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: 13 }} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Popover>
+        </Box>
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mx: 2 }} />
+      </>)}
+
+      <Box sx={{ p: collapsed ? 1 : 1.5, display: 'flex', justifyContent: collapsed ? 'center' : 'space-between', gap: 0.5 }}>
+        {!collapsed && <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <IconButton size="small" onClick={() => navigate('/admin/config')} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#fff' } }}><Settings size={18} /></IconButton>
+          <IconButton size="small" onClick={() => navigate('/help')} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#fff' } }}><HelpCircle size={18} /></IconButton>
+          <IconButton size="small" onClick={() => { logout(); navigate('/login'); }} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#EF4444' } }}><LogOut size={18} /></IconButton>
+        </Box>}
+        <IconButton size="small" onClick={() => setCollapsed(!collapsed)} sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#fff' } }}>
+          <ChevronLeft size={18} style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+        </IconButton>
       </Box>
     </Box>
   );
-};
-
-export { SIDEBAR_WIDTH };
-export default Sidebar;
+}
