@@ -76,7 +76,7 @@
     "ioredis": "^5.8.0",
     "joi": "^17.10.1",
     "jsonwebtoken": "^9.0.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lodash.clonedeep": "^4.5.0",
     "mathjs": "^14.8.2",
     "ml-regression": "^5.0.0",
