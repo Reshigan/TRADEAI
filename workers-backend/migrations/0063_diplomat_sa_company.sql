@@ -18,8 +18,8 @@ INSERT OR IGNORE INTO companies (
 -- Create admin user for Diplomat SA
 -- Password: DiplomatAdmin123! (bcrypt hash)
 INSERT OR IGNORE INTO users (
-  id, email, password_hash, first_name, last_name,
-  role, company_id, status, created_at, updated_at
+  id, email, password, first_name, last_name,
+  role, company_id, is_active, created_at, updated_at
 ) VALUES (
   'user-diplomat-admin-001',
   'admin@diplomatsa.co.za',
@@ -28,7 +28,7 @@ INSERT OR IGNORE INTO users (
   'Admin',
   'admin',
   'comp-diplomat-001',
-  'active',
+  1,
   datetime('now'),
   datetime('now')
 );
