@@ -1,19 +1,21 @@
 import React from 'react';
-import Sidebar from './Sidebar';
+import { Box } from '@mui/material';
+import Sidebar, { SIDEBAR_WIDTH } from '../Sidebar';
 import Header from './Header';
 
-const MainLayout = ({ children }) => {
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
-      <Sidebar />
-      <div style={{ marginLeft: '260px', flex: 1 }}>
-        <Header />
-        <div style={{ marginTop: '60px', padding: '20px' }}>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
+export default function MainLayout({ user, onLogout, children, onOpenCommandPalette }) {
+  const collapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+  const sidebarWidth = collapsed ? 64 : SIDEBAR_WIDTH;
 
-export default MainLayout;
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <Sidebar user={user} />
+      <Box sx={{ flex: 1, ml: `${sidebarWidth}px`, transition: 'margin-left 0.2s ease', display: 'flex', flexDirection: 'column' }}>
+        <Header user={user} onLogout={onLogout} onOpenCommandPalette={onOpenCommandPalette} />
+        <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
+          {children}
+        </Box>
+      </Box>
+    </Box>
+  );
+}

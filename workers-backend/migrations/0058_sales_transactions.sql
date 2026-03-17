@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS sales_transactions (
   store_id TEXT,
   promotion_id TEXT,
   is_promotional INTEGER DEFAULT 0,
+  source TEXT DEFAULT 'manual',
   data TEXT DEFAULT '{}',
   created_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (company_id) REFERENCES companies(id),

@@ -83,18 +83,14 @@ app.use('*', logger());
 app.use('*', prettyJSON());
 app.use('*', secureHeaders());
 
-// CORS configuration - allow all Cloudflare Pages subdomains
+// CORS configuration - dual deploy compatible
 app.use('*', cors({
   origin: (origin) => {
-    if (origin && (
-      origin.endsWith('.pages.dev') ||
-      origin === 'https://tradeai.vantax.co.za' ||
-      origin === 'http://localhost:3000' ||
-      origin === 'http://localhost:12000'
-    )) {
-      return origin;
-    }
-    return 'https://tradeai-8n8.pages.dev';
+    const defaults = ['https://tradeai.vantax.co.za', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:12000'];
+    if (!origin) return defaults[0];
+    if (defaults.includes(origin)) return origin;
+    if (origin.endsWith('.pages.dev')) return origin;
+    return defaults[0];
   },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization', 'X-Company-Code', 'X-Tenant-Id'],

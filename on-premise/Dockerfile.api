@@ -1,0 +1,10 @@
+FROM oven/bun:1-alpine
+WORKDIR /app
+COPY workers-backend/package.json .
+RUN bun install
+COPY workers-backend/src ./src
+COPY workers-backend/migrations ./migrations
+COPY on-premise/d1-adapter.js ./d1-adapter.js
+COPY on-premise/server-onprem.js ./server.js
+EXPOSE 8787
+CMD ["bun", "run", "server.js"]

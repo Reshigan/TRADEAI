@@ -1,178 +1,51 @@
-import React from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  Button,
-  Stepper,
-  Step,
-  StepLabel,
-  StepConnector,
-  LinearProgress,
-  IconButton,
-} from '@mui/material';
-import {
-  ArrowBack as BackIcon,
-  ArrowForward as NextIcon,
-  Check as CheckIcon,
-  Close as CancelIcon,
-} from '@mui/icons-material';
+import React, { useState } from 'react';
+import { Box, Typography, Stepper, Step, StepLabel, StepContent, Button, LinearProgress, Card } from '@mui/material';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
 
-const CustomConnector = styled(StepConnector)(() => ({
-  '& .MuiStepConnector-line': {
-    borderColor: '#E2E8F0',
-    borderLeftWidth: 2,
-    minHeight: 24,
-  },
-  '&.Mui-active .MuiStepConnector-line': {
-    borderColor: '#1E40AF',
-  },
-  '&.Mui-completed .MuiStepConnector-line': {
-    borderColor: '#059669',
-  },
-}));
-
-const CustomStepIcon = ({ active, completed, icon }) => (
-  <Box
-    sx={{
-      width: 32,
-      height: 32,
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      bgcolor: completed ? '#059669' : active ? '#1E40AF' : '#E2E8F0',
-      color: completed || active ? '#FFFFFF' : '#64748B',
-      fontSize: '0.8125rem',
-      fontWeight: 700,
-      transition: 'all 0.2s',
-    }}
-  >
-    {completed ? <CheckIcon sx={{ fontSize: 16 }} /> : icon}
-  </Box>
-);
-
-const WizardPage = ({
-  title,
-  steps = [],
-  activeStep = 0,
-  onNext,
-  onBack,
-  onCancel,
-  onSubmit,
-  children,
-  loading = false,
-  nextLabel = 'Next',
-  backLabel = 'Back',
-  submitLabel = 'Submit',
-  cancelLabel = 'Cancel',
-  nextDisabled = false,
-}) => {
+export default function WizardPage({ title, steps = [], onSubmit, backPath, loading = false }) {
+  const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const progress = ((activeStep + 1) / steps.length) * 100;
-  const isLastStep = activeStep === steps.length - 1;
-
-  const handleCancel = () => {
-    if (onCancel) onCancel();
-    else navigate(-1);
-  };
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <IconButton onClick={handleCancel} sx={{ ml: -0.5 }}>
-          <CancelIcon sx={{ fontSize: 20, color: '#64748B' }} />
-        </IconButton>
-        <Box sx={{ flex: 1 }}>
-          <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, color: '#0F172A' }}>{title}</Typography>
-          <Typography sx={{ fontSize: '0.75rem', color: '#64748B', mt: 0.25 }}>
-            Step {activeStep + 1} of {steps.length}: {steps[activeStep]?.label}
-          </Typography>
-        </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+        {backPath && <Box component="button" onClick={() => navigate(backPath)} sx={{ border: 'none', bgcolor: 'transparent', cursor: 'pointer', p: 0.5, borderRadius: 1, '&:hover': { bgcolor: '#F1F5F9' } }}><ArrowLeft size={20} /></Box>}
+        <Typography variant="h1">{title}</Typography>
       </Box>
+      <LinearProgress variant="determinate" value={progress} sx={{ mb: 3, borderRadius: 2, height: 4, bgcolor: '#F1F5F9', '& .MuiLinearProgress-bar': { bgcolor: '#2563EB', borderRadius: 2 } }} />
 
-      <LinearProgress
-        variant="determinate"
-        value={progress}
-        sx={{
-          mb: 3,
-          height: 4,
-          borderRadius: 2,
-          bgcolor: '#E2E8F0',
-          '& .MuiLinearProgress-bar': { bgcolor: '#1E40AF', borderRadius: 2 },
-        }}
-      />
-
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '220px 1fr' }, gap: 3 }}>
-        <Card
-          sx={{
-            border: '1px solid #E2E8F0',
-            boxShadow: 'none',
-            borderRadius: '12px',
-            p: 2,
-            display: { xs: 'none', md: 'block' },
-            alignSelf: 'start',
-            position: 'sticky',
-            top: 80,
-          }}
-        >
-          <Stepper
-            activeStep={activeStep}
-            orientation="vertical"
-            connector={<CustomConnector />}
-          >
+      <Box sx={{ display: 'flex', gap: 4 }}>
+        <Box sx={{ width: 240, flexShrink: 0 }}>
+          <Stepper activeStep={activeStep} orientation="vertical" sx={{ '& .MuiStepLabel-label': { fontSize: 13 }, '& .MuiStepIcon-root.Mui-completed': { color: '#059669' }, '& .MuiStepIcon-root.Mui-active': { color: '#2563EB' } }}>
             {steps.map((step, i) => (
               <Step key={i} completed={i < activeStep}>
-                <StepLabel
-                  StepIconComponent={(props) => (
-                    <CustomStepIcon {...props} icon={i + 1} />
-                  )}
-                  sx={{
-                    '& .MuiStepLabel-label': {
-                      fontSize: '0.8125rem',
-                      fontWeight: i === activeStep ? 600 : 400,
-                      color: i === activeStep ? '#0F172A' : i < activeStep ? '#059669' : '#64748B',
-                    },
-                  }}
-                >
-                  {step.label}
-                </StepLabel>
+                <StepLabel onClick={() => i < activeStep && setActiveStep(i)} sx={{ cursor: i < activeStep ? 'pointer' : 'default' }}>{step.label}</StepLabel>
               </Step>
             ))}
           </Stepper>
-        </Card>
+        </Box>
 
-        <Box>
-          <Card sx={{ border: '1px solid #E2E8F0', boxShadow: 'none', borderRadius: '12px', p: 3, mb: 2, minHeight: 300 }}>
-            {children}
+        <Box sx={{ flex: 1 }}>
+          <Card sx={{ p: 3, mb: 3, minHeight: 300 }}>
+            <Typography variant="h3" sx={{ mb: 2 }}>{steps[activeStep]?.label}</Typography>
+            {steps[activeStep]?.description && <Typography sx={{ color: 'text.secondary', fontSize: 13, mb: 3 }}>{steps[activeStep].description}</Typography>}
+            {steps[activeStep]?.content}
           </Card>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1.5 }}>
-            <Button
-              variant="outlined"
-              startIcon={<BackIcon />}
-              onClick={activeStep === 0 ? handleCancel : onBack}
-              sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, fontSize: '0.8125rem' }}
-            >
-              {activeStep === 0 ? cancelLabel : backLabel}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button variant="outlined" onClick={() => activeStep > 0 ? setActiveStep(activeStep - 1) : navigate(backPath)} startIcon={<ArrowLeft size={16} />}>
+              {activeStep > 0 ? 'Back' : 'Cancel'}
             </Button>
-
-            <Button
-              variant="contained"
-              endIcon={isLastStep ? <CheckIcon /> : <NextIcon />}
-              onClick={isLastStep ? onSubmit : onNext}
-              disabled={nextDisabled || loading}
-              sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, fontSize: '0.8125rem', px: 3 }}
-            >
-              {loading ? 'Processing...' : isLastStep ? submitLabel : nextLabel}
-            </Button>
+            {activeStep < steps.length - 1 ? (
+              <Button variant="contained" onClick={() => setActiveStep(activeStep + 1)} endIcon={<ArrowRight size={16} />} disabled={steps[activeStep]?.validate && !steps[activeStep].validate()}>Next</Button>
+            ) : (
+              <Button variant="contained" onClick={onSubmit} endIcon={<Check size={16} />} disabled={loading} color="success">Submit</Button>
+            )}
           </Box>
         </Box>
       </Box>
     </Box>
   );
-};
-
-export default WizardPage;
+}

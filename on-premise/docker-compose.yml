@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: on-premise/Dockerfile.api
+    ports: ["8787:8787"]
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - DB_PATH=/data/tradeai.db
+      - STORAGE_PATH=/data/files
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - tradeai-data:/data
+    depends_on: [redis]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../on-premise/Dockerfile.frontend
+    ports: ["3000:80"]
+    environment:
+      - VITE_API_URL=http://api:8787
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  cron:
+    build:
+      context: ..
+      dockerfile: on-premise/Dockerfile.cron
+    environment:
+      - DB_PATH=/data/tradeai.db
+    volumes:
+      - tradeai-data:/data
+    restart: unless-stopped
+
+volumes:
+  tradeai-data:
+  redis-data:

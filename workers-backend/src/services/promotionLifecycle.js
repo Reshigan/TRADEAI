@@ -1,4 +1,5 @@
 import { releaseFunds, recordSpend } from './budgetEnforcement.js';
+import { WalletEnforcementService } from './walletEnforcement.js';
 
 const generateId = () => crypto.randomUUID();
 
@@ -18,6 +19,21 @@ export async function runPromotionLifecycle(db, companyId) {
       await db.prepare(`
         UPDATE promotions SET status = 'active', updated_at = ? WHERE id = ?
       `).bind(now, promo.id).run();
+
+      // Sync to trade_calendar_events on activation
+      try {
+        const existingEvent = await db.prepare(
+          "SELECT id FROM trade_calendar_events WHERE entity_type = 'promotion' AND entity_id = ? AND company_id = ?"
+        ).bind(promo.id, companyId).first();
+        if (!existingEvent) {
+          const promoData = JSON.parse(promo.data || '{}');
+          await db.prepare(`
+            INSERT INTO trade_calendar_events (id, company_id, title, event_type, entity_type, entity_id, start_date, end_date, status, data, created_at, updated_at)
+            VALUES (?, ?, ?, 'promotion', 'promotion', ?, ?, ?, 'active', ?, ?, ?)
+          `).bind(generateId(), companyId, promo.name || 'Promotion', promo.id, promo.start_date || today, promo.end_date || today, JSON.stringify({ customerId: promo.customer_id, productId: promo.product_id, budgetAmount: promo.budget_amount }), now, now).run();
+        }
+      } catch (calErr) { /* calendar sync optional */ }
+
       results.activated.push({ id: promo.id, name: promo.name });
     } catch (e) {
       results.errors.push({ id: promo.id, action: 'activate', error: e.message });
@@ -41,7 +57,20 @@ export async function runPromotionLifecycle(db, companyId) {
         try {
           await recordSpend(db, promo.budget_id, promo.budget_amount, 'promotion', promo.id, promo.name, null, companyId);
         } catch (e) {
-          console.log('Budget spend on completion:', e.message);
+          console.error('Budget spend on completion:', e.message);
+        }
+      }
+
+      // Convert wallet commitment to spend on completion
+      const promoData = JSON.parse(promo.data || '{}');
+      if (promoData.walletId) {
+        try {
+          const walletService = new WalletEnforcementService(db);
+          const committedAmount = promo.expected_spend || promo.budget_amount || 0;
+          const actualAmount = committedAmount; // actual = committed for now
+          await walletService.spendFromWallet(promoData.walletId, committedAmount, actualAmount);
+        } catch (e) {
+          console.error('Wallet spend on completion:', e.message);
         }
       }
 

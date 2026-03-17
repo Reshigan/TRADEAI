@@ -118,6 +118,63 @@ wasteDetectionRoutes.post('/', async (c) => {
       }
     }
 
+    // Kill List: promotions that should NOT be repeated (ROI < 0.5 for 3+ consecutive periods)
+    const killList = [];
+    const custProdHistory = {};
+    for (const promo of promotions) {
+      const data = typeof promo.data === 'string' ? JSON.parse(promo.data || '{}') : (promo.data || {});
+      const roi = data.actualROI || data.roi || data.performance?.roi || 0;
+      const key = `${data.customerId || promo.customer_id}|${(data.productIds || [])[0] || promo.product_id || 'all'}`;
+      if (!custProdHistory[key]) custProdHistory[key] = [];
+      custProdHistory[key].push({ id: promo.id, name: promo.name, roi, type: promo.promotion_type || data.promotionType, date: promo.end_date || promo.created_at });
+    }
+    for (const [key, history] of Object.entries(custProdHistory)) {
+      const sorted = history.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      let consecutiveLow = 0;
+      for (const h of sorted) {
+        if (h.roi < 0.5) consecutiveLow++;
+        else consecutiveLow = 0;
+      }
+      if (consecutiveLow >= 3) {
+        const [custId, prodId] = key.split('|');
+        const bestType = sorted.reduce((best, h) => h.roi > (best?.roi || 0) ? h : best, null);
+        killList.push({
+          customerId: custId,
+          productId: prodId,
+          consecutiveFailures: consecutiveLow,
+          lastROI: sorted[sorted.length - 1]?.roi || 0,
+          recommendation: bestType ? `Try ${bestType.type} instead (best ROI: ${bestType.roi.toFixed(1)}x)` : 'Pause promotions for this combination',
+          promotions: sorted.slice(-3).map(h => ({ id: h.id, name: h.name, roi: h.roi }))
+        });
+      }
+    }
+
+    // Diminishing Returns: promotions where each repeat shows lower uplift
+    const diminishingReturns = [];
+    for (const [key, history] of Object.entries(custProdHistory)) {
+      if (history.length < 3) continue;
+      const sorted = history.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      let declining = true;
+      for (let i = 1; i < sorted.length; i++) {
+        if (sorted[i].roi >= sorted[i - 1].roi) { declining = false; break; }
+      }
+      if (declining && sorted.length >= 3) {
+        const [custId, prodId] = key.split('|');
+        const firstROI = sorted[0].roi;
+        const lastROI = sorted[sorted.length - 1].roi;
+        const declinePct = firstROI > 0 ? Math.round(((firstROI - lastROI) / firstROI) * 100) : 0;
+        diminishingReturns.push({
+          customerId: custId,
+          productId: prodId,
+          periods: sorted.length,
+          firstROI: firstROI.toFixed(2),
+          lastROI: lastROI.toFixed(2),
+          declinePct,
+          trend: sorted.map(h => ({ name: h.name, roi: h.roi }))
+        });
+      }
+    }
+
     wastePatterns.sort((a, b) => {
       const sev = { critical: 0, high: 1, medium: 2, low: 3 };
       return (sev[a.severity] || 3) - (sev[b.severity] || 3);
@@ -130,12 +187,16 @@ wasteDetectionRoutes.post('/', async (c) => {
       success: true,
       data: {
         patterns: wastePatterns,
+        killList,
+        diminishingReturns,
         summary: {
           totalPatterns: totalWaste,
           critical: criticalCount,
           high: wastePatterns.filter(w => w.severity === 'high').length,
           medium: wastePatterns.filter(w => w.severity === 'medium').length,
           analyzedPromotions: promotions.length,
+          killListCount: killList.length,
+          diminishingCount: diminishingReturns.length
         },
         overallRating: criticalCount > 0 ? 'needs_attention' : totalWaste > 3 ? 'review_recommended' : 'healthy',
         generatedAt: new Date().toISOString()

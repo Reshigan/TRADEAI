@@ -99,6 +99,29 @@ promotionConflictRoutes.post('/check', async (c) => {
       }
 
       if (conflictType) {
+        // Product-level overlap details
+        const overlappingProducts = (productIds && pData.productIds)
+          ? productIds.filter(pid => (pData.productIds || []).includes(pid))
+          : [];
+
+        // Estimated revenue cannibalization
+        const totalDays = Math.max(1, Math.ceil((newEnd - newStart) / 86400000));
+        const estimatedCannibalization = overlapDays > 0
+          ? Math.round((overlapDays / totalDays) * (body.expectedSpend || body.budgetAmount || 0) * 100) / 100
+          : 0;
+
+        // Suggestions
+        const suggestions = [];
+        if (overlapDays > 0 && overlapDays < totalDays) {
+          suggestions.push('Shorten promotion dates to avoid overlap');
+        }
+        if (conflictType === 'customer_overlap' || conflictType === 'full_overlap') {
+          suggestions.push('Change customer scope to reduce cannibalization');
+        }
+        if (conflictType !== 'type_overlap') {
+          suggestions.push('Use a different promotion mechanic to differentiate');
+        }
+
         conflicts.push({
           conflictType,
           severity,
@@ -112,7 +135,10 @@ promotionConflictRoutes.post('/check', async (c) => {
             endDate: pData.endDate || promo.end_date,
             customerId: promoCustomerId
           },
-          overlapDays: Math.max(0, overlapDays)
+          overlapDays: Math.max(0, overlapDays),
+          overlappingProducts,
+          estimatedCannibalization,
+          suggestions
         });
       }
     }

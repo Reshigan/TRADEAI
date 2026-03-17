@@ -222,6 +222,53 @@ export async function checkBudgetAlerts(db, budgetId, companyId) {
   return alerts;
 }
 
+// Sprint 5: Predictive budget alerts — burn rate and days until exhausted
+export async function predictiveBudgetAlerts(db, companyId) {
+  const budgets = await db.prepare(
+    "SELECT * FROM budgets WHERE company_id = ? AND status IN ('approved', 'active') AND amount > 0"
+  ).bind(companyId).all();
+
+  const alerts = [];
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000).toISOString();
+
+  for (const budget of (budgets.results || [])) {
+    const total = budget.amount || 0;
+    const utilized = (budget.total_committed || 0) + (budget.total_spent || 0);
+    const remaining = total - utilized;
+    if (remaining <= 0) continue;
+
+    // Calculate burn rate from last 30 days of promotions against this budget
+    const recentSpend = await db.prepare(
+      "SELECT COALESCE(SUM(expected_spend), 0) as total FROM promotions WHERE budget_id = ? AND created_at > ?"
+    ).bind(budget.id, thirtyDaysAgo).first();
+
+    const burnRate = (recentSpend?.total || 0) / 30; // per day
+    const daysUntilExhausted = burnRate > 0 ? Math.round(remaining / burnRate) : 999;
+
+    const alertsSent = JSON.parse(budget.alerts_sent || '[]');
+
+    if (daysUntilExhausted <= 14 && !alertsSent.includes('predicted_exhaustion')) {
+      const alertId = crypto.randomUUID();
+      await db.prepare(`
+        INSERT INTO budget_alerts (id, company_id, budget_id, alert_type, threshold_pct, current_pct, message, created_at)
+        VALUES (?, ?, ?, 'predicted_exhaustion', 0, ?, ?, datetime('now'))
+      `).bind(alertId, companyId, budget.id, Math.round((utilized / total) * 100),
+        `Budget "${budget.name}" predicted to be exhausted in ${daysUntilExhausted} days at current burn rate of R${Math.round(burnRate).toLocaleString()}/day`
+      ).run();
+
+      alertsSent.push('predicted_exhaustion');
+      await db.prepare(
+        "UPDATE budgets SET alerts_sent = ? WHERE id = ?"
+      ).bind(JSON.stringify(alertsSent), budget.id).run();
+
+      alerts.push({ budgetId: budget.id, budgetName: budget.name, daysUntilExhausted, burnRate: Math.round(burnRate), remaining: Math.round(remaining) });
+    }
+  }
+
+  return alerts;
+}
+
 export async function fundKamWallets(db, budgetId, companyId, userId) {
   const budget = await db.prepare(
     'SELECT * FROM budgets WHERE id = ? AND company_id = ?'

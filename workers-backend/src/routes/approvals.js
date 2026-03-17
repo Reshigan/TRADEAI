@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
-import { BudgetEnforcementService } from '../services/budgetEnforcement.js';
+import { BudgetEnforcementService, commitFunds, releaseFunds } from '../services/budgetEnforcement.js';
 import { createNotification } from '../services/notifications.js';
-import { commitFunds, releaseFunds } from '../services/budgetEnforcement.js';
 import { notifyApprovalDecision } from '../services/notificationService.js';
 import { routeApproval } from '../services/approvalRouting.js';
+import { WalletEnforcementService } from '../services/walletEnforcement.js';
 
 const approvals = new Hono();
 
@@ -334,27 +334,26 @@ approvals.post('/:id/approve', async (c) => {
         }
       }
 
-      // Budget enforcement: commit funds when promotion is approved
-      if (approval.entity_type === 'promotion') {
+      // Budget + wallet commit when promotion/trade_spend is approved
+      if (approval.entity_type === 'promotion' || approval.entity_type === 'trade_spend') {
         try {
-          const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
-          if (promo && promo.budget_id && promo.budget_amount) {
-            await commitFunds(db, promo.budget_id, promo.budget_amount, 'promotion', promo.id, promo.name, userId, companyId);
+          const entityTable = approval.entity_type === 'promotion' ? 'promotions' : 'trade_spends';
+          const entity = await db.prepare(`SELECT * FROM ${entityTable} WHERE id = ?`).bind(approval.entity_id).first();
+          const entityData = JSON.parse(entity?.data || '{}');
+          const amount = entity?.expected_spend || entityData.expectedSpend || entity?.budget_amount || 0;
+
+          if (entity?.budget_id && amount > 0) {
+            const enforcement = new BudgetEnforcementService(db);
+            await enforcement.commitFunds(entity.budget_id, amount);
+          }
+          if (entityData.walletId && amount > 0) {
+            const walletEnforcement = new WalletEnforcementService(db);
+            await walletEnforcement.commitFromWallet(entityData.walletId, amount, approval.entity_id);
           }
         } catch (e) {
-          console.log('Budget commit on approval:', e.message);
+          console.error('Budget/wallet commit on approval:', e.message);
         }
       }
-    }
-    
-    if (approval.entity_type === 'promotion') {
-      try {
-        const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
-        if (promo && promo.budget_id && promo.expected_spend > 0) {
-          const enforcement = new BudgetEnforcementService(db);
-          await enforcement.commitFunds(promo.budget_id, promo.expected_spend);
-        }
-      } catch (e) { console.log('Budget commit:', e.message); }
     }
 
     try {
@@ -363,12 +362,11 @@ approvals.post('/:id/approve', async (c) => {
         title: 'Approval Granted', message: `"${approval.entity_name}" has been approved.`,
         type: 'success', category: 'approval', entityType: 'approval', entityId: id
       });
-    } catch (e) { console.log('Notification error:', e.message); }
+    } catch (e) { /* notification optional */ }
 
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
-    // Notify requester of approval decision
-    try { await notifyApprovalDecision(db, companyId, approval, 'approved', userId); } catch (e) { console.log('Notification error:', e.message); }
+    try { await notifyApprovalDecision(db, companyId, approval, 'approved', userId); } catch (e) { /* optional */ }
 
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -420,36 +418,34 @@ approvals.post('/:id/reject', async (c) => {
       
       const table = tableMap[approval.entity_type];
       if (table) {
+        // Update entity status to rejected
         try {
           await db.prepare(`
             UPDATE ${table} SET status = 'rejected', updated_at = ? WHERE id = ?
           `).bind(now, approval.entity_id).run();
         } catch (e) {
-          console.log('Could not update entity status:', e.message);
+          console.error('Could not update entity status:', e.message);
         }
       }
 
-      // Budget enforcement: release committed funds when promotion is rejected
-      if (approval.entity_type === 'promotion') {
+      // Release committed budget funds on rejection (promotion or trade_spend)
+      if (approval.entity_type === 'promotion' || approval.entity_type === 'trade_spend') {
         try {
-          const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
-          if (promo && promo.budget_id && promo.budget_amount) {
-            await releaseFunds(db, promo.budget_id, promo.budget_amount, 'promotion', promo.id, promo.name, userId, companyId);
+          const entityTable = approval.entity_type === 'promotion' ? 'promotions' : 'trade_spends';
+          const entity = await db.prepare(
+            `SELECT budget_id, expected_spend, data FROM ${entityTable} WHERE id = ?`
+          ).bind(approval.entity_id).first();
+          if (entity?.budget_id) {
+            const amount = entity.expected_spend || JSON.parse(entity.data || '{}').expectedSpend || 0;
+            if (amount > 0) {
+              const enforcement = new BudgetEnforcementService(db);
+              await enforcement.releaseFunds(entity.budget_id, amount);
+            }
           }
         } catch (e) {
-          console.log('Budget release on rejection:', e.message);
+          console.error('Budget release on rejection:', e.message);
         }
       }
-    }
-    
-    if (approval.entity_type === 'promotion') {
-      try {
-        const promo = await db.prepare('SELECT * FROM promotions WHERE id = ?').bind(approval.entity_id).first();
-        if (promo && promo.budget_id && promo.expected_spend > 0) {
-          const enforcement = new BudgetEnforcementService(db);
-          await enforcement.releaseFunds(promo.budget_id, promo.expected_spend);
-        }
-      } catch (e) { console.log('Budget release:', e.message); }
     }
 
     try {
@@ -458,12 +454,11 @@ approvals.post('/:id/reject', async (c) => {
         title: 'Approval Rejected', message: `"${approval.entity_name}" was rejected. Reason: ${body.reason || 'Not specified'}`,
         type: 'error', category: 'approval', entityType: 'approval', entityId: id
       });
-    } catch (e) { console.log('Notification error:', e.message); }
+    } catch (e) { /* notification optional */ }
 
     const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
     
-    // Notify requester of rejection
-    try { await notifyApprovalDecision(db, companyId, approval, 'rejected', userId); } catch (e) { console.log('Notification error:', e.message); }
+    try { await notifyApprovalDecision(db, companyId, approval, 'rejected', userId); } catch (e) { /* optional */ }
 
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {

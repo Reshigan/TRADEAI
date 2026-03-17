@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { BudgetEnforcementService, checkBudgetAvailability } from '../services/budgetEnforcement.js';
+import { WalletEnforcementService } from '../services/walletEnforcement.js';
 import { routeApproval } from '../services/approvalRouting.js';
 
 export const promotionRoutes = new Hono();
@@ -61,6 +62,17 @@ promotionRoutes.post('/', async (c) => {
     const userId = c.get('userId');
     const data = await c.req.json();
     const mongodb = getMongoClient(c);
+
+    // Wallet check before budget check
+    if (data.walletId || data.wallet_id) {
+      const walletId = data.walletId || data.wallet_id;
+      const walletEnforcement = new WalletEnforcementService(c.env.DB);
+      try {
+        await walletEnforcement.checkBalance(walletId, data.expected_spend || data.expectedSpend || 0);
+      } catch (err) {
+        return c.json({ success: false, message: err.message }, 400);
+      }
+    }
 
     if (data.budgetId && data.budgetAmount) {
       const check = await checkBudgetAvailability(c.env.DB, data.budgetId, data.budgetAmount, tenantId);

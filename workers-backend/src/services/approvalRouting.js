@@ -2,69 +2,77 @@ import { createNotification } from './notifications.js';
 
 const generateId = () => crypto.randomUUID();
 
-const THRESHOLDS = [
-  { maxAmount: 50000, role: 'manager', label: 'Manager Approval' },
-  { maxAmount: 200000, role: 'director', label: 'Director Approval' },
-  { maxAmount: Infinity, role: 'executive', label: 'Executive Approval' }
+const DEFAULT_THRESHOLDS = [
+  { maxAmount: 50000, role: 'manager', slaHours: 24 },
+  { maxAmount: 200000, role: 'admin', slaHours: 48 },
+  { maxAmount: Infinity, role: 'super_admin', slaHours: 72 }
 ];
 
-export function getApprovalLevel(amount) {
-  for (const t of THRESHOLDS) {
+export function getApprovalLevel(amount, thresholds) {
+  const levels = thresholds || DEFAULT_THRESHOLDS;
+  for (const t of levels) {
     if (amount <= t.maxAmount) return t;
   }
-  return THRESHOLDS[THRESHOLDS.length - 1];
+  return levels[levels.length - 1];
 }
 
-export async function routeApproval(db, companyId, { entityType, entityId, entityName, amount, requestedBy }) {
-  const level = getApprovalLevel(amount);
+export async function routeApproval(db, entityType, entityId, amount, companyId, requesterId) {
+  // Support legacy call signature: routeApproval(db, companyId, { entityType, ... })
+  if (typeof entityType === 'string' && entityType.startsWith('comp')) {
+    const legacyCompanyId = entityType;
+    const opts = entityId;
+    return routeApproval(db, opts.entityType, opts.entityId, opts.amount, legacyCompanyId, opts.requestedBy);
+  }
+
+  // Load company approval rules from system_config
+  let thresholds = null;
+  try {
+    const rules = await db.prepare(
+      "SELECT data FROM system_config WHERE company_id = ? AND config_key = 'approval_thresholds'"
+    ).bind(companyId).first();
+    if (rules?.data) {
+      const parsed = JSON.parse(rules.data);
+      thresholds = parsed[entityType] || null;
+    }
+  } catch (e) { /* use defaults */ }
+
+  const level = getApprovalLevel(amount, thresholds);
   const now = new Date().toISOString();
-  const slaHours = level.role === 'executive' ? 24 : level.role === 'director' ? 48 : 72;
-  const dueDate = new Date(Date.now() + slaHours * 60 * 60 * 1000).toISOString();
+  const slaDeadline = new Date(Date.now() + level.slaHours * 3600000).toISOString();
 
-  const approvers = await db.prepare(
-    "SELECT id, first_name, last_name, role FROM users WHERE company_id = ? AND role = ? AND is_active = 1 LIMIT 5"
-  ).bind(companyId, level.role).all();
+  // Find approver by role
+  const approver = await db.prepare(
+    'SELECT id, first_name, last_name FROM users WHERE company_id = ? AND role = ? AND is_active = 1 ORDER BY RANDOM() LIMIT 1'
+  ).bind(companyId, level.role).first();
 
-  let assignedTo = null;
-  if (approvers.results && approvers.results.length > 0) {
-    assignedTo = approvers.results[0].id;
-  } else {
+  let assignedTo = approver?.id || null;
+  if (!assignedTo) {
+    // Fallback to admin
     const fallback = await db.prepare(
       "SELECT id FROM users WHERE company_id = ? AND role IN ('admin', 'super_admin') AND is_active = 1 LIMIT 1"
     ).bind(companyId).first();
     if (fallback) assignedTo = fallback.id;
   }
 
-  const id = generateId();
+  if (!assignedTo) throw new Error(`No active ${level.role} found for approval`);
+
+  const approvalId = generateId();
   await db.prepare(`
-    INSERT INTO approvals (id, company_id, entity_type, entity_id, entity_name, amount, status, priority, requested_by, requested_at, assigned_to, due_date, sla_hours, data, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(
-    id, companyId, entityType, entityId, entityName || '', amount,
-    amount >= 200000 ? 'high' : 'normal',
-    requestedBy, now, assignedTo, dueDate, slaHours,
-    JSON.stringify({ approvalLevel: level.label, requiredRole: level.role }),
-    now, now
-  ).run();
+    INSERT INTO approvals (id, company_id, entity_type, entity_id, entity_name, status, current_level, assigned_to, requested_by, amount, sla_deadline, data, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+  `).bind(approvalId, companyId, entityType, entityId, '', level.role, assignedTo, requesterId, amount, slaDeadline, JSON.stringify({ thresholdRule: level })).run();
 
   try {
     await createNotification(db, {
       companyId, userId: assignedTo,
-      title: `Approval Required: ${entityName}`,
+      title: `Approval Required`,
       message: `R${Math.round(amount).toLocaleString()} ${entityType} requires your approval.`,
       type: 'warning', category: 'approval', priority: 'high',
-      entityType: 'approval', entityId: id, actionUrl: `/approve/${id}`
+      entityType: 'approval', entityId: approvalId, actionUrl: `/approve/${approvalId}`
     });
-  } catch (e) { console.log('Notification error:', e.message); }
+  } catch (e) { /* notification optional */ }
 
-  return {
-    approvalId: id,
-    level: level.label,
-    requiredRole: level.role,
-    assignedTo,
-    slaHours,
-    dueDate
-  };
+  return { approvalId, assignedTo, level: level.role, slaDeadline };
 }
 
 export async function checkEscalation(db, companyId) {
