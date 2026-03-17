@@ -17,8 +17,8 @@ const WasteDetectionManagement = () => {
     try {
       setLoading(true);
       const [wasteRes, summaryRes] = await Promise.all([
-        apiClient.post('/api/waste-detection', {}),
-        apiClient.get('/api/waste-detection/summary'),
+        apiClient.post('/waste-detection', {}),
+        apiClient.get('/waste-detection/summary'),
       ]);
       setData(wasteRes.data?.data || null);
       setSummary(summaryRes.data?.data || null);

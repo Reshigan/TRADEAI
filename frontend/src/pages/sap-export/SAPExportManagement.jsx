@@ -13,7 +13,7 @@ const SAPExportManagement = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const res = await apiClient.get('/api/sap-export/templates');
+        const res = await apiClient.get('/sap-export/templates');
         setTemplates(res.data?.data || []);
       } catch (e) {
         setTemplates([
@@ -34,7 +34,7 @@ const SAPExportManagement = () => {
   const handleDownload = async (templateId) => {
     try {
       setDownloading(templateId);
-      const res = await apiClient.get(`/api/sap-export/${templateId}`, { responseType: 'blob' });
+      const res = await apiClient.get(`/sap-export/${templateId}`, { responseType: 'blob' });
       const blob = new Blob([res.data], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
