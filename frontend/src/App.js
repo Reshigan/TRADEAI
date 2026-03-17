@@ -185,6 +185,7 @@ const AdminUserListNew = lazy(() => import('./pages/admin/UserList'));
 const AdminRoleList = lazy(() => import('./pages/admin/RoleList'));
 const AdminSystemConfig = lazy(() => import('./pages/admin/SystemConfig'));
 const AdminSAPExport = lazy(() => import('./pages/admin/SAPExport'));
+const AdminSAPIntegration = lazy(() => import('./pages/admin/SAPIntegration'));
 const AdminIntegrations = lazy(() => import('./pages/admin/Integrations'));
 
 const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
@@ -536,6 +537,7 @@ function App() {
             <Route path="/admin/roles" element={<P><AdminRoleList /></P>} />
             <Route path="/admin/config" element={<P><AdminSystemConfig /></P>} />
             <Route path="/admin/sap-export" element={<P><AdminSAPExport /></P>} />
+            <Route path="/admin/sap-integration" element={<P><AdminSAPIntegration /></P>} />
             <Route path="/admin/integrations" element={<P><AdminIntegrations /></P>} />
 
             <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />

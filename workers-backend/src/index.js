@@ -72,6 +72,7 @@ import { workflowEngineRoutes } from './routes/workflowEngine.js';
 import { searchRoutes } from './routes/search.js';
 import { vendorFundRoutes } from './routes/vendorFunds.js';
 import { sapExportRoutes } from './routes/sapExport.js';
+import { sapImportRoutes } from './routes/sapImport.js';
 import { wasteDetectionRoutes } from './routes/wasteDetection.js';
 import { jobRoutes } from './routes/jobs.js';
 
@@ -188,6 +189,7 @@ app.route('/api/workflow-engine', workflowEngineRoutes);
 app.route('/api/search', searchRoutes);
 app.route('/api/vendor-funds', vendorFundRoutes);
 app.route('/api/sap-export', sapExportRoutes);
+app.route('/api/sap-import', sapImportRoutes);
 app.route('/api/waste-detection', wasteDetectionRoutes);
 app.route('/api/jobs', jobRoutes);
 
