@@ -14,13 +14,17 @@ export default function ProductList() {
   const [editId, setEditId] = useState(null);
 
   const load = useCallback(async () => {
-    try { const res = await productService.getAll(); setItems(res.data || res || []); } catch (e) { console.error(e); }
+    try {
+      const res = await productService.getAll();
+      const data = res?.data || res || [];
+      setItems(Array.isArray(data) ? data : []);
+    } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = items.filter(i => (i.name || i.product_name || i.sku || '').toLowerCase().includes(search.toLowerCase()));
+  const filtered = (Array.isArray(items) ? items : []).filter(i => (i.name || i.product_name || i.sku || '').toLowerCase().includes(search.toLowerCase()));
 
   const handleSave = async () => {
     setSaving(true); setError('');

@@ -204,7 +204,7 @@ const BusinessProcessGuide = lazy(() => import('./pages/help').then(m => ({ defa
 
 function ProtectedRoute({ children, user, onLogout, requiredRoles }) {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (requiredRoles && user && !requiredRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -282,10 +282,11 @@ function App() {
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setUser(null);
   };
 
   const P = ({ children, requiredRoles }) => (

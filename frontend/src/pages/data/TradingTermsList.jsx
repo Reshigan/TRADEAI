@@ -13,13 +13,17 @@ export default function TradingTermsList() {
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
-    try { const res = await tradingTermsService.getAll(); setItems(res.data || res || []); } catch (e) { console.error(e); }
+    try {
+      const res = await tradingTermsService.getAll();
+      const data = res?.data || res || [];
+      setItems(Array.isArray(data) ? data : []);
+    } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = items.filter(i => (i.name || '').toLowerCase().includes(search.toLowerCase()));
+  const filtered = (Array.isArray(items) ? items : []).filter(i => (i.name || '').toLowerCase().includes(search.toLowerCase()));
 
   const handleCreate = async () => {
     setSaving(true); setError('');

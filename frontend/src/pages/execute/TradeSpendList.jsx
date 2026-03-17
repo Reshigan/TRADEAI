@@ -20,15 +20,21 @@ export default function TradeSpendList() {
   const load = useCallback(async () => {
     try {
       const [res, cust] = await Promise.allSettled([tradeSpendService.getAll(), customerService.getAll()]);
-      if (res.status === 'fulfilled') setItems(res.value.data || res.value || []);
-      if (cust.status === 'fulfilled') setCustomers(cust.value.data || cust.value || []);
+      if (res.status === 'fulfilled') {
+        const data = res.value?.data || res.value || [];
+        setItems(Array.isArray(data) ? data : []);
+      }
+      if (cust.status === 'fulfilled') {
+        const data = cust.value?.data || cust.value || [];
+        setCustomers(Array.isArray(data) ? data : []);
+      }
     } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = items.filter(i => (i.description || '').toLowerCase().includes(search.toLowerCase()));
+  const filtered = (Array.isArray(items) ? items : []).filter(i => (i.description || '').toLowerCase().includes(search.toLowerCase()));
 
   const handleCreate = async () => {
     setSaving(true); setError('');
