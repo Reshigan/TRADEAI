@@ -405,20 +405,44 @@ async function handleCalculate(c) {
       WHERE company_id = ? ${dateFilter}
     `).bind(...params).first();
 
+    // Build filters for trade_spends (uses created_at for dates)
+    let tsFilter = '';
+    const tsParams = [companyId];
+    if (start_date) { tsFilter += ' AND created_at >= ?'; tsParams.push(start_date); }
+    if (end_date) { tsFilter += ' AND created_at <= ?'; tsParams.push(end_date); }
+    if (customer_id) { tsFilter += ' AND customer_id = ?'; tsParams.push(customer_id); }
+    if (promotion_id) { tsFilter += ' AND promotion_id = ?'; tsParams.push(promotion_id); }
+
     const tradeSpendResult = await db.prepare(`
       SELECT COALESCE(SUM(amount),0) as total FROM trade_spends
-      WHERE company_id = ? AND status = 'approved'
-    `).bind(companyId).first();
+      WHERE company_id = ? AND status = 'approved'${tsFilter}
+    `).bind(...tsParams).first();
+
+    // Build filters for accruals (uses start_date/end_date range)
+    let acFilter = '';
+    const acParams = [companyId];
+    if (start_date) { acFilter += ' AND end_date >= ?'; acParams.push(start_date); }
+    if (end_date) { acFilter += ' AND start_date <= ?'; acParams.push(end_date); }
+    if (customer_id) { acFilter += ' AND customer_id = ?'; acParams.push(customer_id); }
+    if (promotion_id) { acFilter += ' AND promotion_id = ?'; acParams.push(promotion_id); }
 
     const rebateResult = await db.prepare(`
       SELECT COALESCE(SUM(accrued_amount),0) as total FROM accruals
-      WHERE company_id = ? AND status IN ('calculated','approved')
-    `).bind(companyId).first();
+      WHERE company_id = ? AND status IN ('calculated','approved')${acFilter}
+    `).bind(...acParams).first();
+
+    // Build filters for claims (uses claim_date for dates)
+    let clFilter = '';
+    const clParams = [companyId];
+    if (start_date) { clFilter += ' AND claim_date >= ?'; clParams.push(start_date); }
+    if (end_date) { clFilter += ' AND claim_date <= ?'; clParams.push(end_date); }
+    if (customer_id) { clFilter += ' AND customer_id = ?'; clParams.push(customer_id); }
+    if (promotion_id) { clFilter += ' AND promotion_id = ?'; clParams.push(promotion_id); }
 
     const claimResult = await db.prepare(`
       SELECT COALESCE(SUM(claimed_amount),0) as total FROM claims
-      WHERE company_id = ? AND status = 'approved'
-    `).bind(companyId).first();
+      WHERE company_id = ? AND status = 'approved'${clFilter}
+    `).bind(...clParams).first();
 
     const grossSales = sales?.gross_sales || 0;
     const tradeSpend = tradeSpendResult?.total || 0;
