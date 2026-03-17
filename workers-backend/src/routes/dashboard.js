@@ -22,14 +22,15 @@ dashboardRoutes.get('/', async (c) => {
       db.prepare('SELECT COUNT(*) as cnt FROM products WHERE company_id = ?').bind(companyId).first(),
       db.prepare("SELECT COUNT(*) as total, SUM(CASE WHEN status='active' THEN 1 ELSE 0 END) as active, SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) as completed FROM promotions WHERE company_id = ?").bind(companyId).first(),
       db.prepare("SELECT COUNT(*) as cnt FROM approvals WHERE company_id = ? AND status = 'pending'").bind(companyId).first(),
-      db.prepare("SELECT COALESCE(SUM(amount),0) as total_amount, COALESCE(SUM(utilized),0) as utilized FROM budgets WHERE company_id = ? AND status IN ('approved','active')").bind(companyId).first(),
+      db.prepare("SELECT COALESCE(SUM(amount),0) as total_amount, COALESCE(SUM(committed),0) as committed, COALESCE(SUM(spent),0) as spent FROM budgets WHERE company_id = ? AND status IN ('approved','active')").bind(companyId).first(),
       db.prepare('SELECT COUNT(*) as cnt, COALESCE(SUM(claimed_amount),0) as total FROM claims WHERE company_id = ?').bind(companyId).first(),
       db.prepare("SELECT COUNT(*) as cnt, COUNT(CASE WHEN status='open' THEN 1 END) as open_cnt FROM deductions WHERE company_id = ?").bind(companyId).first(),
     ]);
 
     const totalBudget = budgets?.total_amount || 0;
-    const budgetUtilized = budgets?.utilized || 0;
-    const utilization = totalBudget > 0 ? (budgetUtilized / totalBudget * 100) : 0;
+    const budgetCommitted = budgets?.committed || 0;
+    const budgetSpent = budgets?.spent || 0;
+    const utilization = totalBudget > 0 ? ((budgetCommitted + budgetSpent) / totalBudget * 100) : 0;
 
     const base = {
       overview: {
@@ -42,9 +43,9 @@ dashboardRoutes.get('/', async (c) => {
       },
       budget: {
         total: totalBudget,
-        committed: budgetUtilized,
-        spent: budgetUtilized,
-        available: totalBudget - budgetUtilized,
+        committed: budgetCommitted,
+        spent: budgetSpent,
+        available: totalBudget - budgetCommitted - budgetSpent,
         utilizationRate: Math.round(utilization * 100) / 100
       }
     };
@@ -80,7 +81,7 @@ dashboardRoutes.get('/', async (c) => {
       const salesResult = await db.prepare(
         'SELECT COALESCE(SUM(gross_amount),0) as revenue FROM sales_transactions WHERE company_id = ?'
       ).bind(companyId).first();
-      const tradeRate = (salesResult?.revenue || 0) > 0 ? ((budgetUtilized / salesResult.revenue) * 100) : 0;
+      const tradeRate = (salesResult?.revenue || 0) > 0 ? ((budgetSpent / salesResult.revenue) * 100) : 0;
       base.executive = {
         totalRevenue: salesResult?.revenue || 0,
         tradeRate: Math.round(tradeRate * 100) / 100,
