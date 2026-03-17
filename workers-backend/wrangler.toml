@@ -21,6 +21,10 @@ bucket_name = "tradeai-storage"
 binding = "CACHE"
 id = "898dfed622044c399facd725f8815f55"
 
+# Workers AI binding for ML/LLM inference
+[ai]
+binding = "AI"
+
 [triggers]
 crons = [
   "0 1 * * *",

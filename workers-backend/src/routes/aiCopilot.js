@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { generateTradeInsights } from '../services/ai.js';
 
 const aiCopilotRoutes = new Hono();
 aiCopilotRoutes.use('*', authMiddleware);
@@ -34,8 +35,37 @@ aiCopilotRoutes.post('/ask', async (c) => {
     let data = null;
     let suggestions = [];
     let chartData = null;
+    let aiEnhanced = false;
 
-    if (q.includes('budget') && (q.includes('utiliz') || q.includes('spend') || q.includes('how much'))) {
+    // Build data context for Workers AI LLM
+    const totalBudget = budgets.reduce((s, b) => s + (b.amount || 0), 0);
+    const totalUtilized = budgets.reduce((s, b) => s + (b.utilized || 0), 0);
+    const totalSpendAmt = tradeSpends.reduce((s, ts) => s + (ts.amount || 0), 0);
+    const pendingCount = approvals.filter(a => a.status === 'pending').length;
+    const totalClaimAmt = claims.reduce((s, cl) => s + (cl.amount || cl.claimed_amount || 0), 0);
+    const totalDeductionAmt = deductions.reduce((s, d) => s + (d.amount || d.deduction_amount || 0), 0);
+
+    const dataContext = `Company: ${user.companyId}
+Customers: ${customers.length}, Products: ${products.length}
+Promotions: ${promotions.length} (active: ${promotions.filter(p => p.status === 'active').length}, completed: ${promotions.filter(p => p.status === 'completed').length})
+Budgets: ${budgets.length}, Total: R${totalBudget.toLocaleString()}, Utilized: R${totalUtilized.toLocaleString()} (${totalBudget > 0 ? ((totalUtilized / totalBudget) * 100).toFixed(1) : 0}%)
+Trade Spends: ${tradeSpends.length}, Total: R${totalSpendAmt.toLocaleString()}
+Claims: ${claims.length}, Total: R${totalClaimAmt.toLocaleString()}
+Deductions: ${deductions.length}, Total: R${totalDeductionAmt.toLocaleString()}
+Pending Approvals: ${pendingCount}`;
+
+    // Try LLM-powered response via Workers AI binding
+    const aiResult = await generateTradeInsights(c.env, { dataContext, question });
+    if (!aiResult.fallback && aiResult.response) {
+      answer = aiResult.response;
+      aiEnhanced = true;
+      data = { customers: customers.length, products: products.length, promotions: promotions.length, totalBudget, totalSpend: totalSpendAmt, pendingApprovals: pendingCount, claims: claims.length, deductions: deductions.length };
+      suggestions = [
+        { text: 'Show budget utilization', action: 'ask' },
+        { text: 'Analyze promotion ROI', action: 'ask' },
+        { text: 'Review pending approvals', action: '/approvals' }
+      ];
+    } else if (q.includes('budget') && (q.includes('utiliz') || q.includes('spend') || q.includes('how much'))) {
       const totalBudget = budgets.reduce((s, b) => s + (b.amount || 0), 0);
       const totalUtilized = budgets.reduce((s, b) => s + (b.utilized || 0), 0);
       const pct = totalBudget > 0 ? ((totalUtilized / totalBudget) * 100).toFixed(1) : 0;
@@ -107,7 +137,7 @@ aiCopilotRoutes.post('/ask', async (c) => {
       ];
     }
 
-    return c.json({ success: true, data: { answer, data, suggestions, chartData, timestamp: new Date().toISOString() } });
+    return c.json({ success: true, data: { answer, data, suggestions, chartData, aiEnhanced, timestamp: new Date().toISOString() } });
   } catch (error) {
     console.error('AI Copilot error:', error);
     return c.json({ success: false, message: error.message }, 500);
@@ -146,6 +176,35 @@ aiCopilotRoutes.post('/suggest-actions', async (c) => {
   } catch (error) {
     return c.json({ success: false, message: error.message }, 500);
   }
+});
+
+// AI health check endpoint
+aiCopilotRoutes.get('/status', async (c) => {
+  const hasAI = !!c.env.AI;
+  let aiWorking = false;
+
+  if (hasAI) {
+    try {
+      const result = await c.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+        messages: [{ role: 'user', content: 'Say "ok"' }],
+        max_tokens: 5,
+      });
+      aiWorking = !!(result.response || result.result);
+    } catch (e) {
+      console.error('AI status check failed:', e);
+    }
+  }
+
+  return c.json({
+    success: true,
+    data: {
+      aiBinding: hasAI,
+      aiWorking,
+      model: '@cf/meta/llama-3.1-8b-instruct',
+      capabilities: ['text-generation', 'trade-insights', 'anomaly-explanation', 'intent-classification', 'data-summarization'],
+      timestamp: new Date().toISOString()
+    }
+  });
 });
 
 export { aiCopilotRoutes };

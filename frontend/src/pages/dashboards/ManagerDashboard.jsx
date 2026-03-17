@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
-import api, { analyticsService } from '../../services/api';
+import api, { analyticsService, promotionService, tradeCalendarService } from '../../services/api';
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
@@ -43,6 +43,10 @@ const ManagerDashboard = () => {
       highPerformingCount: 0
     }
   });
+  const [activities, setActivities] = useState([]);
+  const [timelineEvents, setTimelineEvents] = useState([]);
+  const [recentPromos, setRecentPromos] = useState([]);
+  const [reportMetrics, setReportMetrics] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -59,6 +63,30 @@ const ManagerDashboard = () => {
       if (dashRes?.success) {
         setLiveData(dashRes.data);
       }
+
+      // Load activities
+      try {
+        const actRes = await api.get('/activities?limit=10');
+        if (actRes.data?.success) setActivities(actRes.data.data || []);
+      } catch (e) { console.error('Activities load error:', e); }
+
+      // Load timeline/calendar events
+      try {
+        const calRes = await tradeCalendarService.getAll();
+        setTimelineEvents(calRes.data || []);
+      } catch (e) { console.error('Calendar load error:', e); }
+
+      // Load recent promotions for report tab
+      try {
+        const promoRes = await promotionService.getAll({ limit: 20 });
+        setRecentPromos((promoRes.data || promoRes || []).slice(0, 20));
+      } catch (e) { console.error('Promos load error:', e); }
+
+      // Load report metrics
+      try {
+        const repRes = await api.get('/analytics/sales-performance').catch(() => null);
+        setReportMetrics(repRes?.data?.data || null);
+      } catch (e) { console.error('Report load error:', e); }
 
       const budgetData = dashRes?.data?.budget || {};
       const analyticsData = analyticsRes?.data || {};
@@ -139,7 +167,7 @@ const ManagerDashboard = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress sx={{ color: '#1E40AF' }} />
         </Box>
-      ) : (
+      ) : activeTab === 0 ? (
         <Grid container spacing={2.5}>
           <Grid item xs={12} md={4}>
             <Paper
@@ -521,6 +549,170 @@ const ManagerDashboard = () => {
                   </Box>
                 ))
               )}
+            </Paper>
+          </Grid>
+        </Grid>
+      ) : activeTab === 1 ? (
+        /* ===== ACTIVITY TAB ===== */
+        <Grid container spacing={2.5}>
+          <Grid item xs={12}>
+            <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Typography variant="subtitle2" fontWeight={700}>Recent Activity Feed</Typography>
+                <Button size="small" onClick={() => navigate('/trade-spends')} sx={{ textTransform: 'none', fontWeight: 600, color: '#1E40AF' }}>View All Trade Spends</Button>
+              </Box>
+              {activities.length === 0 && recentActivity.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <Typography variant="body2" color="text.secondary">No recent activity</Typography>
+                </Box>
+              ) : (
+                <Box>
+                  {(activities.length > 0 ? activities : recentActivity).map((item, idx) => {
+                    const title = item.description || item.title || item.activityType || item.activity_type || item.spendId || 'Activity';
+                    const time = item.created_at || item.createdAt;
+                    const statusType = item.status === 'completed' || item.status === 'approved' ? 'success' : item.status === 'pending' ? 'warning' : 'info';
+                    return (
+                      <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.5, borderBottom: idx < 9 ? '1px solid #F3F4F6' : 'none' }}>
+                        <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: statusType === 'success' ? '#ECFDF5' : statusType === 'warning' ? '#FEF3C7' : '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Typography sx={{ fontSize: 18 }}>{statusType === 'success' ? '\u2705' : statusType === 'warning' ? '\u23F3' : '\u2139\uFE0F'}</Typography>
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.85rem' }}>{title}</Typography>
+                          <Box sx={{ display: 'flex', gap: 1, mt: 0.25 }}>
+                            {item.status && <Chip label={item.status} size="small" sx={{ fontSize: '0.65rem', height: 20 }} />}
+                            {item.spendType && <Chip label={item.spendType} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 20 }} />}
+                          </Box>
+                        </Box>
+                        <Box sx={{ textAlign: 'right' }}>
+                          {item.amount != null && <Typography variant="body2" fontWeight={700}>R{Number(item.amount || 0).toLocaleString()}</Typography>}
+                          <Typography variant="caption" color="text.secondary">{time ? new Date(time).toLocaleDateString() : ''}</Typography>
+                        </Box>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </Paper>
+          </Grid>
+        </Grid>
+      ) : activeTab === 2 ? (
+        /* ===== TIMELINE TAB ===== */
+        <Grid container spacing={2.5}>
+          <Grid item xs={12}>
+            <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Typography variant="subtitle2" fontWeight={700}>Promotion & Event Timeline</Typography>
+                <Button size="small" onClick={() => navigate('/plan/calendar')} sx={{ textTransform: 'none', fontWeight: 600, color: '#1E40AF' }}>Full Calendar</Button>
+              </Box>
+              {timelineEvents.length === 0 && recentPromos.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <Typography variant="body2" color="text.secondary">No upcoming events or promotions</Typography>
+                  <Button variant="outlined" size="small" onClick={() => navigate('/plan/calendar')} sx={{ mt: 2, textTransform: 'none' }}>Go to Trade Calendar</Button>
+                </Box>
+              ) : (
+                <Box>
+                  {/* Timeline events */}
+                  {[...timelineEvents, ...recentPromos.filter(p => p.start_date)]
+                    .sort((a, b) => (a.start_date || a.startDate || '') > (b.start_date || b.startDate || '') ? 1 : -1)
+                    .slice(0, 15)
+                    .map((ev, idx) => {
+                      const name = ev.name || ev.promotion_name || 'Event';
+                      const startDate = ev.start_date || ev.startDate;
+                      const endDate = ev.end_date || ev.endDate;
+                      const status = ev.status || 'planned';
+                      const evType = ev.event_type || ev.eventType || ev.promotion_type || 'promotion';
+                      const spend = ev.planned_spend || ev.plannedSpend || 0;
+                      const statusColors = { draft: '#94A3B8', planned: '#2563EB', approved: '#059669', active: '#1E40AF', completed: '#6B7280', cancelled: '#DC2626' };
+                      const typeColors = { promotion: '#7C3AED', campaign: '#2563EB', seasonal: '#059669', holiday: '#DC2626', trade_show: '#D97706', product_launch: '#EC4899' };
+                      return (
+                        <Box key={idx} sx={{ display: 'flex', gap: 2, py: 1.5, borderBottom: idx < 14 ? '1px solid #F3F4F6' : 'none', '&:hover': { bgcolor: '#F9FAFB' }, cursor: 'pointer' }}
+                          onClick={() => ev.promotion_id || ev.promotionId ? navigate(`/execute/promotions/${ev.promotion_id || ev.promotionId}`) : null}>
+                          <Box sx={{ width: 4, borderRadius: 2, bgcolor: typeColors[evType] || '#7C3AED', flexShrink: 0 }} />
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body2" fontWeight={600}>{name}</Typography>
+                            <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                              <Chip label={evType.replace('_', ' ')} size="small" sx={{ fontSize: '0.65rem', height: 20, bgcolor: `${typeColors[evType] || '#7C3AED'}15`, color: typeColors[evType] || '#7C3AED', textTransform: 'capitalize' }} />
+                              <Chip label={status} size="small" sx={{ fontSize: '0.65rem', height: 20, bgcolor: `${statusColors[status] || '#94A3B8'}15`, color: statusColors[status] || '#94A3B8', textTransform: 'capitalize' }} />
+                            </Box>
+                          </Box>
+                          <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+                            <Typography variant="body2" fontWeight={600}>{startDate ? new Date(startDate).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' }) : '-'}</Typography>
+                            <Typography variant="caption" color="text.secondary">{endDate ? `to ${new Date(endDate).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' })}` : ''}</Typography>
+                            {spend > 0 && <Typography variant="caption" display="block" color="primary" fontWeight={600}>R{(spend / 1000).toFixed(0)}K</Typography>}
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                </Box>
+              )}
+            </Paper>
+          </Grid>
+        </Grid>
+      ) : (
+        /* ===== REPORT TAB ===== */
+        <Grid container spacing={2.5}>
+          <Grid item xs={12}>
+            <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Typography variant="subtitle2" fontWeight={700}>Performance Report</Typography>
+                <Button size="small" onClick={() => navigate('/analyze/reports')} sx={{ textTransform: 'none', fontWeight: 600, color: '#1E40AF' }}>Full Reports</Button>
+              </Box>
+
+              {/* Summary metrics */}
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                {[
+                  { label: 'Total Budget', value: `R${((budget.total || 0) / 1000000).toFixed(1)}M`, color: '#1E40AF' },
+                  { label: 'Budget Utilized', value: `${budgetUtil}%`, color: Number(budgetUtil) > 80 ? '#EF4444' : '#059669' },
+                  { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#7C3AED' },
+                  { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#2563EB' },
+                ].map((m, idx) => (
+                  <Grid item xs={6} md={3} key={idx}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#F9FAFB', borderRadius: '12px' }}>
+                      <Typography variant="h5" fontWeight={800} sx={{ color: m.color }}>{m.value}</Typography>
+                      <Typography variant="caption" color="text.secondary">{m.label}</Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+
+              {/* Promotion performance table */}
+              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Promotion Performance</Typography>
+              <Box sx={{ overflowX: 'auto' }}>
+                <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse', '& th, & td': { px: 1.5, py: 1, textAlign: 'left', borderBottom: '1px solid #F3F4F6', fontSize: '0.8rem' }, '& th': { fontWeight: 700, color: '#6B7280', fontSize: '0.7rem', textTransform: 'uppercase' } }}>
+                  <thead>
+                    <tr><th>Promotion</th><th>Type</th><th>Status</th><th>Planned Spend</th><th>Actual Spend</th><th>Period</th></tr>
+                  </thead>
+                  <tbody>
+                    {recentPromos.length === 0 ? (
+                      <tr><td colSpan={6} style={{ textAlign: 'center', padding: '24px 0' }}><Typography variant="body2" color="text.secondary">No promotions data</Typography></td></tr>
+                    ) : recentPromos.slice(0, 10).map((p, idx) => (
+                      <tr key={idx} style={{ cursor: 'pointer' }} onClick={() => navigate(`/execute/promotions/${p.id}`)}>
+                        <td><Typography variant="body2" fontWeight={600}>{p.name || p.promotion_name}</Typography></td>
+                        <td><Chip label={(p.promotion_type || p.type || 'N/A').replace('_', ' ')} size="small" sx={{ fontSize: '0.65rem', height: 20, textTransform: 'capitalize' }} /></td>
+                        <td><Chip label={p.status || 'draft'} size="small" sx={{ fontSize: '0.65rem', height: 20, bgcolor: p.status === 'active' ? '#ECFDF5' : p.status === 'approved' ? '#DBEAFE' : '#F3F4F6', color: p.status === 'active' ? '#059669' : p.status === 'approved' ? '#2563EB' : '#6B7280', textTransform: 'capitalize' }} /></td>
+                        <td>R{(p.planned_spend || 0).toLocaleString()}</td>
+                        <td>R{(p.actual_spend || 0).toLocaleString()}</td>
+                        <td><Typography variant="caption">{p.start_date ? new Date(p.start_date).toLocaleDateString() : '-'}</Typography></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Box>
+              </Box>
+
+              {/* Quick report links */}
+              <Box sx={{ display: 'flex', gap: 1.5, mt: 3, flexWrap: 'wrap' }}>
+                {[
+                  { label: 'P&L Analysis', path: '/analyze/pnl' },
+                  { label: 'Customer 360', path: '/analyze/customer-360' },
+                  { label: 'Executive KPIs', path: '/analyze/forecast' },
+                  { label: 'Waste Detection', path: '/analyze/waste' },
+                ].map((link, idx) => (
+                  <Button key={idx} variant="outlined" size="small" onClick={() => navigate(link.path)}
+                    sx={{ textTransform: 'none', fontWeight: 600, fontSize: '0.75rem', borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+                    {link.label}
+                  </Button>
+                ))}
+              </Box>
             </Paper>
           </Grid>
         </Grid>
