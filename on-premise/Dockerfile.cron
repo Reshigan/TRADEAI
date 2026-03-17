@@ -1,0 +1,8 @@
+FROM oven/bun:1-alpine
+WORKDIR /app
+COPY workers-backend/package.json .
+RUN bun install && bun add node-cron
+COPY workers-backend/src ./src
+COPY on-premise/d1-adapter.js ./d1-adapter.js
+COPY on-premise/cron-runner.js ./cron-runner.js
+CMD ["bun", "run", "cron-runner.js"]

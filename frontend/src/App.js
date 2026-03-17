@@ -8,6 +8,7 @@ import analytics from './utils/analytics';
 import Login from './components/Login';
 import Layout from './components/Layout';
 import NotFound from './components/NotFound';
+import LandingPage from './pages/landing/LandingPage';
 
 import { CompanyTypeProvider } from './contexts/CompanyTypeContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -313,7 +314,7 @@ function App() {
           )}
           <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />} />
+            <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage onLogin={handleLogin} />} />
             <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
