@@ -63,7 +63,7 @@ export default function CustomerList() {
     setSaving(true); setError('');
     try {
       const payload = { ...form };
-      Object.keys(payload).forEach(k => { if (payload[k] === '') delete payload[k]; });
+      if (!editId) Object.keys(payload).forEach(k => { if (payload[k] === '') delete payload[k]; });
       if (editId) { await customerService.update(editId, payload); }
       else { await customerService.create(payload); }
       setShowCreate(false); setEditId(null); setForm({ ...emptyForm }); load();
