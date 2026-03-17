@@ -291,6 +291,30 @@ export const budgetService = {
       throw error;
     }
   },
+  getBudgets: async (params) => {
+    try {
+      const response = await api.get('/budgets', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  applyReallocation: async (data) => {
+    try {
+      const response = await api.post('/budgets/reallocate', data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getHierarchy: async (params) => {
+    try {
+      const response = await api.get('/budgets/hierarchy', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 // Trade Spend services
@@ -328,6 +352,30 @@ export const tradeSpendService = {
     }
   },
   delete: async (id) => {
+    try {
+      const response = await api.delete(`/trade-spends/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getTradeSpends: async (params) => {
+    try {
+      const response = await api.get('/trade-spends', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getTradeSpendSummary: async () => {
+    try {
+      const response = await api.get('/trade-spends/summary');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  deleteTradeSpend: async (id) => {
     try {
       const response = await api.delete(`/trade-spends/${id}`);
       return response.data;
@@ -423,6 +471,22 @@ export const customerService = {
       throw error;
     }
   },
+  getCustomers: async (params) => {
+    try {
+      const response = await api.get('/customers', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getCustomerHierarchy: async (params) => {
+    try {
+      const response = await api.get('/customers/hierarchy', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 // Product services
@@ -462,6 +526,30 @@ export const productService = {
   delete: async (id) => {
     try {
       const response = await api.delete(`/products/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getProducts: async (params) => {
+    try {
+      const response = await api.get('/products', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getSalesData: async (id, params) => {
+    try {
+      const response = await api.get(`/products/${id}/sales`, { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getProductHierarchy: async (params) => {
+    try {
+      const response = await api.get('/products/hierarchy', { params });
       return response.data;
     } catch (error) {
       throw error;
@@ -535,6 +623,22 @@ export const analyticsService = {
       throw error;
     }
   },
+  getDashboardSummary: async (params) => {
+    try {
+      const response = await api.get('/analytics/dashboard', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getSpendTrend: async (params) => {
+    try {
+      const response = await api.get('/analytics/spend-trend', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 // Currency services
@@ -549,7 +653,7 @@ export const currencyService = {
   },
   convert: async (amount, from, to) => {
     try {
-      const response = await api.get('/currencies/convert', {
+      const response = await api.get('/settings/currencies/convert', {
         params: { amount, from, to }
       });
       return response.data;
@@ -605,6 +709,54 @@ export const userService = {
       throw error;
     }
   },
+  getAll: async (params) => {
+    try {
+      const response = await api.get('/users', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getUsers: async (params) => {
+    try {
+      const response = await api.get('/users', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  create: async (data) => {
+    try {
+      const response = await api.post('/users', data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  update: async (id, data) => {
+    try {
+      const response = await api.put(`/users/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  delete: async (id) => {
+    try {
+      const response = await api.delete(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 // Trading Terms services
@@ -644,6 +796,46 @@ export const tradingTermsService = {
   delete: async (id) => {
     try {
       const response = await api.delete(`/trading-terms/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getTradingTerms: async (params) => {
+    try {
+      const response = await api.get('/trading-terms', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  deleteTradingTerm: async (id) => {
+    try {
+      const response = await api.delete(`/trading-terms/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getTradingTerm: async (id) => {
+    try {
+      const response = await api.get(`/trading-terms/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  updateTradingTerm: async (id, data) => {
+    try {
+      const response = await api.put(`/trading-terms/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  createTradingTerm: async (data) => {
+    try {
+      const response = await api.post('/trading-terms', data);
       return response.data;
     } catch (error) {
       throw error;
@@ -914,6 +1106,10 @@ export const settlementService = {
     const response = await api.get('/settlements/options');
     return response.data;
   },
+  generate: async (data) => {
+    const response = await api.post('/settlements/generate', data);
+    return response.data;
+  },
 };
 
 export const pnlService = {
@@ -959,6 +1155,10 @@ export const pnlService = {
   },
   getOptions: async () => {
     const response = await api.get('/pnl/options');
+    return response.data;
+  },
+  calculate: async (data) => {
+    const response = await api.post('/pnl/calculate', data);
     return response.data;
   },
 };
@@ -1632,6 +1832,17 @@ export const claimService = {
   update: async (id, data) => { const r = await api.put(`/claims/${id}`, data); return r.data; },
   delete: async (id) => { const r = await api.delete(`/claims/${id}`); return r.data; },
   getSummary: async () => { const r = await api.get('/claims/summary'); return r.data; },
+  getAllClaims: async (params) => { const r = await api.get('/claims', { params }); return r.data; },
+  createClaim: async (data) => { const r = await api.post('/claims', data); return r.data; },
+  submitClaim: async (id) => { const r = await api.patch(`/claims/${id}/submit`); return r.data; },
+  submit: async (id) => { const r = await api.patch(`/claims/${id}/submit`); return r.data; },
+  approve: async (id, data) => { const r = await api.patch(`/claims/${id}/approve`, data); return r.data; },
+  reject: async (id, data) => { const r = await api.patch(`/claims/${id}/reject`, data); return r.data; },
+  getUnmatchedClaims: async (params) => { const r = await api.get('/claims', { params: { ...params, status: 'unmatched' } }); return r.data; },
+  getPendingApprovalClaims: async (params) => { const r = await api.get('/claims', { params: { ...params, status: 'pending_approval' } }); return r.data; },
+  getClaimStatistics: async () => { const r = await api.get('/claims/summary'); return r.data; },
+  autoMatchClaims: async () => { const r = await api.post('/claims/auto-match'); return r.data; },
+  getClaimsByCustomer: async (customerId, startDate, endDate) => { const r = await api.get('/claims', { params: { customerId, startDate, endDate } }); return r.data; },
 };
 
 export const deductionService = {
@@ -1641,6 +1852,16 @@ export const deductionService = {
   update: async (id, data) => { const r = await api.put(`/deductions/${id}`, data); return r.data; },
   delete: async (id) => { const r = await api.delete(`/deductions/${id}`); return r.data; },
   getSummary: async () => { const r = await api.get('/deductions/summary'); return r.data; },
+  getAllDeductions: async (params) => { const r = await api.get('/deductions', { params }); return r.data; },
+  createDeduction: async (data) => { const r = await api.post('/deductions', data); return r.data; },
+  validate: async (id) => { const r = await api.patch(`/deductions/${id}/validate`); return r.data; },
+  dispute: async (id, data) => { const r = await api.patch(`/deductions/${id}/dispute`, data); return r.data; },
+  resolve: async (id, data) => { const r = await api.patch(`/deductions/${id}/resolve`, data); return r.data; },
+  getUnmatchedDeductions: async (params) => { const r = await api.get('/deductions', { params: { ...params, status: 'unmatched' } }); return r.data; },
+  getDisputedDeductions: async (params) => { const r = await api.get('/deductions', { params: { ...params, status: 'disputed' } }); return r.data; },
+  getDeductionStatistics: async () => { const r = await api.get('/deductions/summary'); return r.data; },
+  reconcileDeductionsWithClaims: async (customerId, startDate, endDate) => { const r = await api.post('/deductions/reconcile', { customerId, startDate, endDate }); return r.data; },
+  getDeductionsByCustomer: async (customerId, startDate, endDate) => { const r = await api.get('/deductions', { params: { customerId, startDate, endDate } }); return r.data; },
 };
 
 export const approvalService = {
@@ -1649,6 +1870,11 @@ export const approvalService = {
   approve: async (id, data) => { const r = await api.patch(`/approvals/${id}/approve`, data); return r.data; },
   reject: async (id, data) => { const r = await api.patch(`/approvals/${id}/reject`, data); return r.data; },
   getSummary: async () => { const r = await api.get('/approvals/summary'); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/approvals/${id}`, data); return r.data; },
+  getPendingApprovals: async (params) => { const r = await api.get('/approvals', { params: { ...params, status: 'pending' } }); return r.data; },
+  getOverdueApprovals: async (params) => { const r = await api.get('/approvals', { params: { ...params, status: 'overdue' } }); return r.data; },
+  approveApproval: async (id, data) => { const r = await api.patch(`/approvals/${id}/approve`, data); return r.data; },
+  rejectApproval: async (id, data) => { const r = await api.patch(`/approvals/${id}/reject`, data); return r.data; },
 };
 
 export const kamWalletService = {
@@ -1658,6 +1884,10 @@ export const kamWalletService = {
   update: async (id, data) => { const r = await api.put(`/kam-wallets/${id}`, data); return r.data; },
   allocate: async (data) => { const r = await api.post('/kam-wallets/allocate', data); return r.data; },
   getSummary: async () => { const r = await api.get('/kam-wallets/summary'); return r.data; },
+  getWallet: async (id) => { const r = await api.get(`/kam-wallets/${id}`); return r.data; },
+  getWallets: async (params) => { const r = await api.get('/kam-wallets', { params }); return r.data; },
+  createWallet: async (data) => { const r = await api.post('/kam-wallets', data); return r.data; },
+  allocateToCustomer: async (walletId, customerId, amount, notes) => { const r = await api.post('/kam-wallets/allocate', { walletId, customerId, amount, notes }); return r.data; },
 };
 
 export const simulationService = {
@@ -1665,6 +1895,12 @@ export const simulationService = {
   getAll: async (params) => { const r = await api.get('/simulations', { params }); return r.data; },
   getById: async (id) => { const r = await api.get(`/simulations/${id}`); return r.data; },
   getSummary: async () => { const r = await api.get('/simulations/summary'); return r.data; },
+  simulatePromotion: async (data) => { const r = await api.post('/simulations/run', data); return r.data; },
+  compareScenarios: async (data) => { const r = await api.post('/simulations/compare', data); return r.data; },
+  getConflictPreview: async (data) => { const r = await api.post('/simulations/conflict-preview', data); return r.data; },
+  getNextBestPromotions: async (params) => { const r = await api.get('/simulations/next-best', { params }); return r.data; },
+  reallocateBudget: async (data) => { const r = await api.post('/simulations/reallocate', data); return r.data; },
+  simulateReallocation: async (data) => { const r = await api.post('/simulations/run', { ...data, type: 'reallocation' }); return r.data; },
 };
 
 export const activityGridService = {
@@ -1672,34 +1908,82 @@ export const activityGridService = {
   getById: async (id) => { const r = await api.get(`/activity-grid/${id}`); return r.data; },
   create: async (data) => { const r = await api.post('/activity-grid', data); return r.data; },
   update: async (id, data) => { const r = await api.put(`/activity-grid/${id}`, data); return r.data; },
+  getActivityGrid: async (params) => { const r = await api.get('/activity-grid', { params }); return r.data; },
+  getConflicts: async (params) => { const r = await api.get('/activity-grid/conflicts', { params }); return r.data; },
+  updateActivity: async (id, data) => { const r = await api.put(`/activity-grid/${id}`, data); return r.data; },
+  getHeatMap: async (params) => { const r = await api.get('/activity-grid/heatmap', { params }); return r.data; },
+  syncActivities: async (data) => { const r = await api.post('/activity-grid/sync', data); return r.data; },
+  createActivity: async (data) => { const r = await api.post('/activity-grid', data); return r.data; },
+  getActivity: async (id) => { const r = await api.get(`/activity-grid/${id}`); return r.data; },
+  deleteActivity: async (id) => { const r = await api.delete(`/activity-grid/${id}`); return r.data; },
 };
 
 export const dataLineageService = {
   getLineage: async (params) => { const r = await api.get('/data-lineage', { params }); return r.data; },
   getImpact: async (id) => { const r = await api.get(`/data-lineage/${id}/impact`); return r.data; },
+  getVarianceReasonCodes: async (params) => { const r = await api.get('/data-lineage/variance-reason-codes', { params }); return r.data; },
+  getVarianceReport: async (params) => { const r = await api.get('/data-lineage/variance-report', { params }); return r.data; },
+  analyzePromotionVariance: async (data) => { const r = await api.post('/data-lineage/analyze-promotion-variance', data); return r.data; },
+  tagVariance: async (data) => { const r = await api.post('/data-lineage/tag-variance', data); return r.data; },
+  seedDefaultReasonCodes: async () => { const r = await api.post('/data-lineage/seed-reason-codes'); return r.data; },
+  createVarianceReasonCode: async (data) => { const r = await api.post('/data-lineage/variance-reason-codes', data); return r.data; },
+  getOverriddenCalculations: async (params) => { const r = await api.get('/data-lineage/overridden-calculations', { params }); return r.data; },
+  getImportBatches: async (params) => { const r = await api.get('/data-lineage/import-batches', { params }); return r.data; },
+  getLineageForEntity: async (entityType, entityId) => { const r = await api.get(`/data-lineage/${entityType}/${entityId}`); return r.data; },
+  getCalculationSummary: async (params) => { const r = await api.get('/data-lineage/calculation-summary', { params }); return r.data; },
+  overrideCalculation: async (data) => { const r = await api.post('/data-lineage/override-calculation', data); return r.data; },
+  getBaselineConfigs: async (params) => { const r = await api.get('/data-lineage/baseline-configs', { params }); return r.data; },
+  getDefaultBaselineConfig: async () => { const r = await api.get('/data-lineage/baseline-configs/default'); return r.data; },
+  updateBaselineConfig: async (id, data) => { const r = await api.put(`/data-lineage/baseline-configs/${id}`, data); return r.data; },
+  createBaselineConfig: async (data) => { const r = await api.post('/data-lineage/baseline-configs', data); return r.data; },
+  setDefaultBaselineConfig: async (id) => { const r = await api.patch(`/data-lineage/baseline-configs/${id}/set-default`); return r.data; },
 };
 
 export const mlService = {
-  predict: async (data) => { const r = await api.post('/ml/predict', data); return r.data; },
-  getModels: async () => { const r = await api.get('/ml/models'); return r.data; },
-  getStatus: async () => { const r = await api.get('/ml/status'); return r.data; },
+  predict: async (data) => { const r = await api.post('/ai-orchestrator/predict', data); return r.data; },
+  getModels: async () => { const r = await api.get('/ai-orchestrator/models'); return r.data; },
+  getStatus: async () => { const r = await api.get('/ai-orchestrator/status'); return r.data; },
+  forecastDemand: async (data) => { const r = await api.post('/forecasting/demand', data); return r.data; },
+  optimizePrice: async (data) => { const r = await api.post('/ai-orchestrator/optimize-price', data); return r.data; },
+  analyzePromotionLift: async (data) => { const r = await api.post('/ai-orchestrator/analyze-promotion-lift', data); return r.data; },
+  getProductRecommendations: async (params) => { const r = await api.get('/ai-orchestrator/product-recommendations', { params }); return r.data; },
+  checkMLHealth: async () => { const r = await api.get('/ai-orchestrator/health'); return r.data; },
+  batchPredict: async (data) => { const r = await api.post('/ai-orchestrator/batch-predict', data); return r.data; },
 };
 
 export const aiOrchestratorService = {
-  getInsights: async (params) => { const r = await api.get('/ai/insights', { params }); return r.data; },
-  getRecommendations: async (params) => { const r = await api.get('/ai/recommendations', { params }); return r.data; },
+  getInsights: async (params) => { const r = await api.get('/ai-orchestrator/insights', { params }); return r.data; },
+  getRecommendations: async (params) => { const r = await api.get('/ai-orchestrator/recommendations', { params }); return r.data; },
+  orchestrate: async (data) => { const r = await api.post('/ai-orchestrator/orchestrate', data); return r.data; },
+  clearCache: async () => { const r = await api.post('/ai-orchestrator/clear-cache'); return r.data; },
 };
 
 export const reportService = {
-  getAll: async (params) => { const r = await api.get('/reports', { params }); return r.data; },
-  getById: async (id) => { const r = await api.get(`/reports/${id}`); return r.data; },
-  generate: async (data) => { const r = await api.post('/reports/generate', data); return r.data; },
-  getDefinitions: async () => { const r = await api.get('/reports/definitions'); return r.data; },
+  getAll: async (params) => { const r = await api.get('/reporting', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/reporting/${id}`); return r.data; },
+  generate: async (data) => { const r = await api.post('/reporting/generate', data); return r.data; },
+  getDefinitions: async () => { const r = await api.get('/reporting/definitions'); return r.data; },
+  getReport: async (id) => { const r = await api.get(`/reporting/${id}`); return r.data; },
+  createReport: async (data) => { const r = await api.post('/reporting', data); return r.data; },
+  updateReport: async (id, data) => { const r = await api.put(`/reporting/${id}`, data); return r.data; },
+  deleteReport: async (id) => { const r = await api.delete(`/reporting/${id}`); return r.data; },
+  generateReport: async (id) => { const r = await api.post(`/reporting/${id}/generate`); return r.data; },
 };
 
 export const securityService = {
-  getEvents: async (params) => { const r = await api.get('/security/events', { params }); return r.data; },
-  getStatus: async () => { const r = await api.get('/security/status'); return r.data; },
+  getEvents: async (params) => { const r = await api.get('/system-config/security-events', { params }); return r.data; },
+  getStatus: async () => { const r = await api.get('/system-config/security-status'); return r.data; },
+  getSecurityDashboard: async () => { const r = await api.get('/system-config/security-dashboard'); return r.data; },
+  getSecurityEvents: async (params) => { const r = await api.get('/system-config/security-events', { params }); return r.data; },
+  getAuditLogs: async (params) => { const r = await api.get('/system-config/audit-logs', { params }); return r.data; },
+  getRoles: async () => { const r = await api.get('/role-management'); return r.data; },
+  getPermissions: async () => { const r = await api.get('/role-management/permissions'); return r.data; },
+  setupMFA: async (data) => { const r = await api.post('/system-config/mfa/setup', data); return r.data; },
+  enableMFA: async (data) => { const r = await api.post('/system-config/mfa/enable', data); return r.data; },
+  blockUser: async (userId) => { const r = await api.post(`/users/${userId}/block`); return r.data; },
+  terminateSession: async (sessionId) => { const r = await api.delete(`/system-config/sessions/${sessionId}`); return r.data; },
+  updateRole: async (id, data) => { const r = await api.put(`/role-management/${id}`, data); return r.data; },
+  createRole: async (data) => { const r = await api.post('/role-management', data); return r.data; },
 };
 
 export const vendorService = {
@@ -1710,8 +1994,16 @@ export const vendorService = {
 };
 
 export const workflowService = {
-  getAll: async (params) => { const r = await api.get('/workflows', { params }); return r.data; },
-  getById: async (id) => { const r = await api.get(`/workflows/${id}`); return r.data; },
+  getAll: async (params) => { const r = await api.get('/workflow-engine', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/workflow-engine/${id}`); return r.data; },
+  getWorkflowOverview: async () => { const r = await api.get('/workflow-engine/overview'); return r.data; },
+  getActiveWorkflows: async (params) => { const r = await api.get('/workflow-engine', { params: { ...params, status: 'active' } }); return r.data; },
+  getPendingApprovals: async (params) => { const r = await api.get('/workflow-engine/pending-approvals', { params }); return r.data; },
+  getWorkflowTemplates: async () => { const r = await api.get('/workflow-engine/templates'); return r.data; },
+  getWorkflowAnalytics: async (params) => { const r = await api.get('/workflow-engine/analytics', { params }); return r.data; },
+  startWorkflow: async (data) => { const r = await api.post('/workflow-engine/start', data); return r.data; },
+  handleUserAction: async (workflowId, data) => { const r = await api.post(`/workflow-engine/${workflowId}/action`, data); return r.data; },
+  getWorkflowStatus: async (id) => { const r = await api.get(`/workflow-engine/${id}/status`); return r.data; },
 };
 
 export default api;

@@ -30,7 +30,7 @@ export default function ResetPassword() {
     setLoading(true);
     setError('');
     try {
-      await apiClient.post('/api/auth/reset-password', { token, password });
+      await apiClient.post('/auth/reset-password', { token, password });
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {

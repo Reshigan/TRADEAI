@@ -20,7 +20,7 @@ const VendorFundManagement = () => {
   const fetchFunds = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get('/api/vendor-funds');
+      const res = await apiClient.get('/vendor-funds');
       setFunds(res.data?.data || []);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
@@ -28,7 +28,7 @@ const VendorFundManagement = () => {
 
   const fetchVendors = async () => {
     try {
-      const res = await apiClient.get('/api/vendors');
+      const res = await apiClient.get('/vendors');
       setVendors(res.data?.data || res.data || []);
     } catch (e) { console.error(e); }
   };
@@ -42,7 +42,7 @@ const VendorFundManagement = () => {
 
   const handleCreate = async () => {
     try {
-      await apiClient.post('/api/vendor-funds', { ...form, total_amount: parseFloat(form.total_amount) || 0 });
+      await apiClient.post('/vendor-funds', { ...form, total_amount: parseFloat(form.total_amount) || 0 });
       setCreateOpen(false);
       setForm({ vendor_id: '', name: '', fund_type: 'marketing_coop', total_amount: '', start_date: '', end_date: '' });
       fetchFunds();
