@@ -13,13 +13,17 @@ export default function VendorList() {
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
-    try { const res = await api.get('/vendors'); setItems(res.data?.data || res.data || []); } catch (e) { console.error(e); }
+    try {
+      const res = await api.get('/vendors');
+      const data = res.data?.data || res.data || [];
+      setItems(Array.isArray(data) ? data : []);
+    } catch (e) { console.error(e); }
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = items.filter(i => (i.name || '').toLowerCase().includes(search.toLowerCase()));
+  const filtered = (Array.isArray(items) ? items : []).filter(i => (i.name || '').toLowerCase().includes(search.toLowerCase()));
 
   const handleCreate = async () => {
     setSaving(true); setError('');

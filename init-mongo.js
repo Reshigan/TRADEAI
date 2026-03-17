@@ -17,6 +17,7 @@ db.createUser({
 });
 
 // Create collections with initial structure
+db.createCollection('tenants');
 db.createCollection('users');
 db.createCollection('companies');
 db.createCollection('customers');
@@ -29,16 +30,25 @@ db.createCollection('salesData');
 db.createCollection('analytics');
 
 // Create indexes for better performance
+db.tenants.createIndex({ "slug": 1 }, { unique: true });
+db.tenants.createIndex({ "domain": 1 }, { unique: true, sparse: true });
 db.users.createIndex({ "email": 1 }, { unique: true });
 db.users.createIndex({ "companyId": 1 });
+db.users.createIndex({ "tenantId": 1 });
 db.companies.createIndex({ "domain": 1 }, { unique: true });
 db.customers.createIndex({ "companyId": 1, "code": 1 });
+db.customers.createIndex({ "tenantId": 1, "code": 1 });
 db.products.createIndex({ "companyId": 1, "sku": 1 });
+db.products.createIndex({ "tenantId": 1, "sku": 1 });
 db.budgets.createIndex({ "companyId": 1, "year": 1 });
+db.budgets.createIndex({ "tenantId": 1, "year": 1 });
 db.tradespends.createIndex({ "companyId": 1, "createdAt": -1 });
 db.tradeSpends.createIndex({ "companyId": 1, "date": -1 });
+db.tradeSpends.createIndex({ "tenantId": 1, "date": -1 });
 db.promotions.createIndex({ "companyId": 1, "startDate": 1, "endDate": 1 });
+db.promotions.createIndex({ "tenantId": 1, "startDate": 1, "endDate": 1 });
 db.salesData.createIndex({ "companyId": 1, "date": -1 });
+db.salesData.createIndex({ "tenantId": 1, "date": -1 });
 
 print('MongoDB initialization completed successfully');
 print('Database: tradeai');
@@ -61,6 +71,90 @@ function randomInt(min, max) {
 function randomChoice(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
+
+// Create Tenant for multi-tenant isolation
+print('Creating Tenant for Test Company...');
+const testTenantId = new ObjectId();
+db.tenants.insertOne({
+    _id: testTenantId,
+    name: 'Test Company',
+    slug: 'test-company',
+    domain: 'testcompany.demo',
+    companyInfo: {
+        legalName: 'Test Company Inc.',
+        industry: 'FMCG',
+        companySize: 'medium'
+    },
+    contactInfo: {
+        primaryContact: {
+            name: 'Admin User',
+            email: 'admin@testcompany.demo',
+            phone: '+1 555 123 4567',
+            position: 'System Administrator'
+        },
+        address: {
+            street: '456 Demo Street',
+            city: 'New York',
+            state: 'NY',
+            country: 'USA',
+            postalCode: '10001'
+        }
+    },
+    subscription: {
+        plan: 'enterprise',
+        status: 'active',
+        startDate: new Date('2024-01-01'),
+        trialEndDate: new Date('2030-12-31'),
+        autoRenew: true
+    },
+    limits: {
+        maxUsers: 100,
+        maxStorageGB: 50,
+        maxCustomers: 10000,
+        maxProducts: 50000,
+        maxPromotions: 1000,
+        maxAPICallsPerMonth: 100000
+    },
+    usage: {
+        users: 5,
+        storageUsedGB: 1,
+        customers: 10,
+        products: 20,
+        promotions: 10,
+        apiCallsThisMonth: 0
+    },
+    features: {
+        multiCurrency: true,
+        advancedAnalytics: true,
+        aiPredictions: true,
+        customReporting: true,
+        apiAccess: true,
+        sapIntegration: true,
+        excelImportExport: true,
+        emailNotifications: true,
+        workflowApprovals: true,
+        auditLogging: true,
+        dataBackup: true,
+        ssoIntegration: false
+    },
+    settings: {
+        timezone: 'America/New_York',
+        dateFormat: 'MM/DD/YYYY',
+        currency: 'USD',
+        language: 'en',
+        fiscalYearStart: '01-01',
+        defaultPaymentTerms: 30
+    },
+    isActive: true,
+    isVerified: true,
+    isSuspended: false,
+    metadata: {
+        source: 'admin_created',
+        notes: 'Test company for development and demo purposes'
+    },
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date()
+});
 
 // Create Test Company for immediate use
 print('Creating Test Company with sample data...');
@@ -164,6 +258,9 @@ testUsers.forEach(user => {
         _id: userId,
         ...user,
         companyId: testCompanyId,
+        tenantId: testTenantId,
+        department: user.role === 'admin' ? 'admin' : user.role === 'manager' ? 'sales' : user.role === 'kam' ? 'sales' : user.role === 'analyst' ? 'operations' : 'operations',
+        employeeId: `EMP${String(testUserIds.length).padStart(4, '0')}`,
         profile: {
             firstName: user.firstName,
             lastName: user.lastName,
@@ -171,6 +268,8 @@ testUsers.forEach(user => {
             phone: '+1 555 ' + randomInt(1000000, 9999999)
         },
         permissions: user.role === 'admin' ? ['all'] : user.role === 'manager' ? ['read', 'write', 'approve'] : ['read', 'write'],
+        isActive: true,
+        isDeleted: false,
         lastLogin: randomDate(new Date('2024-08-01'), new Date()),
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date()
@@ -189,6 +288,7 @@ for (let i = 0; i < 10; i++) {
         name: customerNames[i],
         code: `CUST${String(i + 1).padStart(3, '0')}`,
         companyId: testCompanyId,
+        tenantId: testTenantId,
         type: randomChoice(['retail', 'wholesale', 'distributor', 'online']),
         status: 'active',
         contact: {
@@ -231,6 +331,7 @@ for (let i = 0; i < 20; i++) {
         name: `${brand} ${category} Product ${i + 1}`,
         sku: `SKU${String(i + 1).padStart(4, '0')}`,
         companyId: testCompanyId,
+        tenantId: testTenantId,
         category: category,
         brand: brand,
         status: 'active',
@@ -257,6 +358,7 @@ db.budgets.insertOne({
     _id: budgetId,
     name: 'Test Company Annual Budget 2024',
     companyId: testCompanyId,
+    tenantId: testTenantId,
     year: 2024,
     totalAmount: 1000000,
     allocatedAmount: 850000,
@@ -287,6 +389,7 @@ for (let i = 0; i < 10; i++) {
         _id: promotionId,
         name: `Test Promotion ${i + 1} - ${randomChoice(['Summer Sale', 'Back to School', 'Holiday Special', 'New Product Launch'])}`,
         companyId: testCompanyId,
+        tenantId: testTenantId,
         type: randomChoice(['discount', 'rebate', 'volume', 'display']),
         startDate: startDate,
         endDate: endDate,
@@ -320,6 +423,7 @@ for (let i = 0; i < 100; i++) {
     
     db.tradeSpends.insertOne({
         companyId: testCompanyId,
+        tenantId: testTenantId,
         customerId: customerId,
         promotionId: promotionId,
         budgetId: budgetId,
@@ -352,6 +456,7 @@ for (let i = 0; i < 500; i++) {
     
     db.salesData.insertOne({
         companyId: testCompanyId,
+        tenantId: testTenantId,
         customerId: customerId,
         productId: productId,
         date: date,
