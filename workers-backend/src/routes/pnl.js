@@ -376,6 +376,80 @@ pnl.get('/live-by-promotion', async (c) => {
   }
 });
 
+// ── GET /calculate  Real-time P&L calculation (must be before /:id) ──
+// Also handles POST /calculate for frontend compatibility
+async function handleCalculate(c) {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const query = c.req.method === 'POST' ? (await c.req.json().catch(() => ({}))) : {};
+    const start_date = c.req.query('start_date') || query.start_date || query.startDate;
+    const end_date = c.req.query('end_date') || query.end_date || query.endDate;
+    const customer_id = c.req.query('customer_id') || query.customer_id || query.customerId;
+    const promotion_id = c.req.query('promotion_id') || query.promotion_id || query.promotionId;
+
+    let dateFilter = '';
+    const params = [companyId];
+    if (start_date) { dateFilter += ' AND transaction_date >= ?'; params.push(start_date); }
+    if (end_date) { dateFilter += ' AND transaction_date <= ?'; params.push(end_date); }
+    if (customer_id) { dateFilter += ' AND customer_id = ?'; params.push(customer_id); }
+    if (promotion_id) { dateFilter += ' AND promotion_id = ?'; params.push(promotion_id); }
+
+    const sales = await db.prepare(`
+      SELECT
+        SUM(gross_amount) as gross_sales,
+        SUM(discount_amount) as total_discounts,
+        SUM(net_amount) as net_revenue,
+        COUNT(*) as transaction_count
+      FROM sales_transactions
+      WHERE company_id = ? ${dateFilter}
+    `).bind(...params).first();
+
+    const tradeSpendResult = await db.prepare(`
+      SELECT COALESCE(SUM(amount),0) as total FROM trade_spends
+      WHERE company_id = ? AND status = 'approved'
+    `).bind(companyId).first();
+
+    const rebateResult = await db.prepare(`
+      SELECT COALESCE(SUM(accrued_amount),0) as total FROM accruals
+      WHERE company_id = ? AND status IN ('calculated','approved')
+    `).bind(companyId).first();
+
+    const claimResult = await db.prepare(`
+      SELECT COALESCE(SUM(claimed_amount),0) as total FROM claims
+      WHERE company_id = ? AND status = 'approved'
+    `).bind(companyId).first();
+
+    const grossSales = sales?.gross_sales || 0;
+    const tradeSpend = tradeSpendResult?.total || 0;
+    const netSales = grossSales - tradeSpend;
+    const rebates = rebateResult?.total || 0;
+    const claimsTotal = claimResult?.total || 0;
+    const netTradeMargin = netSales - rebates - claimsTotal;
+    const marginPercent = grossSales > 0 ? (netTradeMargin / grossSales) * 100 : 0;
+
+    return c.json({
+      success: true,
+      data: {
+        grossSales: Math.round(grossSales * 100) / 100,
+        tradeSpend: Math.round(tradeSpend * 100) / 100,
+        netSales: Math.round(netSales * 100) / 100,
+        rebates: Math.round(rebates * 100) / 100,
+        claims: Math.round(claimsTotal * 100) / 100,
+        netTradeMargin: Math.round(netTradeMargin * 100) / 100,
+        marginPercent: Math.round(marginPercent * 100) / 100,
+        transactionCount: sales?.transaction_count || 0
+      }
+    });
+  } catch (error) {
+    console.error('Error calculating P&L:', error);
+    return c.json({ success: false, message: error.message }, 500);
+  }
+}
+
+pnl.get('/calculate', handleCalculate);
+pnl.post('/calculate', handleCalculate);
+
 // ── GET /:id  Get P&L report with line items ────────────────────────
 pnl.get('/:id', async (c) => {
   try {
@@ -847,72 +921,6 @@ pnl.get('/:id/line-items', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching P&L line items:', error);
-    return c.json({ success: false, message: error.message }, 500);
-  }
-});
-
-// ── GET /calculate  Real-time P&L from sales_transactions (Sprint 4.4) ──
-pnl.get('/calculate', async (c) => {
-  try {
-    const db = c.env.DB;
-    const companyId = getCompanyId(c);
-    const { start_date, end_date, customer_id, promotion_id } = c.req.query();
-
-    let dateFilter = '';
-    const params = [companyId];
-    if (start_date) { dateFilter += ' AND transaction_date >= ?'; params.push(start_date); }
-    if (end_date) { dateFilter += ' AND transaction_date <= ?'; params.push(end_date); }
-    if (customer_id) { dateFilter += ' AND customer_id = ?'; params.push(customer_id); }
-    if (promotion_id) { dateFilter += ' AND promotion_id = ?'; params.push(promotion_id); }
-
-    const sales = await db.prepare(`
-      SELECT
-        SUM(gross_amount) as gross_sales,
-        SUM(discount_amount) as total_discounts,
-        SUM(net_amount) as net_revenue,
-        COUNT(*) as transaction_count
-      FROM sales_transactions
-      WHERE company_id = ? ${dateFilter}
-    `).bind(...params).first();
-
-    const tradeSpendResult = await db.prepare(`
-      SELECT COALESCE(SUM(amount),0) as total FROM trade_spends
-      WHERE company_id = ? AND status = 'approved'
-    `).bind(companyId).first();
-
-    const rebateResult = await db.prepare(`
-      SELECT COALESCE(SUM(accrued_amount),0) as total FROM accruals
-      WHERE company_id = ? AND status IN ('calculated','approved')
-    `).bind(companyId).first();
-
-    const claimResult = await db.prepare(`
-      SELECT COALESCE(SUM(claimed_amount),0) as total FROM claims
-      WHERE company_id = ? AND status = 'approved'
-    `).bind(companyId).first();
-
-    const grossSales = sales?.gross_sales || 0;
-    const tradeSpend = tradeSpendResult?.total || 0;
-    const netSales = grossSales - tradeSpend;
-    const rebates = rebateResult?.total || 0;
-    const claims = claimResult?.total || 0;
-    const netTradeMargin = netSales - rebates - claims;
-    const marginPercent = grossSales > 0 ? (netTradeMargin / grossSales) * 100 : 0;
-
-    return c.json({
-      success: true,
-      data: {
-        grossSales: Math.round(grossSales * 100) / 100,
-        tradeSpend: Math.round(tradeSpend * 100) / 100,
-        netSales: Math.round(netSales * 100) / 100,
-        rebates: Math.round(rebates * 100) / 100,
-        claims: Math.round(claims * 100) / 100,
-        netTradeMargin: Math.round(netTradeMargin * 100) / 100,
-        marginPercent: Math.round(marginPercent * 100) / 100,
-        transactionCount: sales?.transaction_count || 0
-      }
-    });
-  } catch (error) {
-    console.error('Error calculating P&L:', error);
     return c.json({ success: false, message: error.message }, 500);
   }
 });

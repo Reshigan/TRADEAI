@@ -336,7 +336,12 @@ claims.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Claim not found' }, 404);
     }
     
-    return c.json({ success: true, data: rowToDocument(result) });
+    const doc = rowToDocument(result);
+    // Ensure customerName is always populated — fall back to customerId if JOIN returned null
+    if (!doc.customerName && doc.customerId) {
+      doc.customerName = doc.customerId;
+    }
+    return c.json({ success: true, data: doc });
   } catch (error) {
     console.error('Error fetching claim:', error);
     return c.json({ success: false, message: error.message }, 500);

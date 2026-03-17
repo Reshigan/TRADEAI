@@ -263,13 +263,13 @@ const ClaimDetail = () => {
                   </Typography>
                 </Grid>
 
-                {claim.description && (
+                {(claim.description || claim.reason) && (
                   <Grid item xs={12}>
                     <Typography variant="body2" color="text.secondary">
                       Description
                     </Typography>
                     <Typography variant="body1">
-                      {claim.description}
+                      {claim.description || claim.reason}
                     </Typography>
                   </Grid>
                 )}
