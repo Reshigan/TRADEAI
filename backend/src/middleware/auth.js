@@ -147,7 +147,7 @@ const authenticateToken = async (req, res, next) => {
     req.user = user;
     req.token = token;
     // Add tenantId for easy access - fall back to companyId for backward compatibility
-    req.tenantId = user.tenantId || (user.companyId ? user.companyId.toString() : undefined);
+    req.tenantId = user.tenantId || (user.companyId ? (user.companyId._id || user.companyId).toString() : undefined);
     next();
   } catch (error) {
     // Handle specific JWT errors
