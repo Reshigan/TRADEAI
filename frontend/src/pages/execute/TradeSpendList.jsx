@@ -34,7 +34,11 @@ export default function TradeSpendList() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = (Array.isArray(items) ? items : []).filter(i => (i.description || '').toLowerCase().includes(search.toLowerCase()));
+  const filtered = (Array.isArray(items) ? items : []).filter(i => {
+    const text = (i.notes || i.category || i.spendId || '').toLowerCase();
+    const custName = (i.customer?.name || '').toLowerCase();
+    return text.includes(search.toLowerCase()) || custName.includes(search.toLowerCase());
+  });
 
   const handleCreate = async () => {
     setSaving(true); setError('');
@@ -68,14 +72,14 @@ export default function TradeSpendList() {
                   {filtered.length === 0 ? (
                     <TableRow><TableCell colSpan={7} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No trade spends found</Typography></TableCell></TableRow>
                   ) : filtered.map(i => (
-                    <TableRow key={i.id}>
-                      <TableCell><Typography variant="body2" fontWeight={500}>{i.description || i.name}</Typography></TableCell>
-                      <TableCell sx={{ textTransform: 'capitalize' }}>{(i.spend_type || i.type || '').replace(/_/g, ' ')}</TableCell>
-                      <TableCell>{i.customer_name || '-'}</TableCell>
-                      <TableCell align="right">{fmt(i.amount)}</TableCell>
-                      <TableCell>{i.date ? new Date(i.date).toLocaleDateString() : '-'}</TableCell>
+                    <TableRow key={i._id || i.id}>
+                      <TableCell><Typography variant="body2" fontWeight={500}>{i.notes || i.category || i.spendId || '-'}</Typography></TableCell>
+                      <TableCell sx={{ textTransform: 'capitalize' }}>{(i.spendType || '').replace(/_/g, ' ')}</TableCell>
+                      <TableCell>{i.customer?.name || '-'}</TableCell>
+                      <TableCell align="right">{fmt(i.amount?.requested || i.amount?.approved || i.amount?.spent || 0)}</TableCell>
+                      <TableCell>{i.period?.startDate ? new Date(i.period.startDate).toLocaleDateString() : '-'}</TableCell>
                       <TableCell><Chip label={i.status || 'active'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
-                      <TableCell align="right"><IconButton size="small" onClick={() => handleDelete(i.id)}><Trash2 size={16} /></IconButton></TableCell>
+                      <TableCell align="right"><IconButton size="small" onClick={() => handleDelete(i._id || i.id)}><Trash2 size={16} /></IconButton></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
