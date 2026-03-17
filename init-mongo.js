@@ -24,7 +24,6 @@ db.createCollection('customers');
 db.createCollection('products');
 db.createCollection('budgets');
 db.createCollection('tradespends');
-db.createCollection('tradeSpends');
 db.createCollection('promotions');
 db.createCollection('salesData');
 db.createCollection('analytics');
@@ -42,9 +41,9 @@ db.products.createIndex({ "companyId": 1, "sku": 1 });
 db.products.createIndex({ "tenantId": 1, "sku": 1 });
 db.budgets.createIndex({ "companyId": 1, "year": 1 });
 db.budgets.createIndex({ "tenantId": 1, "year": 1 });
-db.tradespends.createIndex({ "companyId": 1, "createdAt": -1 });
-db.tradeSpends.createIndex({ "companyId": 1, "date": -1 });
-db.tradeSpends.createIndex({ "tenantId": 1, "date": -1 });
+db.tradespends.createIndex({ "company": 1, "createdAt": -1 });
+db.tradespends.createIndex({ "tenantId": 1, "createdAt": -1 });
+db.tradespends.createIndex({ "customer": 1, "spendType": 1, "status": 1 });
 db.promotions.createIndex({ "companyId": 1, "startDate": 1, "endDate": 1 });
 db.promotions.createIndex({ "tenantId": 1, "startDate": 1, "endDate": 1 });
 db.salesData.createIndex({ "companyId": 1, "date": -1 });
@@ -52,7 +51,7 @@ db.salesData.createIndex({ "tenantId": 1, "date": -1 });
 
 print('MongoDB initialization completed successfully');
 print('Database: tradeai');
-print('Collections created: users, companies, customers, products, budgets, tradespends, tradeSpends, promotions, salesData, analytics');
+print('Collections created: tenants, users, companies, customers, products, budgets, tradespends, promotions, salesData, analytics');
 print('Indexes created for optimal performance');
 
 // Helper functions for seed data
@@ -415,31 +414,66 @@ for (let i = 0; i < 10; i++) {
     });
 }
 
-// Create sample trade spends
+// Create sample trade spends (using correct Mongoose collection name and schema fields)
+const spendTypes = ['marketing', 'cash_coop', 'trading_terms', 'rebate', 'promotion'];
+const spendCategories = ['volume_discount', 'display_allowance', 'promotional_support', 'listing_fee', 'slotting_fee'];
 for (let i = 0; i < 100; i++) {
     const customerId = randomChoice(testCustomerIds);
     const promotionId = randomChoice(testPromotionIds);
-    const date = randomDate(new Date('2024-01-01'), new Date('2024-11-01'));
+    const startDate = randomDate(new Date('2024-01-01'), new Date('2024-10-01'));
+    const endDate = new Date(startDate.getTime() + randomInt(7, 60) * 24 * 60 * 60 * 1000);
+    const requestedAmount = randomFloat(100, 5000);
+    const approvedAmount = requestedAmount * randomFloat(0.7, 1.0);
+    const spentAmount = approvedAmount * randomFloat(0.3, 0.9);
     
-    db.tradeSpends.insertOne({
-        companyId: testCompanyId,
+    db.tradespends.insertOne({
+        company: testCompanyId,
         tenantId: testTenantId,
-        customerId: customerId,
-        promotionId: promotionId,
-        budgetId: budgetId,
-        amount: randomFloat(100, 5000),
-        date: date,
-        status: randomChoice(['approved', 'paid', 'pending']),
-        type: randomChoice(['accrual', 'payment', 'adjustment']),
-        description: `Trade spend for ${randomChoice(['volume discount', 'display allowance', 'promotional support', 'listing fee'])}`,
-        metadata: {
-            invoiceNumber: `INV${String(i + 1).padStart(6, '0')}`,
-            approvedBy: randomChoice(testUserIds),
-            approvalDate: new Date(date.getTime() + randomInt(1, 7) * 24 * 60 * 60 * 1000),
-            paymentMethod: randomChoice(['Bank Transfer', 'Credit Note', 'Check']),
-            reference: `REF${String(i + 1).padStart(6, '0')}`
+        spendId: `TS${String(i + 1).padStart(6, '0')}`,
+        spendType: randomChoice(spendTypes),
+        category: randomChoice(spendCategories),
+        amount: {
+            requested: requestedAmount,
+            approved: approvedAmount,
+            spent: spentAmount,
+            currency: 'USD'
         },
-        createdAt: date,
+        period: {
+            startDate: startDate,
+            endDate: endDate
+        },
+        customer: customerId,
+        products: testProductIds.slice(0, randomInt(1, 5)),
+        promotion: promotionId,
+        budget: budgetId,
+        status: randomChoice(['draft', 'submitted', 'approved', 'active', 'completed']),
+        approvals: [{
+            level: 'manager',
+            status: 'approved',
+            approver: testUserIds[1],
+            date: new Date(startDate.getTime() - randomInt(1, 7) * 24 * 60 * 60 * 1000),
+            amount: approvedAmount
+        }],
+        financial: {
+            glAccount: `6${randomInt(10000, 99999)}`,
+            costCenter: `CC${randomInt(100, 999)}`,
+            profitCenter: `PC${randomInt(100, 999)}`
+        },
+        performance: {
+            targetMetric: 'sales_volume',
+            targetValue: randomFloat(10000, 100000),
+            actualValue: randomFloat(5000, 120000),
+            roi: randomFloat(0.5, 3.5)
+        },
+        notes: `Trade spend for ${randomChoice(['volume discount', 'display allowance', 'promotional support', 'listing fee'])}`,
+        createdBy: randomChoice(testUserIds),
+        lastModifiedBy: randomChoice(testUserIds),
+        history: [{
+            action: 'created',
+            performedBy: testUserIds[0],
+            performedDate: startDate
+        }],
+        createdAt: startDate,
         updatedAt: new Date()
     });
 }
