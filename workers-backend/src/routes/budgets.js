@@ -82,7 +82,7 @@ budgetRoutes.post('/', async (c) => {
       ...data,
       companyId: tenantId,
       createdBy: userId,
-      status: 'draft',
+      status: data.status || 'draft',
       utilized: 0
     });
 
