@@ -41,7 +41,8 @@ promotionConflictRoutes.post('/check', async (c) => {
   try {
     const user = c.get('user');
     const db = getD1Client(c);
-    const { customerId, productIds, startDate, endDate, promotionType, excludeId } = await c.req.json();
+    const body = await c.req.json();
+    const { customerId, productIds, startDate, endDate, promotionType, excludeId } = body;
 
     const promotions = await db.find('promotions', {
       company_id: user.companyId,

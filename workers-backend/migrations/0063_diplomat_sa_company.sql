@@ -2,12 +2,11 @@
 -- Uses INSERT OR IGNORE to avoid duplicate errors on re-run
 
 INSERT OR IGNORE INTO companies (
-  id, name, industry, country, currency, timezone,
+  id, name, country, currency, timezone,
   status, created_at, updated_at
 ) VALUES (
   'comp-diplomat-001',
   'Diplomat SA',
-  'FMCG',
   'ZA',
   'ZAR',
   'Africa/Johannesburg',
@@ -36,9 +35,9 @@ INSERT OR IGNORE INTO users (
 
 -- Create default budget for Diplomat SA
 INSERT OR IGNORE INTO budgets (
-  id, company_id, name, fiscal_year, total_amount,
-  allocated, committed, spent, available,
-  status, created_at, updated_at
+  id, company_id, name, year, amount,
+  utilized, committed, spent,
+  budget_type, status, created_at, updated_at
 ) VALUES (
   'budget-diplomat-2024',
   'comp-diplomat-001',
@@ -48,7 +47,7 @@ INSERT OR IGNORE INTO budgets (
   0.00,
   0.00,
   0.00,
-  5000000.00,
+  'annual',
   'active',
   datetime('now'),
   datetime('now')
