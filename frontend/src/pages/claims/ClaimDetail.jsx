@@ -54,9 +54,10 @@ const ClaimDetail = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await claimService.getById(id);
-      setClaim(data);
-      analytics.trackEvent('claim_detail_viewed', { claimId: id, claimType: data.claimType });
+      const response = await claimService.getById(id);
+      const claimData = response?.data || response;
+      setClaim(claimData);
+      analytics.trackEvent('claim_detail_viewed', { claimId: id, claimType: claimData.claimType });
     } catch (err) {
       console.error('Error fetching claim detail:', err);
       setError(err.message || 'Failed to load claim details');
@@ -263,13 +264,13 @@ const ClaimDetail = () => {
                   </Typography>
                 </Grid>
 
-                {claim.description && (
+                {(claim.description || claim.reason) && (
                   <Grid item xs={12}>
                     <Typography variant="body2" color="text.secondary">
                       Description
                     </Typography>
                     <Typography variant="body1">
-                      {claim.description}
+                      {claim.description || claim.reason}
                     </Typography>
                   </Grid>
                 )}
