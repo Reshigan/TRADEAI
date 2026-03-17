@@ -117,7 +117,7 @@ export default function BudgetList() {
           <Typography variant="h5" fontWeight={700}>Budget Management</Typography>
           <Typography variant="body2" color="text.secondary">Plan, allocate, and track trade promotion budgets</Typography>
         </Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New Budget</Button>
+        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => { setForm({ ...emptyForm }); setError(''); setActiveStep(0); setShowCreate(true); }}>New Budget</Button>
       </Box>
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -189,7 +189,7 @@ export default function BudgetList() {
         </CardContent>
       </Card>
 
-      <Dialog open={showCreate} onClose={() => { setShowCreate(false); setActiveStep(0); }} maxWidth="md" fullWidth>
+      <Dialog open={showCreate} onClose={() => { setShowCreate(false); setForm({ ...emptyForm }); setError(''); setActiveStep(0); }} maxWidth="md" fullWidth>
         <DialogTitle sx={{ pb: 1 }}>
           <Typography variant="h6" fontWeight={700}>Create New Budget</Typography>
           <Typography variant="body2" color="text.secondary">Define budget parameters, scope, and targeting</Typography>
@@ -294,7 +294,7 @@ export default function BudgetList() {
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => { setShowCreate(false); setActiveStep(0); }}>Cancel</Button>
+          <Button onClick={() => { setShowCreate(false); setForm({ ...emptyForm }); setError(''); setActiveStep(0); }}>Cancel</Button>
           {activeStep > 0 && <Button onClick={() => setActiveStep(activeStep - 1)}>Back</Button>}
           {activeStep < steps.length - 1 ? (
             <Button variant="contained" onClick={() => setActiveStep(activeStep + 1)} disabled={activeStep === 0 && (!form.name || !form.amount)}>Next</Button>
