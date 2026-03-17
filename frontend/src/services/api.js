@@ -1954,7 +1954,7 @@ export const mlService = {
 export const aiOrchestratorService = {
   getInsights: async (params) => { const r = await api.get('/ai-orchestrator/insights', { params }); return r.data; },
   getRecommendations: async (params) => { const r = await api.get('/ai-orchestrator/recommendations', { params }); return r.data; },
-  orchestrate: async (data) => { const r = await api.post('/ai-orchestrator/orchestrate', data); return r.data; },
+  orchestrate: async (intent, context) => { const r = await api.post('/ai-orchestrator/orchestrate', { intent, context }); return r.data; },
   clearCache: async () => { const r = await api.post('/ai-orchestrator/clear-cache'); return r.data; },
 };
 
@@ -1967,13 +1967,13 @@ export const reportService = {
   createReport: async (data) => { const r = await api.post('/reporting', data); return r.data; },
   updateReport: async (id, data) => { const r = await api.put(`/reporting/${id}`, data); return r.data; },
   deleteReport: async (id) => { const r = await api.delete(`/reporting/${id}`); return r.data; },
-  generateReport: async (id) => { const r = await api.post(`/reporting/${id}/generate`); return r.data; },
+  generateReport: async (id, data) => { const r = await api.post(`/reporting/${id}/generate`, data); return r.data; },
 };
 
 export const securityService = {
   getEvents: async (params) => { const r = await api.get('/system-config/security-events', { params }); return r.data; },
   getStatus: async () => { const r = await api.get('/system-config/security-status'); return r.data; },
-  getSecurityDashboard: async () => { const r = await api.get('/system-config/security-dashboard'); return r.data; },
+  getSecurityDashboard: async (params) => { const r = await api.get('/system-config/security-dashboard', { params }); return r.data; },
   getSecurityEvents: async (params) => { const r = await api.get('/system-config/security-events', { params }); return r.data; },
   getAuditLogs: async (params) => { const r = await api.get('/system-config/audit-logs', { params }); return r.data; },
   getRoles: async () => { const r = await api.get('/role-management'); return r.data; },
@@ -2001,8 +2001,8 @@ export const workflowService = {
   getPendingApprovals: async (params) => { const r = await api.get('/workflow-engine/pending-approvals', { params }); return r.data; },
   getWorkflowTemplates: async () => { const r = await api.get('/workflow-engine/templates'); return r.data; },
   getWorkflowAnalytics: async (params) => { const r = await api.get('/workflow-engine/analytics', { params }); return r.data; },
-  startWorkflow: async (data) => { const r = await api.post('/workflow-engine/start', data); return r.data; },
-  handleUserAction: async (workflowId, data) => { const r = await api.post(`/workflow-engine/${workflowId}/action`, data); return r.data; },
+  startWorkflow: async (templateId, data) => { const r = await api.post('/workflow-engine/start', { templateId, ...data }); return r.data; },
+  handleUserAction: async (workflowId, stepId, action, data) => { const r = await api.post(`/workflow-engine/${workflowId}/action`, { stepId, action, ...data }); return r.data; },
   getWorkflowStatus: async (id) => { const r = await api.get(`/workflow-engine/${id}/status`); return r.data; },
 };
 
