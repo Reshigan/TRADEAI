@@ -62,9 +62,39 @@ simulationsRoutes.post('/run-simulation', async (c) => {
       }
     }
 
+    // Cannibalization: if other active promos exist for same customer, reduce lift by 15%
+    let cannibalizationPct = 0;
+    if (custList[0]) {
+      const activePromos = await db.prepare(
+        "SELECT COUNT(*) as cnt FROM promotions WHERE company_id = ? AND status IN ('active','approved') AND customer_id = ?"
+      ).bind(companyId, custList[0]).first();
+      if (activePromos && activePromos.cnt > 0) {
+        cannibalizationPct = 15;
+        totalIncrementalRevenue *= 0.85;
+      }
+    }
+
+    // Forward-buying: for volume_discount and bogo, add 20% forward-buy assumption
+    let forwardBuyingPct = 0;
+    if (promotionType === 'volume_discount' || promotionType === 'bogo') {
+      forwardBuyingPct = 20;
+    }
+
     const projectedROI = totalCost > 0 ? ((totalIncrementalRevenue - totalCost) / totalCost) * 100 : 0;
     const breakEvenWeek = totalCost > 0 && totalIncrementalRevenue > 0
       ? Math.ceil((durationWeeks || 4) * totalCost / totalIncrementalRevenue) : null;
+
+    // Confidence score (0-100)
+    const weeksOfData = details.length > 0 && details[0].weeklyBaseline > 100 ? 52 : 10;
+    const dataScore = weeksOfData >= 26 ? 50 : Math.round((weeksOfData / 26) * 50);
+    const modelFitScore = Math.abs(lift - 0.15) < 0.1 ? 25 : 15;
+    const seasonalityScore = 25; // assume seasonal data available
+    const confidenceScore = Math.min(100, dataScore + modelFitScore + seasonalityScore);
+
+    // Recommendation
+    const roiDecimal = projectedROI / 100;
+    const recommendation = roiDecimal > 1.0 && confidenceScore > 60 ? 'proceed'
+      : roiDecimal > 0.5 || confidenceScore < 60 ? 'review' : 'reconsider';
 
     return c.json({
       success: true,
@@ -74,6 +104,10 @@ simulationsRoutes.post('/run-simulation', async (c) => {
         projectedROI: Math.round(projectedROI * 100) / 100,
         projectedLift: Math.round(lift * 10000) / 100,
         breakEvenWeek,
+        cannibalizationPct,
+        forwardBuyingPct,
+        confidenceScore,
+        recommendation,
         details
       }
     });

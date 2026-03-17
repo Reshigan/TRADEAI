@@ -444,24 +444,71 @@ async function handleCalculate(c) {
       WHERE company_id = ? AND status = 'approved'${clFilter}
     `).bind(...clParams).first();
 
-    const grossSales = sales?.gross_sales || 0;
+    // COGS query (products.cost_price * sales_transactions.quantity)
+    let cogsFilter = '';
+    const cogsParams = [companyId];
+    if (start_date) { cogsFilter += ' AND st.transaction_date >= ?'; cogsParams.push(start_date); }
+    if (end_date) { cogsFilter += ' AND st.transaction_date <= ?'; cogsParams.push(end_date); }
+    if (customer_id) { cogsFilter += ' AND st.customer_id = ?'; cogsParams.push(customer_id); }
+    if (promotion_id) { cogsFilter += ' AND st.promotion_id = ?'; cogsParams.push(promotion_id); }
+
+    const cogsResult = await db.prepare(`
+      SELECT COALESCE(SUM(st.quantity * COALESCE(p.cost_price, st.unit_price * 0.6)), 0) as total
+      FROM sales_transactions st
+      LEFT JOIN products p ON st.product_id = p.id
+      WHERE st.company_id = ? ${cogsFilter}
+    `).bind(...cogsParams).first();
+
+    // Deduction recoveries (matched deductions)
+    let dedFilter = '';
+    const dedParams = [companyId];
+    if (start_date) { dedFilter += ' AND created_at >= ?'; dedParams.push(start_date); }
+    if (end_date) { dedFilter += ' AND created_at <= ?'; dedParams.push(end_date); }
+    if (customer_id) { dedFilter += ' AND customer_id = ?'; dedParams.push(customer_id); }
+
+    const dedResult = await db.prepare(`
+      SELECT COALESCE(SUM(deduction_amount), 0) as total FROM deductions
+      WHERE company_id = ? AND status = 'matched' ${dedFilter}
+    `).bind(...dedParams).first();
+
+    // V5 Waterfall: 10 line items
+    const grossRevenue = sales?.gross_sales || 0;
+    const tradeDiscounts = sales?.total_discounts || 0;
+    const netRevenue = grossRevenue - tradeDiscounts;
+    const cogs = cogsResult?.total || 0;
+    const grossMargin = netRevenue - cogs;
     const tradeSpend = tradeSpendResult?.total || 0;
-    const netSales = grossSales - tradeSpend;
-    const rebates = rebateResult?.total || 0;
-    const claimsTotal = claimResult?.total || 0;
-    const netTradeMargin = netSales - rebates - claimsTotal;
-    const marginPercent = grossSales > 0 ? (netTradeMargin / grossSales) * 100 : 0;
+    const accruals = rebateResult?.total || 0;
+    const deductionRecoveries = dedResult?.total || 0;
+    const netTradeMargin = grossMargin - tradeSpend - accruals + deductionRecoveries;
+    const tradeSpendPct = grossRevenue > 0 ? (tradeSpend / grossRevenue) * 100 : 0;
+
+    const r = (v) => Math.round(v * 100) / 100;
+
+    const waterfall = [
+      { lineItem: 'Gross Revenue', value: r(grossRevenue), type: 'revenue' },
+      { lineItem: 'Trade Discounts', value: r(-tradeDiscounts), type: 'deduction' },
+      { lineItem: 'Net Revenue', value: r(netRevenue), type: 'subtotal' },
+      { lineItem: 'COGS', value: r(-cogs), type: 'deduction' },
+      { lineItem: 'Gross Margin', value: r(grossMargin), type: 'subtotal' },
+      { lineItem: 'Trade Spend', value: r(-tradeSpend), type: 'deduction' },
+      { lineItem: 'Accruals', value: r(-accruals), type: 'deduction' },
+      { lineItem: 'Deduction Recoveries', value: r(deductionRecoveries), type: 'recovery' },
+      { lineItem: 'Net Trade Margin', value: r(netTradeMargin), type: 'total' },
+      { lineItem: 'Trade Spend % of Gross Revenue', value: r(tradeSpendPct), type: 'percentage' }
+    ];
 
     return c.json({
       success: true,
       data: {
-        grossSales: Math.round(grossSales * 100) / 100,
-        tradeSpend: Math.round(tradeSpend * 100) / 100,
-        netSales: Math.round(netSales * 100) / 100,
-        rebates: Math.round(rebates * 100) / 100,
-        claims: Math.round(claimsTotal * 100) / 100,
-        netTradeMargin: Math.round(netTradeMargin * 100) / 100,
-        marginPercent: Math.round(marginPercent * 100) / 100,
+        waterfall,
+        grossSales: r(grossRevenue),
+        tradeSpend: r(tradeSpend),
+        netSales: r(netRevenue),
+        rebates: r(accruals),
+        claims: r(claimResult?.total || 0),
+        netTradeMargin: r(netTradeMargin),
+        marginPercent: r(tradeSpendPct),
         transactionCount: sales?.transaction_count || 0
       }
     });
