@@ -50,6 +50,7 @@ const navGroups = [
     { label: 'Roles', icon: Lock, path: '/admin/roles' },
     { label: 'Config', icon: Settings, path: '/admin/config' },
     { label: 'SAP Export', icon: FileSpreadsheet, path: '/admin/sap-export' },
+    { label: 'SAP Integration', icon: FileSpreadsheet, path: '/admin/sap-integration' },
     { label: 'Integrations', icon: Link2, path: '/admin/integrations' },
   ]},
 ];
