@@ -696,6 +696,7 @@ sapImportRoutes.post('/:templateId', async (c) => {
         const results = { created: 0, updated: 0, failed: 0, errors: [] };
         const ts = now();
 
+        const stmts = [];
         for (const rawRow of jsonRows) {
           try {
             const mapped = {};
@@ -704,11 +705,23 @@ sapImportRoutes.post('/:templateId', async (c) => {
             }
             const transformed = config.transform(mapped, companyId, userId);
             const bindings = config.bindRow(transformed);
-            await db.prepare(config.insertSql).bind(...bindings).run();
-            results.created++;
+            stmts.push(db.prepare(config.insertSql).bind(...bindings));
           } catch (rowErr) {
             results.failed++;
             results.errors.push(rowErr.message);
+          }
+        }
+        // Execute in batches of 100
+        for (let b = 0; b < stmts.length; b += 100) {
+          const batch = stmts.slice(b, b + 100);
+          try {
+            await db.batch(batch);
+            results.created += batch.length;
+          } catch (batchErr) {
+            for (const stmt of batch) {
+              try { await stmt.run(); results.created++; }
+              catch (e) { results.failed++; results.errors.push(e.message); }
+            }
           }
         }
 
@@ -752,27 +765,46 @@ sapImportRoutes.post('/:templateId', async (c) => {
     const results = { created: 0, updated: 0, failed: 0, errors: [] };
     const ts = now();
 
+    // Build all insert statements first
+    const stmts = [];
+    const stmtIndexes = [];
     for (let i = 0; i < rawRows.length; i++) {
       try {
-        // Map SAP fields to internal fields
         const mapped = {};
         for (const [sapField, dbField] of Object.entries(config.fieldMap)) {
           if (rawRows[i][sapField] !== undefined) {
             mapped[dbField] = rawRows[i][sapField];
           }
         }
-
-        // Transform to DB row
         const transformed = config.transform(mapped, companyId, userId);
         const bindings = config.bindRow(transformed);
-
-        // Insert into DB
-        await db.prepare(config.insertSql).bind(...bindings).run();
-        results.created++;
+        stmts.push(db.prepare(config.insertSql).bind(...bindings));
+        stmtIndexes.push(i);
       } catch (rowErr) {
         results.failed++;
-        if (results.errors.length < 20) {
+        if (results.errors.length < 50) {
           results.errors.push(`Row ${i + 1}: ${rowErr.message}`);
+        }
+      }
+    }
+    // Execute in batches of 100
+    for (let b = 0; b < stmts.length; b += 100) {
+      const batch = stmts.slice(b, b + 100);
+      try {
+        await db.batch(batch);
+        results.created += batch.length;
+      } catch (batchErr) {
+        for (let j = 0; j < batch.length; j++) {
+          try {
+            await batch[j].run();
+            results.created++;
+          } catch (rowErr) {
+            results.failed++;
+            const origIdx = stmtIndexes[b + j];
+            if (results.errors.length < 50) {
+              results.errors.push(`Row ${origIdx + 1}: ${rowErr.message}`);
+            }
+          }
         }
       }
     }

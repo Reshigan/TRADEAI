@@ -246,14 +246,43 @@ importExport.post('/', async (c) => {
     const errors = [];
 
     if (tableName && records.length > 0) {
+      // Build all insert statements first
+      const stmts = [];
+      const stmtIndexes = [];
       for (let i = 0; i < records.length; i++) {
         try {
           const insert = buildInsert(tableName, records[i], companyId, userId);
-          if (insert) { await db.prepare(insert.sql).bind(...insert.values).run(); successRows++; }
-          else { errorRows++; errors.push(`Row ${i + 1}: Unknown table`); }
-        } catch (rowErr) {
+          if (insert) {
+            stmts.push(db.prepare(insert.sql).bind(...insert.values));
+            stmtIndexes.push(i);
+          } else {
+            errorRows++;
+            errors.push(`Row ${i + 1}: Unknown table`);
+          }
+        } catch (buildErr) {
           errorRows++;
-          if (errors.length < 20) errors.push(`Row ${i + 1}: ${rowErr.message}`);
+          if (errors.length < 50) errors.push(`Row ${i + 1}: ${buildErr.message}`);
+        }
+      }
+      // Execute in batches of 100 (D1 batch limit is ~500 but keeping conservative)
+      const BATCH_SIZE = 100;
+      for (let b = 0; b < stmts.length; b += BATCH_SIZE) {
+        const batch = stmts.slice(b, b + BATCH_SIZE);
+        try {
+          await db.batch(batch);
+          successRows += batch.length;
+        } catch (batchErr) {
+          // If batch fails, try individual inserts for this batch to identify bad rows
+          for (let j = 0; j < batch.length; j++) {
+            try {
+              await batch[j].run();
+              successRows++;
+            } catch (rowErr) {
+              errorRows++;
+              const origIdx = stmtIndexes[b + j];
+              if (errors.length < 50) errors.push(`Row ${origIdx + 1}: ${rowErr.message}`);
+            }
+          }
         }
       }
     } else if (!tableName && records.length > 0) {
@@ -314,14 +343,43 @@ importExport.post('/:module', async (c) => {
     let errorRows = 0;
     const errors = [];
 
+    // Build all insert statements first
+    const stmts = [];
+    const stmtIndexes = [];
     for (let i = 0; i < records.length; i++) {
       try {
         const insert = buildInsert(tableName, records[i], companyId, userId);
-        if (insert) { await db.prepare(insert.sql).bind(...insert.values).run(); successRows++; }
-        else { errorRows++; errors.push(`Row ${i + 1}: Failed to build insert`); }
-      } catch (rowErr) {
+        if (insert) {
+          stmts.push(db.prepare(insert.sql).bind(...insert.values));
+          stmtIndexes.push(i);
+        } else {
+          errorRows++;
+          errors.push(`Row ${i + 1}: Failed to build insert`);
+        }
+      } catch (buildErr) {
         errorRows++;
-        if (errors.length < 20) errors.push(`Row ${i + 1}: ${rowErr.message}`);
+        if (errors.length < 50) errors.push(`Row ${i + 1}: ${buildErr.message}`);
+      }
+    }
+    // Execute in batches of 100
+    const BATCH_SIZE = 100;
+    for (let b = 0; b < stmts.length; b += BATCH_SIZE) {
+      const batch = stmts.slice(b, b + BATCH_SIZE);
+      try {
+        await db.batch(batch);
+        successRows += batch.length;
+      } catch (batchErr) {
+        // If batch fails, try individual inserts to identify bad rows
+        for (let j = 0; j < batch.length; j++) {
+          try {
+            await batch[j].run();
+            successRows++;
+          } catch (rowErr) {
+            errorRows++;
+            const origIdx = stmtIndexes[b + j];
+            if (errors.length < 50) errors.push(`Row ${origIdx + 1}: ${rowErr.message}`);
+          }
+        }
       }
     }
 
