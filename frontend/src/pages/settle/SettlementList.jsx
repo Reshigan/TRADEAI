@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress } from '@mui/material';
-import { RefreshCw } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress, IconButton, Tooltip } from '@mui/material';
+import { RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { settlementService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function SettlementList() {
+  const { t, tPlural } = useTerminology();
   const [settlements, setSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,18 +26,18 @@ export default function SettlementList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Settlements</Typography><Typography variant="body2" color="text.secondary">Generate and track settlement documents</Typography></Box>
-        <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={generate} disabled={loading}>Generate Settlements</Button>
+        <Box><Typography variant="h1">{tPlural('settlement')}</Typography><Typography variant="body2" color="text.secondary">Generate and track {t('settlement').toLowerCase()} documents</Typography></Box>
+        <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={generate} disabled={loading}>Generate {tPlural('settlement')}</Button>
       </Box>
       <Card>
         <CardContent>
           {loading ? <LinearProgress /> : (
             <TableContainer>
               <Table size="small">
-                <TableHead><TableRow><TableCell>Settlement #</TableCell><TableCell>Customer</TableCell><TableCell align="right">Amount</TableCell><TableCell>Type</TableCell><TableCell>Status</TableCell><TableCell>Date</TableCell></TableRow></TableHead>
+                <TableHead><TableRow><TableCell>{t('settlement')} #</TableCell><TableCell>{t('customer')}</TableCell><TableCell align="right">Amount</TableCell><TableCell>Type</TableCell><TableCell>Status</TableCell><TableCell>Date</TableCell><TableCell align="right">Actions</TableCell></TableRow></TableHead>
                 <TableBody>
                   {settlements.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No settlements generated yet</Typography></TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No {tPlural('settlement').toLowerCase()} generated yet</Typography></TableCell></TableRow>
                   ) : settlements.map(s => (
                     <TableRow key={s.id}>
                       <TableCell><Typography variant="body2" fontWeight={500}>{s.settlement_number || s.id}</Typography></TableCell>
@@ -44,6 +46,14 @@ export default function SettlementList() {
                       <TableCell sx={{ textTransform: 'capitalize' }}>{(s.settlement_type || '').replace(/_/g, ' ')}</TableCell>
                       <TableCell><Chip label={s.status || 'pending'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
                       <TableCell>{s.created_at ? new Date(s.created_at).toLocaleDateString() : '-'}</TableCell>
+                      <TableCell align="right" onClick={e => e.stopPropagation()}>
+                        {(s.status === 'pending' || s.status === 'pending_approval') && (
+                          <>
+                            <Tooltip title="Approve"><IconButton size="small" color="success" onClick={async () => { try { await settlementService.approve(s.id); load(); } catch(e) { console.error(e); } }}><CheckCircle size={16} /></IconButton></Tooltip>
+                            <Tooltip title="Reject"><IconButton size="small" color="error" onClick={async () => { try { await settlementService.reject(s.id); load(); } catch(e) { console.error(e); } }}><XCircle size={16} /></IconButton></Tooltip>
+                          </>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

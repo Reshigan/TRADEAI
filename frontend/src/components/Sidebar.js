@@ -3,52 +3,55 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Typography, Collapse, Badge, Button, Popover, List, ListItemButton, ListItemIcon, ListItemText, Avatar, Divider, IconButton, Tooltip } from '@mui/material';
 import { LayoutDashboard, CalendarRange, Zap, CheckSquare, Landmark, BarChart3, Database, Shield, Plus, Settings, HelpCircle, LogOut, ChevronDown, ChevronRight, ChevronLeft, DollarSign, Wallet, LineChart, TrendingUp, ShoppingCart, Megaphone, FileText, Receipt, Scale, BookOpen, PieChart, Users as UsersIcon, Package, Store, FileSpreadsheet, Layers, BarChart, AlertTriangle, Target, Building2, Link2, Lock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTerminology } from '../contexts/TerminologyContext';
 
 export const SIDEBAR_WIDTH = 256;
 const COLLAPSED_WIDTH = 64;
 
-const navGroups = [
+// T-04: Dynamic nav groups using terminology labels
+const buildNavGroups = (t, tPlural) => [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', single: true },
   { label: 'Plan', icon: CalendarRange, items: [
-    { label: 'Budgets', icon: DollarSign, path: '/plan/budgets' },
-    { label: 'Vendor Funds', icon: Building2, path: '/plan/vendor-funds' },
-    { label: 'KAM Wallet', icon: Wallet, path: '/plan/wallet' },
+    { label: tPlural('budget'), icon: DollarSign, path: '/plan/budgets' },
+    { label: tPlural('vendor_fund'), icon: Building2, path: '/plan/vendor-funds' },
+    { label: t('kam_wallet'), icon: Wallet, path: '/plan/wallet' },
     { label: 'Trade Calendar', icon: CalendarRange, path: '/plan/calendar' },
-    { label: 'Scenarios', icon: Target, path: '/plan/scenarios' },
-    { label: 'Forecasting', icon: TrendingUp, path: '/plan/forecasting' },
+    { label: tPlural('scenario'), icon: Target, path: '/plan/scenarios' },
+    { label: t('forecast') + 'ing', icon: TrendingUp, path: '/plan/forecasting' },
   ]},
   { label: 'Execute', icon: Zap, items: [
-    { label: 'Promotions', icon: Megaphone, path: '/execute/promotions' },
-    { label: 'Trade Spends', icon: ShoppingCart, path: '/execute/trade-spends' },
-    { label: 'Campaigns', icon: Target, path: '/execute/campaigns' },
+    { label: tPlural('promotion'), icon: Megaphone, path: '/execute/promotions' },
+    { label: tPlural('trade_spend'), icon: ShoppingCart, path: '/execute/trade-spends' },
+    { label: tPlural('campaign'), icon: Target, path: '/execute/campaigns' },
   ]},
   { label: 'Approve', icon: CheckSquare, path: '/approve', single: true, badge: true },
   { label: 'Settle', icon: Landmark, items: [
-    { label: 'Claims', icon: FileText, path: '/settle/claims' },
-    { label: 'Deductions', icon: Receipt, path: '/settle/deductions' },
+    { label: tPlural('claim'), icon: FileText, path: '/settle/claims' },
+    { label: tPlural('deduction'), icon: Receipt, path: '/settle/deductions' },
     { label: 'Reconciliation', icon: Scale, path: '/settle/reconciliation' },
-    { label: 'Accruals', icon: BookOpen, path: '/settle/accruals' },
-    { label: 'Settlements', icon: Landmark, path: '/settle/settlements' },
+    { label: tPlural('accrual'), icon: BookOpen, path: '/settle/accruals' },
+    { label: tPlural('settlement'), icon: Landmark, path: '/settle/settlements' },
   ]},
   { label: 'Analyze', icon: BarChart3, items: [
-    { label: 'P&L Analysis', icon: PieChart, path: '/analyze/pnl' },
-    { label: 'Customer 360', icon: UsersIcon, path: '/analyze/customer-360' },
+    { label: t('pnl') + ' Analysis', icon: PieChart, path: '/analyze/pnl' },
+    { label: t('customer') + ' 360', icon: UsersIcon, path: '/analyze/customer-360' },
     { label: 'Reports', icon: FileSpreadsheet, path: '/analyze/reports' },
     { label: 'Executive KPIs', icon: BarChart, path: '/analyze/forecast' },
     { label: 'Waste Detection', icon: AlertTriangle, path: '/analyze/waste' },
   ]},
   { label: 'Data', icon: Database, items: [
-    { label: 'Customers', icon: UsersIcon, path: '/data/customers' },
-    { label: 'Products', icon: Package, path: '/data/products' },
-    { label: 'Vendors', icon: Store, path: '/data/vendors' },
-    { label: 'Trading Terms', icon: FileText, path: '/data/trading-terms' },
-    { label: 'Baselines', icon: LineChart, path: '/data/baselines' },
+    { label: tPlural('customer'), icon: UsersIcon, path: '/data/customers' },
+    { label: tPlural('product'), icon: Package, path: '/data/products' },
+    { label: tPlural('vendor'), icon: Store, path: '/data/vendors' },
+    { label: tPlural('trading_term'), icon: FileText, path: '/data/trading-terms' },
+    { label: tPlural('baseline'), icon: LineChart, path: '/data/baselines' },
     { label: 'Hierarchy', icon: Layers, path: '/data/hierarchy' },
   ]},
   { label: 'Admin', icon: Shield, adminOnly: true, items: [
     { label: 'Users', icon: UsersIcon, path: '/admin/users' },
     { label: 'Roles', icon: Lock, path: '/admin/roles' },
     { label: 'Config', icon: Settings, path: '/admin/config' },
+    { label: 'Terminology', icon: FileText, path: '/admin/terminology' },
     { label: 'SAP Export', icon: FileSpreadsheet, path: '/admin/sap-export' },
     { label: 'SAP Integration', icon: FileSpreadsheet, path: '/admin/sap-integration' },
     { label: 'Integrations', icon: Link2, path: '/admin/integrations' },
@@ -117,10 +120,12 @@ export default function Sidebar({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
+  const { t, tPlural } = useTerminology();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
   const [quickAnchor, setQuickAnchor] = useState(null);
   const pendingCount = 0;
   const userRole = user?.role || 'kam';
+  const navGroups = buildNavGroups(t, tPlural);
   useEffect(() => { localStorage.setItem('sidebar_collapsed', collapsed); }, [collapsed]);
   const width = collapsed ? COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
@@ -166,7 +171,7 @@ export default function Sidebar({ user }) {
           <Popover open={Boolean(quickAnchor)} anchorEl={quickAnchor} onClose={() => setQuickAnchor(null)}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }} transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
             <List sx={{ minWidth: 200, p: 1 }}>
-              {[{ label: 'New Promotion', path: '/execute/promotions/new' }, { label: 'New Trade Spend', path: '/execute/trade-spends/new' }, { label: 'New Claim', path: '/settle/claims/new' }].map(item => (
+              {[{ label: `New ${t('promotion')}`, path: '/execute/promotions/new' }, { label: `New ${t('trade_spend')}`, path: '/execute/trade-spends/new' }, { label: `New ${t('claim')}`, path: '/settle/claims/new' }].map(item => (
                 <ListItemButton key={item.path} onClick={() => { navigate(item.path); setQuickAnchor(null); }} sx={{ borderRadius: 1, py: 0.75 }}>
                   <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: 13 }} />
                 </ListItemButton>

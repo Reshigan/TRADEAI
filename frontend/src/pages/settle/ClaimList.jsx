@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Grid, MenuItem, Alert } from '@mui/material';
 import { Plus, Search } from 'lucide-react';
 import { claimService, customerService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function ClaimList() {
+  const { t, tPlural } = useTerminology();
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -40,8 +42,8 @@ export default function ClaimList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Claims</Typography><Typography variant="body2" color="text.secondary">Manage promotion claims and reimbursements</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New Claim</Button>
+        <Box><Typography variant="h1">{tPlural('claim')}</Typography><Typography variant="body2" color="text.secondary">Manage {t('promotion').toLowerCase()} {tPlural('claim').toLowerCase()} and reimbursements</Typography></Box>
+        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New {t('claim')}</Button>
       </Box>
       <Card>
         <CardContent>

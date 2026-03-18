@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress } from '@mui/material';
 import { Plus, Search } from 'lucide-react';
 import api from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 export default function CampaignList() {
+  const { t, tPlural } = useTerminology();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -21,8 +23,8 @@ export default function CampaignList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Campaigns</Typography><Typography variant="body2" color="text.secondary">Multi-promotion campaign management</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />}>New Campaign</Button>
+        <Box><Typography variant="h1">{tPlural('campaign')}</Typography><Typography variant="body2" color="text.secondary">Multi-{t('promotion').toLowerCase()} {t('campaign').toLowerCase()} management</Typography></Box>
+        <Button variant="contained" startIcon={<Plus size={16} />}>New {t('campaign')}</Button>
       </Box>
       <Card>
         <CardContent>

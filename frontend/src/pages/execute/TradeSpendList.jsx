@@ -3,11 +3,13 @@ import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { tradeSpendService, customerService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function TradeSpendList() {
   const navigate = useNavigate();
+  const { t, tPlural } = useTerminology();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -53,8 +55,8 @@ export default function TradeSpendList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Trade Spends</Typography><Typography variant="body2" color="text.secondary">Track and manage trade spend transactions</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New Trade Spend</Button>
+        <Box><Typography variant="h1">{tPlural('trade_spend')}</Typography><Typography variant="body2" color="text.secondary">Track and manage {tPlural('trade_spend').toLowerCase()}</Typography></Box>
+        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New {t('trade_spend')}</Button>
       </Box>
       <Card>
         <CardContent>

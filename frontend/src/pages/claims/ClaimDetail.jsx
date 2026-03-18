@@ -34,11 +34,13 @@ import { claimService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const ClaimDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { t } = useTerminology();
   const [claim, setClaim] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

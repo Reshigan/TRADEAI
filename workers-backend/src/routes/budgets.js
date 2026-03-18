@@ -109,12 +109,46 @@ budgetRoutes.put('/:id', async (c) => {
   }
 });
 
-// Delete budget
+// W-11: Delete budget with safety check for active promotions/trade spends
 budgetRoutes.delete('/:id', async (c) => {
   try {
     const { id } = c.req.param();
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
+    const db = c.env.DB;
+
+    // W-11: Check for active promotions linked to this budget
+    const activePromos = await mongodb.find('promotions', {
+      companyId: tenantId,
+      $or: [{ budgetId: id }, { budget_id: id }],
+      status: { $in: ['draft', 'pending_approval', 'approved', 'active'] }
+    }, { limit: 5 });
+
+    if (activePromos && activePromos.length > 0) {
+      return c.json({
+        success: false,
+        message: `Cannot delete budget: ${activePromos.length} active promotion(s) are linked to it. Please reassign or close them first.`,
+        activePromotions: activePromos.map(p => ({ id: p._id, name: p.name, status: p.status }))
+      }, 400);
+    }
+
+    // W-11: Check for active trade spends linked to this budget in D1
+    try {
+      const activeSpends = await db.prepare(`
+        SELECT COUNT(*) as count FROM trade_spends
+        WHERE company_id = ? AND budget_id = ? AND status IN ('draft', 'pending', 'approved')
+      `).bind(tenantId, id).first();
+
+      if (activeSpends && activeSpends.count > 0) {
+        return c.json({
+          success: false,
+          message: `Cannot delete budget: ${activeSpends.count} active trade spend(s) are linked to it.`
+        }, 400);
+      }
+    } catch (e) {
+      // D1 check is best-effort
+      console.log('D1 budget safety check skipped:', e.message);
+    }
 
     await mongodb.deleteOne('budgets', { _id: { $oid: id }, companyId: tenantId });
 

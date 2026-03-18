@@ -16,8 +16,9 @@ import {
   Delete as DeleteIcon,
   Visibility as ViewIcon
 } from '@mui/icons-material';
-import api from '../../services/api';
+import api, { campaignService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const CampaignDetail = () => {
   const { id } = useParams();
@@ -25,6 +26,8 @@ const CampaignDetail = () => {
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const { t } = useTerminology();
 
   useEffect(() => {
     fetchCampaign();
@@ -48,13 +51,27 @@ const CampaignDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this campaign?')) {
+    if (window.confirm(`Are you sure you want to delete this ${t('campaign').toLowerCase()}?`)) {
       try {
         await api.delete(`/campaigns/${id}`);
         navigate('/campaigns');
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete campaign');
+        setError(err.response?.data?.message || `Failed to delete ${t('campaign').toLowerCase()}`);
       }
+    }
+  };
+
+  const handleAction = async (action) => {
+    try {
+      setActionLoading(true);
+      if (action === 'submit') await campaignService.submit(id);
+      else if (action === 'approve') await campaignService.approve(id);
+      else if (action === 'reject') await campaignService.reject(id);
+      await fetchCampaign();
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Action failed');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -77,7 +94,7 @@ const CampaignDetail = () => {
   if (!campaign) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error">Campaign not found</Alert>
+        <Alert severity="error">{t('campaign')} not found</Alert>
       </Box>
     );
   }
@@ -118,6 +135,18 @@ const CampaignDetail = () => {
             >
               Back
             </Button>
+            {(campaign.status === 'draft' || campaign.status === 'planned') && (
+              <Button variant="contained" onClick={() => handleAction('submit')} disabled={actionLoading}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Submit</Button>
+            )}
+            {campaign.status === 'pending_approval' && (
+              <Button variant="contained" color="success" onClick={() => handleAction('approve')} disabled={actionLoading}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Approve</Button>
+            )}
+            {campaign.status === 'pending_approval' && (
+              <Button variant="outlined" color="error" onClick={() => handleAction('reject')} disabled={actionLoading}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Reject</Button>
+            )}
             <Button
               variant="outlined"
               startIcon={<ViewIcon />}
@@ -154,7 +183,7 @@ const CampaignDetail = () => {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4}>
             <Typography variant="body2" color="text.secondary" mb={0.5}>
-              Campaign Name
+              {t('campaign')} Name
             </Typography>
             <Typography variant="body1" fontWeight={500}>
               {campaign.name}

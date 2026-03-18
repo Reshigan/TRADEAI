@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Grid, MenuItem, Alert } from '@mui/material';
 import { Plus, Search } from 'lucide-react';
 import { deductionService, customerService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function DeductionList() {
+  const { t, tPlural } = useTerminology();
   const [deductions, setDeductions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -42,8 +44,8 @@ export default function DeductionList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Deductions</Typography><Typography variant="body2" color="text.secondary">Track and resolve customer deductions</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New Deduction</Button>
+        <Box><Typography variant="h1">{tPlural('deduction')}</Typography><Typography variant="body2" color="text.secondary">Track and resolve {t('customer').toLowerCase()} {tPlural('deduction').toLowerCase()}</Typography></Box>
+        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New {t('deduction')}</Button>
       </Box>
       <Card>
         <CardContent>

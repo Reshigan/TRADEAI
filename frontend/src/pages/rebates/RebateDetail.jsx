@@ -24,9 +24,13 @@ import {
   ArrowBack as BackIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  AttachMoney as MoneyIcon
+  AttachMoney as MoneyIcon,
+  Send as SubmitIcon,
+  CheckCircle as ApproveIcon,
+  Cancel as RejectIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -35,9 +39,11 @@ const RebateDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { t } = useTerminology();
   const [rebate, setRebate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     const fetchRebateDetail = async () => {
@@ -181,29 +187,28 @@ const RebateDetail = () => {
             />
           </Box>
         </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/rebates')}
-          >
-            Back
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<EditIcon />}
-            onClick={() => navigate(`/rebates/${id}/edit`)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={handleDelete}
-          >
-            Delete
-          </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" startIcon={<BackIcon />} onClick={() => navigate('/rebates')}>Back</Button>
+          {rebate.status === 'draft' && (
+            <Button variant="contained" startIcon={<SubmitIcon />} disabled={actionLoading}
+              onClick={async () => { setActionLoading(true); try { await api.post(`/rebates/${id}/submit`); const r = await api.get(`/rebates/${id}`); setRebate(r.data.data || r.data); showToast(`${t('rebate')} submitted`, 'success'); } catch(e) { showToast(e.message, 'error'); } setActionLoading(false); }}>
+              Submit
+            </Button>
+          )}
+          {rebate.status === 'pending_approval' && (
+            <Button variant="contained" color="success" startIcon={<ApproveIcon />} disabled={actionLoading}
+              onClick={async () => { setActionLoading(true); try { await api.post(`/rebates/${id}/approve`); const r = await api.get(`/rebates/${id}`); setRebate(r.data.data || r.data); showToast(`${t('rebate')} approved`, 'success'); } catch(e) { showToast(e.message, 'error'); } setActionLoading(false); }}>
+              Approve
+            </Button>
+          )}
+          {rebate.status === 'pending_approval' && (
+            <Button variant="outlined" color="error" startIcon={<RejectIcon />} disabled={actionLoading}
+              onClick={async () => { setActionLoading(true); try { await api.post(`/rebates/${id}/reject`); const r = await api.get(`/rebates/${id}`); setRebate(r.data.data || r.data); showToast(`${t('rebate')} rejected`, 'info'); } catch(e) { showToast(e.message, 'error'); } setActionLoading(false); }}>
+              Reject
+            </Button>
+          )}
+          <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/rebates/${id}/edit`)}>Edit</Button>
+          <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={handleDelete}>Delete</Button>
         </Box>
       </Box>
 
