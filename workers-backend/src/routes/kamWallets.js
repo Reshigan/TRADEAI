@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const kamWallets = new Hono();
 kamWallets.use('*', authMiddleware);
@@ -38,7 +39,7 @@ kamWallets.get('/', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -52,7 +53,7 @@ kamWallets.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -75,7 +76,7 @@ kamWallets.get('/:id/balance',async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -94,7 +95,7 @@ kamWallets.get('/customer/:customerId/allocations', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -125,7 +126,7 @@ kamWallets.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -150,7 +151,7 @@ kamWallets.post('/:id/allocate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -175,7 +176,7 @@ kamWallets.post('/:id/record-usage', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -214,7 +215,7 @@ kamWallets.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -231,7 +232,7 @@ kamWallets.patch('/:id/status', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -246,7 +247,7 @@ kamWallets.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'KAM Wallet deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 

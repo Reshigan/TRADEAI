@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { checkBudgetAvailability, commitFunds } from '../services/budgetEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const campaigns = new Hono();
 
@@ -56,7 +58,7 @@ campaigns.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching campaigns:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -99,7 +101,7 @@ campaigns.get('/analytics', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching campaign analytics:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -141,7 +143,7 @@ campaigns.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -185,7 +187,7 @@ campaigns.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -239,7 +241,7 @@ campaigns.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -263,7 +265,7 @@ campaigns.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Campaign deleted' });
   } catch (error) {
     console.error('Error deleting campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -285,7 +287,7 @@ campaigns.post('/:id/submit', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -308,7 +310,7 @@ campaigns.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -330,7 +332,7 @@ campaigns.post('/:id/activate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -352,7 +354,7 @@ campaigns.post('/:id/complete', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error completing campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -374,7 +376,7 @@ campaigns.post('/:id/cancel', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error cancelling campaign:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -414,7 +416,7 @@ campaigns.post('/:id/promotions', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error adding promotion:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -436,7 +438,7 @@ campaigns.get('/:id/performance', async (c) => {
       roi: doc.actualRevenue && doc.spentAmount ? (((doc.actualRevenue - doc.spentAmount) / doc.spentAmount) * 100).toFixed(1) : '0.0'
     }});
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -455,7 +457,7 @@ campaigns.get('/:id/budget', async (c) => {
       currency: 'ZAR'
     }});
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 
@@ -477,7 +479,7 @@ campaigns.get('/:id/history', async (c) => {
     }
     return c.json({ success: true, data: history.sort((a, b) => new Date(b.date) - new Date(a.date)) });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'campaigns');
   }
 });
 

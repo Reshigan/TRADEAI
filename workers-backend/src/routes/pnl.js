@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const pnl = new Hono();
 
@@ -48,7 +49,7 @@ pnl.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching P&L reports:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -130,7 +131,7 @@ pnl.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching P&L summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -269,7 +270,7 @@ pnl.get('/live-by-customer', async (c) => {
     return c.json({ success: true, data: rows, total: rows.length });
   } catch (error) {
     console.error('Error fetching live P&L by customer:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -372,7 +373,7 @@ pnl.get('/live-by-promotion', async (c) => {
     return c.json({ success: true, data: rows, total: rows.length });
   } catch (error) {
     console.error('Error fetching live P&L by promotion:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -514,7 +515,7 @@ async function handleCalculate(c) {
     });
   } catch (error) {
     console.error('Error calculating P&L:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 }
 
@@ -549,7 +550,7 @@ pnl.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching P&L report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -598,7 +599,7 @@ pnl.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating P&L report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -650,7 +651,7 @@ pnl.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating P&L report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -675,7 +676,7 @@ pnl.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'P&L report deleted' });
   } catch (error) {
     console.error('Error deleting P&L report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -970,7 +971,7 @@ pnl.post('/:id/generate', async (c) => {
     await c.env.DB.prepare(
       "UPDATE pnl_reports SET status = 'draft', updated_at = ? WHERE id = ? AND company_id = ?"
     ).bind(new Date(, companyId).toISOString(), c.req.param().id).run();
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 
@@ -992,7 +993,7 @@ pnl.get('/:id/line-items', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching P&L line items:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'pnl');
   }
 });
 

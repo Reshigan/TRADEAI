@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client, rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const simulationsRoutes = new Hono();
 
@@ -113,7 +114,7 @@ simulationsRoutes.post('/run-simulation', async (c) => {
     });
   } catch (error) {
     console.error('Run simulation error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'simulations');
   }
 });
 
@@ -176,7 +177,7 @@ simulationsRoutes.post('/promotion', async (c) => {
     return c.json({ success: true, simulation });
   } catch (error) {
     console.error('Simulation error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'simulations');
   }
 });
 
@@ -216,7 +217,7 @@ simulationsRoutes.post('/compare', async (c) => {
     return c.json({ success: true, comparison });
   } catch (error) {
     console.error('Comparison error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'simulations');
   }
 });
 
@@ -246,7 +247,7 @@ simulationsRoutes.post('/save', async (c) => {
     return c.json({ success: true, simulation: { ...simulation, id: simulationId } });
   } catch (error) {
     console.error('Save simulation error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'simulations');
   }
 });
 
@@ -295,7 +296,7 @@ simulationsRoutes.get('/history', async (c) => {
     });
   } catch (error) {
     console.error('History error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'simulations');
   }
 });
 

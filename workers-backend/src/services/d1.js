@@ -437,15 +437,11 @@ const COLUMN_MAP = {
   thresholdValue: 'threshold_value',
   currentValue: 'current_value',
   isViolated: 'is_violated',
-  customerName: 'customer_name',
   customerCode: 'customer_code',
-  subChannel: 'sub_channel',
-  totalRevenue: 'total_revenue',
   totalSpend: 'total_spend',
   totalClaims: 'total_claims',
   totalDeductions: 'total_deductions',
   netRevenue: 'net_revenue',
-  grossMarginPct: 'gross_margin_pct',
   tradeSpendPct: 'trade_spend_pct',
   revenueGrowthPct: 'revenue_growth_pct',
   avgOrderValue: 'avg_order_value',
@@ -470,18 +466,13 @@ const COLUMN_MAP = {
   monthlyRevenue: 'monthly_revenue',
   monthlySpend: 'monthly_spend',
   insightType: 'insight_type',
-  metricName: 'metric_name',
-  metricValue: 'metric_value',
   metricUnit: 'metric_unit',
   benchmarkValue: 'benchmark_value',
-  variancePct: 'variance_pct',
-  trendDirection: 'trend_direction',
   actionDate: 'action_date',
   actionBy: 'action_by',
   validFrom: 'valid_from',
   validUntil: 'valid_until',
   reportCategory: 'report_category',
-  reportType: 'report_type',
   dataSource: 'data_source',
   chartConfig: 'chart_config',
   scheduleEnabled: 'schedule_enabled',
@@ -489,8 +480,6 @@ const COLUMN_MAP = {
   scheduleDay: 'schedule_day',
   scheduleTime: 'schedule_time',
   scheduleRecipients: 'schedule_recipients',
-  lastRunAt: 'last_run_at',
-  runCount: 'run_count',
   templateId: 'template_id',
   filtersApplied: 'filters_applied',
   parametersApplied: 'parameters_applied',
@@ -502,78 +491,53 @@ const COLUMN_MAP = {
   exportUrl: 'export_url',
   fileSize: 'file_size',
   generationTimeMs: 'generation_time_ms',
-  isFavorite: 'is_favorite',
   isShared: 'is_shared',
   sharedWith: 'shared_with',
   expiresAt: 'expires_at',
-  generatedBy: 'generated_by',
-  dayOfWeek: 'day_of_week',
   dayOfMonth: 'day_of_month',
   timeOfDay: 'time_of_day',
   nextRunAt: 'next_run_at',
   lastStatus: 'last_status',
   lastError: 'last_error',
   initiativeType: 'initiative_type',
-  targetRevenue: 'target_revenue',
   targetMarginPct: 'target_margin_pct',
   targetGrowthPct: 'target_growth_pct',
-  actualRevenue: 'actual_revenue',
   actualMarginPct: 'actual_margin_pct',
   actualGrowthPct: 'actual_growth_pct',
-  baselineRevenue: 'baseline_revenue',
-  baselineMarginPct: 'baseline_margin_pct',
   investmentAmount: 'investment_amount',
-  confidenceScore: 'confidence_score',
-  riskLevel: 'risk_level',
   strategyType: 'strategy_type',
   currentPrice: 'current_price',
   recommendedPrice: 'recommended_price',
   priceChangePct: 'price_change_pct',
   currentMarginPct: 'current_margin_pct',
-  projectedMarginPct: 'projected_margin_pct',
   priceElasticity: 'price_elasticity',
   volumeImpactPct: 'volume_impact_pct',
   revenueImpact: 'revenue_impact',
   marginImpact: 'margin_impact',
-  competitorPrice: 'competitor_price',
-  priceIndex: 'price_index',
   effectiveDate: 'effective_date',
   analysisType: 'analysis_type',
-  totalVolume: 'total_volume',
   totalMargin: 'total_margin',
   avgMarginPct: 'avg_margin_pct',
   mixScore: 'mix_score',
   opportunityValue: 'opportunity_value',
   metricType: 'metric_type',
-  dimensionId: 'dimension_id',
-  dimensionName: 'dimension_name',
   targetValue: 'target_value',
   actualValue: 'actual_value',
   priorValue: 'prior_value',
-  variancePct: 'variance_pct',
   growthPct: 'growth_pct',
   contributionPct: 'contribution_pct',
-  trendDirection: 'trend_direction',
   kpiType: 'kpi_type',
-  calculationMethod: 'calculation_method',
-  dataSource: 'data_source',
   sourceTable: 'source_table',
   sourceColumn: 'source_column',
   thresholdRed: 'threshold_red',
   thresholdAmber: 'threshold_amber',
   thresholdGreen: 'threshold_green',
-  sortOrder: 'sort_order',
-  isActive: 'is_active',
   kpiId: 'kpi_id',
   kpiName: 'kpi_name',
-  periodStart: 'period_start',
-  periodEnd: 'period_end',
-  targetValue: 'target_value',
   stretchTarget: 'stretch_target',
   floorValue: 'floor_value',
   priorYearValue: 'prior_year_value',
   budgetValue: 'budget_value',
-  actualValue: 'actual_value',
   achievementPct: 'achievement_pct',
   priorPeriodValue: 'prior_period_value',
   yoyGrowthPct: 'yoy_growth_pct',
@@ -940,16 +904,45 @@ export class D1Client {
     return id;
   }
 
-  // Insert multiple documents
+  // Insert multiple documents using D1 batch() for performance (D-15)
   async insertMany(collection, documents) {
+    const table = this.getTableName(collection);
     const ids = [];
-    
-    for (const doc of documents) {
-      const id = await this.insertOne(collection, doc);
-      ids.push(id);
+    const BATCH_SIZE = 50;
+
+    for (let i = 0; i < documents.length; i += BATCH_SIZE) {
+      const chunk = documents.slice(i, i + BATCH_SIZE);
+      const stmts = [];
+
+      for (const doc of chunk) {
+        const id = generateId();
+        ids.push(id);
+        const now = new Date().toISOString();
+        const row = documentToRow(doc, table);
+        row.id = id;
+        row.created_at = now;
+        row.updated_at = now;
+        const columns = Object.keys(row);
+        const placeholders = columns.map(() => '?').join(', ');
+        const values = Object.values(row);
+        stmts.push(this.db.prepare(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`).bind(...values));
+      }
+
+      if (stmts.length > 0) {
+        await this.db.batch(stmts);
+      }
     }
-    
+
     return ids;
+  }
+
+  // D-08: Execute multiple statements atomically using D1 batch()
+  async batch(statements) {
+    if (!statements || statements.length === 0) return [];
+    const stmts = statements.map(({ sql, params }) =>
+      this.db.prepare(sql).bind(...(params || []))
+    );
+    return this.db.batch(stmts);
   }
 
   // Update one document
@@ -1041,53 +1034,103 @@ export class D1Client {
     return result?.count || 0;
   }
 
-  // Aggregate (simplified - supports basic grouping)
+  // Aggregate with full pipeline support (D-10)
   async aggregate(collection, pipeline) {
     const table = this.getTableName(collection);
-    
-    // For now, handle simple aggregations
-    // Complex aggregations would need to be rewritten as SQL
-    let sql = `SELECT * FROM ${table}`;
     const params = [];
-    
+    let matchWhere = null;
+    let groupByParts = [];
+    let selectParts = [];
+    let havingClauses = [];
+    let orderByParts = [];
+    let limitVal = null;
+    let joinClause = '';
+    let postGroupMatch = false;
+
+    // Validate pipeline stages
+    const supportedStages = ['$match', '$group', '$sort', '$limit', '$project', '$unwind', '$lookup', '$count'];
     for (const stage of pipeline) {
-      if (stage.$match) {
-        const where = filterToWhere(stage.$match, params);
-        sql = `SELECT * FROM ${table} WHERE ${where}`;
+      const stageKey = Object.keys(stage)[0];
+      if (!supportedStages.includes(stageKey)) {
+        throw new Error(`Unsupported aggregate stage: ${stageKey}`);
       }
-      if (stage.$count) {
-        sql = `SELECT COUNT(*) as ${stage.$count} FROM ${table}`;
-        if (params.length > 0) {
-          sql = `SELECT COUNT(*) as ${stage.$count} FROM ${table} WHERE ${filterToWhere(pipeline[0].$match || {}, [])}`;
+    }
+
+    let hasGroup = false;
+
+    for (let i = 0; i < pipeline.length; i++) {
+      const stage = pipeline[i];
+
+      // $match stage
+      if (stage.$match) {
+        if (hasGroup) {
+          // $match after $group becomes HAVING
+          for (const [field, value] of Object.entries(stage.$match)) {
+            const col = COLUMN_MAP[field] || field;
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+              for (const [op, val] of Object.entries(value)) {
+                if (op === '$gt') { havingClauses.push(`${col} > ?`); params.push(val); }
+                else if (op === '$gte') { havingClauses.push(`${col} >= ?`); params.push(val); }
+                else if (op === '$lt') { havingClauses.push(`${col} < ?`); params.push(val); }
+                else if (op === '$lte') { havingClauses.push(`${col} <= ?`); params.push(val); }
+                else if (op === '$ne') { havingClauses.push(`${col} != ?`); params.push(val); }
+              }
+            } else {
+              havingClauses.push(`${col} = ?`); params.push(value);
+            }
+          }
+        } else {
+          const matchParams = [];
+          matchWhere = filterToWhere(stage.$match, matchParams);
+          params.push(...matchParams);
         }
       }
+
+      // $count stage
+      if (stage.$count) {
+        let sql = `SELECT COUNT(*) as ${stage.$count} FROM ${table}`;
+        if (matchWhere) sql += ` WHERE ${matchWhere}`;
+        const result = await this.db.prepare(sql).bind(...params).all();
+        return result.results || [];
+      }
+
+      // $lookup stage (LEFT JOIN)
+      if (stage.$lookup) {
+        const { from, localField, foreignField, as: alias } = stage.$lookup;
+        const fromTable = TABLE_MAP[from] || from;
+        const localCol = COLUMN_MAP[localField] || localField;
+        const foreignCol = COLUMN_MAP[foreignField] || foreignField;
+        joinClause += ` LEFT JOIN ${fromTable} AS ${alias} ON ${table}.${localCol} = ${alias}.${foreignCol}`;
+      }
+
+      // $unwind stage (json_each for JSON arrays)
+      if (stage.$unwind) {
+        const field = typeof stage.$unwind === 'string' ? stage.$unwind : stage.$unwind.path;
+        const col = COLUMN_MAP[field.replace('$', '')] || field.replace('$', '');
+        joinClause += `, json_each(${table}.${col})`;
+      }
+
+      // $group stage
       if (stage.$group) {
+        hasGroup = true;
         const group = stage.$group;
         const groupId = group._id;
-        const selectParts = [];
-        const groupByParts = [];
 
         if (groupId === null) {
           selectParts.push("'all' as _id");
         } else if (typeof groupId === 'string' && groupId.startsWith('$')) {
-          const field = groupId.substring(1);
-          const col = COLUMN_MAP[field] || field;
+          const col = COLUMN_MAP[groupId.substring(1)] || groupId.substring(1);
           selectParts.push(`${col} as _id`);
           groupByParts.push(col);
         } else if (typeof groupId === 'object' && groupId !== null) {
-          const idParts = [];
           for (const [alias, expr] of Object.entries(groupId)) {
             if (typeof expr === 'string' && expr.startsWith('$')) {
               const col = COLUMN_MAP[expr.substring(1)] || expr.substring(1);
-              idParts.push(`${col} as ${alias}`);
+              selectParts.push(`${col} as ${alias}`);
               groupByParts.push(col);
             }
           }
-          if (idParts.length > 0) {
-            selectParts.push(...idParts);
-          } else {
-            selectParts.push("'all' as _id");
-          }
+          if (selectParts.length === 0) selectParts.push("'all' as _id");
         }
 
         for (const [alias, expr] of Object.entries(group)) {
@@ -1116,28 +1159,47 @@ export class D1Client {
             }
           }
         }
+      }
 
-        if (selectParts.length === 0) {
-          selectParts.push('*');
+      // $sort stage
+      if (stage.$sort) {
+        for (const [field, dir] of Object.entries(stage.$sort)) {
+          const col = COLUMN_MAP[field] || field;
+          orderByParts.push(`${col} ${dir === -1 ? 'DESC' : 'ASC'}`);
         }
+      }
 
-        let groupSql = `SELECT ${selectParts.join(', ')} FROM ${table}`;
-        if (params.length > 0 && pipeline[0]?.$match) {
-          const matchParams = [];
-          const matchWhere = filterToWhere(pipeline[0].$match, matchParams);
-          groupSql += ` WHERE ${matchWhere}`;
-          params.length = 0;
-          params.push(...matchParams);
-        }
-        if (groupByParts.length > 0) {
-          groupSql += ` GROUP BY ${groupByParts.join(', ')}`;
-        }
+      // $limit stage
+      if (stage.$limit) {
+        limitVal = stage.$limit;
+      }
 
-        const groupResult = await this.db.prepare(groupSql).bind(...params).all();
-        return groupResult.results || [];
+      // $project stage
+      if (stage.$project && !hasGroup) {
+        const projParts = [];
+        for (const [field, val] of Object.entries(stage.$project)) {
+          if (val === 0) continue;
+          const col = COLUMN_MAP[field] || field;
+          if (typeof val === 'string' && val.startsWith('$')) {
+            const srcCol = COLUMN_MAP[val.substring(1)] || val.substring(1);
+            projParts.push(`${srcCol} as ${col}`);
+          } else if (val === 1) {
+            projParts.push(col);
+          }
+        }
+        if (projParts.length > 0) selectParts = projParts;
       }
     }
-    
+
+    // Build final SQL
+    if (selectParts.length === 0) selectParts.push('*');
+    let sql = `SELECT ${selectParts.join(', ')} FROM ${table}${joinClause}`;
+    if (matchWhere) sql += ` WHERE ${matchWhere}`;
+    if (groupByParts.length > 0) sql += ` GROUP BY ${groupByParts.join(', ')}`;
+    if (havingClauses.length > 0) sql += ` HAVING ${havingClauses.join(' AND ')}`;
+    if (orderByParts.length > 0) sql += ` ORDER BY ${orderByParts.join(', ')}`;
+    if (limitVal) { sql += ` LIMIT ?`; params.push(limitVal); }
+
     const result = await this.db.prepare(sql).bind(...params).all();
     return result.results || [];
   }

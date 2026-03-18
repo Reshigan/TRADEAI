@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const budgetAllocations = new Hono();
 
@@ -49,7 +50,7 @@ budgetAllocations.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching budget allocations:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -146,7 +147,7 @@ budgetAllocations.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching allocation summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -194,7 +195,7 @@ budgetAllocations.get('/waterfall', async (c) => {
     return c.json({ success: true, data: waterfallData });
   } catch (error) {
     console.error('Error fetching waterfall:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -226,7 +227,7 @@ budgetAllocations.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching budget allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -287,7 +288,7 @@ budgetAllocations.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating budget allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -341,7 +342,7 @@ budgetAllocations.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating budget allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -370,7 +371,7 @@ budgetAllocations.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Budget allocation deleted' });
   } catch (error) {
     console.error('Error deleting budget allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -550,7 +551,7 @@ budgetAllocations.post('/:id/distribute', async (c) => {
     });
   } catch (error) {
     console.error('Error distributing allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -586,7 +587,7 @@ budgetAllocations.post('/:id/lock', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error locking allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -621,7 +622,7 @@ budgetAllocations.post('/:id/unlock', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error unlocking allocation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -715,7 +716,7 @@ budgetAllocations.post('/:id/refresh-utilization', async (c) => {
     });
   } catch (error) {
     console.error('Error refreshing utilization:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -736,7 +737,7 @@ budgetAllocations.get('/:id/lines', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching allocation lines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 
@@ -804,7 +805,7 @@ budgetAllocations.put('/:id/lines/:lineId', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating allocation line:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgetAllocations');
   }
 });
 

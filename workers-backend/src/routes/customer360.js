@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const customer360 = new Hono();
 
@@ -85,7 +86,7 @@ customer360.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching customer 360 summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -123,7 +124,7 @@ customer360.get('/profiles', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching customer 360 profiles:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -145,7 +146,7 @@ customer360.get('/profiles/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(profile) });
   } catch (error) {
     console.error('Error fetching customer 360 profile:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -207,7 +208,7 @@ customer360.post('/profiles', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating customer 360 profile:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -263,7 +264,7 @@ customer360.put('/profiles/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating customer 360 profile:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -279,7 +280,7 @@ customer360.delete('/profiles/:id', async (c) => {
     return c.json({ success: true, message: 'Customer 360 profile deleted' });
   } catch (error) {
     console.error('Error deleting customer 360 profile:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -310,7 +311,7 @@ customer360.get('/profiles/:id/insights', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching customer 360 insights:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -352,7 +353,7 @@ customer360.post('/insights', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating customer 360 insight:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -366,7 +367,7 @@ customer360.delete('/insights/:id', async (c) => {
     return c.json({ success: true, message: 'Insight deleted' });
   } catch (error) {
     console.error('Error deleting customer 360 insight:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -422,7 +423,7 @@ customer360.post('/profiles/:id/recalculate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error recalculating customer 360 profile:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -444,7 +445,7 @@ customer360.get('/leaderboard', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching customer 360 leaderboard:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 
@@ -463,7 +464,7 @@ customer360.get('/at-risk', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching at-risk customers:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customer360');
   }
 });
 

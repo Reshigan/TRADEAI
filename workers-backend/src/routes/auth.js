@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { signJWT, verifyJWT, authMiddleware } from '../middleware/auth.js';
 import { rateLimit } from '../middleware/rateLimit.js';
+import { apiError } from '../utils/apiError.js';
 
 export const authRoutes = new Hono();
 
@@ -130,6 +131,10 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       refreshTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
     });
 
+    // D-11: Set refresh token as httpOnly secure cookie
+    const isProduction = c.env.ENVIRONMENT === 'production';
+    c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=Strict; Path=/api/auth; Max-Age=${7 * 24 * 60 * 60}`);
+
     return c.json({
       success: true,
       token: accessToken,
@@ -143,16 +148,14 @@ authRoutes.post('/login', authRateLimit, async (c) => {
           companyId: user.companyId
         },
         tokens: {
-          accessToken,
-          refreshToken
-        },
-        refreshToken
+          accessToken
+        }
       },
       message: 'Login successful'
     });
   } catch (error) {
     console.error('Login error:', error);
-    return c.json({ success: false, message: 'Login failed', error: error.message }, 500);
+    return apiError(c, error, 'auth.login');
   }
 });
 
@@ -166,7 +169,18 @@ authRoutes.post('/refresh-token', authRateLimit, async (c) => {
 
 async function handleRefreshToken(c) {
   try {
-    const { refreshToken } = await c.req.json();
+    // D-11: Read refresh token from httpOnly cookie first, then body fallback
+    let refreshToken;
+    const cookieHeader = c.req.header('Cookie') || '';
+    const cookieMatch = cookieHeader.match(/refreshToken=([^;]+)/);
+    if (cookieMatch) {
+      refreshToken = cookieMatch[1];
+    } else {
+      try {
+        const body = await c.req.json();
+        refreshToken = body.refreshToken;
+      } catch { /* no body */ }
+    }
 
     if (!refreshToken) {
       return c.json({ success: false, message: 'Refresh token is required' }, 400);
@@ -207,7 +221,7 @@ async function handleRefreshToken(c) {
     });
   } catch (error) {
     console.error('Refresh token error:', error);
-    return c.json({ success: false, message: 'Token refresh failed', error: error.message }, 401);
+    return apiError(c, error, 'auth.refreshToken');
   }
 }
 
@@ -222,10 +236,12 @@ authRoutes.post('/logout', authMiddleware, async (c) => {
       refreshTokenExpiry: null
     });
 
+    // D-11: Clear httpOnly cookie on logout
+    c.header('Set-Cookie', 'refreshToken=; HttpOnly; SameSite=Strict; Path=/api/auth; Max-Age=0');
     return c.json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
     console.error('Logout error:', error);
-    return c.json({ success: false, message: 'Logout failed', error: error.message }, 500);
+    return apiError(c, error, 'auth.logout');
   }
 });
 
@@ -249,7 +265,7 @@ authRoutes.get('/me', authMiddleware, async (c) => {
     });
   } catch (error) {
     console.error('Get user error:', error);
-    return c.json({ success: false, message: 'Failed to get user', error: error.message }, 500);
+    return apiError(c, error, 'auth.me');
   }
 });
 
@@ -280,7 +296,7 @@ authRoutes.post('/change-password', authMiddleware, async (c) => {
     return c.json({ success: true, message: 'Password changed successfully' });
   } catch (error) {
     console.error('Change password error:', error);
-    return c.json({ success: false, message: 'Failed to change password', error: error.message }, 500);
+    return apiError(c, error, 'auth.changePassword');
   }
 });
 
@@ -300,7 +316,7 @@ authRoutes.post('/2fa/generate', authMiddleware, async (c) => {
     const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpAuthUrl)}`;
     return c.json({ success: true, qrCode, secret: formatted, otpAuthUrl });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'auth');
   }
 });
 
@@ -327,7 +343,7 @@ authRoutes.post('/2fa/verify', authMiddleware, async (c) => {
     });
     return c.json({ success: true, backupCodes, message: '2FA enabled successfully' });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'auth');
   }
 });
 
@@ -351,7 +367,7 @@ authRoutes.post('/2fa/disable', authMiddleware, async (c) => {
     });
     return c.json({ success: true, message: '2FA disabled successfully' });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'auth');
   }
 });
 
@@ -385,7 +401,7 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
       data: { token: resetToken }
     });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to process request', error: error.message }, 500);
+    return apiError(c, error, 'auth.forgotPassword');
   }
 });
 
@@ -425,7 +441,7 @@ authRoutes.post('/reset-password', authRateLimit, async (c) => {
 
     return c.json({ success: true, message: 'Password reset successfully' });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to reset password', error: error.message }, 500);
+    return apiError(c, error, 'auth.resetPassword');
   }
 });
 // Register (admin only)
@@ -465,6 +481,6 @@ authRoutes.post('/register', authRateLimit, async (c) => {
     }, 201);
   } catch (error) {
     console.error('Register error:', error);
-    return c.json({ success: false, message: 'Registration failed', error: error.message }, 500);
+    return apiError(c, error, 'auth.register');
   }
 });

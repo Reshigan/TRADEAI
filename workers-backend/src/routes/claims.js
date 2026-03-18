@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { recordSpend } from '../services/budgetEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const claims = new Hono();
 
@@ -60,7 +62,7 @@ claims.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching claims:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -103,7 +105,7 @@ claims.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching claims summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -142,7 +144,7 @@ claims.get('/statistics', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching claims statistics:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -179,7 +181,7 @@ claims.get('/unmatched', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching unmatched claims:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -216,7 +218,7 @@ claims.get('/pending-approval', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching pending approval claims:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -264,7 +266,7 @@ claims.post('/auto-match', async (c) => {
     });
   } catch (error) {
     console.error('Error auto-matching claims:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -314,7 +316,7 @@ claims.get('/customer/:customerId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching claims by customer:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -344,7 +346,7 @@ claims.get('/:id', async (c) => {
     return c.json({ success: true, data: doc });
   } catch (error) {
     console.error('Error fetching claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -386,7 +388,7 @@ claims.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -432,7 +434,7 @@ claims.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -456,7 +458,7 @@ claims.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Claim deleted' });
   } catch (error) {
     console.error('Error deleting claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -478,7 +480,7 @@ claims.post('/:id/submit', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -516,7 +518,7 @@ claims.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -543,7 +545,7 @@ claims.post('/:id/reject', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -578,7 +580,7 @@ claims.post('/:id/settle', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error settling claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 
@@ -645,7 +647,7 @@ claims.post('/:id/match', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error matching claim:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'claims');
   }
 });
 

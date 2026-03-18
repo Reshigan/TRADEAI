@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const activities = new Hono();
 
@@ -76,7 +77,7 @@ activities.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 
@@ -112,7 +113,7 @@ activities.get('/recent', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching recent activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 
@@ -147,7 +148,7 @@ activities.get('/entity/:entityType/:entityId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching entity activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 
@@ -184,7 +185,7 @@ activities.get('/user/:userId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching user activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 
@@ -245,7 +246,7 @@ activities.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching activity summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 
@@ -280,7 +281,7 @@ activities.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 
@@ -324,7 +325,7 @@ activities.post('/bulk', async (c) => {
     }, 201);
   } catch (error) {
     console.error('Error bulk creating activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activities');
   }
 });
 

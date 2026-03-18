@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const deductionMatchRoutes = new Hono();
 deductionMatchRoutes.use('*', authMiddleware);
@@ -91,7 +92,7 @@ deductionMatchRoutes.post('/auto-match', async (c) => {
     });
   } catch (error) {
     console.error('Deduction match error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductionMatch');
   }
 });
 
@@ -122,7 +123,7 @@ deductionMatchRoutes.get('/summary', async (c) => {
       }
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductionMatch');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const postEventAnalysisRoutes = new Hono();
 postEventAnalysisRoutes.use('*', authMiddleware);
@@ -25,7 +26,7 @@ postEventAnalysisRoutes.get('/', async (c) => {
     });
     return c.json({ success: true, data: analyses, total: analyses.length });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'postEventAnalysis');
   }
 });
 
@@ -110,7 +111,7 @@ postEventAnalysisRoutes.get('/:promotionId', async (c) => {
     });
   } catch (error) {
     console.error('Post-event analysis error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'postEventAnalysis');
   }
 });
 
@@ -148,7 +149,7 @@ postEventAnalysisRoutes.get('/compare', async (c) => {
       }
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'postEventAnalysis');
   }
 });
 

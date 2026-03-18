@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const baselines = new Hono();
 
@@ -48,7 +49,7 @@ baselines.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching baselines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -144,7 +145,7 @@ baselines.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching baseline summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -181,7 +182,7 @@ baselines.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching baseline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -240,7 +241,7 @@ baselines.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating baseline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -302,7 +303,7 @@ baselines.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating baseline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -328,7 +329,7 @@ baselines.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Baseline deleted' });
   } catch (error) {
     console.error('Error deleting baseline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -606,7 +607,7 @@ baselines.post('/:id/calculate', async (c) => {
     });
   } catch (error) {
     console.error('Error calculating baseline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -758,7 +759,7 @@ baselines.post('/:id/decompose', async (c) => {
     });
   } catch (error) {
     console.error('Error decomposing volume:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -788,7 +789,7 @@ baselines.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving baseline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 
@@ -813,7 +814,7 @@ baselines.get('/:id/decompositions', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching decompositions:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'baselines');
   }
 });
 

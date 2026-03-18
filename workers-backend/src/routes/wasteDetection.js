@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 export const wasteDetectionRoutes = new Hono();
 wasteDetectionRoutes.use('*', authMiddleware);
@@ -204,7 +205,7 @@ wasteDetectionRoutes.post('/', async (c) => {
     });
   } catch (error) {
     console.error('Waste detection error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'wasteDetection');
   }
 });
 
@@ -232,6 +233,6 @@ wasteDetectionRoutes.get('/summary', async (c) => {
       }
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'wasteDetection');
   }
 });

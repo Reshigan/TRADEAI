@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const anomalyDetectionRoutes = new Hono();
 anomalyDetectionRoutes.use('*', authMiddleware);
@@ -148,7 +149,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
     });
   } catch (error) {
     console.error('Anomaly detection error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'anomalyDetection');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const revenueGrowth = new Hono();
 
@@ -95,7 +96,7 @@ revenueGrowth.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching RGM summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -131,7 +132,7 @@ revenueGrowth.get('/initiatives', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching RGM initiatives:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -156,7 +157,7 @@ revenueGrowth.get('/initiatives/:id', async (c) => {
     return c.json({ success: true, data: doc });
   } catch (error) {
     console.error('Error fetching RGM initiative:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -205,7 +206,7 @@ revenueGrowth.post('/initiatives', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating RGM initiative:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -258,7 +259,7 @@ revenueGrowth.put('/initiatives/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating RGM initiative:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -276,7 +277,7 @@ revenueGrowth.delete('/initiatives/:id', async (c) => {
     return c.json({ success: true, message: 'Initiative and associated data deleted' });
   } catch (error) {
     console.error('Error deleting RGM initiative:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -308,7 +309,7 @@ revenueGrowth.get('/pricing', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching pricing strategies:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -324,7 +325,7 @@ revenueGrowth.get('/pricing/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(strategy) });
   } catch (error) {
     console.error('Error fetching pricing strategy:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -373,7 +374,7 @@ revenueGrowth.post('/pricing', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating pricing strategy:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -422,7 +423,7 @@ revenueGrowth.put('/pricing/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating pricing strategy:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -436,7 +437,7 @@ revenueGrowth.delete('/pricing/:id', async (c) => {
     return c.json({ success: true, message: 'Pricing strategy deleted' });
   } catch (error) {
     console.error('Error deleting pricing strategy:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -465,7 +466,7 @@ revenueGrowth.get('/mix', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching mix analyses:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -505,7 +506,7 @@ revenueGrowth.post('/mix', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating mix analysis:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -519,7 +520,7 @@ revenueGrowth.delete('/mix/:id', async (c) => {
     return c.json({ success: true, message: 'Mix analysis deleted' });
   } catch (error) {
     console.error('Error deleting mix analysis:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -547,7 +548,7 @@ revenueGrowth.get('/growth-tracking', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching growth tracking:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -592,7 +593,7 @@ revenueGrowth.post('/growth-tracking', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating growth tracker:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 
@@ -606,7 +607,7 @@ revenueGrowth.delete('/growth-tracking/:id', async (c) => {
     return c.json({ success: true, message: 'Growth tracker deleted' });
   } catch (error) {
     console.error('Error deleting growth tracker:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'revenueGrowth');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const forecasting = new Hono();
 
@@ -52,7 +53,7 @@ forecasting.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching forecasts:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -83,7 +84,7 @@ forecasting.get('/compare', async (c) => {
     });
   } catch (error) {
     console.error('Error comparing forecasts:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -132,7 +133,7 @@ forecasting.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -175,7 +176,7 @@ forecasting.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -227,7 +228,7 @@ forecasting.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -251,7 +252,7 @@ forecasting.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Forecast deleted' });
   } catch (error) {
     console.error('Error deleting forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -341,7 +342,7 @@ forecasting.post('/generate', async (c) => {
     });
   } catch (error) {
     console.error('Error generating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -363,7 +364,7 @@ forecasting.post('/:id/activate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -385,7 +386,7 @@ forecasting.post('/:id/archive', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error archiving forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -438,7 +439,7 @@ forecasting.post('/:id/update-actuals', async (c) => {
     });
   } catch (error) {
     console.error('Error updating actuals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 

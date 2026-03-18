@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const rebates = new Hono();
 
@@ -60,7 +62,7 @@ rebates.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching rebates:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -112,7 +114,7 @@ rebates.get('/analytics', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching rebate analytics:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -137,7 +139,7 @@ rebates.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -177,7 +179,7 @@ rebates.get('/:id/accruals', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accruals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -218,7 +220,7 @@ rebates.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -269,7 +271,7 @@ rebates.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -293,7 +295,7 @@ rebates.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Rebate deleted' });
   } catch (error) {
     console.error('Error deleting rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -315,7 +317,7 @@ rebates.post('/:id/activate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -337,7 +339,7 @@ rebates.post('/:id/deactivate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error deactivating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -359,7 +361,7 @@ rebates.post('/:id/submit', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -382,7 +384,7 @@ rebates.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -405,7 +407,7 @@ rebates.post('/:id/reject', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated), reason: body.reason });
   } catch (error) {
     console.error('Error rejecting rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -472,7 +474,7 @@ rebates.post('/:id/calculate', async (c) => {
     });
   } catch (error) {
     console.error('Error calculating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 

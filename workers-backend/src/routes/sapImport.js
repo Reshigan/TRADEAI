@@ -783,7 +783,7 @@ sapImportRoutes.post('/:templateId', async (c) => {
     return c.json({ success: true, data: results }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'sapImport');
   }
 });
 
@@ -829,11 +829,12 @@ sapImportRoutes.post('/:templateId/validate', async (c) => {
       },
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'sapImport');
   }
 });
 
 // GET /api/sap-import/history - get import history
+import { apiError } from '../utils/apiError.js';
 sapImportRoutes.get('/history', async (c) => {
   try {
     const db = c.env.DB;
@@ -844,6 +845,6 @@ sapImportRoutes.get('/history', async (c) => {
     return c.json({ success: true, data: result.results || [] });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'sapImport');
   }
 });

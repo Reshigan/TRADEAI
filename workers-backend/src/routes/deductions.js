@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const deductions = new Hono();
 
@@ -60,7 +61,7 @@ deductions.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching deductions:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -84,7 +85,7 @@ deductions.get('/unmatched', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching unmatched deductions:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -108,7 +109,7 @@ deductions.get('/disputed', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching disputed deductions:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -145,7 +146,7 @@ deductions.get('/statistics', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching deduction statistics:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -204,7 +205,7 @@ deductions.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching deductions summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -229,7 +230,7 @@ deductions.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -295,7 +296,7 @@ deductions.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created), autoMatch }, 201);
   } catch (error) {
     console.error('Error creating deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -345,7 +346,7 @@ deductions.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -369,7 +370,7 @@ deductions.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Deduction deleted' });
   } catch (error) {
     console.error('Error deleting deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -392,7 +393,7 @@ deductions.post('/:id/review', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error starting review:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -443,7 +444,7 @@ deductions.post('/:id/match', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error matching deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -466,7 +467,7 @@ deductions.post('/:id/dispute', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error disputing deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -490,7 +491,7 @@ deductions.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 
@@ -516,7 +517,7 @@ deductions.post('/:id/write-off', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error writing off deduction:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'deductions');
   }
 });
 

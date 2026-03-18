@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const dataLineage = new Hono();
 
@@ -75,7 +76,7 @@ dataLineage.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching data lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -110,7 +111,7 @@ dataLineage.get('/entity/:entityType/:entityId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching entity lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -166,7 +167,7 @@ dataLineage.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching lineage summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -206,7 +207,7 @@ dataLineage.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error recording lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -256,7 +257,7 @@ dataLineage.post('/bulk', async (c) => {
     }, 201);
   } catch (error) {
     console.error('Error bulk recording lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -305,7 +306,7 @@ dataLineage.get('/baselines', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching baselines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -341,7 +342,7 @@ dataLineage.put('/baselines', async (c) => {
     });
   } catch (error) {
     console.error('Error updating baselines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -413,7 +414,7 @@ dataLineage.get('/variance/:entityType', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching variance:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -493,7 +494,7 @@ dataLineage.get('/reconciliation', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching reconciliation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 

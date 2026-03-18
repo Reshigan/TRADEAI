@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const transactions = new Hono();
 transactions.use('*', authMiddleware);
@@ -38,7 +39,7 @@ transactions.get('/', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -52,7 +53,7 @@ transactions.get('/:id',async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -88,7 +89,7 @@ transactions.post('/',async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -118,7 +119,7 @@ transactions.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -133,7 +134,7 @@ transactions.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Transaction deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -153,7 +154,7 @@ transactions.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -174,7 +175,7 @@ transactions.post('/:id/reject', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -194,7 +195,7 @@ transactions.post('/:id/settle', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -242,7 +243,7 @@ transactions.post('/bulk-upload', async (c) => {
     return c.json({ success: true, data: { total: items.length, created: results.created, failed: results.errors.length, errors: results.errors } }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 

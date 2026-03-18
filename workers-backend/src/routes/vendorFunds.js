@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 export const vendorFundRoutes = new Hono();
 vendorFundRoutes.use('*', authMiddleware);

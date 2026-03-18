@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const activityGrid = new Hono();
 
@@ -78,7 +79,7 @@ activityGrid.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching activity grid:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -118,7 +119,7 @@ activityGrid.get('/heat-map', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching heat map:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -193,7 +194,7 @@ activityGrid.get('/conflicts', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching conflicts:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -237,7 +238,7 @@ activityGrid.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -263,7 +264,7 @@ activityGrid.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(activity) });
   } catch (error) {
     console.error('Error fetching activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -322,7 +323,7 @@ activityGrid.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -347,7 +348,7 @@ activityGrid.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Activity deleted' });
   } catch (error) {
     console.error('Error deleting activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -500,7 +501,7 @@ activityGrid.post('/sync', async (c) => {
     });
   } catch (error) {
     console.error('Error syncing activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 

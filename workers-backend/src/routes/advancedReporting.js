@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const advancedReporting = new Hono();
 
@@ -95,7 +96,7 @@ advancedReporting.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching advanced reporting summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -130,7 +131,7 @@ advancedReporting.get('/templates', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching report templates:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -153,7 +154,7 @@ advancedReporting.get('/templates/:id', async (c) => {
     return c.json({ success: true, data: doc });
   } catch (error) {
     console.error('Error fetching report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -200,7 +201,7 @@ advancedReporting.post('/templates', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -249,7 +250,7 @@ advancedReporting.put('/templates/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -266,7 +267,7 @@ advancedReporting.delete('/templates/:id', async (c) => {
     return c.json({ success: true, message: 'Report template and associated reports/schedules deleted' });
   } catch (error) {
     console.error('Error deleting report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -397,7 +398,7 @@ advancedReporting.post('/templates/:id/run', async (c) => {
     });
   } catch (error) {
     console.error('Error running report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -438,7 +439,7 @@ advancedReporting.get('/reports', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching saved reports:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -454,7 +455,7 @@ advancedReporting.get('/reports/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(report) });
   } catch (error) {
     console.error('Error fetching saved report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -498,7 +499,7 @@ advancedReporting.put('/reports/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating saved report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -512,7 +513,7 @@ advancedReporting.delete('/reports/:id', async (c) => {
     return c.json({ success: true, message: 'Saved report deleted' });
   } catch (error) {
     console.error('Error deleting saved report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -531,7 +532,7 @@ advancedReporting.post('/reports/:id/toggle-favorite', async (c) => {
     return c.json({ success: true, data: { isFavorite: !!newVal } });
   } catch (error) {
     console.error('Error toggling favorite:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -560,7 +561,7 @@ advancedReporting.get('/schedules', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching report schedules:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -576,7 +577,7 @@ advancedReporting.get('/schedules/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(schedule) });
   } catch (error) {
     console.error('Error fetching report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -614,7 +615,7 @@ advancedReporting.post('/schedules', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -659,7 +660,7 @@ advancedReporting.put('/schedules/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -673,7 +674,7 @@ advancedReporting.delete('/schedules/:id', async (c) => {
     return c.json({ success: true, message: 'Report schedule deleted' });
   } catch (error) {
     console.error('Error deleting report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -731,7 +732,7 @@ advancedReporting.get('/cross-module', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching cross-module report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 

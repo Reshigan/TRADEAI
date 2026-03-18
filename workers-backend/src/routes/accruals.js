@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const accruals = new Hono();
 
@@ -48,7 +49,7 @@ accruals.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accruals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -151,7 +152,7 @@ accruals.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accrual summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -188,7 +189,7 @@ accruals.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -252,7 +253,7 @@ accruals.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -316,7 +317,7 @@ accruals.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -346,7 +347,7 @@ accruals.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Accrual deleted' });
   } catch (error) {
     console.error('Error deleting accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -539,7 +540,7 @@ accruals.post('/:id/calculate', async (c) => {
     });
   } catch (error) {
     console.error('Error calculating accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -629,7 +630,7 @@ accruals.post('/:id/post', async (c) => {
     });
   } catch (error) {
     console.error('Error posting accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -697,7 +698,7 @@ accruals.post('/:id/reverse', async (c) => {
     });
   } catch (error) {
     console.error('Error reversing accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -727,7 +728,7 @@ accruals.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -748,7 +749,7 @@ accruals.get('/:id/journals', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accrual journals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 

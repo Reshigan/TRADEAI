@@ -6,6 +6,7 @@ import { createNotification } from '../services/notifications.js';
 import { notifyApprovalDecision } from '../services/notificationService.js';
 import { routeApproval } from '../services/approvalRouting.js';
 import { WalletEnforcementService } from '../services/walletEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const approvals = new Hono();
 
@@ -59,7 +60,7 @@ approvals.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -88,7 +89,7 @@ approvals.get('/pending', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching pending approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -113,7 +114,7 @@ approvals.get('/overdue', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching overdue approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -136,7 +137,7 @@ approvals.get('/entity/:entityType/:entityId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching entity approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -158,7 +159,7 @@ approvals.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -199,7 +200,7 @@ approvals.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -250,7 +251,7 @@ approvals.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -276,7 +277,7 @@ approvals.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Approval deleted successfully' });
   } catch (error) {
     console.error('Error deleting approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -371,7 +372,7 @@ approvals.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -463,7 +464,7 @@ approvals.post('/:id/reject', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -477,7 +478,7 @@ approvals.post('/route', async (c) => {
     const result = await routeApproval(db, companyId, { ...body, requestedBy: userId });
     return c.json({ success: true, data: result });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -501,7 +502,7 @@ approvals.post('/:id/cancel', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error cancelling:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -545,7 +546,7 @@ approvals.get('/:id/sla', async (c) => {
     });
   } catch (error) {
     console.error('Error checking SLA:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 

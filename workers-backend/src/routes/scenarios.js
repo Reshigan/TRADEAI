@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const scenarios = new Hono();
 
@@ -136,7 +137,7 @@ scenarios.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching scenario summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -191,7 +192,7 @@ scenarios.get('/compare', async (c) => {
     });
   } catch (error) {
     console.error('Error comparing scenarios:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -230,7 +231,7 @@ scenarios.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching scenarios:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -264,7 +265,7 @@ scenarios.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching scenario:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -382,7 +383,7 @@ scenarios.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created), message: 'Scenario created' }, 201);
   } catch (error) {
     console.error('Error creating scenario:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -466,7 +467,7 @@ scenarios.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated), message: 'Scenario updated' });
   } catch (error) {
     console.error('Error updating scenario:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -492,7 +493,7 @@ scenarios.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Scenario and related data deleted' });
   } catch (error) {
     console.error('Error deleting scenario:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -666,7 +667,7 @@ scenarios.post('/:id/simulate', async (c) => {
     });
   } catch (error) {
     console.error('Error running simulation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -687,7 +688,7 @@ scenarios.get('/:id/variables', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     console.error('Error fetching variables:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -736,7 +737,7 @@ scenarios.post('/:id/variables', async (c) => {
     return c.json({ success: true, data: rowToDocument(created), message: 'Variable added' }, 201);
   } catch (error) {
     console.error('Error adding variable:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -785,7 +786,7 @@ scenarios.put('/:id/variables/:varId', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated), message: 'Variable updated' });
   } catch (error) {
     console.error('Error updating variable:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -799,7 +800,7 @@ scenarios.delete('/:id/variables/:varId', async (c) => {
     return c.json({ success: true, message: 'Variable deleted' });
   } catch (error) {
     console.error('Error deleting variable:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 
@@ -819,7 +820,7 @@ scenarios.get('/:id/results', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     console.error('Error fetching results:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'scenarios');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const tradingTerms = new Hono();
 
@@ -52,7 +53,7 @@ tradingTerms.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching trading terms:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -111,7 +112,7 @@ tradingTerms.get('/applicable/:customerId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching applicable terms:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -136,7 +137,7 @@ tradingTerms.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -176,7 +177,7 @@ tradingTerms.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -227,7 +228,7 @@ tradingTerms.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -251,7 +252,7 @@ tradingTerms.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Trading term deleted' });
   } catch (error) {
     console.error('Error deleting trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -273,7 +274,7 @@ tradingTerms.post('/:id/submit', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -296,7 +297,7 @@ tradingTerms.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -318,7 +319,7 @@ tradingTerms.post('/:id/reject', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 
@@ -368,7 +369,7 @@ tradingTerms.post('/:id/calculate', async (c) => {
     });
   } catch (error) {
     console.error('Error calculating trading term:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradingTerms');
   }
 });
 

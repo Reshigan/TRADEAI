@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const vendors = new Hono();
 
@@ -60,7 +61,7 @@ vendors.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching vendors:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -82,7 +83,7 @@ vendors.get('/options', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching vendor options:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -104,7 +105,7 @@ vendors.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching vendor:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -148,7 +149,7 @@ vendors.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating vendor:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -201,7 +202,7 @@ vendors.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating vendor:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -225,7 +226,7 @@ vendors.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Vendor deleted' });
   } catch (error) {
     console.error('Error deleting vendor:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -247,7 +248,7 @@ vendors.post('/:id/activate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating vendor:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 
@@ -269,7 +270,7 @@ vendors.post('/:id/deactivate', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error deactivating vendor:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'vendors');
   }
 });
 

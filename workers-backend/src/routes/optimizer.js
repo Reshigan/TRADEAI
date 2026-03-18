@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const optimizerRoutes = new Hono();
 
@@ -108,7 +109,7 @@ optimizerRoutes.post('/budget/reallocate', async (c) => {
     });
   } catch (error) {
     console.error('Budget reallocation error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'optimizer');
   }
 });
 
@@ -162,7 +163,7 @@ optimizerRoutes.post('/promotion/optimize', async (c) => {
     });
   } catch (error) {
     console.error('Promotion optimization error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'optimizer');
   }
 });
 
@@ -203,7 +204,7 @@ optimizerRoutes.post('/portfolio/analyze', async (c) => {
     });
   } catch (error) {
     console.error('Portfolio analysis error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'optimizer');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 export const productRoutes = new Hono();
 
@@ -155,7 +156,7 @@ productRoutes.get('/:id/promotions', async (c) => {
     );
     return c.json({ success: true, data: filtered });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'products');
   }
 });
 
@@ -168,7 +169,7 @@ productRoutes.get('/:id/campaigns', async (c) => {
     if (!product) return c.json({ success: false, message: 'Product not found' }, 404);
     return c.json({ success: true, data: product.campaigns || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'products');
   }
 });
 
@@ -181,7 +182,7 @@ productRoutes.get('/:id/sales-history', async (c) => {
     if (!product) return c.json({ success: false, message: 'Product not found' }, 404);
     return c.json({ success: true, data: product.salesHistory || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'products');
   }
 });
 
@@ -194,7 +195,7 @@ productRoutes.get('/:id/trading-terms', async (c) => {
     if (!product) return c.json({ success: false, message: 'Product not found' }, 404);
     return c.json({ success: true, data: product.tradingTerms || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'products');
   }
 });
 

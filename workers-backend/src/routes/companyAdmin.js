@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const companyAdmin = new Hono();
 companyAdmin.use('*', authMiddleware);
@@ -47,7 +48,7 @@ companyAdmin.get('/dashboard/stats', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -67,7 +68,7 @@ companyAdmin.get('/announcements', async (c) => {
     return c.json({ success: true, data: { announcements: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -81,7 +82,7 @@ companyAdmin.get('/announcements/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -100,7 +101,7 @@ companyAdmin.post('/announcements', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -118,7 +119,7 @@ companyAdmin.put('/announcements/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -131,7 +132,7 @@ companyAdmin.delete('/announcements/:id', async (c) => {
     return c.json({ success: true, message: 'Announcement deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -146,7 +147,7 @@ companyAdmin.post('/announcements/:id/publish', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -166,7 +167,7 @@ companyAdmin.get('/policies', async (c) => {
     return c.json({ success: true, data: { policies: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -179,7 +180,7 @@ companyAdmin.get('/policies/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -198,7 +199,7 @@ companyAdmin.post('/policies', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -216,7 +217,7 @@ companyAdmin.put('/policies/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -229,7 +230,7 @@ companyAdmin.delete('/policies/:id', async (c) => {
     return c.json({ success: true, message: 'Policy deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -244,7 +245,7 @@ companyAdmin.post('/policies/:id/publish', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -264,7 +265,7 @@ companyAdmin.get('/courses', async (c) => {
     return c.json({ success: true, data: { courses: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -277,7 +278,7 @@ companyAdmin.get('/courses/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -296,7 +297,7 @@ companyAdmin.post('/courses', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -314,7 +315,7 @@ companyAdmin.put('/courses/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -327,7 +328,7 @@ companyAdmin.delete('/courses/:id', async (c) => {
     return c.json({ success: true, message: 'Course deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -347,7 +348,7 @@ companyAdmin.get('/games', async (c) => {
     return c.json({ success: true, data: { games: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -360,7 +361,7 @@ companyAdmin.get('/games/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -379,7 +380,7 @@ companyAdmin.post('/games', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -397,7 +398,7 @@ companyAdmin.put('/games/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -410,7 +411,7 @@ companyAdmin.delete('/games/:id', async (c) => {
     return c.json({ success: true, message: 'Game deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -432,7 +433,7 @@ companyAdmin.get('/settings', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -461,7 +462,7 @@ companyAdmin.put('/settings', async (c) => {
     return c.json({ success: true, message: 'Settings updated' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -470,7 +471,7 @@ companyAdmin.post('/settings/logo', async (c) => {
     return c.json({ success: true, message: 'Logo upload received', data: { url: '/assets/logo.png' } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -484,7 +485,7 @@ companyAdmin.get('/azure-ad', async (c) => {
     return c.json({ success: true, data: config });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -504,7 +505,7 @@ companyAdmin.post('/azure-ad', async (c) => {
     return c.json({ success: true, message: 'Azure AD config saved' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -584,7 +585,7 @@ companyAdmin.post('/azure-ad/sync', async (c) => {
     return c.json({ success: true, data: { synced: created + updated, created, updated, skipped, total: adUsers.length, message: `Synced ${created + updated} users (${created} new, ${updated} updated, ${skipped} skipped)` } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -598,7 +599,7 @@ companyAdmin.get('/erp-settings', async (c) => {
     return c.json({ success: true, data: config });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -618,7 +619,7 @@ companyAdmin.post('/erp-settings', async (c) => {
     return c.json({ success: true, message: 'ERP settings saved' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -714,7 +715,7 @@ companyAdmin.post('/erp-settings/sync', async (c) => {
     return c.json({ success: true, data: { synced: totalSynced, customers: customersSync, products: productsSync, message: `Synced ${totalSynced} records from ERP` } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -733,7 +734,7 @@ companyAdmin.post('/erp-settings/field-mapping', async (c) => {
     return c.json({ success: true, message: 'Field mappings saved' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 
@@ -755,7 +756,7 @@ companyAdmin.get('/users', async (c) => {
     return c.json({ success: true, data: { users: (result.results || []).map(rowToDocument), pagination: { total: countResult?.total || 0, limit: parseInt(limit), offset: parseInt(offset) } } });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'companyAdmin');
   }
 });
 

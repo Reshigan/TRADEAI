@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const promotionOptimizer = new Hono();
 
@@ -140,7 +141,7 @@ promotionOptimizer.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching optimization summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -179,7 +180,7 @@ promotionOptimizer.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching optimizations:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -212,7 +213,7 @@ promotionOptimizer.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching optimization:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -292,7 +293,7 @@ promotionOptimizer.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created), message: 'Optimization created' }, 201);
   } catch (error) {
     console.error('Error creating optimization:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -354,7 +355,7 @@ promotionOptimizer.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated), message: 'Optimization updated' });
   } catch (error) {
     console.error('Error updating optimization:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -379,7 +380,7 @@ promotionOptimizer.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Optimization and related data deleted' });
   } catch (error) {
     console.error('Error deleting optimization:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -564,7 +565,7 @@ promotionOptimizer.post('/:id/optimize', async (c) => {
     });
   } catch (error) {
     console.error('Error running optimization:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -584,7 +585,7 @@ promotionOptimizer.get('/:id/recommendations', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     console.error('Error fetching recommendations:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -605,7 +606,7 @@ promotionOptimizer.put('/:id/recommendations/:recId/action', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated), message: `Recommendation ${action}` });
   } catch (error) {
     console.error('Error updating recommendation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -625,7 +626,7 @@ promotionOptimizer.get('/:id/constraints', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     console.error('Error fetching constraints:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -664,7 +665,7 @@ promotionOptimizer.post('/:id/constraints', async (c) => {
     return c.json({ success: true, data: rowToDocument(created), message: 'Constraint added' }, 201);
   } catch (error) {
     console.error('Error adding constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 
@@ -677,7 +678,7 @@ promotionOptimizer.delete('/:id/constraints/:conId', async (c) => {
     return c.json({ success: true, message: 'Constraint deleted' });
   } catch (error) {
     console.error('Error deleting constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotionOptimizer');
   }
 });
 

@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { recordSpend } from '../services/budgetEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const settlements = new Hono();
 
@@ -55,7 +57,7 @@ settlements.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching settlements:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -151,7 +153,7 @@ settlements.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching settlement summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -188,7 +190,7 @@ settlements.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -291,7 +293,7 @@ settlements.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -363,7 +365,7 @@ settlements.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -393,7 +395,7 @@ settlements.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Settlement deleted' });
   } catch (error) {
     console.error('Error deleting settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -518,7 +520,7 @@ settlements.post('/:id/process', async (c) => {
     });
   } catch (error) {
     console.error('Error processing settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -553,7 +555,7 @@ settlements.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -586,7 +588,7 @@ settlements.post('/:id/reject', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting settlement:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -694,7 +696,7 @@ settlements.post('/:id/pay', async (c) => {
     });
   } catch (error) {
     console.error('Error recording payment:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -715,7 +717,7 @@ settlements.get('/:id/lines', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching settlement lines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 
@@ -736,7 +738,7 @@ settlements.get('/:id/payments', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching settlement payments:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'settlements');
   }
 });
 

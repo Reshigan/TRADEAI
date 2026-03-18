@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const demandSignals = new Hono();
 
@@ -61,7 +62,7 @@ demandSignals.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching demand signals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -205,7 +206,7 @@ demandSignals.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching demand signal summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -262,7 +263,7 @@ demandSignals.get('/trends', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching trends:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -290,7 +291,7 @@ demandSignals.get('/anomalies', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching anomalies:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -312,7 +313,7 @@ demandSignals.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(signal) });
   } catch (error) {
     console.error('Error fetching demand signal:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -395,7 +396,7 @@ demandSignals.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating demand signal:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -481,7 +482,7 @@ demandSignals.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating demand signal:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -504,7 +505,7 @@ demandSignals.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Demand signal deleted' });
   } catch (error) {
     console.error('Error deleting demand signal:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -540,7 +541,7 @@ demandSignals.get('/sources/list', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching sources:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -562,7 +563,7 @@ demandSignals.get('/sources/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(source) });
   } catch (error) {
     console.error('Error fetching source:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -604,7 +605,7 @@ demandSignals.post('/sources', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating source:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -647,7 +648,7 @@ demandSignals.put('/sources/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating source:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 
@@ -670,7 +671,7 @@ demandSignals.delete('/sources/:id', async (c) => {
     return c.json({ success: true, message: 'Source deleted' });
   } catch (error) {
     console.error('Error deleting source:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'demandSignals');
   }
 });
 

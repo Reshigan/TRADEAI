@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 export const businessRulesRoutes = new Hono();
 

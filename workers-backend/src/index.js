@@ -78,6 +78,14 @@ import { jobRoutes } from './routes/jobs.js';
 
 const app = new Hono();
 
+// D-12: Request ID middleware for structured logging
+app.use('*', async (c, next) => {
+  const requestId = c.req.header('X-Request-Id') || crypto.randomUUID();
+  c.set('requestId', requestId);
+  c.header('X-Request-Id', requestId);
+  await next();
+});
+
 // Global middleware
 app.use('*', logger());
 app.use('*', prettyJSON());
@@ -198,13 +206,14 @@ app.notFound((c) => {
   }, 404);
 });
 
-// Error handler
+// Error handler - D-09: sanitize error messages
 app.onError((err, c) => {
-  console.error('Error:', err);
+  const requestId = c.get('requestId') || 'unknown';
+  console.error(JSON.stringify({ level: 'error', requestId, message: err.message, stack: err.stack }));
   return c.json({
     success: false,
-    message: err.message || 'Internal server error',
-    ...(c.env.ENVIRONMENT !== 'production' && { stack: err.stack })
+    message: 'Internal server error',
+    requestId
   }, 500);
 });
 

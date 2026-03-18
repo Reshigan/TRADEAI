@@ -1,16 +1,33 @@
 import { BudgetEnforcementService } from '../services/budgetEnforcement.js';
 import { createNotification } from '../services/notifications.js';
+import { acquireJobLock, completeJob, failJob } from '../utils/jobGuard.js';
 
 export async function scheduledJobs(event, env) {
   const db = env.DB;
   const cron = event.cron;
 
   switch (cron) {
-    case '0 1 * * *': return promotionLifecycle(db, env);
-    case '0 2 * * *': return accrualCalculation(db, env);
-    case '0 */4 * * *': return approvalEscalation(db, env);
-    case '0 * * * *': return budgetAlerts(db, env);
-    case '0 4 1 * *': return settlementGeneration(db, env);
+    case '0 1 * * *': return runWithGuard(db, 'promotionLifecycle', () => promotionLifecycle(db, env));
+    case '0 2 * * *': return runWithGuard(db, 'accrualCalculation', () => accrualCalculation(db, env));
+    case '0 */4 * * *': return runWithGuard(db, 'approvalEscalation', () => approvalEscalation(db, env));
+    case '0 * * * *': return runWithGuard(db, 'budgetAlerts', () => budgetAlerts(db, env));
+    case '0 4 1 * *': return runWithGuard(db, 'settlementGeneration', () => settlementGeneration(db, env));
+  }
+}
+
+// D-13: Idempotency wrapper for all scheduled jobs
+async function runWithGuard(db, jobName, fn) {
+  const jobRunId = await acquireJobLock(db, jobName);
+  if (!jobRunId) {
+    console.log(JSON.stringify({ level: 'warn', job: jobName, message: 'Skipped - already running' }));
+    return;
+  }
+  try {
+    await fn();
+    await completeJob(db, jobRunId);
+  } catch (error) {
+    await failJob(db, jobRunId, error.message);
+    throw error;
   }
 }
 

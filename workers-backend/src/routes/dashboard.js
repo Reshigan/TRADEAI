@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 export const dashboardRoutes = new Hono();
 
@@ -92,7 +93,7 @@ dashboardRoutes.get('/', async (c) => {
     return c.json({ success: true, data: base });
   } catch (error) {
     console.error('Dashboard error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dashboard');
   }
 });
 
@@ -119,7 +120,7 @@ dashboardRoutes.get('/kpis', async (c) => {
       }
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dashboard');
   }
 });
 
@@ -135,7 +136,7 @@ dashboardRoutes.get('/activity', async (c) => {
 
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dashboard');
   }
 });
 
@@ -151,6 +152,6 @@ dashboardRoutes.get('/notifications', async (c) => {
 
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dashboard');
   }
 });

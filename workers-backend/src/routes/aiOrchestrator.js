@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const aiOrchestratorRoutes = new Hono();
 
@@ -270,7 +271,7 @@ aiOrchestratorRoutes.post('/predict-uplift', async (c) => {
     });
   } catch (error) {
     console.error('Uplift prediction error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -318,7 +319,7 @@ aiOrchestratorRoutes.post('/suggest-pricing', async (c) => {
     });
   } catch (error) {
     console.error('Pricing suggestion error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -420,7 +421,7 @@ aiOrchestratorRoutes.post('/budget-optimize', async (c) => {
     });
   } catch (error) {
     console.error('Budget optimization error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -522,7 +523,7 @@ aiOrchestratorRoutes.post('/roi-predict', async (c) => {
     });
   } catch (error) {
     console.error('ROI prediction error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -627,7 +628,7 @@ aiOrchestratorRoutes.post('/customer-analysis', async (c) => {
     });
   } catch (error) {
     console.error('Customer analysis error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -739,7 +740,7 @@ aiOrchestratorRoutes.post('/product-analysis', async (c) => {
     });
   } catch (error) {
     console.error('Product analysis error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -809,7 +810,7 @@ aiOrchestratorRoutes.get('/ml-insights', async (c) => {
     });
   } catch (error) {
     console.error('ML insights error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 
@@ -859,7 +860,7 @@ aiOrchestratorRoutes.get('/model-status', async (c) => {
     });
   } catch (error) {
     console.error('Model status error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiOrchestrator');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const tradeCalendar = new Hono();
 
@@ -56,7 +57,7 @@ tradeCalendar.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching calendar events:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -188,7 +189,7 @@ tradeCalendar.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching calendar summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -344,7 +345,7 @@ tradeCalendar.post('/check-constraints', async (c) => {
     });
   } catch (error) {
     console.error('Error checking constraints:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -421,7 +422,7 @@ tradeCalendar.get('/timeline', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching timeline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -449,7 +450,7 @@ tradeCalendar.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(event) });
   } catch (error) {
     console.error('Error fetching calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -524,7 +525,7 @@ tradeCalendar.post('/', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -594,7 +595,7 @@ tradeCalendar.put('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -617,7 +618,7 @@ tradeCalendar.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Calendar event deleted' });
   } catch (error) {
     console.error('Error deleting calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -669,7 +670,7 @@ tradeCalendar.post('/:id/sync-promotion', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error syncing promotion:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -706,7 +707,7 @@ tradeCalendar.get('/constraints/list', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching constraints:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -728,7 +729,7 @@ tradeCalendar.get('/constraints/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(constraint) });
   } catch (error) {
     console.error('Error fetching constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -792,7 +793,7 @@ tradeCalendar.post('/constraints', async (c) => {
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -857,7 +858,7 @@ tradeCalendar.put('/constraints/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -880,7 +881,7 @@ tradeCalendar.delete('/constraints/:id', async (c) => {
     return c.json({ success: true, message: 'Constraint deleted' });
   } catch (error) {
     console.error('Error deleting constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
