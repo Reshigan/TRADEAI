@@ -361,7 +361,7 @@ const Dashboard = ({ user }) => {
                                 color: '#fff',
                                 px: 1.5,
                                 minWidth: 0,
-                                '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' },
+                                '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' },
                               }}
                             >
                               Approve

@@ -422,13 +422,13 @@ const TradeCalendarManagement = () => {
           </Button>
           {tab === 0 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateEvent}
-              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
               New Event
             </Button>
           )}
           {tab === 2 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateConstraint}
-              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
               New Constraint
             </Button>
           )}
@@ -771,7 +771,7 @@ const TradeCalendarManagement = () => {
           <Button onClick={() => setEventDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveEvent}
             disabled={!eventForm.name || !eventForm.startDate || !eventForm.endDate}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingEventId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -881,7 +881,7 @@ const TradeCalendarManagement = () => {
           <Button onClick={() => setConstraintDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveConstraint}
             disabled={!constraintForm.name}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingConstraintId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -968,7 +968,7 @@ const TradeCalendarManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="contained" onClick={() => { setDetailDialog(false); handleEditEvent(detailEvent); }}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Edit
           </Button>
         </DialogActions>

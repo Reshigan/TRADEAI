@@ -176,7 +176,7 @@ const CreateClaim = () => {
               <Button variant="outlined" fullWidth onClick={() => handleSubmit(false)} disabled={loading} startIcon={<SaveIcon />}
                 sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600 }}>Save as Draft</Button>
               <Button variant="contained" fullWidth onClick={() => handleSubmit(true)} disabled={loading}
-                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
                 {loading ? 'Creating...' : 'Create & Submit'}
               </Button>
             </Box>

@@ -385,13 +385,13 @@ const DemandSignalManagement = () => {
           </Button>
           {tab === 0 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateSignal}
-              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
               New Signal
             </Button>
           )}
           {tab === 3 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateSource}
-              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
               New Source
             </Button>
           )}
@@ -781,7 +781,7 @@ const DemandSignalManagement = () => {
           <Button onClick={() => setSignalDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSignal}
             disabled={!signalForm.signalDate}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingSignalId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -833,7 +833,7 @@ const DemandSignalManagement = () => {
           <Button onClick={() => setSourceDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSource}
             disabled={!sourceForm.name}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingSourceId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -918,7 +918,7 @@ const DemandSignalManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="contained" onClick={() => { setDetailDialog(false); handleEditSignal(detailSignal); }}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Edit
           </Button>
         </DialogActions>

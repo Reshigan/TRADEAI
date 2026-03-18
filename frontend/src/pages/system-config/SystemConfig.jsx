@@ -104,7 +104,7 @@ export default function SystemConfig() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => tab === 0 ? openConfigDialog() : openTenantDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>{tab === 0 ? 'New Config' : 'New Tenant'}</Button>
+          <Button startIcon={<AddIcon />} onClick={() => tab === 0 ? openConfigDialog() : openTenantDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>{tab === 0 ? 'New Config' : 'New Tenant'}</Button>
         </Box>
       </Box>
 

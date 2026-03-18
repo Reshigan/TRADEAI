@@ -68,7 +68,7 @@ const TradingTermsList = () => {
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/trading-terms/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Trading Term
           </Button>
         </Box>

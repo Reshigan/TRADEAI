@@ -72,7 +72,7 @@ const PromotionList = () => {
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/promotions/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           New Promotion
         </Button>
       </Box>
@@ -121,7 +121,7 @@ const PromotionList = () => {
           <Typography variant="h6" color="text.secondary" mb={1}>No promotions found</Typography>
           <Typography variant="body2" color="text.disabled" mb={3}>Try adjusting your filters or create a new promotion.</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/promotions/new')}
-            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Create Promotion
           </Button>
         </Paper>

@@ -52,7 +52,7 @@ const VendorList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{vendors.length} vendor{vendors.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/vendors/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
           New Vendor
         </Button>
       </Box>
@@ -84,7 +84,7 @@ const VendorList = () => {
           <BusinessIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No vendors found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/vendors/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Add Vendor
           </Button>
         </Paper>

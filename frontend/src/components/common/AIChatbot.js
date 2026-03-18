@@ -311,7 +311,7 @@ const AIChatbot = ({ pageContext, contextData, open, onClose }) => {
               sx={{
                 bgcolor: 'primary.main',
                 color: 'white',
-                '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' },
+                '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' },
                 '&.Mui-disabled': {
                   bgcolor: 'action.disabledBackground'
                 }

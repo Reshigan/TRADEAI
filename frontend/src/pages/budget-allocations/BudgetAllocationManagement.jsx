@@ -375,7 +375,7 @@ const BudgetAllocationManagement = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleCreate}
-            sx={{ borderRadius: 2, textTransform: 'none', bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}
+            sx={{ borderRadius: 2, textTransform: 'none', bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}
           >
             New Allocation
           </Button>
@@ -792,7 +792,7 @@ const BudgetAllocationManagement = () => {
             variant="contained"
             onClick={handleSave}
             disabled={saving || !form.name}
-            sx={{ textTransform: 'none', bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}
+            sx={{ textTransform: 'none', bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}
           >
             {saving ? <CircularProgress size={20} /> : (editingAllocation ? 'Update' : 'Create')}
           </Button>

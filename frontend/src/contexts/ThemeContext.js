@@ -361,7 +361,7 @@ function getSystemPreference() {
 
 export function ThemeContextProvider({ children }) {
   const [mode, setMode] = useState(() => {
-    const saved = localStorage.getItem('tradeai_theme');
+    const saved = localStorage.getItem('tradeai_theme') || localStorage.getItem('themeMode');
     if (saved && ['light', 'dark', 'auto'].includes(saved)) return saved;
     return 'auto';
   });

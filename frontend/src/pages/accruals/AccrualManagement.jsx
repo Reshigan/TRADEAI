@@ -756,7 +756,7 @@ const AccrualManagement = () => {
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => { resetForm(); setCreateOpen(true); }}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Accrual
           </Button>
         </Box>

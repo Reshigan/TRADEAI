@@ -179,7 +179,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
             variant="outlined" size="small"
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: 'white', fontSize: '0.875rem' } }} />
           <IconButton onClick={() => handleSend()} disabled={!input.trim() || loading}
-            sx={{ bgcolor: 'primary.dark', color: 'white', borderRadius: '10px', width: 38, height: 38, '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' }, '&.Mui-disabled': { bgcolor: alpha('#1E40AF', 0.3), color: 'white' } }}>
+            sx={{ bgcolor: 'primary.dark', color: 'white', borderRadius: '10px', width: 38, height: 38, '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' }, '&.Mui-disabled': { bgcolor: alpha('#1E40AF', 0.3), color: 'white' } }}>
             <SendIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Box>

@@ -233,7 +233,7 @@ const BudgetList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>Manage your trade spend budgets</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateBudget}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           Create Budget
         </Button>
       </Box>

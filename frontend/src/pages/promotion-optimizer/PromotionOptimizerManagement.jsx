@@ -314,7 +314,7 @@ const PromotionOptimizerManagement = () => {
             Refresh
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Optimization
           </Button>
         </Box>
@@ -515,7 +515,7 @@ const PromotionOptimizerManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setOptDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSave} disabled={!optForm.name}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -531,7 +531,7 @@ const PromotionOptimizerManagement = () => {
             )}
           </Box>
           <Button variant="contained" startIcon={<OptimizeIcon />} onClick={() => handleOptimize(activeOptId)}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Run Optimization
           </Button>
         </DialogTitle>
@@ -734,7 +734,7 @@ const PromotionOptimizerManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setConDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveConstraint} disabled={!conForm.constraintName}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Add
           </Button>
         </DialogActions>

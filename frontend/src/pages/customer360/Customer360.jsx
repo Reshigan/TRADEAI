@@ -277,7 +277,7 @@ const Customer360Dashboard = () => {
                     const pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
                     return (
                       <Tooltip key={i} title={`${m.label || `Month ${i + 1}`}: ${formatCurrency(val)}`}>
-                        <Box sx={{ flex: 1, height: `${pct}%`, bgcolor: 'primary.dark', borderRadius: '4px 4px 0 0', minHeight: 4, transition: 'height 0.3s ease', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }} />
+                        <Box sx={{ flex: 1, height: `${pct}%`, bgcolor: 'primary.dark', borderRadius: '4px 4px 0 0', minHeight: 4, transition: 'height 0.3s ease', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }} />
                       </Tooltip>
                     );
                   })}
@@ -319,7 +319,7 @@ const Customer360Dashboard = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<Refresh />} onClick={() => { loadSummary(); loadProfiles(); loadAtRisk(); loadLeaderboard(); }}>Refresh</Button>
-          <Button variant="contained" startIcon={<Add />} onClick={handleCreate} sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>Add Profile</Button>
+          <Button variant="contained" startIcon={<Add />} onClick={handleCreate} sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>Add Profile</Button>
         </Box>
       </Box>
 
@@ -525,7 +525,7 @@ const Customer360Dashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave} sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+          <Button variant="contained" onClick={handleSave} sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {dialogMode === 'create' ? 'Create' : 'Save'}
           </Button>
         </DialogActions>

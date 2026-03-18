@@ -391,7 +391,7 @@ const ScenarioPlanningManagement = () => {
             Compare
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Scenario
           </Button>
         </Box>
@@ -597,7 +597,7 @@ const ScenarioPlanningManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setScenarioDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSave} disabled={!scenarioForm.name}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -613,7 +613,7 @@ const ScenarioPlanningManagement = () => {
             )}
           </Box>
           <Button variant="contained" startIcon={<SimulateIcon />} onClick={() => handleSimulate(activeScenarioId)}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Run Simulation
           </Button>
         </DialogTitle>
@@ -813,7 +813,7 @@ const ScenarioPlanningManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setVarDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveVariable} disabled={!varForm.variableName}
-            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingVarId ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
@@ -838,7 +838,7 @@ const ScenarioPlanningManagement = () => {
             </Grid>
             <Grid item xs={12}>
               <Button variant="contained" onClick={handleCompare} disabled={!compareA || !compareB}
-                sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
+                sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
                 Compare
               </Button>
             </Grid>
