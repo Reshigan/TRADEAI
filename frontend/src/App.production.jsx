@@ -15,7 +15,7 @@ import ActivityList from './pages/activities/ActivityList';
 import ActivityDashboard from './pages/activities/ActivityDashboard';
 
 // Trading Terms
-import TradingTermFlow from './pages/tradingterms/TradingTermsList';
+import { TradingTermForm as TradingTermFlow } from './components/tradingTerms';
 import TermsList from './pages/tradingterms/TradingTermsList';
 
 // Sales Analytics
