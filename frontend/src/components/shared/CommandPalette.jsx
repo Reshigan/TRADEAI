@@ -81,7 +81,7 @@ export default function CommandPalette({ open, onClose }) {
           onKeyDown={handleKeyDown} inputRef={inputRef} autoFocus
           InputProps={{ startAdornment: <InputAdornment position="start"><Search size={20} color="#94A3B8" /></InputAdornment> }}
           sx={{ '& .MuiOutlinedInput-root': { border: 'none', borderRadius: 0, '& fieldset': { border: 'none' }, fontSize: 16, py: 0.5 } }} />
-        <Box sx={{ borderTop: '1px solid #E2E8F0', maxHeight: 420, overflow: 'auto' }}>
+        <Box sx={{ borderTop: 1, borderColor: 'divider', maxHeight: 420, overflow: 'auto' }}>
           {results.length === 0 ? (
             <Box sx={{ p: 4, textAlign: 'center' }}><Typography sx={{ color: 'text.secondary' }}>No results found</Typography></Box>
           ) : results.map((item, i) => {
@@ -90,7 +90,7 @@ export default function CommandPalette({ open, onClose }) {
             return (
               <Box key={`${item.type}-${item.path}-${i}`} onClick={() => handleSelect(item)}
                 sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer',
-                  bgcolor: i === selectedIndex ? '#F1F5F9' : 'transparent', '&:hover': { bgcolor: '#F8FAFC' } }}>
+                  bgcolor: i === selectedIndex ? 'action.selected' : 'transparent', '&:hover': { bgcolor: 'action.hover' } }}>
                 <Box sx={{ width: 32, height: 32, borderRadius: 1.5, bgcolor: `${typeColor}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon size={16} color={typeColor} />
                 </Box>
@@ -105,7 +105,7 @@ export default function CommandPalette({ open, onClose }) {
             );
           })}
         </Box>
-        <Box sx={{ borderTop: '1px solid #E2E8F0', px: 2, py: 1, display: 'flex', gap: 2 }}>
+        <Box sx={{ borderTop: 1, borderColor: 'divider', px: 2, py: 1, display: 'flex', gap: 2 }}>
           <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>↑↓ Navigate</Typography>
           <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>↵ Open</Typography>
           <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>Esc Close</Typography>

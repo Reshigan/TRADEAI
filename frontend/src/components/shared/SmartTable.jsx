@@ -330,7 +330,7 @@ const SmartTable = ({
                   align={col.align || (col.type === 'currency' || col.type === 'number' || col.type === 'percent' ? 'right' : 'left')}
                   sx={{
                     fontWeight: 600,
-                    bgcolor: '#F9FAFB',
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? '#0F172A' : '#F9FAFB',
                     minWidth: col.minWidth,
                     width: col.width,
                     whiteSpace: 'nowrap',
@@ -350,7 +350,7 @@ const SmartTable = ({
                   )}
                 </TableCell>
               ))}
-              {rowActions && <TableCell align="right" sx={{ fontWeight: 600, bgcolor: '#F9FAFB', width: 60 }}>Actions</TableCell>}
+              {rowActions && <TableCell align="right" sx={{ fontWeight: 600, bgcolor: (theme) => theme.palette.mode === 'dark' ? '#0F172A' : '#F9FAFB', width: 60 }}>Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Chip } from '@mui/material';
+import { Chip, useTheme } from '@mui/material';
 
-const statusConfig = {
+const lightConfig = {
   draft: { label: 'Draft', bg: '#F1F5F9', color: '#475569' },
   pending_approval: { label: 'Pending', bg: '#FEF3C7', color: '#92400E' },
   pending: { label: 'Pending', bg: '#FEF3C7', color: '#92400E' },
@@ -16,8 +16,27 @@ const statusConfig = {
   overdue: { label: 'Overdue', bg: '#FEE2E2', color: '#991B1B' },
 };
 
+const darkConfig = {
+  draft: { label: 'Draft', bg: '#1E293B', color: '#94A3B8' },
+  pending_approval: { label: 'Pending', bg: '#422006', color: '#FCD34D' },
+  pending: { label: 'Pending', bg: '#422006', color: '#FCD34D' },
+  approved: { label: 'Approved', bg: '#172554', color: '#93C5FD' },
+  active: { label: 'Active', bg: '#052E16', color: '#6EE7B7' },
+  completed: { label: 'Completed', bg: '#1F2937', color: '#D1D5DB' },
+  cancelled: { label: 'Cancelled', bg: '#450A0A', color: '#FCA5A5' },
+  rejected: { label: 'Rejected', bg: '#450A0A', color: '#FCA5A5' },
+  matched: { label: 'Matched', bg: '#052E16', color: '#6EE7B7' },
+  unmatched: { label: 'Unmatched', bg: '#422006', color: '#FCD34D' },
+  in_progress: { label: 'In Progress', bg: '#172554', color: '#93C5FD' },
+  overdue: { label: 'Overdue', bg: '#450A0A', color: '#FCA5A5' },
+};
+
 export default function StatusChip({ status, label, size = 'small' }) {
-  const config = statusConfig[status] || { label: status, bg: '#F1F5F9', color: '#475569' };
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const statusMap = isDark ? darkConfig : lightConfig;
+  const fallback = isDark ? { label: status, bg: '#1E293B', color: '#94A3B8' } : { label: status, bg: '#F1F5F9', color: '#475569' };
+  const config = statusMap[status] || fallback;
   return (
     <Chip
       label={label || config.label}
