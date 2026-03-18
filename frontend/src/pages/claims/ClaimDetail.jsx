@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Button,
-  Chip,
   Grid,
   Divider,
   Table,
@@ -25,9 +24,6 @@ import {
   Skeleton
 } from '@mui/material';
 import {
-  Send as SubmitIcon,
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
   ArrowBack as BackIcon
 } from '@mui/icons-material';
 import { claimService } from '../../services/api';
@@ -35,6 +31,7 @@ import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
 
 const ClaimDetail = () => {
   const { id } = useParams();
@@ -184,40 +181,39 @@ const ClaimDetail = () => {
     );
   }
 
+  const handleQuickAction = async (action) => {
+    if (action === 'submit') await handleSubmit();
+    else if (action === 'approve') await handleApprove();
+    else if (action === 'reject') setRejectDialogOpen(true);
+  };
+
+  const sidebarStats = [
+    { label: 'Claimed Amount', value: formatCurrency(claim.claimedAmount || claim.totalAmount) },
+    { label: 'Claim Type', value: formatLabel(claim.claimType) },
+    { label: 'Customer', value: claim.customerName || claim.customer?.name || 'N/A' },
+    { label: 'Claim Date', value: formatDate(claim.claimDate) },
+  ];
+  const sidebarActivities = [
+    { action: 'created', user: claim.createdBy || 'System', timestamp: claim.createdAt || claim.claimDate, detail: `Claim submitted: ${formatCurrency(claim.claimedAmount || claim.totalAmount)}` },
+    ...(claim.updatedAt && claim.updatedAt !== claim.createdAt ? [{ action: 'updated', user: 'System', timestamp: claim.updatedAt, detail: 'Claim updated' }] : []),
+  ];
+
   return (
       <Box sx={{ p: 3 }}>
-        {/* Header */}
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Button
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/claims')}
-            sx={{ mb: 1 }}
-          >
-            Back to Claims
-          </Button>
-          <Typography variant="h4" gutterBottom>
-            Claim Details
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Claim ID: {claim.claimNumber || claim._id}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Chip
-            label={formatLabel(claim.status)}
-            color={getStatusColor(claim.status)}
-            size="large"
-          />
-          {claim.matchingStatus && (
-            <Chip
-                label={formatLabel(claim.matchingStatus)}
-                color={getStatusColor(claim.matchingStatus)}
-                size="large"
-            />
-          )}
-        </Box>
-      </Box>
+        <PageHeader
+          title={`Claim ${claim.claimNumber || (claim._id || '').slice(-8)}`}
+          subtitle={`${formatLabel(claim.claimType)} • ${claim.customerName || claim.customer?.name || 'N/A'}`}
+          breadcrumbs={[{ label: t('claims', 'Claims'), path: '/claims' }, { label: claim.claimNumber || 'Claim Detail' }]}
+          actions={<Button startIcon={<BackIcon />} onClick={() => navigate('/claims')}>Back to Claims</Button>}
+        />
+        <QuickActionBar
+          status={claim.status || 'draft'}
+          entityType="claim"
+          entityId={id}
+          entityName={claim.claimNumber || 'Claim'}
+          onAction={handleQuickAction}
+          sx={{ mb: 3 }}
+        />
 
       <Grid container spacing={3}>
         {/* Main Details Card */}
@@ -332,93 +328,7 @@ const ClaimDetail = () => {
 
         {/* Sidebar */}
         <Grid item xs={12} md={4}>
-          {/* Actions Card */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Actions
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              {(claim.status === 'draft' || claim.status === 'pending') && (
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SubmitIcon />}
-                  onClick={handleSubmit}
-                  disabled={actionLoading}
-                  sx={{ mb: 2 }}
-                >
-                  Submit Claim
-                </Button>
-              )}
-
-              {(claim.status === 'submitted' || claim.status === 'under_review') && (
-                <>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="success"
-                    startIcon={<ApproveIcon />}
-                    onClick={handleApprove}
-                    disabled={actionLoading}
-                    sx={{ mb: 2 }}
-                  >
-                    Approve
-                  </Button>
-
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="error"
-                    startIcon={<RejectIcon />}
-                    onClick={() => setRejectDialogOpen(true)}
-                    disabled={actionLoading}
-                  >
-                    Reject
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Matching Status Card */}
-          {claim.matchingStatus && (
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Matching Status
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Status
-                  </Typography>
-                  <Chip
-                    label={formatLabel(claim.matchingStatus)}
-                    color={getStatusColor(claim.matchingStatus)}
-                    size="small"
-                    sx={{ mt: 0.5 }}
-                  />
-                </Box>
-
-                {claim.matchedInvoices && claim.matchedInvoices.length > 0 && (
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Matched Invoices
-                    </Typography>
-                    {(claim?.matchedInvoices || []).map((invoice, index) => (
-                      <Typography key={index} variant="body2">
-                        {invoice.invoiceNumber}
-                      </Typography>
-                    ))}
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} loading={loading} />
         </Grid>
       </Grid>
 

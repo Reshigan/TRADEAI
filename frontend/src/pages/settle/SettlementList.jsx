@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress, IconButton, Tooltip } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { settlementService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { SmartTable, PageHeader } from '../../components/shared';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -23,45 +24,46 @@ export default function SettlementList() {
     try { await settlementService.generate(); load(); } catch (e) { console.error(e); setLoading(false); }
   };
 
+  const columns = [
+    { field: 'settlement_number', headerName: `${t('settlement')} #`, renderCell: ({ row }) => row.settlement_number || row.id },
+    { field: 'customer_name', headerName: t('customer') },
+    { field: 'net_amount', headerName: 'Amount', align: 'right', renderCell: ({ row }) => fmt(row.net_amount || row.amount) },
+    { field: 'settlement_type', headerName: 'Type', renderCell: ({ row }) => (row.settlement_type || '').replace(/_/g, ' ') },
+    { field: 'status', headerName: 'Status', type: 'status' },
+    { field: 'created_at', headerName: 'Date', type: 'date' },
+  ];
+
+  const rowActions = [
+    {
+      label: 'Approve', icon: <CheckCircle size={16} />,
+      onClick: async (row) => { try { await settlementService.approve(row.id); load(); } catch(e) { console.error(e); } },
+      visible: (row) => row.status === 'pending' || row.status === 'pending_approval',
+    },
+    {
+      label: 'Reject', icon: <XCircle size={16} />,
+      onClick: async (row) => { try { await settlementService.reject(row.id); load(); } catch(e) { console.error(e); } },
+      visible: (row) => row.status === 'pending' || row.status === 'pending_approval',
+    },
+  ];
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">{tPlural('settlement')}</Typography><Typography variant="body2" color="text.secondary">Generate and track {t('settlement').toLowerCase()} documents</Typography></Box>
-        <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={generate} disabled={loading}>Generate {tPlural('settlement')}</Button>
-      </Box>
-      <Card>
-        <CardContent>
-          {loading ? <LinearProgress /> : (
-            <TableContainer>
-              <Table size="small">
-                <TableHead><TableRow><TableCell>{t('settlement')} #</TableCell><TableCell>{t('customer')}</TableCell><TableCell align="right">Amount</TableCell><TableCell>Type</TableCell><TableCell>Status</TableCell><TableCell>Date</TableCell><TableCell align="right">Actions</TableCell></TableRow></TableHead>
-                <TableBody>
-                  {settlements.length === 0 ? (
-                    <TableRow><TableCell colSpan={7} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No {tPlural('settlement').toLowerCase()} generated yet</Typography></TableCell></TableRow>
-                  ) : settlements.map(s => (
-                    <TableRow key={s.id}>
-                      <TableCell><Typography variant="body2" fontWeight={500}>{s.settlement_number || s.id}</Typography></TableCell>
-                      <TableCell>{s.customer_name || '-'}</TableCell>
-                      <TableCell align="right">{fmt(s.net_amount || s.amount)}</TableCell>
-                      <TableCell sx={{ textTransform: 'capitalize' }}>{(s.settlement_type || '').replace(/_/g, ' ')}</TableCell>
-                      <TableCell><Chip label={s.status || 'pending'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
-                      <TableCell>{s.created_at ? new Date(s.created_at).toLocaleDateString() : '-'}</TableCell>
-                      <TableCell align="right" onClick={e => e.stopPropagation()}>
-                        {(s.status === 'pending' || s.status === 'pending_approval') && (
-                          <>
-                            <Tooltip title="Approve"><IconButton size="small" color="success" onClick={async () => { try { await settlementService.approve(s.id); load(); } catch(e) { console.error(e); } }}><CheckCircle size={16} /></IconButton></Tooltip>
-                            <Tooltip title="Reject"><IconButton size="small" color="error" onClick={async () => { try { await settlementService.reject(s.id); load(); } catch(e) { console.error(e); } }}><XCircle size={16} /></IconButton></Tooltip>
-                          </>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </CardContent>
-      </Card>
+      <PageHeader
+        title={tPlural('settlement')}
+        subtitle={`Generate and track ${t('settlement').toLowerCase()} documents`}
+        actions={
+          <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={generate} disabled={loading}>
+            Generate {tPlural('settlement')}
+          </Button>
+        }
+      />
+      <SmartTable
+        columns={columns}
+        data={settlements}
+        loading={loading}
+        rowActions={rowActions}
+        emptyMessage={`No ${tPlural('settlement').toLowerCase()} generated yet`}
+      />
     </Box>
   );
 }

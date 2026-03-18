@@ -12,15 +12,14 @@ import {
   Skeleton
 } from '@mui/material';
 import {
-  ArrowBack as BackIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon
+  ArrowBack as BackIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
+import { QuickActionBar } from '../../components/shared';
 
 import PromotionOverview from './tabs/PromotionOverview';
 import PromotionProducts from './tabs/PromotionProducts';
@@ -43,6 +42,7 @@ const PromotionDetailWithTabs = () => {
   const [promotion, setPromotion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
+  const [actionLoading, setActionLoading] = useState(false);
 
   const pageVariant = usePageVariants('promotionDetail');
   const tabs = pageVariant?.tabs || [
@@ -105,6 +105,19 @@ const PromotionDetailWithTabs = () => {
     }
   };
 
+  const handleQuickAction = async (action) => {
+    setActionLoading(true);
+    try {
+      if (action === 'submit') await apiClient.post(`/promotions/${id}/submit`);
+      else if (action === 'approve') await apiClient.post(`/promotions/${id}/approve`);
+      else if (action === 'reject') await apiClient.post(`/promotions/${id}/reject`);
+      else if (action === 'edit') { navigate(`/promotions/${id}/edit`); return; }
+      else if (action === 'delete') { await handleDelete(); return; }
+      await loadPromotion();
+    } catch (e) { toast.error(e.response?.data?.message || 'Action failed'); }
+    setActionLoading(false);
+  };
+
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -127,70 +140,25 @@ const PromotionDetailWithTabs = () => {
 
   return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        {/* Modern Header */}
-        <Box sx={{ mb: 4 }}>
-          <Button
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/promotions')}
-            sx={{ 
-              mb: 2,
-              color: 'text.secondary',
-              '&:hover': { color: 'primary.main' }
-            }}
-          >
+        {/* Header */}
+        <Box sx={{ mb: 2 }}>
+          <Button startIcon={<BackIcon />} onClick={() => navigate('/promotions')} sx={{ mb: 1, color: 'text.secondary' }}>
             Back to Promotions
           </Button>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                <Typography variant="h4" fontWeight={700} color="text.primary">
-                  {promotion.name}
-                </Typography>
-                <Chip
-                  label={formatLabel(promotion.status)}
-                  color={
-                    promotion.status === 'active' ? 'success' :
-                    promotion.status === 'approved' ? 'primary' :
-                    promotion.status === 'draft' ? 'default' :
-                    'warning'
-                  }
-                  sx={{ fontWeight: 600 }}
-                />
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                ID: {promotion.id || promotion._id || promotion.promotionId}
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1.5 }}>
-              <Button
-                variant="outlined"
-                startIcon={<EditIcon />}
-                onClick={handleEdit}
-                sx={{ 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontWeight: 600
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={handleDelete}
-                sx={{ 
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontWeight: 600
-                }}
-              >
-                Delete
-              </Button>
-            </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+            <Typography variant="h4" fontWeight={700} color="text.primary">{promotion.name}</Typography>
+            <Chip label={formatLabel(promotion.status)} color={promotion.status === 'active' ? 'success' : promotion.status === 'approved' ? 'primary' : promotion.status === 'draft' ? 'default' : 'warning'} sx={{ fontWeight: 600 }} />
           </Box>
+          <Typography variant="body2" color="text.secondary">ID: {promotion.id || promotion._id || promotion.promotionId}</Typography>
         </Box>
+        <QuickActionBar
+          status={promotion.status || 'draft'}
+          entityType="promotion"
+          entityId={id}
+          entityName={promotion.name}
+          onAction={handleQuickAction}
+          sx={{ mb: 3 }}
+        />
 
         {/* Modern Tabs */}
         <Paper 

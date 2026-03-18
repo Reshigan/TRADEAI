@@ -1,6 +1,5 @@
 import React from 'react';
 import { Chip } from '@mui/material';
-import theme from '../../theme';
 
 const statusConfig = {
   draft: { label: 'Draft', bg: '#F1F5F9', color: '#475569' },
