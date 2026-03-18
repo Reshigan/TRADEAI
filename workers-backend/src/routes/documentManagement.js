@@ -168,3 +168,67 @@ docs.post('/:id/versions', async (c) => {
 });
 
 export const documentManagementRoutes = docs;
+
+// GAP-03: R2 File Upload/Download endpoints
+import { StorageService } from '../services/storageService.js';
+
+docs.post('/upload', async (c) => {
+  try {
+    const companyId = getCompanyId(c);
+    const storage = new StorageService(c.env);
+    
+    // Handle multipart form data
+    const formData = await c.req.formData();
+    const file = formData.get('file');
+    const entityType = formData.get('entityType') || 'general';
+    const entityId = formData.get('entityId') || 'unlinked';
+    const documentName = formData.get('name') || file?.name || 'Untitled';
+    
+    if (!file) return c.json({ success: false, message: 'No file provided' }, 400);
+    
+    const contentType = file.type || 'application/octet-stream';
+    const validation = storage.validateFile(contentType, file.size);
+    if (!validation.valid) return c.json({ success: false, message: validation.error }, 400);
+    
+    const buffer = await file.arrayBuffer();
+    const result = await storage.upload(companyId, entityType, entityId, file.name, buffer, contentType);
+    
+    // Also create document record in D1
+    const db = c.env.DB;
+    const docId = generateId();
+    await db.prepare(`
+      INSERT INTO documents (id, company_id, name, file_name, file_url, file_size, mime_type, document_type, category, entity_type, entity_id, status, uploaded_by, version, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'general', 'other', ?, ?, 'active', ?, 1, datetime('now'), datetime('now'))
+    `).bind(docId, companyId, documentName, file.name, result.key, file.size, contentType, entityType, entityId, getUserId(c)).run();
+    
+    return c.json({ success: true, data: { id: docId, key: result.key, size: result.size, contentType: result.contentType } }, 201);
+  } catch (e) { return c.json({ success: false, message: e.message }, 500); }
+});
+
+docs.get('/:id/download', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { id } = c.req.param();
+    
+    const doc = await db.prepare('SELECT * FROM documents WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!doc) return c.json({ success: false, message: 'Document not found' }, 404);
+    
+    if (!doc.file_url) return c.json({ success: false, message: 'No file attached to this document' }, 404);
+    
+    const storage = new StorageService(c.env);
+    try {
+      const file = await storage.download(doc.file_url);
+      return new Response(file.body, {
+        headers: {
+          'Content-Type': file.contentType,
+          'Content-Disposition': `attachment; filename="${doc.file_name || 'download'}"`,
+          'Content-Length': String(file.size)
+        }
+      });
+    } catch (storageErr) {
+      // If R2 not available, return the file URL for client-side download
+      return c.json({ success: true, data: { downloadUrl: doc.file_url, fileName: doc.file_name } });
+    }
+  } catch (e) { return c.json({ success: false, message: e.message }, 500); }
+});

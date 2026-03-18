@@ -163,36 +163,33 @@ const RealTimeDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Generate mock data for demonstration
-      const now = new Date();
-      const labels = Array.from({ length: 24 }, (_, i) => 
-        format(subHours(now, 23 - i), 'HH:mm')
-      );
+      // GAP-06: Wire to real API instead of mock data
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-      const revenueData = Array.from({ length: 24 }, () => 
-        Math.floor(Math.random() * 50000) + 100000
-      );
-
-      const mockData = {
-        revenue: revenueData,
-        labels: labels,
-        recentActivity: [
-          {
-            description: 'New promotion "Flash Sale" created',
-            timestamp: new Date()
+      if (res.ok) {
+        const result = await res.json();
+        const data = result.data || result;
+        setDashboardData(prev => ({
+          ...prev,
+          kpis: {
+            totalRevenue: data.totalRevenue || data.revenue || 0,
+            totalProfit: data.totalProfit || data.profit || 0,
+            activePromotions: data.activePromotions || 0,
+            customerCount: data.totalCustomers || data.customerCount || 0,
+            revenueGrowth: data.revenueGrowth || 0,
+            profitMargin: data.profitMargin || 0,
+            promotionROI: data.promotionROI || 0,
+            customerRetention: data.customerRetention || 0
           },
-          {
-            description: 'Customer segment analysis completed',
-            timestamp: new Date(Date.now() - 180000)
-          },
-          {
-            description: 'ROI calculation updated for Q3',
-            timestamp: new Date(Date.now() - 360000)
-          }
-        ]
-      };
-
-      setDashboardData(mockData);
+          recentActivity: data.recentActivity || prev.recentActivity,
+          alerts: data.alerts || prev.alerts,
+          systemHealth: data.systemHealth || prev.systemHealth
+        }));
+      }
     } catch (err) {
       setError('Failed to fetch dashboard data');
       console.error('Dashboard fetch error:', err);

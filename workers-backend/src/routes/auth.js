@@ -3,6 +3,8 @@ import { getMongoClient } from '../services/d1.js';
 import { signJWT, verifyJWT, authMiddleware } from '../middleware/auth.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 import { apiError } from '../utils/apiError.js';
+import { verifyTOTP, generateBackupCodes } from '../utils/totp.js';
+import { EmailService } from '../services/emailService.js';
 
 export const authRoutes = new Hono();
 
@@ -99,6 +101,23 @@ authRoutes.post('/login', authRateLimit, async (c) => {
     // Check if password reset is required (seeded accounts)
     if (user.passwordResetRequired) {
       return c.json({ success: false, message: 'Password reset required. Please change your password before proceeding.', code: 'PASSWORD_RESET_REQUIRED' }, 428);
+    }
+
+    // GAP-01: If 2FA is enabled, return tempToken instead of full login
+    if (user.twoFactorEnabled && user.twoFactorSecret) {
+      const secret = c.env.JWT_SECRET;
+      if (!secret) return c.json({ success: false, message: 'Server configuration error' }, 500);
+      const tempToken = await signJWT({
+        userId: user._id.$oid || user._id,
+        type: '2fa_pending',
+        email: user.email
+      }, secret, '5m');
+      return c.json({
+        success: true,
+        requires2FA: true,
+        tempToken,
+        message: 'Please enter your 2FA code'
+      });
     }
 
     // Rehash legacy SHA-256 password to PBKDF2 on successful login
@@ -320,7 +339,7 @@ authRoutes.post('/2fa/generate', authMiddleware, async (c) => {
   }
 });
 
-// 2FA - Verify and enable
+// 2FA - Verify and enable (GAP-01: real TOTP validation)
 authRoutes.post('/2fa/verify', authMiddleware, async (c) => {
   try {
     const user = c.get('user');
@@ -328,22 +347,113 @@ authRoutes.post('/2fa/verify', authMiddleware, async (c) => {
     if (!token || token.length !== 6) {
       return c.json({ success: false, message: 'A valid 6-digit code is required' }, 400);
     }
-    const mongodb = getMongoClient(c);
-    const backupCodes = [];
-    for (let i = 0; i < 10; i++) {
-      const bytes = new Uint8Array(4);
-      crypto.getRandomValues(bytes);
-      backupCodes.push(Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(''));
+    const cleanSecret = secret.replace(/\s/g, '');
+    // Validate TOTP token against the secret
+    const isValid = await verifyTOTP(token, cleanSecret);
+    if (!isValid) {
+      return c.json({ success: false, message: 'Invalid 2FA code. Please try again.' }, 400);
     }
+    const mongodb = getMongoClient(c);
+    const backupCodes = generateBackupCodes(10);
     await mongodb.updateOne('users', { _id: user._id }, {
       twoFactorEnabled: true,
-      twoFactorSecret: secret.replace(/\s/g, ''),
+      twoFactorSecret: cleanSecret,
       twoFactorBackupCodes: JSON.stringify(backupCodes),
       twoFactorEnabledAt: new Date().toISOString()
     });
     return c.json({ success: true, backupCodes, message: '2FA enabled successfully' });
   } catch (error) {
     return apiError(c, error, 'auth');
+  }
+});
+
+// GAP-01: 2FA Login - validate TOTP code with tempToken
+authRoutes.post('/2fa/login', authRateLimit, async (c) => {
+  try {
+    const { tempToken, token: totpCode, backupCode } = await c.req.json();
+    if (!tempToken) return c.json({ success: false, message: 'Temp token is required' }, 400);
+    if (!totpCode && !backupCode) return c.json({ success: false, message: 'TOTP code or backup code is required' }, 400);
+
+    const jwtSecret = c.env.JWT_SECRET;
+    const decoded = await verifyJWT(tempToken, jwtSecret);
+    if (decoded.type !== '2fa_pending') {
+      return c.json({ success: false, message: 'Invalid temp token' }, 401);
+    }
+
+    const mongodb = getMongoClient(c);
+    const user = await mongodb.findOne('users', { email: decoded.email });
+    if (!user || !user.twoFactorEnabled) {
+      return c.json({ success: false, message: 'Invalid request' }, 401);
+    }
+
+    let authenticated = false;
+
+    if (totpCode) {
+      // Validate TOTP
+      authenticated = await verifyTOTP(totpCode, user.twoFactorSecret);
+    } else if (backupCode) {
+      // Validate backup code (one-time use)
+      const storedCodes = JSON.parse(user.twoFactorBackupCodes || '[]');
+      const codeIndex = storedCodes.indexOf(backupCode);
+      if (codeIndex >= 0) {
+        authenticated = true;
+        storedCodes.splice(codeIndex, 1);
+        await mongodb.updateOne('users', { _id: user._id }, {
+          twoFactorBackupCodes: JSON.stringify(storedCodes)
+        });
+      }
+    }
+
+    if (!authenticated) {
+      return c.json({ success: false, message: 'Invalid 2FA code' }, 401);
+    }
+
+    // Update login state
+    const rehashData = { loginAttempts: 0, lockUntil: null, lastLogin: new Date().toISOString() };
+    if (user.password && !user.password.includes(':')) {
+      rehashData.password = await hashPassword(user.password);
+    }
+    await mongodb.updateOne('users', { _id: user._id }, rehashData);
+
+    // Generate full tokens
+    const accessToken = await signJWT({
+      userId: user._id.$oid || user._id,
+      email: user.email,
+      role: user.role,
+      tenantId: user.companyId
+    }, jwtSecret, '15m');
+
+    const refreshToken = await signJWT({
+      userId: user._id.$oid || user._id,
+      type: 'refresh'
+    }, jwtSecret, '7d');
+
+    await mongodb.updateOne('users', { _id: user._id }, {
+      refreshToken,
+      refreshTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    });
+
+    const isProduction = c.env.ENVIRONMENT === 'production';
+    c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=Strict; Path=/api/auth; Max-Age=${7 * 24 * 60 * 60}`);
+
+    return c.json({
+      success: true,
+      token: accessToken,
+      data: {
+        user: {
+          id: user._id.$oid || user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          companyId: user.companyId
+        },
+        tokens: { accessToken }
+      },
+      message: 'Login successful'
+    });
+  } catch (error) {
+    return apiError(c, error, 'auth.2fa.login');
   }
 });
 

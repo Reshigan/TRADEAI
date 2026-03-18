@@ -246,3 +246,30 @@ notif.delete('/history/:id', async (c) => {
 });
 
 export const notificationCenterRoutes = notif;
+
+// GAP-04: Real-time polling endpoint for unread notifications
+notif.get('/unread', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const userId = getUserId(c);
+    const since = c.req.query('since') || new Date(Date.now() - 86400000).toISOString();
+    
+    let query = "SELECT * FROM notifications WHERE company_id = ? AND status = 'unread' AND created_at > ?";
+    const params = [companyId, since];
+    if (userId) { query += ' AND (user_id = ? OR user_id IS NULL)'; params.push(userId); }
+    query += ' ORDER BY created_at DESC LIMIT 50';
+    
+    const result = await db.prepare(query).bind(...params).all();
+    const countResult = await db.prepare(
+      "SELECT COUNT(*) as count FROM notifications WHERE company_id = ? AND status = 'unread'"
+    ).bind(companyId).first();
+    
+    return c.json({ 
+      success: true, 
+      data: result.results || [], 
+      unreadCount: countResult?.count || 0,
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) { return c.json({ success: false, message: e.message }, 500); }
+});

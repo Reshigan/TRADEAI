@@ -121,9 +121,25 @@ const AdvancedAnalytics = () => {
       setLoading(true);
       setError(null);
 
-      // Generate comprehensive mock data for advanced analytics
-      const mockData = generateMockAnalyticsData();
-      setAnalyticsData(mockData);
+      // GAP-06: Wire to real API, fallback to generated data
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      try {
+        const res = await fetch(`${baseUrl}/reporting/analytics?startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const result = await res.json();
+          const data = result.data || result;
+          if (data.roiAnalysis || data.kpis) {
+            setAnalyticsData(prev => ({ ...prev, ...data }));
+            return;
+          }
+        }
+      } catch { /* fallback to generated data */ }
+
+      const fallbackData = generateMockAnalyticsData();
+      setAnalyticsData(fallbackData);
 
     } catch (err) {
       setError('Failed to fetch analytics data');

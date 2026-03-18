@@ -32,18 +32,30 @@ const PersonalizedDashboard = () => {
   const [greeting, setGreeting] = useState('');
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
+  const [dashboardData, setDashboardData] = useState(null);
+  const [aiInsights, setAiInsights] = useState([]);
+
   useEffect(() => {
-    // Get user info
-    const mockUser = {
-      name: 'Sarah Chen',
-      role: 'Senior Key Account Manager',
-      avatar: '/avatar.jpg',
-      preferences: {
-        favoriteMetrics: ['revenue', 'roi', 'customers'],
-        workingHours: '08:00-17:00'
+    // GAP-05: Get real user from auth context / localStorage
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        setUser({
+          id: parsed.id,
+          name: `${parsed.firstName || ''} ${parsed.lastName || ''}`.trim() || parsed.email,
+          firstName: parsed.firstName,
+          role: parsed.role || 'User',
+          avatar: parsed.avatar || null,
+          email: parsed.email,
+          companyId: parsed.companyId
+        });
+      } else {
+        setUser({ name: 'User', role: 'User', firstName: 'User' });
       }
-    };
-    setUser(mockUser);
+    } catch {
+      setUser({ name: 'User', role: 'User', firstName: 'User' });
+    }
 
     // Personalized greeting based on time
     const hour = new Date().getHours();
@@ -54,11 +66,40 @@ const PersonalizedDashboard = () => {
     } else {
       setGreeting('Good evening');
     }
+
+    // GAP-05: Wire to real API endpoints
+    fetchDashboardData();
+    fetchAIInsights();
   }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/dashboard`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        setDashboardData(data.data || data);
+      }
+    } catch { /* fallback to static display */ }
+  };
+
+  const fetchAIInsights = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/ai-copilot/suggest-actions`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const data = await res.json();
+        setAiInsights(data.data || data.suggestions || []);
+      }
+    } catch { /* fallback */ }
+  };
 
   const handleRefresh = () => {
     setLastRefresh(new Date());
-    // Trigger data refresh
+    fetchDashboardData();
+    fetchAIInsights();
   };
 
   if (!user) {
@@ -123,30 +164,30 @@ const PersonalizedDashboard = () => {
               </Box>
             </Box>
 
-            {/* Quick Stats */}
-            <Box sx={{ display: 'flex', gap: 3, mt: 3 }}>
+            {/* Quick Stats - GAP-05: Wire to real data */}
+            <Box sx={{ display: 'flex', gap: 3, mt: 3, flexWrap: 'wrap' }}>
               <Box>
                 <Typography variant="caption" sx={{ opacity: 0.9 }}>
                   Today's Tasks
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  5 pending
+                  {dashboardData?.pendingApprovals ?? '...'} pending
                 </Typography>
               </Box>
               <Box>
                 <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                  Active Campaigns
+                  Active Promotions
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  12 running
+                  {dashboardData?.activePromotions ?? '...'} running
                 </Typography>
               </Box>
               <Box>
                 <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                  This Week's Impact
+                  Budget Utilization
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  R85k revenue
+                  {dashboardData?.budgetUtilization ? `${Math.round(dashboardData.budgetUtilization)}%` : '...'}
                 </Typography>
               </Box>
             </Box>
