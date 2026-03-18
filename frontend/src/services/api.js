@@ -2105,6 +2105,7 @@ export const roleService = {
       currentUser = null;
     }
   },
+  clear: () => { currentUser = null; },
   hasRole: (role) => currentUser?.role === role,
   hasAnyRole: (roles) => Array.isArray(roles) && roles.includes(currentUser?.role),
   hasPermission: (permission) => {
