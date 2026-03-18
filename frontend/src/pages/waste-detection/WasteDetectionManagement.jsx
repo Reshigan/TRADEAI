@@ -49,7 +49,7 @@ const WasteDetectionManagement = () => {
             { label: 'Waste %', value: `${summary.wastePercentage}%`, color: summary.wastePercentage > 30 ? '#EF4444' : '#059669' },
           ].map((kpi, i) => (
             <Grid item xs={6} md={3} key={i}>
-              <Card sx={{ border: '1px solid #E2E8F0' }}>
+              <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
                 <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                   <Typography variant="caption" color="text.secondary">{kpi.label}</Typography>
                   <Typography variant="h5" fontWeight={700} sx={{ color: kpi.color }}>{kpi.value}</Typography>
@@ -84,7 +84,7 @@ const WasteDetectionManagement = () => {
           ))}
 
           {data?.summary && (
-            <Card sx={{ border: '1px solid #E2E8F0', mt: 2 }}>
+            <Card sx={{ border: '1px solid', borderColor: 'divider', mt: 2 }}>
               <CardContent>
                 <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>Analysis Summary</Typography>
                 <Divider sx={{ mb: 1 }} />

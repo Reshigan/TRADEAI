@@ -383,15 +383,15 @@ const ScenarioPlanningManagement = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchScenarios(); fetchSummary(); }}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+            sx={{ borderColor: '#E5E7EB', color: 'text.primary', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
             Refresh
           </Button>
           <Button variant="outlined" startIcon={<CompareIcon />} onClick={() => setCompareDialog(true)}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+            sx={{ borderColor: '#E5E7EB', color: 'text.primary', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
             Compare
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Scenario
           </Button>
         </Box>
@@ -422,7 +422,7 @@ const ScenarioPlanningManagement = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: 'primary.dark' }, '& .MuiTabs-indicator': { bgcolor: 'primary.dark' } }}>
         <Tab label={`All Scenarios (${scenarios.length})`} />
         <Tab label="Favorites" />
       </Tabs>
@@ -431,7 +431,7 @@ const ScenarioPlanningManagement = () => {
       <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+            <TableRow sx={{ bgcolor: 'background.default' }}>
               <TableCell sx={{ fontWeight: 600, color: '#6B7280', width: 40 }}></TableCell>
               <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Scenario</TableCell>
               <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Type</TableCell>
@@ -470,7 +470,7 @@ const ScenarioPlanningManagement = () => {
                   </TableCell>
                   <TableCell>
                     <Chip label={typeInfo?.label || (s.scenarioType || s.scenario_type)} size="small"
-                      sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontWeight: 500, fontSize: '0.7rem' }} />
+                      sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontWeight: 500, fontSize: '0.7rem' }} />
                   </TableCell>
                   <TableCell>
                     <Chip label={s.status} size="small"
@@ -571,7 +571,7 @@ const ScenarioPlanningManagement = () => {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#374151' }}>Baseline Assumptions</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>Baseline Assumptions</Typography></Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField fullWidth size="small" label="Baseline Revenue (R)" type="number"
                 value={scenarioForm.baselineRevenue} onChange={(e) => setScenarioForm(p => ({ ...p, baselineRevenue: parseFloat(e.target.value) || 0 }))} />
@@ -597,7 +597,7 @@ const ScenarioPlanningManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setScenarioDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSave} disabled={!scenarioForm.name}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -613,7 +613,7 @@ const ScenarioPlanningManagement = () => {
             )}
           </Box>
           <Button variant="contained" startIcon={<SimulateIcon />} onClick={() => handleSimulate(activeScenarioId)}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Run Simulation
           </Button>
         </DialogTitle>
@@ -629,7 +629,7 @@ const ScenarioPlanningManagement = () => {
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4} md={2}>
                   <Typography variant="caption" sx={{ color: '#6B7280' }}>Projected Revenue</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatCurrency(detailScenario.projectedRevenue || detailScenario.projected_revenue)}</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 700, color: 'primary.dark' }}>{formatCurrency(detailScenario.projectedRevenue || detailScenario.projected_revenue)}</Typography>
                 </Grid>
                 <Grid item xs={4} md={2}>
                   <Typography variant="caption" sx={{ color: '#6B7280' }}>ROI</Typography>
@@ -660,11 +660,11 @@ const ScenarioPlanningManagement = () => {
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Variables ({detailVariables.length})</Typography>
-                <Button size="small" startIcon={<AddIcon />} onClick={handleAddVariable} sx={{ color: '#1E40AF' }}>Add Variable</Button>
+                <Button size="small" startIcon={<AddIcon />} onClick={handleAddVariable} sx={{ color: 'primary.dark' }}>Add Variable</Button>
               </Box>
 
               {detailVariables.length === 0 ? (
-                <Card sx={{ p: 3, textAlign: 'center', borderRadius: 2, bgcolor: '#F9FAFB', mb: 2 }}>
+                <Card sx={{ p: 3, textAlign: 'center', borderRadius: 2, bgcolor: 'background.default', mb: 2 }}>
                   <Typography color="text.secondary" sx={{ mb: 1 }}>No variables defined yet</Typography>
                   <Typography variant="caption" color="text.secondary">Add variables to model what-if changes, then run the simulation</Typography>
                 </Card>
@@ -696,7 +696,7 @@ const ScenarioPlanningManagement = () => {
                             value={adj} min={minV} max={maxV}
                             step={v.stepSize || v.step_size || 1}
                             onChange={(_, val) => handleSliderChange(v, val)}
-                            sx={{ color: '#1E40AF', flex: 1 }}
+                            sx={{ color: 'primary.dark', flex: 1 }}
                           />
                           <Typography variant="body2" sx={{ fontWeight: 700, minWidth: 60, textAlign: 'right' }}>{adj}</Typography>
                         </Box>
@@ -718,7 +718,7 @@ const ScenarioPlanningManagement = () => {
                   <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                        <TableRow sx={{ bgcolor: 'background.default' }}>
                           <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Metric</TableCell>
                           <TableCell sx={{ fontWeight: 600, color: '#6B7280' }} align="right">Baseline</TableCell>
                           <TableCell sx={{ fontWeight: 600, color: '#6B7280' }} align="right">Projected</TableCell>
@@ -733,7 +733,7 @@ const ScenarioPlanningManagement = () => {
                             <TableRow key={r.id} hover>
                               <TableCell><Typography variant="body2" sx={{ fontWeight: 600 }}>{r.metricName || r.metric_name}</Typography></TableCell>
                               <TableCell align="right">{formatCurrency(r.baselineValue || r.baseline_value)}</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatCurrency(r.metricValue || r.metric_value)}</TableCell>
+                              <TableCell align="right" sx={{ fontWeight: 700, color: 'primary.dark' }}>{formatCurrency(r.metricValue || r.metric_value)}</TableCell>
                               <TableCell align="right" sx={{ color: variance > 0 ? '#059669' : variance < 0 ? '#DC2626' : '#6B7280' }}>
                                 {variance > 0 ? '+' : ''}{formatCurrency(variance)}
                               </TableCell>
@@ -754,7 +754,7 @@ const ScenarioPlanningManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="outlined" onClick={() => { setDetailDialog(false); handleEdit(detailScenario); }}
-            sx={{ borderColor: '#1E40AF', color: '#1E40AF' }}>
+            sx={{ borderColor: '#1E40AF', color: 'primary.dark' }}>
             Edit Scenario
           </Button>
         </DialogActions>
@@ -803,7 +803,7 @@ const ScenarioPlanningManagement = () => {
                   {commonVariables.map((cv, i) => (
                     <Chip key={i} label={cv.name} size="small" clickable
                       onClick={() => setVarForm({ variableName: cv.name, category: cv.category, unit: cv.unit, baseValue: cv.defaultBase, adjustedValue: cv.defaultBase, minValue: cv.min, maxValue: cv.max })}
-                      sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontSize: '0.7rem' }} />
+                      sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontSize: '0.7rem' }} />
                   ))}
                 </Box>
               </Grid>
@@ -813,7 +813,7 @@ const ScenarioPlanningManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setVarDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveVariable} disabled={!varForm.variableName}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             {editingVarId ? 'Update' : 'Add'}
           </Button>
         </DialogActions>
@@ -838,7 +838,7 @@ const ScenarioPlanningManagement = () => {
             </Grid>
             <Grid item xs={12}>
               <Button variant="contained" onClick={handleCompare} disabled={!compareA || !compareB}
-                sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+                sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
                 Compare
               </Button>
             </Grid>

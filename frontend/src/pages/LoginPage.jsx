@@ -38,7 +38,7 @@ export default function LoginPage() {
             <TextField fullWidth label="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} sx={{ mb: 2 }} required />
             <TextField fullWidth label="Password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} sx={{ mb: 3 }} required />
             <Button fullWidth variant="contained" type="submit" disabled={loading} size="large"
-              sx={{ bgcolor: '#2563EB', py: 1.5, fontSize: 15, fontWeight: 600, '&:hover': { bgcolor: '#1D4ED8' } }}>
+              sx={{ bgcolor: 'primary.main', py: 1.5, fontSize: 15, fontWeight: 600, '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
               {loading ? <CircularProgress size={22} color="inherit" /> : 'Sign In'}
             </Button>
           </form>

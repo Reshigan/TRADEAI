@@ -53,7 +53,7 @@ const CustomerList = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: '#1E40AF' }} />
+        <CircularProgress sx={{ color: 'primary.dark' }} />
       </Box>
     );
   }
@@ -66,7 +66,7 @@ const CustomerList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{customers.length} customer{customers.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/customers/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
           New Customer
         </Button>
       </Box>
@@ -91,7 +91,7 @@ const CustomerList = () => {
         <TextField fullWidth placeholder="Search customers by name, code, or location..."
           value={search} onChange={(e) => setSearch(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
-          sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+          sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
       </Paper>
 
       {customers.length === 0 ? (
@@ -99,7 +99,7 @@ const CustomerList = () => {
           <BusinessIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No customers found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/customers/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Add Customer
           </Button>
         </Paper>
@@ -114,7 +114,7 @@ const CustomerList = () => {
                 onClick={() => navigate(`/customers/${customer.id || customer._id}`)}>
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: alpha('#1E40AF', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <BusinessIcon sx={{ color: '#1E40AF', fontSize: 20 }} />
+                    <BusinessIcon sx={{ color: 'primary.dark', fontSize: 20 }} />
                   </Box>
                   <Typography variant="subtitle1" fontWeight={700}>{customer.name || customer.customerName}</Typography>
                 </Box>

@@ -39,7 +39,7 @@ function GanttRow({ item, currentMonth, daysInMonth, label, color, onClick }) {
   const left = ((sDay - 1) / daysInMonth) * 100;
   const width = ((eDay - sDay + 1) / daysInMonth) * 100;
   return (
-    <Box sx={{ display: 'flex', minHeight: 36, alignItems: 'center', minWidth: 800, '&:hover': { bgcolor: '#F8FAFC' } }}>
+    <Box sx={{ display: 'flex', minHeight: 36, alignItems: 'center', minWidth: 800, '&:hover': { bgcolor: 'background.default' } }}>
       <Box sx={{ width: 220, flexShrink: 0, px: 1 }}>
         <Typography variant="body2" fontWeight={500} noWrap sx={{ cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>{label}</Typography>
       </Box>
@@ -58,7 +58,7 @@ function MonthNav({ currentMonth, setCurrentMonth, monthName, daysInMonth }) {
         <Typography variant="h6" fontWeight={700}>{monthName}</Typography>
         <Button size="small" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>Next</Button>
       </Box>
-      <Box sx={{ display: 'flex', borderBottom: '1px solid #E2E8F0', mb: 1, minWidth: 800 }}>
+      <Box sx={{ display: 'flex', borderBottom: 1, borderColor: 'divider', mb: 1, minWidth: 800 }}>
         <Box sx={{ width: 220, flexShrink: 0, p: 1 }}><Typography variant="caption" fontWeight={600}>Name</Typography></Box>
         <Box sx={{ flex: 1, display: 'flex' }}>
           {Array.from({ length: daysInMonth }, (_, i) => (
@@ -141,7 +141,7 @@ export default function TradeCalendar() {
           </Typography>
         </Box>
         <Button variant="outlined" size="small" onClick={() => navigate('/trade-calendar')}
-          sx={{ borderColor: '#E5E7EB', color: '#374151' }}>
+          sx={{ borderColor: '#E5E7EB', color: 'text.primary' }}>
           Advanced Calendar
         </Button>
       </Box>
@@ -195,7 +195,7 @@ export default function TradeCalendar() {
                 <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
                   <Table size="small">
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                      <TableRow sx={{ bgcolor: 'background.default' }}>
                         <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Amount</TableCell>
@@ -239,7 +239,7 @@ export default function TradeCalendar() {
                 <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
                   <Table size="small">
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                      <TableRow sx={{ bgcolor: 'background.default' }}>
                         <TableCell sx={{ fontWeight: 600 }}>Event</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
@@ -288,7 +288,7 @@ export default function TradeCalendar() {
                 <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
                   <Table size="small">
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                      <TableRow sx={{ bgcolor: 'background.default' }}>
                         <TableCell sx={{ fontWeight: 600 }}>Promotion</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Start</TableCell>
@@ -332,7 +332,7 @@ export default function TradeCalendar() {
                 <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
                   <Table size="small">
                     <TableHead>
-                      <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                      <TableRow sx={{ bgcolor: 'background.default' }}>
                         <TableCell sx={{ fontWeight: 600 }}>Activity</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Start</TableCell>
@@ -354,7 +354,7 @@ export default function TradeCalendar() {
                           <TableCell>{formatCurrency(a.budget_spent)}</TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <LinearProgress variant="determinate" value={Math.min(100, a.performance || 0)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: '#F3F4F6', '& .MuiLinearProgress-bar': { bgcolor: (a.performance || 0) >= 80 ? '#059669' : (a.performance || 0) >= 50 ? '#F59E0B' : '#EF4444' } }} />
+                              <LinearProgress variant="determinate" value={Math.min(100, a.performance || 0)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: (a.performance || 0) >= 80 ? '#059669' : (a.performance || 0) >= 50 ? '#F59E0B' : '#EF4444' } }} />
                               <Typography variant="caption" fontWeight={600}>{(a.performance || 0).toFixed(0)}%</Typography>
                             </Box>
                           </TableCell>

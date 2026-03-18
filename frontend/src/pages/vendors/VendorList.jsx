@@ -42,7 +42,7 @@ const VendorList = () => {
     { label: 'With Contact Info', value: stats.withContact, icon: <EmailIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
   ];
 
-  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: 'primary.dark' }} /></Box>;
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
@@ -52,7 +52,7 @@ const VendorList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{vendors.length} vendor{vendors.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/vendors/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
           New Vendor
         </Button>
       </Box>
@@ -76,7 +76,7 @@ const VendorList = () => {
       <Paper elevation={0} sx={{ p: 2.5, mb: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider' }}>
         <TextField fullWidth placeholder="Search vendors..." value={search} onChange={(e) => setSearch(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
-          sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+          sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
       </Paper>
 
       {vendors.length === 0 ? (
@@ -84,7 +84,7 @@ const VendorList = () => {
           <BusinessIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No vendors found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/vendors/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Add Vendor
           </Button>
         </Paper>
@@ -99,7 +99,7 @@ const VendorList = () => {
                 onClick={() => navigate(`/vendors/${vendor.id || vendor._id}`)}>
                 <Box display="flex" alignItems="center" gap={1.5} mb={2}>
                   <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: alpha('#1E40AF', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <BusinessIcon sx={{ color: '#1E40AF', fontSize: 20 }} />
+                    <BusinessIcon sx={{ color: 'primary.dark', fontSize: 20 }} />
                   </Box>
                   <Typography variant="subtitle1" fontWeight={700}>{vendor.name}</Typography>
                 </Box>
@@ -128,7 +128,7 @@ const VendorList = () => {
                   )}
                   {(vendor.city || vendor.location) && (
                     <Box sx={{ mt: 2, p: 1.5, bgcolor: alpha('#1E40AF', 0.06), borderRadius: '10px', display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <LocationIcon sx={{ fontSize: 16, color: '#1E40AF' }} />
+                      <LocationIcon sx={{ fontSize: 16, color: 'primary.dark' }} />
                       <Typography variant="caption" color="#1E40AF">
                         {vendor.city || vendor.location?.city}{(vendor.city || vendor.location?.city) && (vendor.region || vendor.location?.state) ? ', ' : ''}{vendor.region || vendor.location?.state}
                       </Typography>

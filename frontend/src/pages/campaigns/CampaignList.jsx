@@ -49,7 +49,7 @@ const CampaignList = () => {
     { label: 'Total Budget', value: formatCurrency(stats.totalBudget), icon: <BudgetIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
 
-  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}><CircularProgress sx={{ color: 'primary.dark' }} /></Box>;
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
@@ -59,7 +59,7 @@ const CampaignList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/campaigns/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
           New Campaign
         </Button>
       </Box>
@@ -84,10 +84,10 @@ const CampaignList = () => {
         <TextField fullWidth placeholder="Search campaigns..." value={filters.search}
           onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
-          sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+          sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
         <TextField select label="Status" value={filters.status}
           onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-          sx={{ minWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }}>
+          sx={{ minWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }}>
           <MenuItem value="all">All Status</MenuItem>
           <MenuItem value="active">Active</MenuItem>
           <MenuItem value="draft">Draft</MenuItem>
@@ -104,7 +104,7 @@ const CampaignList = () => {
           <CampaignIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No campaigns found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/campaigns/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             Create Campaign
           </Button>
         </Paper>
@@ -143,7 +143,7 @@ const CampaignList = () => {
                   {campaign.promotions && campaign.promotions.length > 0 && (
                     <Box sx={{ p: 1.5, bgcolor: alpha('#1E40AF', 0.06), borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Typography variant="caption" fontWeight={600} color="#1E40AF">Promotions</Typography>
-                      <Chip label={campaign.promotions.length} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: alpha('#1E40AF', 0.12), color: '#1E40AF' }} />
+                      <Chip label={campaign.promotions.length} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: alpha('#1E40AF', 0.12), color: 'primary.dark' }} />
                     </Box>
                   )}
                 </Box>

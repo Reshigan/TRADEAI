@@ -103,7 +103,7 @@ export default function IntegrationHub() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Integration</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>New Integration</Button>
         </Box>
       </Box>
 
@@ -125,7 +125,7 @@ export default function IntegrationHub() {
         <TableContainer>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Provider</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
@@ -138,7 +138,7 @@ export default function IntegrationHub() {
             <TableBody>
               {(tab === 0 ? integrations : tab === 1 ? integrations.filter(i => i.category === 'erp') : integrations.filter(i => i.category === 'crm')).map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><HubIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{item.name}</Typography></Box></TableCell>
+                  <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><HubIcon sx={{ fontSize: 18, color: 'primary.dark' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{item.name}</Typography></Box></TableCell>
                   <TableCell>{item.provider}</TableCell>
                   <TableCell><Chip label={item.category} size="small" /></TableCell>
                   <TableCell><Chip label={item.status} size="small" color={statusColor(item.status)} /></TableCell>
@@ -180,7 +180,7 @@ export default function IntegrationHub() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'primary.dark' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

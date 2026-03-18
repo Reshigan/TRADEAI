@@ -179,7 +179,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
       <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="body2" sx={{ mr: 1 }}>Intensity:</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Box sx={{ width: 20, height: 20, bgcolor: '#f5f5f5', mr: 0.5 }} />
+          <Box sx={{ width: 20, height: 20, bgcolor: 'action.hover', mr: 0.5 }} />
           <Typography variant="caption" sx={{ mr: 1 }}>None</Typography>
           
           <Box sx={{ width: 20, height: 20, bgcolor: '#F5F3FF', mr: 0.5 }} />
@@ -191,7 +191,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
           <Box sx={{ width: 20, height: 20, bgcolor: '#42a5f5', mr: 0.5 }} />
           <Typography variant="caption" sx={{ mr: 1 }}>High</Typography>
           
-          <Box sx={{ width: 20, height: 20, bgcolor: '#1E40AF', mr: 0.5 }} />
+          <Box sx={{ width: 20, height: 20, bgcolor: 'primary.dark', mr: 0.5 }} />
           <Typography variant="caption">Very High</Typography>
         </Box>
       </Box>

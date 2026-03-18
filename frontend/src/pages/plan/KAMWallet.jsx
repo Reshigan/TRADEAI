@@ -82,7 +82,7 @@ export default function KAMWallet() {
                         <TableCell align="right">{fmt(w.allocated_amount)}</TableCell>
                         <TableCell align="right">{fmt(w.spent_amount)}</TableCell>
                         <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: '#F1F5F9', '& .MuiLinearProgress-bar': { bgcolor: util > 90 ? '#DC2626' : '#2563EB' } }} />
+                          <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: util > 90 ? '#DC2626' : '#2563EB' } }} />
                           <Typography variant="caption">{util.toFixed(0)}%</Typography>
                         </Box></TableCell>
                         <TableCell><Chip label={w.status || 'active'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>

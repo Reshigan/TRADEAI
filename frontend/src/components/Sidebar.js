@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Typography, Collapse, Badge, Button, Popover, List, ListItemButton, ListItemIcon, ListItemText, Avatar, Divider, IconButton, Tooltip } from '@mui/material';
-import { LayoutDashboard, CalendarRange, Zap, CheckSquare, Landmark, BarChart3, Database, Shield, Plus, Settings, HelpCircle, LogOut, ChevronDown, ChevronRight, ChevronLeft, DollarSign, Wallet, LineChart, TrendingUp, ShoppingCart, Megaphone, FileText, Receipt, Scale, BookOpen, PieChart, Users as UsersIcon, Package, Store, FileSpreadsheet, Layers, BarChart, AlertTriangle, Target, Building2, Link2, Lock } from 'lucide-react';
+import { LayoutDashboard, CalendarRange, Zap, CheckSquare, Landmark, BarChart3, Database, Shield, Plus, Settings, HelpCircle, LogOut, ChevronDown, ChevronRight, ChevronLeft, DollarSign, Wallet, LineChart, TrendingUp, ShoppingCart, Megaphone, FileText, Receipt, Scale, BookOpen, PieChart, Users as UsersIcon, Package, Store, FileSpreadsheet, Layers, BarChart, AlertTriangle, Target, Building2, Link2, Lock, Sun, Moon, Monitor } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTerminology } from '../contexts/TerminologyContext';
+import { useThemeMode } from '../contexts/ThemeContext';
 
 export const SIDEBAR_WIDTH = 256;
 const COLLAPSED_WIDTH = 64;
@@ -121,6 +122,7 @@ export default function Sidebar({ user }) {
   const location = useLocation();
   const { logout } = useAuth();
   const { t, tPlural } = useTerminology();
+  const { mode, setMode } = useThemeMode();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
   const [quickAnchor, setQuickAnchor] = useState(null);
   const pendingCount = 0;
@@ -181,6 +183,30 @@ export default function Sidebar({ user }) {
         </Box>
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mx: 2 }} />
       </>)}
+
+      {!collapsed && (
+        <Box sx={{ px: 2, py: 1, display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', bgcolor: 'rgba(255,255,255,0.06)', borderRadius: 2, p: 0.5 }}>
+            {[
+              { key: 'light', icon: Sun, label: 'Light' },
+              { key: 'dark', icon: Moon, label: 'Dark' },
+              { key: 'auto', icon: Monitor, label: 'Auto' },
+            ].map(({ key, icon: Icon, label }) => (
+              <Tooltip key={key} title={label} placement="top">
+                <IconButton size="small" onClick={() => setMode(key)}
+                  sx={{
+                    color: mode === key ? '#fff' : 'rgba(255,255,255,0.35)',
+                    bgcolor: mode === key ? 'rgba(59,130,246,0.25)' : 'transparent',
+                    borderRadius: 1.5, mx: 0.25, width: 32, height: 32,
+                    '&:hover': { color: '#fff', bgcolor: mode === key ? 'rgba(59,130,246,0.35)' : 'rgba(255,255,255,0.08)' },
+                  }}>
+                  <Icon size={16} />
+                </IconButton>
+              </Tooltip>
+            ))}
+          </Box>
+        </Box>
+      )}
 
       <Box sx={{ p: collapsed ? 1 : 1.5, display: 'flex', justifyContent: collapsed ? 'center' : 'space-between', gap: 0.5 }}>
         {!collapsed && <Box sx={{ display: 'flex', gap: 0.5 }}>

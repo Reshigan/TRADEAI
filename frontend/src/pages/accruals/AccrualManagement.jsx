@@ -297,7 +297,7 @@ const AccrualManagement = () => {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <AccountBalance sx={{ mr: 1, color: '#1E40AF' }} />
+                <AccountBalance sx={{ mr: 1, color: 'primary.dark' }} />
                 <Typography variant="body2" color="text.secondary">Total Accruals</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>{a.total || 0}</Typography>
@@ -478,7 +478,7 @@ const AccrualManagement = () => {
     <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+          <TableRow sx={{ bgcolor: 'background.default' }}>
             <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Method</TableCell>
@@ -599,7 +599,7 @@ const AccrualManagement = () => {
             <TableContainer component={Paper} variant="outlined">
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ fontWeight: 600 }}>Period</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Dates</TableCell>
                     <TableCell sx={{ fontWeight: 600 }} align="right">Base Sales</TableCell>
@@ -642,7 +642,7 @@ const AccrualManagement = () => {
             <TableContainer component={Paper} variant="outlined">
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Reference</TableCell>
@@ -722,7 +722,7 @@ const AccrualManagement = () => {
               <Grid item xs={12}><Divider /></Grid>
               <Grid item xs={4}>
                 <Typography variant="caption" color="text.secondary">Total Accrued</Typography>
-                <Typography variant="h6" sx={{ color: '#1E40AF' }}>{fmtR(a.accruedAmount || a.accrued_amount)}</Typography>
+                <Typography variant="h6" sx={{ color: 'primary.dark' }}>{fmtR(a.accruedAmount || a.accrued_amount)}</Typography>
               </Grid>
               <Grid item xs={4}>
                 <Typography variant="caption" color="text.secondary">Total Posted</Typography>
@@ -756,7 +756,7 @@ const AccrualManagement = () => {
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => { resetForm(); setCreateOpen(true); }}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Accrual
           </Button>
         </Box>
@@ -801,7 +801,7 @@ const AccrualManagement = () => {
         <DialogActions>
           <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleCreate} disabled={actionLoading || !form.name}
-            sx={{ bgcolor: '#1E40AF' }}>
+            sx={{ bgcolor: 'primary.dark' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Create'}
           </Button>
         </DialogActions>
@@ -814,7 +814,7 @@ const AccrualManagement = () => {
         <DialogActions>
           <Button onClick={() => setEditOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleUpdate} disabled={actionLoading || !form.name}
-            sx={{ bgcolor: '#1E40AF' }}>
+            sx={{ bgcolor: 'primary.dark' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Save'}
           </Button>
         </DialogActions>

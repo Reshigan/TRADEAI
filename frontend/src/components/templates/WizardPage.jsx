@@ -11,10 +11,10 @@ export default function WizardPage({ title, steps = [], onSubmit, backPath, load
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-        {backPath && <Box component="button" onClick={() => navigate(backPath)} sx={{ border: 'none', bgcolor: 'transparent', cursor: 'pointer', p: 0.5, borderRadius: 1, '&:hover': { bgcolor: '#F1F5F9' } }}><ArrowLeft size={20} /></Box>}
+        {backPath && <Box component="button" onClick={() => navigate(backPath)} sx={{ border: 'none', bgcolor: 'transparent', cursor: 'pointer', p: 0.5, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}><ArrowLeft size={20} /></Box>}
         <Typography variant="h1">{title}</Typography>
       </Box>
-      <LinearProgress variant="determinate" value={progress} sx={{ mb: 3, borderRadius: 2, height: 4, bgcolor: '#F1F5F9', '& .MuiLinearProgress-bar': { bgcolor: '#2563EB', borderRadius: 2 } }} />
+      <LinearProgress variant="determinate" value={progress} sx={{ mb: 3, borderRadius: 2, height: 4, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: 'primary.main', borderRadius: 2 } }} />
 
       <Box sx={{ display: 'flex', gap: 4 }}>
         <Box sx={{ width: 240, flexShrink: 0 }}>

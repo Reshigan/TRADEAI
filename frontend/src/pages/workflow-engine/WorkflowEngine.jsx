@@ -113,7 +113,7 @@ export default function WorkflowEngine() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Template</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>New Template</Button>
         </Box>
       </Box>
 
@@ -135,7 +135,7 @@ export default function WorkflowEngine() {
         {tab === 0 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Entity</TableCell>
@@ -147,7 +147,7 @@ export default function WorkflowEngine() {
               <TableBody>
                 {templates.map((t) => (
                   <TableRow key={t.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><WfIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><WfIcon sx={{ fontSize: 18, color: 'primary.dark' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography></Box></TableCell>
                     <TableCell><Chip label={t.workflow_type} size="small" /></TableCell>
                     <TableCell>{t.entity_type || '-'}</TableCell>
                     <TableCell>{t.trigger_event}</TableCell>
@@ -168,7 +168,7 @@ export default function WorkflowEngine() {
         {tab === 1 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Workflow</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Entity</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Step</TableCell>
@@ -216,7 +216,7 @@ export default function WorkflowEngine() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'primary.dark' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

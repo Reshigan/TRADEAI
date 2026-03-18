@@ -107,7 +107,7 @@ const PersonalizedDashboard = () => {
   }
 
   return (
-    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
+    <Box sx={{ bgcolor: 'action.hover', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="xl">
         {/* Personalized Header */}
         <Box sx={{ mb: 4 }}>
@@ -280,7 +280,7 @@ const PersonalizedDashboard = () => {
           <Chip 
             label="Model accuracy: 91%" 
             size="small" 
-            sx={{ bgcolor: '#1E3A8A', color: 'white', fontWeight: 600 }}
+            sx={{ bgcolor: 'primary.dark', color: 'white', fontWeight: 600 }}
           />
         </Paper>
 

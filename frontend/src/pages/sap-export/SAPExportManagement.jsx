@@ -57,10 +57,10 @@ const SAPExportManagement = () => {
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6} md={3}>
-          <Card sx={{ border: '1px solid #E2E8F0' }}>
+          <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <StorageIcon sx={{ color: '#1E40AF' }} />
+                <StorageIcon sx={{ color: 'primary.dark' }} />
                 <Box>
                   <Typography variant="caption" color="text.secondary">Templates</Typography>
                   <Typography variant="h6" fontWeight={700}>{templates.length}</Typography>
@@ -70,7 +70,7 @@ const SAPExportManagement = () => {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card sx={{ border: '1px solid #E2E8F0' }}>
+          <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <DescriptionIcon sx={{ color: '#059669' }} />
@@ -85,7 +85,7 @@ const SAPExportManagement = () => {
       </Grid>
 
       {loading ? <CircularProgress /> : (
-        <Card sx={{ border: '1px solid #E2E8F0' }}>
+        <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -100,7 +100,7 @@ const SAPExportManagement = () => {
                 <TableRow key={t.id} hover>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <DescriptionIcon sx={{ color: '#64748B', fontSize: 20 }} />
+                      <DescriptionIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
                       <Typography variant="body2" fontWeight={600}>{t.name}</Typography>
                     </Box>
                   </TableCell>

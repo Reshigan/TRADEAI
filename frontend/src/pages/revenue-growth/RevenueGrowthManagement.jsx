@@ -205,7 +205,7 @@ export default function RevenueGrowthManagement() {
             <Grid item xs={12} sm={6} md={3} key={i}>
               <Card sx={{ borderRadius: 3 }}>
                 <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F3E8FF', color: '#1E40AF' }}>{card.icon}</Box>
+                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: '#F3E8FF', color: 'primary.dark' }}>{card.icon}</Box>
                   <Box>
                     <Typography variant="h5" fontWeight={700}>{card.value}</Typography>
                     <Typography variant="body2" color="text.secondary">{card.label}</Typography>

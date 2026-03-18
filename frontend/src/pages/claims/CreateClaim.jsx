@@ -126,7 +126,7 @@ const CreateClaim = () => {
               <TableContainer>
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
+                    <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: 'background.default' } }}>
                       <TableCell colSpan={2}>Product</TableCell>
                       <TableCell>Qty</TableCell><TableCell>Unit Price</TableCell>
                       <TableCell>Rate (%)</TableCell><TableCell>Amount</TableCell><TableCell></TableCell>
@@ -176,7 +176,7 @@ const CreateClaim = () => {
               <Button variant="outlined" fullWidth onClick={() => handleSubmit(false)} disabled={loading} startIcon={<SaveIcon />}
                 sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600 }}>Save as Draft</Button>
               <Button variant="contained" fullWidth onClick={() => handleSubmit(true)} disabled={loading}
-                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
                 {loading ? 'Creating...' : 'Create & Submit'}
               </Button>
             </Box>

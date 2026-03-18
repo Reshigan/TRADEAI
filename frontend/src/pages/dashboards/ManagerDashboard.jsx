@@ -165,7 +165,7 @@ const ManagerDashboard = () => {
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress sx={{ color: '#1E40AF' }} />
+          <CircularProgress sx={{ color: 'primary.dark' }} />
         </Box>
       ) : activeTab === 0 ? (
         <Grid container spacing={2.5}>
@@ -181,13 +181,13 @@ const ManagerDashboard = () => {
             >
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.dark' }} />
                   <Typography variant="subtitle2" fontWeight={700} color="text.primary">
                     Sales Target
                   </Typography>
                 </Box>
                 <Box display="flex" gap={0.5}>
-                  <Chip label="All" size="small" sx={{ bgcolor: '#F3F4F6', fontWeight: 600, fontSize: '0.7rem', height: 24 }} />
+                  <Chip label="All" size="small" sx={{ bgcolor: 'action.hover', fontWeight: 600, fontSize: '0.7rem', height: 24 }} />
                   <IconButton size="small"><MoreHoriz sx={{ fontSize: 18 }} /></IconButton>
                   <IconButton size="small"><Fullscreen sx={{ fontSize: 18 }} /></IconButton>
                   <IconButton size="small"><FilterList sx={{ fontSize: 18 }} /></IconButton>
@@ -236,8 +236,8 @@ const ManagerDashboard = () => {
                 ))}
               </Box>
 
-              <Box display="flex" alignItems="center" gap={1} sx={{ bgcolor: '#F9FAFB', borderRadius: '10px', p: 1.5 }}>
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
+              <Box display="flex" alignItems="center" gap={1} sx={{ bgcolor: 'background.default', borderRadius: '10px', p: 1.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.dark' }} />
                 <Typography variant="caption" color="text.secondary">
                   Period: {new Date().toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' })} - {new Date(Date.now() + 30*86400000).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </Typography>
@@ -258,7 +258,7 @@ const ManagerDashboard = () => {
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="subtitle2" fontWeight={700}>Recent Activity</Typography>
                 <IconButton size="small" onClick={() => navigate('/trade-spends')}>
-                  <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Typography sx={{ fontSize: 14, color: '#6B7280' }}>&#8599;</Typography>
                   </Box>
                 </IconButton>
@@ -329,7 +329,7 @@ const ManagerDashboard = () => {
                 <Button
                   size="small"
                   onClick={() => navigate('/approvals')}
-                  sx={{ color: '#1E40AF', fontWeight: 600, fontSize: '0.75rem', textTransform: 'none' }}
+                  sx={{ color: 'primary.dark', fontWeight: 600, fontSize: '0.75rem', textTransform: 'none' }}
                 >
                   Review
                 </Button>
@@ -422,7 +422,7 @@ const ManagerDashboard = () => {
                       justifyContent: 'space-between',
                       py: 1,
                       cursor: 'pointer',
-                      '&:hover': { '& .nav-label': { color: '#1E40AF' } },
+                      '&:hover': { '& .nav-label': { color: 'primary.dark' } },
                     }}
                   >
                     <Typography className="nav-label" variant="body2" fontWeight={500} sx={{ transition: 'color 0.15s' }}>
@@ -446,7 +446,7 @@ const ManagerDashboard = () => {
             >
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.dark' }} />
                   <Typography variant="subtitle2" fontWeight={700}>Portfolio Analysis</Typography>
                 </Box>
                 <Box display="flex" gap={1}>
@@ -497,7 +497,7 @@ const ManagerDashboard = () => {
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1.5}>
                   <Box sx={{ p: 0.75, borderRadius: '8px', bgcolor: alpha('#1E40AF', 0.1), display: 'flex' }}>
-                    <MonetizationOn sx={{ color: '#1E40AF', fontSize: 20 }} />
+                    <MonetizationOn sx={{ color: 'primary.dark', fontSize: 20 }} />
                   </Box>
                   <Box>
                     <Typography variant="subtitle2" fontWeight={700}>AI Recommendations</Typography>
@@ -559,7 +559,7 @@ const ManagerDashboard = () => {
             <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #E5E7EB' }}>
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="subtitle2" fontWeight={700}>Recent Activity Feed</Typography>
-                <Button size="small" onClick={() => navigate('/trade-spends')} sx={{ textTransform: 'none', fontWeight: 600, color: '#1E40AF' }}>View All Trade Spends</Button>
+                <Button size="small" onClick={() => navigate('/trade-spends')} sx={{ textTransform: 'none', fontWeight: 600, color: 'primary.dark' }}>View All Trade Spends</Button>
               </Box>
               {activities.length === 0 && recentActivity.length === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 6 }}>
@@ -602,7 +602,7 @@ const ManagerDashboard = () => {
             <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #E5E7EB' }}>
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="subtitle2" fontWeight={700}>Promotion & Event Timeline</Typography>
-                <Button size="small" onClick={() => navigate('/plan/calendar')} sx={{ textTransform: 'none', fontWeight: 600, color: '#1E40AF' }}>Full Calendar</Button>
+                <Button size="small" onClick={() => navigate('/plan/calendar')} sx={{ textTransform: 'none', fontWeight: 600, color: 'primary.dark' }}>Full Calendar</Button>
               </Box>
               {timelineEvents.length === 0 && recentPromos.length === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 6 }}>
@@ -625,7 +625,7 @@ const ManagerDashboard = () => {
                       const statusColors = { draft: '#94A3B8', planned: '#2563EB', approved: '#059669', active: '#1E40AF', completed: '#6B7280', cancelled: '#DC2626' };
                       const typeColors = { promotion: '#7C3AED', campaign: '#2563EB', seasonal: '#059669', holiday: '#DC2626', trade_show: '#D97706', product_launch: '#EC4899' };
                       return (
-                        <Box key={idx} sx={{ display: 'flex', gap: 2, py: 1.5, borderBottom: idx < 14 ? '1px solid #F3F4F6' : 'none', '&:hover': { bgcolor: '#F9FAFB' }, cursor: 'pointer' }}
+                        <Box key={idx} sx={{ display: 'flex', gap: 2, py: 1.5, borderBottom: idx < 14 ? '1px solid #F3F4F6' : 'none', '&:hover': { bgcolor: 'background.default' }, cursor: 'pointer' }}
                           onClick={() => ev.promotion_id || ev.promotionId ? navigate(`/execute/promotions/${ev.promotion_id || ev.promotionId}`) : null}>
                           <Box sx={{ width: 4, borderRadius: 2, bgcolor: typeColors[evType] || '#7C3AED', flexShrink: 0 }} />
                           <Box sx={{ flex: 1 }}>
@@ -655,7 +655,7 @@ const ManagerDashboard = () => {
             <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #E5E7EB' }}>
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="subtitle2" fontWeight={700}>Performance Report</Typography>
-                <Button size="small" onClick={() => navigate('/analyze/reports')} sx={{ textTransform: 'none', fontWeight: 600, color: '#1E40AF' }}>Full Reports</Button>
+                <Button size="small" onClick={() => navigate('/analyze/reports')} sx={{ textTransform: 'none', fontWeight: 600, color: 'primary.dark' }}>Full Reports</Button>
               </Box>
 
               {/* Summary metrics */}
@@ -667,7 +667,7 @@ const ManagerDashboard = () => {
                   { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#2563EB' },
                 ].map((m, idx) => (
                   <Grid item xs={6} md={3} key={idx}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#F9FAFB', borderRadius: '12px' }}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: '12px' }}>
                       <Typography variant="h5" fontWeight={800} sx={{ color: m.color }}>{m.value}</Typography>
                       <Typography variant="caption" color="text.secondary">{m.label}</Typography>
                     </Box>
@@ -708,7 +708,7 @@ const ManagerDashboard = () => {
                   { label: 'Waste Detection', path: '/analyze/waste' },
                 ].map((link, idx) => (
                   <Button key={idx} variant="outlined" size="small" onClick={() => navigate(link.path)}
-                    sx={{ textTransform: 'none', fontWeight: 600, fontSize: '0.75rem', borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+                    sx={{ textTransform: 'none', fontWeight: 600, fontSize: '0.75rem', borderColor: '#E5E7EB', color: 'text.primary', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
                     {link.label}
                   </Button>
                 ))}

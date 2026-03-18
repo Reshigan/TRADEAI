@@ -9,12 +9,12 @@ const MLPredictionCard = ({ title, value, unit = '', confidence = 0, trend, data
   const trendPositive = trend === 'up' || trend === 'positive';
 
   return (
-    <Box sx={{ p: 2, border: '1px solid #E2E8F0', borderRadius: 2, bgcolor: '#FAFBFF', ...sx }}>
+    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: '#FAFBFF', ...sx }}>
       <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 600 }}>
         {title}
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mt: 0.5 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F172A' }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>
           {value}{unit}
         </Typography>
         {trend && (

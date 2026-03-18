@@ -104,7 +104,7 @@ export default function SystemConfig() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => tab === 0 ? openConfigDialog() : openTenantDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>{tab === 0 ? 'New Config' : 'New Tenant'}</Button>
+          <Button startIcon={<AddIcon />} onClick={() => tab === 0 ? openConfigDialog() : openTenantDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>{tab === 0 ? 'New Config' : 'New Tenant'}</Button>
         </Box>
       </Box>
 
@@ -126,7 +126,7 @@ export default function SystemConfig() {
         {tab === 0 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Key</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Value</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
@@ -137,7 +137,7 @@ export default function SystemConfig() {
               <TableBody>
                 {configs.map((c) => (
                   <TableRow key={c.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><ConfigIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{c.config_key}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><ConfigIcon sx={{ fontSize: 18, color: 'primary.dark' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{c.config_key}</Typography></Box></TableCell>
                     <TableCell><Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.is_sensitive ? '******' : c.config_value}</Typography></TableCell>
                     <TableCell><Chip label={c.config_type} size="small" /></TableCell>
                     <TableCell>{c.category}</TableCell>
@@ -157,7 +157,7 @@ export default function SystemConfig() {
         {tab === 1 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Tenant</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Code</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Plan</TableCell>
@@ -169,7 +169,7 @@ export default function SystemConfig() {
               <TableBody>
                 {tenants.map((t) => (
                   <TableRow key={t.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><TenantIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><TenantIcon sx={{ fontSize: 18, color: 'primary.dark' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography></Box></TableCell>
                     <TableCell>{t.code || '-'}</TableCell>
                     <TableCell><Chip label={t.plan} size="small" color={t.plan === 'enterprise' ? 'primary' : 'default'} /></TableCell>
                     <TableCell><Chip label={t.status} size="small" color={t.status === 'active' ? 'success' : 'default'} /></TableCell>
@@ -223,7 +223,7 @@ export default function SystemConfig() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'primary.dark' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

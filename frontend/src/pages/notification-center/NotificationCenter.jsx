@@ -137,7 +137,7 @@ export default function NotificationCenter() {
           </Box>
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
@@ -177,7 +177,7 @@ export default function NotificationCenter() {
           </Box>
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
@@ -218,7 +218,7 @@ export default function NotificationCenter() {
           </Box>
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Severity</TableCell>

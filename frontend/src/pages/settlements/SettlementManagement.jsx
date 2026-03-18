@@ -301,7 +301,7 @@ const SettlementManagement = () => {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Handshake sx={{ mr: 1, color: '#1E40AF' }} />
+                <Handshake sx={{ mr: 1, color: 'primary.dark' }} />
                 <Typography variant="body2" color="text.secondary">Settlements</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>{s.total || 0}</Typography>
@@ -462,7 +462,7 @@ const SettlementManagement = () => {
     <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+          <TableRow sx={{ bgcolor: 'background.default' }}>
             <TableCell sx={{ fontWeight: 600 }}>Settlement</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -579,7 +579,7 @@ const SettlementManagement = () => {
             {(s.status === 'approved' || s.status === 'partially_paid') && (
               <Button size="small" startIcon={<Payment />} variant="contained"
                 onClick={() => { setDetailOpen(false); handleOpenPay(s); }}
-                sx={{ bgcolor: '#2563EB' }}>
+                sx={{ bgcolor: 'primary.main' }}>
                 Record Payment
               </Button>
             )}
@@ -654,7 +654,7 @@ const SettlementManagement = () => {
             <TableContainer component={Paper} variant="outlined">
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ fontWeight: 600 }}>#</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Product</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
@@ -699,7 +699,7 @@ const SettlementManagement = () => {
             <TableContainer component={Paper} variant="outlined">
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Reference</TableCell>
@@ -757,7 +757,7 @@ const SettlementManagement = () => {
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => { resetForm(); setCreateOpen(true); }}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Settlement
           </Button>
         </Box>
@@ -803,7 +803,7 @@ const SettlementManagement = () => {
         <DialogActions>
           <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleCreate} disabled={actionLoading || !form.name}
-            sx={{ bgcolor: '#1E40AF' }}>
+            sx={{ bgcolor: 'primary.dark' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Create'}
           </Button>
         </DialogActions>
@@ -816,7 +816,7 @@ const SettlementManagement = () => {
         <DialogActions>
           <Button onClick={() => setEditOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleUpdate} disabled={actionLoading || !form.name}
-            sx={{ bgcolor: '#1E40AF' }}>
+            sx={{ bgcolor: 'primary.dark' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Save'}
           </Button>
         </DialogActions>
@@ -865,7 +865,7 @@ const SettlementManagement = () => {
         <DialogActions>
           <Button onClick={() => setPayOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handlePay} disabled={actionLoading || payForm.amount <= 0}
-            sx={{ bgcolor: '#2563EB' }}>
+            sx={{ bgcolor: 'primary.main' }}>
             {actionLoading ? <CircularProgress size={20} /> : 'Record Payment'}
           </Button>
         </DialogActions>

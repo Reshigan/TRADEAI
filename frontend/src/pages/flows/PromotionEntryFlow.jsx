@@ -552,7 +552,7 @@ const PromotionEntryFlow = () => {
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <TrendingUpIcon color="primary" />
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#1E40AF' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'primary.dark' }}>
                 💡 ML Impact Calculation
               </Typography>
             </Box>

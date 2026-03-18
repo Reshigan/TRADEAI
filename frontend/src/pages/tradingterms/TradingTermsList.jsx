@@ -64,11 +64,11 @@ const TradingTermsList = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button variant="outlined" startIcon={<Refresh />} onClick={loadTradingTerms}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: '#E5E7EB', color: '#6B7280', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
             Refresh
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/trading-terms/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' } }}>
             New Trading Term
           </Button>
         </Box>
@@ -93,7 +93,7 @@ const TradingTermsList = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <Box sx={{ p: 2.5, display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid', borderColor: 'divider' }}>
           <TextField select label="Term Type" value={filters.termType} onChange={(e) => handleFilterChange('termType', e.target.value)}
-            sx={{ minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} size="small">
+            sx={{ minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} size="small">
             <MenuItem value="">All Types</MenuItem>
             <MenuItem value="volume_discount">Volume Discount</MenuItem>
             <MenuItem value="early_payment">Early Payment</MenuItem>
@@ -105,7 +105,7 @@ const TradingTermsList = () => {
             <MenuItem value="settlement_discount">Settlement Discount</MenuItem>
           </TextField>
           <TextField select label="Status" value={filters.status} onChange={(e) => handleFilterChange('status', e.target.value)}
-            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} size="small">
+            sx={{ minWidth: 180, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} size="small">
             <MenuItem value="">All Statuses</MenuItem>
             <MenuItem value="draft">Draft</MenuItem>
             <MenuItem value="pending_approval">Pending Approval</MenuItem>
@@ -115,16 +115,16 @@ const TradingTermsList = () => {
             <MenuItem value="suspended">Suspended</MenuItem>
           </TextField>
           <TextField select label="Active" value={filters.isActive} onChange={(e) => handleFilterChange('isActive', e.target.value)}
-            sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} size="small">
+            sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} size="small">
             <MenuItem value="">All</MenuItem>
             <MenuItem value="true">Active</MenuItem>
             <MenuItem value="false">Inactive</MenuItem>
           </TextField>
-          <Chip label={`${tradingTerms.length} terms`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF', fontWeight: 600 }} />
+          <Chip label={`${tradingTerms.length} terms`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', fontWeight: 600 }} />
         </Box>
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: 'primary.dark' }} /></Box>
         ) : tradingTerms.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Gavel sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
@@ -134,7 +134,7 @@ const TradingTermsList = () => {
           <TableContainer>
             <Table>
               <TableHead>
-                <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
+                <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: 'background.default' } }}>
                   <TableCell>Code</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Type</TableCell>
@@ -165,9 +165,9 @@ const TradingTermsList = () => {
                     <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                         <Tooltip title="View"><IconButton size="small" onClick={() => handleView(term.id || term._id)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { color: 'primary.dark', bgcolor: alpha('#1E40AF', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
                         <Tooltip title="Edit"><IconButton size="small" onClick={() => handleEdit(term.id || term._id)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { color: 'primary.dark', bgcolor: alpha('#1E40AF', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
                         <Tooltip title="Delete"><IconButton size="small" onClick={() => handleDelete(term.id || term._id)}
                           sx={{ color: '#6B7280', '&:hover': { color: '#DC2626', bgcolor: alpha('#DC2626', 0.08) } }}><Delete fontSize="small" /></IconButton></Tooltip>
                       </Box>

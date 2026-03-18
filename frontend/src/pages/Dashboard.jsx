@@ -94,7 +94,7 @@ export default function Dashboard() {
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h3" sx={{ mb: 2 }}>Budget Utilization</Typography>
-              <Box sx={{ mb: 1 }}><LinearProgress variant="determinate" value={kpis.budgetUtil || 0} sx={{ height: 10, borderRadius: 5, bgcolor: '#F1F5F9', '& .MuiLinearProgress-bar': { bgcolor: (kpis.budgetUtil || 0) > 90 ? '#DC2626' : '#2563EB', borderRadius: 5 } }} /></Box>
+              <Box sx={{ mb: 1 }}><LinearProgress variant="determinate" value={kpis.budgetUtil || 0} sx={{ height: 10, borderRadius: 5, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: (kpis.budgetUtil || 0) > 90 ? '#DC2626' : '#2563EB', borderRadius: 5 } }} /></Box>
               <Typography variant="body2" color="text.secondary">{(kpis.budgetUtil || 0).toFixed(1)}% of total budget used</Typography>
               <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
                 <Box><Typography variant="caption" color="text.secondary">Spent</Typography><Typography variant="body1" fontWeight={600}>{fmt(kpis.totalSpend)}</Typography></Box>
@@ -133,7 +133,7 @@ export default function Dashboard() {
               </Box>
               {[{ label: 'Create Promotion', path: '/execute/promotions/new', color: '#2563EB' }, { label: 'Create Trade Spend', path: '/execute/trade-spends/new', color: '#059669' }, { label: 'Submit Claim', path: '/settle/claims/new', color: '#7C3AED' }, { label: 'View Reports', path: '/analyze/reports', color: '#F59E0B' }].map((action, i) => (
                 <Button key={i} fullWidth variant="outlined" onClick={() => navigate(action.path)}
-                  sx={{ mb: 1, justifyContent: 'flex-start', borderColor: '#E2E8F0', color: action.color, '&:hover': { borderColor: action.color, bgcolor: `${action.color}08` } }}>
+                  sx={{ mb: 1, justifyContent: 'flex-start', borderColor: 'divider', color: action.color, '&:hover': { borderColor: action.color, bgcolor: `${action.color}08` } }}>
                   {action.label}
                 </Button>
               ))}

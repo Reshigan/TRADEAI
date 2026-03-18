@@ -107,7 +107,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, maxWidth: '90%' }}>
                 {msg.role === 'assistant' && (
                   <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: alpha('#1E40AF', 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, mt: 0.5 }}>
-                    <AIIcon sx={{ fontSize: 16, color: '#1E40AF' }} />
+                    <AIIcon sx={{ fontSize: 16, color: 'primary.dark' }} />
                   </Box>
                 )}
                 <Paper elevation={0} sx={{
@@ -135,7 +135,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
                       {msg.suggestions.map((s, j) => (
                         <Chip key={j} label={typeof s === 'string' ? s : s.text || s.title} size="small"
                           onClick={() => handleSend(typeof s === 'string' ? s : s.text || s.title)}
-                          sx={{ borderRadius: '8px', fontSize: '0.7rem', bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF', cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.15) } }} />
+                          sx={{ borderRadius: '8px', fontSize: '0.7rem', bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.15) } }} />
                       ))}
                     </Box>
                   )}
@@ -151,7 +151,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
 
           {loading && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pl: 4.5 }}>
-              <CircularProgress size={16} sx={{ color: '#1E40AF' }} />
+              <CircularProgress size={16} sx={{ color: 'primary.dark' }} />
               <Typography variant="caption" color="text.secondary">Analyzing...</Typography>
             </Box>
           )}
@@ -179,7 +179,7 @@ const CopilotPanel = ({ isOpen, onClose, context }) => {
             variant="outlined" size="small"
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: 'white', fontSize: '0.875rem' } }} />
           <IconButton onClick={() => handleSend()} disabled={!input.trim() || loading}
-            sx={{ bgcolor: '#1E40AF', color: 'white', borderRadius: '10px', width: 38, height: 38, '&:hover': { bgcolor: '#1E3A8A' }, '&.Mui-disabled': { bgcolor: alpha('#1E40AF', 0.3), color: 'white' } }}>
+            sx={{ bgcolor: 'primary.dark', color: 'white', borderRadius: '10px', width: 38, height: 38, '&:hover': { bgcolor: 'primary.dark', filter: 'brightness(0.85)' }, '&.Mui-disabled': { bgcolor: alpha('#1E40AF', 0.3), color: 'white' } }}>
             <SendIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Box>

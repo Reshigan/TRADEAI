@@ -67,7 +67,7 @@ const VendorFundManagement = () => {
           { label: 'Expiring Soon', value: expiringSoon, icon: <WarningAmberIcon />, color: '#F59E0B' },
         ].map((kpi, i) => (
           <Grid item xs={6} md={3} key={i}>
-            <Card sx={{ border: '1px solid #E2E8F0' }}>
+            <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box>
@@ -83,7 +83,7 @@ const VendorFundManagement = () => {
       </Grid>
 
       {loading ? <LinearProgress /> : (
-        <Card sx={{ border: '1px solid #E2E8F0' }}>
+        <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
           <Table>
             <TableHead>
               <TableRow>

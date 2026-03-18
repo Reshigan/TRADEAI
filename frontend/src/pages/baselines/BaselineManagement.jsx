@@ -356,7 +356,7 @@ const BaselineManagement = () => {
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Timeline sx={{ mr: 1, color: '#1E40AF' }} />
+                <Timeline sx={{ mr: 1, color: 'primary.dark' }} />
                 <Typography variant="body2" color="text.secondary">Total Baselines</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>{b.total || 0}</Typography>
@@ -416,7 +416,7 @@ const BaselineManagement = () => {
     <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+          <TableRow sx={{ bgcolor: 'background.default' }}>
             <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Method</TableCell>
