@@ -39,7 +39,7 @@ const StatusChip = ({ status }) => {
     generating: { bg: '#FEF3C7', color: '#D97706' },
     generated: { bg: '#D1FAE5', color: '#059669' },
     approved: { bg: '#DBEAFE', color: '#2563EB' },
-    published: { bg: '#EFF6FF', color: 'primary.dark' },
+    published: { bg: '#EFF6FF', color: '#1E40AF' },
     archived: { bg: '#F3F4F6', color: '#9CA3AF' },
   };
   const c = colorMap[status] || colorMap.draft;

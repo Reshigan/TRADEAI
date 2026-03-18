@@ -38,7 +38,7 @@ const StatusChip = ({ status }) => {
     draft: { bg: '#F3F4F6', color: '#6B7280' },
     planned: { bg: '#DBEAFE', color: '#2563EB' },
     approved: { bg: '#D1FAE5', color: '#059669' },
-    active: { bg: '#EFF6FF', color: 'primary.dark' },
+    active: { bg: '#EFF6FF', color: '#1E40AF' },
     completed: { bg: '#E0E7FF', color: '#4338CA' },
     cancelled: { bg: '#FEE2E2', color: '#DC2626' },
   };
