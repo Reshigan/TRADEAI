@@ -2128,7 +2128,7 @@ export const roleService = {
   canManageCompanies: () => currentUser?.role === 'super_admin',
   canCreateUsers: () => ['admin', 'super_admin'].includes(currentUser?.role),
   canViewAllData: () => ['manager', 'admin', 'super_admin'].includes(currentUser?.role),
-  canEditData: () => ['manager', 'admin', 'super_admin', 'key_account_manager'].includes(currentUser?.role),
+  canEditData: () => ['manager', 'admin', 'super_admin', 'key_account_manager', 'jam'].includes(currentUser?.role),
   canSetupSSO: () => ['admin', 'super_admin'].includes(currentUser?.role),
   getCompanyId: () => currentUser?.companyId || null,
   getRoleDisplayName: () => {
