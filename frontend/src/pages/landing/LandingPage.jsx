@@ -31,12 +31,14 @@ export default function LandingPage({ onLogin }) {
     setError('');
     try {
       const response = await api.post('/auth/login', { email, password });
-      const data = response.data?.data || response.data;
-      if (data?.token) {
-        localStorage.setItem('token', data.token);
+      const resp = response.data;
+      const token = resp?.token || resp?.data?.tokens?.accessToken;
+      const user = resp?.data?.user || resp?.user || resp;
+      if (token) {
+        localStorage.setItem('token', token);
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify(data.user || data));
-        if (onLogin) onLogin(data.user || data);
+        localStorage.setItem('user', JSON.stringify(user));
+        if (onLogin) onLogin(user);
       } else {
         setError('Invalid response from server');
       }
