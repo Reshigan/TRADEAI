@@ -63,7 +63,7 @@ const CreateDeduction = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <FormSection title="Deduction Information" defaultExpanded>
+          <FormSection title="Deduction Information" defaultOpen>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <SmartField name="deductionType" label="Deduction Type" type="select" value={formData.deductionType} onChange={(e) => handleChange('deductionType', e.target.value)} required

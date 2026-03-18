@@ -33,12 +33,13 @@ export default function PromotionDetail() {
     load();
   }, [id]);
 
-  const handleAction = async (type) => {
+  const handleAction = async (type, comment) => {
     setActionLoading(true); setActionError('');
     try {
+      const note = comment || actionNote;
       if (type === 'submit') await promotionService.submit(id);
-      else if (type === 'approve') await promotionService.approve(id, { notes: actionNote });
-      else if (type === 'reject') await promotionService.reject(id, { reason: actionNote });
+      else if (type === 'approve') await promotionService.approve(id, { notes: note });
+      else if (type === 'reject') await promotionService.reject(id, { reason: note });
       else if (type === 'clone') await promotionService.clone(id);
       await reload();
       setActionDialog({ open: false, type: '' }); setActionNote('');
@@ -79,7 +80,7 @@ export default function PromotionDetail() {
         entityType="promotion"
         entityId={id}
         entityName={promo.name || promo.promotion_name}
-        onAction={(action) => handleAction(action)}
+        onAction={(action, metadata) => handleAction(action, metadata?.comment)}
         budgetInfo={{ spent: actual, total: planned }}
         sx={{ mb: 3 }}
       />

@@ -47,6 +47,34 @@ const STATUS_TRANSITIONS = {
   settled: [
     { action: 'clone', label: 'Clone', icon: <Copy size={16} />, color: 'inherit' },
   ],
+  // Claim-specific statuses
+  submitted: [
+    { action: 'approve', label: 'Approve', icon: <Check size={16} />, color: 'success', confirm: true, confirmMsg: 'Approve this item?', requireComment: false },
+    { action: 'reject', label: 'Reject', icon: <X size={16} />, color: 'error', confirm: true, confirmMsg: 'Reject this item?', requireComment: true },
+    { action: 'return', label: 'Return to Draft', icon: <ArrowLeft size={16} />, color: 'warning', confirm: true, confirmMsg: 'Return this item to draft?' },
+  ],
+  under_review: [
+    { action: 'approve', label: 'Approve', icon: <Check size={16} />, color: 'success', confirm: true, confirmMsg: 'Approve this item?', requireComment: false },
+    { action: 'reject', label: 'Reject', icon: <X size={16} />, color: 'error', confirm: true, confirmMsg: 'Reject this item?', requireComment: true },
+  ],
+  pending: [
+    { action: 'submit', label: 'Submit for Approval', icon: <Send size={16} />, color: 'primary', confirm: true, confirmMsg: 'Submit this item for approval?' },
+    { action: 'edit', label: 'Edit', icon: <Edit size={16} />, color: 'inherit' },
+    { action: 'delete', label: 'Delete', icon: <Trash2 size={16} />, color: 'error', confirm: true, confirmMsg: 'Delete this item permanently?' },
+  ],
+  // Deduction-specific statuses
+  open: [
+    { action: 'approve', label: 'Validate', icon: <Check size={16} />, color: 'success', confirm: true, confirmMsg: 'Validate this deduction?' },
+    { action: 'reject', label: 'Dispute', icon: <AlertTriangle size={16} />, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+  ],
+  validated: [
+    { action: 'settle', label: 'Resolve', icon: <DollarSign size={16} />, color: 'primary', confirm: true, confirmMsg: 'Resolve this deduction?' },
+    { action: 'clone', label: 'Clone', icon: <Copy size={16} />, color: 'inherit' },
+  ],
+  disputed: [
+    { action: 'settle', label: 'Resolve', icon: <DollarSign size={16} />, color: 'primary', confirm: true, confirmMsg: 'Resolve this disputed deduction?' },
+    { action: 'clone', label: 'Clone', icon: <Copy size={16} />, color: 'inherit' },
+  ],
 };
 
 const QuickActionBar = ({

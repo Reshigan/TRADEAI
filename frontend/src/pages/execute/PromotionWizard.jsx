@@ -90,7 +90,7 @@ export default function PromotionWizard() {
       <Card>
         <CardContent>
           {step === 0 && (
-            <FormSection title="Basic Information" defaultExpanded>
+            <FormSection title="Basic Information" defaultOpen>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <SmartField name="name" label="Promotion Name" value={form.name} onChange={(e) => set('name', e.target.value)} required />
@@ -116,7 +116,7 @@ export default function PromotionWizard() {
             </FormSection>
           )}
           {step === 1 && (
-            <FormSection title="Financial Details" defaultExpanded>
+            <FormSection title="Financial Details" defaultOpen>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <SmartField name="planned_spend" label="Planned Spend" type="currency" value={form.planned_spend} onChange={(e) => set('planned_spend', e.target.value)} required />
@@ -135,7 +135,7 @@ export default function PromotionWizard() {
             </FormSection>
           )}
           {step === 2 && (
-            <FormSection title="Products & Customers" defaultExpanded>
+            <FormSection title="Products & Customers" defaultOpen>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <SmartField name="customer_id" label="Customer" type="select" value={form.customer_id} onChange={(e) => set('customer_id', e.target.value)}
@@ -149,7 +149,7 @@ export default function PromotionWizard() {
             </FormSection>
           )}
           {step === 3 && (
-            <FormSection title="Review Promotion" defaultExpanded>
+            <FormSection title="Review Promotion" defaultOpen>
               <Grid container spacing={1}>
                 {[['Name', form.name], ['Type', form.promotion_type], ['Mechanic', form.mechanic], ['Planned Spend', `R ${Number(form.planned_spend || 0).toLocaleString()}`], ['Start Date', form.start_date || '-'], ['End Date', form.end_date || '-']].map(([label, val]) => (
                   <Grid item xs={6} key={label}>
