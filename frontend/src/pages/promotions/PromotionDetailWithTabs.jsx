@@ -129,7 +129,13 @@ const PromotionDetailWithTabs = () => {
       else if (action === 'approve') await apiClient.post(`/promotions/${id}/approve`, { notes: metadata?.comment });
       else if (action === 'reject') await apiClient.post(`/promotions/${id}/reject`, { reason: metadata?.comment });
       else if (action === 'edit') { navigate(`/promotions/${id}/edit`); setActionLoading(false); return; }
-      else if (action === 'delete') { await handleDelete(); setActionLoading(false); return; }
+      else if (action === 'delete') {
+        await apiClient.delete(`/promotions/${id}`);
+        analytics.trackEvent('promotion_deleted', { promotionId: id });
+        toast.success('Promotion deleted successfully');
+        navigate('/promotions');
+        setActionLoading(false); return;
+      }
       await loadPromotion();
     } catch (e) { toast.error(e.response?.data?.message || 'Action failed'); }
     setActionLoading(false);

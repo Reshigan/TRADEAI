@@ -31,7 +31,7 @@ export default function BudgetDetail() {
     try {
       if (action === 'edit') { navigate(`/plan/budgets/${id}/edit`); return; }
       if (action === 'delete') {
-        if (window.confirm('Delete this budget?')) { await budgetService.delete(id); navigate('/plan/budgets'); }
+        await budgetService.delete(id); navigate('/plan/budgets');
         return;
       }
       if (action === 'submit') await budgetService.update(id, { status: 'pending_approval' });

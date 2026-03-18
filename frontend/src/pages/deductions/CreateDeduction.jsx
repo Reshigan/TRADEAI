@@ -35,7 +35,7 @@ const CreateDeduction = () => {
       if (!formData.customer) { setError('Please select a customer'); showToast('Please select a customer', 'warning'); return; }
       if (formData.amount <= 0) { setError('Deduction amount must be greater than 0'); showToast('Deduction amount must be greater than 0', 'warning'); return; }
       if (!formData.reason) { setError('Please provide a reason for the deduction'); showToast('Please provide a reason', 'warning'); return; }
-      await deductionService.createDeduction(formData);
+      await deductionService.createDeduction({ ...formData, amount: Number(formData.amount) || 0 });
       analytics.trackEvent('deduction_created', { deductionType: formData.deductionType, amount: formData.amount });
       showToast('Deduction created successfully', 'success');
       navigate('/deductions');
