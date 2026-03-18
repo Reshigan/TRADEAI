@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const advancedReporting = new Hono();
 
@@ -95,7 +96,7 @@ advancedReporting.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching advanced reporting summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -130,7 +131,7 @@ advancedReporting.get('/templates', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching report templates:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -153,7 +154,7 @@ advancedReporting.get('/templates/:id', async (c) => {
     return c.json({ success: true, data: doc });
   } catch (error) {
     console.error('Error fetching report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -196,11 +197,11 @@ advancedReporting.post('/templates', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM report_templates WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM report_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -245,11 +246,11 @@ advancedReporting.put('/templates/:id', async (c) => {
 
     await db.prepare(`UPDATE report_templates SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM report_templates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM report_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -266,7 +267,7 @@ advancedReporting.delete('/templates/:id', async (c) => {
     return c.json({ success: true, message: 'Report template and associated reports/schedules deleted' });
   } catch (error) {
     console.error('Error deleting report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -381,7 +382,7 @@ advancedReporting.post('/templates/:id/run', async (c) => {
       now, now
     ).run();
 
-    await db.prepare('UPDATE report_templates SET last_run_at = ?, run_count = run_count + 1, updated_at = ? WHERE id = ?').bind(now, now, id).run();
+    await db.prepare('UPDATE report_templates SET last_run_at = ?, run_count = run_count + 1, updated_at = ? WHERE id = ? AND company_id = ?').bind(now, now, id, companyId).run();
 
     return c.json({
       success: true,
@@ -397,7 +398,7 @@ advancedReporting.post('/templates/:id/run', async (c) => {
     });
   } catch (error) {
     console.error('Error running report template:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -438,7 +439,7 @@ advancedReporting.get('/reports', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching saved reports:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -454,7 +455,7 @@ advancedReporting.get('/reports/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(report) });
   } catch (error) {
     console.error('Error fetching saved report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -494,11 +495,11 @@ advancedReporting.put('/reports/:id', async (c) => {
 
     await db.prepare(`UPDATE saved_reports SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM saved_reports WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM saved_reports WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating saved report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -512,7 +513,7 @@ advancedReporting.delete('/reports/:id', async (c) => {
     return c.json({ success: true, message: 'Saved report deleted' });
   } catch (error) {
     console.error('Error deleting saved report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -526,12 +527,12 @@ advancedReporting.post('/reports/:id/toggle-favorite', async (c) => {
     if (!report) return c.json({ success: false, message: 'Saved report not found' }, 404);
 
     const newVal = report.is_favorite ? 0 : 1;
-    await db.prepare('UPDATE saved_reports SET is_favorite = ?, updated_at = ? WHERE id = ?').bind(newVal, new Date().toISOString(), id).run();
+    await db.prepare('UPDATE saved_reports SET is_favorite = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(newVal, new Date().toISOString(), id).run();
 
     return c.json({ success: true, data: { isFavorite: !!newVal } });
   } catch (error) {
     console.error('Error toggling favorite:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -560,7 +561,7 @@ advancedReporting.get('/schedules', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching report schedules:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -576,7 +577,7 @@ advancedReporting.get('/schedules/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(schedule) });
   } catch (error) {
     console.error('Error fetching report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -610,11 +611,11 @@ advancedReporting.post('/schedules', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM report_schedules WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM report_schedules WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -655,11 +656,11 @@ advancedReporting.put('/schedules/:id', async (c) => {
 
     await db.prepare(`UPDATE report_schedules SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM report_schedules WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM report_schedules WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -673,7 +674,7 @@ advancedReporting.delete('/schedules/:id', async (c) => {
     return c.json({ success: true, message: 'Report schedule deleted' });
   } catch (error) {
     console.error('Error deleting report schedule:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 
@@ -731,7 +732,7 @@ advancedReporting.get('/cross-module', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching cross-module report:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'advancedReporting');
   }
 });
 

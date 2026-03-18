@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const dataLineage = new Hono();
 
@@ -75,7 +76,7 @@ dataLineage.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching data lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -110,7 +111,7 @@ dataLineage.get('/entity/:entityType/:entityId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching entity lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -166,7 +167,7 @@ dataLineage.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching lineage summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -201,12 +202,12 @@ dataLineage.post('/', async (c) => {
       JSON.stringify(body.data || {})
     ).run();
     
-    const created = await db.prepare('SELECT * FROM data_lineage WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM data_lineage WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error recording lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -256,7 +257,7 @@ dataLineage.post('/bulk', async (c) => {
     }, 201);
   } catch (error) {
     console.error('Error bulk recording lineage:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -268,8 +269,8 @@ dataLineage.get('/baselines', async (c) => {
     
     // Get baseline configs from company settings or return defaults
     const company = await db.prepare(`
-      SELECT settings FROM companies WHERE id = ?
-    `).bind(companyId).first();
+      SELECT settings FROM companies WHERE id = ? AND company_id = ?
+    `).bind(companyId, companyId).first();
     
     let baselines = {
       promotionBaseline: {
@@ -305,7 +306,7 @@ dataLineage.get('/baselines', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching baselines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -319,8 +320,8 @@ dataLineage.put('/baselines', async (c) => {
     
     // Get current settings
     const company = await db.prepare(`
-      SELECT settings FROM companies WHERE id = ?
-    `).bind(companyId).first();
+      SELECT settings FROM companies WHERE id = ? AND company_id = ?
+    `).bind(companyId, companyId).first();
     
     let settings = {};
     if (company?.settings) {
@@ -332,7 +333,7 @@ dataLineage.put('/baselines', async (c) => {
     settings.baselines = body;
     
     await db.prepare(`
-      UPDATE companies SET settings = ?, updated_at = ? WHERE id = ?
+      UPDATE companies SET settings = ?, updated_at = ? WHERE id = ? AND company_id = ?
     `).bind(JSON.stringify(settings), now, companyId).run();
     
     return c.json({
@@ -341,7 +342,7 @@ dataLineage.put('/baselines', async (c) => {
     });
   } catch (error) {
     console.error('Error updating baselines:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -413,7 +414,7 @@ dataLineage.get('/variance/:entityType', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching variance:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 
@@ -493,7 +494,7 @@ dataLineage.get('/reconciliation', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching reconciliation:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'dataLineage');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const kamWallets = new Hono();
 kamWallets.use('*', authMiddleware);
@@ -38,7 +39,7 @@ kamWallets.get('/', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -52,7 +53,7 @@ kamWallets.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -75,7 +76,7 @@ kamWallets.get('/:id/balance',async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -94,7 +95,7 @@ kamWallets.get('/customer/:customerId/allocations', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -121,11 +122,11 @@ kamWallets.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -144,13 +145,13 @@ kamWallets.post('/:id/allocate', async (c) => {
     const newCommitted = (wallet.committed_amount || 0) + amount;
     const newAvailable = (wallet.allocated_amount || 0) - (wallet.utilized_amount || 0) - newCommitted;
 
-    await db.prepare(`UPDATE kam_wallets SET committed_amount = ?, available_amount = ?, updated_at = ? WHERE id = ?`).bind(newCommitted, newAvailable, now, id).run();
+    await db.prepare(`UPDATE kam_wallets SET committed_amount = ?, available_amount = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(newCommitted, newAvailable, now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -169,13 +170,13 @@ kamWallets.post('/:id/record-usage', async (c) => {
     const newUtilized = (wallet.utilized_amount || 0) + amount;
     const newAvailable = (wallet.allocated_amount || 0) - newUtilized - (wallet.committed_amount || 0);
 
-    await db.prepare(`UPDATE kam_wallets SET utilized_amount = ?, available_amount = ?, updated_at = ? WHERE id = ?`).bind(newUtilized, newAvailable, now, id).run();
+    await db.prepare(`UPDATE kam_wallets SET utilized_amount = ?, available_amount = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(newUtilized, newAvailable, now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -210,11 +211,11 @@ kamWallets.put('/:id', async (c) => {
       now, id, companyId
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -227,11 +228,11 @@ kamWallets.patch('/:id/status', async (c) => {
     const now = new Date().toISOString();
 
     await db.prepare(`UPDATE kam_wallets SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(body.status, now, id, companyId).run();
-    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 
@@ -242,11 +243,11 @@ kamWallets.delete('/:id', async (c) => {
     const { id } = c.req.param();
     const existing = await db.prepare('SELECT * FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'KAM Wallet not found' }, 404);
-    await db.prepare('DELETE FROM kam_wallets WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM kam_wallets WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'KAM Wallet deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'kamWallets');
   }
 });
 

@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { BudgetEnforcementService, checkBudgetAvailability } from '../services/budgetEnforcement.js';
 import { WalletEnforcementService } from '../services/walletEnforcement.js';
 import { routeApproval } from '../services/approvalRouting.js';
+import { apiError } from '../utils/apiError.js';
 
 export const promotionRoutes = new Hono();
 
@@ -222,7 +223,7 @@ promotionRoutes.get('/:id/products', async (c) => {
     }
     return c.json({ success: true, data: products });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -237,7 +238,7 @@ promotionRoutes.delete('/:id/products/:productId', async (c) => {
     await mongodb.updateOne('promotions', { _id: { $oid: id }, companyId: tenantId }, { products });
     return c.json({ success: true, message: 'Product removed' });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -261,7 +262,7 @@ promotionRoutes.get('/:id/customers', async (c) => {
     }
     return c.json({ success: true, data: customers });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -276,7 +277,7 @@ promotionRoutes.delete('/:id/customers/:customerId', async (c) => {
     await mongodb.updateOne('promotions', { _id: { $oid: id }, companyId: tenantId }, { customers });
     return c.json({ success: true, message: 'Customer removed' });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -306,7 +307,7 @@ promotionRoutes.get('/:id/budget', async (c) => {
       currency: 'ZAR'
     }});
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -326,7 +327,7 @@ promotionRoutes.get('/:id/documents', async (c) => {
     }
     return c.json({ success: true, data: documents });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -341,7 +342,7 @@ promotionRoutes.delete('/:id/documents/:documentId', async (c) => {
     await mongodb.updateOne('promotions', { _id: { $oid: id }, companyId: tenantId }, { documents });
     return c.json({ success: true, message: 'Document deleted' });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -367,7 +368,7 @@ promotionRoutes.get('/:id/approvals', async (c) => {
     }
     return c.json({ success: true, data: approvals });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -391,7 +392,7 @@ promotionRoutes.get('/:id/history', async (c) => {
     }
     return c.json({ success: true, data: history.sort((a, b) => new Date(b.date) - new Date(a.date)) });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -416,7 +417,7 @@ promotionRoutes.get('/calendar', async (c) => {
 
     return c.json({ success: true, data: events });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 
@@ -434,8 +435,8 @@ promotionRoutes.put('/:id/submit', async (c) => {
     if (!promo) return c.json({ success: false, message: 'Not found' }, 404);
 
     await c.env.DB.prepare(
-      "UPDATE promotions SET status = 'pending_approval', updated_at = datetime('now') WHERE id = ?"
-    ).bind(id).run();
+      "UPDATE promotions SET status = 'pending_approval', updated_at = datetime('now') WHERE id = ? AND company_id = ?"
+    ).bind(id, companyId).run();
 
     const approvalId = await routeApproval(c.env.DB, {
       companyId, entityType: 'promotion', entityId: id,
@@ -444,7 +445,7 @@ promotionRoutes.put('/:id/submit', async (c) => {
 
     return c.json({ success: true, data: { approvalId }, message: 'Submitted for approval' });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'promotions');
   }
 });
 

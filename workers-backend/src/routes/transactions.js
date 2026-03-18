@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const transactions = new Hono();
 transactions.use('*', authMiddleware);
@@ -38,7 +39,7 @@ transactions.get('/', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -52,7 +53,7 @@ transactions.get('/:id',async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -84,11 +85,11 @@ transactions.post('/',async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM transactions WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -104,7 +105,7 @@ transactions.put('/:id', async (c) => {
     if (!existing) return c.json({ success: false, message: 'Transaction not found' }, 404);
 
     await db.prepare(`
-      UPDATE transactions SET amount = ?, description = ?, reference = ?, status = ?, data = ?, updated_at = ? WHERE id = ?
+      UPDATE transactions SET amount = ?, description = ?, reference = ?, status = ?, data = ?, updated_at = ? WHERE id = ? AND company_id = ?
     `).bind(
       body.amount ?? existing.amount,
       body.description ?? existing.description,
@@ -114,11 +115,11 @@ transactions.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -129,11 +130,11 @@ transactions.delete('/:id', async (c) => {
     const { id } = c.req.param();
     const existing = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Transaction not found' }, 404);
-    await db.prepare('DELETE FROM transactions WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Transaction deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -148,12 +149,12 @@ transactions.post('/:id/approve', async (c) => {
     const existing = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Transaction not found' }, 404);
 
-    await db.prepare(`UPDATE transactions SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ? WHERE id = ?`).bind(userId, now, now, id).run();
-    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ?').bind(id).first();
+    await db.prepare(`UPDATE transactions SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(userId, now, now, id, companyId).run();
+    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -169,12 +170,12 @@ transactions.post('/:id/reject', async (c) => {
     const existing = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Transaction not found' }, 404);
 
-    await db.prepare(`UPDATE transactions SET status = 'rejected', rejected_by = ?, rejected_at = ?, rejection_reason = ?, updated_at = ? WHERE id = ?`).bind(userId, now, body.reason || null, now, id).run();
-    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ?').bind(id).first();
+    await db.prepare(`UPDATE transactions SET status = 'rejected', rejected_by = ?, rejected_at = ?, rejection_reason = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(userId, now, body.reason || null, now, id, companyId).run();
+    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -189,12 +190,12 @@ transactions.post('/:id/settle', async (c) => {
     const existing = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Transaction not found' }, 404);
 
-    await db.prepare(`UPDATE transactions SET status = 'settled', payment_reference = ?, settled_at = ?, updated_at = ? WHERE id = ?`).bind(body.paymentReference || null, now, now, id).run();
-    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ?').bind(id).first();
+    await db.prepare(`UPDATE transactions SET status = 'settled', payment_reference = ?, settled_at = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(body.paymentReference || null, now, now, id, companyId).run();
+    const updated = await db.prepare('SELECT * FROM transactions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 
@@ -242,7 +243,7 @@ transactions.post('/bulk-upload', async (c) => {
     return c.json({ success: true, data: { total: items.length, created: results.created, failed: results.errors.length, errors: results.errors } }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'transactions');
   }
 });
 

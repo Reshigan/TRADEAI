@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { checkBudgetAvailability, commitFunds } from '../services/budgetEnforcement.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 export const tradeSpendRoutes = new Hono();
 
@@ -209,7 +211,7 @@ tradeSpendRoutes.get('/:id/performance', async (c) => {
       incrementalRevenue: ts.incrementalRevenue || 0
     }});
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeSpends');
   }
 });
 
@@ -235,7 +237,7 @@ tradeSpendRoutes.get('/:id/approvals', async (c) => {
     }
     return c.json({ success: true, data: approvals });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeSpends');
   }
 });
 
@@ -259,7 +261,7 @@ tradeSpendRoutes.get('/:id/history', async (c) => {
     }
     return c.json({ success: true, data: history.sort((a, b) => new Date(b.date) - new Date(a.date)) });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeSpends');
   }
 });
 
@@ -282,7 +284,7 @@ tradeSpendRoutes.get('/:id/documents', async (c) => {
     }
     return c.json({ success: true, data: documents });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeSpends');
   }
 });
 
@@ -309,7 +311,7 @@ tradeSpendRoutes.get('/:id/accruals', async (c) => {
     }
     return c.json({ success: true, data: accruals });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeSpends');
   }
 });
 

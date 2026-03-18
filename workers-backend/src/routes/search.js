@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const searchRoutes = new Hono();
 
@@ -42,7 +43,7 @@ searchRoutes.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Search error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'search');
   }
 });
 

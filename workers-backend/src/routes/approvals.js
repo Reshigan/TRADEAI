@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { BudgetEnforcementService, commitFunds, releaseFunds } from '../services/budgetEnforcement.js';
 import { createNotification } from '../services/notifications.js';
 import { notifyApprovalDecision } from '../services/notificationService.js';
 import { routeApproval } from '../services/approvalRouting.js';
 import { WalletEnforcementService } from '../services/walletEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const approvals = new Hono();
 
@@ -59,7 +60,7 @@ approvals.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -88,7 +89,7 @@ approvals.get('/pending', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching pending approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -113,7 +114,7 @@ approvals.get('/overdue', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching overdue approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -136,7 +137,7 @@ approvals.get('/entity/:entityType/:entityId', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching entity approvals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -158,7 +159,7 @@ approvals.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -194,12 +195,12 @@ approvals.post('/', async (c) => {
       JSON.stringify(body.metadata || body.data || {}), now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM approvals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -245,12 +246,12 @@ approvals.put('/:id', async (c) => {
       UPDATE approvals SET ${fields.join(', ')} WHERE id = ? AND company_id = ?
     `).bind(...values).run();
 
-    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
 
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -276,7 +277,7 @@ approvals.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Approval deleted successfully' });
   } catch (error) {
     console.error('Error deleting approval:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -308,8 +309,8 @@ approvals.post('/:id/approve', async (c) => {
       UPDATE approvals 
       SET status = 'approved', approved_by = ?, approved_at = ?, 
           comments = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(userId, now, body.comments || '', now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(userId, now, body.comments || '', now, id, companyId).run();
     
     // Update the underlying entity status if applicable
     if (approval.entity_type && approval.entity_id) {
@@ -327,8 +328,8 @@ approvals.post('/:id/approve', async (c) => {
       if (table) {
         try {
           await db.prepare(`
-            UPDATE ${table} SET status = 'approved', updated_at = ? WHERE id = ?
-          `).bind(now, approval.entity_id).run();
+            UPDATE ${table} SET status = 'approved', updated_at = ? WHERE id = ? AND company_id = ?
+          `).bind(now, approval.entity_id, companyId).run();
         } catch (e) {
           console.log('Could not update entity status:', e.message);
         }
@@ -338,7 +339,7 @@ approvals.post('/:id/approve', async (c) => {
       if (approval.entity_type === 'promotion' || approval.entity_type === 'trade_spend') {
         try {
           const entityTable = approval.entity_type === 'promotion' ? 'promotions' : 'trade_spends';
-          const entity = await db.prepare(`SELECT * FROM ${entityTable} WHERE id = ?`).bind(approval.entity_id).first();
+          const entity = await db.prepare(`SELECT * FROM ${entityTable} WHERE id = ? AND company_id = ?`).bind(approval.entity_id, companyId).first();
           const entityData = JSON.parse(entity?.data || '{}');
           const amount = entity?.expected_spend || entityData.expectedSpend || entity?.budget_amount || 0;
 
@@ -364,14 +365,14 @@ approvals.post('/:id/approve', async (c) => {
       });
     } catch (e) { /* notification optional */ }
 
-    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     try { await notifyApprovalDecision(db, companyId, approval, 'approved', userId); } catch (e) { /* optional */ }
 
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -401,8 +402,8 @@ approvals.post('/:id/reject', async (c) => {
       UPDATE approvals 
       SET status = 'rejected', rejected_by = ?, rejected_at = ?, 
           rejection_reason = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(userId, now, body.reason || '', now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(userId, now, body.reason || '', now, id, companyId).run();
     
     // Update the underlying entity status
     if (approval.entity_type && approval.entity_id) {
@@ -421,8 +422,8 @@ approvals.post('/:id/reject', async (c) => {
         // Update entity status to rejected
         try {
           await db.prepare(`
-            UPDATE ${table} SET status = 'rejected', updated_at = ? WHERE id = ?
-          `).bind(now, approval.entity_id).run();
+            UPDATE ${table} SET status = 'rejected', updated_at = ? WHERE id = ? AND company_id = ?
+          `).bind(now, approval.entity_id, companyId).run();
         } catch (e) {
           console.error('Could not update entity status:', e.message);
         }
@@ -433,8 +434,8 @@ approvals.post('/:id/reject', async (c) => {
         try {
           const entityTable = approval.entity_type === 'promotion' ? 'promotions' : 'trade_spends';
           const entity = await db.prepare(
-            `SELECT budget_id, expected_spend, data FROM ${entityTable} WHERE id = ?`
-          ).bind(approval.entity_id).first();
+            `SELECT budget_id, expected_spend, data FROM ${entityTable} WHERE id = ? AND company_id = ?`
+          ).bind(approval.entity_id, companyId).first();
           if (entity?.budget_id) {
             const amount = entity.expected_spend || JSON.parse(entity.data || '{}').expectedSpend || 0;
             if (amount > 0) {
@@ -456,14 +457,14 @@ approvals.post('/:id/reject', async (c) => {
       });
     } catch (e) { /* notification optional */ }
 
-    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     try { await notifyApprovalDecision(db, companyId, approval, 'rejected', userId); } catch (e) { /* optional */ }
 
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -477,7 +478,7 @@ approvals.post('/route', async (c) => {
     const result = await routeApproval(db, companyId, { ...body, requestedBy: userId });
     return c.json({ success: true, data: result });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -496,12 +497,12 @@ approvals.post('/:id/cancel', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(body.reason || '', now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM approvals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error cancelling:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 
@@ -545,7 +546,7 @@ approvals.get('/:id/sla', async (c) => {
     });
   } catch (error) {
     console.error('Error checking SLA:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'approvals');
   }
 });
 

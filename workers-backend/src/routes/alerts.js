@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const alerts = new Hono();
 alerts.use('*', authMiddleware);
@@ -38,7 +39,7 @@ alerts.get('/', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 
@@ -52,7 +53,7 @@ alerts.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 
@@ -81,11 +82,11 @@ alerts.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM alerts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 
@@ -98,11 +99,11 @@ alerts.put('/:id', async (c) => {
     const now = new Date().toISOString();
 
     await db.prepare(`UPDATE alerts SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(body.status || 'active', now, id, companyId).run();
-    const updated = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM alerts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 
@@ -114,11 +115,11 @@ alerts.post('/:id/dismiss', async (c) => {
     const now = new Date().toISOString();
 
     await db.prepare(`UPDATE alerts SET status = 'dismissed', dismissed_at = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(now, now, id, companyId).run();
-    const updated = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM alerts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 
@@ -131,11 +132,11 @@ alerts.post('/:id/acknowledge', async (c) => {
     const now = new Date().toISOString();
 
     await db.prepare(`UPDATE alerts SET status = 'acknowledged', acknowledged_by = ?, acknowledged_at = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(userId, now, now, id, companyId).run();
-    const updated = await db.prepare('SELECT * FROM alerts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM alerts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 
@@ -148,7 +149,7 @@ alerts.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Alert deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'alerts');
   }
 });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const perfAnalytics = new Hono();
 perfAnalytics.use('*', authMiddleware);
@@ -30,7 +31,7 @@ perfAnalytics.get('/summary', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'performanceAnalytics');
   }
 });
 
@@ -92,7 +93,7 @@ perfAnalytics.get('/promotion-effectiveness', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'performanceAnalytics');
   }
 });
 
@@ -157,7 +158,7 @@ perfAnalytics.get('/budget-variance', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'performanceAnalytics');
   }
 });
 
@@ -224,7 +225,7 @@ perfAnalytics.get('/customer-segmentation', async (c) => {
     });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'performanceAnalytics');
   }
 });
 

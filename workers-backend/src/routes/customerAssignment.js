@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const customerAssignment = new Hono();
 customerAssignment.use('*', authMiddleware);
@@ -27,7 +28,7 @@ customerAssignment.get('/', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customerAssignment');
   }
 });
 
@@ -43,7 +44,7 @@ customerAssignment.get('/unassigned', async (c) => {
     return c.json({ success: true, data: (result.results || []).map(rowToDocument) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customerAssignment');
   }
 });
 
@@ -71,11 +72,11 @@ customerAssignment.post('/assign', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM customer_assignments WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM customer_assignments WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customerAssignment');
   }
 });
 
@@ -92,7 +93,7 @@ customerAssignment.post('/unassign', async (c) => {
     return c.json({ success: true, message: 'Customer unassigned' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customerAssignment');
   }
 });
 
@@ -105,7 +106,7 @@ customerAssignment.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Assignment deleted' });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customerAssignment');
   }
 });
 

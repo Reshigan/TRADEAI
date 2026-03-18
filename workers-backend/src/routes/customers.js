@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 export const customerRoutes = new Hono();
 
@@ -193,7 +194,7 @@ customerRoutes.get('/:id/promotions', async (c) => {
     });
     return c.json({ success: true, data: filtered });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -208,7 +209,7 @@ customerRoutes.get('/:id/budgets', async (c) => {
     const budgets = await mongodb.find('budgets', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: budgets });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -223,7 +224,7 @@ customerRoutes.get('/:id/deductions', async (c) => {
     const deductions = await mongodb.find('deductions', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: deductions });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -238,7 +239,7 @@ customerRoutes.get('/:id/claims', async (c) => {
     const claims = await mongodb.find('claims', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: claims });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -253,7 +254,7 @@ customerRoutes.get('/:id/trade-spends', async (c) => {
     const spends = await mongodb.find('tradespends', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: spends });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -266,7 +267,7 @@ customerRoutes.get('/:id/sales-history', async (c) => {
     if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
     return c.json({ success: true, data: customer.salesHistory || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -279,7 +280,7 @@ customerRoutes.get('/:id/trading-terms', async (c) => {
     if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
     return c.json({ success: true, data: customer.tradingTerms || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 

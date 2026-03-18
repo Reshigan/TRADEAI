@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const forecasting = new Hono();
 
@@ -52,7 +53,7 @@ forecasting.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching forecasts:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -83,7 +84,7 @@ forecasting.get('/compare', async (c) => {
     });
   } catch (error) {
     console.error('Error comparing forecasts:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -132,7 +133,7 @@ forecasting.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -170,12 +171,12 @@ forecasting.post('/', async (c) => {
       now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -202,7 +203,7 @@ forecasting.put('/:id', async (c) => {
         start_period = ?, end_period = ?, base_year = ?, forecast_year = ?,
         total_forecast = ?, total_actual = ?, variance = ?, variance_percent = ?,
         method = ?, confidence_level = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.forecastType || body.forecast_type || existing.forecast_type,
@@ -222,12 +223,12 @@ forecasting.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -246,12 +247,12 @@ forecasting.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Forecast not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM forecasts WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Forecast deleted' });
   } catch (error) {
     console.error('Error deleting forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -325,7 +326,7 @@ forecasting.post('/generate', async (c) => {
       now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({
       success: true,
@@ -341,7 +342,7 @@ forecasting.post('/generate', async (c) => {
     });
   } catch (error) {
     console.error('Error generating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -358,12 +359,12 @@ forecasting.post('/:id/activate', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -380,12 +381,12 @@ forecasting.post('/:id/archive', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error archiving forecast:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 
@@ -415,7 +416,7 @@ forecasting.post('/:id/update-actuals', async (c) => {
     await db.prepare(`
       UPDATE forecasts SET 
         total_actual = ?, variance = ?, variance_percent = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       totalActual,
       Math.round(variance * 100) / 100,
@@ -423,7 +424,7 @@ forecasting.post('/:id/update-actuals', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM forecasts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({
       success: true,
@@ -438,7 +439,7 @@ forecasting.post('/:id/update-actuals', async (c) => {
     });
   } catch (error) {
     console.error('Error updating actuals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'forecasting');
   }
 });
 

@@ -6,6 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // D-11: Send httpOnly cookies with requests
 });
 
 // Token refresh state
@@ -43,19 +44,20 @@ const isTokenExpiringSoon = (token) => {
 api.interceptors.request.use(
   async (config) => {
     const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-    const refreshToken = localStorage.getItem('refreshToken');
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       
       // Check if token is expiring soon and needs refresh
-      if (refreshToken && isTokenExpiringSoon(token) && !isRefreshing) {
+      // D-11: refreshToken is now in httpOnly cookie, no need to send in body
+      if (isTokenExpiringSoon(token) && !isRefreshing) {
         isRefreshing = true;
         
         try {
           const response = await axios.post(
             `${api.defaults.baseURL}/auth/refresh-token`,
-            { refreshToken }
+            {},
+            { withCredentials: true }
           );
           
           const newToken = response.data.token || response.data.accessToken || response.data.data?.tokens?.accessToken;
@@ -86,10 +88,8 @@ api.interceptors.response.use(
     
     // Handle 401 Unauthorized errors
     if (error.response && error.response.status === 401) {
-      // If token expired and we have refresh token, try to refresh
-      const refreshToken = localStorage.getItem('refreshToken');
-      
-      if (refreshToken && !originalRequest._retry) {
+      // If token expired, try to refresh using httpOnly cookie
+      if (!originalRequest._retry) {
         originalRequest._retry = true;
         
         if (isRefreshing) {
@@ -105,9 +105,11 @@ api.interceptors.response.use(
         isRefreshing = true;
         
         try {
+          // D-11: refreshToken sent via httpOnly cookie automatically
           const response = await axios.post(
             `${api.defaults.baseURL}/auth/refresh-token`,
-            { refreshToken }
+            {},
+            { withCredentials: true }
           );
           
           const newToken = response.data.token || response.data.accessToken || response.data.data?.tokens?.accessToken;
@@ -124,7 +126,6 @@ api.interceptors.response.use(
           isRefreshing = false;
           localStorage.removeItem('token');
           localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
           localStorage.removeItem('isAuthenticated');
           localStorage.removeItem('user');
           
@@ -138,10 +139,9 @@ api.interceptors.response.use(
           return Promise.reject(refreshError);
         }
       } else {
-        // No refresh token or already tried refresh, log out
+        // Already tried refresh, log out
         localStorage.removeItem('token');
         localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('user');
         
@@ -215,16 +215,13 @@ export const authService = {
         throw new Error('Invalid login response structure');
       }
       
-      // Store token, refresh token, and user data
+      // D-11: Store access token only; refresh token is in httpOnly cookie
       localStorage.setItem('token', token);
       localStorage.setItem('accessToken', token);
-      if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
-      }
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('user', JSON.stringify(user));
       
-      return { token, refreshToken, user, tokens };
+      return { token, user, tokens };
     } catch (error) {
       throw error;
     }
@@ -232,9 +229,9 @@ export const authService = {
   logout: async () => {
     try {
       await api.post('/auth/logout');
+      // D-11: refreshToken cookie cleared server-side
       localStorage.removeItem('token');
       localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
     } catch (error) {
@@ -242,7 +239,6 @@ export const authService = {
       // Still remove items even if API call fails
       localStorage.removeItem('token');
       localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
     }

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const activityGrid = new Hono();
 
@@ -78,7 +79,7 @@ activityGrid.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching activity grid:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -118,7 +119,7 @@ activityGrid.get('/heat-map', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching heat map:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -193,7 +194,7 @@ activityGrid.get('/conflicts', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching conflicts:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -232,12 +233,12 @@ activityGrid.post('/', async (c) => {
       userId, now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM activity_grid WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM activity_grid WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -263,7 +264,7 @@ activityGrid.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(activity) });
   } catch (error) {
     console.error('Error fetching activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -317,12 +318,12 @@ activityGrid.put('/:id', async (c) => {
       now, id, companyId
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM activity_grid WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM activity_grid WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -347,7 +348,7 @@ activityGrid.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Activity deleted' });
   } catch (error) {
     console.error('Error deleting activity:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 
@@ -385,8 +386,8 @@ activityGrid.post('/sync', async (c) => {
       for (const promo of (promotions.results || [])) {
         const existingId = `promo-${promo.id}`;
         const existing = await db.prepare(
-          'SELECT id FROM activity_grid WHERE id = ?'
-        ).bind(existingId).first();
+          'SELECT id FROM activity_grid WHERE id = ? AND company_id = ?'
+        ).bind(existingId, companyId).first();
         
         if (!existing) {
           await db.prepare(`
@@ -429,8 +430,8 @@ activityGrid.post('/sync', async (c) => {
       for (const ts of (tradeSpends.results || [])) {
         const existingId = `ts-${ts.id}`;
         const existing = await db.prepare(
-          'SELECT id FROM activity_grid WHERE id = ?'
-        ).bind(existingId).first();
+          'SELECT id FROM activity_grid WHERE id = ? AND company_id = ?'
+        ).bind(existingId, companyId).first();
         
         if (!existing) {
           await db.prepare(`
@@ -473,8 +474,8 @@ activityGrid.post('/sync', async (c) => {
       for (const camp of (campaigns.results || [])) {
         const existingId = `camp-${camp.id}`;
         const existing = await db.prepare(
-          'SELECT id FROM activity_grid WHERE id = ?'
-        ).bind(existingId).first();
+          'SELECT id FROM activity_grid WHERE id = ? AND company_id = ?'
+        ).bind(existingId, companyId).first();
         
         if (!existing) {
           await db.prepare(`
@@ -500,7 +501,7 @@ activityGrid.post('/sync', async (c) => {
     });
   } catch (error) {
     console.error('Error syncing activities:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'activityGrid');
   }
 });
 

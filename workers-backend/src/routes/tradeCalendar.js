@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const tradeCalendar = new Hono();
 
@@ -56,7 +57,7 @@ tradeCalendar.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching calendar events:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -188,7 +189,7 @@ tradeCalendar.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching calendar summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -344,7 +345,7 @@ tradeCalendar.post('/check-constraints', async (c) => {
     });
   } catch (error) {
     console.error('Error checking constraints:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -421,7 +422,7 @@ tradeCalendar.get('/timeline', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching timeline:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -449,7 +450,7 @@ tradeCalendar.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(event) });
   } catch (error) {
     console.error('Error fetching calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -520,11 +521,11 @@ tradeCalendar.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM trade_calendar_events WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM trade_calendar_events WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -554,7 +555,7 @@ tradeCalendar.put('/:id', async (c) => {
         planned_spend = ?, actual_spend = ?, planned_volume = ?, actual_volume = ?,
         planned_revenue = ?, actual_revenue = ?, roi = ?, lift_pct = ?,
         priority = ?, tags = ?, notes = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -590,11 +591,11 @@ tradeCalendar.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM trade_calendar_events WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trade_calendar_events WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -613,11 +614,11 @@ tradeCalendar.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Calendar event not found' }, 404);
     }
 
-    await db.prepare('DELETE FROM trade_calendar_events WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM trade_calendar_events WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Calendar event deleted' });
   } catch (error) {
     console.error('Error deleting calendar event:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -657,21 +658,19 @@ tradeCalendar.post('/:id/sync-promotion', async (c) => {
       UPDATE trade_calendar_events SET
         name = ?, status = ?, start_date = ?, end_date = ?,
         actual_spend = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(
-      promotion.name || event.name,
+      WHERE id = ? AND company_id = ?
+    `).bind(promotion.name || event.name,
       promotion.status || event.status,
       promotion.start_date || event.start_date,
       promotion.end_date || event.end_date,
       spendResult?.total || 0,
-      now, id
-    ).run();
+      now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM trade_calendar_events WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trade_calendar_events WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error syncing promotion:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -708,7 +707,7 @@ tradeCalendar.get('/constraints/list', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching constraints:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -730,7 +729,7 @@ tradeCalendar.get('/constraints/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(constraint) });
   } catch (error) {
     console.error('Error fetching constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -790,11 +789,11 @@ tradeCalendar.post('/constraints', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM trade_calendar_constraints WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM trade_calendar_constraints WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -824,7 +823,7 @@ tradeCalendar.put('/constraints/:id', async (c) => {
         max_concurrent_promotions = ?, max_spend_amount = ?, min_gap_days = ?,
         max_discount_pct = ?, min_lead_time_days = ?, require_approval = ?,
         priority = ?, violation_action = ?, notes = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -855,11 +854,11 @@ tradeCalendar.put('/constraints/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM trade_calendar_constraints WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trade_calendar_constraints WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 
@@ -878,11 +877,11 @@ tradeCalendar.delete('/constraints/:id', async (c) => {
       return c.json({ success: false, message: 'Constraint not found' }, 404);
     }
 
-    await db.prepare('DELETE FROM trade_calendar_constraints WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM trade_calendar_constraints WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Constraint deleted' });
   } catch (error) {
     console.error('Error deleting constraint:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'tradeCalendar');
   }
 });
 

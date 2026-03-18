@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const accruals = new Hono();
 
@@ -48,7 +49,7 @@ accruals.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accruals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -151,7 +152,7 @@ accruals.get('/summary', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accrual summary:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -188,7 +189,7 @@ accruals.get('/:id', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -248,11 +249,11 @@ accruals.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM accruals WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM accruals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -284,7 +285,7 @@ accruals.put('/:id', async (c) => {
         rate = ?, rate_type = ?, base_amount = ?,
         currency = ?, auto_calculate = ?, auto_post = ?,
         data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -312,11 +313,11 @@ accruals.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM accruals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM accruals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -341,12 +342,12 @@ accruals.delete('/:id', async (c) => {
 
     await db.prepare('DELETE FROM accrual_journals WHERE accrual_id = ? AND company_id = ?').bind(id, companyId).run();
     await db.prepare('DELETE FROM accrual_periods WHERE accrual_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM accruals WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM accruals WHERE id = ? AND company_id = ?').bind(id, companyId).run();
 
     return c.json({ success: true, message: 'Accrual deleted' });
   } catch (error) {
     console.error('Error deleting accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -370,8 +371,8 @@ accruals.post('/:id/calculate', async (c) => {
     }
 
     await db.prepare(
-      "UPDATE accruals SET status = 'calculating', updated_at = ? WHERE id = ?"
-    ).bind(now, id).run();
+      "UPDATE accruals SET status = 'calculating', updated_at = ? WHERE id = ? AND company_id = ?"
+    ).bind(now, id, companyId).run();
 
     // Step 1: Determine the period boundaries based on frequency
     const startDate = accrual.start_date ? new Date(accrual.start_date) : new Date(new Date().getFullYear(), 0, 1);
@@ -521,10 +522,10 @@ accruals.post('/:id/calculate', async (c) => {
         remaining_amount = ?,
         last_calculated_at = ?,
         updated_at = ?
-      WHERE id = ?
-    `).bind(totalAccrued, remaining, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(totalAccrued, remaining, now, now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM accruals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM accruals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const updatedPeriods = await db.prepare(
       'SELECT * FROM accrual_periods WHERE accrual_id = ? ORDER BY period_number ASC'
     ).bind(id).all();
@@ -539,7 +540,7 @@ accruals.post('/:id/calculate', async (c) => {
     });
   } catch (error) {
     console.error('Error calculating accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -604,8 +605,8 @@ accruals.post('/:id/post', async (c) => {
 
       await db.prepare(`
         UPDATE accrual_periods SET status = 'posted', posted_amount = ?, posted_at = ?, posted_by = ?, updated_at = ?
-        WHERE id = ?
-      `).bind(amount, now, userId, now, period.id).run();
+        WHERE id = ? AND company_id = ?
+      `).bind(amount, now, userId, now, period.id, companyId).run();
 
       totalPosted += amount;
     }
@@ -619,8 +620,8 @@ accruals.post('/:id/post', async (c) => {
         posted_amount = ?,
         last_posted_at = ?,
         updated_at = ?
-      WHERE id = ?
-    `).bind(newPostedTotal, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(newPostedTotal, now, now, id, companyId).run();
 
     return c.json({
       success: true,
@@ -629,7 +630,7 @@ accruals.post('/:id/post', async (c) => {
     });
   } catch (error) {
     console.error('Error posting accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -687,8 +688,8 @@ accruals.post('/:id/reverse', async (c) => {
         reversed_amount = ?,
         remaining_amount = ?,
         updated_at = ?
-      WHERE id = ?
-    `).bind(newReversed, Math.max(0, newRemaining), now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(newReversed, Math.max(0, newRemaining, companyId), now, id).run();
 
     return c.json({
       success: true,
@@ -697,7 +698,7 @@ accruals.post('/:id/reverse', async (c) => {
     });
   } catch (error) {
     console.error('Error reversing accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -720,14 +721,14 @@ accruals.post('/:id/approve', async (c) => {
 
     await db.prepare(`
       UPDATE accruals SET status = 'active', approved_by = ?, approved_at = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(userId, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(userId, now, now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM accruals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM accruals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving accrual:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 
@@ -748,7 +749,7 @@ accruals.get('/:id/journals', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accrual journals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'accruals');
   }
 });
 

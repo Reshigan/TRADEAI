@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const recommendationsRoutes = new Hono();
 
@@ -108,7 +109,7 @@ recommendationsRoutes.post('/next-best-promotion', async (c) => {
     });
   } catch (error) {
     console.error('Next-best promotion error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'recommendations');
   }
 });
 
@@ -202,7 +203,7 @@ recommendationsRoutes.post('/next-best-action', async (c) => {
     });
   } catch (error) {
     console.error('Next-best action error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'recommendations');
   }
 });
 
@@ -337,7 +338,7 @@ recommendationsRoutes.get('/insights/:entityType/:entityId', async (c) => {
     });
   } catch (error) {
     console.error('Entity insights error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'recommendations');
   }
 });
 
@@ -459,7 +460,7 @@ recommendationsRoutes.get('/trending', async (c) => {
     });
   } catch (error) {
     console.error('Trending error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'recommendations');
   }
 });
 

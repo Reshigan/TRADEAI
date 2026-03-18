@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { getD1Client } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 const seedRoutes = new Hono();
 
@@ -272,7 +273,7 @@ seedRoutes.post('/ml-data', async (c) => {
     });
   } catch (error) {
     console.error('Seed error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'seed');
   }
 });
 
@@ -348,7 +349,7 @@ seedRoutes.get('/ml-stats', async (c) => {
     });
   } catch (error) {
     console.error('Stats error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'seed');
   }
 });
 
@@ -403,7 +404,7 @@ seedRoutes.post('/sales-transactions', async (c) => {
     return c.json({ success: true, message: `Seeded ${count} sales transactions`, data: { count, customers: custIds.length, products: prodIds.length } });
   } catch (error) {
     console.error('Seed sales transactions error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'seed');
   }
 });
 

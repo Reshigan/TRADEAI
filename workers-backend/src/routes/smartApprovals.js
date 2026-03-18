@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
+import { apiError } from '../utils/apiError.js';
 
 const smartApprovalsRoutes = new Hono();
 smartApprovalsRoutes.use('*', authMiddleware);
@@ -48,7 +49,7 @@ smartApprovalsRoutes.get('/queue', async (c) => {
     });
     return c.json({ success: true, data: queue, total: queue.length });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'smartApprovals');
   }
 });
 
@@ -113,7 +114,7 @@ smartApprovalsRoutes.post('/evaluate', async (c) => {
     });
   } catch (error) {
     console.error('Smart approval error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'smartApprovals');
   }
 });
 
@@ -153,7 +154,7 @@ smartApprovalsRoutes.post('/bulk-evaluate', async (c) => {
       }
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'smartApprovals');
   }
 });
 

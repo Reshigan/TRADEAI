@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
 import { generateTradeInsights } from '../services/ai.js';
+import { apiError } from '../utils/apiError.js';
 
 const aiCopilotRoutes = new Hono();
 aiCopilotRoutes.use('*', authMiddleware);
@@ -140,7 +141,7 @@ Pending Approvals: ${pendingCount}`;
     return c.json({ success: true, data: { answer, data, suggestions, chartData, aiEnhanced, timestamp: new Date().toISOString() } });
   } catch (error) {
     console.error('AI Copilot error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiCopilot');
   }
 });
 
@@ -174,7 +175,7 @@ aiCopilotRoutes.post('/suggest-actions', async (c) => {
 
     return c.json({ success: true, data: { actions, timestamp: new Date().toISOString() } });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiCopilot');
   }
 });
 
@@ -240,7 +241,7 @@ aiCopilotRoutes.post('/context-query', async (c) => {
     return c.json({ success: true, data: { response, context, aiEnhanced, timestamp: new Date().toISOString() } });
   } catch (error) {
     console.error('Context query error:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'aiCopilot');
   }
 });
 

@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
 const wf = new Hono();
 wf.use('*', authMiddleware);
@@ -101,7 +102,7 @@ wf.post('/templates', async (c) => {
       INSERT INTO workflow_templates (id, company_id, name, description, workflow_type, entity_type, trigger_event, status, is_system, version, steps, conditions, escalation_rules, sla_hours, auto_approve_below, requires_all_approvers, created_by, notes, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, companyId, body.name, body.description || null, body.workflow_type || 'approval', body.entity_type || null, body.trigger_event || 'on_submit', body.status || 'active', JSON.stringify(body.steps || []), JSON.stringify(body.conditions || {}), JSON.stringify(body.escalation_rules || {}), body.sla_hours || null, body.auto_approve_below || null, body.requires_all_approvers ? 1 : 0, c.get('userId') || null, body.notes || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM workflow_templates WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM workflow_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -116,9 +117,9 @@ wf.put('/templates/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM workflow_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Template not found' }, 404);
     await db.prepare(`
-      UPDATE workflow_templates SET name = ?, description = ?, workflow_type = ?, entity_type = ?, trigger_event = ?, status = ?, steps = ?, conditions = ?, escalation_rules = ?, sla_hours = ?, auto_approve_below = ?, requires_all_approvers = ?, notes = ?, data = ?, updated_at = ? WHERE id = ?
-    `).bind(body.name || existing.name, body.description ?? existing.description, body.workflow_type || existing.workflow_type, body.entity_type ?? existing.entity_type, body.trigger_event || existing.trigger_event, body.status || existing.status, JSON.stringify(body.steps || JSON.parse(existing.steps || '[]')), JSON.stringify(body.conditions || JSON.parse(existing.conditions || '{}')), JSON.stringify(body.escalation_rules || JSON.parse(existing.escalation_rules || '{}')), body.sla_hours ?? existing.sla_hours, body.auto_approve_below ?? existing.auto_approve_below, body.requires_all_approvers !== undefined ? (body.requires_all_approvers ? 1 : 0) : existing.requires_all_approvers, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
-    const updated = await db.prepare('SELECT * FROM workflow_templates WHERE id = ?').bind(id).first();
+      UPDATE workflow_templates SET name = ?, description = ?, workflow_type = ?, entity_type = ?, trigger_event = ?, status = ?, steps = ?, conditions = ?, escalation_rules = ?, sla_hours = ?, auto_approve_below = ?, requires_all_approvers = ?, notes = ?, data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.name || existing.name, body.description ?? existing.description, body.workflow_type || existing.workflow_type, body.entity_type ?? existing.entity_type, body.trigger_event || existing.trigger_event, body.status || existing.status, JSON.stringify(body.steps || JSON.parse(existing.steps || '[]', companyId)), JSON.stringify(body.conditions || JSON.parse(existing.conditions || '{}')), JSON.stringify(body.escalation_rules || JSON.parse(existing.escalation_rules || '{}')), body.sla_hours ?? existing.sla_hours, body.auto_approve_below ?? existing.auto_approve_below, body.requires_all_approvers !== undefined ? (body.requires_all_approvers ? 1 : 0) : existing.requires_all_approvers, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
+    const updated = await db.prepare('SELECT * FROM workflow_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: updated });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -131,7 +132,7 @@ wf.delete('/templates/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM workflow_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Template not found' }, 404);
     if (existing.is_system) return c.json({ success: false, message: 'Cannot delete system template' }, 400);
-    await db.prepare('DELETE FROM workflow_templates WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM workflow_templates WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Template deleted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -185,7 +186,7 @@ wf.post('/instances', async (c) => {
       const stepId = generateId();
       await db.prepare(`INSERT INTO workflow_steps (id, company_id, instance_id, step_number, step_name, step_type, assignee_id, assignee_name, status, due_at, sla_hours, data, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(stepId, companyId, id, i + 1, steps[i].name || `Step ${i + 1}`, steps[i].type || 'approval', steps[i].assignee_id || null, steps[i].assignee_name || null, i === 0 ? 'in_progress' : 'pending', null, steps[i].sla_hours || template.sla_hours || null, JSON.stringify(steps[i].data || {}), now).run();
     }
-    const created = await db.prepare('SELECT * FROM workflow_instances WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM workflow_instances WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -199,13 +200,13 @@ wf.put('/steps/:id/complete', async (c) => {
     const now = new Date().toISOString();
     const step = await db.prepare('SELECT * FROM workflow_steps WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!step) return c.json({ success: false, message: 'Step not found' }, 404);
-    await db.prepare("UPDATE workflow_steps SET status = 'completed', action = ?, comments = ?, completed_at = ? WHERE id = ?").bind(body.action || 'approved', body.comments || null, now, id).run();
+    await db.prepare("UPDATE workflow_steps SET status = 'completed', action = ?, comments = ?, completed_at = ? WHERE id = ? AND company_id = ?").bind(body.action || 'approved', body.comments || null, now, id, companyId).run();
     const nextStep = await db.prepare("SELECT * FROM workflow_steps WHERE instance_id = ? AND step_number = ? AND company_id = ?").bind(step.instance_id, step.step_number + 1, companyId).first();
     if (nextStep) {
-      await db.prepare("UPDATE workflow_steps SET status = 'in_progress', started_at = ? WHERE id = ?").bind(now, nextStep.id).run();
-      await db.prepare("UPDATE workflow_instances SET current_step = ?, updated_at = ? WHERE id = ?").bind(step.step_number + 1, now, step.instance_id).run();
+      await db.prepare("UPDATE workflow_steps SET status = 'in_progress', started_at = ? WHERE id = ? AND company_id = ?").bind(now, nextStep.id, companyId).run();
+      await db.prepare("UPDATE workflow_instances SET current_step = ?, updated_at = ? WHERE id = ? AND company_id = ?").bind(step.step_number + 1, now, step.instance_id, companyId).run();
     } else {
-      await db.prepare("UPDATE workflow_instances SET status = 'completed', outcome = 'approved', completed_at = ?, completed_by = ?, updated_at = ? WHERE id = ?").bind(now, c.get('userId') || null, now, step.instance_id).run();
+      await db.prepare("UPDATE workflow_instances SET status = 'completed', outcome = 'approved', completed_at = ?, completed_by = ?, updated_at = ? WHERE id = ? AND company_id = ?").bind(now, c.get('userId') || null, now, step.instance_id).run();
     }
     return c.json({ success: true, message: 'Step completed' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
@@ -220,8 +221,8 @@ wf.put('/steps/:id/reject', async (c) => {
     const now = new Date().toISOString();
     const step = await db.prepare('SELECT * FROM workflow_steps WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!step) return c.json({ success: false, message: 'Step not found' }, 404);
-    await db.prepare("UPDATE workflow_steps SET status = 'rejected', action = 'rejected', comments = ?, completed_at = ? WHERE id = ?").bind(body.comments || null, now, id).run();
-    await db.prepare("UPDATE workflow_instances SET status = 'rejected', outcome = 'rejected', completed_at = ?, completed_by = ?, updated_at = ? WHERE id = ?").bind(now, c.get('userId') || null, now, step.instance_id).run();
+    await db.prepare("UPDATE workflow_steps SET status = 'rejected', action = 'rejected', comments = ?, completed_at = ? WHERE id = ? AND company_id = ?").bind(body.comments || null, now, id, companyId).run();
+    await db.prepare("UPDATE workflow_instances SET status = 'rejected', outcome = 'rejected', completed_at = ?, completed_by = ?, updated_at = ? WHERE id = ? AND company_id = ?").bind(now, c.get('userId') || null, now, step.instance_id).run();
     return c.json({ success: true, message: 'Step rejected' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });

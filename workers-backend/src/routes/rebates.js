@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
+import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 const rebates = new Hono();
 
@@ -60,7 +62,7 @@ rebates.get('/', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching rebates:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -112,7 +114,7 @@ rebates.get('/analytics', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching rebate analytics:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -137,7 +139,7 @@ rebates.get('/:id', async (c) => {
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
     console.error('Error fetching rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -177,7 +179,7 @@ rebates.get('/:id/accruals', async (c) => {
     });
   } catch (error) {
     console.error('Error fetching accruals:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -213,12 +215,12 @@ rebates.post('/', async (c) => {
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -246,7 +248,7 @@ rebates.put('/:id', async (c) => {
         rate = ?, rate_type = ?, threshold = ?, cap = ?,
         calculation_basis = ?, settlement_frequency = ?,
         data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description || existing.description,
@@ -264,12 +266,12 @@ rebates.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -288,12 +290,12 @@ rebates.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Rebate not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM rebates WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Rebate deleted' });
   } catch (error) {
     console.error('Error deleting rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -310,12 +312,12 @@ rebates.post('/:id/activate', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error activating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -332,12 +334,12 @@ rebates.post('/:id/deactivate', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error deactivating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -354,12 +356,12 @@ rebates.post('/:id/submit', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error submitting rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -377,12 +379,12 @@ rebates.post('/:id/approve', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -400,12 +402,12 @@ rebates.post('/:id/reject', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated), reason: body.reason });
   } catch (error) {
     console.error('Error rejecting rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 
@@ -454,10 +456,10 @@ rebates.post('/:id/calculate', async (c) => {
         last_calculated_at = ?,
         status = 'calculating',
         updated_at = ?
-      WHERE id = ?
-    `).bind(newAccrued, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(newAccrued, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({
       success: true,
@@ -472,7 +474,7 @@ rebates.post('/:id/calculate', async (c) => {
     });
   } catch (error) {
     console.error('Error calculating rebate:', error);
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'rebates');
   }
 });
 

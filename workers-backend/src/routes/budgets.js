@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { checkBudgetAvailability, checkBudgetAlerts, fundKamWallets } from '../services/budgetEnforcement.js';
+import { apiError } from '../utils/apiError.js';
 
 export const budgetRoutes = new Hono();
 
@@ -185,7 +186,7 @@ budgetRoutes.get('/:id/allocations', async (c) => {
     }
     return c.json({ success: true, data: allocations });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -207,7 +208,7 @@ budgetRoutes.get('/:id/approvals', async (c) => {
     }
     return c.json({ success: true, data: approvals });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -234,7 +235,7 @@ budgetRoutes.get('/:id/spending', async (c) => {
     spending.utilizationRate = spending.totalBudget > 0 ? ((spending.totalSpent / spending.totalBudget) * 100).toFixed(1) : '0.0';
     return c.json({ success: true, data: spending });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -255,7 +256,7 @@ budgetRoutes.get('/:id/history', async (c) => {
     }
     return c.json({ success: true, data: history.sort((a, b) => new Date(b.date) - new Date(a.date)) });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -280,7 +281,7 @@ budgetRoutes.get('/:id/transfers', async (c) => {
     }
     return c.json({ success: true, data: transfers });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -299,7 +300,7 @@ budgetRoutes.get('/:id/scenarios', async (c) => {
     ];
     return c.json({ success: true, data: scenarios });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -324,7 +325,7 @@ budgetRoutes.get('/:id/forecast', async (c) => {
     forecast.forEach(f => { f.variance = f.planned - f.actual; });
     return c.json({ success: true, data: forecast });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -337,7 +338,7 @@ budgetRoutes.get('/:id/availability', async (c) => {
     const result = await checkBudgetAvailability(c.env.DB, id, parseFloat(amount || '0'), tenantId);
     return c.json({ success: true, data: result });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -351,7 +352,7 @@ budgetRoutes.get('/:id/alerts', async (c) => {
     ).bind(id, tenantId).all();
     return c.json({ success: true, data: alerts.results || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -365,7 +366,7 @@ budgetRoutes.get('/:id/transactions', async (c) => {
     ).bind(id, tenantId).all();
     return c.json({ success: true, data: txns.results || [] });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -402,7 +403,7 @@ budgetRoutes.post('/:id/approve', async (c) => {
       data: { budgetId: id, status: 'approved', walletsFunded: walletResult.funded, perKam: walletResult.perKam }
     });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
@@ -414,7 +415,7 @@ budgetRoutes.post('/:id/check-alerts', async (c) => {
     const alerts = await checkBudgetAlerts(c.env.DB, id, tenantId);
     return c.json({ success: true, data: { alerts, count: alerts.length } });
   } catch (error) {
-    return c.json({ success: false, message: error.message }, 500);
+    return apiError(c, error, 'budgets');
   }
 });
 
