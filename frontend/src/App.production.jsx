@@ -10,13 +10,13 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 // Activities
-import ActivityFlow from './pages/activities/ActivityFlow';
+import ActivityFlow from './pages/activities/ActivityFormPage';
 import ActivityList from './pages/activities/ActivityList';
 import ActivityDashboard from './pages/activities/ActivityDashboard';
 
 // Trading Terms
-import TradingTermFlow from './pages/trading-terms/TradingTermFlow';
-import TermsList from './pages/trading-terms/TermsList';
+import TradingTermFlow from './pages/tradingterms/TradingTermsList';
+import TermsList from './pages/tradingterms/TradingTermsList';
 
 // Sales Analytics
 import SalesAnalytics from './pages/sales-analytics/SalesAnalytics';
