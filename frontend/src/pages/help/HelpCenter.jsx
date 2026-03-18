@@ -46,7 +46,7 @@ const helpSections = [
     id: 'promotions',
     title: 'Promotions',
     icon: PromotionsIcon,
-    color: '#1E40AF',
+    color: 'primary.dark',
     description: 'Create, manage, and track trade promotions',
     path: '/help/promotions',
     topics: ['Creating promotions', 'Promotion types', 'Approval workflow', 'Performance tracking'],

@@ -148,7 +148,7 @@ const AdminLayout = ({ user, onLogout }) => {
           flexGrow: 1,
           p: 3,
           mt: '64px',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'action.hover',
           minHeight: 'calc(100vh - 64px)'
         }}
       >

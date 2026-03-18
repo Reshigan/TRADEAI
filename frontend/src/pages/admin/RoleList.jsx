@@ -8,7 +8,7 @@ const roles = [
   { name: 'Manager', key: 'manager', color: '#2563EB', permissions: ['budgets', 'promotions', 'approvals', 'reports'] },
   { name: 'KAM', key: 'kam', color: '#059669', permissions: ['promotions', 'trade_spends', 'claims'] },
   { name: 'Finance', key: 'finance', color: '#F59E0B', permissions: ['claims', 'deductions', 'settlements', 'accruals', 'pnl', 'reports'] },
-  { name: 'Viewer', key: 'viewer', color: '#94A3B8', permissions: ['view_only'] },
+  { name: 'Viewer', key: 'viewer', color: 'text.secondary', permissions: ['view_only'] },
 ];
 
 const modules = ['users', 'config', 'budgets', 'promotions', 'trade_spends', 'approvals', 'claims', 'deductions', 'settlements', 'accruals', 'pnl', 'reports'];

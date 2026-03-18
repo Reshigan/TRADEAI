@@ -219,7 +219,7 @@ const AdvancedReportingManagement = () => {
   const fmtPct = (v) => v != null ? `${Number(v).toFixed(1)}%` : '—';
 
   const summaryCards = summary ? [
-    { label: 'Templates', value: summary.templates?.total || 0, color: '#1E40AF' },
+    { label: 'Templates', value: summary.templates?.total || 0, color: 'primary.dark' },
     { label: 'Active Templates', value: summary.templates?.active || 0, color: '#10B981' },
     { label: 'Saved Reports', value: summary.reports?.total || 0, color: '#3B82F6' },
     { label: 'Favorites', value: summary.reports?.favorites || 0, color: '#F59E0B' },

@@ -39,7 +39,7 @@ const StatusChip = ({ status }) => {
     pending_approval: { bg: '#FEF3C7', color: '#D97706' },
     approved: { bg: '#DBEAFE', color: '#2563EB' },
     active: { bg: '#D1FAE5', color: '#059669' },
-    locked: { bg: '#EFF6FF', color: '#1E40AF' },
+    locked: { bg: '#EFF6FF', color: 'primary.dark' },
     archived: { bg: '#F3F4F6', color: '#9CA3AF' },
   };
   const c = colorMap[status] || colorMap.draft;
@@ -64,7 +64,7 @@ const UtilizationBar = ({ value, size = 'medium' }) => {
           flex: 1,
           height: size === 'small' ? 4 : 6,
           borderRadius: 3,
-          bgcolor: '#F3F4F6',
+          bgcolor: 'action.hover',
           '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 3 },
         }}
       />
@@ -375,7 +375,7 @@ const BudgetAllocationManagement = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleCreate}
-            sx={{ borderRadius: 2, textTransform: 'none', bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}
+            sx={{ borderRadius: 2, textTransform: 'none', bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}
           >
             New Allocation
           </Button>
@@ -434,8 +434,8 @@ const BudgetAllocationManagement = () => {
           sx={{
             px: 2, pt: 1,
             '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 44 },
-            '& .Mui-selected': { color: '#1E40AF' },
-            '& .MuiTabs-indicator': { bgcolor: '#1E40AF' },
+            '& .Mui-selected': { color: 'primary.dark' },
+            '& .MuiTabs-indicator': { bgcolor: 'primary.dark' },
           }}
         >
           <Tab icon={<ReportIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Allocations" />
@@ -445,7 +445,7 @@ const BudgetAllocationManagement = () => {
         {activeTab === 0 && (
           <TableContainer>
             {loading ? (
-              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: '#1E40AF' }} /></Box>
+              <Box sx={{ p: 4, textAlign: 'center' }}><CircularProgress size={32} sx={{ color: 'primary.dark' }} /></Box>
             ) : allocations.length === 0 ? (
               <Box sx={{ p: 4, textAlign: 'center' }}>
                 <Typography color="text.secondary">No budget allocations yet. Click &quot;New Allocation&quot; to create one.</Typography>
@@ -470,7 +470,7 @@ const BudgetAllocationManagement = () => {
                 </TableHead>
                 <TableBody>
                   {sortedAllocations.map((a) => (
-                    <TableRow key={a.id} hover sx={{ '&:hover': { bgcolor: '#F9FAFB' } }}>
+                    <TableRow key={a.id} hover sx={{ '&:hover': { bgcolor: 'background.default' } }}>
                       <TableCell>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>{a.name}</Typography>
                         {a.description && <Typography variant="caption" color="text.secondary">{a.description}</Typography>}
@@ -487,7 +487,7 @@ const BudgetAllocationManagement = () => {
                         <Chip
                           label={dimensions.find(d => d.value === a.dimension)?.label || a.dimension}
                           size="small"
-                          sx={{ fontSize: '0.7rem', bgcolor: '#EFF6FF', color: '#1E40AF' }}
+                          sx={{ fontSize: '0.7rem', bgcolor: '#EFF6FF', color: 'primary.dark' }}
                         />
                       </TableCell>
                       <TableCell><StatusChip status={a.status} /></TableCell>
@@ -532,7 +532,7 @@ const BudgetAllocationManagement = () => {
                           ) : (
                             <Tooltip title="Lock">
                               <IconButton size="small" onClick={() => handleLock(a.id)}>
-                                <LockIcon sx={{ fontSize: 18, color: '#1E40AF' }} />
+                                <LockIcon sx={{ fontSize: 18, color: 'primary.dark' }} />
                               </IconButton>
                             </Tooltip>
                           )}
@@ -563,7 +563,7 @@ const BudgetAllocationManagement = () => {
         {activeTab === 1 && (
           <Box sx={{ p: 3 }}>
             {waterfallLoading ? (
-              <Box sx={{ textAlign: 'center', py: 4 }}><CircularProgress size={32} sx={{ color: '#1E40AF' }} /></Box>
+              <Box sx={{ textAlign: 'center', py: 4 }}><CircularProgress size={32} sx={{ color: 'primary.dark' }} /></Box>
             ) : waterfallData.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 4 }}>
                 <Typography color="text.secondary">No waterfall data available. Create allocations linked to budgets first.</Typography>
@@ -792,7 +792,7 @@ const BudgetAllocationManagement = () => {
             variant="contained"
             onClick={handleSave}
             disabled={saving || !form.name}
-            sx={{ textTransform: 'none', bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}
+            sx={{ textTransform: 'none', bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}
           >
             {saving ? <CircularProgress size={20} /> : (editingAllocation ? 'Update' : 'Create')}
           </Button>
@@ -805,13 +805,13 @@ const BudgetAllocationManagement = () => {
           <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
             {detailAllocation?.status && <StatusChip status={detailAllocation.status} />}
             {detailAllocation?.locked ? (
-              <Chip icon={<LockIcon sx={{ fontSize: 14 }} />} label="Locked" size="small" sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontSize: '0.7rem' }} />
+              <Chip icon={<LockIcon sx={{ fontSize: 14 }} />} label="Locked" size="small" sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontSize: '0.7rem' }} />
             ) : null}
           </Box>
         </DialogTitle>
         <DialogContent dividers>
           {detailLoading ? (
-            <Box sx={{ textAlign: 'center', py: 4 }}><CircularProgress size={32} sx={{ color: '#1E40AF' }} /></Box>
+            <Box sx={{ textAlign: 'center', py: 4 }}><CircularProgress size={32} sx={{ color: 'primary.dark' }} /></Box>
           ) : detailAllocation ? (
             <Box>
               <Grid container spacing={2} sx={{ mb: 3 }}>

@@ -380,18 +380,18 @@ const DemandSignalManagement = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchSignals(); fetchSources(); fetchSummary(); fetchTrends(); fetchAnomalies(); }}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+            sx={{ borderColor: '#E5E7EB', color: 'text.primary', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
             Refresh
           </Button>
           {tab === 0 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateSignal}
-              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
               New Signal
             </Button>
           )}
           {tab === 3 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateSource}
-              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
               New Source
             </Button>
           )}
@@ -423,7 +423,7 @@ const DemandSignalManagement = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: 'primary.dark' }, '& .MuiTabs-indicator': { bgcolor: 'primary.dark' } }}>
         <Tab label={`Signals (${signals.length})`} />
         <Tab label="Trends" />
         <Tab label={`Anomalies (${anomalies.length})`} />
@@ -435,7 +435,7 @@ const DemandSignalManagement = () => {
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>
                   <TableSortLabel active={sortField === 'signal_date'} direction={sortField === 'signal_date' ? sortDir : 'desc'} onClick={() => handleSort('signal_date')}>Date</TableSortLabel>
                 </TableCell>
@@ -469,7 +469,7 @@ const DemandSignalManagement = () => {
                     </TableCell>
                     <TableCell>
                       <Chip label={typeInfo?.label || (sig.signalType || sig.signal_type)} size="small"
-                        sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontWeight: 500, fontSize: '0.7rem' }} />
+                        sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontWeight: 500, fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">{sig.customerName || sig.customer_name || '-'}</Typography>
@@ -518,7 +518,7 @@ const DemandSignalManagement = () => {
             <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Period</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: '#6B7280' }} align="right">Units</TableCell>
                     <TableCell sx={{ fontWeight: 600, color: '#6B7280' }} align="right">Revenue</TableCell>
@@ -580,7 +580,7 @@ const DemandSignalManagement = () => {
                   <TableRow key={a.id} hover sx={{ bgcolor: '#FEF2F2' }}>
                     <TableCell>{formatDate(a.signalDate || a.signal_date)}</TableCell>
                     <TableCell>
-                      <Chip label={a.signalType || a.signal_type} size="small" sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontSize: '0.7rem' }} />
+                      <Chip label={a.signalType || a.signal_type} size="small" sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>{a.customerName || a.customer_name || '-'}</TableCell>
                     <TableCell>{a.productName || a.product_name || '-'}</TableCell>
@@ -609,7 +609,7 @@ const DemandSignalManagement = () => {
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Provider</TableCell>
@@ -715,7 +715,7 @@ const DemandSignalManagement = () => {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#374151' }}>Sales Data</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>Sales Data</Typography></Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField fullWidth size="small" label="Units Sold" type="number"
                 value={signalForm.unitsSold} onChange={(e) => setSignalForm(prev => ({ ...prev, unitsSold: parseFloat(e.target.value) || 0 }))} />
@@ -733,7 +733,7 @@ const DemandSignalManagement = () => {
                 value={signalForm.volume} onChange={(e) => setSignalForm(prev => ({ ...prev, volume: parseFloat(e.target.value) || 0 }))} />
             </Grid>
 
-            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#374151' }}>Baseline & Lift</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>Baseline & Lift</Typography></Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField fullWidth size="small" label="Baseline Units" type="number"
                 value={signalForm.baselineUnits} onChange={(e) => setSignalForm(prev => ({ ...prev, baselineUnits: parseFloat(e.target.value) || 0 }))} />
@@ -751,7 +751,7 @@ const DemandSignalManagement = () => {
                 value={signalForm.liftPct} onChange={(e) => setSignalForm(prev => ({ ...prev, liftPct: parseFloat(e.target.value) || 0 }))} />
             </Grid>
 
-            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#374151' }}>Market Intelligence</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>Market Intelligence</Typography></Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField fullWidth size="small" label="Market Share %" type="number"
                 value={signalForm.marketSharePct} onChange={(e) => setSignalForm(prev => ({ ...prev, marketSharePct: parseFloat(e.target.value) || 0 }))} />
@@ -781,7 +781,7 @@ const DemandSignalManagement = () => {
           <Button onClick={() => setSignalDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSignal}
             disabled={!signalForm.signalDate}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             {editingSignalId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -833,7 +833,7 @@ const DemandSignalManagement = () => {
           <Button onClick={() => setSourceDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSource}
             disabled={!sourceForm.name}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             {editingSourceId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -870,7 +870,7 @@ const DemandSignalManagement = () => {
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Revenue</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatCurrency(detailSignal.revenue)}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.dark' }}>{formatCurrency(detailSignal.revenue)}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Baseline Revenue</Typography>
@@ -918,7 +918,7 @@ const DemandSignalManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="contained" onClick={() => { setDetailDialog(false); handleEditSignal(detailSignal); }}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             Edit
           </Button>
         </DialogActions>

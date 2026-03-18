@@ -94,7 +94,7 @@ const UniversalFlowLayout = ({
       display: 'flex', 
       flexDirection: 'column',
       height: '100vh',
-      bgcolor: '#f5f7fa'
+      bgcolor: 'action.hover'
     }}>
       {/* Header */}
       <Paper sx={{ 
@@ -202,7 +202,7 @@ const UniversalFlowLayout = ({
             right: aiPanelOpen ? 0 : 16,
             top: aiPanelOpen ? '50%' : '50%',
             transform: 'translateY(-50%)',
-            bgcolor: '#1E3A8A',
+            bgcolor: 'primary.dark',
             color: 'white',
             '&:hover': {
               bgcolor: '#5B21B6'
@@ -245,7 +245,7 @@ const UniversalFlowLayout = ({
         mt: 2,
         borderRadius: 0,
         borderTop: '1px solid #e0e0e0',
-        bgcolor: '#fafafa'
+        bgcolor: 'action.hover'
       }}>
         <Box sx={{ 
           display: 'flex', 

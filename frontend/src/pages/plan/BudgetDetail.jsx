@@ -117,7 +117,7 @@ export default function BudgetDetail() {
               <Card><CardContent>
                 <Typography variant="body2" color="text.secondary">Available</Typography>
                 <Typography variant="h2" sx={{ color: '#059669' }}>{fmt(available)}</Typography>
-                <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ mt: 1, height: 6, borderRadius: 3, bgcolor: '#F1F5F9' }} />
+                <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ mt: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover' }} />
               </CardContent></Card>
             </Grid>
           </Grid>

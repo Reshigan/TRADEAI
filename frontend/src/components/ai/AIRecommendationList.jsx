@@ -16,8 +16,8 @@ const AIRecommendationList = ({ recommendations = [], onApply, title = 'AI Recom
   if (!recommendations.length) return null;
 
   return (
-    <Box sx={{ border: '1px solid #E2E8F0', borderRadius: 2, bgcolor: '#fff', overflow: 'hidden', ...sx }}>
-      <Box sx={{ px: 2, py: 1.5, bgcolor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: 'background.paper', overflow: 'hidden', ...sx }}>
+      <Box sx={{ px: 2, py: 1.5, bgcolor: 'background.default', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1 }}>
         <LightbulbOutlinedIcon sx={{ color: '#7C3AED', fontSize: 18 }} />
         <Typography variant="subtitle2" fontWeight={600}>{title}</Typography>
         <Chip label={`${recommendations.length}`} size="small" sx={{ ml: 'auto', bgcolor: '#7C3AED22', color: '#7C3AED', fontWeight: 700, fontSize: 11, height: 20 }} />
@@ -28,7 +28,7 @@ const AIRecommendationList = ({ recommendations = [], onApply, title = 'AI Recom
         return (
           <Box key={i}>
             {i > 0 && <Divider />}
-            <Box sx={{ px: 2, py: 1.5, '&:hover': { bgcolor: '#F8FAFC' } }}>
+            <Box sx={{ px: 2, py: 1.5, '&:hover': { bgcolor: 'background.default' } }}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                 <Icon sx={{ color: '#7C3AED', fontSize: 18, mt: 0.25 }} />
                 <Box sx={{ flex: 1 }}>

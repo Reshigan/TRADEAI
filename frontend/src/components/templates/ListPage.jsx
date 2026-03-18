@@ -64,9 +64,9 @@ export default function ListPage({ title, kpis = [], filters = [], data = [], co
           <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
             <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
               <Box component="thead">
-                <Box component="tr" sx={{ bgcolor: '#F8FAFC' }}>
+                <Box component="tr" sx={{ bgcolor: 'background.default' }}>
                   {columns.map(col => (
-                    <Box component="th" key={col.key} sx={{ p: '12px 16px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 600, color: '#94A3B8', letterSpacing: '0.04em', textTransform: 'uppercase', borderBottom: '1px solid #F1F5F9' }}>
+                    <Box component="th" key={col.key} sx={{ p: '12px 16px', textAlign: 'left', fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', letterSpacing: '0.04em', textTransform: 'uppercase', borderBottom: '1px solid #F1F5F9' }}>
                       {col.label}
                     </Box>
                   ))}
@@ -74,7 +74,7 @@ export default function ListPage({ title, kpis = [], filters = [], data = [], co
               </Box>
               <Box component="tbody">
                 {filteredData.map((row, ri) => (
-                  <Box component="tr" key={row.id || ri} onClick={() => onRowClick && onRowClick(row)} sx={{ cursor: onRowClick ? 'pointer' : 'default', '&:hover': { bgcolor: '#F8FAFC' } }}>
+                  <Box component="tr" key={row.id || ri} onClick={() => onRowClick && onRowClick(row)} sx={{ cursor: onRowClick ? 'pointer' : 'default', '&:hover': { bgcolor: 'background.default' } }}>
                     {columns.map(col => (
                       <Box component="td" key={col.key} sx={{ p: '12px 16px', fontSize: '0.8125rem', borderBottom: '1px solid #F1F5F9', color: 'text.primary' }}>
                         {col.render ? col.render(row[col.key], row) : row[col.key]}

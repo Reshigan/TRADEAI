@@ -44,7 +44,7 @@ export default function ApprovalQueue() {
       </Box>
 
       <Card>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2, borderBottom: '1px solid #E2E8F0' }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2, borderBottom: 1, borderColor: 'divider' }}>
           <Tab label="Pending" /><Tab label="Approved" /><Tab label="Rejected" />
         </Tabs>
         <CardContent>

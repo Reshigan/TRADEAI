@@ -100,7 +100,7 @@ export default function DocumentManagement() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Document</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>New Document</Button>
         </Box>
       </Box>
 
@@ -123,7 +123,7 @@ export default function DocumentManagement() {
         <TableContainer>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
@@ -194,7 +194,7 @@ export default function DocumentManagement() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'primary.dark' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

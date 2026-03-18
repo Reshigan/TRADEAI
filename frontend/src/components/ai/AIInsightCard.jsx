@@ -17,7 +17,7 @@ const AIInsightCard = ({ icon, severity = 'info', title, description, impact, ac
   const Icon = icon || config.icon;
 
   return (
-    <Box sx={{ p: 2, border: '1px solid #E2E8F0', borderRadius: 2, borderLeft: `4px solid ${config.color}`, bgcolor: config.bg, ...sx }}>
+    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, borderLeft: `4px solid ${config.color}`, bgcolor: config.bg, ...sx }}>
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
         <Icon sx={{ color: config.color, mt: 0.25, fontSize: 20 }} />
         <Box sx={{ flex: 1 }}>

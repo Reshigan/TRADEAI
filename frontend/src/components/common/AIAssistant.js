@@ -188,7 +188,7 @@ const AIAssistant = ({ context = 'dashboard' }) => {
             flexGrow: 1,
             p: 2,
             overflowY: 'auto',
-            backgroundColor: '#f5f5f5',
+            backgroundColor: 'action.hover',
             display: 'flex',
             flexDirection: 'column',
             gap: 2,

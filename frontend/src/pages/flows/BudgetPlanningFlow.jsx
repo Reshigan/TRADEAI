@@ -433,7 +433,7 @@ const BudgetPlanningFlow = () => {
           </Grid>
         </Grid>
         
-        <Paper sx={{ p: 3, mt: 4, bgcolor: '#f5f5f5' }}>
+        <Paper sx={{ p: 3, mt: 4, bgcolor: 'action.hover' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Typography variant="h6" color="primary">
               Budget Allocation
@@ -478,7 +478,7 @@ const BudgetPlanningFlow = () => {
                 </Paper>
 
                 {/* Product Hierarchy Section */}
-                <Paper sx={{ p: 3, mt: 4, bgcolor: '#f5f5f5' }}>
+                <Paper sx={{ p: 3, mt: 4, bgcolor: 'action.hover' }}>
                   <Typography variant="h6" sx={{ mb: 2, color: '#1E3A8A' }}>
                     Product Hierarchy (Optional)
                   </Typography>
@@ -526,7 +526,7 @@ const BudgetPlanningFlow = () => {
                 </Paper>
 
                 {/* Customer Hierarchy Section */}
-                <Paper sx={{ p: 3, mt: 3, bgcolor: '#f5f5f5' }}>
+                <Paper sx={{ p: 3, mt: 3, bgcolor: 'action.hover' }}>
                   <Typography variant="h6" sx={{ mb: 2, color: '#1E3A8A' }}>
                     Customer Hierarchy (Optional)
                   </Typography>

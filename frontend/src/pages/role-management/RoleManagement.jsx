@@ -92,7 +92,7 @@ export default function RoleManagement() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<RefreshIcon />} onClick={loadData} variant="outlined" size="small">Refresh</Button>
-          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>New Role</Button>
+          <Button startIcon={<AddIcon />} onClick={() => openDialog()} variant="contained" size="small" sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>New Role</Button>
         </Box>
       </Box>
 
@@ -115,7 +115,7 @@ export default function RoleManagement() {
         {tab === 0 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Level</TableCell>
@@ -126,7 +126,7 @@ export default function RoleManagement() {
               <TableBody>
                 {roles.map((r) => (
                   <TableRow key={r.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><RoleIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{r.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><RoleIcon sx={{ fontSize: 18, color: 'primary.dark' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{r.name}</Typography></Box></TableCell>
                     <TableCell><Chip label={r.role_type} size="small" color={r.role_type === 'system' ? 'primary' : 'default'} /></TableCell>
                     <TableCell>{r.level}</TableCell>
                     <TableCell>{r.max_approval_amount ? `R${Number(r.max_approval_amount).toLocaleString()}` : 'Unlimited'}</TableCell>
@@ -146,7 +146,7 @@ export default function RoleManagement() {
         {tab === 1 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>User ID</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
@@ -170,7 +170,7 @@ export default function RoleManagement() {
         {tab === 2 && (
           <TableContainer>
             <Table size="small">
-              <TableHead><TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableHead><TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Group Name</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Module</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Permissions</TableCell>
@@ -179,7 +179,7 @@ export default function RoleManagement() {
               <TableBody>
                 {permGroups.map((g) => (
                   <TableRow key={g.id} hover>
-                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><PermIcon sx={{ fontSize: 18, color: '#1E40AF' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{g.name}</Typography></Box></TableCell>
+                    <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><PermIcon sx={{ fontSize: 18, color: 'primary.dark' }} /><Typography variant="body2" sx={{ fontWeight: 600 }}>{g.name}</Typography></Box></TableCell>
                     <TableCell>{g.module || '-'}</TableCell>
                     <TableCell>{(() => { try { return JSON.parse(g.permissions || '[]').length; } catch { return 0; } })()}</TableCell>
                     <TableCell>{g.is_system ? 'Yes' : 'No'}</TableCell>
@@ -206,7 +206,7 @@ export default function RoleManagement() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#1E40AF' }}>{editItem ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'primary.dark' }}>{editItem ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
 

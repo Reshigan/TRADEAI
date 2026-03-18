@@ -206,7 +206,7 @@ const BudgetList = () => {
   }, [budgets]);
 
   const summaryCards = [
-    { label: 'Total Budget', value: formatCurrencyCompact(budgetStats.totalAmount), icon: <BudgetIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Budget', value: formatCurrencyCompact(budgetStats.totalAmount), icon: <BudgetIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
     { label: 'Approved', value: budgetStats.approved, icon: <ApprovedIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Utilized', value: formatCurrencyCompact(budgetStats.totalUtilized), icon: <SpentIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'Remaining', value: formatCurrencyCompact(budgetStats.totalRemaining), icon: <RemainingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
@@ -233,7 +233,7 @@ const BudgetList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>Manage your trade spend budgets</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateBudget}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: { xs: 2, sm: 3 }, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' }, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
           Create Budget
         </Button>
       </Box>
@@ -257,14 +257,14 @@ const BudgetList = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', mb: 3, overflow: 'hidden' }}>
         <Box sx={{ p: 2.5, display: 'flex', gap: 2, flexWrap: 'wrap', borderBottom: '1px solid', borderColor: 'divider' }}>
           <TextField fullWidth select label="Year" name="year" value={filters.year} onChange={handleFilterChange} size="small"
-            sx={{ maxWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }}>
+            sx={{ maxWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }}>
             <MenuItem value="">All Years</MenuItem>
             <MenuItem value="2025">2025</MenuItem>
             <MenuItem value="2026">2026</MenuItem>
             <MenuItem value="2027">2027</MenuItem>
           </TextField>
           <TextField fullWidth select label="Status" name="status" value={filters.status} onChange={handleFilterChange} size="small"
-            sx={{ maxWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }}>
+            sx={{ maxWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }}>
             <MenuItem value="">All Statuses</MenuItem>
             <MenuItem value="draft">Draft</MenuItem>
             <MenuItem value="pending">Pending</MenuItem>
@@ -273,7 +273,7 @@ const BudgetList = () => {
           </TextField>
           <TextField fullWidth label="Search" name="search" value={filters.search} onChange={handleFilterChange} size="small"
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
-            sx={{ flex: 1, minWidth: { xs: 120, sm: 200 }, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+            sx={{ flex: 1, minWidth: { xs: 120, sm: 200 }, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
         </Box>
       </Paper>
 

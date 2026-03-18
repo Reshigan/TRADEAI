@@ -130,7 +130,7 @@ const ApprovalsList = () => {
   if (loading) return <SkeletonLoader type="table" />;
 
   const summaryCards = [
-    { label: 'Total Pending', value: approvalStats.total, icon: <ApprovalIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Pending', value: approvalStats.total, icon: <ApprovalIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
     { label: 'Awaiting Action', value: approvalStats.pending, icon: <PendingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
     { label: 'Overdue', value: approvalStats.overdue, icon: <OverdueIcon />, color: '#DC2626', bg: alpha('#DC2626', 0.08) },
   ];
@@ -165,17 +165,17 @@ const ApprovalsList = () => {
       <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
           <Tabs value={filter === 'pending' ? 0 : 1} onChange={(_, v) => setFilter(v === 0 ? 'pending' : 'overdue')}
-            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, minHeight: 48, fontSize: '0.875rem' }, '& .Mui-selected': { color: 'primary.dark' }, '& .MuiTabs-indicator': { bgcolor: 'primary.dark' } }}>
             <Tab label="Pending" />
             <Tab label="Overdue" />
           </Tabs>
-          <Chip label={`${approvals.length} items`} size="small" sx={{ bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF', fontWeight: 600 }} />
+          <Chip label={`${approvals.length} items`} size="small" sx={{ bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', fontWeight: 600 }} />
         </Box>
 
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
+              <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: 'background.default' } }}>
                 <TableCell>Request</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell align="right">Amount</TableCell>
@@ -244,7 +244,7 @@ const ApprovalsList = () => {
                     <TableCell align="center">
                       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                         <Tooltip title="View"><IconButton size="small" onClick={() => navigate(`/approvals/${approval.id || approval._id}`)}
-                          sx={{ color: '#6B7280', '&:hover': { bgcolor: alpha('#1E40AF', 0.08), color: '#1E40AF' } }}><ViewIcon fontSize="small" /></IconButton></Tooltip>
+                          sx={{ color: '#6B7280', '&:hover': { bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark' } }}><ViewIcon fontSize="small" /></IconButton></Tooltip>
                         {approval.status === 'pending' && (
                           <>
                             <Tooltip title="Approve"><IconButton size="small" onClick={() => openActionDialog(approval, 'approve')}

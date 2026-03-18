@@ -23,7 +23,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#0F172A', px: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'text.primary', px: 2 }}>
       <Card sx={{ maxWidth: 420, width: '100%', borderRadius: 3, overflow: 'hidden' }}>
         <Box sx={{ p: 4, background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)', textAlign: 'center' }}>
           <Box sx={{ width: 56, height: 56, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.15)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
@@ -38,7 +38,7 @@ export default function LoginPage() {
             <TextField fullWidth label="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} sx={{ mb: 2 }} required />
             <TextField fullWidth label="Password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} sx={{ mb: 3 }} required />
             <Button fullWidth variant="contained" type="submit" disabled={loading} size="large"
-              sx={{ bgcolor: '#2563EB', py: 1.5, fontSize: 15, fontWeight: 600, '&:hover': { bgcolor: '#1D4ED8' } }}>
+              sx={{ bgcolor: 'primary.main', py: 1.5, fontSize: 15, fontWeight: 600, '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
               {loading ? <CircularProgress size={22} color="inherit" /> : 'Sign In'}
             </Button>
           </form>

@@ -38,7 +38,7 @@ const StatusChip = ({ status }) => {
     draft: { bg: '#F3F4F6', color: '#6B7280' },
     planned: { bg: '#DBEAFE', color: '#2563EB' },
     approved: { bg: '#D1FAE5', color: '#059669' },
-    active: { bg: '#EFF6FF', color: '#1E40AF' },
+    active: { bg: '#EFF6FF', color: 'primary.dark' },
     completed: { bg: '#E0E7FF', color: '#4338CA' },
     cancelled: { bg: '#FEE2E2', color: '#DC2626' },
   };
@@ -96,7 +96,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
 
 const EMPTY_EVENT = {
   name: '', description: '', eventType: 'promotion', status: 'draft',
-  startDate: '', endDate: '', allDay: true, color: '#1E40AF',
+  startDate: '', endDate: '', allDay: true, color: 'primary.dark',
   customerId: '', customerName: '', productId: '', productName: '',
   promotionId: '', budgetId: '', channel: '', region: '', category: '', brand: '',
   plannedSpend: 0, plannedVolume: 0, plannedRevenue: 0,
@@ -417,18 +417,18 @@ const TradeCalendarManagement = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchEvents(); fetchConstraints(); fetchSummary(); fetchTimeline(); }}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+            sx={{ borderColor: '#E5E7EB', color: 'text.primary', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
             Refresh
           </Button>
           {tab === 0 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateEvent}
-              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
               New Event
             </Button>
           )}
           {tab === 2 && (
             <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateConstraint}
-              sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+              sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
               New Constraint
             </Button>
           )}
@@ -460,7 +460,7 @@ const TradeCalendarManagement = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: 'primary.dark' }, '& .MuiTabs-indicator': { bgcolor: 'primary.dark' } }}>
         <Tab label={`Calendar Events (${events.length})`} />
         <Tab label="Timeline View" />
         <Tab label={`Constraints (${constraints.length})`} />
@@ -471,7 +471,7 @@ const TradeCalendarManagement = () => {
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>
                   <TableSortLabel active={sortField === 'name'} direction={sortField === 'name' ? sortDir : 'asc'} onClick={() => handleSort('name')}>Name</TableSortLabel>
                 </TableCell>
@@ -496,7 +496,7 @@ const TradeCalendarManagement = () => {
               ) : sortedEvents.map((ev) => {
                 const typeInfo = eventTypes.find(t => t.value === (ev.eventType || ev.event_type));
                 return (
-                  <TableRow key={ev.id} hover sx={{ '&:hover': { bgcolor: '#F9FAFB' } }}>
+                  <TableRow key={ev.id} hover sx={{ '&:hover': { bgcolor: 'background.default' } }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: ev.color || typeInfo?.color || '#1E40AF', flexShrink: 0 }} />
@@ -508,12 +508,12 @@ const TradeCalendarManagement = () => {
                         sx={{ bgcolor: `${typeInfo?.color || '#1E40AF'}20`, color: typeInfo?.color || '#1E40AF', fontWeight: 500, fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>
-                      <Typography variant="caption" sx={{ color: '#374151' }}>
+                      <Typography variant="caption" sx={{ color: 'text.primary' }}>
                         {formatDate(ev.startDate || ev.start_date)} — {formatDate(ev.endDate || ev.end_date)}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" sx={{ color: '#374151' }}>
+                      <Typography variant="body2" sx={{ color: 'text.primary' }}>
                         {ev.customerName || ev.customer_name || '-'}
                       </Typography>
                     </TableCell>
@@ -553,7 +553,7 @@ const TradeCalendarManagement = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Typography variant="h6" sx={{ fontWeight: 700 }}>{month.label}</Typography>
                   <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Chip label={`${month.count} events`} size="small" sx={{ bgcolor: '#EFF6FF', color: '#1E40AF' }} />
+                    <Chip label={`${month.count} events`} size="small" sx={{ bgcolor: '#EFF6FF', color: 'primary.dark' }} />
                     <Typography variant="body2" sx={{ color: '#6B7280' }}>
                       Spend: {formatCurrency(month.totalPlannedSpend)}
                     </Typography>
@@ -563,7 +563,7 @@ const TradeCalendarManagement = () => {
                   {month.events.map((ev) => {
                     const typeInfo = eventTypes.find(t => t.value === (ev.eventType || ev.event_type));
                     return (
-                      <Box key={ev.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, borderRadius: 2, bgcolor: '#F9FAFB', '&:hover': { bgcolor: '#F3F4F6' } }}>
+                      <Box key={ev.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, borderRadius: 2, bgcolor: 'background.default', '&:hover': { bgcolor: 'action.hover' } }}>
                         <Box sx={{ width: 4, height: 32, borderRadius: 1, bgcolor: ev.color || typeInfo?.color || '#1E40AF' }} />
                         <Box sx={{ flex: 1 }}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>{ev.name}</Typography>
@@ -591,7 +591,7 @@ const TradeCalendarManagement = () => {
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Scope</TableCell>
@@ -771,7 +771,7 @@ const TradeCalendarManagement = () => {
           <Button onClick={() => setEventDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveEvent}
             disabled={!eventForm.name || !eventForm.startDate || !eventForm.endDate}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             {editingEventId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -881,7 +881,7 @@ const TradeCalendarManagement = () => {
           <Button onClick={() => setConstraintDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveConstraint}
             disabled={!constraintForm.name}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             {editingConstraintId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -926,7 +926,7 @@ const TradeCalendarManagement = () => {
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Planned Spend</Typography>
-                <Typography variant="body2" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatCurrency(detailEvent.plannedSpend || detailEvent.planned_spend)}</Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.dark' }}>{formatCurrency(detailEvent.plannedSpend || detailEvent.planned_spend)}</Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <Typography variant="caption" sx={{ color: '#6B7280' }}>Actual Spend</Typography>
@@ -968,7 +968,7 @@ const TradeCalendarManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="contained" onClick={() => { setDetailDialog(false); handleEditEvent(detailEvent); }}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             Edit
           </Button>
         </DialogActions>

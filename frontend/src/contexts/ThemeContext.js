@@ -393,7 +393,7 @@ export function ThemeContextProvider({ children }) {
     mode,
     resolvedMode,
     setMode,
-    toggleTheme: () => setMode(prev => prev === 'dark' ? 'light' : 'dark'),
+    toggleTheme: () => setMode(resolvedMode === 'dark' ? 'light' : 'dark'),
   }), [mode, resolvedMode]);
 
   return (

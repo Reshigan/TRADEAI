@@ -43,7 +43,7 @@ const RebatesList = () => {
   }, [rebates]);
 
   const summaryCards = [
-    { label: 'Total Rebates', value: stats.total, icon: <AccountBalance />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Rebates', value: stats.total, icon: <AccountBalance />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
     { label: 'Active', value: stats.active, icon: <CheckCircle />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Total Accrued', value: `R${(stats.totalAccrued / 1000).toFixed(1)}K`, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];

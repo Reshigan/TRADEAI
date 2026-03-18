@@ -47,7 +47,7 @@ export default function Header({ user, onLogout, onOpenCommandPalette }) {
 
       <TextField size="small" placeholder="Search... (Cmd+K)" onClick={onOpenCommandPalette} readOnly
         InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} color="#94A3B8" /></InputAdornment> }}
-        sx={{ width: 240, '& .MuiOutlinedInput-root': { bgcolor: '#F8FAFC', cursor: 'pointer' }, '& input': { cursor: 'pointer' } }} />
+        sx={{ width: 240, '& .MuiOutlinedInput-root': { bgcolor: 'background.default', cursor: 'pointer' }, '& input': { cursor: 'pointer' } }} />
 
       <FormControl size="small" sx={{ minWidth: 140 }}>
         <Select value={period} onChange={e => setPeriod(e.target.value)} sx={{ fontSize: 13, height: 36 }}>
@@ -62,7 +62,7 @@ export default function Header({ user, onLogout, onOpenCommandPalette }) {
       <IconButton size="small"><Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}><Bell size={18} /></Badge></IconButton>
 
       <IconButton onClick={e => setAnchorEl(e.currentTarget)} size="small">
-        <Avatar sx={{ width: 32, height: 32, bgcolor: '#2563EB', fontSize: 13 }}>{(user?.name || user?.email || '?')[0].toUpperCase()}</Avatar>
+        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: 13 }}>{(user?.name || user?.email || '?')[0].toUpperCase()}</Avatar>
       </IconButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)} PaperProps={{ sx: { minWidth: 200, mt: 1 } }}>
         <Box sx={{ px: 2, py: 1.5 }}>

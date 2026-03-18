@@ -19,7 +19,7 @@ export default function Header({ onMenuClick }) {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Chip icon={<Sparkles size={14} />} label="AI Ready" size="small" sx={{ bgcolor: '#F5F3FF', color: '#7C3AED', fontWeight: 600, fontSize: 11, '& .MuiChip-icon': { color: '#7C3AED' } }} />
         <IconButton size="small"><Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}><Bell size={18} /></Badge></IconButton>
-        <Avatar sx={{ width: 32, height: 32, bgcolor: '#2563EB', fontSize: 12, ml: 0.5 }}>{(user?.name || user?.email || '?')[0].toUpperCase()}</Avatar>
+        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: 12, ml: 0.5 }}>{(user?.name || user?.email || '?')[0].toUpperCase()}</Avatar>
       </Box>
     </Box>
   );

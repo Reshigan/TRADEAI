@@ -310,11 +310,11 @@ const PromotionOptimizerManagement = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchOptimizations(); fetchSummary(); }}
-            sx={{ borderColor: '#E5E7EB', color: '#374151', '&:hover': { borderColor: '#1E40AF', color: '#1E40AF' } }}>
+            sx={{ borderColor: '#E5E7EB', color: 'text.primary', '&:hover': { borderColor: '#1E40AF', color: 'primary.dark' } }}>
             Refresh
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             New Optimization
           </Button>
         </Box>
@@ -345,7 +345,7 @@ const PromotionOptimizerManagement = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: '#1E40AF' }, '& .MuiTabs-indicator': { bgcolor: '#1E40AF' } }}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 }, '& .Mui-selected': { color: 'primary.dark' }, '& .MuiTabs-indicator': { bgcolor: 'primary.dark' } }}>
         <Tab label={`All (${optimizations.length})`} />
         <Tab label="Optimized" />
         <Tab label="Applied" />
@@ -354,7 +354,7 @@ const PromotionOptimizerManagement = () => {
       <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+            <TableRow sx={{ bgcolor: 'background.default' }}>
               <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Optimization</TableCell>
               <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Type</TableCell>
               <TableCell sx={{ fontWeight: 600, color: '#6B7280' }}>Status</TableCell>
@@ -392,7 +392,7 @@ const PromotionOptimizerManagement = () => {
                     </TableCell>
                     <TableCell>
                       <Chip label={typeInfo?.label || (o.optimizationType || o.optimization_type)} size="small"
-                        sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontWeight: 500, fontSize: '0.7rem' }} />
+                        sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontWeight: 500, fontSize: '0.7rem' }} />
                     </TableCell>
                     <TableCell>
                       <Chip label={o.status} size="small"
@@ -475,7 +475,7 @@ const PromotionOptimizerManagement = () => {
                 value={optForm.endDate} onChange={(e) => setOptForm(p => ({ ...p, endDate: e.target.value }))} />
             </Grid>
 
-            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#374151' }}>Constraints & Thresholds</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>Constraints & Thresholds</Typography></Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField fullWidth size="small" label="Budget Limit (R)" type="number"
                 value={optForm.budgetLimit} onChange={(e) => setOptForm(p => ({ ...p, budgetLimit: parseFloat(e.target.value) || 0 }))} />
@@ -493,7 +493,7 @@ const PromotionOptimizerManagement = () => {
                 value={optForm.maxDiscountPct} onChange={(e) => setOptForm(p => ({ ...p, maxDiscountPct: parseFloat(e.target.value) || 0 }))} />
             </Grid>
 
-            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#374151' }}>Baseline Assumptions</Typography></Grid>
+            <Grid item xs={12}><Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>Baseline Assumptions</Typography></Grid>
             <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth size="small" label="Baseline Revenue (R)" type="number"
                 value={optForm.baselineRevenue} onChange={(e) => setOptForm(p => ({ ...p, baselineRevenue: parseFloat(e.target.value) || 0 }))} />
@@ -515,7 +515,7 @@ const PromotionOptimizerManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setOptDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSave} disabled={!optForm.name}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             {editingId ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
@@ -531,7 +531,7 @@ const PromotionOptimizerManagement = () => {
             )}
           </Box>
           <Button variant="contained" startIcon={<OptimizeIcon />} onClick={() => handleOptimize(activeOptId)}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             Run Optimization
           </Button>
         </DialogTitle>
@@ -547,7 +547,7 @@ const PromotionOptimizerManagement = () => {
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4} md={2}>
                   <Typography variant="caption" sx={{ color: '#6B7280' }}>Optimized ROI</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 700, color: '#1E40AF' }}>{formatPct(detailOpt.optimizedRoi || detailOpt.optimized_roi)}</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 700, color: 'primary.dark' }}>{formatPct(detailOpt.optimizedRoi || detailOpt.optimized_roi)}</Typography>
                 </Grid>
                 <Grid item xs={4} md={2}>
                   <Typography variant="caption" sx={{ color: '#6B7280' }}>Revenue</Typography>
@@ -578,11 +578,11 @@ const PromotionOptimizerManagement = () => {
               {/* CONSTRAINTS */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Constraints ({detailConstraints.length})</Typography>
-                <Button size="small" startIcon={<AddIcon />} onClick={handleAddConstraint} sx={{ color: '#1E40AF' }}>Add Constraint</Button>
+                <Button size="small" startIcon={<AddIcon />} onClick={handleAddConstraint} sx={{ color: 'primary.dark' }}>Add Constraint</Button>
               </Box>
 
               {detailConstraints.length === 0 ? (
-                <Card sx={{ p: 2, textAlign: 'center', borderRadius: 2, bgcolor: '#F9FAFB', mb: 2 }}>
+                <Card sx={{ p: 2, textAlign: 'center', borderRadius: 2, bgcolor: 'background.default', mb: 2 }}>
                   <Typography variant="body2" color="text.secondary">No constraints defined. Add constraints to guide the optimizer.</Typography>
                 </Card>
               ) : (
@@ -620,7 +620,7 @@ const PromotionOptimizerManagement = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>Recommendations ({detailRecs.length})</Typography>
 
               {detailRecs.length === 0 ? (
-                <Card sx={{ p: 3, textAlign: 'center', borderRadius: 2, bgcolor: '#F9FAFB', mb: 2 }}>
+                <Card sx={{ p: 3, textAlign: 'center', borderRadius: 2, bgcolor: 'background.default', mb: 2 }}>
                   <Typography color="text.secondary" sx={{ mb: 1 }}>No recommendations yet</Typography>
                   <Typography variant="caption" color="text.secondary">Run the optimization to generate AI-powered recommendations</Typography>
                 </Card>
@@ -636,7 +636,7 @@ const PromotionOptimizerManagement = () => {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                               <Typography variant="body2" sx={{ fontWeight: 700 }}>{r.title}</Typography>
                               <Chip label={r.recommendationType || r.recommendation_type} size="small"
-                                sx={{ bgcolor: '#EFF6FF', color: '#1E40AF', fontSize: '0.65rem', height: 20 }} />
+                                sx={{ bgcolor: '#EFF6FF', color: 'primary.dark', fontSize: '0.65rem', height: 20 }} />
                               <Chip label={r.riskLevel || r.risk_level || 'medium'} size="small"
                                 sx={{ bgcolor: risk.bg, color: risk.text, fontSize: '0.65rem', height: 20, fontWeight: 600 }} />
                             </Box>
@@ -690,7 +690,7 @@ const PromotionOptimizerManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setDetailDialog(false)}>Close</Button>
           <Button variant="outlined" onClick={() => { setDetailDialog(false); handleEdit(detailOpt); }}
-            sx={{ borderColor: '#1E40AF', color: '#1E40AF' }}>
+            sx={{ borderColor: '#1E40AF', color: 'primary.dark' }}>
             Edit Optimization
           </Button>
         </DialogActions>
@@ -734,7 +734,7 @@ const PromotionOptimizerManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setConDialog(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveConstraint} disabled={!conForm.constraintName}
-            sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             Add
           </Button>
         </DialogActions>

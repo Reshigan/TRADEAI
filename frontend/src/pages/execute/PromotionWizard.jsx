@@ -167,7 +167,7 @@ export default function PromotionWizard() {
             </FormSection>
           )}
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3, pt: 2, borderTop: '1px solid #E2E8F0' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3, pt: 2, borderTop: 1, borderColor: 'divider' }}>
             <Button disabled={step === 0} onClick={() => setStep(step - 1)} startIcon={<ArrowLeft size={16} />}>Back</Button>
             <Box sx={{ display: 'flex', gap: 1 }}>
               {step < steps.length - 1 ? (

@@ -8,7 +8,7 @@ export default function FormPage({ title, subtitle, backPath, sections = [], onS
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        {backPath && <Box component="button" onClick={() => navigate(backPath)} sx={{ border: 'none', bgcolor: 'transparent', cursor: 'pointer', p: 0.5, borderRadius: 1, '&:hover': { bgcolor: '#F1F5F9' } }}><ArrowLeft size={20} /></Box>}
+        {backPath && <Box component="button" onClick={() => navigate(backPath)} sx={{ border: 'none', bgcolor: 'transparent', cursor: 'pointer', p: 0.5, borderRadius: 1, '&:hover': { bgcolor: 'action.hover' } }}><ArrowLeft size={20} /></Box>}
         <Box>
           <Typography variant="h1">{title}</Typography>
           {subtitle && <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>{subtitle}</Typography>}

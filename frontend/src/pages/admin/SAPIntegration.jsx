@@ -331,7 +331,7 @@ export default function SAPIntegration() {
       {/* KPI Summary Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6} md={3}>
-          <Card sx={{ border: '1px solid #E2E8F0' }}>
+          <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <UploadIcon sx={{ color: '#2563EB' }} />
@@ -344,7 +344,7 @@ export default function SAPIntegration() {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card sx={{ border: '1px solid #E2E8F0' }}>
+          <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <DownloadIcon sx={{ color: '#059669' }} />
@@ -357,7 +357,7 @@ export default function SAPIntegration() {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card sx={{ border: '1px solid #E2E8F0' }}>
+          <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <StorageIcon sx={{ color: '#7C3AED' }} />
@@ -370,7 +370,7 @@ export default function SAPIntegration() {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card sx={{ border: '1px solid #E2E8F0' }}>
+          <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <HistoryIcon sx={{ color: '#D97706' }} />
@@ -385,7 +385,7 @@ export default function SAPIntegration() {
       </Grid>
 
       {/* Tabs */}
-      <Card sx={{ border: '1px solid #E2E8F0' }}>
+      <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}>
           <Tabs value={tab} onChange={(_, v) => setTab(v)}>
             <Tab icon={<UploadIcon sx={{ fontSize: 18 }} />} iconPosition="start" label="Import from SAP" sx={{ textTransform: 'none', fontWeight: 600 }} />
@@ -426,7 +426,7 @@ export default function SAPIntegration() {
                       <Chip label={t.sapTransaction} size="small" variant="outlined" sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 11 }} />
                     </TableCell>
                     <TableCell>
-                      <Chip label={t.sapTable} size="small" sx={{ fontFamily: 'monospace', fontSize: 11, bgcolor: '#F1F5F9' }} />
+                      <Chip label={t.sapTable} size="small" sx={{ fontFamily: 'monospace', fontSize: 11, bgcolor: 'action.hover' }} />
                     </TableCell>
                     <TableCell>
                       <Chip label={t.targetTable} size="small" color="primary" variant="outlined" sx={{ fontSize: 11 }} />
@@ -485,7 +485,7 @@ export default function SAPIntegration() {
                   <TableRow key={t.id} hover>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <FileIcon sx={{ color: '#64748B', fontSize: 20 }} />
+                        <FileIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
                         <Typography variant="body2" fontWeight={600}>{t.name}</Typography>
                       </Box>
                     </TableCell>
@@ -493,7 +493,7 @@ export default function SAPIntegration() {
                       <Chip label={t.sapTransaction} size="small" variant="outlined" sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 11 }} />
                     </TableCell>
                     <TableCell>
-                      <Chip label={t.sapTable} size="small" sx={{ fontFamily: 'monospace', fontSize: 11, bgcolor: '#F1F5F9' }} />
+                      <Chip label={t.sapTable} size="small" sx={{ fontFamily: 'monospace', fontSize: 11, bgcolor: 'action.hover' }} />
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" color="text.secondary">{t.description}</Typography>
@@ -617,7 +617,7 @@ export default function SAPIntegration() {
             <Box>
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={4}>
-                  <Card sx={{ bgcolor: '#F8FAFC' }}>
+                  <Card sx={{ bgcolor: 'background.default' }}>
                     <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                       <Typography variant="h5" color="primary">{validationResult.totalRows}</Typography>
                       <Typography variant="caption" color="text.secondary">Total Rows</Typography>

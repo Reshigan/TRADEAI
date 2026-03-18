@@ -51,7 +51,7 @@ const ProductList = () => {
   }, [products]);
 
   const summaryCards = [
-    { label: 'Total Products', value: stats.total, icon: <InventoryIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Products', value: stats.total, icon: <InventoryIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
     { label: 'Categories', value: stats.categories, icon: <CategoryIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Avg Price', value: formatCurrency(stats.avgPrice), icon: <PriceIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
@@ -59,7 +59,7 @@ const ProductList = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: '#1E40AF' }} />
+        <CircularProgress sx={{ color: 'primary.dark' }} />
       </Box>
     );
   }
@@ -72,7 +72,7 @@ const ProductList = () => {
           <Typography variant="body2" color="text.secondary" mt={0.5}>{products.length} product{products.length !== 1 ? 's' : ''}</Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/products/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
           New Product
         </Button>
       </Box>
@@ -97,10 +97,10 @@ const ProductList = () => {
         <TextField fullWidth placeholder="Search products..." value={filters.search}
           onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
-          sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }} />
+          sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
         <TextField select label="Category" value={filters.category}
           onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-          sx={{ minWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#F9FAFB' } }}>
+          sx={{ minWidth: 160, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }}>
           <MenuItem value="all">All Categories</MenuItem>
           <MenuItem value="Beverages">Beverages</MenuItem>
           <MenuItem value="Snacks">Snacks</MenuItem>
@@ -115,7 +115,7 @@ const ProductList = () => {
           <InventoryIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="h6" color="text.secondary" mb={2}>No products found</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/products/new')}
-            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+            sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             Add Product
           </Button>
         </Paper>

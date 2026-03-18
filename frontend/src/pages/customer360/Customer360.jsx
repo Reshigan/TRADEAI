@@ -29,7 +29,7 @@ const HealthBar = ({ score }) => {
   const color = score >= 80 ? '#10B981' : score >= 60 ? '#3B82F6' : score >= 40 ? '#F59E0B' : '#EF4444';
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Box sx={{ flex: 1, height: 8, bgcolor: '#F3F4F6', borderRadius: 4, overflow: 'hidden' }}>
+      <Box sx={{ flex: 1, height: 8, bgcolor: 'action.hover', borderRadius: 4, overflow: 'hidden' }}>
         <Box sx={{ height: '100%', width: `${Math.min(100, score)}%`, bgcolor: color, borderRadius: 4, transition: 'width 0.5s ease' }} />
       </Box>
       <Typography variant="caption" sx={{ fontWeight: 600, color, minWidth: 32 }}>{Math.round(score)}</Typography>
@@ -188,7 +188,7 @@ const Customer360Dashboard = () => {
             { label: 'Net Revenue', value: formatCurrency(p.netRevenue), icon: <TrendingUp />, color: '#3B82F6' },
             { label: 'Trade Spend %', value: `${(p.tradeSpendPct || 0).toFixed(1)}%`, icon: <BarChart />, color: '#F59E0B' },
             { label: 'Health Score', value: `${Math.round(p.healthScore || 0)}/100`, icon: <Speed />, color: p.healthScore >= 60 ? '#10B981' : '#EF4444' },
-            { label: 'LTV Score', value: formatCurrency(p.ltvScore), icon: <Star />, color: '#1E40AF' },
+            { label: 'LTV Score', value: formatCurrency(p.ltvScore), icon: <Star />, color: 'primary.dark' },
             { label: 'Churn Risk', value: `${((p.churnRisk || 0) * 100).toFixed(0)}%`, icon: <Warning />, color: (p.churnRisk || 0) > 0.5 ? '#EF4444' : '#F59E0B' },
           ].map((card, i) => (
             <Grid item xs={12} sm={6} md={2} key={i}>
@@ -262,7 +262,7 @@ const Customer360Dashboard = () => {
                     <Typography variant="body2">{prod.name || `Product ${i + 1}`}</Typography>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{formatCurrency(prod.revenue)}</Typography>
                   </Box>
-                  <LinearProgress variant="determinate" value={Math.min(100, (prod.share || 0) * 100)} sx={{ height: 6, borderRadius: 3, bgcolor: '#F3F4F6', '& .MuiLinearProgress-bar': { bgcolor: '#1E40AF', borderRadius: 3 } }} />
+                  <LinearProgress variant="determinate" value={Math.min(100, (prod.share || 0) * 100)} sx={{ height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: 'primary.dark', borderRadius: 3 } }} />
                 </Box>
               )) : <Typography variant="body2" color="text.secondary">No product data available</Typography>}
             </Paper>
@@ -277,7 +277,7 @@ const Customer360Dashboard = () => {
                     const pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
                     return (
                       <Tooltip key={i} title={`${m.label || `Month ${i + 1}`}: ${formatCurrency(val)}`}>
-                        <Box sx={{ flex: 1, height: `${pct}%`, bgcolor: '#1E40AF', borderRadius: '4px 4px 0 0', minHeight: 4, transition: 'height 0.3s ease', '&:hover': { bgcolor: '#1E3A8A' } }} />
+                        <Box sx={{ flex: 1, height: `${pct}%`, bgcolor: 'primary.dark', borderRadius: '4px 4px 0 0', minHeight: 4, transition: 'height 0.3s ease', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }} />
                       </Tooltip>
                     );
                   })}
@@ -319,14 +319,14 @@ const Customer360Dashboard = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="outlined" startIcon={<Refresh />} onClick={() => { loadSummary(); loadProfiles(); loadAtRisk(); loadLeaderboard(); }}>Refresh</Button>
-          <Button variant="contained" startIcon={<Add />} onClick={handleCreate} sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>Add Profile</Button>
+          <Button variant="contained" startIcon={<Add />} onClick={handleCreate} sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>Add Profile</Button>
         </Box>
       </Box>
 
       {summary && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {[
-            { label: 'Total Customers', value: summary.totalCustomers, icon: <Person />, color: '#1E40AF' },
+            { label: 'Total Customers', value: summary.totalCustomers, icon: <Person />, color: 'primary.dark' },
             { label: 'Active', value: summary.activeCustomers, icon: <ThumbUp />, color: '#10B981' },
             { label: 'At Risk', value: summary.atRiskCustomers, icon: <Warning />, color: '#EF4444' },
             { label: 'Avg Health', value: `${summary.avgHealthScore}/100`, icon: <Speed />, color: '#3B82F6' },
@@ -376,7 +376,7 @@ const Customer360Dashboard = () => {
             <TableContainer component={Paper} variant="outlined">
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
                     <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Tier</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Segment</TableCell>
@@ -392,7 +392,7 @@ const Customer360Dashboard = () => {
                   {profiles.length === 0 ? (
                     <TableRow><TableCell colSpan={9} align="center" sx={{ py: 4 }}><Typography color="text.secondary">No customer profiles found</Typography></TableCell></TableRow>
                   ) : profiles.map((p) => (
-                    <TableRow key={p.id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: '#F9FAFB' } }}>
+                    <TableRow key={p.id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'background.default' } }}>
                       <TableCell onClick={() => handleViewProfile(p)}>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>{p.customerName}</Typography>
                         <Typography variant="caption" color="text.secondary">{p.customerCode} {p.channel && `• ${p.channel}`}</Typography>
@@ -461,7 +461,7 @@ const Customer360Dashboard = () => {
         <TableContainer component={Paper} variant="outlined">
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F9FAFB' }}>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Rank</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Tier</TableCell>
@@ -525,7 +525,7 @@ const Customer360Dashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave} sx={{ bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
+          <Button variant="contained" onClick={handleSave} sx={{ bgcolor: 'primary.dark', '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' } }}>
             {dialogMode === 'create' ? 'Create' : 'Save'}
           </Button>
         </DialogActions>

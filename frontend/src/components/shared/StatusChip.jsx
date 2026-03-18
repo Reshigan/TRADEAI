@@ -2,22 +2,22 @@ import React from 'react';
 import { Chip, useTheme } from '@mui/material';
 
 const lightConfig = {
-  draft: { label: 'Draft', bg: '#F1F5F9', color: '#475569' },
+  draft: { label: 'Draft', bg: '#F1F5F9', color: 'text.secondary' },
   pending_approval: { label: 'Pending', bg: '#FEF3C7', color: '#92400E' },
   pending: { label: 'Pending', bg: '#FEF3C7', color: '#92400E' },
-  approved: { label: 'Approved', bg: '#DBEAFE', color: '#1E40AF' },
+  approved: { label: 'Approved', bg: '#DBEAFE', color: 'primary.dark' },
   active: { label: 'Active', bg: '#D1FAE5', color: '#065F46' },
-  completed: { label: 'Completed', bg: '#F3F4F6', color: '#374151' },
+  completed: { label: 'Completed', bg: '#F3F4F6', color: 'text.primary' },
   cancelled: { label: 'Cancelled', bg: '#FEE2E2', color: '#991B1B' },
   rejected: { label: 'Rejected', bg: '#FEE2E2', color: '#991B1B' },
   matched: { label: 'Matched', bg: '#D1FAE5', color: '#065F46' },
   unmatched: { label: 'Unmatched', bg: '#FEF3C7', color: '#92400E' },
-  in_progress: { label: 'In Progress', bg: '#DBEAFE', color: '#1E40AF' },
+  in_progress: { label: 'In Progress', bg: '#DBEAFE', color: 'primary.dark' },
   overdue: { label: 'Overdue', bg: '#FEE2E2', color: '#991B1B' },
 };
 
 const darkConfig = {
-  draft: { label: 'Draft', bg: '#1E293B', color: '#94A3B8' },
+  draft: { label: 'Draft', bg: '#1E293B', color: 'text.secondary' },
   pending_approval: { label: 'Pending', bg: '#422006', color: '#FCD34D' },
   pending: { label: 'Pending', bg: '#422006', color: '#FCD34D' },
   approved: { label: 'Approved', bg: '#172554', color: '#93C5FD' },
@@ -35,7 +35,7 @@ export default function StatusChip({ status, label, size = 'small' }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const statusMap = isDark ? darkConfig : lightConfig;
-  const fallback = isDark ? { label: status, bg: '#1E293B', color: '#94A3B8' } : { label: status, bg: '#F1F5F9', color: '#475569' };
+  const fallback = isDark ? { label: status, bg: '#1E293B', color: 'text.secondary' } : { label: status, bg: '#F1F5F9', color: 'text.secondary' };
   const config = statusMap[status] || fallback;
   return (
     <Chip

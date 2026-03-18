@@ -135,7 +135,7 @@ const Dashboard = ({ user }) => {
             textTransform: 'none',
             fontWeight: 600,
             fontSize: '0.8rem',
-            color: '#1E40AF',
+            color: 'primary.dark',
             border: '1px solid #E5E7EB',
             px: 2.5,
             '&:hover': { bgcolor: 'rgba(124,58,237,0.04)', borderColor: '#1E40AF' },
@@ -153,7 +153,7 @@ const Dashboard = ({ user }) => {
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-          <CircularProgress sx={{ color: '#1E40AF' }} />
+          <CircularProgress sx={{ color: 'primary.dark' }} />
         </Box>
       ) : (
         <>
@@ -241,7 +241,7 @@ const Dashboard = ({ user }) => {
               <Paper elevation={0} sx={{ ...cardSx, p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                   <Box display="flex" alignItems="center" gap={1}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#1E40AF' }} />
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.dark' }} />
                     <Typography variant="subtitle2" fontWeight={700}>Budget Overview</Typography>
                   </Box>
                   <Chip
@@ -283,7 +283,7 @@ const Dashboard = ({ user }) => {
                         { label: '% Used', value: formatPercentage(dashboardData.summary.budgetUtilization, 0) },
                       ].map((stat, idx) => (
                         <Grid item xs={4} key={idx}>
-                          <Box sx={{ textAlign: 'center', p: 1.5, bgcolor: '#F9FAFB', borderRadius: '12px' }}>
+                          <Box sx={{ textAlign: 'center', p: 1.5, bgcolor: 'background.default', borderRadius: '12px' }}>
                             <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
                             <Typography variant="h6" fontWeight={700}>{stat.value}</Typography>
                           </Box>
@@ -298,7 +298,7 @@ const Dashboard = ({ user }) => {
                 )}
                 <Divider sx={{ my: 2 }} />
                 <Box sx={{ bgcolor: '#F5F3FF', borderRadius: '12px', p: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={700} sx={{ color: '#1E40AF', mb: 0.5 }}>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ color: 'primary.dark', mb: 0.5 }}>
                     AI Budget Forecast
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
@@ -319,7 +319,7 @@ const Dashboard = ({ user }) => {
                       fontWeight: 600,
                       fontSize: '0.75rem',
                       textTransform: 'none',
-                      color: '#1E40AF',
+                      color: 'primary.dark',
                       border: '1px solid #E5E7EB',
                       px: 2,
                     }}
@@ -357,11 +357,11 @@ const Dashboard = ({ user }) => {
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 fontSize: '0.7rem',
-                                bgcolor: '#1E40AF',
+                                bgcolor: 'primary.dark',
                                 color: '#fff',
                                 px: 1.5,
                                 minWidth: 0,
-                                '&:hover': { bgcolor: '#1E3A8A' },
+                                '&:hover': { bgcolor: 'primary.main', filter: 'brightness(0.9)' },
                               }}
                             >
                               Approve
@@ -410,7 +410,7 @@ const Dashboard = ({ user }) => {
                       fontWeight: 600,
                       fontSize: '0.75rem',
                       textTransform: 'none',
-                      color: '#1E40AF',
+                      color: 'primary.dark',
                       border: '1px solid #E5E7EB',
                       px: 2,
                     }}

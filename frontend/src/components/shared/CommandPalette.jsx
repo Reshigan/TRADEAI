@@ -106,11 +106,11 @@ export default function CommandPalette({ open, onClose }) {
           })}
         </Box>
         <Box sx={{ borderTop: 1, borderColor: 'divider', px: 2, py: 1, display: 'flex', gap: 2 }}>
-          <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>↑↓ Navigate</Typography>
-          <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>↵ Open</Typography>
-          <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>Esc Close</Typography>
+          <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>↑↓ Navigate</Typography>
+          <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>↵ Open</Typography>
+          <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Esc Close</Typography>
           <Box sx={{ flex: 1 }} />
-          <Typography sx={{ fontSize: 11, color: '#94A3B8' }}>Ctrl+K to open</Typography>
+          <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Ctrl+K to open</Typography>
         </Box>
       </Box>
     </Dialog>

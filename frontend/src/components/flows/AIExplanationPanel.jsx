@@ -97,7 +97,7 @@ const AIExplanationPanel = ({
         </Box>
         
         {/* Confidence Indicator */}
-        <Paper sx={{ p: 2, bgcolor: '#f5f5f5', border: `2px solid ${getConfidenceColor(confidence)}` }}>
+        <Paper sx={{ p: 2, bgcolor: 'action.hover', border: `2px solid ${getConfidenceColor(confidence)}` }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
               {getConfidenceLabel(confidence)}
@@ -333,7 +333,7 @@ const AIExplanationPanel = ({
       </Accordion>
 
       {/* Feedback Section */}
-      <Paper sx={{ p: 2, bgcolor: '#fafafa' }}>
+      <Paper sx={{ p: 2, bgcolor: 'action.hover' }}>
         <Typography variant="body2" sx={{ mb: 1, fontWeight: 600 }}>
           Was this insight helpful?
         </Typography>
