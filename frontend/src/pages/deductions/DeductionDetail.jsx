@@ -185,15 +185,39 @@ const DeductionDetail = () => {
     if (action === 'validate') await handleValidate();
     else if (action === 'dispute') {
       if (metadata?.comment) {
-        setDisputeReason(metadata.comment);
-        await handleDispute();
+        // Call API directly to avoid React state race condition
+        try {
+          setActionLoading(true);
+          await deductionService.dispute(id, { reason: metadata.comment });
+          showToast('Deduction disputed successfully', 'success');
+          analytics.trackEvent('deduction_disputed', { deductionId: id, deductionType: deduction.deductionType });
+          fetchDeductionDetail();
+        } catch (err) {
+          console.error('Error disputing deduction:', err);
+          showToast(err.message || 'Failed to dispute deduction', 'error');
+          analytics.trackEvent('deduction_dispute_failed', { deductionId: id, error: err.message });
+        } finally {
+          setActionLoading(false);
+        }
       } else {
         setDisputeDialogOpen(true);
       }
     } else if (action === 'resolve') {
       if (metadata?.comment) {
-        setResolutionNotes(metadata.comment);
-        await handleResolve();
+        // Call API directly to avoid React state race condition
+        try {
+          setActionLoading(true);
+          await deductionService.resolve(id, { notes: metadata.comment });
+          showToast('Deduction resolved successfully', 'success');
+          analytics.trackEvent('deduction_resolved', { deductionId: id, deductionType: deduction.deductionType });
+          fetchDeductionDetail();
+        } catch (err) {
+          console.error('Error resolving deduction:', err);
+          showToast(err.message || 'Failed to resolve deduction', 'error');
+          analytics.trackEvent('deduction_resolve_failed', { deductionId: id, error: err.message });
+        } finally {
+          setActionLoading(false);
+        }
       } else {
         setResolveDialogOpen(true);
       }

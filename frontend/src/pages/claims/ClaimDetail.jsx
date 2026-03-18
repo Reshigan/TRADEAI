@@ -186,8 +186,20 @@ const ClaimDetail = () => {
     else if (action === 'approve') await handleApprove();
     else if (action === 'reject') {
       if (metadata?.comment) {
-        setRejectReason(metadata.comment);
-        await handleReject();
+        // Call API directly to avoid React state race condition
+        try {
+          setActionLoading(true);
+          await claimService.reject(id, { comments: metadata.comment });
+          showToast('Claim rejected', 'success');
+          analytics.trackEvent('claim_rejected', { claimId: id, claimType: claim.claimType });
+          fetchClaimDetail();
+        } catch (err) {
+          console.error('Error rejecting claim:', err);
+          showToast(err.message || 'Failed to reject claim', 'error');
+          analytics.trackEvent('claim_reject_failed', { claimId: id, error: err.message });
+        } finally {
+          setActionLoading(false);
+        }
       } else {
         setRejectDialogOpen(true);
       }
