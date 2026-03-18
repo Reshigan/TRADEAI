@@ -204,14 +204,18 @@ export const authService = {
     try {
       const response = await api.post('/auth/login', credentials);
       
+      // GAP-01: Check if 2FA is required
+      if (response.data.requires2FA) {
+        return { requires2FA: true, tempToken: response.data.tempToken };
+      }
+      
       // Backend response structure: { success: true, token: "...", data: { user: {...}, tokens: {...} } }
       const { token, data } = response.data;
       const user = data?.user;
       const tokens = data?.tokens || {};
-      const refreshToken = tokens.refreshToken || data.refreshToken;
       
       if (!token || !user) {
-        console.error('❌ Invalid response structure:', response.data);
+        console.error('Invalid response structure:', response.data);
         throw new Error('Invalid login response structure');
       }
       
@@ -225,6 +229,34 @@ export const authService = {
     } catch (error) {
       throw error;
     }
+  },
+  // GAP-01: 2FA login with TOTP code
+  verify2FA: async ({ tempToken, token: totpCode, backupCode }) => {
+    try {
+      const response = await api.post('/auth/2fa/login', { tempToken, token: totpCode, backupCode });
+      const { token, data } = response.data;
+      const user = data?.user;
+      if (!token || !user) throw new Error('Invalid 2FA response');
+      localStorage.setItem('token', token);
+      localStorage.setItem('accessToken', token);
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(user));
+      return { token, user };
+    } catch (error) {
+      throw error;
+    }
+  },
+  generate2FA: async () => {
+    const response = await api.post('/auth/2fa/generate');
+    return response.data;
+  },
+  enable2FA: async (data) => {
+    const response = await api.post('/auth/2fa/verify', data);
+    return response.data;
+  },
+  disable2FA: async (data) => {
+    const response = await api.post('/auth/2fa/disable', data);
+    return response.data;
   },
   logout: async () => {
     try {

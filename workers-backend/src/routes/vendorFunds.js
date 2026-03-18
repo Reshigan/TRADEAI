@@ -238,3 +238,28 @@ vendorFundRoutes.delete('/:id', async (c) => {
     return c.json({ success: true, message: 'Fund cancelled' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
+
+// GAP-13: Vendor Fund → Budget Engine - auto-create budget on approval
+import { VendorFundEngine } from '../services/vendorFundEngine.js';
+
+vendorFundRoutes.get('/utilization/report', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const engine = new VendorFundEngine(db);
+    const report = await engine.getVendorUtilization(companyId);
+    return c.json({ success: true, data: report });
+  } catch (e) { return apiError(c, e, 'vendorFunds.utilization'); }
+});
+
+vendorFundRoutes.get('/:id/linked-budgets', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { id } = c.req.param();
+    const budgets = await db.prepare(
+      "SELECT * FROM budgets WHERE company_id = ? AND vendor_fund_id = ? ORDER BY created_at DESC"
+    ).bind(companyId, id).all();
+    return c.json({ success: true, data: budgets.results || [] });
+  } catch (e) { return apiError(c, e, 'vendorFunds.linkedBudgets'); }
+});

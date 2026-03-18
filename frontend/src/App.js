@@ -14,6 +14,7 @@ import { CompanyTypeProvider } from './contexts/CompanyTypeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { UserSkillProvider } from './hooks/useUserSkillContext';
+import { ThemeContextProvider } from './contexts/ThemeContext';
 
 const LoadingFallback = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 12 }}>
@@ -299,6 +300,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <ThemeContextProvider>
       <ToastProvider>
         <AuthProvider>
           <CurrencyProvider>
@@ -577,6 +579,7 @@ function App() {
           </CurrencyProvider>
         </AuthProvider>
       </ToastProvider>
+      </ThemeContextProvider>
     </ErrorBoundary>
   );
 }
