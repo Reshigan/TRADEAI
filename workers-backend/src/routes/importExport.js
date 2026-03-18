@@ -77,14 +77,14 @@ const NUMERIC_COLS = new Set([
 function parseCsv(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   if (lines.length < 2) return [];
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const headers = parseCsvLine(lines[0]).map(h => h.trim());
   const rows = [];
   for (let i = 1; i < lines.length; i++) {
     const values = parseCsvLine(lines[i]);
     if (values.length === 0) continue;
     const row = {};
     headers.forEach((h, idx) => {
-      row[h] = (values[idx] || '').trim().replace(/^"|"$/g, '');
+      row[h] = (values[idx] || '').trim();
     });
     rows.push(row);
   }
@@ -235,7 +235,7 @@ importExport.post('/', async (c) => {
       if (file) { const csvText = await file.text(); records = parseCsv(csvText); }
     } else {
       const body = await c.req.json();
-      importType = body.type || body.module || body.entity || 'unknown';
+      importType = body.entity || body.type || body.module || 'unknown';
       fileName = body.fileName || 'api-upload';
       records = body.records || body.data || [];
     }
