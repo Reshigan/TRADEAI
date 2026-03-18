@@ -2094,7 +2094,8 @@ export const roleService = {
     try {
       const stored = localStorage.getItem('user');
       if (stored) {
-        currentUser = JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        currentUser = { id: parsed.id || parsed._id || parsed.userId, role: parsed.role, email: parsed.email, companyId: parsed.companyId || parsed.company_id };
         return;
       }
       const payload = JSON.parse(atob(token.split('.')[1]));
