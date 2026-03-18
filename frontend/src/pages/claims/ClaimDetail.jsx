@@ -181,10 +181,17 @@ const ClaimDetail = () => {
     );
   }
 
-  const handleQuickAction = async (action) => {
+  const handleQuickAction = async (action, metadata) => {
     if (action === 'submit') await handleSubmit();
     else if (action === 'approve') await handleApprove();
-    else if (action === 'reject') setRejectDialogOpen(true);
+    else if (action === 'reject') {
+      if (metadata?.comment) {
+        setRejectReason(metadata.comment);
+        await handleReject();
+      } else {
+        setRejectDialogOpen(true);
+      }
+    }
   };
 
   const sidebarStats = [

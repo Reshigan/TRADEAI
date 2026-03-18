@@ -181,10 +181,49 @@ const DeductionDetail = () => {
     );
   }
 
-  const handleQuickAction = async (action) => {
-    if (action === 'submit' || action === 'approve') await handleValidate();
-    else if (action === 'reject') setDisputeDialogOpen(true);
-    else if (action === 'settle') setResolveDialogOpen(true);
+  const handleQuickAction = async (action, metadata) => {
+    if (action === 'validate') await handleValidate();
+    else if (action === 'dispute') {
+      if (metadata?.comment) {
+        setDisputeReason(metadata.comment);
+        await handleDispute();
+      } else {
+        setDisputeDialogOpen(true);
+      }
+    } else if (action === 'resolve') {
+      if (metadata?.comment) {
+        setResolutionNotes(metadata.comment);
+        await handleResolve();
+      } else {
+        setResolveDialogOpen(true);
+      }
+    }
+  };
+
+  // Deduction-specific actions per status — overrides generic STATUS_TRANSITIONS
+  const getDeductionActions = () => {
+    const s = (deduction.status || 'pending').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      pending: [
+        { action: 'validate', label: 'Validate', icon: null, color: 'success', confirm: true, confirmMsg: 'Validate this deduction?' },
+        { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+      ],
+      open: [
+        { action: 'validate', label: 'Validate', icon: null, color: 'success', confirm: true, confirmMsg: 'Validate this deduction?' },
+        { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+      ],
+      validated: [
+        { action: 'resolve', label: 'Resolve', icon: null, color: 'primary', confirm: true, confirmMsg: 'Resolve this deduction?', requireComment: true },
+      ],
+      disputed: [
+        { action: 'resolve', label: 'Resolve', icon: null, color: 'primary', confirm: true, confirmMsg: 'Resolve this disputed deduction?', requireComment: true },
+      ],
+      under_review: [
+        { action: 'resolve', label: 'Resolve', icon: null, color: 'primary', confirm: true, confirmMsg: 'Resolve this deduction?', requireComment: true },
+        { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || undefined;
   };
 
   const sidebarStats = [
@@ -212,6 +251,7 @@ const DeductionDetail = () => {
           entityId={id}
           entityName={deduction.deductionNumber || 'Deduction'}
           onAction={handleQuickAction}
+          customActions={getDeductionActions()}
           sx={{ mb: 3 }}
         />
 

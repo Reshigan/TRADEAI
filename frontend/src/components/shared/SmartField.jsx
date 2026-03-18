@@ -308,7 +308,7 @@ const SmartField = ({
     <TextField
       name={name}
       label={label}
-      type={type === 'phone' ? 'tel' : type === 'email' ? 'email' : 'text'}
+      type={type === 'phone' ? 'tel' : type === 'email' ? 'email' : type === 'password' ? 'password' : 'text'}
       value={value || ''}
       onChange={handleChange}
       onBlur={handleBlur}
