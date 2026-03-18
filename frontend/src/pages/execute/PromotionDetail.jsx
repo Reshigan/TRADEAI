@@ -41,10 +41,21 @@ export default function PromotionDetail() {
       else if (type === 'approve') await promotionService.approve(id, { notes: note });
       else if (type === 'reject') await promotionService.reject(id, { reason: note });
       else if (type === 'clone') await promotionService.clone(id);
+      else if (type === 'edit') { navigate(`/execute/promotions/${id}/edit`); setActionLoading(false); return; }
+      else if (type === 'delete') {
+        await promotionService.delete(id);
+        navigate('/execute/promotions');
+        return;
+      }
       await reload();
       setActionDialog({ open: false, type: '' }); setActionNote('');
-    } catch (e) { setActionError(e.response?.data?.message || e.message || 'Action failed'); }
-    setActionLoading(false);
+    } catch (e) {
+      const msg = e.response?.data?.message || e.message || 'Action failed';
+      setActionError(msg);
+      throw e; // Re-throw so QuickActionBar shows its error feedback
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;

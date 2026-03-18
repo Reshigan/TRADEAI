@@ -73,9 +73,9 @@ const SmartField = ({
 
   // Read-only display mode
   if (readOnly) {
-    let displayValue = value || '—';
-    if (type === 'currency' && value) displayValue = `R ${formatCurrency(value)}`;
-    if (type === 'percent' && value) displayValue = `${value}%`;
+    let displayValue = (value !== null && value !== undefined && value !== '') ? value : '—';
+    if (type === 'currency' && (value !== null && value !== undefined && value !== '')) displayValue = `R ${formatCurrency(value)}`;
+    if (type === 'percent' && (value !== null && value !== undefined && value !== '')) displayValue = `${value}%`;
     if (type === 'select' && value) {
       const opt = options.find(o => (o.value || o) === value);
       displayValue = opt?.label || opt || value;

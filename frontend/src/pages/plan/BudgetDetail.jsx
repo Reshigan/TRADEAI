@@ -27,15 +27,19 @@ export default function BudgetDetail() {
     load();
   }, [id]);
 
-  const handleAction = async (action) => {
+  const handleAction = async (action, metadata) => {
     try {
       if (action === 'edit') { navigate(`/plan/budgets/${id}/edit`); return; }
+      if (action === 'delete') {
+        if (window.confirm('Delete this budget?')) { await budgetService.delete(id); navigate('/plan/budgets'); }
+        return;
+      }
       if (action === 'submit') await budgetService.update(id, { status: 'pending_approval' });
-      else if (action === 'approve') await budgetService.update(id, { status: 'approved' });
-      else if (action === 'reject') await budgetService.update(id, { status: 'rejected' });
+      else if (action === 'approve') await budgetService.update(id, { status: 'approved', notes: metadata?.comment });
+      else if (action === 'reject') await budgetService.update(id, { status: 'rejected', reason: metadata?.comment });
       const res = await budgetService.getById(id);
       setBudget(res.data || res);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); throw e; }
   };
 
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;
