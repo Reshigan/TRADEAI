@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const campaigns = new Hono();
@@ -180,7 +180,7 @@ campaigns.post('/', async (c) => {
       now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
@@ -212,7 +212,7 @@ campaigns.put('/:id', async (c) => {
         start_date = ?, end_date = ?, budget_amount = ?,
         spent_amount = ?, target_revenue = ?, actual_revenue = ?,
         target_volume = ?, actual_volume = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description || existing.description,
@@ -234,7 +234,7 @@ campaigns.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -258,7 +258,7 @@ campaigns.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Campaign not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM campaigns WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Campaign deleted' });
   } catch (error) {
@@ -280,7 +280,7 @@ campaigns.post('/:id/submit', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -303,7 +303,7 @@ campaigns.post('/:id/approve', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -325,7 +325,7 @@ campaigns.post('/:id/activate', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -347,7 +347,7 @@ campaigns.post('/:id/complete', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -369,7 +369,7 @@ campaigns.post('/:id/cancel', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -406,10 +406,10 @@ campaigns.post('/:id/promotions', async (c) => {
     }
     
     await db.prepare(`
-      UPDATE campaigns SET data = ?, updated_at = ? WHERE id = ?
-    `).bind(JSON.stringify(data), now, id).run();
+      UPDATE campaigns SET data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(JSON.stringify(data, companyId), now, id).run();
     
-    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {

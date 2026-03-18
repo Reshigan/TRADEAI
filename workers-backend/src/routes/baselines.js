@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const baselines = new Hono();
@@ -236,7 +236,7 @@ baselines.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM baselines WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating baseline:', error);
@@ -271,7 +271,7 @@ baselines.put('/:id', async (c) => {
         seasonality_enabled = ?, trend_enabled = ?,
         outlier_removal_enabled = ?, outlier_threshold = ?,
         confidence_level = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -298,7 +298,7 @@ baselines.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM baselines WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating baseline:', error);
@@ -323,7 +323,7 @@ baselines.delete('/:id', async (c) => {
 
     await db.prepare('DELETE FROM volume_decomposition WHERE baseline_id = ? AND company_id = ?').bind(id, companyId).run();
     await db.prepare('DELETE FROM baseline_periods WHERE baseline_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM baselines WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).run();
 
     return c.json({ success: true, message: 'Baseline deleted' });
   } catch (error) {
@@ -352,8 +352,8 @@ baselines.post('/:id/calculate', async (c) => {
     }
 
     await db.prepare(
-      "UPDATE baselines SET status = 'calculating', updated_at = ? WHERE id = ?"
-    ).bind(now, id).run();
+      "UPDATE baselines SET status = 'calculating', updated_at = ? WHERE id = ? AND company_id = ?"
+    ).bind(now, id, companyId).run();
 
     // Step 1: Gather historical trade spend data for the base year
     let historicalQuery = `
@@ -568,7 +568,7 @@ baselines.post('/:id/calculate', async (c) => {
         seasonality_index = ?, trend_coefficient = ?,
         r_squared = ?, mape = ?, confidence_level = ?,
         updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       Math.round(totalBaseVolume * 100) / 100,
       Math.round(totalBaseVolume * 100) / 100,
@@ -582,7 +582,7 @@ baselines.post('/:id/calculate', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM baselines WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const periods = await db.prepare(
       'SELECT * FROM baseline_periods WHERE baseline_id = ? ORDER BY period_number ASC'
     ).bind(id).all();
@@ -736,7 +736,7 @@ baselines.post('/:id/decompose', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM volume_decomposition WHERE id = ?').bind(decompId).first();
+    const created = await db.prepare('SELECT * FROM volume_decomposition WHERE id = ? AND company_id = ?').bind(decompId, companyId).first();
 
     return c.json({
       success: true,
@@ -781,10 +781,10 @@ baselines.post('/:id/approve', async (c) => {
 
     await db.prepare(`
       UPDATE baselines SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(userId, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(userId, now, now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM baselines WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving baseline:', error);

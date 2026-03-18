@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const customerAssignment = new Hono();
@@ -71,7 +71,7 @@ customerAssignment.post('/assign', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM customer_assignments WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM customer_assignments WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);

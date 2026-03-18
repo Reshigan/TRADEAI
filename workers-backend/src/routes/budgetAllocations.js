@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const budgetAllocations = new Hono();
@@ -283,7 +283,7 @@ budgetAllocations.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM budget_allocations WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating budget allocation:', error);
@@ -318,7 +318,7 @@ budgetAllocations.put('/:id', async (c) => {
         budget_id = ?, source_amount = ?,
         fiscal_year = ?, period_type = ?, start_date = ?, end_date = ?,
         dimension = ?, currency = ?, notes = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -337,7 +337,7 @@ budgetAllocations.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM budget_allocations WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating budget allocation:', error);
@@ -365,7 +365,7 @@ budgetAllocations.delete('/:id', async (c) => {
     }
 
     await db.prepare('DELETE FROM budget_allocation_lines WHERE allocation_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM budget_allocations WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).run();
 
     return c.json({ success: true, message: 'Budget allocation deleted' });
   } catch (error) {
@@ -525,10 +525,10 @@ budgetAllocations.post('/:id/distribute', async (c) => {
     await db.prepare(`
       UPDATE budget_allocations SET
         allocated_amount = ?, remaining_amount = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(totalAllocated, remaining, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(totalAllocated, remaining, now, id, companyId).run();
 
-    const updatedAllocation = await db.prepare('SELECT * FROM budget_allocations WHERE id = ?').bind(id).first();
+    const updatedAllocation = await db.prepare('SELECT * FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const updatedLines = await db.prepare(
       'SELECT * FROM budget_allocation_lines WHERE allocation_id = ? ORDER BY line_number ASC'
     ).bind(id).all();
@@ -574,15 +574,15 @@ budgetAllocations.post('/:id/lock', async (c) => {
     await db.prepare(`
       UPDATE budget_allocations SET
         locked = 1, locked_by = ?, locked_at = ?, status = 'locked', updated_at = ?
-      WHERE id = ?
-    `).bind(userId, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(userId, now, now, id, companyId).run();
 
     await db.prepare(`
       UPDATE budget_allocation_lines SET status = 'locked', updated_at = ?
       WHERE allocation_id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM budget_allocations WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error locking allocation:', error);
@@ -609,15 +609,15 @@ budgetAllocations.post('/:id/unlock', async (c) => {
     await db.prepare(`
       UPDATE budget_allocations SET
         locked = 0, locked_by = NULL, locked_at = NULL, status = 'active', updated_at = ?
-      WHERE id = ?
-    `).bind(now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(now, id, companyId).run();
 
     await db.prepare(`
       UPDATE budget_allocation_lines SET status = 'active', updated_at = ?
       WHERE allocation_id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM budget_allocations WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error unlocking allocation:', error);
@@ -675,7 +675,7 @@ budgetAllocations.post('/:id/refresh-utilization', async (c) => {
         UPDATE budget_allocation_lines SET
           utilized_amount = ?, remaining_amount = ?, utilization_pct = ?,
           variance_amount = ?, variance_pct = ?, updated_at = ?
-        WHERE id = ?
+        WHERE id = ? AND company_id = ?
       `).bind(
         Math.round(utilized * 100) / 100,
         Math.round(remaining * 100) / 100,
@@ -694,14 +694,14 @@ budgetAllocations.post('/:id/refresh-utilization', async (c) => {
     await db.prepare(`
       UPDATE budget_allocations SET
         utilized_amount = ?, utilization_pct = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       Math.round(totalUtilized * 100) / 100,
       Math.round(totalUtilizationPct * 100) / 100,
       now, id
     ).run();
 
-    const updatedAllocation = await db.prepare('SELECT * FROM budget_allocations WHERE id = ?').bind(id).first();
+    const updatedAllocation = await db.prepare('SELECT * FROM budget_allocations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const updatedLines = await db.prepare(
       'SELECT * FROM budget_allocation_lines WHERE allocation_id = ? ORDER BY line_number ASC'
     ).bind(id).all();
@@ -776,7 +776,7 @@ budgetAllocations.put('/:id/lines/:lineId', async (c) => {
       UPDATE budget_allocation_lines SET
         allocated_amount = ?, allocated_pct = ?,
         remaining_amount = ?, notes = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       Math.round(newAmount * 100) / 100,
       Math.round(newPct * 100) / 100,
@@ -793,14 +793,14 @@ budgetAllocations.put('/:id/lines/:lineId', async (c) => {
     await db.prepare(`
       UPDATE budget_allocations SET
         allocated_amount = ?, remaining_amount = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       Math.round(totalAllocated * 100) / 100,
       Math.round((allocation.source_amount - totalAllocated) * 100) / 100,
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM budget_allocation_lines WHERE id = ?').bind(lineId).first();
+    const updated = await db.prepare('SELECT * FROM budget_allocation_lines WHERE id = ? AND company_id = ?').bind(lineId, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating allocation line:', error);

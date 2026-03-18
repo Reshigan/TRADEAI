@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const customer360 = new Hono();
@@ -203,7 +203,7 @@ customer360.post('/profiles', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM customer_360_profiles WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM customer_360_profiles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating customer 360 profile:', error);
@@ -259,7 +259,7 @@ customer360.put('/profiles/:id', async (c) => {
 
     await db.prepare(`UPDATE customer_360_profiles SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM customer_360_profiles WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM customer_360_profiles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating customer 360 profile:', error);
@@ -348,7 +348,7 @@ customer360.post('/insights', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM customer_360_insights WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM customer_360_insights WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating customer 360 insight:', error);
@@ -418,7 +418,7 @@ customer360.post('/profiles/:id/recalculate', async (c) => {
       id, companyId
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM customer_360_profiles WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM customer_360_profiles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error recalculating customer 360 profile:', error);

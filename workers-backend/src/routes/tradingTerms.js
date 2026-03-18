@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const tradingTerms = new Hono();
@@ -171,7 +171,7 @@ tradingTerms.post('/', async (c) => {
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
@@ -204,7 +204,7 @@ tradingTerms.put('/:id', async (c) => {
         rate = ?, rate_type = ?, threshold = ?, cap = ?,
         payment_frequency = ?, calculation_basis = ?,
         data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description || existing.description,
@@ -222,7 +222,7 @@ tradingTerms.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -246,7 +246,7 @@ tradingTerms.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Trading term not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM trading_terms WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Trading term deleted' });
   } catch (error) {
@@ -268,7 +268,7 @@ tradingTerms.post('/:id/submit', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -291,7 +291,7 @@ tradingTerms.post('/:id/approve', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -313,7 +313,7 @@ tradingTerms.post('/:id/reject', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 
 const hub = new Hono();
 hub.use('*', authMiddleware);
@@ -101,7 +101,7 @@ hub.post('/', async (c) => {
       INSERT INTO integrations (id, company_id, name, description, integration_type, provider, category, status, config, credentials, endpoint_url, auth_type, sync_frequency, created_by, notes, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, companyId, body.name, body.description || null, body.integration_type || 'api', body.provider || 'custom', body.category || 'erp', body.status || 'inactive', JSON.stringify(body.config || {}), JSON.stringify(body.credentials || {}), body.endpoint_url || null, body.auth_type || 'api_key', body.sync_frequency || 'manual', c.get('userId') || null, body.notes || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM integrations WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM integrations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -116,9 +116,9 @@ hub.put('/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM integrations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Integration not found' }, 404);
     await db.prepare(`
-      UPDATE integrations SET name = ?, description = ?, integration_type = ?, provider = ?, category = ?, status = ?, config = ?, endpoint_url = ?, auth_type = ?, sync_frequency = ?, notes = ?, data = ?, updated_at = ? WHERE id = ?
-    `).bind(body.name || existing.name, body.description ?? existing.description, body.integration_type || existing.integration_type, body.provider || existing.provider, body.category || existing.category, body.status || existing.status, JSON.stringify(body.config || JSON.parse(existing.config || '{}')), body.endpoint_url ?? existing.endpoint_url, body.auth_type || existing.auth_type, body.sync_frequency || existing.sync_frequency, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
-    const updated = await db.prepare('SELECT * FROM integrations WHERE id = ?').bind(id).first();
+      UPDATE integrations SET name = ?, description = ?, integration_type = ?, provider = ?, category = ?, status = ?, config = ?, endpoint_url = ?, auth_type = ?, sync_frequency = ?, notes = ?, data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.name || existing.name, body.description ?? existing.description, body.integration_type || existing.integration_type, body.provider || existing.provider, body.category || existing.category, body.status || existing.status, JSON.stringify(body.config || JSON.parse(existing.config || '{}', companyId)), body.endpoint_url ?? existing.endpoint_url, body.auth_type || existing.auth_type, body.sync_frequency || existing.sync_frequency, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
+    const updated = await db.prepare('SELECT * FROM integrations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: updated });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -131,7 +131,7 @@ hub.delete('/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM integrations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Integration not found' }, 404);
     await db.prepare('DELETE FROM integration_logs WHERE integration_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM integrations WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM integrations WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Integration deleted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -144,10 +144,10 @@ hub.post('/:id/sync', async (c) => {
     const now = new Date().toISOString();
     const integration = await db.prepare('SELECT * FROM integrations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!integration) return c.json({ success: false, message: 'Integration not found' }, 404);
-    await db.prepare("UPDATE integrations SET sync_status = 'syncing', updated_at = ? WHERE id = ?").bind(now, id).run();
+    await db.prepare("UPDATE integrations SET sync_status = 'syncing', updated_at = ? WHERE id = ? AND company_id = ?").bind(now, id, companyId).run();
     const logId = generateId();
     await db.prepare(`INSERT INTO integration_logs (id, company_id, integration_id, log_type, action, status, records_processed, duration_ms, created_at) VALUES (?, ?, ?, 'info', 'sync', 'success', 0, 0, ?)`).bind(logId, companyId, id, now).run();
-    await db.prepare("UPDATE integrations SET sync_status = 'idle', last_sync_at = ?, updated_at = ? WHERE id = ?").bind(now, now, id).run();
+    await db.prepare("UPDATE integrations SET sync_status = 'idle', last_sync_at = ?, updated_at = ? WHERE id = ? AND company_id = ?").bind(now, now, id, companyId).run();
     return c.json({ success: true, message: 'Sync completed' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });

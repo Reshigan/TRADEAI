@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 
 export const vendorFundRoutes = new Hono();
 vendorFundRoutes.use('*', authMiddleware);
@@ -121,7 +121,7 @@ vendorFundRoutes.put('/:id', async (c) => {
         product_hierarchy_level = ?, product_hierarchy_id = ?, product_hierarchy_name = ?,
         min_spend_pct = ?, vendor_contact_name = ?, vendor_contact_email = ?, vendor_reference = ?,
         payment_terms = ?, invoice_frequency = ?, notes = ?, data = ?, updated_at = datetime('now')
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       data.name || existing.name, data.description || existing.description, data.fund_type || existing.fund_type,
       data.total_amount ?? existing.total_amount, data.start_date || existing.start_date, data.end_date || existing.end_date,
@@ -147,8 +147,8 @@ vendorFundRoutes.post('/:id/approve', async (c) => {
     if (!fund) return c.json({ success: false, message: 'Not found' }, 404);
     const available = (fund.total_amount || 0) - (fund.committed_amount || 0) - (fund.spent_amount || 0);
     await db.prepare(
-      "UPDATE vendor_funds SET status = 'active', available_amount = ?, approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now') WHERE id = ?"
-    ).bind(available, userId, id).run();
+      "UPDATE vendor_funds SET status = 'active', available_amount = ?, approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND company_id = ?"
+    ).bind(available, userId, id, companyId).run();
     return c.json({ success: true, message: 'Fund activated' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -169,8 +169,8 @@ vendorFundRoutes.post('/:id/charge', async (c) => {
       'INSERT INTO vendor_fund_usages (id, company_id, vendor_fund_id, entity_type, entity_id, amount, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime("now"))'
     ).bind(usageId, companyId, id, entityType, entityId, amount, 'committed').run();
     await db.prepare(
-      'UPDATE vendor_funds SET committed_amount = committed_amount + ?, available_amount = MAX(0, available_amount - ?), updated_at = datetime("now") WHERE id = ?'
-    ).bind(amount, amount, id).run();
+      'UPDATE vendor_funds SET committed_amount = committed_amount + ?, available_amount = MAX(0, available_amount - ?), updated_at = datetime("now") WHERE id = ? AND company_id = ?'
+    ).bind(amount, amount, id, companyId).run();
     return c.json({ success: true, data: { usageId }, message: 'Fund charged' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -190,8 +190,8 @@ vendorFundRoutes.post('/:id/claim', async (c) => {
       "SELECT COALESCE(SUM(amount), 0) as total FROM vendor_fund_usages WHERE vendor_fund_id = ? AND status = 'claimed'"
     ).bind(id).first();
     await db.prepare(
-      'UPDATE vendor_funds SET claimed_amount = ?, updated_at = datetime("now") WHERE id = ?'
-    ).bind(totalClaimed?.total || 0, id).run();
+      'UPDATE vendor_funds SET claimed_amount = ?, updated_at = datetime("now") WHERE id = ? AND company_id = ?'
+    ).bind(totalClaimed?.total || 0, id, companyId).run();
     return c.json({ success: true, message: 'Claim submitted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -223,7 +223,7 @@ vendorFundRoutes.post('/:id/renew', async (c) => {
       fund.payment_terms, fund.invoice_frequency, userId, data.notes || null,
       JSON.stringify({ renewedFrom: id })
     ).run();
-    await db.prepare("UPDATE vendor_funds SET status = 'closed', updated_at = datetime('now') WHERE id = ?").bind(id).run();
+    await db.prepare("UPDATE vendor_funds SET status = 'closed', updated_at = datetime('now') WHERE id = ? AND company_id = ?").bind(id, companyId).run();
     return c.json({ success: true, data: { id: newId }, message: 'Fund renewed' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });

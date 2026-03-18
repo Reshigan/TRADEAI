@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const claims = new Hono();
@@ -245,12 +245,12 @@ claims.post('/auto-match', async (c) => {
             Math.abs(claim.claimed_amount - deduction.deduction_amount) < 0.01) {
           // Match found
           await db.prepare(`
-            UPDATE claims SET data = ?, updated_at = ? WHERE id = ?
-          `).bind(JSON.stringify({ matchedDeductions: [deduction.id] }), now, claim.id).run();
+            UPDATE claims SET data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+          `).bind(JSON.stringify({ matchedDeductions: [deduction.id] }, companyId), now, claim.id).run();
           
           await db.prepare(`
-            UPDATE deductions SET status = 'matched', matched_to = ?, updated_at = ? WHERE id = ?
-          `).bind(JSON.stringify([claim.id]), now, deduction.id).run();
+            UPDATE deductions SET status = 'matched', matched_to = ?, updated_at = ? WHERE id = ? AND company_id = ?
+          `).bind(JSON.stringify([claim.id], companyId), now, deduction.id).run();
           
           matched.push({ claimId: claim.id, deductionId: deduction.id });
         }
@@ -381,7 +381,7 @@ claims.post('/', async (c) => {
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
@@ -412,7 +412,7 @@ claims.put('/:id', async (c) => {
         claim_type = ?, customer_id = ?, promotion_id = ?, rebate_id = ?,
         claimed_amount = ?, claim_date = ?, due_date = ?, reason = ?,
         supporting_documents = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.claimType || body.claim_type || existing.claim_type,
       body.customerId || body.customer_id || body.customer || existing.customer_id,
@@ -427,7 +427,7 @@ claims.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -451,7 +451,7 @@ claims.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Claim not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM claims WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Claim deleted' });
   } catch (error) {
@@ -473,7 +473,7 @@ claims.post('/:id/submit', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -508,10 +508,10 @@ claims.post('/:id/approve', async (c) => {
         status = ?, approved_amount = ?, 
         reviewed_by = ?, reviewed_at = ?, review_notes = ?,
         updated_at = ?
-      WHERE id = ?
-    `).bind(status, approvedAmount, userId, now, body.notes || '', now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(status, approvedAmount, userId, now, body.notes || '', now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -538,7 +538,7 @@ claims.post('/:id/reject', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, body.reason || '', now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -570,10 +570,10 @@ claims.post('/:id/settle', async (c) => {
       UPDATE claims SET 
         status = 'settled', settled_amount = ?, settlement_date = ?,
         updated_at = ?
-      WHERE id = ?
-    `).bind(settledAmount, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(settledAmount, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -613,8 +613,8 @@ claims.post('/:id/match', async (c) => {
     });
     
     await db.prepare(`
-      UPDATE claims SET data = ?, updated_at = ? WHERE id = ?
-    `).bind(JSON.stringify(data), now, id).run();
+      UPDATE claims SET data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(JSON.stringify(data, companyId), now, id).run();
     
     // Update deduction if provided
     if (body.deductionId) {
@@ -626,7 +626,7 @@ claims.post('/:id/match', async (c) => {
             status = CASE WHEN deduction_amount <= matched_amount + ? THEN 'matched' ELSE status END,
             matched_to = ?,
             updated_at = ?
-          WHERE id = ?
+          WHERE id = ? AND company_id = ?
         `).bind(
           body.matchedAmount || 0,
           body.matchedAmount || 0,
@@ -640,7 +640,7 @@ claims.post('/:id/match', async (c) => {
       }
     }
     
-    const updated = await db.prepare('SELECT * FROM claims WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {

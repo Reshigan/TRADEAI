@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const activities = new Hono();
@@ -275,7 +275,7 @@ activities.post('/', async (c) => {
       now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM activities WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM activities WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {

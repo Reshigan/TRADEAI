@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const advancedReporting = new Hono();
@@ -196,7 +196,7 @@ advancedReporting.post('/templates', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM report_templates WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM report_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating report template:', error);
@@ -245,7 +245,7 @@ advancedReporting.put('/templates/:id', async (c) => {
 
     await db.prepare(`UPDATE report_templates SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM report_templates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM report_templates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating report template:', error);
@@ -381,7 +381,7 @@ advancedReporting.post('/templates/:id/run', async (c) => {
       now, now
     ).run();
 
-    await db.prepare('UPDATE report_templates SET last_run_at = ?, run_count = run_count + 1, updated_at = ? WHERE id = ?').bind(now, now, id).run();
+    await db.prepare('UPDATE report_templates SET last_run_at = ?, run_count = run_count + 1, updated_at = ? WHERE id = ? AND company_id = ?').bind(now, now, id, companyId).run();
 
     return c.json({
       success: true,
@@ -494,7 +494,7 @@ advancedReporting.put('/reports/:id', async (c) => {
 
     await db.prepare(`UPDATE saved_reports SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM saved_reports WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM saved_reports WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating saved report:', error);
@@ -526,7 +526,7 @@ advancedReporting.post('/reports/:id/toggle-favorite', async (c) => {
     if (!report) return c.json({ success: false, message: 'Saved report not found' }, 404);
 
     const newVal = report.is_favorite ? 0 : 1;
-    await db.prepare('UPDATE saved_reports SET is_favorite = ?, updated_at = ? WHERE id = ?').bind(newVal, new Date().toISOString(), id).run();
+    await db.prepare('UPDATE saved_reports SET is_favorite = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(newVal, new Date().toISOString(), id).run();
 
     return c.json({ success: true, data: { isFavorite: !!newVal } });
   } catch (error) {
@@ -610,7 +610,7 @@ advancedReporting.post('/schedules', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM report_schedules WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM report_schedules WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating report schedule:', error);
@@ -655,7 +655,7 @@ advancedReporting.put('/schedules/:id', async (c) => {
 
     await db.prepare(`UPDATE report_schedules SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM report_schedules WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM report_schedules WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating report schedule:', error);

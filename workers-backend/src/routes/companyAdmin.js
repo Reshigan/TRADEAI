@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const companyAdmin = new Hono();
@@ -96,7 +96,7 @@ companyAdmin.post('/announcements', async (c) => {
     await db.prepare(`INSERT INTO announcements (id, company_id, title, content, category, priority, status, target_audience, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)`).bind(
       id, companyId, body.title, body.content || '',body.category || 'general', body.priority || 'medium', body.targetAudience || body.target_audience || 'all', c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM announcements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -114,7 +114,7 @@ companyAdmin.put('/announcements/:id', async (c) => {
     await db.prepare(`UPDATE announcements SET title = COALESCE(?, title), content = COALESCE(?, content), category = COALESCE(?, category), priority = COALESCE(?, priority), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?`).bind(
       body.title || null, body.content || null, body.category || null, body.priority || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM announcements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -142,7 +142,7 @@ companyAdmin.post('/announcements/:id/publish', async (c) => {
     const { id } = c.req.param();
     const now = new Date().toISOString();
     await db.prepare(`UPDATE announcements SET status = 'published', published_at = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(now, now, id, companyId).run();
-    const updated = await db.prepare('SELECT * FROM announcements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM announcements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -174,7 +174,7 @@ companyAdmin.get('/policies/:id', async (c) => {
   try {
     const db = c.env.DB;
     const { id } = c.req.param();
-    const result = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
+    const result = await db.prepare('SELECT * FROM policies WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!result) return c.json({ success: false, message: 'Policy not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
@@ -194,7 +194,7 @@ companyAdmin.post('/policies', async (c) => {
     await db.prepare(`INSERT INTO policies (id, company_id, title, content, category, version, status, effective_date, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)`).bind(
       id, companyId, body.title, body.content || '',body.category || 'general', body.version || '1.0', body.effectiveDate || body.effective_date || now, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM policies WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -212,7 +212,7 @@ companyAdmin.put('/policies/:id', async (c) => {
     await db.prepare(`UPDATE policies SET title = COALESCE(?, title), content = COALESCE(?, content), category = COALESCE(?, category), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?`).bind(
       body.title || null, body.content || null, body.category || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM policies WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -240,7 +240,7 @@ companyAdmin.post('/policies/:id/publish', async (c) => {
     const { id } = c.req.param();
     const now = new Date().toISOString();
     await db.prepare(`UPDATE policies SET status = 'published', published_at = ?, updated_at = ? WHERE id = ? AND company_id = ?`).bind(now, now, id, companyId).run();
-    const updated = await db.prepare('SELECT * FROM policies WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM policies WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -272,7 +272,7 @@ companyAdmin.get('/courses/:id', async (c) => {
   try {
     const db = c.env.DB;
     const { id } = c.req.param();
-    const result = await db.prepare('SELECT * FROM courses WHERE id = ?').bind(id).first();
+    const result = await db.prepare('SELECT * FROM courses WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!result) return c.json({ success: false, message: 'Course not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
@@ -292,7 +292,7 @@ companyAdmin.post('/courses', async (c) => {
     await db.prepare(`INSERT INTO courses (id, company_id, title, description, category, difficulty, duration_minutes, status, content_url, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)`).bind(
       id, companyId, body.title,body.description || '', body.category || 'general', body.difficulty || 'beginner', body.durationMinutes || body.duration_minutes || 30, body.contentUrl || body.content_url || null, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM courses WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM courses WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -310,7 +310,7 @@ companyAdmin.put('/courses/:id', async (c) => {
     await db.prepare(`UPDATE courses SET title = COALESCE(?, title), description = COALESCE(?, description), category = COALESCE(?, category), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?`).bind(
       body.title || null, body.description || null, body.category || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM courses WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM courses WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -355,7 +355,7 @@ companyAdmin.get('/games/:id', async (c) => {
   try {
     const db = c.env.DB;
     const { id } = c.req.param();
-    const result = await db.prepare('SELECT * FROM games WHERE id = ?').bind(id).first();
+    const result = await db.prepare('SELECT * FROM games WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!result) return c.json({ success: false, message: 'Game not found' }, 404);
     return c.json({ success: true, data: rowToDocument(result) });
   } catch (error) {
@@ -375,7 +375,7 @@ companyAdmin.post('/games', async (c) => {
     await db.prepare(`INSERT INTO games (id, company_id, title, description, game_type, difficulty, points, status, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?)`).bind(
       id, companyId, body.title,body.description || '', body.gameType || body.game_type || 'quiz', body.difficulty || 'medium', body.points || 100, c.get('userId') || 'system', JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM games WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM games WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -393,7 +393,7 @@ companyAdmin.put('/games/:id', async (c) => {
     await db.prepare(`UPDATE games SET title = COALESCE(?, title), description = COALESCE(?, description), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?`).bind(
       body.title || null, body.description || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM games WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM games WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -419,7 +419,7 @@ companyAdmin.get('/settings', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const company = await db.prepare('SELECT * FROM companies WHERE id = ? OR code = ?').bind(companyId, companyId).first();
+    const company = await db.prepare('SELECT * FROM companies WHERE id = ? AND company_id = ? OR code = ?').bind(companyId, companyId).first();
     const settings = await db.prepare('SELECT * FROM settings WHERE company_id = ?').bind(companyId).all();
     const settingsMap = {};
     (settings.results || []).forEach(s => { settingsMap[s.key] = s.value; });
@@ -444,14 +444,14 @@ companyAdmin.put('/settings', async (c) => {
     const now = new Date().toISOString();
 
     if (body.companyName || body.name) {
-      await db.prepare('UPDATE companies SET name = ?, updated_at = ? WHERE id = ? OR code = ?').bind(body.companyName || body.name, now, companyId, companyId).run();
+      await db.prepare('UPDATE companies SET name = ?, updated_at = ? WHERE id = ? AND company_id = ? OR code = ?').bind(body.companyName || body.name, now, companyId, companyId).run();
     }
 
     if (body.settings && typeof body.settings === 'object') {
       for (const [key, value] of Object.entries(body.settings)) {
         const existing = await db.prepare('SELECT id FROM settings WHERE company_id = ? AND key = ?').bind(companyId, key).first();
         if (existing) {
-          await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(String(value), now, existing.id).run();
+          await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(String(value), now, existing.id).run();
         } else {
           await db.prepare('INSERT INTO settings (id, company_id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)').bind(generateId(), companyId, key, String(value), now, now).run();
         }
@@ -497,7 +497,7 @@ companyAdmin.post('/azure-ad', async (c) => {
     const existing = await db.prepare("SELECT id FROM settings WHERE company_id = ? AND key = 'azure_ad_config'").bind(companyId).first();
     const value = JSON.stringify(body);
     if (existing) {
-      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(value, now, existing.id).run();
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(value, now, existing.id, companyId).run();
     } else {
       await db.prepare('INSERT INTO settings (id, company_id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)').bind(generateId(), companyId, 'azure_ad_config', value, now, now).run();
     }
@@ -565,9 +565,7 @@ companyAdmin.post('/azure-ad/sync', async (c) => {
       if (!adUser.mail) { skipped++; continue; }
       const existing = await db.prepare('SELECT id FROM users WHERE email = ? AND company_id = ?').bind(adUser.mail.toLowerCase(), companyId).first();
       if (existing) {
-        await db.prepare('UPDATE users SET first_name = ?, last_name = ?, department = ?, updated_at = ? WHERE id = ?').bind(
-          adUser.givenName || '', adUser.surname || '', adUser.department || '', now, existing.id
-        ).run();
+        await db.prepare('UPDATE users SET first_name = ?, last_name = ?, department = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(adUser.givenName || '', adUser.surname || '', adUser.department || '', now, existing.id, companyId).run();
         updated++;
       } else {
         await db.prepare('INSERT INTO users (id, company_id, email, first_name, last_name, role, department, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)').bind(
@@ -581,7 +579,7 @@ companyAdmin.post('/azure-ad/sync', async (c) => {
       const cfg = JSON.parse(settingRow.value || '{}');
       cfg.lastSyncAt = now;
       cfg.lastSyncStats = { created, updated, skipped, total: adUsers.length };
-      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(cfg), now, settingRow.id).run();
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(JSON.stringify(cfg), now, settingRow.id).run();
     }
     return c.json({ success: true, data: { synced: created + updated, created, updated, skipped, total: adUsers.length, message: `Synced ${created + updated} users (${created} new, ${updated} updated, ${skipped} skipped)` } });
   } catch (error) {
@@ -613,7 +611,7 @@ companyAdmin.post('/erp-settings', async (c) => {
     const existing = await db.prepare("SELECT id FROM settings WHERE company_id = ? AND key = 'erp_config'").bind(companyId).first();
     const value = JSON.stringify(body);
     if (existing) {
-      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(value, now, existing.id).run();
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(value, now, existing.id, companyId).run();
     } else {
       await db.prepare('INSERT INTO settings (id, company_id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)').bind(generateId(), companyId, 'erp_config', value, now, now).run();
     }
@@ -672,7 +670,7 @@ companyAdmin.post('/erp-settings/sync', async (c) => {
           if (!name) continue;
           const existing = await db.prepare('SELECT id FROM customers WHERE code = ? AND company_id = ?').bind(code, companyId).first();
           if (existing) {
-            await db.prepare('UPDATE customers SET name = ?, updated_at = ? WHERE id = ?').bind(name, now, existing.id).run();
+            await db.prepare('UPDATE customers SET name = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(name, now, existing.id, companyId).run();
             customersSync.updated++;
           } else {
             await db.prepare('INSERT INTO customers (id, company_id, name, code, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(
@@ -694,7 +692,7 @@ companyAdmin.post('/erp-settings/sync', async (c) => {
           if (!name) continue;
           const existing = await db.prepare('SELECT id FROM products WHERE code = ? AND company_id = ?').bind(code, companyId).first();
           if (existing) {
-            await db.prepare('UPDATE products SET name = ?, updated_at = ? WHERE id = ?').bind(name, now, existing.id).run();
+            await db.prepare('UPDATE products SET name = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(name, now, existing.id, companyId).run();
             productsSync.updated++;
           } else {
             await db.prepare('INSERT INTO products (id, company_id, name, code, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(
@@ -710,7 +708,7 @@ companyAdmin.post('/erp-settings/sync', async (c) => {
       const cfg = JSON.parse(settingRow.value || '{}');
       cfg.lastSyncAt = now;
       cfg.lastSyncStats = { customers: customersSync, products: productsSync };
-      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(cfg), now, settingRow.id).run();
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(JSON.stringify(cfg), now, settingRow.id).run();
     }
     const totalSynced = customersSync.created + customersSync.updated + productsSync.created + productsSync.updated;
     return c.json({ success: true, data: { synced: totalSynced, customers: customersSync, products: productsSync, message: `Synced ${totalSynced} records from ERP` } });
@@ -730,7 +728,7 @@ companyAdmin.post('/erp-settings/field-mapping', async (c) => {
     if (existing) {
       const config = JSON.parse(existing.value || '{}');
       config.mappings = body.mappings || body;
-      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(config), now, existing.id).run();
+      await db.prepare('UPDATE settings SET value = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(JSON.stringify(config), now, existing.id).run();
     }
     return c.json({ success: true, message: 'Field mappings saved' });
   } catch (error) {

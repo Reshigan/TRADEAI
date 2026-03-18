@@ -7,18 +7,51 @@ export const authRoutes = new Hono();
 
 const authRateLimit = rateLimit({ limit: 5, windowMs: 60000 });
 
-// Password hashing using Web Crypto API (bcrypt alternative for Workers)
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+// Password hashing using PBKDF2 with per-password salt (Workers-compatible Web Crypto API)
+const PBKDF2_ITERATIONS = 100000;
+const SALT_LENGTH = 16;
+const HASH_LENGTH = 32;
+
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function verifyPassword(password, hash) {
-  const passwordHash = await hashPassword(password);
-  return passwordHash === hash;
+function fromHex(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  return bytes;
+}
+
+async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const hashBuffer = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' }, keyMaterial, HASH_LENGTH * 8);
+  return `${toHex(salt)}:${toHex(hashBuffer)}`;
+}
+
+async function verifyPassword(password, storedHash) {
+  if (!storedHash) return false;
+  // Support legacy unsalted SHA-256 hashes (no ':' separator) for migration period
+  if (!storedHash.includes(':')) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const legacyHash = toHex(hashBuffer);
+    return legacyHash === storedHash;
+  }
+  const [saltHex, hashHex] = storedHash.split(':');
+  const salt = fromHex(saltHex);
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const hashBuffer = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' }, keyMaterial, HASH_LENGTH * 8);
+  // Timing-safe comparison
+  const computed = new Uint8Array(hashBuffer);
+  const stored = fromHex(hashHex);
+  if (computed.length !== stored.length) return false;
+  let diff = 0;
+  for (let i = 0; i < computed.length; i++) diff |= computed[i] ^ stored[i];
+  return diff === 0;
 }
 
 // Login endpoint
@@ -62,12 +95,17 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Account is deactivated' }, 401);
     }
 
-    // Reset login attempts on successful login
-    await mongodb.updateOne('users', { _id: user._id }, {
-      loginAttempts: 0,
-      lockUntil: null,
-      lastLogin: new Date().toISOString()
-    });
+    // Check if password reset is required (seeded accounts)
+    if (user.passwordResetRequired) {
+      return c.json({ success: false, message: 'Password reset required. Please change your password before proceeding.', code: 'PASSWORD_RESET_REQUIRED' }, 428);
+    }
+
+    // Rehash legacy SHA-256 password to PBKDF2 on successful login
+    const rehashData = { loginAttempts: 0, lockUntil: null, lastLogin: new Date().toISOString() };
+    if (!user.password.includes(':')) {
+      rehashData.password = await hashPassword(password);
+    }
+    await mongodb.updateOne('users', { _id: user._id }, rehashData);
 
     // Generate tokens
     const secret = c.env.JWT_SECRET;

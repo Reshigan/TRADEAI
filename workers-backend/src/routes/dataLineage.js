@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const dataLineage = new Hono();
@@ -201,7 +201,7 @@ dataLineage.post('/', async (c) => {
       JSON.stringify(body.data || {})
     ).run();
     
-    const created = await db.prepare('SELECT * FROM data_lineage WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM data_lineage WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
@@ -268,8 +268,8 @@ dataLineage.get('/baselines', async (c) => {
     
     // Get baseline configs from company settings or return defaults
     const company = await db.prepare(`
-      SELECT settings FROM companies WHERE id = ?
-    `).bind(companyId).first();
+      SELECT settings FROM companies WHERE id = ? AND company_id = ?
+    `).bind(companyId, companyId).first();
     
     let baselines = {
       promotionBaseline: {
@@ -319,8 +319,8 @@ dataLineage.put('/baselines', async (c) => {
     
     // Get current settings
     const company = await db.prepare(`
-      SELECT settings FROM companies WHERE id = ?
-    `).bind(companyId).first();
+      SELECT settings FROM companies WHERE id = ? AND company_id = ?
+    `).bind(companyId, companyId).first();
     
     let settings = {};
     if (company?.settings) {
@@ -332,7 +332,7 @@ dataLineage.put('/baselines', async (c) => {
     settings.baselines = body;
     
     await db.prepare(`
-      UPDATE companies SET settings = ?, updated_at = ? WHERE id = ?
+      UPDATE companies SET settings = ?, updated_at = ? WHERE id = ? AND company_id = ?
     `).bind(JSON.stringify(settings), now, companyId).run();
     
     return c.json({

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const scenarios = new Hono();
@@ -376,8 +376,8 @@ scenarios.post('/', async (c) => {
     }
 
     const created = await db.prepare(
-      'SELECT * FROM scenarios WHERE id = ?'
-    ).bind(id).first();
+      'SELECT * FROM scenarios WHERE id = ? AND company_id = ?'
+    ).bind(id, companyId).first();
 
     return c.json({ success: true, data: rowToDocument(created), message: 'Scenario created' }, 201);
   } catch (error) {
@@ -462,7 +462,7 @@ scenarios.put('/:id', async (c) => {
       id, companyId
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM scenarios WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM scenarios WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated), message: 'Scenario updated' });
   } catch (error) {
     console.error('Error updating scenario:', error);
@@ -641,7 +641,7 @@ scenarios.post('/:id/simulate', async (c) => {
         UPDATE scenario_variables SET
           impact_on_revenue = ?, impact_on_units = ?,
           impact_on_roi = ?, sensitivity = ?, updated_at = ?
-        WHERE id = ?
+        WHERE id = ? AND company_id = ?
       `).bind(
         Math.round(revImpact * 100) / 100,
         Math.round(unitImpact),
@@ -651,7 +651,7 @@ scenarios.post('/:id/simulate', async (c) => {
       ).run();
     }
 
-    const updated = await db.prepare('SELECT * FROM scenarios WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM scenarios WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const updatedVars = await db.prepare('SELECT * FROM scenario_variables WHERE scenario_id = ? ORDER BY sort_order').bind(id).all();
     const updatedResults = await db.prepare('SELECT * FROM scenario_results WHERE scenario_id = ? ORDER BY sort_order').bind(id).all();
 
@@ -732,7 +732,7 @@ scenarios.post('/:id/variables', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM scenario_variables WHERE id = ?').bind(vid).first();
+    const created = await db.prepare('SELECT * FROM scenario_variables WHERE id = ? AND company_id = ?').bind(vid, companyId).first();
     return c.json({ success: true, data: rowToDocument(created), message: 'Variable added' }, 201);
   } catch (error) {
     console.error('Error adding variable:', error);
@@ -749,8 +749,8 @@ scenarios.put('/:id/variables/:varId', async (c) => {
     const now = new Date().toISOString();
 
     const existing = await db.prepare(
-      'SELECT * FROM scenario_variables WHERE id = ?'
-    ).bind(varId).first();
+      'SELECT * FROM scenario_variables WHERE id = ? AND company_id = ?'
+    ).bind(varId, companyId).first();
 
     if (!existing) {
       return c.json({ success: false, message: 'Variable not found' }, 404);
@@ -766,7 +766,7 @@ scenarios.put('/:id/variables/:varId', async (c) => {
         base_value = ?, adjusted_value = ?, change_pct = ?,
         min_value = ?, max_value = ?, step_size = ?,
         unit = ?, notes = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.variableName || body.variable_name || body.name || existing.variable_name,
       body.variableType || body.variable_type || existing.variable_type,
@@ -781,7 +781,7 @@ scenarios.put('/:id/variables/:varId', async (c) => {
       now, varId
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM scenario_variables WHERE id = ?').bind(varId).first();
+    const updated = await db.prepare('SELECT * FROM scenario_variables WHERE id = ? AND company_id = ?').bind(varId, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated), message: 'Variable updated' });
   } catch (error) {
     console.error('Error updating variable:', error);
@@ -795,7 +795,7 @@ scenarios.delete('/:id/variables/:varId', async (c) => {
     const db = c.env.DB;
     const { varId } = c.req.param();
 
-    await db.prepare('DELETE FROM scenario_variables WHERE id = ?').bind(varId).run();
+    await db.prepare('DELETE FROM scenario_variables WHERE id = ? AND company_id = ?').bind(varId, companyId).run();
     return c.json({ success: true, message: 'Variable deleted' });
   } catch (error) {
     console.error('Error deleting variable:', error);

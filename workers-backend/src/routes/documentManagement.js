@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 
 const docs = new Hono();
 docs.use('*', authMiddleware);
@@ -100,7 +100,7 @@ docs.post('/', async (c) => {
       INSERT INTO documents (id, company_id, name, description, document_type, category, file_name, file_url, file_size, mime_type, version, status, entity_type, entity_id, entity_name, tags, uploaded_by, expires_at, notes, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, companyId, body.name, body.description || null, body.document_type || 'general', body.category || 'other', body.file_name || null, body.file_url || null, body.file_size || 0, body.mime_type || null, body.status || 'active', body.entity_type || null, body.entity_id || null, body.entity_name || null, JSON.stringify(body.tags || []), getUserId(c), body.expires_at || null, body.notes || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM documents WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM documents WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -115,9 +115,9 @@ docs.put('/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM documents WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Document not found' }, 404);
     await db.prepare(`
-      UPDATE documents SET name = ?, description = ?, document_type = ?, category = ?, file_name = ?, file_url = ?, file_size = ?, mime_type = ?, status = ?, entity_type = ?, entity_id = ?, entity_name = ?, tags = ?, expires_at = ?, notes = ?, data = ?, updated_at = ? WHERE id = ?
-    `).bind(body.name || existing.name, body.description ?? existing.description, body.document_type || existing.document_type, body.category || existing.category, body.file_name ?? existing.file_name, body.file_url ?? existing.file_url, body.file_size ?? existing.file_size, body.mime_type ?? existing.mime_type, body.status || existing.status, body.entity_type ?? existing.entity_type, body.entity_id ?? existing.entity_id, body.entity_name ?? existing.entity_name, JSON.stringify(body.tags || JSON.parse(existing.tags || '[]')), body.expires_at ?? existing.expires_at, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
-    const updated = await db.prepare('SELECT * FROM documents WHERE id = ?').bind(id).first();
+      UPDATE documents SET name = ?, description = ?, document_type = ?, category = ?, file_name = ?, file_url = ?, file_size = ?, mime_type = ?, status = ?, entity_type = ?, entity_id = ?, entity_name = ?, tags = ?, expires_at = ?, notes = ?, data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.name || existing.name, body.description ?? existing.description, body.document_type || existing.document_type, body.category || existing.category, body.file_name ?? existing.file_name, body.file_url ?? existing.file_url, body.file_size ?? existing.file_size, body.mime_type ?? existing.mime_type, body.status || existing.status, body.entity_type ?? existing.entity_type, body.entity_id ?? existing.entity_id, body.entity_name ?? existing.entity_name, JSON.stringify(body.tags || JSON.parse(existing.tags || '[]', companyId)), body.expires_at ?? existing.expires_at, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
+    const updated = await db.prepare('SELECT * FROM documents WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: updated });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -130,7 +130,7 @@ docs.delete('/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM documents WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Document not found' }, 404);
     await db.prepare('DELETE FROM document_versions WHERE document_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM documents WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM documents WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Document deleted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -160,8 +160,8 @@ docs.post('/:id/versions', async (c) => {
       INSERT INTO document_versions (id, company_id, document_id, version_number, file_name, file_url, file_size, mime_type, change_summary, uploaded_by, data, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(versionId, companyId, id, newVersion, body.file_name || doc.file_name, body.file_url || null, body.file_size || 0, body.mime_type || doc.mime_type, body.change_summary || null, getUserId(c), JSON.stringify(body.data || {}), now).run();
-    await db.prepare('UPDATE documents SET version = ?, file_name = ?, file_url = ?, file_size = ?, mime_type = ?, updated_at = ? WHERE id = ?').bind(newVersion, body.file_name || doc.file_name, body.file_url || doc.file_url, body.file_size || doc.file_size, body.mime_type || doc.mime_type, now, id).run();
-    const created = await db.prepare('SELECT * FROM document_versions WHERE id = ?').bind(versionId).first();
+    await db.prepare('UPDATE documents SET version = ?, file_name = ?, file_url = ?, file_size = ?, mime_type = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(newVersion, body.file_name || doc.file_name, body.file_url || doc.file_url, body.file_size || doc.file_size, body.mime_type || doc.mime_type, now, id, companyId).run();
+    const created = await db.prepare('SELECT * FROM document_versions WHERE id = ? AND company_id = ?').bind(versionId, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { BudgetEnforcementService, checkBudgetAvailability } from '../services/budgetEnforcement.js';
 import { WalletEnforcementService } from '../services/walletEnforcement.js';
 import { routeApproval } from '../services/approvalRouting.js';
@@ -434,8 +434,8 @@ promotionRoutes.put('/:id/submit', async (c) => {
     if (!promo) return c.json({ success: false, message: 'Not found' }, 404);
 
     await c.env.DB.prepare(
-      "UPDATE promotions SET status = 'pending_approval', updated_at = datetime('now') WHERE id = ?"
-    ).bind(id).run();
+      "UPDATE promotions SET status = 'pending_approval', updated_at = datetime('now') WHERE id = ? AND company_id = ?"
+    ).bind(id, companyId).run();
 
     const approvalId = await routeApproval(c.env.DB, {
       companyId, entityType: 'promotion', entityId: id,

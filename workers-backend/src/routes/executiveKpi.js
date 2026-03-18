@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { getD1Client } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 
 const executiveKpiRoutes = new Hono();
 executiveKpiRoutes.use('*', authMiddleware);

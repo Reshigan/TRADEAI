@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const promotionOptimizer = new Hono();
@@ -288,7 +288,7 @@ promotionOptimizer.post('/', async (c) => {
       }
     }
 
-    const created = await db.prepare('SELECT * FROM promotion_optimizations WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM promotion_optimizations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created), message: 'Optimization created' }, 201);
   } catch (error) {
     console.error('Error creating optimization:', error);
@@ -350,7 +350,7 @@ promotionOptimizer.put('/:id', async (c) => {
       now, id, companyId
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM promotion_optimizations WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM promotion_optimizations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated), message: 'Optimization updated' });
   } catch (error) {
     console.error('Error updating optimization:', error);
@@ -456,8 +456,8 @@ promotionOptimizer.post('/:id/optimize', async (c) => {
       else if (con.constraint_type === 'margin') { currentVal = marginPct; violated = marginPct < con.threshold_value ? 1 : 0; }
 
       await db.prepare(
-        'UPDATE optimization_constraints SET current_value = ?, is_violated = ?, updated_at = ? WHERE id = ?'
-      ).bind(Math.round(currentVal * 100) / 100, violated, now, con.id).run();
+        'UPDATE optimization_constraints SET current_value = ?, is_violated = ?, updated_at = ? WHERE id = ? AND company_id = ?'
+      ).bind(Math.round(currentVal * 100, companyId) / 100, violated, now, con.id).run();
     }
 
     await db.prepare(`
@@ -549,7 +549,7 @@ promotionOptimizer.post('/:id/optimize', async (c) => {
       ).run();
     }
 
-    const updated = await db.prepare('SELECT * FROM promotion_optimizations WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM promotion_optimizations WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const updatedRecs = await db.prepare('SELECT * FROM optimization_recommendations WHERE optimization_id = ? ORDER BY priority, sort_order').bind(id).all();
     const updatedCons = await db.prepare('SELECT * FROM optimization_constraints WHERE optimization_id = ? ORDER BY sort_order').bind(id).all();
 
@@ -598,10 +598,10 @@ promotionOptimizer.put('/:id/recommendations/:recId/action', async (c) => {
     const action = body.action || body.actionTaken || body.action_taken || 'pending';
 
     await db.prepare(
-      'UPDATE optimization_recommendations SET action_taken = ?, applied_at = ?, updated_at = ? WHERE id = ?'
+      'UPDATE optimization_recommendations SET action_taken = ?, applied_at = ?, updated_at = ? WHERE id = ? AND company_id = ?'
     ).bind(action, action === 'applied' ? now : null, now, recId).run();
 
-    const updated = await db.prepare('SELECT * FROM optimization_recommendations WHERE id = ?').bind(recId).first();
+    const updated = await db.prepare('SELECT * FROM optimization_recommendations WHERE id = ? AND company_id = ?').bind(recId, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated), message: `Recommendation ${action}` });
   } catch (error) {
     console.error('Error updating recommendation:', error);
@@ -660,7 +660,7 @@ promotionOptimizer.post('/:id/constraints', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM optimization_constraints WHERE id = ?').bind(cid).first();
+    const created = await db.prepare('SELECT * FROM optimization_constraints WHERE id = ? AND company_id = ?').bind(cid, companyId).first();
     return c.json({ success: true, data: rowToDocument(created), message: 'Constraint added' }, 201);
   } catch (error) {
     console.error('Error adding constraint:', error);
@@ -673,7 +673,7 @@ promotionOptimizer.delete('/:id/constraints/:conId', async (c) => {
     const db = c.env.DB;
     const { conId } = c.req.param();
 
-    await db.prepare('DELETE FROM optimization_constraints WHERE id = ?').bind(conId).run();
+    await db.prepare('DELETE FROM optimization_constraints WHERE id = ? AND company_id = ?').bind(conId, companyId).run();
     return c.json({ success: true, message: 'Constraint deleted' });
   } catch (error) {
     console.error('Error deleting constraint:', error);

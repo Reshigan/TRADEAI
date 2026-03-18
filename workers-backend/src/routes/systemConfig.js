@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 
 const config = new Hono();
 config.use('*', authMiddleware);
@@ -87,7 +87,7 @@ config.post('/configs', async (c) => {
       INSERT INTO system_config (id, company_id, config_key, config_value, config_type, category, module, description, is_sensitive, is_readonly, default_value, validation_rules, updated_by, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, companyId, body.config_key, body.config_value || null, body.config_type || 'string', body.category || 'general', body.module || null, body.description || null, body.is_sensitive ? 1 : 0, body.is_readonly ? 1 : 0, body.default_value || null, body.validation_rules || null, c.get('userId') || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM system_config WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM system_config WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -102,8 +102,8 @@ config.put('/configs/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM system_config WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Config not found' }, 404);
     if (existing.is_readonly) return c.json({ success: false, message: 'Config is read-only' }, 400);
-    await db.prepare('UPDATE system_config SET config_value = ?, description = ?, updated_by = ?, updated_at = ? WHERE id = ?').bind(body.config_value ?? existing.config_value, body.description ?? existing.description, c.get('userId') || null, now, id).run();
-    const updated = await db.prepare('SELECT * FROM system_config WHERE id = ?').bind(id).first();
+    await db.prepare('UPDATE system_config SET config_value = ?, description = ?, updated_by = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(body.config_value ?? existing.config_value, body.description ?? existing.description, c.get('userId') || null, now, id).run();
+    const updated = await db.prepare('SELECT * FROM system_config WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: updated });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -115,7 +115,7 @@ config.delete('/configs/:id', async (c) => {
     const { id } = c.req.param();
     const existing = await db.prepare('SELECT * FROM system_config WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Config not found' }, 404);
-    await db.prepare('DELETE FROM system_config WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM system_config WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Config deleted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -147,7 +147,7 @@ config.post('/tenants', async (c) => {
       INSERT INTO tenants (id, name, code, domain, status, plan, max_users, max_storage_gb, features, branding, contact_name, contact_email, contact_phone, billing_email, country, currency, timezone, notes, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, body.name, body.code || null, body.domain || null, body.status || 'active', body.plan || 'standard', body.max_users || 50, body.max_storage_gb || 10, JSON.stringify(body.features || []), JSON.stringify(body.branding || {}), body.contact_name || null, body.contact_email || null, body.contact_phone || null, body.billing_email || null, body.country || null, body.currency || 'ZAR', body.timezone || 'Africa/Johannesburg', body.notes || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM tenants WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM tenants WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -158,12 +158,12 @@ config.put('/tenants/:id', async (c) => {
     const { id } = c.req.param();
     const body = await c.req.json();
     const now = new Date().toISOString();
-    const existing = await db.prepare('SELECT * FROM tenants WHERE id = ?').bind(id).first();
+    const existing = await db.prepare('SELECT * FROM tenants WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Tenant not found' }, 404);
     await db.prepare(`
-      UPDATE tenants SET name = ?, code = ?, domain = ?, status = ?, plan = ?, max_users = ?, max_storage_gb = ?, features = ?, branding = ?, contact_name = ?, contact_email = ?, contact_phone = ?, billing_email = ?, country = ?, currency = ?, timezone = ?, notes = ?, data = ?, updated_at = ? WHERE id = ?
-    `).bind(body.name || existing.name, body.code ?? existing.code, body.domain ?? existing.domain, body.status || existing.status, body.plan || existing.plan, body.max_users ?? existing.max_users, body.max_storage_gb ?? existing.max_storage_gb, JSON.stringify(body.features || JSON.parse(existing.features || '[]')), JSON.stringify(body.branding || JSON.parse(existing.branding || '{}')), body.contact_name ?? existing.contact_name, body.contact_email ?? existing.contact_email, body.contact_phone ?? existing.contact_phone, body.billing_email ?? existing.billing_email, body.country ?? existing.country, body.currency || existing.currency, body.timezone || existing.timezone, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
-    const updated = await db.prepare('SELECT * FROM tenants WHERE id = ?').bind(id).first();
+      UPDATE tenants SET name = ?, code = ?, domain = ?, status = ?, plan = ?, max_users = ?, max_storage_gb = ?, features = ?, branding = ?, contact_name = ?, contact_email = ?, contact_phone = ?, billing_email = ?, country = ?, currency = ?, timezone = ?, notes = ?, data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.name || existing.name, body.code ?? existing.code, body.domain ?? existing.domain, body.status || existing.status, body.plan || existing.plan, body.max_users ?? existing.max_users, body.max_storage_gb ?? existing.max_storage_gb, JSON.stringify(body.features || JSON.parse(existing.features || '[]', companyId)), JSON.stringify(body.branding || JSON.parse(existing.branding || '{}')), body.contact_name ?? existing.contact_name, body.contact_email ?? existing.contact_email, body.contact_phone ?? existing.contact_phone, body.billing_email ?? existing.billing_email, body.country ?? existing.country, body.currency || existing.currency, body.timezone || existing.timezone, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
+    const updated = await db.prepare('SELECT * FROM tenants WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: updated });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -172,9 +172,9 @@ config.delete('/tenants/:id', async (c) => {
   try {
     const db = c.env.DB;
     const { id } = c.req.param();
-    const existing = await db.prepare('SELECT * FROM tenants WHERE id = ?').bind(id).first();
+    const existing = await db.prepare('SELECT * FROM tenants WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Tenant not found' }, 404);
-    await db.prepare('DELETE FROM tenants WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM tenants WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Tenant deleted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });

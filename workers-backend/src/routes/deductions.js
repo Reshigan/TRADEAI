@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const deductions = new Hono();
@@ -268,7 +268,7 @@ deductions.post('/', async (c) => {
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
 
     let autoMatch = null;
     try {
@@ -281,11 +281,11 @@ deductions.post('/', async (c) => {
         const tolerance = Math.abs(amount - claim.claimed_amount) / Math.max(amount, 1);
         if (tolerance < 0.05) {
           await db.prepare(`
-            UPDATE deductions SET status = 'matched', matched_to = ?, updated_at = ? WHERE id = ?
-          `).bind(JSON.stringify([{ entityType: 'claim', entityId: claim.id, amount }]), now, id).run();
+            UPDATE deductions SET status = 'matched', matched_to = ?, updated_at = ? WHERE id = ? AND company_id = ?
+          `).bind(JSON.stringify([{ entityType: 'claim', entityId: claim.id, amount }], companyId), now, id).run();
           await db.prepare(`
-            UPDATE claims SET status = 'matched', data = json_set(COALESCE(data,'{}'), '$.matchedDeductionId', ?) WHERE id = ?
-          `).bind(id, claim.id).run();
+            UPDATE claims SET status = 'matched', data = json_set(COALESCE(data,'{}'), '$.matchedDeductionId', ?) WHERE id = ? AND company_id = ?
+          `).bind(id, claim.id, companyId).run();
           autoMatch = { claimId: claim.id, claimAmount: claim.claimed_amount, deductionAmount: amount, tolerance: Math.round(tolerance * 100) + '%' };
           break;
         }
@@ -325,7 +325,7 @@ deductions.put('/:id', async (c) => {
         deduction_amount = ?, matched_amount = ?, remaining_amount = ?,
         deduction_date = ?, due_date = ?, reason_code = ?, reason_description = ?,
         data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.deductionType || body.deduction_type || existing.deduction_type,
       body.customerId || body.customer_id || body.customer || existing.customer_id,
@@ -340,7 +340,7 @@ deductions.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -364,7 +364,7 @@ deductions.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Deduction not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM deductions WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Deduction deleted' });
   } catch (error) {
@@ -387,7 +387,7 @@ deductions.post('/:id/review', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -435,10 +435,10 @@ deductions.post('/:id/match', async (c) => {
       UPDATE deductions SET 
         matched_amount = ?, remaining_amount = ?, status = ?,
         matched_to = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(newMatchedAmount, newRemainingAmount, newStatus, JSON.stringify(matchedTo), now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(newMatchedAmount, newRemainingAmount, newStatus, JSON.stringify(matchedTo, companyId), now, id).run();
     
-    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -461,7 +461,7 @@ deductions.post('/:id/dispute', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(body.reason || '', now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -485,7 +485,7 @@ deductions.post('/:id/approve', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -511,7 +511,7 @@ deductions.post('/:id/write-off', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, body.reason || 'Written off', now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {

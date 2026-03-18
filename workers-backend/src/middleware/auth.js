@@ -124,19 +124,42 @@ export async function authMiddleware(c, next) {
   }
 }
 
-// Role-based authorization middleware
+// Role hierarchy for RBAC
+const ROLE_HIERARCHY = { super_admin: 5, admin: 4, executive: 3, manager: 2, kam: 1, user: 0 };
+
+// Role-based authorization middleware (exact role match)
 export function requireRole(...roles) {
   return async (c, next) => {
     const user = c.get('user');
-    
-    if (!user) {
-      return c.json({ success: false, message: 'Authentication required' }, 401);
-    }
+    if (!user) return c.json({ success: false, message: 'Authentication required' }, 401);
+    if (!roles.includes(user.role)) return c.json({ success: false, message: 'Insufficient permissions' }, 403);
+    await next();
+  };
+}
 
-    if (!roles.includes(user.role)) {
-      return c.json({ success: false, message: 'Insufficient permissions' }, 403);
-    }
+// Minimum role level middleware (hierarchy-based)
+export function requireMinRole(minRole) {
+  return async (c, next) => {
+    const user = c.get('user');
+    if (!user) return c.json({ success: false, message: 'Authentication required' }, 401);
+    const userLevel = ROLE_HIERARCHY[user.role] ?? 0;
+    const requiredLevel = ROLE_HIERARCHY[minRole] ?? 0;
+    if (userLevel < requiredLevel) return c.json({ success: false, message: 'Insufficient permissions' }, 403);
+    await next();
+  };
+}
 
+// Ownership check middleware - for KAM users to only access own records
+export function requireOwnership(field = 'created_by') {
+  return async (c, next) => {
+    const user = c.get('user');
+    if (!user) return c.json({ success: false, message: 'Authentication required' }, 401);
+    const userLevel = ROLE_HIERARCHY[user.role] ?? 0;
+    // Managers+ can access any record
+    if (userLevel >= ROLE_HIERARCHY.manager) return next();
+    // KAM/user can only access own records - set flag for route to check
+    c.set('enforceOwnership', true);
+    c.set('ownershipField', field);
     await next();
   };
 }

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const rebates = new Hono();
@@ -213,7 +213,7 @@ rebates.post('/', async (c) => {
       userId, JSON.stringify(body.data || {}), now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
@@ -246,7 +246,7 @@ rebates.put('/:id', async (c) => {
         rate = ?, rate_type = ?, threshold = ?, cap = ?,
         calculation_basis = ?, settlement_frequency = ?,
         data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description || existing.description,
@@ -264,7 +264,7 @@ rebates.put('/:id', async (c) => {
       now, id
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -288,7 +288,7 @@ rebates.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Rebate not found' }, 404);
     }
     
-    await db.prepare('DELETE FROM rebates WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     
     return c.json({ success: true, message: 'Rebate deleted' });
   } catch (error) {
@@ -310,7 +310,7 @@ rebates.post('/:id/activate', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -332,7 +332,7 @@ rebates.post('/:id/deactivate', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -354,7 +354,7 @@ rebates.post('/:id/submit', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -377,7 +377,7 @@ rebates.post('/:id/approve', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -400,7 +400,7 @@ rebates.post('/:id/reject', async (c) => {
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated), reason: body.reason });
   } catch (error) {
@@ -454,10 +454,10 @@ rebates.post('/:id/calculate', async (c) => {
         last_calculated_at = ?,
         status = 'calculating',
         updated_at = ?
-      WHERE id = ?
-    `).bind(newAccrued, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(newAccrued, now, now, id, companyId).run();
     
-    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({
       success: true,

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const pnl = new Hono();
@@ -594,7 +594,7 @@ pnl.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM pnl_reports WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM pnl_reports WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating P&L report:', error);
@@ -626,7 +626,7 @@ pnl.put('/:id', async (c) => {
         customer_id = ?, promotion_id = ?, product_id = ?,
         category = ?, channel = ?, region = ?,
         currency = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -646,7 +646,7 @@ pnl.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM pnl_reports WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM pnl_reports WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating P&L report:', error);
@@ -670,7 +670,7 @@ pnl.delete('/:id', async (c) => {
     }
 
     await db.prepare('DELETE FROM pnl_line_items WHERE report_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM pnl_reports WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM pnl_reports WHERE id = ? AND company_id = ?').bind(id, companyId).run();
 
     return c.json({ success: true, message: 'P&L report deleted' });
   } catch (error) {
@@ -700,8 +700,8 @@ pnl.post('/:id/generate', async (c) => {
     }
 
     await db.prepare(
-      "UPDATE pnl_reports SET status = 'generating', updated_at = ? WHERE id = ?"
-    ).bind(now, id).run();
+      "UPDATE pnl_reports SET status = 'generating', updated_at = ? WHERE id = ? AND company_id = ?"
+    ).bind(now, id, companyId).run();
 
     await db.prepare('DELETE FROM pnl_line_items WHERE report_id = ? AND company_id = ?').bind(id, companyId).run();
 
@@ -930,7 +930,7 @@ pnl.post('/:id/generate', async (c) => {
         net_trade_cost = ?, net_profit = ?, net_margin_pct = ?,
         budget_amount = ?, budget_variance = ?, budget_variance_pct = ?,
         roi = ?, generated_at = ?, generated_by = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       Math.round(totalGrossSales * 100) / 100,
       Math.round(totalTradeSpend * 100) / 100,
@@ -952,7 +952,7 @@ pnl.post('/:id/generate', async (c) => {
       now, userId, now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM pnl_reports WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM pnl_reports WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     const lineItems = await db.prepare(
       'SELECT * FROM pnl_line_items WHERE report_id = ? AND company_id = ? ORDER BY sort_order ASC'
     ).bind(id, companyId).all();
@@ -968,8 +968,8 @@ pnl.post('/:id/generate', async (c) => {
   } catch (error) {
     console.error('Error generating P&L report:', error);
     await c.env.DB.prepare(
-      "UPDATE pnl_reports SET status = 'draft', updated_at = ? WHERE id = ?"
-    ).bind(new Date().toISOString(), c.req.param().id).run();
+      "UPDATE pnl_reports SET status = 'draft', updated_at = ? WHERE id = ? AND company_id = ?"
+    ).bind(new Date(, companyId).toISOString(), c.req.param().id).run();
     return c.json({ success: false, message: error.message }, 500);
   }
 });

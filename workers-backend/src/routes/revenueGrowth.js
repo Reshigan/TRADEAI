@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const revenueGrowth = new Hono();
@@ -201,7 +201,7 @@ revenueGrowth.post('/initiatives', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM rgm_initiatives WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM rgm_initiatives WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating RGM initiative:', error);
@@ -254,7 +254,7 @@ revenueGrowth.put('/initiatives/:id', async (c) => {
 
     await db.prepare(`UPDATE rgm_initiatives SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM rgm_initiatives WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rgm_initiatives WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating RGM initiative:', error);
@@ -369,7 +369,7 @@ revenueGrowth.post('/pricing', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM rgm_pricing_strategies WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM rgm_pricing_strategies WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating pricing strategy:', error);
@@ -418,7 +418,7 @@ revenueGrowth.put('/pricing/:id', async (c) => {
 
     await db.prepare(`UPDATE rgm_pricing_strategies SET ${fields.join(', ')} WHERE id = ? AND company_id = ?`).bind(...params).run();
 
-    const updated = await db.prepare('SELECT * FROM rgm_pricing_strategies WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM rgm_pricing_strategies WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating pricing strategy:', error);
@@ -501,7 +501,7 @@ revenueGrowth.post('/mix', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM rgm_mix_analyses WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM rgm_mix_analyses WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating mix analysis:', error);
@@ -588,7 +588,7 @@ revenueGrowth.post('/growth-tracking', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM rgm_growth_trackers WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM rgm_growth_trackers WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating growth tracker:', error);

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const activityGrid = new Hono();
@@ -232,7 +232,7 @@ activityGrid.post('/', async (c) => {
       userId, now, now
     ).run();
     
-    const created = await db.prepare('SELECT * FROM activity_grid WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM activity_grid WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
@@ -317,7 +317,7 @@ activityGrid.put('/:id', async (c) => {
       now, id, companyId
     ).run();
     
-    const updated = await db.prepare('SELECT * FROM activity_grid WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM activity_grid WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -385,8 +385,8 @@ activityGrid.post('/sync', async (c) => {
       for (const promo of (promotions.results || [])) {
         const existingId = `promo-${promo.id}`;
         const existing = await db.prepare(
-          'SELECT id FROM activity_grid WHERE id = ?'
-        ).bind(existingId).first();
+          'SELECT id FROM activity_grid WHERE id = ? AND company_id = ?'
+        ).bind(existingId, companyId).first();
         
         if (!existing) {
           await db.prepare(`
@@ -429,8 +429,8 @@ activityGrid.post('/sync', async (c) => {
       for (const ts of (tradeSpends.results || [])) {
         const existingId = `ts-${ts.id}`;
         const existing = await db.prepare(
-          'SELECT id FROM activity_grid WHERE id = ?'
-        ).bind(existingId).first();
+          'SELECT id FROM activity_grid WHERE id = ? AND company_id = ?'
+        ).bind(existingId, companyId).first();
         
         if (!existing) {
           await db.prepare(`
@@ -473,8 +473,8 @@ activityGrid.post('/sync', async (c) => {
       for (const camp of (campaigns.results || [])) {
         const existingId = `camp-${camp.id}`;
         const existing = await db.prepare(
-          'SELECT id FROM activity_grid WHERE id = ?'
-        ).bind(existingId).first();
+          'SELECT id FROM activity_grid WHERE id = ? AND company_id = ?'
+        ).bind(existingId, companyId).first();
         
         if (!existing) {
           await db.prepare(`

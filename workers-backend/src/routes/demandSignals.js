@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const demandSignals = new Hono();
@@ -391,7 +391,7 @@ demandSignals.post('/', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM demand_signals WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM demand_signals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating demand signal:', error);
@@ -429,7 +429,7 @@ demandSignals.put('/:id', async (c) => {
         weather_condition = ?, temperature = ?, sentiment_score = ?,
         trend_direction = ?, confidence = ?, anomaly_flag = ?, anomaly_type = ?,
         notes = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       (body.sourceId || body.source_id) ?? existing.source_id,
       (body.sourceName || body.source_name) ?? existing.source_name,
@@ -477,7 +477,7 @@ demandSignals.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM demand_signals WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM demand_signals WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating demand signal:', error);
@@ -500,7 +500,7 @@ demandSignals.delete('/:id', async (c) => {
       return c.json({ success: false, message: 'Demand signal not found' }, 404);
     }
 
-    await db.prepare('DELETE FROM demand_signals WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM demand_signals WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Demand signal deleted' });
   } catch (error) {
     console.error('Error deleting demand signal:', error);
@@ -600,7 +600,7 @@ demandSignals.post('/sources', async (c) => {
       now, now
     ).run();
 
-    const created = await db.prepare('SELECT * FROM demand_signal_sources WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM demand_signal_sources WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating source:', error);
@@ -629,7 +629,7 @@ demandSignals.put('/sources/:id', async (c) => {
       UPDATE demand_signal_sources SET
         name = ?, description = ?, source_type = ?, provider = ?, frequency = ?,
         status = ?, record_count = ?, config = ?, data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -643,7 +643,7 @@ demandSignals.put('/sources/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM demand_signal_sources WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM demand_signal_sources WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating source:', error);
@@ -666,7 +666,7 @@ demandSignals.delete('/sources/:id', async (c) => {
       return c.json({ success: false, message: 'Source not found' }, 404);
     }
 
-    await db.prepare('DELETE FROM demand_signal_sources WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM demand_signal_sources WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Source deleted' });
   } catch (error) {
     console.error('Error deleting source:', error);

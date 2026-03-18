@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const settlements = new Hono();
@@ -287,7 +287,7 @@ settlements.post('/', async (c) => {
       }
     }
 
-    const created = await db.prepare('SELECT * FROM settlements WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     console.error('Error creating settlement:', error);
@@ -330,7 +330,7 @@ settlements.put('/:id', async (c) => {
         payment_method = ?, payment_reference = ?,
         currency = ?, notes = ?,
         data = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
       body.description ?? existing.description,
@@ -359,7 +359,7 @@ settlements.put('/:id', async (c) => {
       now, id
     ).run();
 
-    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error updating settlement:', error);
@@ -388,7 +388,7 @@ settlements.delete('/:id', async (c) => {
 
     await db.prepare('DELETE FROM settlement_payments WHERE settlement_id = ? AND company_id = ?').bind(id, companyId).run();
     await db.prepare('DELETE FROM settlement_lines WHERE settlement_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM settlements WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).run();
 
     return c.json({ success: true, message: 'Settlement deleted' });
   } catch (error) {
@@ -462,12 +462,10 @@ settlements.post('/:id/process', async (c) => {
         status = ?, accrued_amount = ?, claimed_amount = ?,
         approved_amount = ?, variance_amount = ?, variance_pct = ?,
         processed_by = ?, processed_at = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(
-      newStatus, accruedAmount, claimedAmount,
+      WHERE id = ? AND company_id = ?
+    `).bind(newStatus, accruedAmount, claimedAmount,
       approvedAmount, varianceAmount, variancePct,
-      userId, now, now, id
-    ).run();
+      userId, now, now, id, companyId).run();
 
     // Process line items — recalculate each line's settled amount
     const lines = await db.prepare(
@@ -484,15 +482,15 @@ settlements.post('/:id/process', async (c) => {
       await db.prepare(`
         UPDATE settlement_lines SET
           settled_amount = ?, status = 'processed', updated_at = ?
-        WHERE id = ?
-      `).bind(lineSettled, now, line.id).run();
+        WHERE id = ? AND company_id = ?
+      `).bind(lineSettled, now, line.id, companyId).run();
     }
 
     // If line items exist, update settlement settled_amount from lines
     if ((lines.results || []).length > 0) {
       await db.prepare(`
-        UPDATE settlements SET settled_amount = ?, updated_at = ? WHERE id = ?
-      `).bind(totalLineSettled, now, id).run();
+        UPDATE settlements SET settled_amount = ?, updated_at = ? WHERE id = ? AND company_id = ?
+      `).bind(totalLineSettled, now, id, companyId).run();
     }
 
     // Update linked accrual's settled_amount if applicable
@@ -510,7 +508,7 @@ settlements.post('/:id/process', async (c) => {
       `).bind(approvedAmount, approvedAmount, approvedAmount, now, settlement.accrual_id, companyId).run();
     }
 
-    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({
       success: true,
       data: rowToDocument(updated),
@@ -548,10 +546,10 @@ settlements.post('/:id/approve', async (c) => {
       UPDATE settlements SET
         status = 'approved', approved_amount = ?,
         approved_by = ?, approved_at = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(approvedAmount, userId, now, now, id).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(approvedAmount, userId, now, now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving settlement:', error);
@@ -580,13 +578,11 @@ settlements.post('/:id/reject', async (c) => {
     await db.prepare(`
       UPDATE settlements SET
         status = 'rejected', notes = ?, updated_at = ?
-      WHERE id = ?
-    `).bind(
-      body.reason || body.notes || settlement.notes || 'Rejected',
-      now, id
-    ).run();
+      WHERE id = ? AND company_id = ?
+    `).bind(body.reason || body.notes || settlement.notes || 'Rejected',
+      now, id, companyId).run();
 
-    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error rejecting settlement:', error);
@@ -655,7 +651,7 @@ settlements.post('/:id/pay', async (c) => {
         settled_amount = ?, payment_date = ?,
         payment_reference = COALESCE(?, payment_reference),
         status = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id = ? AND company_id = ?
     `).bind(
       newSettledAmount,
       body.paymentDate || body.payment_date || now.split('T')[0],
@@ -689,7 +685,7 @@ settlements.post('/:id/pay', async (c) => {
       ).run();
     }
 
-    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM settlements WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({
       success: true,
       data: rowToDocument(updated),

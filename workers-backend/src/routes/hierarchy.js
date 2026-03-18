@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 
 const hierarchy = new Hono();
@@ -121,7 +121,7 @@ hierarchy.post('/regions', async (c) => {
     await db.prepare('INSERT INTO regions (id, company_id, name, code, status, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').bind(
       id, companyId, body.name, body.code || body.name.toLowerCase().replace(/\s+/g, '-'), body.status || 'active', JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM regions WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM regions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: { ...rowToDocument(created), cities: [] } }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -141,7 +141,7 @@ hierarchy.post('/districts', async (c) => {
       id, companyId, body.name, body.regionId || body.region_id || null, body.regionName || body.region || null,
       body.code || body.name.toLowerCase().replace(/\s+/g, '-'), body.status || 'active', JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM districts WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM districts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -162,7 +162,7 @@ hierarchy.post('/stores', async (c) => {
       body.channel || null, body.tier || null, body.status || 'active', body.region || null, body.city || null,
       JSON.stringify(body.data || {}), now, now
     ).run();
-    const created = await db.prepare('SELECT * FROM customers WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM customers WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: rowToDocument(created) }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
@@ -180,7 +180,7 @@ hierarchy.put('/regions/:id', async (c) => {
     await db.prepare('UPDATE regions SET name = COALESCE(?, name), code = COALESCE(?, code), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?').bind(
       body.name || null, body.code || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM regions WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM regions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!updated) return c.json({ success: false, message: 'Region not found' }, 404);
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -200,7 +200,7 @@ hierarchy.put('/districts/:id', async (c) => {
       body.name || null, body.regionId || body.region_id || null, body.regionName || body.region || null,
       body.code || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM districts WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM districts WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!updated) return c.json({ success: false, message: 'District not found' }, 404);
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
@@ -219,7 +219,7 @@ hierarchy.put('/stores/:id', async (c) => {
     await db.prepare('UPDATE customers SET name = COALESCE(?, name), region = COALESCE(?, region), city = COALESCE(?, city), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?').bind(
       body.name || null, body.region || null, body.city || null, body.status || null, now, id, companyId
     ).run();
-    const updated = await db.prepare('SELECT * FROM customers WHERE id = ?').bind(id).first();
+    const updated = await db.prepare('SELECT * FROM customers WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!updated) return c.json({ success: false, message: 'Store not found' }, 404);
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {

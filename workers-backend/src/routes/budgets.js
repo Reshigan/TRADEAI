@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { checkBudgetAvailability, checkBudgetAlerts, fundKamWallets } from '../services/budgetEnforcement.js';
 
 export const budgetRoutes = new Hono();

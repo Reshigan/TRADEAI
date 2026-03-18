@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 
 const roles = new Hono();
 roles.use('*', authMiddleware);
@@ -108,7 +108,7 @@ roles.post('/', async (c) => {
       INSERT INTO roles (id, company_id, name, description, role_type, is_system, is_active, permissions, parent_role_id, level, max_approval_amount, created_by, notes, data, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, 0, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, companyId, body.name, body.description || null, body.role_type || 'custom', JSON.stringify(body.permissions || []), body.parent_role_id || null, body.level || 0, body.max_approval_amount || null, c.get('userId') || null, body.notes || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM roles WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM roles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -123,9 +123,9 @@ roles.put('/:id', async (c) => {
     const existing = await db.prepare('SELECT * FROM roles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!existing) return c.json({ success: false, message: 'Role not found' }, 404);
     await db.prepare(`
-      UPDATE roles SET name = ?, description = ?, role_type = ?, is_active = ?, permissions = ?, parent_role_id = ?, level = ?, max_approval_amount = ?, notes = ?, data = ?, updated_at = ? WHERE id = ?
-    `).bind(body.name || existing.name, body.description ?? existing.description, body.role_type || existing.role_type, body.is_active !== undefined ? (body.is_active ? 1 : 0) : existing.is_active, JSON.stringify(body.permissions || JSON.parse(existing.permissions || '[]')), body.parent_role_id ?? existing.parent_role_id, body.level ?? existing.level, body.max_approval_amount ?? existing.max_approval_amount, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
-    const updated = await db.prepare('SELECT * FROM roles WHERE id = ?').bind(id).first();
+      UPDATE roles SET name = ?, description = ?, role_type = ?, is_active = ?, permissions = ?, parent_role_id = ?, level = ?, max_approval_amount = ?, notes = ?, data = ?, updated_at = ? WHERE id = ? AND company_id = ?
+    `).bind(body.name || existing.name, body.description ?? existing.description, body.role_type || existing.role_type, body.is_active !== undefined ? (body.is_active ? 1 : 0, companyId) : existing.is_active, JSON.stringify(body.permissions || JSON.parse(existing.permissions || '[]')), body.parent_role_id ?? existing.parent_role_id, body.level ?? existing.level, body.max_approval_amount ?? existing.max_approval_amount, body.notes ?? existing.notes, JSON.stringify(body.data || JSON.parse(existing.data || '{}')), now, id).run();
+    const updated = await db.prepare('SELECT * FROM roles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: updated });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -139,7 +139,7 @@ roles.delete('/:id', async (c) => {
     if (!existing) return c.json({ success: false, message: 'Role not found' }, 404);
     if (existing.is_system) return c.json({ success: false, message: 'Cannot delete system role' }, 400);
     await db.prepare('DELETE FROM user_roles WHERE role_id = ? AND company_id = ?').bind(id, companyId).run();
-    await db.prepare('DELETE FROM roles WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM roles WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'Role deleted' });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -170,7 +170,7 @@ roles.post('/assignments', async (c) => {
     if (!body.user_id || !body.role_id) return c.json({ success: false, message: 'user_id and role_id are required' }, 400);
     const role = await db.prepare('SELECT name FROM roles WHERE id = ? AND company_id = ?').bind(body.role_id, companyId).first();
     await db.prepare(`INSERT INTO user_roles (id, company_id, user_id, role_id, role_name, assigned_by, valid_from, valid_until, status, data, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`).bind(id, companyId, body.user_id, body.role_id, role?.name || null, c.get('userId') || null, body.valid_from || now, body.valid_until || null, JSON.stringify(body.data || {}), now).run();
-    const created = await db.prepare('SELECT * FROM user_roles WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM user_roles WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
@@ -202,7 +202,7 @@ roles.post('/permission-groups', async (c) => {
     const id = generateId();
     const now = new Date().toISOString();
     await db.prepare(`INSERT INTO permission_groups (id, company_id, name, description, module, permissions, is_system, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`).bind(id, companyId, body.name, body.description || null, body.module || null, JSON.stringify(body.permissions || []), c.get('userId') || null, JSON.stringify(body.data || {}), now, now).run();
-    const created = await db.prepare('SELECT * FROM permission_groups WHERE id = ?').bind(id).first();
+    const created = await db.prepare('SELECT * FROM permission_groups WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     return c.json({ success: true, data: created }, 201);
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });

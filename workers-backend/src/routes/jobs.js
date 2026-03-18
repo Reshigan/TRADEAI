@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { runPromotionLifecycle, detectPromotionConflicts, calculateBaseline, runSimulation } from '../services/promotionLifecycle.js';
 import { calculateAccruals, autoMatchDeductions, generateMonthlySettlement, calculatePnL } from '../services/settlementReconciliation.js';
 import { checkEscalation } from '../services/approvalRouting.js';
