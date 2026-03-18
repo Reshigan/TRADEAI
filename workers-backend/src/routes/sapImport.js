@@ -95,6 +95,13 @@ const SAP_IMPORT_CONFIGS = {
       Object.entries(row).forEach(([k, v]) => {
         if (k.startsWith('_') && v) data[k.substring(1)] = v;
       });
+      // address, contact_name, contact_email, contact_phone, credit_limit, payment_terms go into data JSON
+      if (row._address) data.address = row._address;
+      if (row._paymentTerms) data.paymentTerms = row._paymentTerms;
+      data.contact_name = '';
+      data.contact_email = '';
+      data.contact_phone = '';
+      data.credit_limit = 0;
       return {
         id,
         company_id: companyId,
@@ -106,19 +113,13 @@ const SAP_IMPORT_CONFIGS = {
         status: 'active',
         region: row._region || '',
         city: row._city || '',
-        address: row._address || '',
-        contact_name: '',
-        contact_email: '',
-        contact_phone: '',
-        credit_limit: 0,
-        payment_terms: row._paymentTerms || 'net30',
         data: JSON.stringify(data),
         created_at: ts,
         updated_at: ts,
       };
     },
-    insertSql: `INSERT OR REPLACE INTO customers (id, company_id, name, code, customer_type, channel, tier, status, region, city, address, contact_name, contact_email, contact_phone, credit_limit, payment_terms, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    bindRow: (r) => [r.id, r.company_id, r.name, r.code, r.customer_type, r.channel, r.tier, r.status, r.region, r.city, r.address, r.contact_name, r.contact_email, r.contact_phone, r.credit_limit, r.payment_terms, r.data, r.created_at, r.updated_at],
+    insertSql: `INSERT OR REPLACE INTO customers (id, company_id, name, code, customer_type, channel, tier, status, region, city, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    bindRow: (r) => [r.id, r.company_id, r.name, r.code, r.customer_type, r.channel, r.tier, r.status, r.region, r.city, r.data, r.created_at, r.updated_at],
   },
 
   // SAP Material Master (MARA/MARC) -> products table
@@ -292,30 +293,35 @@ const SAP_IMPORT_CONFIGS = {
         if (k.startsWith('_') && v) data[k.substring(1)] = v;
       });
       const billingDate = formatSapDate(row._billingDate) || ts.split('T')[0];
+      // amount_requested/approved/actual, category, notes, period_start/end don't exist as columns
+      // Use 'amount' + 'description' + put rest in data JSON
+      data.amount_requested = parseFloat(row._netValue) || 0;
+      data.amount_approved = parseFloat(row._netValue) || 0;
+      data.amount_actual = parseFloat(row._netValue) || 0;
+      data.category = 'billing';
+      data.period_start = billingDate;
+      data.period_end = billingDate;
       return {
         id,
         company_id: companyId,
         spend_id: `SAP-${row._billingDoc || id.substring(0, 8)}`,
-        budget_id: null,
-        customer_id: row.customer_id || null,
-        product_id: row.product_id || null,
-        amount_requested: parseFloat(row._netValue) || 0,
-        amount_approved: parseFloat(row._netValue) || 0,
-        amount_actual: parseFloat(row._netValue) || 0,
         spend_type: 'promotional',
-        category: 'billing',
-        status: 'completed',
-        notes: `SAP Billing Doc ${row._billingDoc || ''}`,
-        period_start: billingDate,
-        period_end: billingDate,
+        activity_type: 'billing',
+        amount: parseFloat(row._netValue) || 0,
+        status: 'approved',
+        customer_id: row.customer_id || null,
+        promotion_id: null,
+        budget_id: null,
         created_by: userId,
+        product_id: row.product_id || null,
+        description: `SAP Billing Doc ${row._billingDoc || ''}`,
         data: JSON.stringify(data),
         created_at: ts,
         updated_at: ts,
       };
     },
-    insertSql: `INSERT OR REPLACE INTO trade_spends (id, company_id, spend_id, budget_id, customer_id, product_id, amount_requested, amount_approved, amount_actual, spend_type, category, status, notes, period_start, period_end, created_by, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    bindRow: (r) => [r.id, r.company_id, r.spend_id, r.budget_id, r.customer_id, r.product_id, r.amount_requested, r.amount_approved, r.amount_actual, r.spend_type, r.category, r.status, r.notes, r.period_start, r.period_end, r.created_by, r.data, r.created_at, r.updated_at],
+    insertSql: `INSERT OR REPLACE INTO trade_spends (id, company_id, spend_id, spend_type, activity_type, amount, status, customer_id, promotion_id, budget_id, created_by, product_id, description, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    bindRow: (r) => [r.id, r.company_id, r.spend_id, r.spend_type, r.activity_type, r.amount, r.status, r.customer_id, r.promotion_id, r.budget_id, r.created_by, r.product_id, r.description, r.data, r.created_at, r.updated_at],
   },
 
   // SAP AR Deductions (FI-AR) -> deductions table
@@ -357,7 +363,7 @@ const SAP_IMPORT_CONFIGS = {
         customer_id: row.customer_id || null,
         invoice_number: row._invoiceRef || row._documentNumber || '',
         deduction_amount: parseFloat(row.deduction_amount) || 0,
-        approved_amount: 0,
+        matched_amount: 0,
         remaining_amount: parseFloat(row.deduction_amount) || 0,
         deduction_date: formatSapDate(row._postingDate) || ts.split('T')[0],
         reason_code: row.reason_code || '',
@@ -367,8 +373,8 @@ const SAP_IMPORT_CONFIGS = {
         updated_at: ts,
       };
     },
-    insertSql: `INSERT OR REPLACE INTO deductions (id, company_id, deduction_number, deduction_type, status, customer_id, invoice_number, deduction_amount, approved_amount, remaining_amount, deduction_date, reason_code, reason_description, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    bindRow: (r) => [r.id, r.company_id, r.deduction_number, r.deduction_type, r.status, r.customer_id, r.invoice_number, r.deduction_amount, r.approved_amount, r.remaining_amount, r.deduction_date, r.reason_code, r.reason_description, r.data, r.created_at, r.updated_at],
+    insertSql: `INSERT OR REPLACE INTO deductions (id, company_id, deduction_number, deduction_type, status, customer_id, invoice_number, deduction_amount, matched_amount, remaining_amount, deduction_date, reason_code, reason_description, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    bindRow: (r) => [r.id, r.company_id, r.deduction_number, r.deduction_type, r.status, r.customer_id, r.invoice_number, r.deduction_amount, r.matched_amount, r.remaining_amount, r.deduction_date, r.reason_code, r.reason_description, r.data, r.created_at, r.updated_at],
   },
 
   // SAP GL Postings / Accruals (FI) -> accruals table
@@ -452,9 +458,9 @@ const SAP_IMPORT_CONFIGS = {
         name: row.name || `Fund ${row.code || ''}`,
         year: parseInt(row.year) || new Date().getFullYear(),
         amount: parseFloat(row.amount) || 0,
-        allocated: parseFloat(row._committed) || 0,
+        utilized: parseFloat(row._spent) || 0,
+        committed: parseFloat(row._committed) || 0,
         spent: parseFloat(row._spent) || 0,
-        remaining: parseFloat(row._available) || parseFloat(row.amount) || 0,
         budget_type: 'trade',
         status: 'active',
         data: JSON.stringify(data),
@@ -462,8 +468,8 @@ const SAP_IMPORT_CONFIGS = {
         updated_at: ts,
       };
     },
-    insertSql: `INSERT OR REPLACE INTO budgets (id, company_id, name, year, amount, allocated, spent, remaining, budget_type, status, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    bindRow: (r) => [r.id, r.company_id, r.name, r.year, r.amount, r.allocated, r.spent, r.remaining, r.budget_type, r.status, r.data, r.created_at, r.updated_at],
+    insertSql: `INSERT OR REPLACE INTO budgets (id, company_id, name, year, amount, utilized, committed, spent, budget_type, status, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    bindRow: (r) => [r.id, r.company_id, r.name, r.year, r.amount, r.utilized, r.committed, r.spent, r.budget_type, r.status, r.data, r.created_at, r.updated_at],
   },
 
   // SAP Rebate Agreements (VBO1/VBO2) -> rebates table
@@ -538,6 +544,9 @@ const SAP_IMPORT_CONFIGS = {
       Object.entries(row).forEach(([k, v]) => {
         if (k.startsWith('_') && v) data[k.substring(1)] = v;
       });
+      // customer_id, planned_spend, expected_lift not direct columns; use expected_spend/actual_spend + data
+      if (row.customer_id) data.customer_id = row.customer_id;
+      if (row._expectedLift) data.expected_lift = parseFloat(row._expectedLift) || 0;
       return {
         id,
         company_id: companyId,
@@ -545,20 +554,18 @@ const SAP_IMPORT_CONFIGS = {
         description: row.description || '',
         promotion_type: row.promotion_type || 'price_discount',
         status: row.status || 'draft',
-        customer_id: row.customer_id || null,
         start_date: formatSapDate(row.start_date) || ts.split('T')[0],
         end_date: formatSapDate(row.end_date) || ts.split('T')[0],
-        planned_spend: parseFloat(row.planned_spend) || 0,
+        expected_spend: parseFloat(row.planned_spend) || 0,
         actual_spend: 0,
-        expected_lift: parseFloat(row._expectedLift) || 0,
         data: JSON.stringify(data),
         created_by: userId,
         created_at: ts,
         updated_at: ts,
       };
     },
-    insertSql: `INSERT OR REPLACE INTO promotions (id, company_id, name, description, promotion_type, status, customer_id, start_date, end_date, planned_spend, actual_spend, expected_lift, data, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    bindRow: (r) => [r.id, r.company_id, r.name, r.description, r.promotion_type, r.status, r.customer_id, r.start_date, r.end_date, r.planned_spend, r.actual_spend, r.expected_lift, r.data, r.created_by, r.created_at, r.updated_at],
+    insertSql: `INSERT OR REPLACE INTO promotions (id, company_id, name, description, promotion_type, status, start_date, end_date, expected_spend, actual_spend, data, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    bindRow: (r) => [r.id, r.company_id, r.name, r.description, r.promotion_type, r.status, r.start_date, r.end_date, r.expected_spend, r.actual_spend, r.data, r.created_by, r.created_at, r.updated_at],
   },
 
   // SAP Claims (MIRO credits) -> claims table
