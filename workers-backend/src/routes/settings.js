@@ -239,8 +239,8 @@ settingsRoutes.put('/company-type', requireRole('admin', 'superadmin'), async (c
     const { companyType } = await c.req.json();
     const mongodb = getMongoClient(c);
 
-    if (!['distributor', 'retailer'].includes(companyType)) {
-      return c.json({ success: false, message: 'Invalid company type. Must be "distributor" or "retailer".' }, 400);
+    if (!['distributor', 'retailer', 'custom'].includes(companyType)) {
+      return c.json({ success: false, message: 'Invalid company type. Must be "distributor", "retailer", or "custom".' }, 400);
     }
 
     const existing = await mongodb.findOne('settings', { companyId: tenantId, key: 'companyType' });
