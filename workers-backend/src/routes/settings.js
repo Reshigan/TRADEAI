@@ -253,7 +253,7 @@ settingsRoutes.put('/company-type', requireRole('admin', 'superadmin'), async (c
     return c.json({
       success: true,
       message: `Company type set to ${companyType}`,
-      data: { companyType, defaults: COMPANY_TYPE_DEFAULTS[companyType] }
+      data: { companyType, defaults: COMPANY_TYPE_DEFAULTS[companyType] || {} }
     });
   } catch (error) {
     return apiError(c, error, 'settings');
