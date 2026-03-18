@@ -17,7 +17,7 @@ const buildNavGroups = (t, tPlural) => [
     { label: t('kam_wallet'), icon: Wallet, path: '/plan/wallet' },
     { label: 'Trade Calendar', icon: CalendarRange, path: '/plan/calendar' },
     { label: tPlural('scenario'), icon: Target, path: '/plan/scenarios' },
-    { label: t('forecast') + 'ing', icon: TrendingUp, path: '/plan/forecasting' },
+    { label: 'Forecasting', icon: TrendingUp, path: '/plan/forecasting' },
   ]},
   { label: 'Execute', icon: Zap, items: [
     { label: tPlural('promotion'), icon: Megaphone, path: '/execute/promotions' },

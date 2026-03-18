@@ -1004,7 +1004,7 @@ pnl.post('/:id/generate', async (c) => {
     console.error('Error generating P&L report:', error);
     await c.env.DB.prepare(
       "UPDATE pnl_reports SET status = 'draft', updated_at = ? WHERE id = ? AND company_id = ?"
-    ).bind(new Date(, companyId).toISOString(), c.req.param().id).run();
+    ).bind(new Date().toISOString(), c.req.param().id, getCompanyId(c)).run();
     return apiError(c, error, 'pnl');
   }
 });

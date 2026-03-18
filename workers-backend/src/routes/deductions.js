@@ -551,7 +551,7 @@ deductions.post('/:id/write-off', async (c) => {
     // W-12: Record spend on write-off if budget is linked
     if (deduction.budget_id) {
       try {
-        await recordSpend(db, deduction.budget_id, deduction.deduction_amount || 0, companyId);
+        await recordSpend(db, deduction.budget_id, deduction.deduction_amount || 0, 'deduction', id, deduction.deduction_number || id, userId, companyId);
       } catch (e) {
         console.log('Budget spend recording skipped:', e.message);
       }
