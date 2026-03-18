@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, Grid, MenuItem, Alert, Paper } from '@mui/material';
+import { Box, Typography, Button, Grid, Alert, Paper } from '@mui/material';
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { deductionService } from '../../services/api';
@@ -7,6 +7,7 @@ import { customerService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import { SmartField, FormSection, PageHeader } from '../../components/shared';
 
 const CreateDeduction = () => {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const CreateDeduction = () => {
       if (!formData.customer) { setError('Please select a customer'); showToast('Please select a customer', 'warning'); return; }
       if (formData.amount <= 0) { setError('Deduction amount must be greater than 0'); showToast('Deduction amount must be greater than 0', 'warning'); return; }
       if (!formData.reason) { setError('Please provide a reason for the deduction'); showToast('Please provide a reason', 'warning'); return; }
-      await deductionService.createDeduction(formData);
+      await deductionService.createDeduction({ ...formData, amount: Number(formData.amount) || 0 });
       analytics.trackEvent('deduction_created', { deductionType: formData.deductionType, amount: formData.amount });
       showToast('Deduction created successfully', 'success');
       navigate('/deductions');
@@ -48,64 +49,51 @@ const CreateDeduction = () => {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: formData.currency }).format(amount);
 
+  const customerOptions = customers.map(c => ({ value: c.id || c._id, label: `${c.name} (${c.code || (c.id || c._id || '').toString().slice(-6)})` }));
+
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={700}>Create Deduction</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>Record a new customer deduction</Typography>
-        </Box>
-        <Button variant="outlined" startIcon={<CancelIcon />} onClick={() => navigate('/deductions')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600 }}>Cancel</Button>
-      </Box>
+      <PageHeader
+        title="Create Deduction"
+        subtitle="Record a new customer deduction"
+        actions={<Button variant="outlined" startIcon={<CancelIcon />} onClick={() => navigate('/deductions')}>Cancel</Button>}
+      />
 
-      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError(null)}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="h6" fontWeight={600} mb={2}>Deduction Information</Typography>
+          <FormSection title="Deduction Information" defaultOpen>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField select fullWidth label="Deduction Type" value={formData.deductionType} onChange={(e) => handleChange('deductionType', e.target.value)} required>
-                  <MenuItem value="pricing">Pricing</MenuItem><MenuItem value="shortage">Shortage</MenuItem>
-                  <MenuItem value="damage">Damage</MenuItem><MenuItem value="quality">Quality</MenuItem>
-                  <MenuItem value="promotional">Promotional</MenuItem><MenuItem value="administrative">Administrative</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </TextField>
+                <SmartField name="deductionType" label="Deduction Type" type="select" value={formData.deductionType} onChange={(e) => handleChange('deductionType', e.target.value)} required
+                  options={[{ value: 'pricing', label: 'Pricing' }, { value: 'shortage', label: 'Shortage' }, { value: 'damage', label: 'Damage' }, { value: 'quality', label: 'Quality' }, { value: 'promotional', label: 'Promotional' }, { value: 'administrative', label: 'Administrative' }, { value: 'other', label: 'Other' }]} />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField select fullWidth label="Customer" value={formData.customer} onChange={(e) => handleChange('customer', e.target.value)} required>
-                  {customers.map((customer) => (
-                    <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>
-                      {customer.name} ({customer.code || (customer.id || customer._id || '').toString().slice(-6)})
-                    </MenuItem>
-                  ))}
-                </TextField>
+                <SmartField name="customer" label="Customer" type="select" value={formData.customer} onChange={(e) => handleChange('customer', e.target.value)} required
+                  options={customerOptions} />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth type="date" label="Deduction Date" value={formData.deductionDate} onChange={(e) => handleChange('deductionDate', e.target.value)} InputLabelProps={{ shrink: true }} required />
+                <SmartField name="deductionDate" label="Deduction Date" type="date" value={formData.deductionDate} onChange={(e) => handleChange('deductionDate', e.target.value)} required />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth type="number" label="Amount" value={formData.amount} onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)} required inputProps={{ min: 0, step: 0.01 }} />
+                <SmartField name="amount" label="Amount" type="currency" value={formData.amount} onChange={(e) => handleChange('amount', e.target.value)} required />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField select fullWidth label="Currency" value={formData.currency} onChange={(e) => handleChange('currency', e.target.value)}>
-                  <MenuItem value="ZAR">ZAR</MenuItem><MenuItem value="USD">USD</MenuItem>
-                  <MenuItem value="EUR">EUR</MenuItem><MenuItem value="GBP">GBP</MenuItem>
-                </TextField>
+                <SmartField name="currency" label="Currency" type="select" value={formData.currency} onChange={(e) => handleChange('currency', e.target.value)}
+                  options={[{ value: 'ZAR', label: 'ZAR' }, { value: 'USD', label: 'USD' }, { value: 'EUR', label: 'EUR' }, { value: 'GBP', label: 'GBP' }]} />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Invoice Number" value={formData.invoiceNumber} onChange={(e) => handleChange('invoiceNumber', e.target.value)} placeholder="Optional" />
+                <SmartField name="invoiceNumber" label="Invoice Number" value={formData.invoiceNumber} onChange={(e) => handleChange('invoiceNumber', e.target.value)} placeholder="Optional" />
               </Grid>
               <Grid item xs={12}>
-                <TextField fullWidth label="Reason" value={formData.reason} onChange={(e) => handleChange('reason', e.target.value)} required placeholder="Brief reason for the deduction" />
+                <SmartField name="reason" label="Reason" value={formData.reason} onChange={(e) => handleChange('reason', e.target.value)} required placeholder="Brief reason for the deduction" />
               </Grid>
               <Grid item xs={12}>
-                <TextField fullWidth multiline rows={4} label="Description" value={formData.description} onChange={(e) => handleChange('description', e.target.value)} placeholder="Detailed description (optional)" />
+                <SmartField name="description" label="Description" type="textarea" value={formData.description} onChange={(e) => handleChange('description', e.target.value)} placeholder="Detailed description (optional)" />
               </Grid>
             </Grid>
-          </Paper>
+          </FormSection>
         </Grid>
 
         <Grid item xs={12} md={4}>

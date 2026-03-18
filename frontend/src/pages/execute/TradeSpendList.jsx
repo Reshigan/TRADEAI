@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Grid, MenuItem, Alert } from '@mui/material';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Alert } from '@mui/material';
+import { Plus, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { tradeSpendService, customerService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { SmartTable, PageHeader, SmartField } from '../../components/shared';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -12,7 +13,6 @@ export default function TradeSpendList() {
   const { t, tPlural } = useTerminology();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [form, setForm] = useState({ notes: '', spendType: 'promotion', category: 'volume_discount', amountRequested: '', customer: '', startDate: new Date().toISOString().split('T')[0], endDate: '' });
@@ -20,6 +20,7 @@ export default function TradeSpendList() {
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const [res, cust] = await Promise.allSettled([tradeSpendService.getAll(), customerService.getAll()]);
       if (res.status === 'fulfilled') {
@@ -36,12 +37,6 @@ export default function TradeSpendList() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = (Array.isArray(items) ? items : []).filter(i => {
-    const text = `${i.notes || ''} ${i.category || ''} ${i.spendId || ''}`.toLowerCase();
-    const custName = (i.customer?.name || '').toLowerCase();
-    return text.includes(search.toLowerCase()) || custName.includes(search.toLowerCase());
-  });
-
   const handleCreate = async () => {
     setSaving(true); setError('');
     try {
@@ -56,61 +51,78 @@ export default function TradeSpendList() {
     try { await tradeSpendService.delete(id); load(); } catch (e) { console.error(e); }
   };
 
+  const columns = [
+    { field: 'notes', headerName: 'Description', renderCell: ({ row }) => row.notes || row.category || row.spendId || '—' },
+    { field: 'spendType', headerName: 'Type', renderCell: ({ row }) => (row.spendType || '').replace(/_/g, ' ') },
+    { field: 'customer', headerName: 'Customer', renderCell: ({ row }) => row.customer?.name || row.customer_name || '—' },
+    { field: 'amount', headerName: 'Amount', type: 'currency', align: 'right', renderCell: ({ row }) => fmt(row.amount?.requested || row.amount?.approved || row.amount?.spent || 0) },
+    { field: 'period', headerName: 'Date', renderCell: ({ row }) => row.period?.startDate ? new Date(row.period.startDate).toLocaleDateString() : '—' },
+    { field: 'status', headerName: 'Status', type: 'status' },
+  ];
+
+  const rowActions = [
+    { label: 'View', icon: <Eye size={16} />, onClick: (row) => navigate(`/execute/trade-spends/${row._id || row.id}`) },
+    { label: 'Delete', icon: <Trash2 size={16} />, onClick: (row) => handleDelete(row._id || row.id) },
+  ];
+
+  const customerOptions = customers.map(c => ({ value: c._id || c.id, label: c.name || c.customer_name }));
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">{tPlural('trade_spend')}</Typography><Typography variant="body2" color="text.secondary">Track and manage {tPlural('trade_spend').toLowerCase()}</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New {t('trade_spend')}</Button>
-      </Box>
-      <Card>
-        <CardContent>
-          <TextField placeholder="Search..." size="small" value={search} onChange={(e) => setSearch(e.target.value)}
-            InputProps={{ startAdornment: <Search size={16} color="#94A3B8" style={{ marginRight: 8 }} /> }} sx={{ mb: 2, maxWidth: 360, width: '100%' }} />
-          {loading ? <LinearProgress /> : (
-            <TableContainer>
-              <Table size="small">
-                <TableHead><TableRow><TableCell>Description</TableCell><TableCell>Type</TableCell><TableCell>Customer</TableCell><TableCell align="right">Amount</TableCell><TableCell>Date</TableCell><TableCell>Status</TableCell><TableCell align="right">Actions</TableCell></TableRow></TableHead>
-                <TableBody>
-                  {filtered.length === 0 ? (
-                    <TableRow><TableCell colSpan={7} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No trade spends found</Typography></TableCell></TableRow>
-                  ) : filtered.map(i => (
-                    <TableRow key={i._id || i.id}>
-                      <TableCell><Typography variant="body2" fontWeight={500}>{i.notes || i.category || i.spendId || '-'}</Typography></TableCell>
-                      <TableCell sx={{ textTransform: 'capitalize' }}>{(i.spendType || '').replace(/_/g, ' ')}</TableCell>
-                      <TableCell>{i.customer?.name || '-'}</TableCell>
-                      <TableCell align="right">{fmt(i.amount?.requested || i.amount?.approved || i.amount?.spent || 0)}</TableCell>
-                      <TableCell>{i.period?.startDate ? new Date(i.period.startDate).toLocaleDateString() : '-'}</TableCell>
-                      <TableCell><Chip label={i.status || 'active'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
-                      <TableCell align="right"><IconButton size="small" onClick={() => handleDelete(i._id || i.id)}><Trash2 size={16} /></IconButton></TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </CardContent>
-      </Card>
+      <PageHeader
+        title={tPlural('trade_spend')}
+        subtitle={`Track and manage ${tPlural('trade_spend').toLowerCase()}`}
+        actions={
+          <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>
+            New {t('trade_spend')}
+          </Button>
+        }
+      />
+      <SmartTable
+        columns={columns}
+        data={items}
+        loading={loading}
+        onRowClick={(row) => navigate(`/execute/trade-spends/${row._id || row.id}`)}
+        rowActions={rowActions}
+        searchPlaceholder={`Search ${tPlural('trade_spend').toLowerCase()}...`}
+        emptyMessage={`No ${tPlural('trade_spend').toLowerCase()} found`}
+      />
+
       <Dialog open={showCreate} onClose={() => setShowCreate(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Create Trade Spend</DialogTitle>
+        <DialogTitle>Create {t('trade_spend')}</DialogTitle>
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
-            <Grid item xs={12}><TextField fullWidth label="Notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Grid>
-            <Grid item xs={6}><TextField fullWidth label="Amount" type="number" value={form.amountRequested} onChange={(e) => setForm({ ...form, amountRequested: e.target.value })} required /></Grid>
-            <Grid item xs={6}><TextField fullWidth select label="Type" value={form.spendType} onChange={(e) => setForm({ ...form, spendType: e.target.value })}>
-              <MenuItem value="promotion">Promotion</MenuItem><MenuItem value="marketing">Marketing</MenuItem><MenuItem value="cash_coop">Cash Co-op</MenuItem><MenuItem value="trading_terms">Trading Terms</MenuItem><MenuItem value="rebate">Rebate</MenuItem>
-            </TextField></Grid>
-            <Grid item xs={6}><TextField fullWidth select label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-              <MenuItem value="volume_discount">Volume Discount</MenuItem><MenuItem value="display_allowance">Display Allowance</MenuItem><MenuItem value="promotional_support">Promotional Support</MenuItem><MenuItem value="listing_fee">Listing Fee</MenuItem><MenuItem value="slotting_fee">Slotting Fee</MenuItem>
-            </TextField></Grid>
-            <Grid item xs={6}><TextField fullWidth select label="Customer" value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value })} required>
-              <MenuItem value="">Select Customer</MenuItem>{customers.map(c => <MenuItem key={c._id || c.id} value={c._id || c.id}>{c.name || c.customer_name}</MenuItem>)}
-            </TextField></Grid>
-            <Grid item xs={6}><TextField fullWidth label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} InputLabelProps={{ shrink: true }} required /></Grid>
-            <Grid item xs={6}><TextField fullWidth label="End Date" type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} InputLabelProps={{ shrink: true }} /></Grid>
+            <Grid item xs={12}>
+              <SmartField name="notes" label="Notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="amountRequested" label="Amount" type="currency" value={form.amountRequested} onChange={(e) => setForm({ ...form, amountRequested: e.target.value })} required />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="spendType" label="Type" type="select" value={form.spendType} onChange={(e) => setForm({ ...form, spendType: e.target.value })}
+                options={[{ value: 'promotion', label: 'Promotion' }, { value: 'marketing', label: 'Marketing' }, { value: 'cash_coop', label: 'Cash Co-op' }, { value: 'trading_terms', label: 'Trading Terms' }, { value: 'rebate', label: 'Rebate' }]} />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="category" label="Category" type="select" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
+                options={[{ value: 'volume_discount', label: 'Volume Discount' }, { value: 'display_allowance', label: 'Display Allowance' }, { value: 'promotional_support', label: 'Promotional Support' }, { value: 'listing_fee', label: 'Listing Fee' }, { value: 'slotting_fee', label: 'Slotting Fee' }]} />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="customer" label="Customer" type="select" value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value })} required
+                options={customerOptions} />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="startDate" label="Start Date" type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} required />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="endDate" label="End Date" type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
+            </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions><Button onClick={() => setShowCreate(false)}>Cancel</Button><Button variant="contained" onClick={handleCreate} disabled={saving}>{saving ? 'Creating...' : 'Create'}</Button></DialogActions>
+        <DialogActions>
+          <Button onClick={() => setShowCreate(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreate} disabled={saving}>{saving ? 'Creating...' : 'Create'}</Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

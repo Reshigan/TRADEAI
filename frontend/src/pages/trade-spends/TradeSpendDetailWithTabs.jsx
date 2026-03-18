@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
-import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
+import { ArrowBack as BackIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import { tradeSpendService } from '../../services/api';
@@ -9,6 +9,7 @@ import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { QuickActionBar } from '../../components/shared';
 
 import TradeSpendOverview from './tabs/TradeSpendOverview';
 import TradeSpendAccruals from './tabs/TradeSpendAccruals';
@@ -84,39 +85,53 @@ const TradeSpendDetailWithTabs = () => {
     );
   }
 
+  // Trade spend-specific actions per status — only show actions we can handle
+  const getTradeSpendActions = () => {
+    const s = (tradeSpend.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this trade spend for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'inherit' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this trade spend?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this trade spend?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
+  const handleQuickAction = async (action, metadata) => {
+    setActionLoading(true);
+    try {
+      if (action === 'submit') await tradeSpendService.submit(id);
+      else if (action === 'approve') await tradeSpendService.approve(id);
+      else if (action === 'reject') await tradeSpendService.reject(id, { reason: metadata?.comment });
+      else if (action === 'edit') { navigate(`/trade-spends/${id}/edit`); setActionLoading(false); return; }
+      await loadTradeSpend();
+    } catch (e) { toast.error(e.response?.data?.message || 'Action failed'); }
+    setActionLoading(false);
+  };
+
   return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ mb: 4 }}>
-          <Button
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/trade-spends')}
-            sx={{ mb: 2, color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
-          >
-            Back to Trade Spends
-          </Button>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                                <Typography variant="h4" fontWeight={700} color="text.primary">{formatLabel(tradeSpend.spendType)} - {tradeSpend.category}</Typography>
-                                <Chip label={formatLabel(tradeSpend.status)} color={tradeSpend.status === 'approved' ? 'success' : 'default'} sx={{ fontWeight: 600 }} />
-              </Box>
-              <Typography variant="body2" color="text.secondary">ID: {tradeSpend.spendId}</Typography>
-            </Box>
-            {(tradeSpend.status === 'draft') && (
-              <Button variant="contained" disabled={actionLoading} onClick={async () => { setActionLoading(true); try { await tradeSpendService.submit(id); await loadTradeSpend(); } catch(e) { console.error(e); } setActionLoading(false); }}
-                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Submit</Button>
-            )}
-            {tradeSpend.status === 'pending_approval' && (
-              <Button variant="contained" color="success" disabled={actionLoading} onClick={async () => { setActionLoading(true); try { await tradeSpendService.approve(id); await loadTradeSpend(); } catch(e) { console.error(e); } setActionLoading(false); }}
-                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Approve</Button>
-            )}
-            {tradeSpend.status === 'pending_approval' && (
-              <Button variant="outlined" color="error" disabled={actionLoading} onClick={async () => { setActionLoading(true); try { await tradeSpendService.reject(id); await loadTradeSpend(); } catch(e) { console.error(e); } setActionLoading(false); }}
-                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Reject</Button>
-            )}
-            <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/trade-spends/${id}/edit`)} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Edit</Button>
+        <Box sx={{ mb: 2 }}>
+          <Button startIcon={<BackIcon />} onClick={() => navigate('/trade-spends')} sx={{ mb: 1, color: 'text.secondary' }}>Back to Trade Spends</Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+            <Typography variant="h4" fontWeight={700} color="text.primary">{formatLabel(tradeSpend.spendType)} - {tradeSpend.category}</Typography>
+            <Chip label={formatLabel(tradeSpend.status)} color={tradeSpend.status === 'approved' ? 'success' : 'default'} sx={{ fontWeight: 600 }} />
           </Box>
+          <Typography variant="body2" color="text.secondary">ID: {tradeSpend.spendId}</Typography>
         </Box>
+        <QuickActionBar
+          status={tradeSpend.status || 'draft'}
+          entityType="trade_spend"
+          entityId={id}
+          entityName={`${formatLabel(tradeSpend.spendType)} - ${tradeSpend.category}`}
+          onAction={handleQuickAction}
+          customActions={getTradeSpendActions()}
+          sx={{ mb: 3 }}
+        />
 
         <Paper elevation={0} sx={{ mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
           <Tabs value={activeTab} onChange={handleTabChange} variant="scrollable" scrollButtons="auto" sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.9375rem', minHeight: 56 } }}>

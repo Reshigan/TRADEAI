@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Typography, TextField, Button, Grid, MenuItem, Alert, Paper, IconButton, alpha,
+  Box, Typography, TextField, Button, Grid, Alert, Paper, IconButton, alpha, MenuItem,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
@@ -9,6 +9,7 @@ import { claimService } from '../../services/api';
 import { customerService } from '../../services/api';
 import { productService } from '../../services/api';
 import analytics from '../../utils/analytics';
+import { SmartField, FormSection, PageHeader } from '../../components/shared';
 
 const CreateClaim = () => {
   const navigate = useNavigate();
@@ -74,53 +75,42 @@ const CreateClaim = () => {
 
   const formatCurrency = (amount) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: formData.currency }).format(amount);
 
+  const customerOptions = customers.map(c => ({ value: c.id || c._id, label: `${c.name} (${c.code || '-'})` }));
+
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={700}>Create Claim</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>Submit a new claim for processing</Typography>
-        </Box>
-        <Button variant="outlined" startIcon={<CancelIcon />} onClick={() => navigate('/claims')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600 }}>Cancel</Button>
-      </Box>
+      <PageHeader
+        title="Create Claim"
+        subtitle="Submit a new claim for processing"
+        actions={<Button variant="outlined" startIcon={<CancelIcon />} onClick={() => navigate('/claims')}>Cancel</Button>}
+      />
 
-      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError(null)}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', mb: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={2}>Claim Information</Typography>
+          <FormSection title="Claim Information" defaultOpen>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <TextField select fullWidth label="Claim Type" value={formData.claimType} onChange={(e) => handleChange('claimType', e.target.value)} required>
-                  <MenuItem value="promotion">Promotion</MenuItem><MenuItem value="rebate">Rebate</MenuItem>
-                  <MenuItem value="allowance">Allowance</MenuItem><MenuItem value="markdown">Markdown</MenuItem>
-                  <MenuItem value="damage">Damage</MenuItem><MenuItem value="return">Return</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </TextField>
+                <SmartField name="claimType" label="Claim Type" type="select" value={formData.claimType} onChange={(e) => handleChange('claimType', e.target.value)} required
+                  options={[{ value: 'promotion', label: 'Promotion' }, { value: 'rebate', label: 'Rebate' }, { value: 'allowance', label: 'Allowance' }, { value: 'markdown', label: 'Markdown' }, { value: 'damage', label: 'Damage' }, { value: 'return', label: 'Return' }, { value: 'other', label: 'Other' }]} />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField select fullWidth label="Customer" value={formData.customer} onChange={(e) => handleChange('customer', e.target.value)} required>
-                  {customers.map((customer) => (
-                    <MenuItem key={customer.id || customer._id} value={customer.id || customer._id}>{customer.name} ({customer.code || '-'})</MenuItem>
-                  ))}
-                </TextField>
+                <SmartField name="customer" label="Customer" type="select" value={formData.customer} onChange={(e) => handleChange('customer', e.target.value)} required
+                  options={customerOptions} />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth type="date" label="Claim Date" value={formData.claimDate} onChange={(e) => handleChange('claimDate', e.target.value)} InputLabelProps={{ shrink: true }} required />
+                <SmartField name="claimDate" label="Claim Date" type="date" value={formData.claimDate} onChange={(e) => handleChange('claimDate', e.target.value)} required />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField select fullWidth label="Currency" value={formData.currency} onChange={(e) => handleChange('currency', e.target.value)}>
-                  <MenuItem value="ZAR">ZAR</MenuItem><MenuItem value="USD">USD</MenuItem>
-                  <MenuItem value="EUR">EUR</MenuItem><MenuItem value="GBP">GBP</MenuItem>
-                </TextField>
+                <SmartField name="currency" label="Currency" type="select" value={formData.currency} onChange={(e) => handleChange('currency', e.target.value)}
+                  options={[{ value: 'ZAR', label: 'ZAR' }, { value: 'USD', label: 'USD' }, { value: 'EUR', label: 'EUR' }, { value: 'GBP', label: 'GBP' }]} />
               </Grid>
               <Grid item xs={12}>
-                <TextField fullWidth multiline rows={3} label="Notes" value={formData.notes} onChange={(e) => handleChange('notes', e.target.value)} />
+                <SmartField name="notes" label="Notes" type="textarea" value={formData.notes} onChange={(e) => handleChange('notes', e.target.value)} />
               </Grid>
             </Grid>
-          </Paper>
+          </FormSection>
 
           <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

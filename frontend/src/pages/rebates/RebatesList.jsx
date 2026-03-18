@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {
-  Box, Typography, Button, Grid, Paper, Chip, IconButton, Tooltip,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, alpha, CircularProgress,
-} from '@mui/material';
-import { Add, Edit, Delete, Visibility, AccountBalance, TrendingUp, CheckCircle } from '@mui/icons-material';
+import { Box, Button, Grid, Paper, Typography, alpha } from '@mui/material';
+import { Add, AccountBalance, TrendingUp, CheckCircle } from '@mui/icons-material';
+import { Eye, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { SmartTable, PageHeader } from '../../components/shared';
 
 const RebatesList = () => {
   const navigate = useNavigate();
@@ -34,7 +33,6 @@ const RebatesList = () => {
     }
   };
 
-  const getStatusColor = (status) => ({ draft: 'default', active: 'success', calculating: 'info', inactive: 'warning', expired: 'error' })[status] || 'default';
   const getTypeLabel = (type) => ({ volume: 'Volume Rebate', growth: 'Growth Rebate', 'early-payment': 'Early Payment', slotting: 'Slotting Fee', coop: 'Co-op Marketing', 'off-invoice': 'Off-Invoice', billback: 'Bill-Back', display: 'Display/Feature' })[type] || formatLabel(type);
 
   const stats = useMemo(() => {
@@ -50,26 +48,39 @@ const RebatesList = () => {
     { label: 'Total Accrued', value: `R${(stats.totalAccrued / 1000).toFixed(1)}K`, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
 
-  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress sx={{ color: '#1E40AF' }} /></Box>;
+  const columns = [
+    { field: 'name', headerName: 'Name' },
+    { field: 'rebateType', headerName: 'Type', renderCell: ({ row }) => getTypeLabel(row.rebateType || row.type) },
+    { field: 'status', headerName: 'Status', type: 'status' },
+    { field: 'rate', headerName: 'Rate/Amount', renderCell: ({ row }) => (row.rateType === 'percentage' || row.calculationType === 'percentage') ? `${row.rate || 0}%` : `R ${(row.amount || 0).toLocaleString()}` },
+    { field: 'startDate', headerName: 'Period', type: 'date' },
+    { field: 'accruedAmount', headerName: 'Accrued', align: 'right', renderCell: ({ row }) => `R ${(row.accruedAmount || row.totalAccrued || 0).toLocaleString()}` },
+    { field: 'settledAmount', headerName: 'Paid', align: 'right', renderCell: ({ row }) => `R ${(row.settledAmount || row.totalPaid || 0).toLocaleString()}` },
+  ];
+
+  const rowActions = [
+    { label: 'View', icon: <Eye size={16} />, onClick: (row) => navigate(`/rebates/${row.id || row._id}`) },
+    { label: 'Edit', icon: <Edit size={16} />, onClick: (row) => navigate(`/rebates/${row.id || row._id}/edit`) },
+    { label: 'Delete', icon: <Trash2 size={16} />, onClick: (row) => handleDelete(row.id || row._id) },
+  ];
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={700}>{tPlural('rebate')}</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>Configure and manage all {t('rebate').toLowerCase()} programs</Typography>
-        </Box>
-        <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/rebates/new')}
-          sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
-          New {t('rebate')}
-        </Button>
-      </Box>
+      <PageHeader
+        title={tPlural('rebate')}
+        subtitle={`Configure and manage all ${t('rebate').toLowerCase()} programs`}
+        actions={
+          <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/rebates/new')}>
+            New {t('rebate')}
+          </Button>
+        }
+      />
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {summaryCards.map((s) => (
           <Grid item xs={12} sm={4} key={s.label}>
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ width: 44, height: 44, borderRadius: 1.5, bgcolor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {React.cloneElement(s.icon, { sx: { color: s.color, fontSize: 22 } })}
               </Box>
               <Box>
@@ -81,56 +92,15 @@ const RebatesList = () => {
         ))}
       </Grid>
 
-      <Paper elevation={0} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: '#F9FAFB' } }}>
-                <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Rate/Amount</TableCell>
-                <TableCell>Period</TableCell>
-                <TableCell align="right">Accrued</TableCell>
-                <TableCell align="right">Paid</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rebates.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
-                    <AccountBalance sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">No rebates found. Create your first rebate program.</Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                rebates.map((rebate) => (
-                  <TableRow key={rebate.id || rebate._id} hover sx={{ '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}>
-                    <TableCell><Typography variant="body2" fontWeight={600}>{rebate.name}</Typography></TableCell>
-                    <TableCell><Chip label={getTypeLabel(rebate.rebateType || rebate.type)} size="small" variant="outlined" sx={{ borderRadius: '6px', height: 24 }} /></TableCell>
-                    <TableCell><Chip label={formatLabel(rebate.status)} color={getStatusColor(rebate.status)} size="small" sx={{ borderRadius: '6px', height: 24, fontWeight: 600 }} /></TableCell>
-                    <TableCell>{rebate.rateType === 'percentage' || rebate.calculationType === 'percentage' ? `${rebate.rate || 0}%` : `R ${(rebate.amount || 0).toLocaleString()}`}</TableCell>
-                    <TableCell><Typography variant="body2" color="text.secondary">{rebate.startDate ? new Date(rebate.startDate).toLocaleDateString() : '-'}</Typography></TableCell>
-                    <TableCell align="right"><Typography variant="body2" fontWeight={600}>R {(rebate.accruedAmount || rebate.totalAccrued || 0).toLocaleString()}</Typography></TableCell>
-                    <TableCell align="right">R {(rebate.settledAmount || rebate.totalPaid || 0).toLocaleString()}</TableCell>
-                    <TableCell align="center">
-                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
-                        <Tooltip title="View"><IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}`)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Visibility fontSize="small" /></IconButton></Tooltip>
-                        <Tooltip title="Edit"><IconButton size="small" onClick={() => navigate(`/rebates/${rebate.id || rebate._id}/edit`)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#1E40AF', bgcolor: alpha('#1E40AF', 0.08) } }}><Edit fontSize="small" /></IconButton></Tooltip>
-                        <Tooltip title="Delete"><IconButton size="small" onClick={() => handleDelete(rebate.id || rebate._id)}
-                          sx={{ color: '#6B7280', '&:hover': { color: '#DC2626', bgcolor: alpha('#DC2626', 0.08) } }}><Delete fontSize="small" /></IconButton></Tooltip>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+      <SmartTable
+        columns={columns}
+        data={rebates}
+        loading={loading}
+        onRowClick={(row) => navigate(`/rebates/${row.id || row._id}`)}
+        rowActions={rowActions}
+        searchPlaceholder={`Search ${tPlural('rebate').toLowerCase()}...`}
+        emptyMessage={`No ${tPlural('rebate').toLowerCase()} found. Create your first rebate program.`}
+      />
     </Box>
   );
 };

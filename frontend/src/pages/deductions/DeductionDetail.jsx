@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Button,
-  Chip,
   Grid,
   Divider,
   Alert,
@@ -22,17 +21,14 @@ import {
   Skeleton
 } from '@mui/material';
 import {
-  CheckCircle as ValidateIcon,
-  Gavel as DisputeIcon,
-  CheckCircleOutline as ResolveIcon,
-  ArrowBack as BackIcon,
-  Link as LinkIcon
+  ArrowBack as BackIcon
 } from '@mui/icons-material';
 import { deductionService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
 
 const DeductionDetail = () => {
   const { id } = useParams();
@@ -185,40 +181,110 @@ const DeductionDetail = () => {
     );
   }
 
+  const handleQuickAction = async (action, metadata) => {
+    if (action === 'validate') await handleValidate();
+    else if (action === 'dispute') {
+      if (metadata?.comment) {
+        // Call API directly to avoid React state race condition
+        try {
+          setActionLoading(true);
+          await deductionService.dispute(id, { reason: metadata.comment });
+          showToast('Deduction disputed successfully', 'success');
+          analytics.trackEvent('deduction_disputed', { deductionId: id, deductionType: deduction.deductionType });
+          fetchDeductionDetail();
+        } catch (err) {
+          console.error('Error disputing deduction:', err);
+          showToast(err.message || 'Failed to dispute deduction', 'error');
+          analytics.trackEvent('deduction_dispute_failed', { deductionId: id, error: err.message });
+        } finally {
+          setActionLoading(false);
+        }
+      } else {
+        setDisputeDialogOpen(true);
+      }
+    } else if (action === 'resolve') {
+      if (metadata?.comment) {
+        // Call API directly to avoid React state race condition
+        try {
+          setActionLoading(true);
+          await deductionService.resolve(id, { notes: metadata.comment });
+          showToast('Deduction resolved successfully', 'success');
+          analytics.trackEvent('deduction_resolved', { deductionId: id, deductionType: deduction.deductionType });
+          fetchDeductionDetail();
+        } catch (err) {
+          console.error('Error resolving deduction:', err);
+          showToast(err.message || 'Failed to resolve deduction', 'error');
+          analytics.trackEvent('deduction_resolve_failed', { deductionId: id, error: err.message });
+        } finally {
+          setActionLoading(false);
+        }
+      } else {
+        setResolveDialogOpen(true);
+      }
+    }
+  };
+
+  // Deduction-specific actions per status — overrides generic STATUS_TRANSITIONS
+  const getDeductionActions = () => {
+    const s = (deduction.status || 'pending').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      pending: [
+        { action: 'validate', label: 'Validate', icon: null, color: 'success', confirm: true, confirmMsg: 'Validate this deduction?' },
+        { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+      ],
+      open: [
+        { action: 'validate', label: 'Validate', icon: null, color: 'success', confirm: true, confirmMsg: 'Validate this deduction?' },
+        { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+      ],
+      validated: [
+        { action: 'resolve', label: 'Resolve', icon: null, color: 'primary', confirm: true, confirmMsg: 'Resolve this deduction?', requireComment: true },
+      ],
+      disputed: [
+        { action: 'resolve', label: 'Resolve', icon: null, color: 'primary', confirm: true, confirmMsg: 'Resolve this disputed deduction?', requireComment: true },
+      ],
+      under_review: [
+        { action: 'resolve', label: 'Resolve', icon: null, color: 'primary', confirm: true, confirmMsg: 'Resolve this deduction?', requireComment: true },
+        { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
+  const sidebarStats = [
+    { label: 'Amount', value: formatCurrency(deduction.deductionAmount || deduction.amount) },
+    { label: 'Type', value: formatLabel(deduction.deductionType) },
+    { label: 'Customer', value: deduction.customerName || deduction.customer?.name || 'N/A' },
+    { label: 'Date', value: formatDate(deduction.deductionDate) },
+    ...(deduction.matchingStatus ? [{ label: 'Matching Status', value: formatLabel(deduction.matchingStatus) }] : []),
+    ...(deduction.variance?.expectedAmount != null ? [{ label: 'Expected Amount', value: formatCurrency(deduction.variance.expectedAmount) }] : []),
+    ...(deduction.variance?.actualAmount != null ? [{ label: 'Actual Amount', value: formatCurrency(deduction.variance.actualAmount) }] : []),
+    ...(deduction.variance?.variance != null ? [{ label: 'Variance', value: formatCurrency(deduction.variance.variance) }] : []),
+  ];
+  const sidebarActivities = [
+    { action: 'created', user: deduction.createdBy || 'System', timestamp: deduction.createdAt || deduction.deductionDate, detail: `Deduction: ${formatCurrency(deduction.deductionAmount || deduction.amount)}` },
+    ...(deduction.updatedAt && deduction.updatedAt !== deduction.createdAt ? [{ action: 'updated', user: 'System', timestamp: deduction.updatedAt, detail: 'Deduction updated' }] : []),
+  ];
+  const relatedEntities = [
+    ...(deduction.matchedClaims || []).map(claim => ({ type: 'Matched Claim', name: claim.claimNumber || `Claim ${(claim.id || claim._id || '').toString().slice(-6)}`, path: `/claims/${claim.id || claim._id}` })),
+  ];
+
   return (
       <Box sx={{ p: 3 }}>
-        {/* Header */}
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Button
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/deductions')}
-            sx={{ mb: 1 }}
-          >
-            Back to Deductions
-          </Button>
-          <Typography variant="h4" gutterBottom>
-            Deduction Details
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Deduction ID: {deduction.deductionNumber || deduction.id || deduction._id}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Chip
-            label={formatLabel(deduction.status)}
-            color={getStatusColor(deduction.status)}
-            size="large"
-          />
-          {deduction.matchingStatus && (
-            <Chip
-                            label={formatLabel(deduction.matchingStatus)}
-                            color={getStatusColor(deduction.matchingStatus)}
-                            size="large"
-            />
-          )}
-        </Box>
-      </Box>
+        <PageHeader
+          title={`Deduction ${deduction.deductionNumber || (deduction.id || deduction._id || '').toString().slice(-8)}`}
+          subtitle={`${formatLabel(deduction.deductionType)} • ${deduction.customerName || deduction.customer?.name || 'N/A'}`}
+          breadcrumbs={[{ label: t('deductions', 'Deductions'), path: '/deductions' }, { label: deduction.deductionNumber || 'Deduction Detail' }]}
+          actions={<Button startIcon={<BackIcon />} onClick={() => navigate('/deductions')}>Back to Deductions</Button>}
+        />
+        <QuickActionBar
+          status={deduction.status || 'pending'}
+          entityType="deduction"
+          entityId={id}
+          entityName={deduction.deductionNumber || 'Deduction'}
+          onAction={handleQuickAction}
+          customActions={getDeductionActions()}
+          sx={{ mb: 3 }}
+        />
 
       <Grid container spacing={3}>
         {/* Main Details Card */}
@@ -329,138 +395,7 @@ const DeductionDetail = () => {
 
         {/* Sidebar */}
         <Grid item xs={12} md={4}>
-          {/* Actions Card */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Actions
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              {(deduction.status === 'pending' || deduction.status === 'open') && (
-                <>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="success"
-                    startIcon={<ValidateIcon />}
-                    onClick={handleValidate}
-                    disabled={actionLoading}
-                    sx={{ mb: 2 }}
-                  >
-                    Validate
-                  </Button>
-
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DisputeIcon />}
-                    onClick={() => setDisputeDialogOpen(true)}
-                    disabled={actionLoading}
-                  >
-                    Dispute
-                  </Button>
-                </>
-              )}
-
-              {(deduction.status === 'validated' || deduction.status === 'disputed' || deduction.status === 'under_review') && (
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  startIcon={<ResolveIcon />}
-                  onClick={() => setResolveDialogOpen(true)}
-                  disabled={actionLoading}
-                >
-                  Resolve
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Matching Status Card */}
-          {deduction.matchingStatus && (
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Matching Status
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Status
-                  </Typography>
-                  <Chip
-                                        label={formatLabel(deduction.matchingStatus)}
-                                        color={getStatusColor(deduction.matchingStatus)}
-                                        size="small"
-                    sx={{ mt: 0.5 }}
-                  />
-                </Box>
-
-                {deduction.matchedClaims && deduction.matchedClaims.length > 0 && (
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Matched Claims
-                    </Typography>
-                    {(deduction?.matchedClaims || []).map((claim, index) => (
-                      <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <LinkIcon sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
-                        <Typography
-                          variant="body2"
-                          sx={{ cursor: 'pointer', color: 'primary.main' }}
-                          onClick={() => navigate(`/claims/${claim.id || claim._id}`)}
-                        >
-                          {claim.claimNumber}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Variance Card */}
-          {deduction.variance && (
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Variance Analysis
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Expected Amount
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {formatCurrency(deduction.variance.expectedAmount)}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Actual Amount
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {formatCurrency(deduction.variance.actualAmount)}
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Variance
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium" color="error">
-                    {formatCurrency(deduction.variance.variance)}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          )}
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} relatedEntities={relatedEntities} loading={loading} />
         </Grid>
       </Grid>
 

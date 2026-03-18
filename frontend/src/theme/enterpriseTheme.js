@@ -1,9 +1,11 @@
 import { createTheme } from '@mui/material/styles';
+import { borderRadius, shadows, brand } from '../design-system/tokens';
 
 /**
  * TRADEAI Elegant Enterprise Theme
  * Polished, classy design matching the login screen aesthetic
  * Features: Blue gradient palette, elegant shadows, refined typography
+ * Integrated with design-system/tokens.js for consistent design tokens
  */
 
 const enterpriseTheme = createTheme({
@@ -262,6 +264,41 @@ const enterpriseTheme = createTheme({
         },
       },
     },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        input: {
+          color: '#1E293B',
+          '&::placeholder': {
+            color: '#94A3B8',
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          color: '#1E293B',
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: '#64748B',
+          '&.Mui-focused': {
+            color: '#1976D2',
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          color: '#1E293B',
+        },
+      },
+    },
     MuiIconButton: {
       styleOverrides: {
         root: {
@@ -310,6 +347,21 @@ const enterpriseTheme = createTheme({
       styleOverrides: {
         root: {
           borderColor: 'rgba(226, 232, 240, 0.8)',
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: borderRadius.xl,
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontWeight: 600,
+          backgroundColor: '#F9FAFB',
         },
       },
     },

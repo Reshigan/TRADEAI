@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, CircularProgress } from '@mui/material';
-import { ArrowLeft, Edit2, Send, CheckCircle, XCircle, Copy } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, CircularProgress } from '@mui/material';
+import { ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 const statusColor = (s) => ({ draft: '#94A3B8', pending_approval: '#F59E0B', approved: '#2563EB', active: '#059669', completed: '#6B7280', cancelled: '#DC2626', rejected: '#DC2626' }[s] || '#94A3B8');
@@ -32,56 +33,101 @@ export default function PromotionDetail() {
     load();
   }, [id]);
 
-  const handleAction = async (type) => {
+  const handleAction = async (type, comment) => {
     setActionLoading(true); setActionError('');
     try {
+      const note = comment || actionNote;
       if (type === 'submit') await promotionService.submit(id);
-      else if (type === 'approve') await promotionService.approve(id, { notes: actionNote });
-      else if (type === 'reject') await promotionService.reject(id, { reason: actionNote });
+      else if (type === 'approve') await promotionService.approve(id, { notes: note });
+      else if (type === 'reject') await promotionService.reject(id, { reason: note });
       else if (type === 'clone') await promotionService.clone(id);
+      else if (type === 'edit') { navigate(`/execute/promotions/${id}/edit`); setActionLoading(false); return; }
+      else if (type === 'delete') {
+        await promotionService.delete(id);
+        navigate('/execute/promotions');
+        return;
+      }
       await reload();
       setActionDialog({ open: false, type: '' }); setActionNote('');
-    } catch (e) { setActionError(e.response?.data?.message || e.message || 'Action failed'); }
-    setActionLoading(false);
+    } catch (e) {
+      const msg = e.response?.data?.message || e.message || 'Action failed';
+      setActionError(msg);
+      throw e; // Re-throw so QuickActionBar shows its error feedback
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;
   if (!promo) return <Box sx={{ py: 4 }}><Typography>Promotion not found</Typography><Button onClick={() => navigate('/execute/promotions')}>Back</Button></Box>;
 
+  // Promotion-specific actions per status — only show actions we can handle
+  const getPromotionActions = () => {
+    const s = (promo.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this promotion for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'inherit' },
+        { action: 'delete', label: 'Delete', icon: null, color: 'error', confirm: true, confirmMsg: 'Delete this promotion?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this promotion?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this promotion?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
+  const planned = Number(promo?.planned_spend || promo?.budget || 0);
+  const actual = Number(promo?.actual_spend || 0);
+  const sidebarStats = [
+    { label: 'Planned Spend', value: fmt(planned) },
+    { label: 'Actual Spend', value: fmt(actual), progress: planned > 0 ? (actual / planned) * 100 : 0 },
+    { label: 'ROI', value: promo.roi ? `${Number(promo.roi).toFixed(1)}x` : '-' },
+    { label: 'Lift', value: promo.incremental_lift ? `${Number(promo.incremental_lift).toFixed(1)}%` : '-' },
+  ];
+  const sidebarActivities = [
+    { action: 'created', user: promo.created_by || 'System', timestamp: promo.created_at, detail: `${t('promotion')} created` },
+    ...(promo.updated_at && promo.updated_at !== promo.created_at ? [{ action: 'updated', user: 'System', timestamp: promo.updated_at, detail: `${t('promotion')} updated` }] : []),
+  ];
+  const relatedEntities = [
+    ...(promo.budget_id ? [{ type: 'Budget', name: promo.budget_name || promo.budget_id, path: `/plan/budgets/${promo.budget_id}` }] : []),
+    ...(promo.customer_name ? [{ type: 'Customer', name: promo.customer_name }] : []),
+  ];
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-        <Button startIcon={<ArrowLeft size={16} />} onClick={() => navigate('/execute/promotions')} sx={{ color: 'text.secondary' }}>Back</Button>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box>
-          <Typography variant="h1">{promo.name || promo.promotion_name}</Typography>
-          <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-            <Chip label={(promo.status || 'draft').replace(/_/g, ' ')} size="small" sx={{ bgcolor: `${statusColor(promo.status)}15`, color: statusColor(promo.status), fontWeight: 600, textTransform: 'capitalize' }} />
-            <Chip label={(promo.type || promo.promotion_type || '').replace(/_/g, ' ')} size="small" variant="outlined" sx={{ textTransform: 'capitalize' }} />
-          </Box>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          {promo.status === 'draft' && <Button variant="contained" startIcon={<Send size={16} />} onClick={() => setActionDialog({ open: true, type: 'submit' })}>Submit</Button>}
-          {promo.status === 'pending_approval' && <Button variant="contained" color="success" startIcon={<CheckCircle size={16} />} onClick={() => setActionDialog({ open: true, type: 'approve' })}>Approve</Button>}
-          {promo.status === 'pending_approval' && <Button variant="outlined" color="error" startIcon={<XCircle size={16} />} onClick={() => setActionDialog({ open: true, type: 'reject' })}>Reject</Button>}
-          <Button variant="outlined" startIcon={<Copy size={16} />} onClick={() => handleAction('clone')}>Clone</Button>
-          <Button variant="outlined" startIcon={<Edit2 size={16} />} onClick={() => navigate(`/execute/promotions/${id}/edit`)}>Edit</Button>
-        </Box>
-      </Box>
+      <PageHeader
+        title={promo.name || promo.promotion_name}
+        subtitle={`${(promo.type || promo.promotion_type || '').replace(/_/g, ' ')} • ${promo.start_date ? new Date(promo.start_date).toLocaleDateString() : ''} – ${promo.end_date ? new Date(promo.end_date).toLocaleDateString() : ''}`}
+        breadcrumbs={[{ label: t('promotions', 'Promotions'), path: '/execute/promotions' }, { label: promo.name || promo.promotion_name }]}
+        actions={<Button startIcon={<ArrowLeft size={16} />} onClick={() => navigate('/execute/promotions')} sx={{ color: 'text.secondary' }}>Back</Button>}
+      />
+      <QuickActionBar
+        status={promo.status || 'draft'}
+        entityType="promotion"
+        entityId={id}
+        entityName={promo.name || promo.promotion_name}
+        onAction={(action, metadata) => handleAction(action, metadata?.comment)}
+        customActions={getPromotionActions()}
+        budgetInfo={{ spent: actual, total: planned }}
+        sx={{ mb: 3 }}
+      />
 
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">Planned Spend</Typography><Typography variant="h2">{fmt(promo.planned_spend || promo.budget)}</Typography></CardContent></Card></Grid>
-        <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">Actual Spend</Typography><Typography variant="h2">{fmt(promo.actual_spend)}</Typography></CardContent></Card></Grid>
-        <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">ROI</Typography><Typography variant="h2">{promo.roi ? `${Number(promo.roi).toFixed(1)}x` : '-'}</Typography></CardContent></Card></Grid>
-        <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">Lift</Typography><Typography variant="h2">{promo.incremental_lift ? `${Number(promo.incremental_lift).toFixed(1)}%` : '-'}</Typography></CardContent></Card></Grid>
-      </Grid>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={9}>
+          <Grid container spacing={2.5} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">Planned Spend</Typography><Typography variant="h2">{fmt(planned)}</Typography></CardContent></Card></Grid>
+            <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">Actual Spend</Typography><Typography variant="h2">{fmt(actual)}</Typography></CardContent></Card></Grid>
+            <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">ROI</Typography><Typography variant="h2">{promo.roi ? `${Number(promo.roi).toFixed(1)}x` : '-'}</Typography></CardContent></Card></Grid>
+            <Grid item xs={12} sm={3}><Card><CardContent><Typography variant="body2" color="text.secondary">Lift</Typography><Typography variant="h2">{promo.incremental_lift ? `${Number(promo.incremental_lift).toFixed(1)}%` : '-'}</Typography></CardContent></Card></Grid>
+          </Grid>
 
-      <Card>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2 }}>
-          <Tab label="Details" /><Tab label="Financials" /><Tab label="Performance" /><Tab label="Approvals" />
-        </Tabs>
-        <CardContent>
+          <Card>
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2 }}>
+              <Tab label="Details" /><Tab label="Financials" /><Tab label="Performance" /><Tab label="Approvals" />
+            </Tabs>
+            <CardContent>
           {tab === 0 && (
             <Grid container spacing={2}>
               {[['Description', promo.description || '-'], ['Mechanic', (promo.mechanic || '').replace(/_/g, ' ')], ['Customer', promo.customer_name || '-'], ['Start Date', promo.start_date ? new Date(promo.start_date).toLocaleDateString() : '-'], ['End Date', promo.end_date ? new Date(promo.end_date).toLocaleDateString() : '-'], ['Created', promo.created_at ? new Date(promo.created_at).toLocaleDateString() : '-']].map(([label, val]) => (
@@ -112,8 +158,13 @@ export default function PromotionDetail() {
               <Typography variant="body2" color="text.secondary">{promo.status === 'pending_approval' ? 'Awaiting approval' : promo.status === 'approved' || promo.status === 'active' ? 'Approved' : 'No approval required yet'}</Typography>
             </Box>
           )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} relatedEntities={relatedEntities} loading={loading} />
+        </Grid>
+      </Grid>
       {/* W-09: Action Confirmation Dialog */}
       <Dialog open={actionDialog.open} onClose={() => { setActionDialog({ open: false, type: '' }); setActionError(''); }}>
         <DialogTitle sx={{ textTransform: 'capitalize' }}>{actionDialog.type} {t('promotion')}</DialogTitle>

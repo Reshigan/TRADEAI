@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Grid, MenuItem, Alert } from '@mui/material';
-import { Plus, Search } from 'lucide-react';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Alert } from '@mui/material';
+import { Plus, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { claimService, customerService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { SmartTable, PageHeader, SmartField } from '../../components/shared';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function ClaimList() {
+  const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [form, setForm] = useState({ claim_type: 'promotion', amount: '', customer_id: '', description: '', promotion_id: '' });
@@ -18,6 +20,7 @@ export default function ClaimList() {
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const [res, cust] = await Promise.allSettled([claimService.getAll(), customerService.getAll()]);
       if (res.status === 'fulfilled') setClaims(res.value.data || res.value || []);
@@ -28,8 +31,6 @@ export default function ClaimList() {
 
   useEffect(() => { load(); }, [load]);
 
-  const filtered = claims.filter(c => (c.description || c.claim_type || '').toLowerCase().includes(search.toLowerCase()));
-
   const handleCreate = async () => {
     setSaving(true); setError('');
     try {
@@ -39,55 +40,67 @@ export default function ClaimList() {
     setSaving(false);
   };
 
+  const columns = [
+    { field: 'description', headerName: 'Description', renderCell: ({ row }) => row.description || row.claim_type || '—' },
+    { field: 'claim_type', headerName: 'Type', renderCell: ({ row }) => (row.claim_type || '').replace(/_/g, ' ') },
+    { field: 'customer_name', headerName: 'Customer' },
+    { field: 'amount', headerName: 'Amount', type: 'currency', align: 'right', renderCell: ({ row }) => fmt(row.amount) },
+    { field: 'status', headerName: 'Status', type: 'status' },
+    { field: 'created_at', headerName: 'Date', type: 'date' },
+  ];
+
+  const rowActions = [
+    { label: 'View', icon: <Eye size={16} />, onClick: (row) => navigate(`/settle/claims/${row.id}`) },
+  ];
+
+  const customerOptions = customers.map(c => ({ value: c.id, label: c.name || c.customer_name }));
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">{tPlural('claim')}</Typography><Typography variant="body2" color="text.secondary">Manage {t('promotion').toLowerCase()} {tPlural('claim').toLowerCase()} and reimbursements</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>New {t('claim')}</Button>
-      </Box>
-      <Card>
-        <CardContent>
-          <TextField placeholder="Search claims..." size="small" value={search} onChange={(e) => setSearch(e.target.value)}
-            InputProps={{ startAdornment: <Search size={16} color="#94A3B8" style={{ marginRight: 8 }} /> }} sx={{ mb: 2, maxWidth: 360, width: '100%' }} />
-          {loading ? <LinearProgress /> : (
-            <TableContainer>
-              <Table size="small">
-                <TableHead><TableRow><TableCell>Description</TableCell><TableCell>Type</TableCell><TableCell>Customer</TableCell><TableCell align="right">Amount</TableCell><TableCell>Status</TableCell><TableCell>Date</TableCell></TableRow></TableHead>
-                <TableBody>
-                  {filtered.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No claims found</Typography></TableCell></TableRow>
-                  ) : filtered.map(c => (
-                    <TableRow key={c.id}>
-                      <TableCell><Typography variant="body2" fontWeight={500}>{c.description || c.claim_type}</Typography></TableCell>
-                      <TableCell sx={{ textTransform: 'capitalize' }}>{(c.claim_type || '').replace(/_/g, ' ')}</TableCell>
-                      <TableCell>{c.customer_name || '-'}</TableCell>
-                      <TableCell align="right">{fmt(c.amount)}</TableCell>
-                      <TableCell><Chip label={c.status || 'pending'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
-                      <TableCell>{c.created_at ? new Date(c.created_at).toLocaleDateString() : '-'}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </CardContent>
-      </Card>
+      <PageHeader
+        title={tPlural('claim')}
+        subtitle={`Manage ${t('promotion').toLowerCase()} ${tPlural('claim').toLowerCase()} and reimbursements`}
+        actions={
+          <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => setShowCreate(true)}>
+            New {t('claim')}
+          </Button>
+        }
+      />
+      <SmartTable
+        columns={columns}
+        data={claims}
+        loading={loading}
+        onRowClick={(row) => navigate(`/settle/claims/${row.id}`)}
+        rowActions={rowActions}
+        searchPlaceholder={`Search ${tPlural('claim').toLowerCase()}...`}
+        emptyMessage={`No ${tPlural('claim').toLowerCase()} found`}
+      />
+
       <Dialog open={showCreate} onClose={() => setShowCreate(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Create Claim</DialogTitle>
+        <DialogTitle>Create {t('claim')}</DialogTitle>
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
-            <Grid item xs={12}><TextField fullWidth label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required /></Grid>
-            <Grid item xs={6}><TextField fullWidth label="Amount" type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required /></Grid>
-            <Grid item xs={6}><TextField fullWidth select label="Type" value={form.claim_type} onChange={(e) => setForm({ ...form, claim_type: e.target.value })}>
-              <MenuItem value="promotion">Promotion</MenuItem><MenuItem value="display">Display</MenuItem><MenuItem value="rebate">Rebate</MenuItem><MenuItem value="damage">Damage</MenuItem>
-            </TextField></Grid>
-            <Grid item xs={12}><TextField fullWidth select label="Customer" value={form.customer_id} onChange={(e) => setForm({ ...form, customer_id: e.target.value })}>
-              <MenuItem value="">Select Customer</MenuItem>{customers.map(c => <MenuItem key={c.id} value={c.id}>{c.name || c.customer_name}</MenuItem>)}
-            </TextField></Grid>
+            <Grid item xs={12}>
+              <SmartField name="description" label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="amount" label="Amount" type="currency" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required />
+            </Grid>
+            <Grid item xs={6}>
+              <SmartField name="claim_type" label="Type" type="select" value={form.claim_type} onChange={(e) => setForm({ ...form, claim_type: e.target.value })}
+                options={[{ value: 'promotion', label: 'Promotion' }, { value: 'display', label: 'Display' }, { value: 'rebate', label: 'Rebate' }, { value: 'damage', label: 'Damage' }]} />
+            </Grid>
+            <Grid item xs={12}>
+              <SmartField name="customer_id" label="Customer" type="select" value={form.customer_id} onChange={(e) => setForm({ ...form, customer_id: e.target.value })}
+                options={customerOptions} />
+            </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions><Button onClick={() => setShowCreate(false)}>Cancel</Button><Button variant="contained" onClick={handleCreate} disabled={saving}>{saving ? 'Creating...' : 'Create'}</Button></DialogActions>
+        <DialogActions>
+          <Button onClick={() => setShowCreate(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleCreate} disabled={saving}>{saving ? 'Creating...' : 'Create'}</Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

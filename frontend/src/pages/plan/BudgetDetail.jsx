@@ -3,6 +3,7 @@ import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress,
 import { ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { budgetService, promotionService } from '../../services/api';
+import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -26,6 +27,38 @@ export default function BudgetDetail() {
     load();
   }, [id]);
 
+  const handleAction = async (action, metadata) => {
+    try {
+      if (action === 'edit') { navigate(`/plan/budgets/${id}/edit`); return; }
+      if (action === 'delete') {
+        await budgetService.delete(id); navigate('/plan/budgets');
+        return;
+      }
+      if (action === 'submit') await budgetService.update(id, { status: 'pending_approval' });
+      else if (action === 'approve') await budgetService.update(id, { status: 'approved', notes: metadata?.comment });
+      else if (action === 'reject') await budgetService.update(id, { status: 'rejected', reason: metadata?.comment });
+      const res = await budgetService.getById(id);
+      setBudget(res.data || res);
+    } catch (e) { console.error(e); throw e; }
+  };
+
+  // Budget-specific actions per status — only show actions we can handle
+  const getBudgetActions = () => {
+    const s = (budget?.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this budget for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'inherit' },
+        { action: 'delete', label: 'Delete', icon: null, color: 'error', confirm: true, confirmMsg: 'Delete this budget?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this budget?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this budget?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;
   if (!budget) return <Box sx={{ py: 4 }}><Typography>Budget not found</Typography><Button onClick={() => navigate('/plan/budgets')}>Back</Button></Box>;
 
@@ -34,72 +67,96 @@ export default function BudgetDetail() {
   const util = total > 0 ? (spent / total) * 100 : 0;
   const available = total - spent;
 
+  const sidebarStats = [
+    { label: 'Total Budget', value: fmt(total) },
+    { label: 'Spent / Committed', value: fmt(spent), progress: util, color: util > 90 ? 'error' : 'primary' },
+    { label: 'Available', value: fmt(available) },
+    { label: 'Utilization', value: `${util.toFixed(1)}%` },
+  ];
+
+  const sidebarActivities = [
+    { action: 'created', user: budget.created_by || 'System', timestamp: budget.created_at, detail: `Budget created: ${fmt(total)}` },
+    ...(budget.updated_at && budget.updated_at !== budget.created_at ? [{ action: 'updated', user: 'System', timestamp: budget.updated_at, detail: 'Budget updated' }] : []),
+  ];
+
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-        <Button startIcon={<ArrowLeft size={16} />} onClick={() => navigate('/plan/budgets')} sx={{ color: 'text.secondary' }}>Back</Button>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box>
-          <Typography variant="h1">{budget.name}</Typography>
-          <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-            <Chip label={budget.status || 'draft'} size="small" sx={{ textTransform: 'capitalize' }} />
-            <Chip label={`FY ${budget.fiscal_year}`} size="small" variant="outlined" />
-          </Box>
-        </Box>
-      </Box>
+      <PageHeader
+        title={budget.name}
+        subtitle={`FY ${budget.fiscal_year || budget.year || '-'}`}
+        breadcrumbs={[{ label: 'Budgets', path: '/plan/budgets' }, { label: budget.name }]}
+        actions={<Button startIcon={<ArrowLeft size={16} />} onClick={() => navigate('/plan/budgets')} sx={{ color: 'text.secondary' }}>Back</Button>}
+      />
+      <QuickActionBar
+        status={budget.status || 'draft'}
+        entityType="budget"
+        entityId={id}
+        entityName={budget.name}
+        onAction={handleAction}
+        customActions={getBudgetActions()}
+        budgetInfo={{ spent, total }}
+        sx={{ mb: 3 }}
+      />
 
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
-          <Card><CardContent>
-            <Typography variant="body2" color="text.secondary">Total Budget</Typography>
-            <Typography variant="h2">{fmt(total)}</Typography>
-          </CardContent></Card>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={9}>
+          <Grid container spacing={2.5} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={4}>
+              <Card><CardContent>
+                <Typography variant="body2" color="text.secondary">Total Budget</Typography>
+                <Typography variant="h2">{fmt(total)}</Typography>
+              </CardContent></Card>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Card><CardContent>
+                <Typography variant="body2" color="text.secondary">Spent / Committed</Typography>
+                <Typography variant="h2" sx={{ color: '#DC2626' }}>{fmt(spent)}</Typography>
+              </CardContent></Card>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Card><CardContent>
+                <Typography variant="body2" color="text.secondary">Available</Typography>
+                <Typography variant="h2" sx={{ color: '#059669' }}>{fmt(available)}</Typography>
+                <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ mt: 1, height: 6, borderRadius: 3, bgcolor: '#F1F5F9' }} />
+              </CardContent></Card>
+            </Grid>
+          </Grid>
+
+          <Card>
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2 }}>
+              <Tab label="Linked Promotions" /><Tab label="Allocations" /><Tab label="History" />
+            </Tabs>
+            <CardContent>
+              {tab === 0 && (
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead><TableRow><TableCell>Promotion</TableCell><TableCell>Type</TableCell><TableCell>Status</TableCell><TableCell align="right">Amount</TableCell><TableCell>Period</TableCell></TableRow></TableHead>
+                    <TableBody>
+                      {promos.length === 0 ? (
+                        <TableRow><TableCell colSpan={5} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>No promotions linked</Typography></TableCell></TableRow>
+                      ) : promos.map(p => (
+                        <TableRow key={p.id} onClick={() => navigate(`/execute/promotions/${p.id}`)} sx={{ cursor: 'pointer' }}>
+                          <TableCell>{p.name || p.promotion_name}</TableCell>
+                          <TableCell sx={{ textTransform: 'capitalize' }}>{(p.type || p.promotion_type || '').replace('_', ' ')}</TableCell>
+                          <TableCell><Chip label={p.status || 'draft'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
+                          <TableCell align="right">{fmt(p.planned_spend || p.budget)}</TableCell>
+                          <TableCell>{p.start_date ? new Date(p.start_date).toLocaleDateString() : '-'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+              {tab === 1 && <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>Budget allocation breakdown coming from backend allocations API</Typography>}
+              {tab === 2 && <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>Budget history and audit trail</Typography>}
+            </CardContent>
+          </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card><CardContent>
-            <Typography variant="body2" color="text.secondary">Spent / Committed</Typography>
-            <Typography variant="h2" sx={{ color: '#DC2626' }}>{fmt(spent)}</Typography>
-          </CardContent></Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card><CardContent>
-            <Typography variant="body2" color="text.secondary">Available</Typography>
-            <Typography variant="h2" sx={{ color: '#059669' }}>{fmt(available)}</Typography>
-            <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ mt: 1, height: 6, borderRadius: 3, bgcolor: '#F1F5F9' }} />
-          </CardContent></Card>
+
+        <Grid item xs={12} md={3}>
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} loading={loading} />
         </Grid>
       </Grid>
-
-      <Card>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2 }}>
-          <Tab label="Linked Promotions" /><Tab label="Allocations" /><Tab label="History" />
-        </Tabs>
-        <CardContent>
-          {tab === 0 && (
-            <TableContainer>
-              <Table size="small">
-                <TableHead><TableRow><TableCell>Promotion</TableCell><TableCell>Type</TableCell><TableCell>Status</TableCell><TableCell align="right">Amount</TableCell><TableCell>Period</TableCell></TableRow></TableHead>
-                <TableBody>
-                  {promos.length === 0 ? (
-                    <TableRow><TableCell colSpan={5} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>No promotions linked</Typography></TableCell></TableRow>
-                  ) : promos.map(p => (
-                    <TableRow key={p.id} onClick={() => navigate(`/execute/promotions/${p.id}`)} sx={{ cursor: 'pointer' }}>
-                      <TableCell>{p.name || p.promotion_name}</TableCell>
-                      <TableCell sx={{ textTransform: 'capitalize' }}>{(p.type || p.promotion_type || '').replace('_', ' ')}</TableCell>
-                      <TableCell><Chip label={p.status || 'draft'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>
-                      <TableCell align="right">{fmt(p.planned_spend || p.budget)}</TableCell>
-                      <TableCell>{p.start_date ? new Date(p.start_date).toLocaleDateString() : '-'}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-          {tab === 1 && <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>Budget allocation breakdown coming from backend allocations API</Typography>}
-          {tab === 2 && <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>Budget history and audit trail</Typography>}
-        </CardContent>
-      </Card>
     </Box>
   );
 }

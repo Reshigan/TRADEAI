@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Grid, MenuItem, LinearProgress, Alert, InputAdornment, Divider, Stepper, Step, StepLabel, Autocomplete } from '@mui/material';
-import { Plus, Search, Trash2, Eye, AlertTriangle } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, Alert, Stepper, Step, StepLabel, Autocomplete, TextField } from '@mui/material';
+import { Plus, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { budgetService, customerService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { SmartTable, PageHeader, SmartField, FormSection } from '../../components/shared';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -61,7 +62,6 @@ export default function BudgetList() {
   const { t, tPlural } = useTerminology();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [saving, setSaving] = useState(false);
@@ -88,8 +88,6 @@ export default function BudgetList() {
     }
   }, [showCreate]);
 
-  const filtered = budgets.filter(b => (b.name || '').toLowerCase().includes(search.toLowerCase()));
-
   const handleCreate = async () => {
     setSaving(true); setError('');
     try {
@@ -106,21 +104,34 @@ export default function BudgetList() {
     try { await budgetService.delete(id); load(); } catch (e) { console.error(e); }
   };
 
-  const statusColor = (s) => ({ draft: '#94A3B8', approved: '#2563EB', active: '#059669', closed: '#6B7280', planned: '#D97706' }[s] || '#94A3B8');
   const steps = ['Budget Details', 'Scope & Targeting', 'Review'];
+
+  const columns = [
+    { field: 'name', headerName: 'Budget Name' },
+    { field: 'budget_type', headerName: 'Type', renderCell: ({ row }) => (row.budget_type || '').replace(/_/g, ' ') },
+    { field: 'budget_category', headerName: 'Category', renderCell: ({ row }) => (row.budget_category || row.category || '').replace(/_/g, ' ') },
+    { field: 'year', headerName: 'Year' },
+    { field: 'amount', headerName: 'Amount', align: 'right', renderCell: ({ row }) => fmt(row.amount) },
+    { field: 'committed', headerName: 'Committed', align: 'right', renderCell: ({ row }) => fmt(row.committed) },
+    { field: 'spent', headerName: 'Spent', align: 'right', renderCell: ({ row }) => fmt(row.spent || row.utilized) },
+    { field: 'status', headerName: 'Status', type: 'status' },
+  ];
+
+  const rowActions = [
+    { label: 'View', icon: <Eye size={16} />, onClick: (row) => navigate(`/plan/budgets/${row.id}`) },
+    { label: 'Delete', icon: <Trash2 size={16} />, onClick: (row) => handleDelete(row.id) },
+  ];
   const totalBudget = budgets.reduce((sum, b) => sum + Number(b.amount || 0), 0);
   const totalSpent = budgets.reduce((sum, b) => sum + Number(b.spent || b.utilized || 0), 0);
   const totalCommitted = budgets.reduce((sum, b) => sum + Number(b.committed || 0), 0);
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={700}>{t('budget')} Management</Typography>
-          <Typography variant="body2" color="text.secondary">Plan, allocate, and track trade {t('promotion').toLowerCase()} {tPlural('budget').toLowerCase()}</Typography>
-        </Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => { setForm({ ...emptyForm }); setError(''); setActiveStep(0); setShowCreate(true); }}>New Budget</Button>
-      </Box>
+      <PageHeader
+        title={`${t('budget')} Management`}
+        subtitle={`Plan, allocate, and track trade ${t('promotion').toLowerCase()} ${tPlural('budget').toLowerCase()}`}
+        actions={<Button variant="contained" startIcon={<Plus size={16} />} onClick={() => { setForm({ ...emptyForm }); setError(''); setActiveStep(0); setShowCreate(true); }}>New Budget</Button>}
+      />
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
@@ -138,58 +149,15 @@ export default function BudgetList() {
         ))}
       </Grid>
 
-      <Card>
-        <CardContent sx={{ pb: '16px !important' }}>
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <TextField placeholder="Search budgets..." size="small" value={search} onChange={(e) => setSearch(e.target.value)}
-              InputProps={{ startAdornment: <Search size={16} color="#94A3B8" style={{ marginRight: 8 }} /> }} sx={{ flex: 1, maxWidth: 360 }} />
-          </Box>
-          {loading ? <LinearProgress /> : (
-            <TableContainer>
-              <Table size="small">
-                <TableHead><TableRow>
-                  <TableCell>Budget Name</TableCell><TableCell>Type</TableCell><TableCell>Category</TableCell><TableCell>Year</TableCell>
-                  <TableCell align="right">Amount</TableCell><TableCell align="right">Committed</TableCell><TableCell align="right">Spent</TableCell>
-                  <TableCell>Utilization</TableCell><TableCell>Status</TableCell><TableCell align="right">Actions</TableCell>
-                </TableRow></TableHead>
-                <TableBody>
-                  {filtered.length === 0 ? (
-                    <TableRow><TableCell colSpan={10} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No budgets found</Typography></TableCell></TableRow>
-                  ) : filtered.map(b => {
-                    const spent = Number(b.spent || b.utilized || 0);
-                    const committed = Number(b.committed || 0);
-                    const total = Number(b.amount || 0);
-                    const util = total > 0 ? ((spent + committed) / total) * 100 : 0;
-                    return (
-                      <TableRow key={b.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/plan/budgets/${b.id}`)}>
-                        <TableCell><Typography variant="body2" fontWeight={600}>{b.name}</Typography></TableCell>
-                        <TableCell><Typography variant="body2" sx={{ textTransform: 'capitalize' }}>{(b.budget_type || '').replace('_', ' ')}</Typography></TableCell>
-                        <TableCell><Typography variant="body2" sx={{ textTransform: 'capitalize' }}>{(b.budget_category || b.category || '').replace('_', ' ')}</Typography></TableCell>
-                        <TableCell>{b.year}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600 }}>{fmt(total)}</TableCell>
-                        <TableCell align="right"><Typography variant="body2" color="warning.main">{fmt(committed)}</Typography></TableCell>
-                        <TableCell align="right"><Typography variant="body2" color="primary.main">{fmt(spent)}</Typography></TableCell>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: '#F1F5F9', '& .MuiLinearProgress-bar': { bgcolor: util > 90 ? '#DC2626' : util > 70 ? '#D97706' : '#2563EB', borderRadius: 3 } }} />
-                            <Typography variant="caption" sx={{ minWidth: 32 }}>{util.toFixed(0)}%</Typography>
-                            {util > 90 && <AlertTriangle size={14} color="#DC2626" />}
-                          </Box>
-                        </TableCell>
-                        <TableCell><Chip label={b.status || 'draft'} size="small" sx={{ bgcolor: `${statusColor(b.status)}15`, color: statusColor(b.status), fontWeight: 600, textTransform: 'capitalize' }} /></TableCell>
-                        <TableCell align="right" onClick={e => e.stopPropagation()}>
-                          <IconButton size="small" onClick={() => navigate(`/plan/budgets/${b.id}`)} title="View"><Eye size={16} /></IconButton>
-                          <IconButton size="small" onClick={() => handleDelete(b.id)} title="Delete"><Trash2 size={16} /></IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </CardContent>
-      </Card>
+      <SmartTable
+        columns={columns}
+        data={budgets}
+        loading={loading}
+        onRowClick={(row) => navigate(`/plan/budgets/${row.id}`)}
+        rowActions={rowActions}
+        searchPlaceholder="Search budgets..."
+        emptyMessage="No budgets found"
+      />
 
       <Dialog open={showCreate} onClose={() => { setShowCreate(false); setForm({ ...emptyForm }); setError(''); setActiveStep(0); }} maxWidth="md" fullWidth>
         <DialogTitle sx={{ pb: 1 }}>
@@ -205,74 +173,66 @@ export default function BudgetList() {
           {activeStep === 0 && (
             <Grid container spacing={2} sx={{ mt: 0.5 }}>
               <Grid item xs={12}>
-                <TextField fullWidth label="Budget Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required
-                  helperText="E.g. 'Q1 2025 Trade Promotion Budget' or 'Woolworths Listing Fees 2025'" />
+                <SmartField name="name" label="Budget Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
               </Grid>
               <Grid item xs={6}>
-                <TextField fullWidth label="Budget Amount" type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required
-                  InputProps={{ startAdornment: <InputAdornment position="start">R</InputAdornment> }} helperText="Total budget allocation in ZAR" />
+                <SmartField name="amount" label="Budget Amount" type="currency" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required />
               </Grid>
               <Grid item xs={6}>
-                <TextField fullWidth label="Fiscal Year" type="number" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} />
+                <SmartField name="year" label="Fiscal Year" type="number" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} />
               </Grid>
               <Grid item xs={6}>
-                <TextField fullWidth select label="Budget Type" value={form.budget_type} onChange={(e) => setForm({ ...form, budget_type: e.target.value })}>
-                  {BUDGET_TYPES.map(t => <MenuItem key={t.value} value={t.value}>{t.label}</MenuItem>)}
-                </TextField>
+                <SmartField name="budget_type" label="Budget Type" type="select" value={form.budget_type} onChange={(e) => setForm({ ...form, budget_type: e.target.value })} options={BUDGET_TYPES} />
               </Grid>
               <Grid item xs={6}>
-                <TextField fullWidth select label="Budget Category" value={form.budget_category} onChange={(e) => setForm({ ...form, budget_category: e.target.value })}>
-                  {BUDGET_CATEGORIES.map(c => <MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>)}
-                </TextField>
+                <SmartField name="budget_category" label="Budget Category" type="select" value={form.budget_category} onChange={(e) => setForm({ ...form, budget_category: e.target.value })} options={BUDGET_CATEGORIES} />
               </Grid>
               <Grid item xs={6}>
-                <TextField fullWidth select label="Deal Type" value={form.deal_type} onChange={(e) => setForm({ ...form, deal_type: e.target.value })}>
-                  {DEAL_TYPES.map(d => <MenuItem key={d.value} value={d.value}>{d.label}</MenuItem>)}
-                </TextField>
+                <SmartField name="deal_type" label="Deal Type" type="select" value={form.deal_type} onChange={(e) => setForm({ ...form, deal_type: e.target.value })} options={DEAL_TYPES} />
               </Grid>
               <Grid item xs={6}>
-                <TextField fullWidth select label="Status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                  <MenuItem value="draft">Draft</MenuItem><MenuItem value="planned">Planned</MenuItem><MenuItem value="active">Active</MenuItem>
-                </TextField>
+                <SmartField name="status" label="Status" type="select" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  options={[{ value: 'draft', label: 'Draft' }, { value: 'planned', label: 'Planned' }, { value: 'active', label: 'Active' }]} />
               </Grid>
             </Grid>
           )}
 
           {activeStep === 1 && (
-            <Grid container spacing={2} sx={{ mt: 0.5 }}>
-              <Grid item xs={12}><Typography variant="subtitle2" color="text.secondary" gutterBottom>Scope & Targeting</Typography><Divider sx={{ mb: 1 }} /></Grid>
-              <Grid item xs={6}>
-                <TextField fullWidth select label="Scope Type" value={form.scope_type} onChange={(e) => setForm({ ...form, scope_type: e.target.value })}>
-                  {SCOPE_TYPES.map(s => <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>)}
-                </TextField>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField fullWidth select label="Customer Channel" value={form.customer_channel} onChange={(e) => setForm({ ...form, customer_channel: e.target.value })}>
-                  <MenuItem value="">All Channels</MenuItem>
-                  {CUSTOMER_CHANNELS.map(ch => <MenuItem key={ch.value} value={ch.value}>{ch.label}</MenuItem>)}
-                </TextField>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField fullWidth label="Customer Sub-Channel" value={form.customer_sub_channel} onChange={(e) => setForm({ ...form, customer_sub_channel: e.target.value })} helperText="Optional sub-channel filter" />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField fullWidth label="Customer Segmentation" value={form.customer_segmentation} onChange={(e) => setForm({ ...form, customer_segmentation: e.target.value })} helperText="E.g. Premium, Value, Mainstream" />
-              </Grid>
-              {form.scope_type === 'customer' && (
-                <Grid item xs={12}>
-                  <Autocomplete options={customers} getOptionLabel={(opt) => opt.name || opt.customer_name || ''}
-                    value={customers.find(c => c.id === form.customer_id) || null}
-                    onChange={(e, val) => setForm({ ...form, customer_id: val?.id || '' })}
-                    renderInput={(params) => <TextField {...params} label="Specific Customer" helperText="Select a customer for customer-specific budgets" />} />
+            <Box sx={{ mt: 0.5 }}>
+              <FormSection title="Scope & Targeting" defaultOpen>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <SmartField name="scope_type" label="Scope Type" type="select" value={form.scope_type} onChange={(e) => setForm({ ...form, scope_type: e.target.value })} options={SCOPE_TYPES} />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <SmartField name="customer_channel" label="Customer Channel" type="select" value={form.customer_channel} onChange={(e) => setForm({ ...form, customer_channel: e.target.value })}
+                      options={[{ value: '', label: 'All Channels' }, ...CUSTOMER_CHANNELS]} />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <SmartField name="customer_sub_channel" label="Customer Sub-Channel" value={form.customer_sub_channel} onChange={(e) => setForm({ ...form, customer_sub_channel: e.target.value })} />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <SmartField name="customer_segmentation" label="Customer Segmentation" value={form.customer_segmentation} onChange={(e) => setForm({ ...form, customer_segmentation: e.target.value })} />
+                  </Grid>
+                  {form.scope_type === 'customer' && (
+                    <Grid item xs={12}>
+                      <Autocomplete options={customers} getOptionLabel={(opt) => opt.name || opt.customer_name || ''}
+                        value={customers.find(c => c.id === form.customer_id) || null}
+                        onChange={(e, val) => setForm({ ...form, customer_id: val?.id || '' })}
+                        renderInput={(params) => <TextField {...params} label="Specific Customer" />} />
+                    </Grid>
+                  )}
                 </Grid>
-              )}
-              <Grid item xs={12}><Divider sx={{ my: 1 }} /></Grid>
-              <Grid item xs={12}><Typography variant="subtitle2" color="text.secondary" gutterBottom>Product Targeting (Optional)</Typography></Grid>
-              <Grid item xs={6}><TextField fullWidth label="Product Vendor" value={form.product_vendor} onChange={(e) => setForm({ ...form, product_vendor: e.target.value })} /></Grid>
-              <Grid item xs={6}><TextField fullWidth label="Product Category" value={form.product_category} onChange={(e) => setForm({ ...form, product_category: e.target.value })} /></Grid>
-              <Grid item xs={6}><TextField fullWidth label="Product Brand" value={form.product_brand} onChange={(e) => setForm({ ...form, product_brand: e.target.value })} /></Grid>
-              <Grid item xs={6}><TextField fullWidth label="Product Sub-Brand" value={form.product_sub_brand} onChange={(e) => setForm({ ...form, product_sub_brand: e.target.value })} /></Grid>
-            </Grid>
+              </FormSection>
+              <FormSection title="Product Targeting (Optional)">
+                <Grid container spacing={2}>
+                  <Grid item xs={6}><SmartField name="product_vendor" label="Product Vendor" value={form.product_vendor} onChange={(e) => setForm({ ...form, product_vendor: e.target.value })} /></Grid>
+                  <Grid item xs={6}><SmartField name="product_category" label="Product Category" value={form.product_category} onChange={(e) => setForm({ ...form, product_category: e.target.value })} /></Grid>
+                  <Grid item xs={6}><SmartField name="product_brand" label="Product Brand" value={form.product_brand} onChange={(e) => setForm({ ...form, product_brand: e.target.value })} /></Grid>
+                  <Grid item xs={6}><SmartField name="product_sub_brand" label="Product Sub-Brand" value={form.product_sub_brand} onChange={(e) => setForm({ ...form, product_sub_brand: e.target.value })} /></Grid>
+                </Grid>
+              </FormSection>
+            </Box>
           )}
 
           {activeStep === 2 && (

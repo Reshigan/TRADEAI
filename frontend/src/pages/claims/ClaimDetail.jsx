@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Button,
-  Chip,
   Grid,
   Divider,
   Table,
@@ -25,9 +24,6 @@ import {
   Skeleton
 } from '@mui/material';
 import {
-  Send as SubmitIcon,
-  CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
   ArrowBack as BackIcon
 } from '@mui/icons-material';
 import { claimService } from '../../services/api';
@@ -35,6 +31,7 @@ import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
 
 const ClaimDetail = () => {
   const { id } = useParams();
@@ -184,40 +181,89 @@ const ClaimDetail = () => {
     );
   }
 
+  // Claim-specific actions per status — only show actions we can actually handle
+  const getClaimActions = () => {
+    const s = (claim.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this claim for approval?' },
+      ],
+      submitted: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this claim?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
+      ],
+      under_review: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this claim?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
+      ],
+      pending: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this claim for approval?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this claim?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
+  const handleQuickAction = async (action, metadata) => {
+    if (action === 'submit') await handleSubmit();
+    else if (action === 'approve') await handleApprove();
+    else if (action === 'reject') {
+      if (metadata?.comment) {
+        // Call API directly to avoid React state race condition
+        try {
+          setActionLoading(true);
+          await claimService.reject(id, { comments: metadata.comment });
+          showToast('Claim rejected', 'success');
+          analytics.trackEvent('claim_rejected', { claimId: id, claimType: claim.claimType });
+          fetchClaimDetail();
+        } catch (err) {
+          console.error('Error rejecting claim:', err);
+          showToast(err.message || 'Failed to reject claim', 'error');
+          analytics.trackEvent('claim_reject_failed', { claimId: id, error: err.message });
+        } finally {
+          setActionLoading(false);
+        }
+      } else {
+        setRejectDialogOpen(true);
+      }
+    }
+  };
+
+  const sidebarStats = [
+    { label: 'Claimed Amount', value: formatCurrency(claim.claimedAmount || claim.totalAmount) },
+    { label: 'Claim Type', value: formatLabel(claim.claimType) },
+    { label: 'Customer', value: claim.customerName || claim.customer?.name || 'N/A' },
+    { label: 'Claim Date', value: formatDate(claim.claimDate) },
+    ...(claim.matchingStatus ? [{ label: 'Matching Status', value: formatLabel(claim.matchingStatus) }] : []),
+  ];
+  const sidebarActivities = [
+    { action: 'created', user: claim.createdBy || 'System', timestamp: claim.createdAt || claim.claimDate, detail: `Claim submitted: ${formatCurrency(claim.claimedAmount || claim.totalAmount)}` },
+    ...(claim.updatedAt && claim.updatedAt !== claim.createdAt ? [{ action: 'updated', user: 'System', timestamp: claim.updatedAt, detail: 'Claim updated' }] : []),
+  ];
+  const relatedEntities = [
+    ...(claim.matchedInvoices || []).map(inv => ({ type: 'Matched Invoice', name: inv.invoiceNumber || `Invoice ${(inv.id || '').toString().slice(-6)}`, id: inv.id })),
+  ];
+
   return (
       <Box sx={{ p: 3 }}>
-        {/* Header */}
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Button
-            startIcon={<BackIcon />}
-            onClick={() => navigate('/claims')}
-            sx={{ mb: 1 }}
-          >
-            Back to Claims
-          </Button>
-          <Typography variant="h4" gutterBottom>
-            Claim Details
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Claim ID: {claim.claimNumber || claim._id}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Chip
-            label={formatLabel(claim.status)}
-            color={getStatusColor(claim.status)}
-            size="large"
-          />
-          {claim.matchingStatus && (
-            <Chip
-                label={formatLabel(claim.matchingStatus)}
-                color={getStatusColor(claim.matchingStatus)}
-                size="large"
-            />
-          )}
-        </Box>
-      </Box>
+        <PageHeader
+          title={`Claim ${claim.claimNumber || (claim._id || '').slice(-8)}`}
+          subtitle={`${formatLabel(claim.claimType)} • ${claim.customerName || claim.customer?.name || 'N/A'}`}
+          breadcrumbs={[{ label: t('claims', 'Claims'), path: '/claims' }, { label: claim.claimNumber || 'Claim Detail' }]}
+          actions={<Button startIcon={<BackIcon />} onClick={() => navigate('/claims')}>Back to Claims</Button>}
+        />
+        <QuickActionBar
+          status={claim.status || 'draft'}
+          entityType="claim"
+          entityId={id}
+          entityName={claim.claimNumber || 'Claim'}
+          onAction={handleQuickAction}
+          customActions={getClaimActions()}
+          sx={{ mb: 3 }}
+        />
 
       <Grid container spacing={3}>
         {/* Main Details Card */}
@@ -332,93 +378,7 @@ const ClaimDetail = () => {
 
         {/* Sidebar */}
         <Grid item xs={12} md={4}>
-          {/* Actions Card */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Actions
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              {(claim.status === 'draft' || claim.status === 'pending') && (
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SubmitIcon />}
-                  onClick={handleSubmit}
-                  disabled={actionLoading}
-                  sx={{ mb: 2 }}
-                >
-                  Submit Claim
-                </Button>
-              )}
-
-              {(claim.status === 'submitted' || claim.status === 'under_review') && (
-                <>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="success"
-                    startIcon={<ApproveIcon />}
-                    onClick={handleApprove}
-                    disabled={actionLoading}
-                    sx={{ mb: 2 }}
-                  >
-                    Approve
-                  </Button>
-
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    color="error"
-                    startIcon={<RejectIcon />}
-                    onClick={() => setRejectDialogOpen(true)}
-                    disabled={actionLoading}
-                  >
-                    Reject
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Matching Status Card */}
-          {claim.matchingStatus && (
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Matching Status
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Status
-                  </Typography>
-                  <Chip
-                    label={formatLabel(claim.matchingStatus)}
-                    color={getStatusColor(claim.matchingStatus)}
-                    size="small"
-                    sx={{ mt: 0.5 }}
-                  />
-                </Box>
-
-                {claim.matchedInvoices && claim.matchedInvoices.length > 0 && (
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Matched Invoices
-                    </Typography>
-                    {(claim?.matchedInvoices || []).map((invoice, index) => (
-                      <Typography key={index} variant="body2">
-                        {invoice.invoiceNumber}
-                      </Typography>
-                    ))}
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} relatedEntities={relatedEntities} loading={loading} />
         </Grid>
       </Grid>
 

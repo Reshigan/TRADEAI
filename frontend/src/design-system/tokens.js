@@ -1,9 +1,19 @@
+// GONXT Brand Tokens
+export const brand = {
+  navy: '#0A111E',
+  gold: '#C9A12B',
+  fonts: {
+    heading: '"Instrument Serif", Georgia, serif',
+    body: '"Outfit", "Inter", -apple-system, sans-serif',
+    code: '"IBM Plex Mono", "Fira Code", monospace',
+  },
+};
 
 export const colors = {
   primary: {
-    main: '#7C3AED',
+    main: '#1976D2',
     light: '#42a5f5',
-    dark: '#1565c0',
+    dark: '#0D47A1',
     contrastText: '#fff',
   },
   
@@ -217,7 +227,30 @@ export const darkColors = {
   },
 };
 
+// MUI Theme component overrides derived from tokens
+export const themeOverrides = {
+  components: {
+    MuiPaper: { styleOverrides: { root: { borderRadius: borderRadius.xl } } },
+    MuiCard: { styleOverrides: { root: { borderRadius: borderRadius.xl, boxShadow: shadows.sm } } },
+    MuiButton: { styleOverrides: { root: { borderRadius: borderRadius.lg, textTransform: 'none', fontWeight: 600 } } },
+    MuiTextField: { styleOverrides: { root: { '& .MuiOutlinedInput-root': { borderRadius: borderRadius.md } } } },
+    MuiChip: { styleOverrides: { root: { borderRadius: borderRadius.md, fontWeight: 500 } } },
+    MuiDialog: { styleOverrides: { paper: { borderRadius: borderRadius.xl } } },
+    MuiTableCell: { styleOverrides: { head: { fontWeight: 600, backgroundColor: '#F9FAFB' } } },
+  },
+};
+
+// Shared styled component tokens
+export const layoutTokens = {
+  pageMaxWidth: 1200,
+  pagePadding: spacing.lg,
+  sectionPadding: spacing.lg,
+  cardBorder: '1px solid',
+  cardBorderColor: 'divider',
+};
+
 export default {
+  brand,
   colors,
   spacing,
   typography,
@@ -227,4 +260,6 @@ export default {
   breakpoints,
   transitions,
   darkColors,
+  themeOverrides,
+  layoutTokens,
 };
