@@ -48,7 +48,7 @@ const SmartDateRange = ({
       return `${Math.ceil((days + 1) / 30)} months`;
     }
     return null;
-  }, [startDate, endDate]);
+  }, [startValue, endValue]);
 
   const handleStartChange = (newVal) => {
     if (onChange) {

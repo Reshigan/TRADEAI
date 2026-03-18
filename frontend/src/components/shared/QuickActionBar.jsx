@@ -189,7 +189,7 @@ const QuickActionBar = ({
               color={action.color || 'primary'}
               startIcon={action.icon}
               onClick={() => handleAction(action)}
-              disabled={actionLoading === action.action}
+              disabled={actionLoading !== null}
             >
               {actionLoading === action.action ? 'Processing...' : action.label}
             </Button>
