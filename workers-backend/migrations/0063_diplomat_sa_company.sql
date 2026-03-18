@@ -2,12 +2,11 @@
 -- Uses INSERT OR IGNORE to avoid duplicate errors on re-run
 
 INSERT OR IGNORE INTO companies (
-  id, name, industry, country, currency, timezone,
+  id, name, country, currency, timezone,
   status, created_at, updated_at
 ) VALUES (
   'comp-diplomat-001',
   'Diplomat SA',
-  'FMCG',
   'ZA',
   'ZAR',
   'Africa/Johannesburg',
@@ -19,8 +18,8 @@ INSERT OR IGNORE INTO companies (
 -- Create admin user for Diplomat SA
 -- Password: DiplomatAdmin123! (bcrypt hash)
 INSERT OR IGNORE INTO users (
-  id, email, password_hash, first_name, last_name,
-  role, company_id, status, created_at, updated_at
+  id, email, password, first_name, last_name,
+  role, company_id, is_active, created_at, updated_at
 ) VALUES (
   'user-diplomat-admin-001',
   'admin@diplomatsa.co.za',
@@ -29,16 +28,16 @@ INSERT OR IGNORE INTO users (
   'Admin',
   'admin',
   'comp-diplomat-001',
-  'active',
+  1,
   datetime('now'),
   datetime('now')
 );
 
 -- Create default budget for Diplomat SA
 INSERT OR IGNORE INTO budgets (
-  id, company_id, name, fiscal_year, total_amount,
-  allocated, committed, spent, available,
-  status, created_at, updated_at
+  id, company_id, name, year, amount,
+  utilized, committed, spent,
+  budget_type, status, created_at, updated_at
 ) VALUES (
   'budget-diplomat-2024',
   'comp-diplomat-001',
@@ -48,7 +47,7 @@ INSERT OR IGNORE INTO budgets (
   0.00,
   0.00,
   0.00,
-  5000000.00,
+  'annual',
   'active',
   datetime('now'),
   datetime('now')

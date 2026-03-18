@@ -18,7 +18,12 @@ export function getApprovalLevel(amount, thresholds) {
 
 export async function routeApproval(db, entityType, entityId, amount, companyId, requesterId) {
   // Support legacy call signature: routeApproval(db, companyId, { entityType, ... })
-  if (typeof entityType === 'string' && entityType.startsWith('comp')) {
+  // or routeApproval(db, { companyId, entityType, ... })
+  if (typeof entityType === 'object' && entityType !== null) {
+    const opts = entityType;
+    return routeApproval(db, opts.entityType, opts.entityId, opts.amount, opts.companyId || entityId, opts.requestedBy || opts.createdBy);
+  }
+  if (typeof entityType === 'string' && !['promotion', 'budget', 'trade_spend', 'rebate', 'trading_term', 'claim', 'campaign'].includes(entityType)) {
     const legacyCompanyId = entityType;
     const opts = entityId;
     return routeApproval(db, opts.entityType, opts.entityId, opts.amount, legacyCompanyId, opts.requestedBy);
