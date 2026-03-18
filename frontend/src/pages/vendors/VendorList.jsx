@@ -38,7 +38,7 @@ const VendorList = () => {
   }), [vendors]);
 
   const summaryCards = [
-    { label: 'Total Vendors', value: stats.total, icon: <VendorsIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Vendors', value: stats.total, icon: <VendorsIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'With Contact Info', value: stats.withContact, icon: <EmailIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
   ];
 

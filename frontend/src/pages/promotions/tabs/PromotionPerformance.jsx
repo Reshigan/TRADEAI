@@ -80,7 +80,7 @@ const PromotionPerformance = ({ promotionId, promotion }) => {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { label: 'ROI', value: `${(kpis.roi || 0).toFixed(1)}x`, color: (kpis.roi || 0) > 1 ? '#059669' : '#DC2626', icon: <TrendingUpIcon /> },
-          { label: 'Uplift', value: formatPercentage(kpis.uplift), color: 'primary.dark', icon: <ChartIcon /> },
+          { label: 'Uplift', value: formatPercentage(kpis.uplift), color: '#1E40AF', icon: <ChartIcon /> },
           { label: 'Incremental Sales', value: formatCurrency(kpis.incrementalSales), color: '#2563EB', icon: <AssessmentIcon /> },
           { label: 'Actual Spend', value: formatCurrency(kpis.actualSpend), color: '#D97706', icon: <SpeedIcon /> },
           { label: 'Margin Impact', value: formatCurrency(kpis.marginImpact), color: (kpis.marginImpact || 0) > 0 ? '#059669' : '#DC2626', icon: <TrendingUpIcon /> },

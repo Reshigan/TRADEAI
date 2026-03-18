@@ -96,7 +96,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
 
 const EMPTY_EVENT = {
   name: '', description: '', eventType: 'promotion', status: 'draft',
-  startDate: '', endDate: '', allDay: true, color: 'primary.dark',
+  startDate: '', endDate: '', allDay: true, color: '#1E40AF',
   customerId: '', customerName: '', productId: '', productName: '',
   promotionId: '', budgetId: '', channel: '', region: '', category: '', brand: '',
   plannedSpend: 0, plannedVolume: 0, plannedRevenue: 0,

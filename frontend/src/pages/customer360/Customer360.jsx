@@ -188,7 +188,7 @@ const Customer360Dashboard = () => {
             { label: 'Net Revenue', value: formatCurrency(p.netRevenue), icon: <TrendingUp />, color: '#3B82F6' },
             { label: 'Trade Spend %', value: `${(p.tradeSpendPct || 0).toFixed(1)}%`, icon: <BarChart />, color: '#F59E0B' },
             { label: 'Health Score', value: `${Math.round(p.healthScore || 0)}/100`, icon: <Speed />, color: p.healthScore >= 60 ? '#10B981' : '#EF4444' },
-            { label: 'LTV Score', value: formatCurrency(p.ltvScore), icon: <Star />, color: 'primary.dark' },
+            { label: 'LTV Score', value: formatCurrency(p.ltvScore), icon: <Star />, color: '#1E40AF' },
             { label: 'Churn Risk', value: `${((p.churnRisk || 0) * 100).toFixed(0)}%`, icon: <Warning />, color: (p.churnRisk || 0) > 0.5 ? '#EF4444' : '#F59E0B' },
           ].map((card, i) => (
             <Grid item xs={12} sm={6} md={2} key={i}>
@@ -326,7 +326,7 @@ const Customer360Dashboard = () => {
       {summary && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {[
-            { label: 'Total Customers', value: summary.totalCustomers, icon: <Person />, color: 'primary.dark' },
+            { label: 'Total Customers', value: summary.totalCustomers, icon: <Person />, color: '#1E40AF' },
             { label: 'Active', value: summary.activeCustomers, icon: <ThumbUp />, color: '#10B981' },
             { label: 'At Risk', value: summary.atRiskCustomers, icon: <Warning />, color: '#EF4444' },
             { label: 'Avg Health', value: `${summary.avgHealthScore}/100`, icon: <Speed />, color: '#3B82F6' },

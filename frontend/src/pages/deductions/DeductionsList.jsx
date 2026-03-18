@@ -88,7 +88,7 @@ const DeductionsList = () => {
   }, [deductions]);
 
   const summaryCards = [
-    { label: 'Total Deductions', value: deductionStats.total, icon: <DeductionIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Deductions', value: deductionStats.total, icon: <DeductionIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Total Value', value: formatCurrency(deductionStats.totalAmount), icon: <ReconcileIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'Unmatched', value: deductionStats.unmatched, icon: <UnmatchedIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
     { label: 'Disputed', value: deductionStats.disputed, icon: <DisputeIcon />, color: '#DC2626', bg: alpha('#DC2626', 0.08) },

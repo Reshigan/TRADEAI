@@ -59,7 +59,7 @@ const TradeSpendList = () => {
     if (!summary) return [];
     const utilization = summary.totalApproved > 0 ? ((summary.totalSpent / summary.totalApproved) * 100).toFixed(1) : 0;
     return [
-      { label: 'Total Requested', value: `R${((summary.totalRequested || 0) / 1000).toFixed(1)}K`, icon: <AttachMoney />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+      { label: 'Total Requested', value: `R${((summary.totalRequested || 0) / 1000).toFixed(1)}K`, icon: <AttachMoney />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
       { label: 'Total Approved', value: `R${((summary.totalApproved || 0) / 1000).toFixed(1)}K`, icon: <CheckCircle />, color: '#059669', bg: alpha('#059669', 0.08) },
       { label: 'Total Spent', value: `R${((summary.totalSpent || 0) / 1000).toFixed(1)}K`, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
       { label: 'Utilization', value: `${utilization}%`, icon: <PieChartIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },

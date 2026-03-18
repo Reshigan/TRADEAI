@@ -80,7 +80,7 @@ const Sidebar = () => {
   return (
     <div style={{ 
       width: '260px', 
-      backgroundColor: 'background.paper', 
+      backgroundColor: '#FFFFFF', 
       color: '#171717', 
       height: '100vh', 
       overflowY: 'auto',

@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   ];
 
   const statCards = [
-    { label: 'Active Users', value: '45', icon: <People />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Active Users', value: '45', icon: <People />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Rebate Types', value: '8', icon: <LocalOffer />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Active Workflows', value: '12', icon: <AccountTree />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'System Health', value: '100%', icon: <Security />, color: '#D97706', bg: alpha('#D97706', 0.08) },

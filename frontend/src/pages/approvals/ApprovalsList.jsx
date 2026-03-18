@@ -130,7 +130,7 @@ const ApprovalsList = () => {
   if (loading) return <SkeletonLoader type="table" />;
 
   const summaryCards = [
-    { label: 'Total Pending', value: approvalStats.total, icon: <ApprovalIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Pending', value: approvalStats.total, icon: <ApprovalIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Awaiting Action', value: approvalStats.pending, icon: <PendingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
     { label: 'Overdue', value: approvalStats.overdue, icon: <OverdueIcon />, color: '#DC2626', bg: alpha('#DC2626', 0.08) },
   ];

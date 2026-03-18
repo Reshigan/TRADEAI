@@ -56,7 +56,7 @@ const PromotionList = () => {
   }
 
   const statCards = [
-    { label: 'Total Promotions', value: promotions.length, icon: <CampaignIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Promotions', value: promotions.length, icon: <CampaignIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Active', value: stats.active, icon: <ActiveIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Planned', value: stats.planned, icon: <PlannedIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
     { label: 'Total Budget', value: formatCurrency(stats.totalBudget), icon: <TrendingUpIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },

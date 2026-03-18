@@ -43,7 +43,7 @@ const WasteDetectionManagement = () => {
       {summary && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {[
-            { label: 'Completed Promos', value: summary.totalCompleted, color: 'primary.dark' },
+            { label: 'Completed Promos', value: summary.totalCompleted, color: '#1E40AF' },
             { label: 'Underperformers', value: summary.underperformers, color: '#EF4444', icon: <TrendingDownIcon /> },
             { label: 'Avg ROI', value: `${summary.avgROI}x`, color: summary.avgROI >= 1 ? '#059669' : '#F59E0B' },
             { label: 'Waste %', value: `${summary.wastePercentage}%`, color: summary.wastePercentage > 30 ? '#EF4444' : '#059669' },

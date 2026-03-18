@@ -104,7 +104,7 @@ const ClaimsList = () => {
   if (loading && claims.length === 0) return <SkeletonLoader type="table" />;
 
   const summaryCards = [
-    { label: 'Total Claims', value: claimStats.total, icon: <ClaimsIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Claims', value: claimStats.total, icon: <ClaimsIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Approved', value: claimStats.approved, icon: <ApprovedIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Pending', value: claimStats.pending, icon: <PendingIcon />, color: '#D97706', bg: alpha('#D97706', 0.08) },
     { label: 'Total Value', value: formatCurrency(claimStats.totalAmount), icon: <MoneyIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },

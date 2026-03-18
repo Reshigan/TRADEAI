@@ -45,7 +45,7 @@ const CustomerList = () => {
   }, [customers]);
 
   const summaryCards = [
-    { label: 'Total Customers', value: stats.total, icon: <PeopleIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Customers', value: stats.total, icon: <PeopleIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'With Credit', value: stats.withCredit, icon: <ActiveIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Regions', value: stats.regions, icon: <LocationIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];

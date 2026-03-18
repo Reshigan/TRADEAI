@@ -51,7 +51,7 @@ const ProductList = () => {
   }, [products]);
 
   const summaryCards = [
-    { label: 'Total Products', value: stats.total, icon: <InventoryIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Products', value: stats.total, icon: <InventoryIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Categories', value: stats.categories, icon: <CategoryIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Avg Price', value: formatCurrency(stats.avgPrice), icon: <PriceIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];

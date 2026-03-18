@@ -44,7 +44,7 @@ const CampaignList = () => {
   }), [campaigns]);
 
   const summaryCards = [
-    { label: 'Total Campaigns', value: stats.total, icon: <CampaignIcon />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Campaigns', value: stats.total, icon: <CampaignIcon />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Active', value: stats.active, icon: <ActiveIcon />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Total Budget', value: formatCurrency(stats.totalBudget), icon: <BudgetIcon />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];

@@ -61,7 +61,7 @@ const VendorFundManagement = () => {
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Funds', value: `R${(totalAmount / 1000).toFixed(0)}K`, icon: <AccountBalanceIcon />, color: 'primary.dark' },
+          { label: 'Total Funds', value: `R${(totalAmount / 1000).toFixed(0)}K`, icon: <AccountBalanceIcon />, color: '#1E40AF' },
           { label: 'Active', value: activeFunds, icon: <CheckCircleIcon />, color: '#059669' },
           { label: 'Available Balance', value: `R${(totalAvailable / 1000).toFixed(0)}K`, icon: <AccountBalanceIcon />, color: '#3B82F6' },
           { label: 'Expiring Soon', value: expiringSoon, icon: <WarningAmberIcon />, color: '#F59E0B' },

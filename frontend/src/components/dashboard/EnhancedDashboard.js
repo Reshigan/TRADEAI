@@ -442,7 +442,7 @@ export default function EnhancedDashboard({ user }) {
               </Typography>
               <Grid container spacing={2}>
                 {[
-                  { title: 'Create Budget', icon: <AccountBalance />, path: '/budgets/new', color: 'primary.dark' },
+                  { title: 'Create Budget', icon: <AccountBalance />, path: '/budgets/new', color: '#1E40AF' },
                   { title: 'New Promotion', icon: <Campaign />, path: '/promotions/new', color: '#1E3A8A' },
                   { title: 'Run Simulation', icon: <Assessment />, path: '/enterprise/promotions', color: '#ed6c02' },
                   { title: 'View Reports', icon: <TrendingUp />, path: '/reports', color: '#2e7d32' },

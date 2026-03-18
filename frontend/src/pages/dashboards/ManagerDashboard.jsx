@@ -392,8 +392,8 @@ const ManagerDashboard = () => {
                 Key Metrics
               </Typography>
               {[
-                { label: 'Total Customers', value: overview.totalCustomers || 0, color: 'primary.dark' },
-                { label: 'Active Promotions', value: overview.activePromotions || 0, color: 'primary.dark' },
+                { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#1E40AF' },
+                { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#1E40AF' },
                 { label: 'Total Products', value: overview.totalProducts || 0, color: '#10B981' },
               ].map((metric, idx) => (
                 <Box key={idx} display="flex" alignItems="center" justifyContent="space-between" sx={{ py: 1.25, borderBottom: idx < 2 ? '1px solid #F3F4F6' : 'none' }}>
@@ -466,7 +466,7 @@ const ManagerDashboard = () => {
 
               <Grid container spacing={3}>
                 {[
-                  { label: 'Reallocation Opportunity', value: `R${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K`, icon: <MonetizationOn />, color: 'primary.dark', sub: 'Available to optimize' },
+                  { label: 'Reallocation Opportunity', value: `R${(Number(dashboardData.portfolioKPIs.totalReallocation || 0) / 1000).toFixed(1)}K`, icon: <MonetizationOn />, color: '#1E40AF', sub: 'Available to optimize' },
                   { label: 'Expected Revenue Gain', value: `R${(Number(dashboardData.portfolioKPIs.expectedRevenueGain || 0) / 1000).toFixed(1)}K`, icon: <AttachMoney />, color: '#10B981', sub: 'Projected uplift' },
                   { label: 'Underperforming', value: dashboardData.portfolioKPIs.underperformingCount || 0, icon: <TrendingDown />, color: '#EF4444', sub: 'Need attention' },
                   { label: 'High Performing', value: dashboardData.portfolioKPIs.highPerformingCount || 0, icon: <ShowChart />, color: '#10B981', sub: 'Exceeding targets' },
@@ -661,7 +661,7 @@ const ManagerDashboard = () => {
               {/* Summary metrics */}
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 {[
-                  { label: 'Total Budget', value: `R${((budget.total || 0) / 1000000).toFixed(1)}M`, color: 'primary.dark' },
+                  { label: 'Total Budget', value: `R${((budget.total || 0) / 1000000).toFixed(1)}M`, color: '#1E40AF' },
                   { label: 'Budget Utilized', value: `${budgetUtil}%`, color: Number(budgetUtil) > 80 ? '#EF4444' : '#059669' },
                   { label: 'Active Promotions', value: overview.activePromotions || 0, color: '#7C3AED' },
                   { label: 'Total Customers', value: overview.totalCustomers || 0, color: '#2563EB' },

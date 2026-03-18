@@ -50,7 +50,7 @@ const TradingTermsList = () => {
   }), [tradingTerms]);
 
   const summaryCards = [
-    { label: 'Total Terms', value: stats.total, icon: <Gavel />, color: 'primary.dark', bg: alpha('#1E40AF', 0.08) },
+    { label: 'Total Terms', value: stats.total, icon: <Gavel />, color: '#1E40AF', bg: alpha('#1E40AF', 0.08) },
     { label: 'Approved', value: stats.approved, icon: <CheckCircle />, color: '#059669', bg: alpha('#059669', 0.08) },
     { label: 'Active', value: stats.active, icon: <TrendingUp />, color: '#2563EB', bg: alpha('#2563EB', 0.08) },
   ];
