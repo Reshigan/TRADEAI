@@ -77,7 +77,7 @@ const CreateDeduction = () => {
                 <SmartField name="deductionDate" label="Deduction Date" type="date" value={formData.deductionDate} onChange={(e) => handleChange('deductionDate', e.target.value)} required />
               </Grid>
               <Grid item xs={12} md={6}>
-                <SmartField name="amount" label="Amount" type="currency" value={formData.amount} onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)} required />
+                <SmartField name="amount" label="Amount" type="currency" value={formData.amount} onChange={(e) => handleChange('amount', e.target.value)} required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <SmartField name="currency" label="Currency" type="select" value={formData.currency} onChange={(e) => handleChange('currency', e.target.value)}

@@ -255,10 +255,17 @@ const DeductionDetail = () => {
     { label: 'Type', value: formatLabel(deduction.deductionType) },
     { label: 'Customer', value: deduction.customerName || deduction.customer?.name || 'N/A' },
     { label: 'Date', value: formatDate(deduction.deductionDate) },
+    ...(deduction.matchingStatus ? [{ label: 'Matching Status', value: formatLabel(deduction.matchingStatus) }] : []),
+    ...(deduction.variance?.expectedAmount != null ? [{ label: 'Expected Amount', value: formatCurrency(deduction.variance.expectedAmount) }] : []),
+    ...(deduction.variance?.actualAmount != null ? [{ label: 'Actual Amount', value: formatCurrency(deduction.variance.actualAmount) }] : []),
+    ...(deduction.variance?.variance != null ? [{ label: 'Variance', value: formatCurrency(deduction.variance.variance) }] : []),
   ];
   const sidebarActivities = [
     { action: 'created', user: deduction.createdBy || 'System', timestamp: deduction.createdAt || deduction.deductionDate, detail: `Deduction: ${formatCurrency(deduction.deductionAmount || deduction.amount)}` },
     ...(deduction.updatedAt && deduction.updatedAt !== deduction.createdAt ? [{ action: 'updated', user: 'System', timestamp: deduction.updatedAt, detail: 'Deduction updated' }] : []),
+  ];
+  const relatedEntities = [
+    ...(deduction.matchedClaims || []).map(claim => ({ type: 'Matched Claim', name: claim.claimNumber || `Claim ${(claim.id || claim._id || '').toString().slice(-6)}`, path: `/claims/${claim.id || claim._id}` })),
   ];
 
   return (
@@ -388,7 +395,7 @@ const DeductionDetail = () => {
 
         {/* Sidebar */}
         <Grid item xs={12} md={4}>
-          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} loading={loading} />
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} relatedEntities={relatedEntities} loading={loading} />
         </Grid>
       </Grid>
 

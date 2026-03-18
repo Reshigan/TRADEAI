@@ -91,7 +91,7 @@ const TradeSpendDetailWithTabs = () => {
     const actionMap = {
       draft: [
         { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this trade spend for approval?' },
-        { action: 'edit', label: 'Edit', icon: null, color: 'default' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'inherit' },
       ],
       pending_approval: [
         { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this trade spend?' },

@@ -237,10 +237,14 @@ const ClaimDetail = () => {
     { label: 'Claim Type', value: formatLabel(claim.claimType) },
     { label: 'Customer', value: claim.customerName || claim.customer?.name || 'N/A' },
     { label: 'Claim Date', value: formatDate(claim.claimDate) },
+    ...(claim.matchingStatus ? [{ label: 'Matching Status', value: formatLabel(claim.matchingStatus) }] : []),
   ];
   const sidebarActivities = [
     { action: 'created', user: claim.createdBy || 'System', timestamp: claim.createdAt || claim.claimDate, detail: `Claim submitted: ${formatCurrency(claim.claimedAmount || claim.totalAmount)}` },
     ...(claim.updatedAt && claim.updatedAt !== claim.createdAt ? [{ action: 'updated', user: 'System', timestamp: claim.updatedAt, detail: 'Claim updated' }] : []),
+  ];
+  const relatedEntities = [
+    ...(claim.matchedInvoices || []).map(inv => ({ type: 'Matched Invoice', name: inv.invoiceNumber || `Invoice ${(inv.id || '').toString().slice(-6)}`, id: inv.id })),
   ];
 
   return (
@@ -374,7 +378,7 @@ const ClaimDetail = () => {
 
         {/* Sidebar */}
         <Grid item xs={12} md={4}>
-          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} loading={loading} />
+          <ActivitySidebar stats={sidebarStats} activities={sidebarActivities} relatedEntities={relatedEntities} loading={loading} />
         </Grid>
       </Grid>
 

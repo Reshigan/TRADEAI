@@ -48,7 +48,7 @@ export default function BudgetDetail() {
     const actionMap = {
       draft: [
         { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this budget for approval?' },
-        { action: 'edit', label: 'Edit', icon: null, color: 'default' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'inherit' },
         { action: 'delete', label: 'Delete', icon: null, color: 'error', confirm: true, confirmMsg: 'Delete this budget?' },
       ],
       pending_approval: [
