@@ -247,7 +247,7 @@ const DeductionDetail = () => {
         { action: 'dispute', label: 'Dispute', icon: null, color: 'warning', confirm: true, confirmMsg: 'Dispute this deduction?', requireComment: true },
       ],
     };
-    return actionMap[s] || undefined;
+    return actionMap[s] || [];
   };
 
   const sidebarStats = [

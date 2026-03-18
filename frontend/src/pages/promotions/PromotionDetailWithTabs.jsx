@@ -105,6 +105,23 @@ const PromotionDetailWithTabs = () => {
     }
   };
 
+  // Promotion-specific actions per status — only show actions we can handle
+  const getPromotionActions = () => {
+    const s = (promotion.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this promotion for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'default' },
+        { action: 'delete', label: 'Delete', icon: null, color: 'error', confirm: true, confirmMsg: 'Delete this promotion?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this promotion?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this promotion?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
   const handleQuickAction = async (action, metadata) => {
     setActionLoading(true);
     try {
@@ -157,6 +174,7 @@ const PromotionDetailWithTabs = () => {
           entityId={id}
           entityName={promotion.name}
           onAction={handleQuickAction}
+          customActions={getPromotionActions()}
           sx={{ mb: 3 }}
         />
 

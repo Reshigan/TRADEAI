@@ -204,7 +204,7 @@ const ClaimDetail = () => {
         { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
       ],
     };
-    return actionMap[s] || undefined;
+    return actionMap[s] || [];
   };
 
   const handleQuickAction = async (action, metadata) => {

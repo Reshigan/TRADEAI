@@ -85,6 +85,22 @@ const TradeSpendDetailWithTabs = () => {
     );
   }
 
+  // Trade spend-specific actions per status — only show actions we can handle
+  const getTradeSpendActions = () => {
+    const s = (tradeSpend.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this trade spend for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'default' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this trade spend?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this trade spend?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
   const handleQuickAction = async (action, metadata) => {
     setActionLoading(true);
     try {
@@ -113,6 +129,7 @@ const TradeSpendDetailWithTabs = () => {
           entityId={id}
           entityName={`${formatLabel(tradeSpend.spendType)} - ${tradeSpend.category}`}
           onAction={handleQuickAction}
+          customActions={getTradeSpendActions()}
           sx={{ mb: 3 }}
         />
 

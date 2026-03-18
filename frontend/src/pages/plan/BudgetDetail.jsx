@@ -42,6 +42,23 @@ export default function BudgetDetail() {
     } catch (e) { console.error(e); throw e; }
   };
 
+  // Budget-specific actions per status — only show actions we can handle
+  const getBudgetActions = () => {
+    const s = (budget?.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this budget for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'default' },
+        { action: 'delete', label: 'Delete', icon: null, color: 'error', confirm: true, confirmMsg: 'Delete this budget?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this budget?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this budget?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;
   if (!budget) return <Box sx={{ py: 4 }}><Typography>Budget not found</Typography><Button onClick={() => navigate('/plan/budgets')}>Back</Button></Box>;
 
@@ -76,6 +93,7 @@ export default function BudgetDetail() {
         entityId={id}
         entityName={budget.name}
         onAction={handleAction}
+        customActions={getBudgetActions()}
         budgetInfo={{ spent, total }}
         sx={{ mb: 3 }}
       />

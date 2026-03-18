@@ -61,6 +61,23 @@ export default function PromotionDetail() {
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;
   if (!promo) return <Box sx={{ py: 4 }}><Typography>Promotion not found</Typography><Button onClick={() => navigate('/execute/promotions')}>Back</Button></Box>;
 
+  // Promotion-specific actions per status — only show actions we can handle
+  const getPromotionActions = () => {
+    const s = (promo.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this promotion for approval?' },
+        { action: 'edit', label: 'Edit', icon: null, color: 'default' },
+        { action: 'delete', label: 'Delete', icon: null, color: 'error', confirm: true, confirmMsg: 'Delete this promotion?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this promotion?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this promotion?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || [];
+  };
+
   const planned = Number(promo?.planned_spend || promo?.budget || 0);
   const actual = Number(promo?.actual_spend || 0);
   const sidebarStats = [
@@ -92,6 +109,7 @@ export default function PromotionDetail() {
         entityId={id}
         entityName={promo.name || promo.promotion_name}
         onAction={(action, metadata) => handleAction(action, metadata?.comment)}
+        customActions={getPromotionActions()}
         budgetInfo={{ spent: actual, total: planned }}
         sx={{ mb: 3 }}
       />
