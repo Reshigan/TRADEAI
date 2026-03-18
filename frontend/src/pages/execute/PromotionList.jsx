@@ -3,12 +3,14 @@ import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell
 import { Plus, Search, Eye, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 const statusColor = (s) => ({ draft: '#94A3B8', pending_approval: '#F59E0B', approved: '#2563EB', active: '#059669', completed: '#6B7280', cancelled: '#DC2626', rejected: '#DC2626' }[s] || '#94A3B8');
 
 export default function PromotionList() {
   const navigate = useNavigate();
+  const { t, tPlural } = useTerminology();
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -36,8 +38,8 @@ export default function PromotionList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Promotions</Typography><Typography variant="body2" color="text.secondary">Manage trade promotions</Typography></Box>
-        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => navigate('/execute/promotions/new')}>New Promotion</Button>
+        <Box><Typography variant="h1">{tPlural('promotion')}</Typography><Typography variant="body2" color="text.secondary">Manage {tPlural('promotion').toLowerCase()}</Typography></Box>
+        <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => navigate('/execute/promotions/new')}>New {t('promotion')}</Button>
       </Box>
 
       <Card>

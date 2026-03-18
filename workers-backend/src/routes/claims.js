@@ -3,6 +3,8 @@ import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { recordSpend } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
+import { createNotification } from '../services/notifications.js';
 
 const claims = new Hono();
 
@@ -484,7 +486,7 @@ claims.post('/:id/submit', async (c) => {
   }
 });
 
-// Approve claim
+// W-04: Approve claim + auto-create settlement + notification
 claims.post('/:id/approve', async (c) => {
   try {
     const db = c.env.DB;
@@ -504,7 +506,15 @@ claims.post('/:id/approve', async (c) => {
     
     const approvedAmount = body.approvedAmount || body.approved_amount || claim.claimed_amount;
     const status = approvedAmount < claim.claimed_amount ? 'partially_approved' : 'approved';
-    
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityApprove({
+      entityType: 'claim', entityId: id,
+      entityName: claim.claim_number || 'Claim',
+      amount: approvedAmount,
+      requesterId: claim.created_by
+    });
+
     await db.prepare(`
       UPDATE claims SET 
         status = ?, approved_amount = ?, 
@@ -512,10 +522,45 @@ claims.post('/:id/approve', async (c) => {
         updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(status, approvedAmount, userId, now, body.notes || '', now, id, companyId).run();
-    
+
+    // W-04: Auto-create settlement on claim approval
+    let settlementId = null;
+    try {
+      settlementId = crypto.randomUUID();
+      const stlNum = `STL-${Date.now().toString(36).toUpperCase()}`;
+      await db.prepare(`
+        INSERT INTO settlements (
+          id, company_id, settlement_number, name, description, status,
+          settlement_type, customer_id, claim_id, budget_id,
+          accrued_amount, claimed_amount, approved_amount, settled_amount,
+          variance_amount, variance_pct, payment_method, currency,
+          created_by, data, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, 'draft', 'claim', ?, ?, ?, 0, ?, ?, 0, ?, ?, 'credit_note', 'ZAR', ?, '{}', ?, ?)
+      `).bind(
+        settlementId, companyId, stlNum,
+        `Settlement for ${claim.claim_number}`,
+        `Auto-created from approved claim ${claim.claim_number}`,
+        claim.customer_id, id, null,
+        claim.claimed_amount, approvedAmount,
+        claim.claimed_amount - approvedAmount,
+        approvedAmount > 0 ? ((claim.claimed_amount - approvedAmount) / approvedAmount * 100) : 0,
+        userId, now, now
+      ).run();
+
+      await createNotification(db, {
+        companyId, userId: claim.created_by || userId,
+        title: 'Settlement Auto-Created',
+        message: `Settlement ${stlNum} (R${Math.round(approvedAmount).toLocaleString()}) auto-created from approved claim "${claim.claim_number}".`,
+        type: 'info', category: 'settlement', priority: 'normal',
+        entityType: 'settlement', entityId: settlementId, entityName: stlNum
+      });
+    } catch (e) {
+      console.error('Failed to auto-create settlement:', e.message);
+    }
+
     const updated = await db.prepare('SELECT * FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
-    return c.json({ success: true, data: rowToDocument(updated) });
+    return c.json({ success: true, data: rowToDocument(updated), settlementId });
   } catch (error) {
     console.error('Error approving claim:', error);
     return apiError(c, error, 'claims');
@@ -549,11 +594,12 @@ claims.post('/:id/reject', async (c) => {
   }
 });
 
-// Settle claim
+// W-04: Settle claim with budget spend recording
 claims.post('/:id/settle', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
+    const userId = getUserId(c);
     const { id } = c.req.param();
     const body = await c.req.json();
     const now = new Date().toISOString();
@@ -567,7 +613,16 @@ claims.post('/:id/settle', async (c) => {
     }
     
     const settledAmount = body.settledAmount || body.settled_amount || claim.approved_amount;
-    
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntitySettle({
+      entityType: 'claim', entityId: id,
+      entityName: claim.claim_number || 'Claim',
+      amount: settledAmount,
+      budgetId: claim.budget_id,
+      requesterId: claim.created_by
+    });
+
     await db.prepare(`
       UPDATE claims SET 
         status = 'settled', settled_amount = ?, settlement_date = ?,

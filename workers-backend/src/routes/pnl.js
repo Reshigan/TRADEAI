@@ -149,6 +149,21 @@ pnl.get('/live-by-customer', async (c) => {
     if (start_date) { dateFilter += ' AND ts.created_at >= ?'; dateParams.push(start_date); }
     if (end_date) { dateFilter += ' AND ts.created_at <= ?'; dateParams.push(end_date); }
 
+    // W-06: Query real sales_transactions for gross_sales instead of hardcoded multipliers
+    const customerSales = await db.prepare(`
+      SELECT
+        customer_id,
+        SUM(amount) as total_gross_sales,
+        SUM(CASE WHEN category = 'cogs' OR category = 'cost' THEN amount ELSE 0 END) as total_cogs
+      FROM sales_transactions
+      WHERE company_id = ?
+      GROUP BY customer_id
+    `).bind(companyId).all();
+
+    const salesMap = {};
+    (customerSales.results || []).forEach(r => { salesMap[r.customer_id] = r; });
+    const hasSalesData = (customerSales.results || []).length > 0;
+
     const customerSpends = await db.prepare(`
       SELECT
         ts.customer_id,
@@ -231,9 +246,11 @@ pnl.get('/live-by-customer', async (c) => {
       const deductions = deductionMap[custId]?.total_deductions || 0;
       const budget = budgetMap[custId]?.total_budget || 0;
 
-      const grossSales = tradeSpend * 4;
+      // W-06: Use real sales_transactions data instead of hardcoded multipliers
+      const salesData = salesMap[custId];
+      const grossSales = salesData ? (salesData.total_gross_sales || 0) : tradeSpend * 4;
+      const cogs = salesData ? (salesData.total_cogs || grossSales * 0.6) : grossSales * 0.6;
       const netSales = grossSales - tradeSpend;
-      const cogs = grossSales * 0.6;
       const grossProfit = netSales - cogs;
       const grossMarginPct = grossSales > 0 ? (grossProfit / grossSales) * 100 : 0;
       const netTradeCost = accrued + claims + deductions;
@@ -267,7 +284,7 @@ pnl.get('/live-by-customer', async (c) => {
       };
     });
 
-    return c.json({ success: true, data: rows, total: rows.length });
+    return c.json({ success: true, data: rows, total: rows.length, hasSalesData });
   } catch (error) {
     console.error('Error fetching live P&L by customer:', error);
     return apiError(c, error, 'pnl');
@@ -285,6 +302,21 @@ pnl.get('/live-by-promotion', async (c) => {
     const dateParams = [];
     if (start_date) { dateFilter += ' AND ts.created_at >= ?'; dateParams.push(start_date); }
     if (end_date) { dateFilter += ' AND ts.created_at <= ?'; dateParams.push(end_date); }
+
+    // W-06: Query real sales_transactions for promotion-level P&L
+    const promoSales = await db.prepare(`
+      SELECT
+        promotion_id,
+        SUM(amount) as total_gross_sales,
+        SUM(CASE WHEN category = 'cogs' OR category = 'cost' THEN amount ELSE 0 END) as total_cogs
+      FROM sales_transactions
+      WHERE company_id = ? AND promotion_id IS NOT NULL
+      GROUP BY promotion_id
+    `).bind(companyId).all();
+
+    const promoSalesMap = {};
+    (promoSales.results || []).forEach(r => { promoSalesMap[r.promotion_id] = r; });
+    const hasSalesData = (promoSales.results || []).length > 0;
 
     const promoSpends = await db.prepare(`
       SELECT
@@ -335,9 +367,11 @@ pnl.get('/live-by-promotion', async (c) => {
       const settled = settlementMap[promoId]?.total_settled || 0;
       const budget = budgetMap[promoId]?.total_budget || 0;
 
-      const grossSales = tradeSpend * 4;
+      // W-06: Use real sales_transactions data instead of hardcoded multipliers
+      const salesData = promoSalesMap[promoId];
+      const grossSales = salesData ? (salesData.total_gross_sales || 0) : tradeSpend * 4;
+      const cogs = salesData ? (salesData.total_cogs || grossSales * 0.6) : grossSales * 0.6;
       const netSales = grossSales - tradeSpend;
-      const cogs = grossSales * 0.6;
       const grossProfit = netSales - cogs;
       const grossMarginPct = grossSales > 0 ? (grossProfit / grossSales) * 100 : 0;
       const netTradeCost = accrued;
@@ -370,7 +404,7 @@ pnl.get('/live-by-promotion', async (c) => {
       };
     });
 
-    return c.json({ success: true, data: rows, total: rows.length });
+    return c.json({ success: true, data: rows, total: rows.length, hasSalesData });
   } catch (error) {
     console.error('Error fetching live P&L by promotion:', error);
     return apiError(c, error, 'pnl');

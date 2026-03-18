@@ -109,11 +109,20 @@ promotionRoutes.post('/', async (c) => {
     } catch (e) { /* conflict check is optional */ }
 
 
+    // W-07: Prevent direct-create bypass — force draft status and commit budget if needed
+    let effectiveStatus = 'draft';
+    if (data.status && data.status !== 'draft') {
+      // If caller tries to create with status 'approved'/'active', force to draft
+      // but record the intended status for audit
+      effectiveStatus = 'draft';
+    }
+
     const promotionId = await mongodb.insertOne('promotions', {
       ...data,
       companyId: tenantId,
       createdBy: userId,
-      status: data.status || 'draft'
+      status: effectiveStatus,
+      _originalRequestedStatus: data.status !== 'draft' ? data.status : undefined
     });
 
     return c.json({ success: true, data: { id: promotionId }, warnings, message: 'Promotion created successfully' }, 201);

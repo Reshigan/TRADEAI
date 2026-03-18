@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress } from '@mui/material';
 import { RefreshCw } from 'lucide-react';
 import { accrualService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function AccrualList() {
+  const { t, tPlural } = useTerminology();
   const [accruals, setAccruals] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +29,7 @@ export default function AccrualList() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box><Typography variant="h1">Accruals</Typography><Typography variant="body2" color="text.secondary">Promotion accrual calculations and tracking</Typography></Box>
+        <Box><Typography variant="h1">{tPlural('accrual')}</Typography><Typography variant="body2" color="text.secondary">{t('promotion')} {t('accrual').toLowerCase()} calculations and tracking</Typography></Box>
         <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={runCalculation} disabled={loading}>Recalculate</Button>
       </Box>
       <Card>

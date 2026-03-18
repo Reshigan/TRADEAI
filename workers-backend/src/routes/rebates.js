@@ -3,6 +3,8 @@ import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
+import { createNotification } from '../services/notifications.js';
 
 const rebates = new Hono();
 
@@ -343,14 +345,29 @@ rebates.post('/:id/deactivate', async (c) => {
   }
 });
 
-// Submit for approval
+// W-03: Submit rebate for approval
 rebates.post('/:id/submit', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
+    const userId = getUserId(c);
     const { id } = c.req.param();
     const now = new Date().toISOString();
-    
+
+    const rebate = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!rebate) return c.json({ success: false, message: 'Rebate not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    const result = await lifecycle.onEntitySubmit({
+      entityType: 'rebate', entityId: id,
+      entityName: rebate.name || 'Rebate',
+      amount: rebate.estimated_amount || rebate.rate || 0
+    });
+
+    if (!result.success) {
+      return c.json({ success: false, message: result.reason }, 400);
+    }
+
     await db.prepare(`
       UPDATE rebates SET status = 'pending_approval', updated_at = ?
       WHERE id = ? AND company_id = ?
@@ -365,7 +382,7 @@ rebates.post('/:id/submit', async (c) => {
   }
 });
 
-// Approve rebate
+// W-03: Approve rebate + auto-create accrual
 rebates.post('/:id/approve', async (c) => {
   try {
     const db = c.env.DB;
@@ -373,32 +390,79 @@ rebates.post('/:id/approve', async (c) => {
     const { id } = c.req.param();
     const userId = getUserId(c);
     const now = new Date().toISOString();
-    
+
+    const rebate = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!rebate) return c.json({ success: false, message: 'Rebate not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityApprove({
+      entityType: 'rebate', entityId: id,
+      entityName: rebate.name || 'Rebate',
+      amount: rebate.estimated_amount || rebate.rate || 0,
+      requesterId: rebate.created_by
+    });
+
     await db.prepare(`
       UPDATE rebates SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
-    
+
+    // W-03: Auto-create accrual on rebate approval
+    let accrualId = null;
+    try {
+      accrualId = crypto.randomUUID();
+      const accrualAmount = rebate.estimated_amount || rebate.accrued_amount || 0;
+      await db.prepare(`
+        INSERT INTO accruals (id, company_id, customer_id, promotion_id, rebate_id, accrual_type, period, accrued_amount, settled_amount, remaining_amount, status, gl_account, cost_center, data, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, 'rebate', ?, ?, 0, ?, 'pending', '4200-Rebate Accrual', '', '{}', ?, ?)
+      `).bind(
+        accrualId, companyId, rebate.customer_id || null, rebate.promotion_id || null, id,
+        now.substring(0, 7), accrualAmount, accrualAmount, now, now
+      ).run();
+
+      await createNotification(db, {
+        companyId, userId: rebate.created_by || userId,
+        title: 'Accrual Auto-Created',
+        message: `Accrual of R${Math.round(accrualAmount).toLocaleString()} auto-created from approved rebate "${rebate.name}".`,
+        type: 'info', category: 'accrual', priority: 'normal',
+        entityType: 'accrual', entityId: accrualId, entityName: `Rebate Accrual - ${rebate.name}`
+      });
+    } catch (e) {
+      console.error('Failed to auto-create accrual:', e.message);
+    }
+
     const updated = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
-    return c.json({ success: true, data: rowToDocument(updated) });
+    return c.json({ success: true, data: rowToDocument(updated), accrualId });
   } catch (error) {
     console.error('Error approving rebate:', error);
     return apiError(c, error, 'rebates');
   }
 });
 
-// Reject rebate
+// W-03: Reject rebate with notification
 rebates.post('/:id/reject', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
+    const userId = getUserId(c);
     const { id } = c.req.param();
     const body = await c.req.json();
     const now = new Date().toISOString();
-    
+
+    const rebate = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!rebate) return c.json({ success: false, message: 'Rebate not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityReject({
+      entityType: 'rebate', entityId: id,
+      entityName: rebate.name || 'Rebate',
+      amount: rebate.estimated_amount || rebate.rate || 0,
+      requesterId: rebate.created_by, reason: body.reason
+    });
+
     await db.prepare(`
-      UPDATE rebates SET status = 'draft', updated_at = ?
+      UPDATE rebates SET status = 'rejected', updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     

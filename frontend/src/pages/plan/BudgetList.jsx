@@ -3,6 +3,7 @@ import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell
 import { Plus, Search, Trash2, Eye, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { budgetService, customerService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -57,6 +58,7 @@ const emptyForm = {
 
 export default function BudgetList() {
   const navigate = useNavigate();
+  const { t, tPlural } = useTerminology();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -114,8 +116,8 @@ export default function BudgetList() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Budget Management</Typography>
-          <Typography variant="body2" color="text.secondary">Plan, allocate, and track trade promotion budgets</Typography>
+          <Typography variant="h5" fontWeight={700}>{t('budget')} Management</Typography>
+          <Typography variant="body2" color="text.secondary">Plan, allocate, and track trade {t('promotion').toLowerCase()} {tPlural('budget').toLowerCase()}</Typography>
         </Box>
         <Button variant="contained" startIcon={<Plus size={16} />} onClick={() => { setForm({ ...emptyForm }); setError(''); setActiveStep(0); setShowCreate(true); }}>New Budget</Button>
       </Box>

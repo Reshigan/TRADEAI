@@ -387,6 +387,10 @@ export const tradeSpendService = {
       throw error;
     }
   },
+  // W-08: Missing service methods
+  submit: async (id) => { const r = await api.post(`/trade-spends/${id}/submit`); return r.data; },
+  approve: async (id, data) => { const r = await api.post(`/trade-spends/${id}/approve`, data || {}); return r.data; },
+  reject: async (id, data) => { const r = await api.post(`/trade-spends/${id}/reject`, data || {}); return r.data; },
   getTradeSpends: async (params) => {
     try {
       const response = await api.get('/trade-spends', { params });
@@ -455,6 +459,11 @@ export const promotionService = {
       throw error;
     }
   },
+  // W-08: Missing service methods
+  submit: async (id) => { const r = await api.post(`/promotions/${id}/submit`); return r.data; },
+  approve: async (id, data) => { const r = await api.post(`/promotions/${id}/approve`, data || {}); return r.data; },
+  reject: async (id, data) => { const r = await api.post(`/promotions/${id}/reject`, data || {}); return r.data; },
+  clone: async (id, data) => { const r = await api.post(`/promotions/${id}/clone`, data || {}); return r.data; },
 };
 
 // Customer services
@@ -709,6 +718,23 @@ export const settingsService = {
       throw error;
     }
   },
+  // T-01/T-02: Terminology API methods
+  getTerminology: async () => {
+    const response = await api.get('/settings/terminology');
+    return response.data;
+  },
+  updateTerminology: async (data) => {
+    const response = await api.put('/settings/terminology', data);
+    return response.data;
+  },
+  resetTerminology: async () => {
+    const response = await api.delete('/settings/terminology');
+    return response.data;
+  },
+  setCompanyType: async (companyType) => {
+    const response = await api.put('/settings/company-type', { companyType });
+    return response.data;
+  },
 };
 
 // User services
@@ -869,6 +895,23 @@ export const tradingTermsService = {
       throw error;
     }
   },
+  // W-08: Missing service methods
+  submit: async (id) => { const r = await api.post(`/trading-terms/${id}/submit`); return r.data; },
+  approve: async (id, data) => { const r = await api.post(`/trading-terms/${id}/approve`, data || {}); return r.data; },
+  reject: async (id, data) => { const r = await api.post(`/trading-terms/${id}/reject`, data || {}); return r.data; },
+};
+
+// W-08: Campaign service (was missing entirely)
+export const campaignService = {
+  getAll: async (params) => { const r = await api.get('/campaigns', { params }); return r.data; },
+  getById: async (id) => { const r = await api.get(`/campaigns/${id}`); return r.data; },
+  create: async (data) => { const r = await api.post('/campaigns', data); return r.data; },
+  update: async (id, data) => { const r = await api.put(`/campaigns/${id}`, data); return r.data; },
+  delete: async (id) => { const r = await api.delete(`/campaigns/${id}`); return r.data; },
+  submit: async (id) => { const r = await api.post(`/campaigns/${id}/submit`); return r.data; },
+  approve: async (id, data) => { const r = await api.post(`/campaigns/${id}/approve`, data || {}); return r.data; },
+  reject: async (id, data) => { const r = await api.post(`/campaigns/${id}/reject`, data || {}); return r.data; },
+  getSummary: async () => { const r = await api.get('/campaigns/summary'); return r.data; },
 };
 
 // Forecasting services
@@ -1862,10 +1905,11 @@ export const claimService = {
   getSummary: async () => { const r = await api.get('/claims/summary'); return r.data; },
   getAllClaims: async (params) => { const r = await api.get('/claims', { params }); return r.data; },
   createClaim: async (data) => { const r = await api.post('/claims', data); return r.data; },
-  submitClaim: async (id) => { const r = await api.patch(`/claims/${id}/submit`); return r.data; },
-  submit: async (id) => { const r = await api.patch(`/claims/${id}/submit`); return r.data; },
-  approve: async (id, data) => { const r = await api.patch(`/claims/${id}/approve`, data); return r.data; },
-  reject: async (id, data) => { const r = await api.patch(`/claims/${id}/reject`, data); return r.data; },
+  submitClaim: async (id) => { const r = await api.post(`/claims/${id}/submit`); return r.data; },
+  submit: async (id) => { const r = await api.post(`/claims/${id}/submit`); return r.data; },
+  approve: async (id, data) => { const r = await api.post(`/claims/${id}/approve`, data || {}); return r.data; },
+  reject: async (id, data) => { const r = await api.post(`/claims/${id}/reject`, data || {}); return r.data; },
+  settle: async (id, data) => { const r = await api.post(`/claims/${id}/settle`, data || {}); return r.data; },
   getUnmatchedClaims: async (params) => { const r = await api.get('/claims', { params: { ...params, status: 'unmatched' } }); return r.data; },
   getPendingApprovalClaims: async (params) => { const r = await api.get('/claims', { params: { ...params, status: 'pending_approval' } }); return r.data; },
   getClaimStatistics: async () => { const r = await api.get('/claims/summary'); return r.data; },
@@ -1882,9 +1926,11 @@ export const deductionService = {
   getSummary: async () => { const r = await api.get('/deductions/summary'); return r.data; },
   getAllDeductions: async (params) => { const r = await api.get('/deductions', { params }); return r.data; },
   createDeduction: async (data) => { const r = await api.post('/deductions', data); return r.data; },
-  validate: async (id) => { const r = await api.patch(`/deductions/${id}/validate`); return r.data; },
-  dispute: async (id, data) => { const r = await api.patch(`/deductions/${id}/dispute`, data); return r.data; },
-  resolve: async (id, data) => { const r = await api.patch(`/deductions/${id}/resolve`, data); return r.data; },
+  validate: async (id) => { const r = await api.post(`/deductions/${id}/review`); return r.data; },
+  dispute: async (id, data) => { const r = await api.post(`/deductions/${id}/dispute`, data || {}); return r.data; },
+  resolve: async (id, data) => { const r = await api.post(`/deductions/${id}/approve`, data || {}); return r.data; },
+  approve: async (id, data) => { const r = await api.post(`/deductions/${id}/approve`, data || {}); return r.data; },
+  writeOff: async (id, data) => { const r = await api.post(`/deductions/${id}/write-off`, data || {}); return r.data; },
   getUnmatchedDeductions: async (params) => { const r = await api.get('/deductions', { params: { ...params, status: 'unmatched' } }); return r.data; },
   getDisputedDeductions: async (params) => { const r = await api.get('/deductions', { params: { ...params, status: 'disputed' } }); return r.data; },
   getDeductionStatistics: async () => { const r = await api.get('/deductions/summary'); return r.data; },

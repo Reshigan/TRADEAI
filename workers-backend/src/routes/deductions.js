@@ -2,6 +2,9 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
+import { createNotification } from '../services/notifications.js';
+import { recordSpend } from '../services/budgetEnforcement.js';
 
 const deductions = new Hono();
 
@@ -471,7 +474,7 @@ deductions.post('/:id/dispute', async (c) => {
   }
 });
 
-// Approve deduction
+// W-12: Approve deduction → auto-create settlement
 deductions.post('/:id/approve', async (c) => {
   try {
     const db = c.env.DB;
@@ -479,23 +482,60 @@ deductions.post('/:id/approve', async (c) => {
     const { id } = c.req.param();
     const userId = getUserId(c);
     const now = new Date().toISOString();
-    
+
+    const deduction = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!deduction) return c.json({ success: false, message: 'Deduction not found' }, 404);
+
     await db.prepare(`
       UPDATE deductions SET 
         status = 'approved', reviewed_by = ?, reviewed_at = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
-    
+
+    // W-12: Auto-create settlement from approved deduction
+    let settlementId = null;
+    try {
+      settlementId = crypto.randomUUID();
+      const stlNum = `STL-${Date.now().toString(36).toUpperCase()}`;
+      const amount = deduction.deduction_amount || 0;
+      await db.prepare(`
+        INSERT INTO settlements (
+          id, company_id, settlement_number, name, description, status,
+          settlement_type, customer_id, deduction_id,
+          accrued_amount, claimed_amount, approved_amount, settled_amount,
+          variance_amount, variance_pct, payment_method, currency,
+          created_by, data, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, 'draft', 'deduction', ?, ?, 0, ?, ?, 0, 0, 0, 'credit_note', 'ZAR', ?, '{}', ?, ?)
+      `).bind(
+        settlementId, companyId, stlNum,
+        `Settlement for deduction ${deduction.deduction_number}`,
+        `Auto-created from approved deduction ${deduction.deduction_number}`,
+        deduction.customer_id, id,
+        amount, amount,
+        userId, now, now
+      ).run();
+
+      await createNotification(db, {
+        companyId, userId: deduction.created_by || userId,
+        title: 'Settlement Auto-Created from Deduction',
+        message: `Settlement ${stlNum} (R${Math.round(amount).toLocaleString()}) auto-created from approved deduction "${deduction.deduction_number}".`,
+        type: 'info', category: 'settlement', priority: 'normal',
+        entityType: 'settlement', entityId: settlementId, entityName: stlNum
+      });
+    } catch (e) {
+      console.error('Failed to auto-create settlement from deduction:', e.message);
+    }
+
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
-    return c.json({ success: true, data: rowToDocument(updated) });
+    return c.json({ success: true, data: rowToDocument(updated), settlementId });
   } catch (error) {
     console.error('Error approving deduction:', error);
     return apiError(c, error, 'deductions');
   }
 });
 
-// Write off deduction
+// W-12: Write off deduction → budget.spent update
 deductions.post('/:id/write-off', async (c) => {
   try {
     const db = c.env.DB;
@@ -504,14 +544,34 @@ deductions.post('/:id/write-off', async (c) => {
     const body = await c.req.json();
     const userId = getUserId(c);
     const now = new Date().toISOString();
-    
+
+    const deduction = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!deduction) return c.json({ success: false, message: 'Deduction not found' }, 404);
+
+    // W-12: Record spend on write-off if budget is linked
+    if (deduction.budget_id) {
+      try {
+        await recordSpend(db, deduction.budget_id, deduction.deduction_amount || 0, companyId);
+      } catch (e) {
+        console.log('Budget spend recording skipped:', e.message);
+      }
+    }
+
     await db.prepare(`
       UPDATE deductions SET 
         status = 'written_off', reviewed_by = ?, reviewed_at = ?, 
         review_notes = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, body.reason || 'Written off', now, id, companyId).run();
-    
+
+    await createNotification(db, {
+      companyId, userId: deduction.created_by || userId,
+      title: 'Deduction Written Off',
+      message: `Deduction "${deduction.deduction_number}" (R${Math.round(deduction.deduction_amount || 0).toLocaleString()}) has been written off.`,
+      type: 'warning', category: 'deduction', priority: 'normal',
+      entityType: 'deduction', entityId: id, entityName: deduction.deduction_number
+    });
+
     const updated = await db.prepare('SELECT * FROM deductions WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
     return c.json({ success: true, data: rowToDocument(updated) });

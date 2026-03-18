@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { getTerminologyForTenant } from '../utils/terminology.js';
 
 export const dashboardRoutes = new Hono();
 
@@ -90,7 +91,10 @@ dashboardRoutes.get('/', async (c) => {
       };
     }
 
-    return c.json({ success: true, data: base });
+    // T-06: Include terminology labels in dashboard response
+    let terminology;
+    try { terminology = await getTerminologyForTenant(db, companyId); } catch (e) { terminology = null; }
+    return c.json({ success: true, data: base, ...(terminology ? { terminology } : {}) });
   } catch (error) {
     console.error('Dashboard error:', error);
     return apiError(c, error, 'dashboard');

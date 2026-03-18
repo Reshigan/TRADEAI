@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
+import { createNotification } from '../services/notifications.js';
 
 const tradingTerms = new Hono();
 
@@ -256,14 +258,29 @@ tradingTerms.delete('/:id', async (c) => {
   }
 });
 
-// Submit for approval
+// W-10: Submit trading term for approval
 tradingTerms.post('/:id/submit', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
+    const userId = getUserId(c);
     const { id } = c.req.param();
     const now = new Date().toISOString();
-    
+
+    const term = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!term) return c.json({ success: false, message: 'Trading term not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    const result = await lifecycle.onEntitySubmit({
+      entityType: 'trading_term', entityId: id,
+      entityName: term.name || 'Trading Term',
+      amount: term.rate || 0
+    });
+
+    if (!result.success) {
+      return c.json({ success: false, message: result.reason }, 400);
+    }
+
     await db.prepare(`
       UPDATE trading_terms SET status = 'pending_approval', updated_at = ?
       WHERE id = ? AND company_id = ?
@@ -278,7 +295,7 @@ tradingTerms.post('/:id/submit', async (c) => {
   }
 });
 
-// Approve trading term
+// W-10: Approve trading term + auto-create rebate
 tradingTerms.post('/:id/approve', async (c) => {
   try {
     const db = c.env.DB;
@@ -286,31 +303,91 @@ tradingTerms.post('/:id/approve', async (c) => {
     const { id } = c.req.param();
     const userId = getUserId(c);
     const now = new Date().toISOString();
-    
+
+    const term = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!term) return c.json({ success: false, message: 'Trading term not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityApprove({
+      entityType: 'trading_term', entityId: id,
+      entityName: term.name || 'Trading Term',
+      amount: term.rate || 0,
+      requesterId: term.created_by
+    });
+
     await db.prepare(`
       UPDATE trading_terms SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(userId, now, now, id, companyId).run();
-    
+
+    // W-10: Auto-create rebate from approved trading term
+    let rebateId = null;
+    try {
+      rebateId = crypto.randomUUID();
+      await db.prepare(`
+        INSERT INTO rebates (
+          id, company_id, name, description, rebate_type, status,
+          customer_id, trading_term_id, start_date, end_date,
+          rate, rate_type, threshold, cap, calculation_basis,
+          settlement_frequency, created_by, data, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '{}', ?, ?)
+      `).bind(
+        rebateId, companyId,
+        `Rebate from ${term.name}`,
+        `Auto-created from approved trading term "${term.name}"`,
+        term.term_type || 'volume_rebate',
+        term.customer_id, id,
+        term.start_date, term.end_date,
+        term.rate || 0, term.rate_type || 'percentage',
+        term.threshold || 0, term.cap,
+        term.calculation_basis || 'revenue',
+        term.payment_frequency || 'quarterly',
+        userId, now, now
+      ).run();
+
+      await createNotification(db, {
+        companyId, userId: term.created_by || userId,
+        title: 'Rebate Auto-Created',
+        message: `Rebate auto-created from approved trading term "${term.name}".`,
+        type: 'info', category: 'rebate', priority: 'normal',
+        entityType: 'rebate', entityId: rebateId, entityName: `Rebate from ${term.name}`
+      });
+    } catch (e) {
+      console.error('Failed to auto-create rebate:', e.message);
+    }
+
     const updated = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
-    return c.json({ success: true, data: rowToDocument(updated) });
+    return c.json({ success: true, data: rowToDocument(updated), rebateId });
   } catch (error) {
     console.error('Error approving trading term:', error);
     return apiError(c, error, 'tradingTerms');
   }
 });
 
-// Reject trading term
+// W-10: Reject trading term with notification
 tradingTerms.post('/:id/reject', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
+    const userId = getUserId(c);
     const { id } = c.req.param();
+    const body = await c.req.json().catch(() => ({}));
     const now = new Date().toISOString();
-    
+
+    const term = await db.prepare('SELECT * FROM trading_terms WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!term) return c.json({ success: false, message: 'Trading term not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityReject({
+      entityType: 'trading_term', entityId: id,
+      entityName: term.name || 'Trading Term',
+      amount: term.rate || 0,
+      requesterId: term.created_by, reason: body.reason
+    });
+
     await db.prepare(`
-      UPDATE trading_terms SET status = 'draft', updated_at = ?
+      UPDATE trading_terms SET status = 'rejected', updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(now, id, companyId).run();
     

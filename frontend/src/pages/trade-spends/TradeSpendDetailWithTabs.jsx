@@ -4,9 +4,11 @@ import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } 
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
+import { tradeSpendService } from '../../services/api';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
 import { usePageVariants } from '../../hooks/usePageVariants';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 import TradeSpendOverview from './tabs/TradeSpendOverview';
 import TradeSpendAccruals from './tabs/TradeSpendAccruals';
@@ -21,6 +23,8 @@ const TradeSpendDetailWithTabs = () => {
   const [tradeSpend, setTradeSpend] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
+  const [actionLoading, setActionLoading] = useState(false);
+  const { t } = useTerminology();
 
   const pageVariant = usePageVariants('tradeSpendDetail');
   const tabs = pageVariant?.tabs || [
@@ -75,7 +79,7 @@ const TradeSpendDetailWithTabs = () => {
   if (!tradeSpend) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4 }}>
-        <Typography variant="h6" color="error">Trade Spend not found</Typography>
+        <Typography variant="h6" color="error">{t('trade_spend')} not found</Typography>
       </Container>
     );
   }
@@ -98,6 +102,18 @@ const TradeSpendDetailWithTabs = () => {
               </Box>
               <Typography variant="body2" color="text.secondary">ID: {tradeSpend.spendId}</Typography>
             </Box>
+            {(tradeSpend.status === 'draft') && (
+              <Button variant="contained" disabled={actionLoading} onClick={async () => { setActionLoading(true); try { await tradeSpendService.submit(id); await loadTradeSpend(); } catch(e) { console.error(e); } setActionLoading(false); }}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Submit</Button>
+            )}
+            {tradeSpend.status === 'pending_approval' && (
+              <Button variant="contained" color="success" disabled={actionLoading} onClick={async () => { setActionLoading(true); try { await tradeSpendService.approve(id); await loadTradeSpend(); } catch(e) { console.error(e); } setActionLoading(false); }}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Approve</Button>
+            )}
+            {tradeSpend.status === 'pending_approval' && (
+              <Button variant="outlined" color="error" disabled={actionLoading} onClick={async () => { setActionLoading(true); try { await tradeSpendService.reject(id); await loadTradeSpend(); } catch(e) { console.error(e); } setActionLoading(false); }}
+                sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Reject</Button>
+            )}
             <Button variant="outlined" startIcon={<EditIcon />} onClick={() => navigate(`/trade-spends/${id}/edit`)} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>Edit</Button>
           </Box>
         </Box>

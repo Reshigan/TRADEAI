@@ -15,6 +15,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { UserSkillProvider } from './hooks/useUserSkillContext';
 import { ThemeContextProvider } from './contexts/ThemeContext';
+import { TerminologyProvider } from './contexts/TerminologyContext';
 
 const LoadingFallback = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 12 }}>
@@ -189,6 +190,7 @@ const AdminSystemConfig = lazy(() => import('./pages/admin/SystemConfig'));
 const AdminSAPExport = lazy(() => import('./pages/admin/SAPExport'));
 const AdminSAPIntegration = lazy(() => import('./pages/admin/SAPIntegration'));
 const AdminIntegrations = lazy(() => import('./pages/admin/Integrations'));
+const AdminTerminology = lazy(() => import('./pages/admin/TerminologySettings'));
 
 const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
 const PromotionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.PromotionsHelp })));
@@ -305,6 +307,7 @@ function App() {
         <AuthProvider>
           <CurrencyProvider>
             <CompanyTypeProvider user={user}>
+              <TerminologyProvider>
               <Router>
                 <UserSkillProvider>
           {isAuthenticated && (
@@ -542,6 +545,7 @@ function App() {
             <Route path="/admin/sap-export" element={<P><AdminSAPExport /></P>} />
             <Route path="/admin/sap-integration" element={<P><AdminSAPIntegration /></P>} />
             <Route path="/admin/integrations" element={<P><AdminIntegrations /></P>} />
+            <Route path="/admin/terminology" element={<P requiredRoles={['admin', 'super_admin']}><AdminTerminology /></P>} />
 
             <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />
             <Route path="/simulation-studio" element={<Navigate to="/scenarios" replace />} />
@@ -575,6 +579,7 @@ function App() {
           </Suspense>
                 </UserSkillProvider>
               </Router>
+              </TerminologyProvider>
             </CompanyTypeProvider>
           </CurrencyProvider>
         </AuthProvider>

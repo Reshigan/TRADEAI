@@ -3,6 +3,7 @@ import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { checkBudgetAvailability, commitFunds } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 
 const campaigns = new Hono();
 
@@ -269,14 +270,30 @@ campaigns.delete('/:id', async (c) => {
   }
 });
 
-// Submit for approval
+// W-02: Submit campaign for approval with budget check + approval routing
 campaigns.post('/:id/submit', async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
+    const userId = getUserId(c);
     const { id } = c.req.param();
     const now = new Date().toISOString();
-    
+
+    const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    const doc = rowToDocument(campaign);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    const result = await lifecycle.onEntitySubmit({
+      entityType: 'campaign', entityId: id,
+      entityName: doc.name || 'Campaign',
+      amount: doc.budgetAmount || 0, budgetId: doc.budgetId
+    });
+
+    if (!result.success) {
+      return c.json({ success: false, message: result.reason }, 400);
+    }
+
     await db.prepare(`
       UPDATE campaigns SET status = 'pending_approval', updated_at = ?
       WHERE id = ? AND company_id = ?
@@ -284,14 +301,14 @@ campaigns.post('/:id/submit', async (c) => {
     
     const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     
-    return c.json({ success: true, data: rowToDocument(updated) });
+    return c.json({ success: true, data: rowToDocument(updated), lifecycle: result.results });
   } catch (error) {
     console.error('Error submitting campaign:', error);
     return apiError(c, error, 'campaigns');
   }
 });
 
-// Approve campaign
+// W-02: Approve campaign with budget commit + notification
 campaigns.post('/:id/approve', async (c) => {
   try {
     const db = c.env.DB;
@@ -299,7 +316,19 @@ campaigns.post('/:id/approve', async (c) => {
     const { id } = c.req.param();
     const userId = getUserId(c);
     const now = new Date().toISOString();
-    
+
+    const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    const doc = rowToDocument(campaign);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityApprove({
+      entityType: 'campaign', entityId: id,
+      entityName: doc.name || 'Campaign',
+      amount: doc.budgetAmount || 0, budgetId: doc.budgetId,
+      requesterId: doc.createdBy
+    });
+
     await db.prepare(`
       UPDATE campaigns SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
@@ -310,6 +339,42 @@ campaigns.post('/:id/approve', async (c) => {
     return c.json({ success: true, data: rowToDocument(updated) });
   } catch (error) {
     console.error('Error approving campaign:', error);
+    return apiError(c, error, 'campaigns');
+  }
+});
+
+// W-02: Reject campaign with budget release + notification
+campaigns.post('/:id/reject', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const { id } = c.req.param();
+    const userId = getUserId(c);
+    const body = await c.req.json();
+    const now = new Date().toISOString();
+
+    const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    const doc = rowToDocument(campaign);
+
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityReject({
+      entityType: 'campaign', entityId: id,
+      entityName: doc.name || 'Campaign',
+      amount: doc.budgetAmount || 0, budgetId: doc.budgetId,
+      requesterId: doc.createdBy, reason: body.reason
+    });
+
+    await db.prepare(`
+      UPDATE campaigns SET status = 'rejected', updated_at = ?
+      WHERE id = ? AND company_id = ?
+    `).bind(now, id, companyId).run();
+    
+    const updated = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
+    
+    return c.json({ success: true, data: rowToDocument(updated) });
+  } catch (error) {
+    console.error('Error rejecting campaign:', error);
     return apiError(c, error, 'campaigns');
   }
 });

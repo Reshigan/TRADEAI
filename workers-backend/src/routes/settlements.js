@@ -1,8 +1,9 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
-import { recordSpend } from '../services/budgetEnforcement.js';
+import { recordSpend, releaseFunds } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 
 const settlements = new Hono();
 
@@ -544,6 +545,16 @@ settlements.post('/:id/approve', async (c) => {
 
     const approvedAmount = parseFloat(body.approvedAmount || body.approved_amount) || settlement.approved_amount || settlement.claimed_amount;
 
+    // W-05: Budget spend recording on settlement approval
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityApprove({
+      entityType: 'settlement', entityId: id,
+      entityName: settlement.settlement_number || settlement.name || 'Settlement',
+      amount: approvedAmount,
+      budgetId: settlement.budget_id,
+      requesterId: settlement.created_by
+    });
+
     await db.prepare(`
       UPDATE settlements SET
         status = 'approved', approved_amount = ?,
@@ -576,6 +587,17 @@ settlements.post('/:id/reject', async (c) => {
     if (!settlement) {
       return c.json({ success: false, message: 'Settlement not found' }, 404);
     }
+
+    // W-05: Release committed funds on settlement rejection
+    const lifecycle = new EntityLifecycleService(db, companyId, userId);
+    await lifecycle.onEntityReject({
+      entityType: 'settlement', entityId: id,
+      entityName: settlement.settlement_number || settlement.name || 'Settlement',
+      amount: settlement.approved_amount || settlement.claimed_amount || 0,
+      budgetId: settlement.budget_id,
+      requesterId: settlement.created_by,
+      reason: body.reason || body.notes || 'Rejected'
+    });
 
     await db.prepare(`
       UPDATE settlements SET

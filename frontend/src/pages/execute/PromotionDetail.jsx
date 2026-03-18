@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Tabs, Tab } from '@mui/material';
-import { ArrowLeft, Edit2, Send } from 'lucide-react';
+import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, CircularProgress } from '@mui/material';
+import { ArrowLeft, Edit2, Send, CheckCircle, XCircle, Copy } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 const statusColor = (s) => ({ draft: '#94A3B8', pending_approval: '#F59E0B', approved: '#2563EB', active: '#059669', completed: '#6B7280', cancelled: '#DC2626', rejected: '#DC2626' }[s] || '#94A3B8');
@@ -10,27 +11,38 @@ const statusColor = (s) => ({ draft: '#94A3B8', pending_approval: '#F59E0B', app
 export default function PromotionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTerminology();
   const [promo, setPromo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState(0);
+  const [actionDialog, setActionDialog] = useState({ open: false, type: '' });
+  const [actionNote, setActionNote] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
+
+  const reload = async () => {
+    try { const res = await promotionService.getById(id); setPromo(res.data || res); } catch (e) { console.error(e); }
+  };
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const res = await promotionService.getById(id);
-        setPromo(res.data || res);
-      } catch (e) { console.error(e); }
+      try { const res = await promotionService.getById(id); setPromo(res.data || res); } catch (e) { console.error(e); }
       setLoading(false);
     };
     load();
   }, [id]);
 
-  const submitForApproval = async () => {
+  const handleAction = async (type) => {
+    setActionLoading(true); setActionError('');
     try {
-      await promotionService.update(id, { ...promo, status: 'pending_approval' });
-      const res = await promotionService.getById(id);
-      setPromo(res.data || res);
-    } catch (e) { console.error(e); }
+      if (type === 'submit') await promotionService.submit(id);
+      else if (type === 'approve') await promotionService.approve(id, { notes: actionNote });
+      else if (type === 'reject') await promotionService.reject(id, { reason: actionNote });
+      else if (type === 'clone') await promotionService.clone(id);
+      await reload();
+      setActionDialog({ open: false, type: '' }); setActionNote('');
+    } catch (e) { setActionError(e.response?.data?.message || e.message || 'Action failed'); }
+    setActionLoading(false);
   };
 
   if (loading) return <Box sx={{ py: 4 }}><LinearProgress /></Box>;
@@ -50,7 +62,10 @@ export default function PromotionDetail() {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          {promo.status === 'draft' && <Button variant="contained" startIcon={<Send size={16} />} onClick={submitForApproval}>Submit for Approval</Button>}
+          {promo.status === 'draft' && <Button variant="contained" startIcon={<Send size={16} />} onClick={() => setActionDialog({ open: true, type: 'submit' })}>Submit</Button>}
+          {promo.status === 'pending_approval' && <Button variant="contained" color="success" startIcon={<CheckCircle size={16} />} onClick={() => setActionDialog({ open: true, type: 'approve' })}>Approve</Button>}
+          {promo.status === 'pending_approval' && <Button variant="outlined" color="error" startIcon={<XCircle size={16} />} onClick={() => setActionDialog({ open: true, type: 'reject' })}>Reject</Button>}
+          <Button variant="outlined" startIcon={<Copy size={16} />} onClick={() => handleAction('clone')}>Clone</Button>
           <Button variant="outlined" startIcon={<Edit2 size={16} />} onClick={() => navigate(`/execute/promotions/${id}/edit`)}>Edit</Button>
         </Box>
       </Box>
@@ -99,6 +114,30 @@ export default function PromotionDetail() {
           )}
         </CardContent>
       </Card>
+      {/* W-09: Action Confirmation Dialog */}
+      <Dialog open={actionDialog.open} onClose={() => { setActionDialog({ open: false, type: '' }); setActionError(''); }}>
+        <DialogTitle sx={{ textTransform: 'capitalize' }}>{actionDialog.type} {t('promotion')}</DialogTitle>
+        <DialogContent>
+          {actionError && <Alert severity="error" sx={{ mb: 2 }}>{actionError}</Alert>}
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            {actionDialog.type === 'submit' && `Submit this ${t('promotion').toLowerCase()} for approval?`}
+            {actionDialog.type === 'approve' && `Approve this ${t('promotion').toLowerCase()}? Budget will be committed.`}
+            {actionDialog.type === 'reject' && `Reject this ${t('promotion').toLowerCase()}?`}
+          </Typography>
+          {(actionDialog.type === 'approve' || actionDialog.type === 'reject') && (
+            <TextField fullWidth multiline rows={2} label={actionDialog.type === 'reject' ? 'Reason' : 'Notes'}
+              value={actionNote} onChange={(e) => setActionNote(e.target.value)} />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setActionDialog({ open: false, type: '' }); setActionError(''); }}>Cancel</Button>
+          <Button variant="contained" onClick={() => handleAction(actionDialog.type)} disabled={actionLoading}
+            color={actionDialog.type === 'reject' ? 'error' : 'primary'}
+            startIcon={actionLoading ? <CircularProgress size={16} /> : null}>
+            {actionLoading ? 'Processing...' : actionDialog.type}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

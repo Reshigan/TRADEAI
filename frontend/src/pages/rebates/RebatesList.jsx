@@ -7,9 +7,11 @@ import { Add, Edit, Delete, Visibility, AccountBalance, TrendingUp, CheckCircle 
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useTerminology } from '../../contexts/TerminologyContext';
 
 const RebatesList = () => {
   const navigate = useNavigate();
+  const { t, tPlural } = useTerminology();
   const [rebates, setRebates] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,12 +56,12 @@ const RebatesList = () => {
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Rebates</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>Configure and manage all rebate programs</Typography>
+          <Typography variant="h5" fontWeight={700}>{tPlural('rebate')}</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>Configure and manage all {t('rebate').toLowerCase()} programs</Typography>
         </Box>
         <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/rebates/new')}
           sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, px: 3, py: 1.2, bgcolor: '#1E40AF', '&:hover': { bgcolor: '#1E3A8A' } }}>
-          New Rebate
+          New {t('rebate')}
         </Button>
       </Box>
 

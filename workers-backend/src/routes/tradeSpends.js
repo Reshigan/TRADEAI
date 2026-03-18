@@ -3,6 +3,7 @@ import { getMongoClient } from '../services/d1.js';
 import { checkBudgetAvailability, commitFunds } from '../services/budgetEnforcement.js';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
+import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 
 export const tradeSpendRoutes = new Hono();
 
@@ -101,11 +102,19 @@ tradeSpendRoutes.post('/', async (c) => {
     const data = await c.req.json();
     const mongodb = getMongoClient(c);
 
+    // W-01: Budget availability check on create
+    if (data.budgetId && data.amount > 0) {
+      const check = await checkBudgetAvailability(c.env.DB, data.budgetId, data.amount, tenantId);
+      if (!check.available) {
+        return c.json({ success: false, message: check.reason }, 400);
+      }
+    }
+
     const tradeSpendId = await mongodb.insertOne('tradespends', {
       ...data,
       companyId: tenantId,
       createdBy: userId,
-      status: 'pending'
+      status: data.status || 'draft'
     });
 
     return c.json({ success: true, data: { id: tradeSpendId }, message: 'Trade spend created successfully' }, 201);
@@ -315,13 +324,56 @@ tradeSpendRoutes.get('/:id/accruals', async (c) => {
   }
 });
 
-// Approve trade spend
+// W-01: Submit trade spend for approval
+tradeSpendRoutes.post('/:id/submit', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const tenantId = c.get('tenantId');
+    const userId = c.get('userId');
+    const mongodb = getMongoClient(c);
+
+    const ts = await mongodb.findOne('tradespends', { _id: { $oid: id }, companyId: tenantId });
+    if (!ts) return c.json({ success: false, message: 'Trade spend not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(c.env.DB, tenantId, userId);
+    const result = await lifecycle.onEntitySubmit({
+      entityType: 'trade_spend', entityId: id,
+      entityName: ts.notes || ts.spendId || 'Trade Spend',
+      amount: ts.amount || 0, budgetId: ts.budgetId
+    });
+
+    if (!result.success) {
+      return c.json({ success: false, message: result.reason }, 400);
+    }
+
+    await mongodb.updateOne('tradespends', { _id: { $oid: id }, companyId: tenantId }, {
+      status: 'pending_approval', submittedAt: new Date().toISOString()
+    });
+
+    return c.json({ success: true, message: 'Trade spend submitted for approval', data: result.results });
+  } catch (error) {
+    return apiError(c, error, 'tradeSpends');
+  }
+});
+
+// W-01: Approve trade spend with budget commit
 tradeSpendRoutes.post('/:id/approve', async (c) => {
   try {
     const { id } = c.req.param();
     const tenantId = c.get('tenantId');
     const userId = c.get('userId');
     const mongodb = getMongoClient(c);
+
+    const ts = await mongodb.findOne('tradespends', { _id: { $oid: id }, companyId: tenantId });
+    if (!ts) return c.json({ success: false, message: 'Trade spend not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(c.env.DB, tenantId, userId);
+    await lifecycle.onEntityApprove({
+      entityType: 'trade_spend', entityId: id,
+      entityName: ts.notes || ts.spendId || 'Trade Spend',
+      amount: ts.amount || 0, budgetId: ts.budgetId,
+      requesterId: ts.createdBy
+    });
 
     await mongodb.updateOne('tradespends', { _id: { $oid: id }, companyId: tenantId }, {
       status: 'approved',
@@ -335,7 +387,7 @@ tradeSpendRoutes.post('/:id/approve', async (c) => {
   }
 });
 
-// Reject trade spend
+// W-01: Reject trade spend with budget release
 tradeSpendRoutes.post('/:id/reject', async (c) => {
   try {
     const { id } = c.req.param();
@@ -343,6 +395,17 @@ tradeSpendRoutes.post('/:id/reject', async (c) => {
     const userId = c.get('userId');
     const { reason } = await c.req.json();
     const mongodb = getMongoClient(c);
+
+    const ts = await mongodb.findOne('tradespends', { _id: { $oid: id }, companyId: tenantId });
+    if (!ts) return c.json({ success: false, message: 'Trade spend not found' }, 404);
+
+    const lifecycle = new EntityLifecycleService(c.env.DB, tenantId, userId);
+    await lifecycle.onEntityReject({
+      entityType: 'trade_spend', entityId: id,
+      entityName: ts.notes || ts.spendId || 'Trade Spend',
+      amount: ts.amount || 0, budgetId: ts.budgetId,
+      requesterId: ts.createdBy, reason
+    });
 
     await mongodb.updateOne('tradespends', { _id: { $oid: id }, companyId: tenantId }, {
       status: 'rejected',
