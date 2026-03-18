@@ -977,6 +977,10 @@ export const aiCopilotService = {
     const response = await api.post('/ai-copilot/suggest-actions', {});
     return response.data;
   },
+  analyzePromotionLift: async (data) => {
+    const response = await api.post('/ai-copilot/analyze-promotion-lift', data);
+    return response.data;
+  },
 };
 
 export const smartApprovalsService = {
@@ -1975,6 +1979,7 @@ export const simulationService = {
   getNextBestPromotions: async (params) => { const r = await api.get('/simulations/next-best', { params }); return r.data; },
   reallocateBudget: async (data) => { const r = await api.post('/simulations/reallocate', data); return r.data; },
   simulateReallocation: async (data) => { const r = await api.post('/simulations/run', { ...data, type: 'reallocation' }); return r.data; },
+  getRoiCurve: async (params) => { const r = await api.get('/simulations/roi-curve', { params }); return r.data; },
 };
 
 export const activityGridService = {
@@ -2078,6 +2083,58 @@ export const workflowService = {
   startWorkflow: async (templateId, data) => { const r = await api.post('/workflow-engine/start', { templateId, ...data }); return r.data; },
   handleUserAction: async (workflowId, stepId, action, data) => { const r = await api.post(`/workflow-engine/${workflowId}/action`, { stepId, action, ...data }); return r.data; },
   getWorkflowStatus: async (id) => { const r = await api.get(`/workflow-engine/${id}/status`); return r.data; },
+};
+
+// Client-side role service for JWT token parsing and role-based access control
+let currentUser = null;
+export const roleService = {
+  getCurrentUser: () => currentUser,
+  getCurrentRole: () => currentUser?.role || null,
+  initializeFromToken: (token) => {
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        currentUser = { id: parsed.id || parsed._id || parsed.userId, role: parsed.role, email: parsed.email, companyId: parsed.companyId || parsed.company_id };
+        return;
+      }
+      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64));
+      currentUser = { id: payload.userId || payload.sub, role: payload.role, email: payload.email, companyId: payload.companyId };
+    } catch (e) {
+      console.error('Failed to parse token for role service:', e);
+      currentUser = null;
+    }
+  },
+  clear: () => { currentUser = null; },
+  hasRole: (role) => currentUser?.role === role,
+  hasAnyRole: (roles) => Array.isArray(roles) && roles.includes(currentUser?.role),
+  hasPermission: (permission) => {
+    const rolePerms = {
+      super_admin: ['*'],
+      admin: ['manage_users', 'manage_settings', 'manage_company', 'view_all', 'edit_data', 'create_users', 'setup_sso'],
+      manager: ['view_all', 'edit_data', 'approve'],
+      key_account_manager: ['view_own', 'edit_own'],
+      jam: ['view_own', 'edit_own'],
+      viewer: ['view_own'],
+    };
+    const perms = rolePerms[currentUser?.role] || [];
+    return perms.includes('*') || perms.includes(permission);
+  },
+  hasAnyPermission: (permissions) => Array.isArray(permissions) && permissions.some(p => roleService.hasPermission(p)),
+  isSuperAdmin: () => currentUser?.role === 'super_admin',
+  isAdmin: () => currentUser?.role === 'admin' || currentUser?.role === 'super_admin',
+  isManager: () => ['manager', 'admin', 'super_admin'].includes(currentUser?.role),
+  canManageCompanies: () => currentUser?.role === 'super_admin',
+  canCreateUsers: () => ['admin', 'super_admin'].includes(currentUser?.role),
+  canViewAllData: () => ['manager', 'admin', 'super_admin'].includes(currentUser?.role),
+  canEditData: () => ['manager', 'admin', 'super_admin', 'key_account_manager', 'jam'].includes(currentUser?.role),
+  canSetupSSO: () => ['admin', 'super_admin'].includes(currentUser?.role),
+  getCompanyId: () => currentUser?.companyId || null,
+  getRoleDisplayName: () => {
+    const names = { super_admin: 'Super Admin', admin: 'Admin', manager: 'Manager', key_account_manager: 'Key Account Manager', jam: 'JAM', viewer: 'Viewer' };
+    return names[currentUser?.role] || currentUser?.role || 'Unknown';
+  },
 };
 
 export default api;

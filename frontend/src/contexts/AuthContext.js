@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { roleService } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('isAuthenticated');
+    roleService.clear();
     setUser(null);
     setIsAuthenticated(false);
   };
