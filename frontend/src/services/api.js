@@ -2098,7 +2098,8 @@ export const roleService = {
         currentUser = { id: parsed.id || parsed._id || parsed.userId, role: parsed.role, email: parsed.email, companyId: parsed.companyId || parsed.company_id };
         return;
       }
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64));
       currentUser = { id: payload.userId || payload.sub, role: payload.role, email: payload.email, companyId: payload.companyId };
     } catch (e) {
       console.error('Failed to parse token for role service:', e);
