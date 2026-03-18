@@ -14,16 +14,17 @@ const sharedTypography = {
 const sharedShape = { borderRadius: 12 };
 
 const headingTypography = {
-  h1: { fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-0.02em' },
-  h2: { fontSize: '2rem', fontWeight: 700, letterSpacing: '-0.01em' },
-  h3: { fontSize: '1.75rem', fontWeight: 600, letterSpacing: '-0.01em' },
-  h4: { fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.005em' },
-  h5: { fontSize: '1.25rem', fontWeight: 600 },
-  h6: { fontSize: '1rem', fontWeight: 600 },
-  subtitle1: { fontSize: '1rem', fontWeight: 500 },
-  subtitle2: { fontSize: '0.875rem', fontWeight: 500 },
-  body1: { fontSize: '1rem' },
-  body2: { fontSize: '0.875rem' },
+  h1: { fontSize: '1.5rem', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em' },
+  h2: { fontSize: '1.25rem', fontWeight: 600, lineHeight: 1.3, letterSpacing: '-0.02em' },
+  h3: { fontSize: '1rem', fontWeight: 600, lineHeight: 1.4 },
+  h4: { fontSize: '0.9375rem', fontWeight: 600 },
+  h5: { fontSize: '0.875rem', fontWeight: 600 },
+  h6: { fontSize: '0.8125rem', fontWeight: 600 },
+  subtitle1: { fontSize: '0.875rem', fontWeight: 500 },
+  subtitle2: { fontSize: '0.8125rem', fontWeight: 500 },
+  body1: { fontSize: '0.875rem', lineHeight: 1.5 },
+  body2: { fontSize: '0.8125rem', lineHeight: 1.5 },
+  caption: { fontSize: '0.75rem', fontWeight: 500, letterSpacing: '0.02em', lineHeight: 1.4 },
 };
 
 // Light theme builder

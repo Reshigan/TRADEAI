@@ -137,7 +137,7 @@ export default function BudgetList() {
         {[
           { label: 'Total Budget', value: fmt(totalBudget), color: undefined },
           { label: 'Committed', value: fmt(totalCommitted), color: 'warning.main' },
-          { label: 'Spent', value: fmt(totalSpent), color: '#2563EB' },
+          { label: 'Spent', value: fmt(totalSpent), color: 'primary.main' },
           { label: 'Available', value: fmt(totalBudget - totalSpent - totalCommitted), color: 'success.main' },
         ].map(kpi => (
           <Grid item xs={12} sm={6} md={3} key={kpi.label}>
