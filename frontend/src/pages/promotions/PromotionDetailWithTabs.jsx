@@ -105,14 +105,14 @@ const PromotionDetailWithTabs = () => {
     }
   };
 
-  const handleQuickAction = async (action) => {
+  const handleQuickAction = async (action, metadata) => {
     setActionLoading(true);
     try {
       if (action === 'submit') await apiClient.post(`/promotions/${id}/submit`);
-      else if (action === 'approve') await apiClient.post(`/promotions/${id}/approve`);
-      else if (action === 'reject') await apiClient.post(`/promotions/${id}/reject`);
-      else if (action === 'edit') { navigate(`/promotions/${id}/edit`); return; }
-      else if (action === 'delete') { await handleDelete(); return; }
+      else if (action === 'approve') await apiClient.post(`/promotions/${id}/approve`, { notes: metadata?.comment });
+      else if (action === 'reject') await apiClient.post(`/promotions/${id}/reject`, { reason: metadata?.comment });
+      else if (action === 'edit') { navigate(`/promotions/${id}/edit`); setActionLoading(false); return; }
+      else if (action === 'delete') { await handleDelete(); setActionLoading(false); return; }
       await loadPromotion();
     } catch (e) { toast.error(e.response?.data?.message || 'Action failed'); }
     setActionLoading(false);

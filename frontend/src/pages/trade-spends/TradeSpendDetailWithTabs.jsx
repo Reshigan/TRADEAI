@@ -85,12 +85,12 @@ const TradeSpendDetailWithTabs = () => {
     );
   }
 
-  const handleQuickAction = async (action) => {
+  const handleQuickAction = async (action, metadata) => {
     setActionLoading(true);
     try {
       if (action === 'submit') await tradeSpendService.submit(id);
       else if (action === 'approve') await tradeSpendService.approve(id);
-      else if (action === 'reject') await tradeSpendService.reject(id);
+      else if (action === 'reject') await tradeSpendService.reject(id, { reason: metadata?.comment });
       else if (action === 'edit') { navigate(`/trade-spends/${id}/edit`); setActionLoading(false); return; }
       await loadTradeSpend();
     } catch (e) { toast.error(e.response?.data?.message || 'Action failed'); }

@@ -195,7 +195,7 @@ const SmartField = ({
       <TextField
         name={name}
         label={label}
-        value={focused ? (value || '') : formatCurrency(value)}
+        value={focused ? (value !== null && value !== undefined && value !== '' ? String(value) : '') : formatCurrency(value)}
         onChange={handleCurrencyChange}
         onFocus={() => setFocused(true)}
         onBlur={handleBlur}

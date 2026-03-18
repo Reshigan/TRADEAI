@@ -181,6 +181,32 @@ const ClaimDetail = () => {
     );
   }
 
+  // Claim-specific actions per status — only show actions we can actually handle
+  const getClaimActions = () => {
+    const s = (claim.status || 'draft').toLowerCase().replace(/\s+/g, '_');
+    const actionMap = {
+      draft: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this claim for approval?' },
+      ],
+      submitted: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this claim?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
+      ],
+      under_review: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this claim?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
+      ],
+      pending: [
+        { action: 'submit', label: 'Submit for Approval', icon: null, color: 'primary', confirm: true, confirmMsg: 'Submit this claim for approval?' },
+      ],
+      pending_approval: [
+        { action: 'approve', label: 'Approve', icon: null, color: 'success', confirm: true, confirmMsg: 'Approve this claim?' },
+        { action: 'reject', label: 'Reject', icon: null, color: 'error', confirm: true, confirmMsg: 'Reject this claim?', requireComment: true },
+      ],
+    };
+    return actionMap[s] || undefined;
+  };
+
   const handleQuickAction = async (action, metadata) => {
     if (action === 'submit') await handleSubmit();
     else if (action === 'approve') await handleApprove();
@@ -231,6 +257,7 @@ const ClaimDetail = () => {
           entityId={id}
           entityName={claim.claimNumber || 'Claim'}
           onAction={handleQuickAction}
+          customActions={getClaimActions()}
           sx={{ mb: 3 }}
         />
 
