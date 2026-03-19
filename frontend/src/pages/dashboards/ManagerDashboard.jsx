@@ -195,7 +195,7 @@ const ManagerDashboard = () => {
               </Box>
 
               <Box display="flex" alignItems="baseline" gap={1} mb={1}>
-                <Typography variant="h2" fontWeight={800} sx={{ color: '#111827', fontSize: { xs: '2rem', sm: '3rem' } }}>
+                <Typography variant="h2" fontWeight={800} sx={{ color: 'text.primary', fontSize: { xs: '2rem', sm: '3rem' } }}>
                   %{budgetUtil}
                 </Typography>
               </Box>

@@ -80,21 +80,21 @@ const Sidebar = () => {
   return (
     <div style={{ 
       width: '260px', 
-      backgroundColor: '#FFFFFF', 
-      color: '#171717', 
+      backgroundColor: 'var(--bg-card)', 
+      color: 'var(--text-primary)', 
       height: '100vh', 
       overflowY: 'auto',
       position: 'fixed',
       left: 0,
       top: 0,
-      borderRight: '1px solid #E5E5E5',
+      borderRight: '1px solid var(--border-primary)',
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Logo Section */}
       <div style={{ 
         padding: '20px 16px', 
-        borderBottom: '1px solid #E5E5E5',
+        borderBottom: '1px solid var(--border-primary)',
         display: 'flex',
         alignItems: 'center',
         gap: '12px'
@@ -114,7 +114,7 @@ const Sidebar = () => {
               padding: '0 16px', 
               marginBottom: '8px', 
               fontSize: '11px', 
-              color: '#737373', 
+              color: 'var(--text-muted)', 
               fontWeight: '600', 
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
@@ -138,11 +138,11 @@ const Sidebar = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    color: active ? '#1E3A8A' : '#404040'
+                    color: active ? '#1E3A8A' : 'var(--text-primary)'
                   }}
                   onMouseEnter={(e) => {
                     if (!active) {
-                      e.currentTarget.style.backgroundColor = '#F5F5F5';
+                      e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -153,7 +153,7 @@ const Sidebar = () => {
                 >
                   <IconComponent style={{ 
                     fontSize: '20px',
-                    color: active ? '#1E3A8A' : '#737373'
+                    color: active ? '#1E3A8A' : 'var(--text-muted)'
                   }} />
                   <span style={{ 
                     fontSize: '14px',
@@ -171,7 +171,7 @@ const Sidebar = () => {
       {/* Logout Section */}
       <div style={{ 
         padding: '16px', 
-        borderTop: '1px solid #E5E5E5'
+        borderTop: '1px solid var(--border-primary)'
       }}>
         <button
           onClick={() => {
@@ -181,9 +181,9 @@ const Sidebar = () => {
           style={{
             width: '100%',
             padding: '10px 16px',
-            backgroundColor: '#FAFAFA',
-            color: '#525252',
-            border: '1px solid #E5E5E5',
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--text-secondary)',
+            border: '1px solid var(--border-primary)',
             borderRadius: '6px',
             cursor: 'pointer',
             fontSize: '14px',
@@ -195,12 +195,12 @@ const Sidebar = () => {
             transition: 'all 0.15s ease'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#F5F5F5';
-            e.currentTarget.style.borderColor = '#D4D4D4';
+            e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)';
+            e.currentTarget.style.borderColor = 'var(--border-accent)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#FAFAFA';
-            e.currentTarget.style.borderColor = '#E5E5E5';
+            e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+            e.currentTarget.style.borderColor = 'var(--border-primary)';
           }}
         >
           <LogoutIcon style={{ fontSize: '18px' }} />

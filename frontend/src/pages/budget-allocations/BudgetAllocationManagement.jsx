@@ -83,7 +83,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
           <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 500, textTransform: 'uppercase', letterSpacing: 0.5 }}>
             {title}
           </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700, mt: 0.5, color: '#111827' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, mt: 0.5, color: 'text.primary' }}>
             {value}
           </Typography>
           {subtitle && (
@@ -355,7 +355,7 @@ const BudgetAllocationManagement = () => {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
             Budget Allocation Engine
           </Typography>
           <Typography variant="body2" sx={{ color: '#6B7280', mt: 0.5 }}>
