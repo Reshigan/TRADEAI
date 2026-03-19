@@ -34,7 +34,10 @@ companyRoutes.get('/', async (c) => {
     // Non-super_admin users only see their own company
     if (user.role !== 'super_admin') {
       const companyId = user.companyId || user.company_id;
-      if (companyId) filter._id = { $oid: companyId };
+      if (!companyId) {
+        return c.json({ success: true, data: [], pagination: { page: 1, limit: 50, total: 0, pages: 0 } });
+      }
+      filter._id = { $oid: companyId };
     }
     if (search) {
       filter.$or = [
@@ -65,7 +68,16 @@ companyRoutes.get('/', async (c) => {
 companyRoutes.get('/:id', async (c) => {
   try {
     const { id } = c.req.param();
+    const user = c.get('user');
     const mongodb = getMongoClient(c);
+
+    // Authorization: super_admin can see any company, others only their own
+    if (user.role !== 'super_admin') {
+      const userCompanyId = user.companyId || user.company_id;
+      if (userCompanyId !== id) {
+        return c.json({ success: false, message: 'Insufficient permissions' }, 403);
+      }
+    }
 
     const company = await mongodb.findOne('companies', { _id: { $oid: id } });
     if (!company) return c.json({ success: false, message: 'Company not found' }, 404);
@@ -80,7 +92,16 @@ companyRoutes.get('/:id', async (c) => {
 companyRoutes.get('/:id/users', async (c) => {
   try {
     const { id } = c.req.param();
+    const user = c.get('user');
     const mongodb = getMongoClient(c);
+
+    // Authorization: super_admin can see any company's users, others only their own
+    if (user.role !== 'super_admin') {
+      const userCompanyId = user.companyId || user.company_id;
+      if (userCompanyId !== id) {
+        return c.json({ success: false, message: 'Insufficient permissions' }, 403);
+      }
+    }
 
     const users = await mongodb.find('users', { companyId: id }, {
       sort: { createdAt: -1 },
