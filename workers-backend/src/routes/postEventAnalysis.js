@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 const postEventAnalysisRoutes = new Hono();
 postEventAnalysisRoutes.use('*', authMiddleware);
@@ -44,7 +45,21 @@ postEventAnalysisRoutes.get('/:promotionId', async (c) => {
 
     const budget = promotion.budget || pData.budget || 0;
     const actualSpend = perf.actualSpend || budget * (0.85 + Math.random() * 0.25);
-    const baselineSales = perf.baselineSales || budget * 3;
+
+    // Try hierarchy-aware baseline resolution for accurate baseline sales
+    let baselineSales = perf.baselineSales || 0;
+    if (!baselineSales && db) {
+      try {
+        const resolved = await resolveBaselineScope(c.env.DB, user.companyId, {
+          customerId: promotion.customer_id, productId: promotion.product_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineSales = resolved.baseline.total_base_volume || 0;
+        }
+      } catch (e) { /* fallback below */ }
+    }
+    if (!baselineSales) baselineSales = budget * 3;
+
     const actualSales = perf.actualSales || baselineSales * (1 + (perf.uplift || 15) / 100);
     const incrementalSales = actualSales - baselineSales;
     const roi = actualSpend > 0 ? incrementalSales / actualSpend : 0;

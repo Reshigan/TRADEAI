@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 const forecasting = new Hono();
 
@@ -273,8 +274,20 @@ forecasting.post('/generate', async (c) => {
     let baseValue = 0;
     let forecastValue = 0;
     
-    // Get historical data based on forecast type
-    if (forecastType === 'budget') {
+    // Try hierarchy-aware baseline resolution for forecast base value
+    const customerId = body.customerId || body.customer_id;
+    const productId = body.productId || body.product_id;
+    if (customerId || productId) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, { customerId, productId });
+        if (resolved && resolved.baseline) {
+          baseValue = resolved.baseline.total_base_volume || 0;
+        }
+      } catch (e) { /* fallback below */ }
+    }
+    
+    // Get historical data based on forecast type (fallback if baseline not resolved)
+    if (baseValue === 0 && forecastType === 'budget') {
       const historical = await db.prepare(`
         SELECT SUM(amount) as total FROM budgets 
         WHERE company_id = ? AND year = ?

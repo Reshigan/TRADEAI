@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 const anomalyDetectionRoutes = new Hono();
 anomalyDetectionRoutes.use('*', authMiddleware);

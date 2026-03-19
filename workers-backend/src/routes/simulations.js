@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { getD1Client, rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 const simulationsRoutes = new Hono();
 
@@ -40,15 +41,31 @@ simulationsRoutes.post('/run-simulation', async (c) => {
 
     for (const custId of custList) {
       for (const prodId of prodList) {
-        let baselineQuery = `SELECT AVG(quantity) as avg_qty, AVG(net_amount) as avg_rev, COUNT(*) as weeks
-          FROM sales_transactions WHERE company_id = ? AND is_promotional = 0
-          AND transaction_date >= date('now', '-52 weeks')`;
-        const params = [companyId];
-        if (custId) { baselineQuery += ' AND customer_id = ?'; params.push(custId); }
-        if (prodId) { baselineQuery += ' AND product_id = ?'; params.push(prodId); }
-
-        const baseline = await db.prepare(baselineQuery).bind(...params).first();
-        const weeklyBaseline = baseline?.avg_rev || 5000;
+        // Try hierarchy-aware baseline resolution first, fall back to raw SQL average
+        let weeklyBaseline = 5000;
+        try {
+          const resolved = await resolveBaselineScope(db, companyId, {
+            customerId: custId, productId: prodId
+          });
+          if (resolved && resolved.baseline) {
+            const bp = resolved.baseline;
+            weeklyBaseline = bp.avg_weekly_volume || bp.total_base_volume / (bp.periods_used || 52) || 5000;
+            // Apply seasonal factor if available
+            if (resolved.seasonalityFactor) {
+              weeklyBaseline *= resolved.seasonalityFactor;
+            }
+          }
+        } catch (resolveErr) {
+          // Fallback to raw SQL average if hierarchy resolver fails
+          let baselineQuery = `SELECT AVG(quantity) as avg_qty, AVG(net_amount) as avg_rev, COUNT(*) as weeks
+            FROM sales_transactions WHERE company_id = ? AND is_promotional = 0
+            AND transaction_date >= date('now', '-52 weeks')`;
+          const params = [companyId];
+          if (custId) { baselineQuery += ' AND customer_id = ?'; params.push(custId); }
+          if (prodId) { baselineQuery += ' AND product_id = ?'; params.push(prodId); }
+          const baseline = await db.prepare(baselineQuery).bind(...params).first();
+          weeklyBaseline = baseline?.avg_rev || 5000;
+        }
         const forecastWeekly = weeklyBaseline * (1 + lift);
         const incrementalRevenue = (forecastWeekly - weeklyBaseline) * (durationWeeks || 4);
         totalIncrementalRevenue += incrementalRevenue;
