@@ -141,10 +141,45 @@ customer360.get('/profiles/:id', async (c) => {
       if (!profileByCustomer) {
         return c.json({ success: false, message: 'Customer 360 profile not found' }, 404);
       }
-      return c.json({ success: true, data: rowToDocument(profileByCustomer) });
+
+      // Hierarchy-aware baseline resolution for customer profile
+      let baselineData = null;
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: profileByCustomer.customer_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineData = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            baseRevenue: resolved.baseline.total_base_revenue || 0,
+            seasonalityIndex: resolved.baseline.seasonality_index || 1.0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+
+      return c.json({ success: true, data: { ...rowToDocument(profileByCustomer), baseline: baselineData } });
     }
 
-    return c.json({ success: true, data: rowToDocument(profile) });
+    // Hierarchy-aware baseline resolution for customer profile
+    let baselineData = null;
+    try {
+      const resolved = await resolveBaselineScope(db, companyId, {
+        customerId: profile.customer_id
+      });
+      if (resolved && resolved.baseline) {
+        baselineData = {
+          baseVolume: resolved.baseline.total_base_volume || 0,
+          avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+          baseRevenue: resolved.baseline.total_base_revenue || 0,
+          seasonalityIndex: resolved.baseline.seasonality_index || 1.0,
+          source: resolved.source
+        };
+      }
+    } catch (e) { /* no baseline available */ }
+
+    return c.json({ success: true, data: { ...rowToDocument(profile), baseline: baselineData } });
   } catch (error) {
     console.error('Error fetching customer 360 profile:', error);
     return apiError(c, error, 'customer360');

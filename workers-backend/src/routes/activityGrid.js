@@ -261,8 +261,27 @@ activityGrid.get('/:id', async (c) => {
     if (!activity) {
       return c.json({ success: false, message: 'Activity not found' }, 404);
     }
+
+    // Hierarchy-aware baseline resolution for activity context
+    let baselineData = null;
+    if (activity.customer_id || activity.product_id) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: activity.customer_id,
+          productId: activity.product_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineData = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            seasonalityIndex: resolved.baseline.seasonality_index || 1.0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+    }
     
-    return c.json({ success: true, data: rowToDocument(activity) });
+    return c.json({ success: true, data: { ...rowToDocument(activity), baseline: baselineData } });
   } catch (error) {
     console.error('Error fetching activity:', error);
     return apiError(c, error, 'activityGrid');

@@ -788,7 +788,20 @@ sapImportRoutes.post('/:templateId', async (c) => {
       JSON.stringify(results.errors.slice(0, 20)), userId, ts, ts
     ).run();
 
-    return c.json({ success: true, data: results }, 201);
+    // Hierarchy-aware baseline resolution post-import for baseline recalculation hint
+    let baselineHint = null;
+    try {
+      const resolved = await resolveBaselineScope(db, companyId, {});
+      if (resolved && resolved.baseline) {
+        baselineHint = {
+          baseVolume: resolved.baseline.total_base_volume || 0,
+          source: resolved.source,
+          recalculationRecommended: results.created > 0
+        };
+      }
+    } catch (e) { /* no baseline available */ }
+
+    return c.json({ success: true, data: { ...results, baselineHint } }, 201);
   } catch (error) {
     if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
     return apiError(c, error, 'sapImport');

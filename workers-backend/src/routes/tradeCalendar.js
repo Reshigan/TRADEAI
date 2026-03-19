@@ -448,7 +448,26 @@ tradeCalendar.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Calendar event not found' }, 404);
     }
 
-    return c.json({ success: true, data: rowToDocument(event) });
+    // Hierarchy-aware baseline resolution for calendar event context
+    let baselineData = null;
+    if (event.customer_id || event.product_id) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: event.customer_id,
+          productId: event.product_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineData = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            seasonalityIndex: resolved.baseline.seasonality_index || 1.0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+    }
+
+    return c.json({ success: true, data: { ...rowToDocument(event), baseline: baselineData } });
   } catch (error) {
     console.error('Error fetching calendar event:', error);
     return apiError(c, error, 'tradeCalendar');
