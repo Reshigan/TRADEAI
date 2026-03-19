@@ -25,7 +25,37 @@ export default function Customer360() {
     if (!selected) return;
     const load = async () => {
       setLoading(true);
-      try { const res = await api.get(`/analytics/customer-360/${selected}`); setProfile(res.data?.data || res.data || {}); } catch (e) { console.error(e); }
+      try {
+        const res = await api.get(`/customer-360/profiles/${selected}`);
+        const profileData = res.data?.data || res.data || {};
+        // Also fetch promotions for this customer
+        let promos = [];
+        try {
+          const promoRes = await api.get('/promotions', { params: { customer_id: selected } });
+          promos = promoRes.data?.data || [];
+        } catch (_) {}
+        // Also fetch trade spends for this customer
+        let spends = [];
+        try {
+          const spendRes = await api.get('/trade-spends', { params: { customer_id: selected } });
+          spends = spendRes.data?.data || [];
+        } catch (_) {}
+        const totalSpend = spends.reduce((s, ts) => s + (Number(ts.amount) || 0), 0);
+        setProfile({
+          ...profileData,
+          total_revenue: profileData.total_revenue || profileData.totalRevenue || 0,
+          total_trade_spend: profileData.total_spend || profileData.totalSpend || totalSpend,
+          avg_roi: profileData.avg_roi || profileData.avgRoi || 0,
+          promotion_count: profileData.active_promotions || profileData.activePromotions || promos.length,
+          promotions: promos.map(p => ({
+            name: p.name || p.promotion_name,
+            type: p.type || p.promotion_type,
+            status: p.status,
+            spend: p.planned_spend || p.actual_spend || 0,
+            roi: p.roi || 0
+          }))
+        });
+      } catch (e) { console.error(e); }
       setLoading(false);
     };
     load();

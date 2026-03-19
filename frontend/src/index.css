@@ -124,11 +124,16 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
+  background: var(--bg-primary);
+  z-index: -1;
+}
+
+[data-theme="dark"] body::before {
   background: 
     radial-gradient(circle at 20% 80%, rgba(30, 64, 175, 0.06) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(30, 64, 175, 0.04) 0%, transparent 50%),
     radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
-  z-index: -1;
+  background-color: #0B1120;
   animation: premiumFloat 30s ease-in-out infinite;
 }
 
@@ -407,7 +412,7 @@ h1, h2, h3, h4, h5, h6 {
   
   /* Disable animations on mobile for performance */
   body::before {
-    animation: none;
+    animation: none !important;
   }
   
   /* Hide hover effects on touch devices */
@@ -858,12 +863,24 @@ select {
   color: var(--text-primary);
 }
 
-/* ── Ensure black text on white inputs in light mode ──────────── */
+/* ── Ensure proper text colors in both themes ──────────── */
 .MuiOutlinedInput-input,
 .MuiInputBase-input,
 .MuiSelect-select,
-.MuiFilledInput-input {
+.MuiFilledInput-input,
+.MuiAutocomplete-input,
+textarea.MuiInputBase-input {
   color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+/* Placeholder text should be visible but muted */
+.MuiOutlinedInput-input::placeholder,
+.MuiInputBase-input::placeholder,
+textarea.MuiInputBase-input::placeholder {
+  color: var(--text-muted) !important;
+  -webkit-text-fill-color: var(--text-muted) !important;
+  opacity: 1 !important;
 }
 
 .MuiInputLabel-root {
@@ -872,6 +889,89 @@ select {
 
 .MuiInputLabel-root.Mui-focused {
   color: var(--primary-blue) !important;
+}
+
+/* Input backgrounds should match theme */
+.MuiOutlinedInput-root,
+.MuiFilledInput-root {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-primary) !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-accent) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-blue) !important;
+}
+
+/* Disabled input text should still be readable */
+.MuiInputBase-input.Mui-disabled {
+  color: var(--text-muted) !important;
+  -webkit-text-fill-color: var(--text-muted) !important;
+}
+
+/* Select dropdown icon */
+.MuiSelect-icon {
+  color: var(--text-secondary) !important;
+}
+
+/* Table text colors */
+.MuiTableCell-root {
+  color: var(--text-primary) !important;
+}
+
+.MuiTableCell-head {
+  color: var(--text-secondary) !important;
+}
+
+/* Card and Paper backgrounds */
+.MuiPaper-root {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Typography should use theme text color */
+.MuiTypography-root {
+  color: var(--text-primary);
+}
+
+/* Chip text in light mode */
+.MuiChip-label {
+  color: inherit;
+}
+
+/* Dialog and popover backgrounds */
+.MuiDialog-paper {
+  background-color: var(--bg-card) !important;
+}
+
+.MuiPopover-paper,
+.MuiMenu-paper {
+  background-color: var(--bg-card) !important;
+}
+
+.MuiMenuItem-root {
+  color: var(--text-primary) !important;
+}
+
+/* Autocomplete dropdown */
+.MuiAutocomplete-paper {
+  background-color: var(--bg-card) !important;
+}
+
+.MuiAutocomplete-option {
+  color: var(--text-primary) !important;
+}
+
+/* Ensure the entire page background changes with theme */
+#root {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
 }
 
 /* ── Mobile Responsive Overrides ─────────────────────────────────── */

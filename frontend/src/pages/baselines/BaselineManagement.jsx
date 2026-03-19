@@ -12,7 +12,7 @@ import {
   Assessment, Science
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { baselineService, customerService, productService, promotionService } from '../../services/api';
+import { baselineService, baselineEngineService, customerService, productService, promotionService } from '../../services/api';
 
 const STATUS_COLORS = {
   draft: 'default',
@@ -44,6 +44,12 @@ const BaselineManagement = () => {
   const [promotions, setPromotions] = useState([]);
   const [options, setOptions] = useState(null);
 
+  const [mlDialogOpen, setMlDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [mlForm, setMlForm] = useState({ method: 'seasonal_decomposition', windowSize: 12, alpha: 0.3 });
+  const [importCsv, setImportCsv] = useState('');
+  const [calcLogs, setCalcLogs] = useState([]);
+
   const [form, setForm] = useState({
     name: '', description: '', baselineType: 'volume',
     calculationMethod: 'historical_average', granularity: 'weekly',
@@ -52,7 +58,9 @@ const BaselineManagement = () => {
     baseYear: new Date().getFullYear() - 1, periodsUsed: 52,
     seasonalityEnabled: true, trendEnabled: true,
     outlierRemovalEnabled: true, outlierThreshold: 2.0,
-    confidenceLevel: 0.85
+    confidenceLevel: 0.85,
+    customerHierarchyLevel: '', customerHierarchyId: '',
+    productHierarchyLevel: '', productHierarchyId: ''
   });
 
   const [decomposeForm, setDecomposeForm] = useState({
@@ -116,8 +124,46 @@ const BaselineManagement = () => {
       baseYear: new Date().getFullYear() - 1, periodsUsed: 52,
       seasonalityEnabled: true, trendEnabled: true,
       outlierRemovalEnabled: true, outlierThreshold: 2.0,
-      confidenceLevel: 0.85
+      confidenceLevel: 0.85,
+      customerHierarchyLevel: '', customerHierarchyId: '',
+      productHierarchyLevel: '', productHierarchyId: ''
     });
+  };
+
+  const handleMLCalculate = async () => {
+    if (!selectedBaseline) return;
+    setActionLoading(true);
+    try {
+      await baselineEngineService.calculateML({
+        baselineId: selectedBaseline.id,
+        method: mlForm.method,
+        windowSize: mlForm.windowSize,
+        alpha: mlForm.alpha
+      });
+      setMlDialogOpen(false);
+      await loadBaselines();
+      await loadSummary();
+      const detail = await baselineService.getById(selectedBaseline.id);
+      setSelectedBaseline(detail.data);
+    } catch (error) {
+      console.error('ML calculation failed:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleImportSalesHistory = async () => {
+    if (!importCsv.trim()) return;
+    setActionLoading(true);
+    try {
+      await baselineEngineService.importSalesHistory({ csvData: importCsv });
+      setImportDialogOpen(false);
+      setImportCsv('');
+    } catch (error) {
+      console.error('Import failed:', error);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleCreate = async () => {
@@ -223,7 +269,11 @@ const BaselineManagement = () => {
       trendEnabled: baseline.trendEnabled ?? baseline.trend_enabled ?? true,
       outlierRemovalEnabled: baseline.outlierRemovalEnabled ?? baseline.outlier_removal_enabled ?? true,
       outlierThreshold: baseline.outlierThreshold || baseline.outlier_threshold || 2.0,
-      confidenceLevel: baseline.confidenceLevel || baseline.confidence_level || 0.85
+      confidenceLevel: baseline.confidenceLevel || baseline.confidence_level || 0.85,
+      customerHierarchyLevel: baseline.customerHierarchyLevel || baseline.customer_hierarchy_level || '',
+      customerHierarchyId: baseline.customerHierarchyId || baseline.customer_hierarchy_id || '',
+      productHierarchyLevel: baseline.productHierarchyLevel || baseline.product_hierarchy_level || '',
+      productHierarchyId: baseline.productHierarchyId || baseline.product_hierarchy_id || ''
     });
     setEditOpen(true);
   };
@@ -324,6 +374,43 @@ const BaselineManagement = () => {
         <TextField fullWidth label="End Date" type="date" value={form.endDate}
           onChange={(e) => setForm({ ...form, endDate: e.target.value })}
           InputLabelProps={{ shrink: true }} />
+      </Grid>
+      <Grid item xs={12}>
+        <Divider sx={{ my: 1 }} />
+        <Typography variant="subtitle2" sx={{ mb: 1 }}>Hierarchy Scope</Typography>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField select fullWidth label="Customer Hierarchy Level" value={form.customerHierarchyLevel}
+          onChange={(e) => setForm({ ...form, customerHierarchyLevel: e.target.value })}>
+          <MenuItem value="">None</MenuItem>
+          <MenuItem value="national">National</MenuItem>
+          <MenuItem value="chain">Chain</MenuItem>
+          <MenuItem value="region">Region</MenuItem>
+          <MenuItem value="district">District</MenuItem>
+          <MenuItem value="store">Store</MenuItem>
+        </TextField>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField fullWidth label="Customer Hierarchy ID" value={form.customerHierarchyId}
+          onChange={(e) => setForm({ ...form, customerHierarchyId: e.target.value })}
+          placeholder="UUID of hierarchy node" />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField select fullWidth label="Product Hierarchy Level" value={form.productHierarchyLevel}
+          onChange={(e) => setForm({ ...form, productHierarchyLevel: e.target.value })}>
+          <MenuItem value="">None</MenuItem>
+          <MenuItem value="division">Division</MenuItem>
+          <MenuItem value="category">Category</MenuItem>
+          <MenuItem value="subcategory">Subcategory</MenuItem>
+          <MenuItem value="brand">Brand</MenuItem>
+          <MenuItem value="sub_brand">Sub-brand</MenuItem>
+          <MenuItem value="sku">SKU</MenuItem>
+        </TextField>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField fullWidth label="Product Hierarchy ID" value={form.productHierarchyId}
+          onChange={(e) => setForm({ ...form, productHierarchyId: e.target.value })}
+          placeholder="UUID of hierarchy node" />
       </Grid>
       <Grid item xs={12}>
         <Divider sx={{ my: 1 }} />
@@ -765,6 +852,10 @@ const BaselineManagement = () => {
           <Button variant="outlined" startIcon={<Refresh />} onClick={loadBaselines}>
             Refresh
           </Button>
+          <Button variant="outlined" startIcon={<Science />}
+            onClick={() => setMlDialogOpen(true)}>
+            ML Calculate
+          </Button>
           <Button variant="contained" startIcon={<Add />}
             onClick={() => { resetForm(); setCreateOpen(true); }}>
             New Baseline
@@ -849,6 +940,73 @@ const BaselineManagement = () => {
           <Button variant="contained" onClick={handleDecompose}
             disabled={actionLoading || !decomposeForm.promotionId}>
             {actionLoading ? <CircularProgress size={20} /> : 'Analyze'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={mlDialogOpen} onClose={() => setMlDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>ML Baseline Calculation</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Run ML-powered baseline calculation using sales history data. Select a baseline and method.
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField select fullWidth label="Baseline" value={selectedBaseline?.id || ''}
+                onChange={(e) => {
+                  const bl = baselines.find(b => b.id === e.target.value);
+                  setSelectedBaseline(bl || null);
+                }}>
+                {baselines.map(b => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField select fullWidth label="ML Method" value={mlForm.method}
+                onChange={(e) => setMlForm({ ...mlForm, method: e.target.value })}>
+                <MenuItem value="historical_average">Historical Average</MenuItem>
+                <MenuItem value="moving_average">Moving Average</MenuItem>
+                <MenuItem value="linear_regression">Linear Regression</MenuItem>
+                <MenuItem value="seasonal_decomposition">Seasonal Decomposition</MenuItem>
+                <MenuItem value="exponential_smoothing">Exponential Smoothing</MenuItem>
+              </TextField>
+            </Grid>
+            {mlForm.method === 'moving_average' && (
+              <Grid item xs={12}>
+                <TextField fullWidth label="Window Size" type="number" value={mlForm.windowSize}
+                  onChange={(e) => setMlForm({ ...mlForm, windowSize: parseInt(e.target.value) })}
+                  inputProps={{ min: 2, max: 52 }} />
+              </Grid>
+            )}
+            {mlForm.method === 'exponential_smoothing' && (
+              <Grid item xs={12}>
+                <TextField fullWidth label="Alpha (smoothing factor)" type="number" value={mlForm.alpha}
+                  onChange={(e) => setMlForm({ ...mlForm, alpha: parseFloat(e.target.value) })}
+                  inputProps={{ step: 0.05, min: 0.01, max: 1 }} />
+              </Grid>
+            )}
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMlDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleMLCalculate} disabled={actionLoading || !selectedBaseline}>
+            {actionLoading ? <CircularProgress size={20} /> : 'Run ML Calculation'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={importDialogOpen} onClose={() => setImportDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Import Sales History</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Paste CSV data with columns: customer_id, product_id, period_start, period_end, volume, revenue, units
+          </Typography>
+          <TextField fullWidth multiline rows={12} placeholder="customer_id,product_id,period_start,period_end,volume,revenue,units\n..."
+            value={importCsv} onChange={(e) => setImportCsv(e.target.value)} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setImportDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleImportSalesHistory} disabled={actionLoading || !importCsv.trim()}>
+            {actionLoading ? <CircularProgress size={20} /> : 'Import'}
           </Button>
         </DialogActions>
       </Dialog>

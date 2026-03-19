@@ -25,8 +25,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-
-// Mock data for development
+import api from '../../services/api';
 
 // Available currencies
 const currencies = [
@@ -102,12 +101,36 @@ const CompanyForm = () => {
   // Load company data if in edit mode
   useEffect(() => {
     if (isEditMode) {
-      // In a real app, we would fetch data from the API
-      // For now, we'll use mock data
-      setLoading(true);
-      
+      fetchCompany();
     }
-  }, [isEditMode]);
+  }, [isEditMode, id]);
+
+  const fetchCompany = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/companies/${id}`);
+      const company = response.data?.data || response.data;
+      if (company) {
+        setFormData({
+          name: company.name || '',
+          industry: company.industry || '',
+          region: company.region || '',
+          address: company.address || '',
+          phone: company.phone || '',
+          website: company.website || '',
+          status: company.status || 'active',
+          currency: company.currency || 'USD',
+          taxId: company.taxId || company.tax_id || '',
+          notes: company.notes || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching company:', error);
+      setSnackbar({ open: true, message: 'Failed to load company', severity: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // Handle form input change
   const handleChange = (event) => {
@@ -155,7 +178,7 @@ const CompanyForm = () => {
   };
   
   // Handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     
     if (!validateForm()) {
@@ -163,24 +186,21 @@ const CompanyForm = () => {
     }
     
     setSaving(true);
-    
-    // In a real app, we would call the API to save the company
-    setTimeout(() => {
+    try {
+      if (isEditMode) {
+        await api.put(`/companies/${id}`, formData);
+        setSnackbar({ open: true, message: `Company ${formData.name} has been updated`, severity: 'success' });
+      } else {
+        await api.post('/companies', formData);
+        setSnackbar({ open: true, message: `Company ${formData.name} has been created`, severity: 'success' });
+      }
+      setTimeout(() => navigate('/companies'), 1500);
+    } catch (error) {
+      console.error('Error saving company:', error);
+      setSnackbar({ open: true, message: error.response?.data?.message || 'Failed to save company', severity: 'error' });
+    } finally {
       setSaving(false);
-      
-      setSnackbar({
-        open: true,
-        message: isEditMode
-          ? `Company ${formData.name} has been updated`
-          : `Company ${formData.name} has been created`,
-        severity: 'success'
-      });
-      
-      // Navigate back to company list after successful save
-      setTimeout(() => {
-        navigate('/companies');
-      }, 1500);
-    }, 1500);
+    }
   };
   
   // Handle cancel

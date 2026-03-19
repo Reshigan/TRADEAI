@@ -76,6 +76,9 @@ import { sapImportRoutes } from './routes/sapImport.js';
 import { wasteDetectionRoutes } from './routes/wasteDetection.js';
 import { jobRoutes } from './routes/jobs.js';
 import { bulkOperationsRoutes } from './routes/bulkOperations.js';
+import { companyRoutes } from './routes/companies.js';
+import { tenantRoutes } from './routes/tenants.js';
+import { baselineEngineRoutes } from './routes/baselineEngine.js';
 
 const app = new Hono();
 
@@ -198,6 +201,9 @@ app.route('/api/sap-import', sapImportRoutes);
 app.route('/api/waste-detection', wasteDetectionRoutes);
 app.route('/api/jobs', jobRoutes);
 app.route('/api/bulk', bulkOperationsRoutes);
+app.route('/api/companies', companyRoutes);
+app.route('/api/tenants', tenantRoutes);
+app.route('/api/baseline-engine', baselineEngineRoutes);
 
 // 404 handler
 app.notFound((c) => {

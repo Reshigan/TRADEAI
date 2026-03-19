@@ -77,7 +77,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
           <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             {title}
           </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827', mt: 0.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', mt: 0.5 }}>
             {value}
           </Typography>
           {subtitle && (
@@ -408,7 +408,7 @@ const TradeCalendarManagement = () => {
     <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1400, mx: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827' }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
             Trade Calendar & Constraints
           </Typography>
           <Typography variant="body2" sx={{ color: '#6B7280', mt: 0.5 }}>

@@ -51,11 +51,18 @@ const buildNavGroups = (t, tPlural) => [
   { label: 'Admin', icon: Shield, adminOnly: true, items: [
     { label: 'Users', icon: UsersIcon, path: '/admin/users' },
     { label: 'Roles', icon: Lock, path: '/admin/roles' },
+    { label: 'Company Setup', icon: Settings, path: '/admin/company-setup' },
     { label: 'Config', icon: Settings, path: '/admin/config' },
     { label: 'Terminology', icon: FileText, path: '/admin/terminology' },
     { label: 'SAP Export', icon: FileSpreadsheet, path: '/admin/sap-export' },
     { label: 'SAP Integration', icon: FileSpreadsheet, path: '/admin/sap-integration' },
     { label: 'Integrations', icon: Link2, path: '/admin/integrations' },
+  ]},
+  { label: 'Super Admin', icon: Building2, superAdminOnly: true, items: [
+    { label: 'Companies', icon: Building2, path: '/companies' },
+    { label: 'Tenants', icon: Building2, path: '/admin/tenants' },
+    { label: 'Modules', icon: Settings, path: '/admin/modules' },
+    { label: 'Assign Admin', icon: UsersIcon, path: '/admin/assign-admin' },
   ]},
 ];
 
@@ -161,6 +168,7 @@ export default function Sidebar({ user }) {
         <List disablePadding>
           {navGroups.map(group => {
             if (group.adminOnly && !['admin', 'super_admin'].includes(userRole)) return null;
+            if (group.superAdminOnly && userRole !== 'super_admin') return null;
             return <NavGroup key={group.label} group={group} collapsed={collapsed} location={location} navigate={navigate} pendingCount={pendingCount} />;
           })}
         </List>

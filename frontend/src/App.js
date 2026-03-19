@@ -1,5 +1,5 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles/App.css';
 
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -125,6 +125,7 @@ const KAMWalletAllocate = lazy(() => import('./pages/kamwallet/KAMWalletAllocate
 const HierarchyManager = lazy(() => import('./pages/hierarchy/HierarchyManager'));
 const CustomerHierarchy = lazy(() => import('./pages/hierarchy/CustomerHierarchy'));
 const ProductHierarchy = lazy(() => import('./pages/hierarchy/ProductHierarchy'));
+const HierarchyComparison = lazy(() => import('./components/hierarchy/HierarchyComparison'));
 
 const AdminUserList = lazy(() => import('./pages/admin/users/UserList'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
@@ -191,6 +192,9 @@ const AdminSAPExport = lazy(() => import('./pages/admin/SAPExport'));
 const AdminSAPIntegration = lazy(() => import('./pages/admin/SAPIntegration'));
 const AdminIntegrations = lazy(() => import('./pages/admin/Integrations'));
 const AdminTerminology = lazy(() => import('./pages/admin/TerminologySettings'));
+const ModuleConfiguration = lazy(() => import('./pages/admin/ModuleConfiguration'));
+const AdminAssignment = lazy(() => import('./pages/admin/AdminAssignment'));
+const CompanyAdminSetup = lazy(() => import('./pages/admin/CompanyAdminSetup'));
 
 const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
 const PromotionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.PromotionsHelp })));
@@ -207,10 +211,28 @@ const DeductionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m
 const ForecastingHelp = lazy(() => import('./pages/help').then(m => ({ default: m.ForecastingHelp })));
 const BusinessProcessGuide = lazy(() => import('./pages/help').then(m => ({ default: m.BusinessProcessGuide })));
 
-function ProtectedRoute({ children, user, onLogout, requiredRoles }) {
+// ProtectedRoute defined outside App to maintain stable component identity.
+// Uses a redirect guard to prevent infinite history.replaceState() loops.
+const ProtectedRoute = React.memo(function ProtectedRoute({ children, user, onLogout, requiredRoles }) {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  const location = useLocation();
+  const lastRedirect = useRef({ path: '', time: 0 });
+
+  if (!isAuthenticated) {
+    // Guard against redirect loop: if we just redirected to /login, don't redirect again
+    const now = Date.now();
+    if (lastRedirect.current.path === '/login' && now - lastRedirect.current.time < 2000) {
+      return <LoadingFallback />;
+    }
+    lastRedirect.current = { path: '/login', time: now };
+    return <Navigate to="/login" replace />;
+  }
   if (requiredRoles && user && !requiredRoles.includes(user.role)) {
+    const now = Date.now();
+    if (lastRedirect.current.path === '/dashboard' && now - lastRedirect.current.time < 2000) {
+      return <LoadingFallback />;
+    }
+    lastRedirect.current = { path: '/dashboard', time: now };
     return <Navigate to="/dashboard" replace />;
   }
   return (
@@ -220,7 +242,7 @@ function ProtectedRoute({ children, user, onLogout, requiredRoles }) {
       </Suspense>
     </Layout>
   );
-}
+});
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -278,27 +300,35 @@ function App() {
     }
   };
 
-  const handleLogin = (userData) => {
+  const handleLogin = useCallback((userData) => {
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user', JSON.stringify(userData));
     setIsAuthenticated(true);
     setUser(userData);
-    setTimeout(() => { setIsAuthenticated(true); setUser(userData); }, 100);
-  };
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
-  };
+  }, []);
 
-  const P = ({ children, requiredRoles }) => (
-    <ProtectedRoute user={user} onLogout={handleLogout} requiredRoles={requiredRoles}>
-      {children}
-    </ProtectedRoute>
-  );
+  // P must be defined outside render or memoized to prevent component identity changes.
+  // We use useRef to hold a stable component reference that only updates props, not identity.
+  const pRef = useRef(null);
+  if (!pRef.current) {
+    pRef.current = ({ children, requiredRoles }) => (
+      <ProtectedRoute user={pRef.currentUser} onLogout={pRef.currentLogout} requiredRoles={requiredRoles}>
+        {children}
+      </ProtectedRoute>
+    );
+  }
+  // Update the current values without changing component identity
+  pRef.currentUser = user;
+  pRef.currentLogout = handleLogout;
+  const P = pRef.current;
 
   return (
     <ErrorBoundary>
@@ -473,6 +503,7 @@ function App() {
             <Route path="/data/import-export" element={<P><DataImportExport /></P>} />
             <Route path="/hierarchy/customers" element={<P><CustomerHierarchy /></P>} />
             <Route path="/hierarchy/products" element={<P><ProductHierarchy /></P>} />
+            <Route path="/hierarchy/compare" element={<P><HierarchyComparison /></P>} />
 
             <Route path="/notification-center" element={<P><NotificationCenter /></P>} />
             <Route path="/document-management" element={<P><DocumentManagement /></P>} />
@@ -546,6 +577,14 @@ function App() {
             <Route path="/admin/sap-integration" element={<P><AdminSAPIntegration /></P>} />
             <Route path="/admin/integrations" element={<P><AdminIntegrations /></P>} />
             <Route path="/admin/terminology" element={<P requiredRoles={['admin', 'super_admin']}><AdminTerminology /></P>} />
+            <Route path="/admin/modules" element={<P requiredRoles={['super_admin']}><ModuleConfiguration /></P>} />
+            <Route path="/admin/assign-admin" element={<P requiredRoles={['super_admin']}><AdminAssignment /></P>} />
+            <Route path="/admin/company-setup" element={<P requiredRoles={['admin', 'super_admin']}><CompanyAdminSetup /></P>} />
+
+            <Route path="/baselines/:id" element={<P><BaselineManagement /></P>} />
+            <Route path="/accruals/:id" element={<P><AccrualManagement /></P>} />
+            <Route path="/settlements/:id" element={<P><SettlementManagement /></P>} />
+            <Route path="/transactions/:id" element={<P><TransactionManagement /></P>} />
 
             <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />
             <Route path="/simulation-studio" element={<Navigate to="/scenarios" replace />} />

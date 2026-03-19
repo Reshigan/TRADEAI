@@ -38,11 +38,11 @@ export default function BaselineList() {
                     <TableRow><TableCell colSpan={5} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No baselines calculated yet</Typography></TableCell></TableRow>
                   ) : items.map(i => (
                     <TableRow key={i.id}>
-                      <TableCell><Typography variant="body2" fontWeight={500}>{i.product_name || i.product_id}</Typography></TableCell>
-                      <TableCell>{i.customer_name || i.customer_id || 'All'}</TableCell>
-                      <TableCell align="right">{Number(i.baseline_volume || 0).toLocaleString()}</TableCell>
-                      <TableCell align="right">{fmt(i.baseline_revenue)}</TableCell>
-                      <TableCell>{i.period || '-'}</TableCell>
+                      <TableCell><Typography variant="body2" fontWeight={500}>{i.product_name || i.productName || i.product_id || 'All'}</Typography></TableCell>
+                      <TableCell>{i.customer_name || i.customerName || i.customer_id || 'All'}</TableCell>
+                      <TableCell align="right">{Number(i.baseline_volume || i.total_base_volume || i.totalBaseVolume || 0).toLocaleString()}</TableCell>
+                      <TableCell align="right">{fmt(i.baseline_revenue || i.total_base_revenue || i.totalBaseRevenue)}</TableCell>
+                      <TableCell>{i.period || i.granularity || '-'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

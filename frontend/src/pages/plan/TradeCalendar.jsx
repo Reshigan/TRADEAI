@@ -77,7 +77,7 @@ function SummaryCard({ title, value, subtitle, color = '#1E40AF' }) {
     <Card sx={{ borderRadius: 3, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', height: '100%' }}>
       <CardContent sx={{ p: 2 }}>
         <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</Typography>
-        <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827', mt: 0.5 }}>{value}</Typography>
+        <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', mt: 0.5 }}>{value}</Typography>
         {subtitle && <Typography variant="caption" sx={{ color: 'text.secondary' }}>{subtitle}</Typography>}
       </CardContent>
     </Card>
@@ -135,7 +135,7 @@ export default function TradeCalendar() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827' }}>Trade Calendar</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>Trade Calendar</Typography>
           <Typography variant="body2" sx={{ color: '#6B7280', mt: 0.5 }}>
             Unified view of trade spend, marketing, promotions, and activities
           </Typography>

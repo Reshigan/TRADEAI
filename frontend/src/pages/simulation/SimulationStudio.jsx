@@ -27,8 +27,9 @@ import {
   TrendingDown
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { simulationService } from '../../services/api';
+import { simulationService, baselineEngineService } from '../../services/api';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
+import HierarchyBreadcrumb from '../../components/hierarchy/HierarchyBreadcrumb';
 
 const SimulationStudio = () => {
   const navigate = useNavigate();
@@ -56,6 +57,37 @@ const SimulationStudio = () => {
   const [selectedCustomers, setSelectedCustomers] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [lockRatios, setLockRatios] = useState(false);
+  const [baselineScope, setBaselineScope] = useState(null);
+  const [baselineScopeLoading, setBaselineScopeLoading] = useState(false);
+
+  const resolveBaselineScope = async (customers, products) => {
+    if (customers.length === 0 && products.length === 0) {
+      setBaselineScope(null);
+      return;
+    }
+    setBaselineScopeLoading(true);
+    try {
+      const res = await baselineEngineService.resolve({
+        customerHierarchyId: customers[0]?.hierarchyId || customers[0]?.id,
+        productHierarchyId: products[0]?.hierarchyId || products[0]?.id
+      });
+      setBaselineScope(res.data || null);
+    } catch (e) {
+      setBaselineScope(null);
+    } finally {
+      setBaselineScopeLoading(false);
+    }
+  };
+
+  const handleCustomerChange = (customers) => {
+    setSelectedCustomers(customers);
+    resolveBaselineScope(customers, selectedProducts);
+  };
+
+  const handleProductChange = (products) => {
+    setSelectedProducts(products);
+    resolveBaselineScope(selectedCustomers, products);
+  };
 
   const handleAddScenario = () => {
     const newScenario = {
@@ -117,7 +149,13 @@ const SimulationStudio = () => {
         discountPercent: scenario.config.discountPercent,
         duration: scenario.config.duration,
         budget: scenario.config.budget,
-        lockRatios
+        lockRatios,
+        hierarchyScope: baselineScope ? {
+          source: baselineScope.source,
+          baseVolume: baselineScope.baseline?.total_base_volume,
+          avgWeeklyVolume: baselineScope.baseline?.avg_weekly_volume,
+          seasonalityIndex: baselineScope.baseline?.seasonality_index
+        } : undefined
       });
 
       handleUpdateScenario(scenarioId, { 
@@ -517,7 +555,7 @@ const SimulationStudio = () => {
               <HierarchySelector
                 type="customer"
                 selected={selectedCustomers}
-                onSelectionChange={setSelectedCustomers}
+                onSelectionChange={handleCustomerChange}
                 showAllocation={true}
                 lockRatios={lockRatios}
                 onLockRatiosChange={setLockRatios}
@@ -525,16 +563,57 @@ const SimulationStudio = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card sx={{ mb: 3 }}>
             <CardContent>
               <HierarchySelector
                 type="product"
                 selected={selectedProducts}
-                onSelectionChange={setSelectedProducts}
+                onSelectionChange={handleProductChange}
                 showAllocation={false}
               />
             </CardContent>
           </Card>
+
+          {(selectedCustomers.length > 0 || selectedProducts.length > 0) && (
+            <Card>
+              <CardContent>
+                <Typography variant="subtitle2" gutterBottom>
+                  Baseline Scope
+                </Typography>
+                <Divider sx={{ mb: 1 }} />
+                {baselineScopeLoading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1 }}>
+                    <CircularProgress size={16} />
+                    <Typography variant="body2" color="text.secondary">Resolving baseline...</Typography>
+                  </Box>
+                ) : baselineScope ? (
+                  <Box>
+                    <HierarchyBreadcrumb path={baselineScope.path || []} />
+                    <Chip
+                      label={`Source: ${baselineScope.source || 'fallback'}`}
+                      size="small"
+                      color={baselineScope.source === 'exact' ? 'success' : baselineScope.source === 'rollup' ? 'info' : 'default'}
+                      sx={{ mt: 1, mr: 1 }}
+                    />
+                    {baselineScope.baseline?.total_base_volume != null && (
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        Base Volume: {Number(baselineScope.baseline.total_base_volume).toLocaleString()}
+                      </Typography>
+                    )}
+                    {baselineScope.baseline?.avg_weekly_volume != null && (
+                      <Typography variant="body2">
+                        Avg Weekly: {Number(baselineScope.baseline.avg_weekly_volume).toLocaleString()}
+                      </Typography>
+                    )}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 1 }}>
+                    No baseline found for this scope
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </Grid>
 
         <Grid item xs={12} md={9}>

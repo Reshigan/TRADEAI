@@ -24,15 +24,19 @@ baselines.get('/', async (c) => {
     const companyId = getCompanyId(c);
     const { status, baseline_type, customer_id, product_id, limit = 50, offset = 0 } = c.req.query();
 
-    let query = 'SELECT * FROM baselines WHERE company_id = ?';
+    let query = `SELECT b.*, p.name as product_name, c.name as customer_name
+      FROM baselines b
+      LEFT JOIN products p ON b.product_id = p.id
+      LEFT JOIN customers c ON b.customer_id = c.id
+      WHERE b.company_id = ?`;
     const params = [companyId];
 
-    if (status) { query += ' AND status = ?'; params.push(status); }
-    if (baseline_type) { query += ' AND baseline_type = ?'; params.push(baseline_type); }
-    if (customer_id) { query += ' AND customer_id = ?'; params.push(customer_id); }
-    if (product_id) { query += ' AND product_id = ?'; params.push(product_id); }
+    if (status) { query += ' AND b.status = ?'; params.push(status); }
+    if (baseline_type) { query += ' AND b.baseline_type = ?'; params.push(baseline_type); }
+    if (customer_id) { query += ' AND b.customer_id = ?'; params.push(customer_id); }
+    if (product_id) { query += ' AND b.product_id = ?'; params.push(product_id); }
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+    query += ' ORDER BY b.created_at DESC LIMIT ? OFFSET ?';
     params.push(parseInt(limit), parseInt(offset));
 
     const result = await db.prepare(query).bind(...params).all();
@@ -208,8 +212,11 @@ baselines.post('/', async (c) => {
         start_date, end_date, base_year, periods_used,
         seasonality_enabled, trend_enabled,
         outlier_removal_enabled, outlier_threshold,
-        confidence_level, created_by, data, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        confidence_level,
+        customer_hierarchy_level, customer_hierarchy_id, customer_hierarchy_path,
+        product_hierarchy_level, product_hierarchy_id, product_hierarchy_path,
+        created_by, data, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       id, companyId,
       body.name,
@@ -232,6 +239,12 @@ baselines.post('/', async (c) => {
       body.outlierRemovalEnabled !== undefined ? (body.outlierRemovalEnabled ? 1 : 0) : 1,
       body.outlierThreshold || body.outlier_threshold || 2.0,
       body.confidenceLevel || body.confidence_level || 0.85,
+      body.customerHierarchyLevel || body.customer_hierarchy_level || null,
+      body.customerHierarchyId || body.customer_hierarchy_id || null,
+      body.customerHierarchyPath || body.customer_hierarchy_path || null,
+      body.productHierarchyLevel || body.product_hierarchy_level || null,
+      body.productHierarchyId || body.product_hierarchy_id || null,
+      body.productHierarchyPath || body.product_hierarchy_path || null,
       userId,
       JSON.stringify(body.data || {}),
       now, now
@@ -271,7 +284,10 @@ baselines.put('/:id', async (c) => {
         start_date = ?, end_date = ?, base_year = ?, periods_used = ?,
         seasonality_enabled = ?, trend_enabled = ?,
         outlier_removal_enabled = ?, outlier_threshold = ?,
-        confidence_level = ?, data = ?, updated_at = ?
+        confidence_level = ?,
+        customer_hierarchy_level = ?, customer_hierarchy_id = ?, customer_hierarchy_path = ?,
+        product_hierarchy_level = ?, product_hierarchy_id = ?, product_hierarchy_path = ?,
+        data = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
@@ -295,8 +311,14 @@ baselines.put('/:id', async (c) => {
       body.outlierRemovalEnabled !== undefined ? (body.outlierRemovalEnabled ? 1 : 0) : existing.outlier_removal_enabled,
       body.outlierThreshold || body.outlier_threshold || existing.outlier_threshold,
       body.confidenceLevel || body.confidence_level || existing.confidence_level,
+      body.customerHierarchyLevel || body.customer_hierarchy_level || existing.customer_hierarchy_level || null,
+      body.customerHierarchyId || body.customer_hierarchy_id || existing.customer_hierarchy_id || null,
+      body.customerHierarchyPath || body.customer_hierarchy_path || existing.customer_hierarchy_path || null,
+      body.productHierarchyLevel || body.product_hierarchy_level || existing.product_hierarchy_level || null,
+      body.productHierarchyId || body.product_hierarchy_id || existing.product_hierarchy_id || null,
+      body.productHierarchyPath || body.product_hierarchy_path || existing.product_hierarchy_path || null,
       JSON.stringify(body.data || JSON.parse(existing.data || '{}')),
-      now, id
+      now, id, companyId
     ).run();
 
     const updated = await db.prepare('SELECT * FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).first();
