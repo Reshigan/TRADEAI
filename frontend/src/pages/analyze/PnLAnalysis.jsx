@@ -52,7 +52,7 @@ export default function PnLAnalysis() {
           <MenuItem value="monthly">Monthly</MenuItem><MenuItem value="quarterly">Quarterly</MenuItem><MenuItem value="annual">Annual</MenuItem>
         </TextField>
         <TextField select size="small" value={groupBy} onChange={(e) => setGroupBy(e.target.value)} sx={{ minWidth: 140 }}>
-          <MenuItem value="customer">By Customer</MenuItem><MenuItem value="promotion">By Promotion</MenuItem><MenuItem value="product">By Product</MenuItem>
+          <MenuItem value="customer">By Customer</MenuItem><MenuItem value="promotion">By Promotion</MenuItem>
         </TextField>
       </Box>
 
