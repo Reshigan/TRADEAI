@@ -124,7 +124,16 @@ companyRoutes.get('/:id/users', async (c) => {
 companyRoutes.get('/:id/modules', async (c) => {
   try {
     const { id } = c.req.param();
+    const user = c.get('user');
     const mongodb = getMongoClient(c);
+
+    // Authorization: super_admin can see any company, others only their own
+    if (user.role !== 'super_admin') {
+      const userCompanyId = user.companyId || user.company_id;
+      if (userCompanyId !== id) {
+        return c.json({ success: false, message: 'Insufficient permissions' }, 403);
+      }
+    }
 
     const company = await mongodb.findOne('companies', { _id: { $oid: id } });
     if (!company) return c.json({ success: false, message: 'Company not found' }, 404);
@@ -247,7 +256,23 @@ companyRoutes.put('/:id/modules', requireRole('super_admin'), async (c) => {
       return c.json({ success: false, message: 'modules object is required' }, 400);
     }
 
+    // Fetch existing company to preserve all data fields
+    const existing = await mongodb.findOne('companies', { _id: { $oid: id } });
+    if (!existing) {
+      return c.json({ success: false, message: 'Company not found' }, 404);
+    }
+
+    // Build full update preserving all existing fields, only changing modules
+    const preservedFields = {};
+    const fieldsToPreserve = ['name', 'slug', 'domain', 'industry', 'region', 'address', 'phone', 'website', 'currency', 'status', 'plan', 'maxUsers', 'taxId', 'notes'];
+    for (const field of fieldsToPreserve) {
+      if (existing[field] !== undefined) {
+        preservedFields[field] = existing[field];
+      }
+    }
+
     await mongodb.updateOne('companies', { _id: { $oid: id } }, {
+      ...preservedFields,
       modules: JSON.stringify(modules),
       updatedAt: new Date().toISOString()
     });
