@@ -4,6 +4,23 @@ import { authMiddleware, requireRole, requireMinRole } from '../middleware/auth.
 
 export const companyRoutes = new Hono();
 
+// PBKDF2 password hashing (consistent with auth.js)
+const PBKDF2_ITERATIONS = 100000;
+const SALT_LENGTH = 16;
+const HASH_LENGTH = 32;
+
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPasswordPBKDF2(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const hashBuffer = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' }, keyMaterial, HASH_LENGTH * 8);
+  return `${toHex(salt)}:${toHex(hashBuffer)}`;
+}
+
 companyRoutes.use('*', authMiddleware);
 
 // Get all companies (super_admin sees all, admin sees own)
@@ -248,10 +265,8 @@ companyRoutes.post('/:id/assign-admin', requireRole('super_admin'), async (c) =>
       return c.json({ success: true, message: 'Existing user promoted to admin for this company' });
     }
 
-    // Hash password
-    const encoder = new TextEncoder();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
-    const hashedPassword = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    // Hash password using PBKDF2 (consistent with auth system)
+    const hashedPassword = await hashPasswordPBKDF2(password);
 
     const now = new Date().toISOString();
     const newAdmin = {

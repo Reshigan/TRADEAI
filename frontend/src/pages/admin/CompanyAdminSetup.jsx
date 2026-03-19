@@ -9,7 +9,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   IconButton, Chip, Switch, FormControlLabel, TextField, MenuItem,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Checkbox
+  Checkbox, Alert
 } from '@mui/material';
 import {
   People, Settings, Save, Add, Edit, Delete,
@@ -487,6 +487,16 @@ const CompanyAdminSetup = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {snackbar.open && (
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 9999 }}
+        >
+          {snackbar.message}
+        </Alert>
+      )}
     </Box>
   );
 };

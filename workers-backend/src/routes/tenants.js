@@ -4,6 +4,23 @@ import { authMiddleware, requireRole } from '../middleware/auth.js';
 
 export const tenantRoutes = new Hono();
 
+// PBKDF2 password hashing (consistent with auth.js)
+const PBKDF2_ITERATIONS = 100000;
+const SALT_LENGTH = 16;
+const HASH_LENGTH = 32;
+
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPasswordPBKDF2(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const hashBuffer = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' }, keyMaterial, HASH_LENGTH * 8);
+  return `${toHex(salt)}:${toHex(hashBuffer)}`;
+}
+
 tenantRoutes.use('*', authMiddleware);
 
 // Get all tenants (super_admin only)
@@ -174,14 +191,14 @@ tenantRoutes.post('/', requireRole('super_admin'), async (c) => {
     // If contact info has an email, create the admin user
     const adminEmail = data.contactInfo?.primaryContact?.email;
     const adminName = data.contactInfo?.primaryContact?.name;
+    let adminGeneratedPassword = null;
     if (adminEmail && adminName) {
       const [firstName, ...lastParts] = adminName.split(' ');
       const lastName = lastParts.join(' ') || firstName;
-      const defaultPassword = 'Admin123!';
+      adminGeneratedPassword = crypto.randomUUID().slice(0, 12);
 
-      const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(defaultPassword));
-      const hashedPassword = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      // Hash password using PBKDF2 (consistent with auth system)
+      const hashedPassword = await hashPasswordPBKDF2(adminGeneratedPassword);
 
       await mongodb.insertOne('users', {
         email: adminEmail.toLowerCase(),
@@ -191,14 +208,20 @@ tenantRoutes.post('/', requireRole('super_admin'), async (c) => {
         role: 'admin',
         companyId: companyId,
         isActive: true,
+        passwordResetRequired: true,
         createdAt: now,
         updatedAt: now
       });
     }
 
+    const responseData = { id: companyId, ...companyData };
+    if (adminEmail && adminGeneratedPassword) {
+      responseData.adminCredentials = { email: adminEmail.toLowerCase(), generatedPassword: adminGeneratedPassword };
+    }
+
     return c.json({
       success: true,
-      data: { id: companyId, ...companyData },
+      data: responseData,
       message: 'Tenant created successfully'
     }, 201);
   } catch (error) {

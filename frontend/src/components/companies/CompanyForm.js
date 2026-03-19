@@ -103,7 +103,7 @@ const CompanyForm = () => {
     if (isEditMode) {
       fetchCompany();
     }
-  }, [isEditMode]);
+  }, [isEditMode, id]);
 
   const fetchCompany = async () => {
     setLoading(true);

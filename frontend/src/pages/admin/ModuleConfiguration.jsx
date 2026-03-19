@@ -262,6 +262,15 @@ const ModuleConfiguration = () => {
           )}
         </Grid>
       </Grid>
+      {snackbar.open && (
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 9999 }}
+        >
+          {snackbar.message}
+        </Alert>
+      )}
     </Box>
   );
 };
