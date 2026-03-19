@@ -5,6 +5,7 @@ import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
 import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 import { createNotification } from '../services/notifications.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 const rebates = new Hono();
 

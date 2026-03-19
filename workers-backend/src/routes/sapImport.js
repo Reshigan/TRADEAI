@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 export const sapImportRoutes = new Hono();
 sapImportRoutes.use('*', authMiddleware);

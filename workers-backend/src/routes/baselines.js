@@ -212,8 +212,11 @@ baselines.post('/', async (c) => {
         start_date, end_date, base_year, periods_used,
         seasonality_enabled, trend_enabled,
         outlier_removal_enabled, outlier_threshold,
-        confidence_level, created_by, data, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        confidence_level,
+        customer_hierarchy_level, customer_hierarchy_id, customer_hierarchy_path,
+        product_hierarchy_level, product_hierarchy_id, product_hierarchy_path,
+        created_by, data, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       id, companyId,
       body.name,
@@ -236,6 +239,12 @@ baselines.post('/', async (c) => {
       body.outlierRemovalEnabled !== undefined ? (body.outlierRemovalEnabled ? 1 : 0) : 1,
       body.outlierThreshold || body.outlier_threshold || 2.0,
       body.confidenceLevel || body.confidence_level || 0.85,
+      body.customerHierarchyLevel || body.customer_hierarchy_level || null,
+      body.customerHierarchyId || body.customer_hierarchy_id || null,
+      body.customerHierarchyPath || body.customer_hierarchy_path || null,
+      body.productHierarchyLevel || body.product_hierarchy_level || null,
+      body.productHierarchyId || body.product_hierarchy_id || null,
+      body.productHierarchyPath || body.product_hierarchy_path || null,
       userId,
       JSON.stringify(body.data || {}),
       now, now
@@ -275,7 +284,10 @@ baselines.put('/:id', async (c) => {
         start_date = ?, end_date = ?, base_year = ?, periods_used = ?,
         seasonality_enabled = ?, trend_enabled = ?,
         outlier_removal_enabled = ?, outlier_threshold = ?,
-        confidence_level = ?, data = ?, updated_at = ?
+        confidence_level = ?,
+        customer_hierarchy_level = ?, customer_hierarchy_id = ?, customer_hierarchy_path = ?,
+        product_hierarchy_level = ?, product_hierarchy_id = ?, product_hierarchy_path = ?,
+        data = ?, updated_at = ?
       WHERE id = ? AND company_id = ?
     `).bind(
       body.name || existing.name,
@@ -299,8 +311,14 @@ baselines.put('/:id', async (c) => {
       body.outlierRemovalEnabled !== undefined ? (body.outlierRemovalEnabled ? 1 : 0) : existing.outlier_removal_enabled,
       body.outlierThreshold || body.outlier_threshold || existing.outlier_threshold,
       body.confidenceLevel || body.confidence_level || existing.confidence_level,
+      body.customerHierarchyLevel || body.customer_hierarchy_level || existing.customer_hierarchy_level || null,
+      body.customerHierarchyId || body.customer_hierarchy_id || existing.customer_hierarchy_id || null,
+      body.customerHierarchyPath || body.customer_hierarchy_path || existing.customer_hierarchy_path || null,
+      body.productHierarchyLevel || body.product_hierarchy_level || existing.product_hierarchy_level || null,
+      body.productHierarchyId || body.product_hierarchy_id || existing.product_hierarchy_id || null,
+      body.productHierarchyPath || body.product_hierarchy_path || existing.product_hierarchy_path || null,
       JSON.stringify(body.data || JSON.parse(existing.data || '{}')),
-      now, id
+      now, id, companyId
     ).run();
 
     const updated = await db.prepare('SELECT * FROM baselines WHERE id = ? AND company_id = ?').bind(id, companyId).first();

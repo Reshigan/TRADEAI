@@ -125,6 +125,7 @@ const KAMWalletAllocate = lazy(() => import('./pages/kamwallet/KAMWalletAllocate
 const HierarchyManager = lazy(() => import('./pages/hierarchy/HierarchyManager'));
 const CustomerHierarchy = lazy(() => import('./pages/hierarchy/CustomerHierarchy'));
 const ProductHierarchy = lazy(() => import('./pages/hierarchy/ProductHierarchy'));
+const HierarchyComparison = lazy(() => import('./components/hierarchy/HierarchyComparison'));
 
 const AdminUserList = lazy(() => import('./pages/admin/users/UserList'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
@@ -502,6 +503,7 @@ function App() {
             <Route path="/data/import-export" element={<P><DataImportExport /></P>} />
             <Route path="/hierarchy/customers" element={<P><CustomerHierarchy /></P>} />
             <Route path="/hierarchy/products" element={<P><ProductHierarchy /></P>} />
+            <Route path="/hierarchy/compare" element={<P><HierarchyComparison /></P>} />
 
             <Route path="/notification-center" element={<P><NotificationCenter /></P>} />
             <Route path="/document-management" element={<P><DocumentManagement /></P>} />

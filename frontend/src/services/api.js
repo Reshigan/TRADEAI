@@ -1077,6 +1077,64 @@ export const baselineService = {
   },
 };
 
+export const baselineEngineService = {
+  calculateML: async (data) => {
+    const response = await api.post('/baseline-engine/calculate-ml', data);
+    return response.data;
+  },
+  rollup: async (data) => {
+    const response = await api.post('/baseline-engine/rollup', data);
+    return response.data;
+  },
+  drilldown: async (data) => {
+    const response = await api.post('/baseline-engine/drilldown', data);
+    return response.data;
+  },
+  resolve: async (data) => {
+    const response = await api.post('/baseline-engine/resolve', data);
+    return response.data;
+  },
+  cascadeCalculate: async (data) => {
+    const response = await api.post('/baseline-engine/cascade-calculate', data);
+    return response.data;
+  },
+  getSalesHistory: async (params) => {
+    const response = await api.get('/baseline-engine/sales-history', { params });
+    return response.data;
+  },
+  importSalesHistory: async (data) => {
+    const response = await api.post('/baseline-engine/sales-history/import', data);
+    return response.data;
+  },
+  getSalesHistoryImports: async (params) => {
+    const response = await api.get('/baseline-engine/sales-history/imports', { params });
+    return response.data;
+  },
+  getCalculationLogs: async (params) => {
+    const response = await api.get('/baseline-engine/calculation-logs', { params });
+    return response.data;
+  },
+  getHierarchyTree: async (type) => {
+    const response = await api.get(`/baseline-engine/hierarchy-tree/${type}`);
+    return response.data;
+  },
+};
+
+export const hierarchyService = {
+  getCustomerTree: async () => {
+    const response = await api.get('/baseline-engine/hierarchy-tree/customer');
+    return response.data;
+  },
+  getProductTree: async () => {
+    const response = await api.get('/baseline-engine/hierarchy-tree/product');
+    return response.data;
+  },
+  resolveBaseline: async (data) => {
+    const response = await api.post('/baseline-engine/resolve', data);
+    return response.data;
+  },
+};
+
 export const accrualService = {
   getAll: async (params) => {
     const response = await api.get('/accruals', { params });

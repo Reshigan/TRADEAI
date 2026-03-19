@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { resolveBaselineScope } from '../services/hierarchyResolver.js';
 
 const scenarios = new Hono();
 
@@ -66,7 +67,11 @@ scenarios.get('/options', async (c) => {
         { name: 'COGS per Unit', category: 'cost', unit: 'R', defaultBase: 12, min: 0, max: 500 },
         { name: 'Media Spend', category: 'promotion', unit: 'R', defaultBase: 50000, min: 0, max: 2000000 },
         { name: 'Baseline Volume', category: 'volume', unit: 'units', defaultBase: 10000, min: 0, max: 1000000 }
-      ]
+      ],
+      hierarchyLevels: {
+        customer: ['national', 'chain', 'region', 'district', 'store'],
+        product: ['division', 'category', 'subcategory', 'brand', 'sub_brand', 'sku']
+      }
     }
   });
 });
