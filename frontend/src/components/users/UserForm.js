@@ -31,8 +31,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-
-// Mock data for development
+import { userService } from '../../services/api';
 
 const UserForm = () => {
   const { id } = useParams();
@@ -62,12 +61,35 @@ const UserForm = () => {
   // Load user data if in edit mode
   useEffect(() => {
     if (isEditMode) {
-      // In a real app, we would fetch data from the API
-      // For now, we'll use mock data
-      setLoading(true);
-      
+      const fetchUser = async () => {
+        setLoading(true);
+        try {
+          const response = await userService.getById(id);
+          const u = response.data || response;
+          setFormData({
+            name: u.name || u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '',
+            email: u.email || '',
+            role: u.role || '',
+            department: u.department || '',
+            password: '',
+            confirmPassword: '',
+            status: u.status || 'active',
+            sendWelcomeEmail: false
+          });
+        } catch (err) {
+          console.error('Failed to fetch user:', err);
+          setSnackbar({
+            open: true,
+            message: 'Failed to load user data',
+            severity: 'error'
+          });
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUser();
     }
-  }, [isEditMode]);
+  }, [isEditMode, id]);
   
   // Handle form input change
   const handleChange = (event) => {
@@ -136,7 +158,7 @@ const UserForm = () => {
   };
   
   // Handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     
     if (!validateForm()) {
@@ -145,10 +167,28 @@ const UserForm = () => {
     
     setSaving(true);
     
-    // In a real app, we would call the API to save the user
-    setTimeout(() => {
+    try {
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        department: formData.department,
+        status: formData.status
+      };
+      if (formData.password) {
+        payload.password = formData.password;
+      }
+      if (!isEditMode) {
+        payload.sendWelcomeEmail = formData.sendWelcomeEmail;
+      }
+
+      if (isEditMode) {
+        await userService.update(id, payload);
+      } else {
+        await userService.create(payload);
+      }
+
       setSaving(false);
-      
       setSnackbar({
         open: true,
         message: isEditMode
@@ -156,12 +196,18 @@ const UserForm = () => {
           : `User ${formData.name} has been created`,
         severity: 'success'
       });
-      
-      // Navigate back to user list after successful save
       setTimeout(() => {
         navigate('/users');
       }, 1500);
-    }, 1500);
+    } catch (err) {
+      console.error('Failed to save user:', err);
+      setSaving(false);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || 'Failed to save user',
+        severity: 'error'
+      });
+    }
   };
   
   // Handle cancel

@@ -161,9 +161,29 @@ const AnalyticsDashboard = () => {
   };
 
   // Export data
-  const exportData = () => {
-    // In a real app, we would call the API to export data
-    alert('Export functionality would be implemented here');
+  const exportData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/reporting/export?startDate=${filters.dateRange.startDate.toISOString()}&endDate=${filters.dateRange.endDate.toISOString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics-export-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      } else {
+        console.error('Export failed:', res.statusText);
+      }
+    } catch (err) {
+      console.error('Export error:', err);
+    }
   };
 
   // Format date for display

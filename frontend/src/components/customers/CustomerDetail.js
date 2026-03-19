@@ -128,17 +128,11 @@ const CustomerDetail = () => {
   // Handle confirm delete
   const handleConfirmDelete = async () => {
     setDeleteLoading(true);
-    
     try {
-      // In a real app, we would call the API
-      // await customerService.delete(id);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setDeleteLoading(false);
-        setOpenDeleteDialog(false);
-        navigate('/customers');
-      }, 1000);
+      await customerService.delete(id);
+      setDeleteLoading(false);
+      setOpenDeleteDialog(false);
+      navigate('/customers');
     } catch (error) {
       console.error('Failed to delete customer:', error);
       setDeleteLoading(false);
@@ -149,10 +143,7 @@ const CustomerDetail = () => {
   // Handle form submit
   const handleFormSubmit = async (customerData) => {
     try {
-      // In a real app, we would call the API
-      // await customerService.update(id, customerData);
-      
-      // Refresh customer
+      await customerService.update(id, customerData);
       fetchCustomer();
       setOpenEditForm(false);
     } catch (error) {

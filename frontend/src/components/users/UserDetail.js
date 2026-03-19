@@ -51,8 +51,7 @@ import {
 
 import { PageHeader } from '../common';
 import { formatLabel } from '../../utils/formatters';
-
-// Mock data for development
+import { userService } from '../../services/api';
 
 
 
@@ -76,10 +75,30 @@ const UserDetail = () => {
   
   // Load user data
   useEffect(() => {
-    // In a real app, we would fetch data from the API
-    // For now, we'll use mock data
-    setLoading(true);
-    
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const response = await userService.getById(id);
+        const u = response.data || response;
+        setUser({
+          id: u.id,
+          name: u.name || u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
+          email: u.email,
+          phone: u.phone || '',
+          role: u.role || 'Viewer',
+          department: u.department || 'General',
+          status: u.status || 'active',
+          lastLogin: u.last_login || u.updated_at || u.created_at,
+          createdAt: u.created_at || u.createdAt,
+          permissions: u.permissions || []
+        });
+      } catch (err) {
+        console.error('Failed to fetch user:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
   }, [id]);
   
   // Handle tab change
@@ -118,48 +137,71 @@ const UserDetail = () => {
   };
   
   // Handle delete user
-  const handleDeleteUser = () => {
-    // In a real app, we would call the API to delete the user
-    setSnackbar({
-      open: true,
-      message: `User ${user.name} has been deleted`,
-      severity: 'success'
-    });
-    
-    handleDeleteDialogClose();
-    
-    // Navigate back to user list after successful delete
-    setTimeout(() => {
-      navigate('/users');
-    }, 1500);
+  const handleDeleteUser = async () => {
+    try {
+      await userService.delete(id);
+      setSnackbar({
+        open: true,
+        message: `User ${user.name} has been deleted`,
+        severity: 'success'
+      });
+      handleDeleteDialogClose();
+      setTimeout(() => {
+        navigate('/users');
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to delete user:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete user',
+        severity: 'error'
+      });
+      handleDeleteDialogClose();
+    }
   };
   
   // Handle toggle user status
-  const handleToggleUserStatus = () => {
-    // In a real app, we would call the API to toggle the user status
-    setUser((prevUser) => ({
-      ...prevUser,
-      status: prevUser.status === 'active' ? 'inactive' : 'active'
-    }));
-    
-    setSnackbar({
-      open: true,
-      message: `User ${user.name} has been ${user.status === 'active' ? 'deactivated' : 'activated'}`,
-      severity: 'success'
-    });
-    
+  const handleToggleUserStatus = async () => {
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    try {
+      await userService.update(id, { status: newStatus });
+      setUser((prevUser) => ({
+        ...prevUser,
+        status: newStatus
+      }));
+      setSnackbar({
+        open: true,
+        message: `User ${user.name} has been ${user.status === 'active' ? 'deactivated' : 'activated'}`,
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to update user status:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to update user status',
+        severity: 'error'
+      });
+    }
     handleStatusDialogClose();
   };
   
   // Handle reset password
-  const handleResetPassword = () => {
-    // In a real app, we would call the API to reset the password
-    setSnackbar({
-      open: true,
-      message: `Password reset email has been sent to ${user.email}`,
-      severity: 'success'
-    });
-    
+  const handleResetPassword = async () => {
+    try {
+      await userService.update(id, { resetPassword: true });
+      setSnackbar({
+        open: true,
+        message: `Password reset email has been sent to ${user.email}`,
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to reset password:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to reset password',
+        severity: 'error'
+      });
+    }
     handleResetPasswordDialogClose();
   };
   

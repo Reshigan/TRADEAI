@@ -41,8 +41,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-
-// No more mock data - using real API calls
+import { userService } from '../../services/api';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -68,10 +67,28 @@ const UserList = () => {
   
   // Load users data
   useEffect(() => {
-    // In a real app, we would fetch data from the API
-    // For now, we'll use mock data
-    setLoading(true);
-    
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const response = await userService.getAll();
+        const data = response.data || response || [];
+        setUsers(Array.isArray(data) ? data.map(u => ({
+          id: u.id,
+          name: u.name || u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
+          email: u.email,
+          role: u.role || 'Viewer',
+          department: u.department || 'General',
+          status: u.status || 'active',
+          lastLogin: u.last_login || u.updated_at || u.created_at
+        })) : []);
+      } catch (err) {
+        console.error('Failed to fetch users:', err);
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
   }, []);
   
   // Handle page change
@@ -153,36 +170,51 @@ const UserList = () => {
   };
   
   // Handle delete user
-  const handleDeleteUser = () => {
-    // In a real app, we would call the API to delete the user
-    setUsers((prevUsers) => prevUsers.filter(user => user.id !== selectedUser.id));
-    
-    setSnackbar({
-      open: true,
-      message: `User ${selectedUser.name} has been deleted`,
-      severity: 'success'
-    });
-    
+  const handleDeleteUser = async () => {
+    try {
+      await userService.delete(selectedUser.id);
+      setUsers((prevUsers) => prevUsers.filter(user => user.id !== selectedUser.id));
+      setSnackbar({
+        open: true,
+        message: `User ${selectedUser.name} has been deleted`,
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to delete user:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete user',
+        severity: 'error'
+      });
+    }
     handleDeleteDialogClose();
   };
   
   // Handle toggle user status
-  const handleToggleUserStatus = () => {
-    // In a real app, we would call the API to toggle the user status
-    setUsers((prevUsers) =>
-      prevUsers.map(user =>
-        user.id === selectedUser.id
-          ? { ...user, status: user.status === 'active' ? 'inactive' : 'active' }
-          : user
-      )
-    );
-    
-    setSnackbar({
-      open: true,
-      message: `User ${selectedUser.name} has been ${selectedUser.status === 'active' ? 'deactivated' : 'activated'}`,
-      severity: 'success'
-    });
-    
+  const handleToggleUserStatus = async () => {
+    const newStatus = selectedUser.status === 'active' ? 'inactive' : 'active';
+    try {
+      await userService.update(selectedUser.id, { status: newStatus });
+      setUsers((prevUsers) =>
+        prevUsers.map(user =>
+          user.id === selectedUser.id
+            ? { ...user, status: newStatus }
+            : user
+        )
+      );
+      setSnackbar({
+        open: true,
+        message: `User ${selectedUser.name} has been ${selectedUser.status === 'active' ? 'deactivated' : 'activated'}`,
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to update user status:', err);
+      setSnackbar({
+        open: true,
+        message: 'Failed to update user status',
+        severity: 'error'
+      });
+    }
     handleStatusDialogClose();
   };
   

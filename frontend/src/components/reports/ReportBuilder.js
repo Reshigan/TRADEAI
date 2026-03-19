@@ -279,28 +279,38 @@ const ReportBuilder = () => {
   };
   
   // Handle save report
-  const handleSaveReport = () => {
+  const handleSaveReport = async () => {
     if (!validateStep()) {
       return;
     }
     
     setSaving(true);
-    
-    // In a real app, we would call the API to save the report
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/reporting/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(reportData)
+      });
       setSaving(false);
-      
       setSnackbar({
         open: true,
         message: `Report "${reportData.name}" has been created`,
         severity: 'success'
       });
-      
-      // Navigate back to reports list after successful save
       setTimeout(() => {
         navigate('/reports');
       }, 1500);
-    }, 1500);
+    } catch (err) {
+      console.error('Failed to save report:', err);
+      setSaving(false);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to save report',
+        severity: 'error'
+      });
+    }
   };
   
   // Handle cancel
