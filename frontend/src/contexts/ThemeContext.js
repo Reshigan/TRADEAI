@@ -133,14 +133,20 @@ function buildLightTheme() {
       },
       MuiOutlinedInput: {
         styleOverrides: {
-          input: { color: '#1E293B', '&::placeholder': { color: '#94A3B8', opacity: 1 } },
+          root: {
+            backgroundColor: '#FFFFFF',
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#CBD5E1' },
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#94A3B8' },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1976D2' },
+          },
+          input: { color: '#1E293B', WebkitTextFillColor: '#1E293B', '&::placeholder': { color: '#64748B', WebkitTextFillColor: '#64748B', opacity: 1 } },
         },
       },
-      MuiInputBase: { styleOverrides: { input: { color: '#1E293B' } } },
+      MuiInputBase: { styleOverrides: { input: { color: '#1E293B', WebkitTextFillColor: '#1E293B' } } },
       MuiInputLabel: {
-        styleOverrides: { root: { color: '#64748B', '&.Mui-focused': { color: '#1976D2' } } },
+        styleOverrides: { root: { color: '#475569', '&.Mui-focused': { color: '#1976D2' } } },
       },
-      MuiSelect: { styleOverrides: { select: { color: '#1E293B' } } },
+      MuiSelect: { styleOverrides: { select: { color: '#1E293B', WebkitTextFillColor: '#1E293B' }, icon: { color: '#475569' } } },
       MuiIconButton: {
         styleOverrides: {
           root: { transition: 'all 0.2s', '&:hover': { backgroundColor: 'rgba(25,118,210,0.08)', transform: 'scale(1.05)' } },
@@ -166,7 +172,7 @@ function buildLightTheme() {
       MuiTableCell: {
         styleOverrides: {
           root: { borderBottom: '1px solid #E2E8F0', color: '#1E293B' },
-          head: { fontWeight: 600, backgroundColor: '#F9FAFB', color: '#475569' },
+          head: { fontWeight: 600, backgroundColor: '#F1F5F9', color: '#334155', fontSize: '0.75rem', letterSpacing: '0.04em', textTransform: 'uppercase' },
         },
       },
       MuiTableRow: {

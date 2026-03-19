@@ -143,20 +143,17 @@ const CompanyDetail = () => {
   };
   
   // Handle delete company
-  const handleDeleteCompany = () => {
-    // In a real app, we would call the API to delete the company
-    setSnackbar({
-      open: true,
-      message: `Company ${company.name} has been deleted`,
-      severity: 'success'
-    });
-    
-    handleDeleteDialogClose();
-    
-    // Navigate back to company list after successful delete
-    setTimeout(() => {
-      navigate('/companies');
-    }, 1500);
+  const handleDeleteCompany = async () => {
+    try {
+      await api.delete(`/companies/${id}`);
+      setSnackbar({ open: true, message: `Company ${company.name} has been deleted`, severity: 'success' });
+      handleDeleteDialogClose();
+      setTimeout(() => navigate('/companies'), 1500);
+    } catch (error) {
+      console.error('Error deleting company:', error);
+      setSnackbar({ open: true, message: 'Failed to delete company', severity: 'error' });
+      handleDeleteDialogClose();
+    }
   };
   
   // Handle snackbar close

@@ -39,8 +39,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
-
-// No more mock data - using real API calls
+import api from '../../services/api';
 
 // Currency display mapping
 const currencyDisplay = {
@@ -80,11 +79,22 @@ const CompanyList = () => {
   
   // Load companies data
   useEffect(() => {
-    // In a real app, we would fetch data from the API
-    // For now, we'll use mock data
-    setLoading(true);
-    
+    fetchCompanies();
   }, []);
+
+  const fetchCompanies = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/companies');
+      const data = response.data?.data || response.data || [];
+      setCompanies(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      setSnackbar({ open: true, message: 'Failed to load companies', severity: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -160,17 +170,18 @@ const CompanyList = () => {
   };
   
   // Handle delete company
-  const handleDeleteCompany = () => {
-    // In a real app, we would call the API to delete the company
-    setCompanies((prevCompanies) => prevCompanies.filter(company => company.id !== selectedCompany.id));
-    
-    setSnackbar({
-      open: true,
-      message: `Company ${selectedCompany.name} has been deleted`,
-      severity: 'success'
-    });
-    
-    handleDeleteDialogClose();
+  const handleDeleteCompany = async () => {
+    try {
+      const companyId = selectedCompany.id || selectedCompany._id;
+      await api.delete(`/companies/${companyId}`);
+      setSnackbar({ open: true, message: `Company ${selectedCompany.name} has been deleted`, severity: 'success' });
+      handleDeleteDialogClose();
+      fetchCompanies();
+    } catch (error) {
+      console.error('Error deleting company:', error);
+      setSnackbar({ open: true, message: 'Failed to delete company', severity: 'error' });
+      handleDeleteDialogClose();
+    }
   };
   
   // Handle snackbar close
@@ -184,9 +195,9 @@ const CompanyList = () => {
   // Filter companies based on search term and filters
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = 
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.region.toLowerCase().includes(searchTerm.toLowerCase());
+      (company.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (company.industry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (company.region || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesIndustry = industryFilter === 'all' || company.industry === industryFilter;
     const matchesRegion = regionFilter === 'all' || company.region === regionFilter;
