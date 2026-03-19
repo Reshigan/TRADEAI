@@ -231,13 +231,28 @@ companyRoutes.put('/:id', requireMinRole('admin'), async (c) => {
       }
     }
 
+    // Fetch existing company to preserve all data fields
+    const existing = await mongodb.findOne('companies', { _id: { $oid: id } });
+    if (!existing) {
+      return c.json({ success: false, message: 'Company not found' }, 404);
+    }
+
+    // Build full update by merging existing fields with incoming updates
+    const preservedFields = {};
+    const allDataFields = ['name', 'slug', 'domain', 'industry', 'region', 'address', 'phone', 'website', 'currency', 'status', 'plan', 'maxUsers', 'taxId', 'notes', 'modules'];
+    for (const field of allDataFields) {
+      if (existing[field] !== undefined) {
+        preservedFields[field] = existing[field];
+      }
+    }
+
     // If modules is an object, stringify it
     if (updates.modules && typeof updates.modules === 'object') {
       updates.modules = JSON.stringify(updates.modules);
     }
 
-    updates.updatedAt = new Date().toISOString();
-    await mongodb.updateOne('companies', { _id: { $oid: id } }, updates);
+    const mergedUpdate = { ...preservedFields, ...updates, updatedAt: new Date().toISOString() };
+    await mongodb.updateOne('companies', { _id: { $oid: id } }, mergedUpdate);
 
     return c.json({ success: true, message: 'Company updated successfully' });
   } catch (error) {

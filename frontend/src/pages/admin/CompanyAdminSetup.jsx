@@ -69,8 +69,20 @@ const CompanyAdminSetup = () => {
 
   const fetchSystemConfig = useCallback(async () => {
     try {
-      const response = await api.get('/system-config');
-      setSystemConfig(response.data?.data || {});
+      const response = await api.get('/system-config/configs');
+      const configs = response.data?.data || [];
+      // Convert individual config items into a flat key-value object
+      const configObj = {};
+      configs.forEach(item => {
+        const key = item.config_key;
+        let value = item.config_value;
+        if (item.config_type === 'boolean') value = value === 'true' || value === true;
+        else if (item.config_type === 'number') value = parseFloat(value) || 0;
+        configObj[key] = value;
+        // Store the config item ID for updates
+        configObj[`_id_${key}`] = item.id;
+      });
+      setSystemConfig(configObj);
     } catch (error) {
       console.error('Error fetching system config:', error);
       setSystemConfig({});
@@ -153,7 +165,29 @@ const CompanyAdminSetup = () => {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      await api.put('/system-config', systemConfig);
+      // Save each config key individually via the correct API endpoints
+      const configKeys = Object.keys(systemConfig).filter(k => !k.startsWith('_id_'));
+      for (const key of configKeys) {
+        const value = systemConfig[key];
+        const existingId = systemConfig[`_id_${key}`];
+        const configType = typeof value === 'boolean' ? 'boolean' : typeof value === 'number' ? 'number' : 'string';
+        if (existingId) {
+          // Update existing config item
+          await api.put(`/system-config/configs/${existingId}`, {
+            config_value: String(value),
+          });
+        } else {
+          // Create new config item
+          await api.post('/system-config/configs', {
+            config_key: key,
+            config_value: String(value),
+            config_type: configType,
+            category: 'general',
+          });
+        }
+      }
+      // Re-fetch to get updated IDs
+      await fetchSystemConfig();
       setSnackbar({ open: true, message: 'System configuration saved', severity: 'success' });
     } catch (error) {
       console.error('Error saving config:', error);

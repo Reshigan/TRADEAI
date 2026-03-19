@@ -239,6 +239,15 @@ tenantRoutes.put('/:id', requireRole('super_admin'), async (c) => {
     const existing = await mongodb.findOne('companies', { _id: { $oid: id } });
     if (!existing) return c.json({ success: false, message: 'Tenant not found' }, 404);
 
+    // Preserve all existing data-column fields to prevent data loss
+    const preservedFields = {};
+    const allDataFields = ['name', 'slug', 'domain', 'industry', 'region', 'address', 'phone', 'website', 'currency', 'status', 'plan', 'maxUsers', 'taxId', 'notes', 'modules'];
+    for (const field of allDataFields) {
+      if (existing[field] !== undefined) {
+        preservedFields[field] = existing[field];
+      }
+    }
+
     const updates = {};
     if (data.name) updates.name = data.name;
     if (data.domain) updates.domain = data.domain;
@@ -248,9 +257,9 @@ tenantRoutes.put('/:id', requireRole('super_admin'), async (c) => {
     if (data.settings?.currency) updates.currency = data.settings.currency;
     if (data.limits?.maxUsers) updates.maxUsers = data.limits.maxUsers;
     if (data.features) updates.modules = JSON.stringify(data.features);
-    updates.updatedAt = new Date().toISOString();
 
-    await mongodb.updateOne('companies', { _id: { $oid: id } }, updates);
+    const mergedUpdate = { ...preservedFields, ...updates, updatedAt: new Date().toISOString() };
+    await mongodb.updateOne('companies', { _id: { $oid: id } }, mergedUpdate);
 
     return c.json({ success: true, message: 'Tenant updated successfully' });
   } catch (error) {
