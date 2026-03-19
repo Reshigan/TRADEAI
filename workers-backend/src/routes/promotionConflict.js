@@ -111,7 +111,7 @@ promotionConflictRoutes.post('/check', async (c) => {
         let baselineRevenue = body.expectedSpend || body.budgetAmount || 0;
         if (customerId && !body.expectedSpend) {
           try {
-            const resolved = await resolveBaselineScope(db, user.companyId, {
+            const resolved = await resolveBaselineScope(c.env.DB, user.companyId, {
               customerId
             });
             if (resolved && resolved.baseline) {
