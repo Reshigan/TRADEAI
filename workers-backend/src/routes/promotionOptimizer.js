@@ -475,7 +475,7 @@ promotionOptimizer.post('/:id/optimize', async (c) => {
 
       await db.prepare(
         'UPDATE optimization_constraints SET current_value = ?, is_violated = ?, updated_at = ? WHERE id = ? AND company_id = ?'
-      ).bind(Math.round(currentVal * 100, companyId) / 100, violated, now, con.id).run();
+      ).bind(Math.round(currentVal * 100) / 100, violated, now, con.id, companyId).run();
     }
 
     await db.prepare(`

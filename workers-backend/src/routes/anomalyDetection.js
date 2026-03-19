@@ -25,7 +25,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
     // Hierarchy-aware baseline resolution for anomaly threshold calibration
     let baselineContext = null;
     try {
-      const resolved = await resolveBaselineScope(db, user.companyId, {});
+      const resolved = await resolveBaselineScope(c.env.DB, user.companyId, {});
       if (resolved && resolved.baseline) {
         baselineContext = {
           baseVolume: resolved.baseline.total_base_volume || 0,

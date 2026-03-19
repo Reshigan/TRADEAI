@@ -25,7 +25,7 @@ wasteDetectionRoutes.post('/', async (c) => {
     // Hierarchy-aware baseline resolution for waste threshold calibration
     let companyBaseline = null;
     try {
-      const resolved = await resolveBaselineScope(db, user.companyId, {});
+      const resolved = await resolveBaselineScope(c.env.DB, user.companyId, {});
       if (resolved && resolved.baseline) {
         companyBaseline = {
           baseVolume: resolved.baseline.total_base_volume || 0,
