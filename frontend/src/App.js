@@ -191,6 +191,9 @@ const AdminSAPExport = lazy(() => import('./pages/admin/SAPExport'));
 const AdminSAPIntegration = lazy(() => import('./pages/admin/SAPIntegration'));
 const AdminIntegrations = lazy(() => import('./pages/admin/Integrations'));
 const AdminTerminology = lazy(() => import('./pages/admin/TerminologySettings'));
+const ModuleConfiguration = lazy(() => import('./pages/admin/ModuleConfiguration'));
+const AdminAssignment = lazy(() => import('./pages/admin/AdminAssignment'));
+const CompanyAdminSetup = lazy(() => import('./pages/admin/CompanyAdminSetup'));
 
 const HelpCenter = lazy(() => import('./pages/help').then(m => ({ default: m.HelpCenter })));
 const PromotionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m.PromotionsHelp })));
@@ -546,6 +549,14 @@ function App() {
             <Route path="/admin/sap-integration" element={<P><AdminSAPIntegration /></P>} />
             <Route path="/admin/integrations" element={<P><AdminIntegrations /></P>} />
             <Route path="/admin/terminology" element={<P requiredRoles={['admin', 'super_admin']}><AdminTerminology /></P>} />
+            <Route path="/admin/modules" element={<P requiredRoles={['super_admin']}><ModuleConfiguration /></P>} />
+            <Route path="/admin/assign-admin" element={<P requiredRoles={['super_admin']}><AdminAssignment /></P>} />
+            <Route path="/admin/company-setup" element={<P requiredRoles={['admin', 'super_admin']}><CompanyAdminSetup /></P>} />
+
+            <Route path="/baselines/:id" element={<P><BaselineManagement /></P>} />
+            <Route path="/accruals/:id" element={<P><AccrualManagement /></P>} />
+            <Route path="/settlements/:id" element={<P><SettlementManagement /></P>} />
+            <Route path="/transactions/:id" element={<P><TransactionManagement /></P>} />
 
             <Route path="/simulations" element={<Navigate to="/scenarios" replace />} />
             <Route path="/simulation-studio" element={<Navigate to="/scenarios" replace />} />
