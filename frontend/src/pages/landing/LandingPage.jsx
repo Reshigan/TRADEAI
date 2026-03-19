@@ -59,7 +59,7 @@ export default function LandingPage({ onLogin }) {
           </Box>
           <Box>
             <Typography sx={{ fontWeight: 700, fontSize: 18, color: '#0F172A', lineHeight: 1.1 }}>TradeAI</Typography>
-            <Typography sx={{ fontSize: 9, color: '#94A3B8', fontWeight: 500, letterSpacing: '0.1em' }}>TRADE INTELLIGENCE</Typography>
+            <Typography sx={{ fontSize: 9, color: '#64748B', fontWeight: 500, letterSpacing: '0.1em' }}>TRADE INTELLIGENCE</Typography>
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -158,7 +158,7 @@ export default function LandingPage({ onLogin }) {
 
       {/* Footer */}
       <Box sx={{ borderTop: '1px solid #F1F5F9', py: 4, textAlign: 'center' }}>
-        <Typography sx={{ fontSize: 13, color: '#94A3B8' }}>
+        <Typography sx={{ fontSize: 13, color: '#64748B' }}>
           {'\u00a9 '}{new Date().getFullYear()} TradeAI by GONXT Technology | Vanta X Holdings (Pty) Ltd. All rights reserved.
         </Typography>
       </Box>

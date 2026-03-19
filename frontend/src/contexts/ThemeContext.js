@@ -133,12 +133,12 @@ function buildLightTheme() {
       },
       MuiOutlinedInput: {
         styleOverrides: {
-          input: { color: '#1E293B', '&::placeholder': { color: '#94A3B8', opacity: 1 } },
+          input: { color: '#1E293B', '&::placeholder': { color: '#94A3B8', opacity: 0.7 } },
         },
       },
       MuiInputBase: { styleOverrides: { input: { color: '#1E293B' } } },
       MuiInputLabel: {
-        styleOverrides: { root: { color: '#64748B', '&.Mui-focused': { color: '#1976D2' } } },
+        styleOverrides: { root: { color: '#475569', '&.Mui-focused': { color: '#1976D2' } } },
       },
       MuiSelect: { styleOverrides: { select: { color: '#1E293B' } } },
       MuiIconButton: {
@@ -166,7 +166,7 @@ function buildLightTheme() {
       MuiTableCell: {
         styleOverrides: {
           root: { borderBottom: '1px solid #E2E8F0', color: '#1E293B' },
-          head: { fontWeight: 600, backgroundColor: '#F9FAFB', color: '#475569' },
+          head: { fontWeight: 600, backgroundColor: '#F9FAFB', color: '#334155' },
         },
       },
       MuiTableRow: {

@@ -159,7 +159,7 @@ export default function WorkflowEngine() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {templates.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No templates found</TableCell></TableRow>}
+                {templates.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>No templates found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>
@@ -191,7 +191,7 @@ export default function WorkflowEngine() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {instances.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No workflow instances found</TableCell></TableRow>}
+                {instances.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>No workflow instances found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>

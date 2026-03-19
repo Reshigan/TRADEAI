@@ -152,7 +152,7 @@ export default function IntegrationHub() {
                   </TableCell>
                 </TableRow>
               ))}
-              {integrations.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No integrations found</TableCell></TableRow>}
+              {integrations.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>No integrations found</TableCell></TableRow>}
             </TableBody>
           </Table>
         </TableContainer>

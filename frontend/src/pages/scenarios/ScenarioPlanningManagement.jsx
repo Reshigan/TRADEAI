@@ -50,7 +50,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {subtitle}
             </Typography>
           )}
@@ -446,7 +446,7 @@ const ScenarioPlanningManagement = () => {
           <TableBody>
             {(tab === 1 ? scenarios.filter(s => s.isFavorite || s.is_favorite) : scenarios).length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                <TableCell colSpan={9} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                   {tab === 1 ? 'No favorite scenarios yet' : 'No scenarios yet. Click "New Scenario" to create one.'}
                 </TableCell>
               </TableRow>
@@ -465,7 +465,7 @@ const ScenarioPlanningManagement = () => {
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{s.name}</Typography>
                     {(s.customerName || s.customer_name) && (
-                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>{s.customerName || s.customer_name}</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>{s.customerName || s.customer_name}</Typography>
                     )}
                   </TableCell>
                   <TableCell>
@@ -681,7 +681,7 @@ const ScenarioPlanningManagement = () => {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>{v.variableName || v.variable_name}</Typography>
-                            <Typography variant="caption" sx={{ color: '#9CA3AF' }}>{v.category} {v.unit ? `(${v.unit})` : ''}</Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>{v.category} {v.unit ? `(${v.unit})` : ''}</Typography>
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Chip label={`${change >= 0 ? '+' : ''}${change.toFixed(1)}%`} size="small"

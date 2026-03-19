@@ -148,7 +148,7 @@ export default function SystemConfig() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {configs.length === 0 && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No configurations found</TableCell></TableRow>}
+                {configs.length === 0 && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>No configurations found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>
@@ -181,7 +181,7 @@ export default function SystemConfig() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {tenants.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No tenants found</TableCell></TableRow>}
+                {tenants.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>No tenants found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>

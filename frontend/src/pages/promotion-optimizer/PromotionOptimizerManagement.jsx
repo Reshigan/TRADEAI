@@ -43,7 +43,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {subtitle}
             </Typography>
           )}
@@ -373,7 +373,7 @@ const PromotionOptimizerManagement = () => {
               if (filtered.length === 0) {
                 return (
                   <TableRow>
-                    <TableCell colSpan={8} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                    <TableCell colSpan={8} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                       {tab === 0 ? 'No optimizations yet. Click "New Optimization" to create one.' : 'No matching optimizations.'}
                     </TableCell>
                   </TableRow>
@@ -387,7 +387,7 @@ const PromotionOptimizerManagement = () => {
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>{o.name}</Typography>
                       {(o.customerName || o.customer_name) && (
-                        <Typography variant="caption" sx={{ color: '#9CA3AF' }}>{o.customerName || o.customer_name}</Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>{o.customerName || o.customer_name}</Typography>
                       )}
                     </TableCell>
                     <TableCell>
@@ -642,7 +642,7 @@ const PromotionOptimizerManagement = () => {
                             </Box>
                             <Typography variant="body2" sx={{ color: '#4B5563' }}>{r.description}</Typography>
                             {r.rationale && (
-                              <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', mt: 0.5, fontStyle: 'italic' }}>{r.rationale}</Typography>
+                              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5, fontStyle: 'italic' }}>{r.rationale}</Typography>
                             )}
                           </Box>
                         </Box>

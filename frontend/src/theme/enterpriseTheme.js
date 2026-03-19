@@ -270,7 +270,7 @@ const enterpriseTheme = createTheme({
           color: '#1E293B',
           '&::placeholder': {
             color: '#94A3B8',
-            opacity: 1,
+            opacity: 0.7,
           },
         },
       },
