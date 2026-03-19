@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, TextField, MenuItem, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import { Download } from 'lucide-react';
-import { pnlService } from '../../services/api';
+import api from '../../services/api';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -14,8 +14,23 @@ export default function PnLAnalysis() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await pnlService.calculate({ period, group_by: groupBy });
-        setData(res.data || res);
+        const endpoint = groupBy === 'promotion' ? '/pnl/live-by-promotion' : '/pnl/live-by-customer';
+        const res = await api.get(endpoint);
+        const rows = res.data?.data || [];
+        const totalGross = rows.reduce((s, r) => s + (r.grossSales || 0), 0);
+        const totalSpend = rows.reduce((s, r) => s + (r.tradeSpend || 0), 0);
+        const totalNet = rows.reduce((s, r) => s + (r.netSales || 0), 0);
+        const spendPct = totalGross > 0 ? (totalSpend / totalGross) * 100 : 0;
+        setData({
+          summary: { gross_revenue: totalGross, total_trade_spend: totalSpend, net_revenue: totalNet, trade_spend_percentage: spendPct },
+          items: rows.map(r => ({
+            name: r.customerName || r.promotionName || '-',
+            revenue: r.grossSales,
+            trade_spend: r.tradeSpend,
+            net_revenue: r.netSales,
+            margin: r.grossMarginPct
+          }))
+        });
       } catch (e) { console.error(e); }
       setLoading(false);
     };
@@ -37,7 +52,7 @@ export default function PnLAnalysis() {
           <MenuItem value="monthly">Monthly</MenuItem><MenuItem value="quarterly">Quarterly</MenuItem><MenuItem value="annual">Annual</MenuItem>
         </TextField>
         <TextField select size="small" value={groupBy} onChange={(e) => setGroupBy(e.target.value)} sx={{ minWidth: 140 }}>
-          <MenuItem value="customer">By Customer</MenuItem><MenuItem value="promotion">By Promotion</MenuItem><MenuItem value="product">By Product</MenuItem>
+          <MenuItem value="customer">By Customer</MenuItem><MenuItem value="promotion">By Promotion</MenuItem>
         </TextField>
       </Box>
 

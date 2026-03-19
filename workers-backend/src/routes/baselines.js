@@ -24,15 +24,19 @@ baselines.get('/', async (c) => {
     const companyId = getCompanyId(c);
     const { status, baseline_type, customer_id, product_id, limit = 50, offset = 0 } = c.req.query();
 
-    let query = 'SELECT * FROM baselines WHERE company_id = ?';
+    let query = `SELECT b.*, p.name as product_name, c.name as customer_name
+      FROM baselines b
+      LEFT JOIN products p ON b.product_id = p.id
+      LEFT JOIN customers c ON b.customer_id = c.id
+      WHERE b.company_id = ?`;
     const params = [companyId];
 
-    if (status) { query += ' AND status = ?'; params.push(status); }
-    if (baseline_type) { query += ' AND baseline_type = ?'; params.push(baseline_type); }
-    if (customer_id) { query += ' AND customer_id = ?'; params.push(customer_id); }
-    if (product_id) { query += ' AND product_id = ?'; params.push(product_id); }
+    if (status) { query += ' AND b.status = ?'; params.push(status); }
+    if (baseline_type) { query += ' AND b.baseline_type = ?'; params.push(baseline_type); }
+    if (customer_id) { query += ' AND b.customer_id = ?'; params.push(customer_id); }
+    if (product_id) { query += ' AND b.product_id = ?'; params.push(product_id); }
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+    query += ' ORDER BY b.created_at DESC LIMIT ? OFFSET ?';
     params.push(parseInt(limit), parseInt(offset));
 
     const result = await db.prepare(query).bind(...params).all();
