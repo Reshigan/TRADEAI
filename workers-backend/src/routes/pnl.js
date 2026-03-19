@@ -153,8 +153,8 @@ pnl.get('/live-by-customer', async (c) => {
     const customerSales = await db.prepare(`
       SELECT
         customer_id,
-        SUM(amount) as total_gross_sales,
-        SUM(CASE WHEN category = 'cogs' OR category = 'cost' THEN amount ELSE 0 END) as total_cogs
+        SUM(gross_amount) as total_gross_sales,
+        SUM(gross_amount - net_amount) as total_cogs
       FROM sales_transactions
       WHERE company_id = ?
       GROUP BY customer_id
@@ -307,8 +307,8 @@ pnl.get('/live-by-promotion', async (c) => {
     const promoSales = await db.prepare(`
       SELECT
         promotion_id,
-        SUM(amount) as total_gross_sales,
-        SUM(CASE WHEN category = 'cogs' OR category = 'cost' THEN amount ELSE 0 END) as total_cogs
+        SUM(gross_amount) as total_gross_sales,
+        SUM(gross_amount - net_amount) as total_cogs
       FROM sales_transactions
       WHERE company_id = ? AND promotion_id IS NOT NULL
       GROUP BY promotion_id
