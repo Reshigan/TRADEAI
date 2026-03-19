@@ -346,13 +346,35 @@ advancedReporting.post('/templates/:id/run', async (c) => {
       statusBreakdown[s] = (statusBreakdown[s] || 0) + 1;
     }
 
+    // Hierarchy-aware baseline resolution for report context
+    let baselineContext = null;
+    const reportCustomerId = filtersApplied.customerId || filtersApplied.customer_id;
+    const reportProductId = filtersApplied.productId || filtersApplied.product_id;
+    if (reportCustomerId || reportProductId) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: reportCustomerId,
+          productId: reportProductId
+        });
+        if (resolved && resolved.baseline) {
+          baselineContext = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            baseRevenue: resolved.baseline.total_base_revenue || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline context */ }
+    }
+
     summaryData = {
       totalRows: rowCount,
       totalAmount: Math.round(totalAmount * 100) / 100,
       avgAmount: rowCount > 0 ? Math.round((totalAmount / rowCount) * 100) / 100 : 0,
       maxAmount: maxAmount > 0 ? maxAmount : 0,
       minAmount: minAmount < Infinity ? minAmount : 0,
-      statusBreakdown
+      statusBreakdown,
+      baseline: baselineContext
     };
 
     const generationTime = Date.now() - startTime;

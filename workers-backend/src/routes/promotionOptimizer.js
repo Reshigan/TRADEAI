@@ -409,8 +409,24 @@ promotionOptimizer.post('/:id/optimize', async (c) => {
     ).bind(id).all();
     const constraints = constraintsResult.results || [];
 
-    const baseRevenue = opt.baseline_revenue || 1000000;
-    const baseUnits = opt.baseline_units || 10000;
+    // Hierarchy-aware baseline resolution for optimization inputs
+    let resolvedBaseRevenue = opt.baseline_revenue || 0;
+    let resolvedBaseUnits = opt.baseline_units || 0;
+    if (!resolvedBaseRevenue || !resolvedBaseUnits) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: opt.customer_id,
+          productId: opt.product_id
+        });
+        if (resolved && resolved.baseline) {
+          resolvedBaseRevenue = resolvedBaseRevenue || resolved.baseline.total_base_revenue || resolved.baseline.total_base_volume || 0;
+          resolvedBaseUnits = resolvedBaseUnits || resolved.baseline.total_base_volume || 0;
+        }
+      } catch (e) { /* fallback to defaults below */ }
+    }
+
+    const baseRevenue = resolvedBaseRevenue || 1000000;
+    const baseUnits = resolvedBaseUnits || 10000;
     const baseMargin = opt.baseline_margin_pct || 25;
     const budgetLimit = opt.budget_limit || baseRevenue * 0.15;
     const objective = opt.objective || 'maximize_roi';

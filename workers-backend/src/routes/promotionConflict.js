@@ -107,10 +107,23 @@ promotionConflictRoutes.post('/check', async (c) => {
           ? productIds.filter(pid => (pData.productIds || []).includes(pid))
           : [];
 
+        // Hierarchy-aware baseline resolution for cannibalization estimation
+        let baselineRevenue = body.expectedSpend || body.budgetAmount || 0;
+        if (customerId && !body.expectedSpend) {
+          try {
+            const resolved = await resolveBaselineScope(db, user.companyId, {
+              customerId
+            });
+            if (resolved && resolved.baseline) {
+              baselineRevenue = resolved.baseline.total_base_revenue || resolved.baseline.total_base_volume || baselineRevenue;
+            }
+          } catch (e) { /* fallback to body values */ }
+        }
+
         // Estimated revenue cannibalization
         const totalDays = Math.max(1, Math.ceil((newEnd - newStart) / 86400000));
         const estimatedCannibalization = overlapDays > 0
-          ? Math.round((overlapDays / totalDays) * (body.expectedSpend || body.budgetAmount || 0) * 100) / 100
+          ? Math.round((overlapDays / totalDays) * baselineRevenue * 100) / 100
           : 0;
 
         // Suggestions

@@ -22,6 +22,19 @@ wasteDetectionRoutes.post('/', async (c) => {
     const productPerformance = {};
     const typePerformance = {};
 
+    // Hierarchy-aware baseline resolution for waste threshold calibration
+    let companyBaseline = null;
+    try {
+      const resolved = await resolveBaselineScope(db, user.companyId, {});
+      if (resolved && resolved.baseline) {
+        companyBaseline = {
+          baseVolume: resolved.baseline.total_base_volume || 0,
+          avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+          source: resolved.source
+        };
+      }
+    } catch (e) { /* no baseline available */ }
+
     for (const promo of promotions) {
       const data = typeof promo.data === 'string' ? JSON.parse(promo.data || '{}') : (promo.data || {});
       const roi = data.actualROI || data.roi || data.performance?.roi || 0;

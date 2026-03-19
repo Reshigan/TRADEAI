@@ -301,9 +301,23 @@ dataLineage.get('/baselines', async (c) => {
       } catch (e) {}
     }
     
+    // Enrich with hierarchy-aware baseline resolution
+    let hierarchyBaseline = null;
+    try {
+      const resolved = await resolveBaselineScope(db, companyId, {});
+      if (resolved && resolved.baseline) {
+        hierarchyBaseline = {
+          baseVolume: resolved.baseline.total_base_volume || 0,
+          avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+          baseRevenue: resolved.baseline.total_base_revenue || 0,
+          source: resolved.source
+        };
+      }
+    } catch (e) { /* no hierarchy baseline available */ }
+
     return c.json({
       success: true,
-      data: baselines
+      data: { ...baselines, hierarchyBaseline }
     });
   } catch (error) {
     console.error('Error fetching baselines:', error);

@@ -54,6 +54,24 @@ recommendationsRoutes.post('/next-best-promotion', async (c) => {
     });
     
     const recommendations = [];
+
+    // Hierarchy-aware baseline resolution for recommendation scoring
+    let baselineContext = null;
+    if (customerId) {
+      try {
+        const resolved = await resolveBaselineScope(c.env.DB, user.companyId, {
+          customerId
+        });
+        if (resolved && resolved.baseline) {
+          baselineContext = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            seasonalityIndex: resolved.baseline.seasonality_index || 1.0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+    }
     
     const promotionTypes = ['Discount', 'BOGO', 'Volume', 'Bundle', 'Loyalty'];
     const categories = [...new Set(products.map(p => p.data?.category).filter(Boolean))];
@@ -62,9 +80,11 @@ recommendationsRoutes.post('/next-best-promotion', async (c) => {
       const type = promotionTypes[i % promotionTypes.length];
       const category = categories[i % Math.max(1, categories.length)] || 'General';
       const targetCustomer = customers[i % Math.max(1, customers.length)];
-      
-      const baseROI = 1.5 + Math.random() * 1.0;
-      const confidence = 0.7 + Math.random() * 0.2;
+
+      // Use baseline seasonality to adjust ROI prediction
+      const seasonalBoost = baselineContext ? (baselineContext.seasonalityIndex - 1.0) * 0.5 : 0;
+      const baseROI = 1.5 + Math.random() * 1.0 + seasonalBoost;
+      const confidence = 0.7 + Math.random() * 0.2 + (baselineContext ? 0.05 : 0);
       
       recommendations.push({
         id: `rec-${Date.now()}-${i}`,

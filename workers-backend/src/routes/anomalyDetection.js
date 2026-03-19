@@ -22,6 +22,20 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
 
     const anomalies = [];
 
+    // Hierarchy-aware baseline resolution for anomaly threshold calibration
+    let baselineContext = null;
+    try {
+      const resolved = await resolveBaselineScope(db, user.companyId, {});
+      if (resolved && resolved.baseline) {
+        baselineContext = {
+          baseVolume: resolved.baseline.total_base_volume || 0,
+          baseRevenue: resolved.baseline.total_base_revenue || 0,
+          avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+          source: resolved.source
+        };
+      }
+    } catch (e) { /* no baseline available */ }
+
     const overBudgets = budgets.filter(b => b.amount && (b.utilized || 0) > b.amount);
     overBudgets.forEach(b => {
       anomalies.push({

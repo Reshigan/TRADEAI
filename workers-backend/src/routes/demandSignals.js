@@ -311,7 +311,27 @@ demandSignals.get('/:id', async (c) => {
       return c.json({ success: false, message: 'Demand signal not found' }, 404);
     }
 
-    return c.json({ success: true, data: rowToDocument(signal) });
+    // Hierarchy-aware baseline resolution for signal context
+    let baselineData = null;
+    if (signal.customer_id || signal.product_id) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: signal.customer_id,
+          productId: signal.product_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineData = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            baseRevenue: resolved.baseline.total_base_revenue || 0,
+            seasonalityIndex: resolved.baseline.seasonality_index || 1.0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+    }
+
+    return c.json({ success: true, data: { ...rowToDocument(signal), baseline: baselineData } });
   } catch (error) {
     console.error('Error fetching demand signal:', error);
     return apiError(c, error, 'demandSignals');

@@ -170,6 +170,22 @@ revenueGrowth.post('/initiatives', async (c) => {
     const id = generateId();
     const now = new Date().toISOString();
 
+    // Hierarchy-aware baseline resolution for initiative baseline revenue
+    let resolvedBaselineRevenue = 0;
+    const custId = body.customerId || body.customer_id;
+    const prodId = body.productId || body.product_id;
+    if ((custId || prodId) && !(body.baselineRevenue || body.baseline_revenue)) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: custId,
+          productId: prodId
+        });
+        if (resolved && resolved.baseline) {
+          resolvedBaselineRevenue = resolved.baseline.total_base_revenue || resolved.baseline.total_base_volume || 0;
+        }
+      } catch (e) { /* fallback to 0 */ }
+    }
+
     await db.prepare(`INSERT INTO rgm_initiatives (id, company_id, name, description, initiative_type, status, priority, category, customer_id, customer_name, product_id, product_name, channel, region, brand, start_date, end_date, target_revenue, target_margin_pct, target_growth_pct, baseline_revenue, baseline_margin_pct, investment_amount, confidence_score, risk_level, owner, created_by, tags, notes, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
       id, companyId,
       body.name || '',
@@ -190,7 +206,7 @@ revenueGrowth.post('/initiatives', async (c) => {
       body.targetRevenue || body.target_revenue || 0,
       body.targetMarginPct || body.target_margin_pct || 0,
       body.targetGrowthPct || body.target_growth_pct || 0,
-      body.baselineRevenue || body.baseline_revenue || 0,
+      body.baselineRevenue || body.baseline_revenue || resolvedBaselineRevenue || 0,
       body.baselineMarginPct || body.baseline_margin_pct || 0,
       body.investmentAmount || body.investment_amount || 0,
       body.confidenceScore || body.confidence_score || 0,

@@ -57,7 +57,26 @@ vendorFundRoutes.get('/:id', async (c) => {
     const fund = await db.prepare('SELECT * FROM vendor_funds WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!fund) return c.json({ success: false, message: 'Not found' }, 404);
     const usages = await db.prepare('SELECT * FROM vendor_fund_usages WHERE vendor_fund_id = ? ORDER BY created_at DESC').bind(id).all();
-    return c.json({ success: true, data: { ...fund, usages: usages.results || [] } });
+
+    // Hierarchy-aware baseline resolution for fund context
+    let baselineData = null;
+    if (fund.customer_hierarchy_id || fund.product_hierarchy_id) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: fund.customer_hierarchy_id,
+          productId: fund.product_hierarchy_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineData = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            baseRevenue: resolved.baseline.total_base_revenue || 0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+    }
+
+    return c.json({ success: true, data: { ...fund, usages: usages.results || [], baseline: baselineData } });
   } catch (e) { return c.json({ success: false, message: e.message }, 500); }
 });
 

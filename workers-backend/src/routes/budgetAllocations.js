@@ -183,13 +183,27 @@ budgetAllocations.get('/waterfall', async (c) => {
         FROM trade_spends WHERE company_id = ? AND budget_id = ?
       `).bind(companyId, budget.id).first();
 
+      // Resolve hierarchy-aware baseline for budget scope
+      let baselineInfo = null;
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {});
+        if (resolved && resolved.baseline) {
+          baselineInfo = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            baseRevenue: resolved.baseline.total_base_revenue || 0,
+            source: resolved.source
+          };
+        }
+      } catch (e) { /* no baseline available */ }
+
       waterfallData.push({
         budgetId: budget.id,
         budgetName: budget.name,
         totalBudget: budget.amount || 0,
         budgetUtilized: budget.utilized || 0,
         totalSpend: spendResult?.total_spend || 0,
-        allocations: (allocLines.results || []).map(rowToDocument)
+        allocations: (allocLines.results || []).map(rowToDocument),
+        baseline: baselineInfo
       });
     }
 

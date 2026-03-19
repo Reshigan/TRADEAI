@@ -519,6 +519,25 @@ async function handleCalculate(c) {
     const netTradeMargin = grossMargin - tradeSpend - accruals + deductionRecoveries;
     const tradeSpendPct = grossRevenue > 0 ? (tradeSpend / grossRevenue) * 100 : 0;
 
+    // Hierarchy-aware baseline resolution for P&L comparison
+    let baselineData = null;
+    if (customer_id || promotion_id) {
+      try {
+        const resolved = await resolveBaselineScope(db, companyId, {
+          customerId: customer_id
+        });
+        if (resolved && resolved.baseline) {
+          baselineData = {
+            baseVolume: resolved.baseline.total_base_volume || 0,
+            avgWeeklyVolume: resolved.baseline.avg_weekly_volume || 0,
+            baseRevenue: resolved.baseline.total_base_revenue || 0,
+            source: resolved.source,
+            seasonalityIndex: resolved.baseline.seasonality_index || 1.0
+          };
+        }
+      } catch (e) { /* fallback: no baseline comparison */ }
+    }
+
     const r = (v) => Math.round(v * 100) / 100;
 
     const waterfall = [
@@ -545,7 +564,8 @@ async function handleCalculate(c) {
         claims: r(claimResult?.total || 0),
         netTradeMargin: r(netTradeMargin),
         marginPercent: r(tradeSpendPct),
-        transactionCount: sales?.transaction_count || 0
+        transactionCount: sales?.transaction_count || 0,
+        baseline: baselineData
       }
     });
   } catch (error) {
