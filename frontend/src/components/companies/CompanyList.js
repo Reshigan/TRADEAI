@@ -195,9 +195,9 @@ const CompanyList = () => {
   // Filter companies based on search term and filters
   const filteredCompanies = companies.filter(company => {
     const matchesSearch = 
-      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      company.region.toLowerCase().includes(searchTerm.toLowerCase());
+      (company.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (company.industry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (company.region || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesIndustry = industryFilter === 'all' || company.industry === industryFilter;
     const matchesRegion = regionFilter === 'all' || company.region === regionFilter;
