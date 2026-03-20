@@ -112,6 +112,43 @@ router.get('/trade-spend-roi', authenticateToken, asyncHandler(async (req, res) 
   });
 }));
 
+// Generate report from template
+router.post('/generate', authenticateToken, asyncHandler(async (req, res) => {
+  const { template_id, filters } = req.body;
+  const tenantId = req.user.company;
+
+  // Map template IDs to report generation logic
+  const templateHandlers = {
+    'promotion_summary': () => reportController.generatePromotionEffectivenessReport({ tenantId, ...filters }),
+    'budget_utilization': () => reportController.generateBudgetUtilizationReport({ tenantId, year: new Date().getFullYear(), ...filters }),
+    'roi_analysis': () => reportController.generateTradeSpendROIReport({ tenantId, ...filters }),
+    'trade_spend_by_customer': () => reportController.generateTradeSpendROIReport({ tenantId, ...filters }),
+    'deduction_aging': () => reportController.generateCustomerPerformanceReport({ tenantId, ...filters }),
+    'claim_status': () => reportController.generateCustomerPerformanceReport({ tenantId, ...filters }),
+    'pnl_by_promotion': () => reportController.generatePromotionEffectivenessReport({ tenantId, ...filters }),
+    'accrual_report': () => reportController.generateBudgetUtilizationReport({ tenantId, year: new Date().getFullYear(), ...filters }),
+  };
+
+  const handler = templateHandlers[template_id];
+  if (!handler) {
+    throw new AppError(`Unknown report template: ${template_id}`, 400);
+  }
+
+  const report = await handler();
+
+  res.json({
+    success: true,
+    data: {
+      id: `rpt-${Date.now()}`,
+      template_id,
+      name: template_id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      created_at: new Date().toISOString(),
+      status: 'completed',
+      report
+    }
+  });
+}));
+
 // Export report as Excel
 router.post('/export', authenticateToken, asyncHandler(async (req, res) => {
   const { reportType, filters, format = 'xlsx' } = req.body;

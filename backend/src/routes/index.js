@@ -30,6 +30,10 @@ const securityRoutes = require('./security');
 // Company Admin Routes
 const companyAdminRoutes = require('./companyAdmin');
 
+// Claims & Deductions Routes
+const claimsRoutes = require('./claims');
+const deductionsRoutes = require('./deductions');
+
 // NEW: AI Promotion Routes
 const aiPromotionRoutes = require('./aiPromotion');
 
@@ -92,6 +96,7 @@ router.use('/trading-terms', tradingTermsRoutes);
 router.use('/enterprise', enterpriseRoutes);
 router.use('/super-admin', superAdminRoutes);
 router.use('/reports', reportRoutes);
+router.use('/reporting', reportRoutes);
 router.use('/ml', mlRoutes);
 router.use('/integrations', integrationRoutes);
 router.use('/sap', sapRoutes);
@@ -99,6 +104,31 @@ router.use('/security', securityRoutes);
 
 // Company Admin Routes
 router.use('/company-admin', companyAdminRoutes);
+
+// Claims & Deductions Routes
+router.use('/claims', claimsRoutes);
+router.use('/deductions', deductionsRoutes);
+
+// Settlements reconciliation endpoint (used by frontend Reconciliation page)
+router.get('/settlements/reconciliation', require('../middleware/auth').authenticateToken, async (req, res) => {
+  try {
+    const tenantId = req.user.company;
+    const db = req.env?.DB;
+    if (!db) {
+      return res.json({ success: true, data: { total_claims: 0, total_deductions: 0, matched_amount: 0, unmatched_amount: 0, match_rate: 0 } });
+    }
+    const claimsResult = await db.prepare('SELECT COALESCE(SUM(amount), 0) as total FROM claims WHERE company_id = ?').bind(tenantId).first();
+    const deductionsResult = await db.prepare('SELECT COALESCE(SUM(amount), 0) as total, COALESCE(SUM(CASE WHEN matched_status = ? THEN amount ELSE 0 END), 0) as matched FROM deductions WHERE company_id = ?').bind('Matched', tenantId).first();
+    const totalClaims = claimsResult?.total || 0;
+    const totalDeductions = deductionsResult?.total || 0;
+    const matched = deductionsResult?.matched || 0;
+    const unmatched = totalDeductions - matched;
+    res.json({ success: true, data: { total_claims: totalClaims, total_deductions: totalDeductions, matched_amount: matched, unmatched_amount: unmatched, match_rate: totalDeductions > 0 ? ((matched / totalDeductions) * 100) : 0 } });
+  } catch (error) {
+    console.error('Error fetching reconciliation data:', error);
+    res.json({ success: true, data: { total_claims: 0, total_deductions: 0, matched_amount: 0, unmatched_amount: 0, match_rate: 0 } });
+  }
+});
 
 // NEW: AI-Powered Promotion Routes
 router.use('/ai-promotion', aiPromotionRoutes);
