@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress, Snackbar, Alert } from '@mui/material';
 import { Scale, CheckCircle, AlertTriangle, DollarSign } from 'lucide-react';
 import api from '../../services/api';
 
@@ -8,6 +8,7 @@ const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).to
 export default function Reconciliation() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     const load = async () => {
@@ -23,10 +24,15 @@ export default function Reconciliation() {
   const runMatch = async () => {
     setLoading(true);
     try {
-      await api.post('/deductions/auto-match');
+      const matchRes = await api.post('/deductions/auto-match');
       const res = await api.get('/settlements/reconciliation');
       setData(res.data?.data || res.data || {});
-    } catch (e) { console.error(e); }
+      const matched = matchRes.data?.data?.length || 0;
+      setFeedback({ open: true, message: matched > 0 ? `Auto-match complete: ${matched} match${matched !== 1 ? 'es' : ''} found` : 'Auto-match complete: no new matches found', severity: 'success' });
+    } catch (e) {
+      console.error(e);
+      setFeedback({ open: true, message: 'Auto-match failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
+    }
     setLoading(false);
   };
 
@@ -74,6 +80,9 @@ export default function Reconciliation() {
           </Typography>
         </CardContent>
       </Card>
+      <Snackbar open={feedback.open} autoHideDuration={5000} onClose={() => setFeedback(f => ({ ...f, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={() => setFeedback(f => ({ ...f, open: false }))} severity={feedback.severity} variant="filled">{feedback.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

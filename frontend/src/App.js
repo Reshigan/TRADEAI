@@ -551,6 +551,7 @@ function App() {
 
             <Route path="/settle/claims" element={<P><SettleClaimList /></P>} />
             <Route path="/settle/claims/new" element={<P><CreateClaim /></P>} />
+            <Route path="/settle/claims/:id" element={<P><ClaimDetail /></P>} />
             <Route path="/settle/deductions" element={<P><SettleDeductionList /></P>} />
             <Route path="/settle/deductions/new" element={<P><CreateDeduction /></P>} />
             <Route path="/settle/reconciliation" element={<P><SettleReconciliation /></P>} />
