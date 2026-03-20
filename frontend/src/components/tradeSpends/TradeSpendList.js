@@ -18,10 +18,7 @@ import {
 import { format } from 'date-fns';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
-import tradeSpendService from '../../services/api';
-import budgetService from '../../services/api';
-import customerService from '../../services/api';
-import { vendorService } from '../../services/api';
+import { tradeSpendService, budgetService, customerService, vendorService } from '../../services/api';
 import { formatCurrency, formatLabel } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
 

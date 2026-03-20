@@ -19,7 +19,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader, DataTable, StatusChip } from '../common';
-import customerService from '../../services/api';
+import { customerService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 import CustomerForm from './CustomerForm';
 

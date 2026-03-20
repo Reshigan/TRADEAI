@@ -380,7 +380,7 @@ const ManagerDashboard = () => {
                 </Box>
                 <Box display="flex" justifyContent="space-between" mt={1.5}>
                   <Typography variant="h5" fontWeight={800} color="text.primary">
-                    R{((budget.utilized || 0) / 1000000).toFixed(1)}M
+                    R{(((budget.committed || 0) + (budget.spent || 0)) / 1000000).toFixed(1)}M
                   </Typography>
                   <Typography variant="body2" color="text.secondary" fontWeight={500}>
                     /R{((budget.total || 0) / 1000000).toFixed(1)}M

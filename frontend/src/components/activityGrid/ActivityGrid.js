@@ -34,7 +34,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {format, addMonths, startOfMonth, endOfMonth, parseISO} from 'date-fns';
 import { enZA } from 'date-fns/locale';
 
-import activityGridService from '../../services/api';
+import { activityGridService } from '../../services/api';
 import ActivityGridCalendar from './ActivityGridCalendar';
 import ActivityGridList from './ActivityGridList';
 import ActivityGridHeatMap from './ActivityGridHeatMap';
