@@ -87,9 +87,9 @@ const ProductDetail = () => {
   // Fetch promotions from API
   const fetchPromotions = async () => {
     try {
-      // In a real app, we would call the API
       const response = await promotionService.getAll({ product_id: id });
-      setPromotions(response.data);    } catch (err) {
+      setPromotions(response.data || response || []);
+    } catch (err) {
       console.error('Failed to fetch promotions:', err);
     }
   };
@@ -97,9 +97,9 @@ const ProductDetail = () => {
   // Fetch trade spends from API
   const fetchTradeSpends = async () => {
     try {
-      // In a real app, we would call the API
       const response = await tradeSpendService.getAll({ product_id: id });
-      setTradeSpends(response.data);    } catch (err) {
+      setTradeSpends(response.data || response || []);
+    } catch (err) {
       console.error('Failed to fetch trade spends:', err);
     }
   };
@@ -107,9 +107,9 @@ const ProductDetail = () => {
   // Fetch sales data from API
   const fetchSalesData = async () => {
     try {
-      // In a real app, we would call the API
       const response = await productService.getSalesData(id);
-      setSalesData(response.data);    } catch (error) {
+      setSalesData(response.data || response || []);
+    } catch (error) {
       console.error('Failed to fetch sales data:', error);
     }
   };
@@ -132,17 +132,11 @@ const ProductDetail = () => {
   // Handle confirm delete
   const handleConfirmDelete = async () => {
     setDeleteLoading(true);
-    
     try {
-      // In a real app, we would call the API
-      // await productService.delete(id);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setDeleteLoading(false);
-        setOpenDeleteDialog(false);
-        navigate('/products');
-      }, 1000);
+      await productService.delete(id);
+      setDeleteLoading(false);
+      setOpenDeleteDialog(false);
+      navigate('/products');
     } catch (error) {
       console.error('Failed to delete product:', error);
       setDeleteLoading(false);
@@ -152,10 +146,7 @@ const ProductDetail = () => {
   // Handle form submit
   const handleFormSubmit = async (productData) => {
     try {
-      // In a real app, we would call the API
-      // await productService.update(id, productData);
-      
-      // Refresh product
+      await productService.update(id, productData);
       fetchProduct();
       setOpenEditForm(false);
     } catch (error) {

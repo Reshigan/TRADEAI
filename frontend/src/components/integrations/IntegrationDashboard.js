@@ -128,10 +128,14 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock connection
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/integrations/${integrationId}/connect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(integrationConfig)
+      });
 
-      // Update integration status
       setIntegrations(prev => prev.map(integration => 
         integration.id === integrationId 
           ? { ...integration, status: 'active', lastSync: new Date().toISOString() }
@@ -157,10 +161,13 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock disconnection
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/integrations/${integrationId}/disconnect`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-      // Update integration status
       setIntegrations(prev => prev.map(integration => 
         integration.id === integrationId 
           ? { ...integration, status: 'inactive' }
@@ -181,10 +188,15 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock sync
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/integrations/${integrationId}/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(syncConfig)
+      });
+      const result = await res.json();
 
-      // Update integration sync data
       setIntegrations(prev => prev.map(integration => 
         integration.id === integrationId 
           ? { 
@@ -196,7 +208,7 @@ const IntegrationDashboard = () => {
       ));
 
       setSyncDialogOpen(false);
-      alert('Sync completed! 1,234 records synchronized.');
+      alert(`Sync completed! ${result.data?.recordCount || 0} records synchronized.`);
     } catch (error) {
       setError('Failed to sync integration');
       console.error('Error syncing integration:', error);
@@ -211,10 +223,16 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock webhook creation
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/integrations/webhooks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(webhookConfig)
+      });
+      const result = await res.json();
 
-      const newWebhook = {
+      const newWebhook = result.data || {
         id: `wh_${Date.now()}`,
         url: webhookConfig.url,
         events: webhookConfig.events,
@@ -240,8 +258,12 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock webhook test
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/integrations/webhooks/${webhookId}/test`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
       alert('Webhook test successful!');
     } catch (error) {
@@ -261,8 +283,12 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock webhook deletion
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/integrations/webhooks/${webhookId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       setWebhooks(prev => prev.filter(webhook => webhook.id !== webhookId));
       

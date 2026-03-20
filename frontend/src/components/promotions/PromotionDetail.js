@@ -100,17 +100,11 @@ const PromotionDetail = () => {
   // Handle confirm delete
   const handleConfirmDelete = async () => {
     setDeleteLoading(true);
-    
     try {
-      // In a real app, we would call the API
-      // await promotionService.delete(id);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setDeleteLoading(false);
-        setOpenDeleteDialog(false);
-        navigate('/promotions');
-      }, 1000);
+      await promotionService.delete(id);
+      setDeleteLoading(false);
+      setOpenDeleteDialog(false);
+      navigate('/promotions');
     } catch (err) {
       console.error('Failed to delete promotion:', err);
       setDeleteLoading(false);
@@ -118,12 +112,9 @@ const PromotionDetail = () => {
   };
 
   // Handle form submit
-  const handleFormSubmit = async (_promotionData) => {
+  const handleFormSubmit = async (promotionData) => {
     try {
-      // In a real app, we would call the API
-      // await promotionService.update(id, promotionData);
-      
-      // Refresh promotion
+      await promotionService.update(id, promotionData);
       fetchPromotion();
       setOpenEditForm(false);
     } catch (error) {

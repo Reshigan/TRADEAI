@@ -44,6 +44,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import { userService } from '../../services/api';
 
 const SettingsPage = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -179,17 +180,26 @@ const SettingsPage = () => {
   };
 
   // Save profile
-  const handleSaveProfile = () => {
-    // In a real app, we would call the API to save the profile
-    setSnackbar({
-      open: true,
-      message: 'Profile updated successfully',
-      severity: 'success'
-    });
+  const handleSaveProfile = async () => {
+    try {
+      await userService.updateProfile(profileData);
+      setSnackbar({
+        open: true,
+        message: 'Profile updated successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to save profile:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to update profile',
+        severity: 'error'
+      });
+    }
   };
 
   // Change password
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     // Validate passwords
     if (!securityData.currentPassword) {
       setSnackbar({
@@ -218,72 +228,139 @@ const SettingsPage = () => {
       return;
     }
     
-    // In a real app, we would call the API to change the password
-    setSnackbar({
-      open: true,
-      message: 'Password changed successfully',
-      severity: 'success'
-    });
-    
-    // Clear password fields
-    setSecurityData((prevData) => ({
-      ...prevData,
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    }));
+    try {
+      await userService.changePassword({
+        currentPassword: securityData.currentPassword,
+        newPassword: securityData.newPassword
+      });
+      setSnackbar({
+        open: true,
+        message: 'Password changed successfully',
+        severity: 'success'
+      });
+      setSecurityData((prevData) => ({
+        ...prevData,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+    } catch (err) {
+      console.error('Failed to change password:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to change password',
+        severity: 'error'
+      });
+    }
   };
 
   // Save notification settings
-  const handleSaveNotificationSettings = () => {
-    // In a real app, we would call the API to save the notification settings
-    setSnackbar({
-      open: true,
-      message: 'Notification settings updated successfully',
-      severity: 'success'
-    });
+  const handleSaveNotificationSettings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/settings/notifications`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(notificationSettings)
+      });
+      setSnackbar({
+        open: true,
+        message: 'Notification settings updated successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to save notification settings:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to save notification settings',
+        severity: 'error'
+      });
+    }
   };
 
   // Save display settings
-  const handleSaveDisplaySettings = () => {
-    // In a real app, we would call the API to save the display settings
-    setSnackbar({
-      open: true,
-      message: 'Display settings updated successfully',
-      severity: 'success'
-    });
+  const handleSaveDisplaySettings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/settings/display`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(displaySettings)
+      });
+      setSnackbar({
+        open: true,
+        message: 'Display settings updated successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to save display settings:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to save display settings',
+        severity: 'error'
+      });
+    }
   };
 
   // Generate new API key
-  const handleGenerateApiKey = () => {
-    // In a real app, we would call the API to generate a new API key
-    const newKey = {
-      id: `${apiKeys.length + 1}`,
-      name: `API Key ${apiKeys.length + 1}`,
-      key: `sk_test_${Math.random().toString(36).substring(2, 15)}`,
-      created: new Date().toISOString().split('T')[0],
-      lastUsed: 'Never'
-    };
-    
-    setApiKeys((prevKeys) => [...prevKeys, newKey]);
-    
-    setSnackbar({
-      open: true,
-      message: 'New API key generated successfully',
-      severity: 'success'
-    });
+  const handleGenerateApiKey = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/settings/api-keys`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: `API Key ${apiKeys.length + 1}` })
+      });
+      const result = await res.json();
+      const newKey = result.data || {
+        id: `${apiKeys.length + 1}`,
+        name: `API Key ${apiKeys.length + 1}`,
+        key: result.key || `sk_${Date.now().toString(36)}`,
+        created: new Date().toISOString().split('T')[0],
+        lastUsed: 'Never'
+      };
+      setApiKeys((prevKeys) => [...prevKeys, newKey]);
+      setSnackbar({
+        open: true,
+        message: 'New API key generated successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to generate API key:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to generate API key',
+        severity: 'error'
+      });
+    }
   };
 
   // Delete API key
-  const handleDeleteApiKey = (id) => {
-    // In a real app, we would call the API to delete the API key
-    setApiKeys((prevKeys) => prevKeys.filter(key => key.id !== id));
-    
-    setSnackbar({
-      open: true,
-      message: 'API key deleted successfully',
-      severity: 'success'
-    });
+  const handleDeleteApiKey = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/settings/api-keys/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setApiKeys((prevKeys) => prevKeys.filter(key => key.id !== id));
+      setSnackbar({
+        open: true,
+        message: 'API key deleted successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to delete API key:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to delete API key',
+        severity: 'error'
+      });
+    }
   };
 
   // Handle integration settings change
@@ -298,56 +375,98 @@ const SettingsPage = () => {
   };
 
   // Test SAP connection
-  const handleTestSapConnection = () => {
+  const handleTestSapConnection = async () => {
     setIntegrationSettings(prev => ({
       ...prev,
       sap: { ...prev.sap, testConnection: true }
     }));
-    
-    // Simulate connection test
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/sap/test-connection`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(integrationSettings.sap)
+      });
+      const result = await res.json();
+      setSnackbar({
+        open: true,
+        message: result.success !== false ? 'SAP connection test successful' : (result.message || 'SAP connection test failed'),
+        severity: result.success !== false ? 'success' : 'error'
+      });
+    } catch (err) {
+      console.error('SAP connection test failed:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'SAP connection test failed',
+        severity: 'error'
+      });
+    } finally {
       setIntegrationSettings(prev => ({
         ...prev,
         sap: { ...prev.sap, testConnection: false }
       }));
-      
-      setSnackbar({
-        open: true,
-        message: 'SAP connection test successful',
-        severity: 'success'
-      });
-    }, 2000);
+    }
   };
 
   // Test SSO connection
-  const handleTestSsoConnection = () => {
+  const handleTestSsoConnection = async () => {
     setIntegrationSettings(prev => ({
       ...prev,
       sso: { ...prev.sso, testConnection: true }
     }));
-    
-    // Simulate connection test
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/settings/sso/test`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(integrationSettings.sso)
+      });
+      const result = await res.json();
+      setSnackbar({
+        open: true,
+        message: result.success !== false ? 'SSO connection test successful' : (result.message || 'SSO connection test failed'),
+        severity: result.success !== false ? 'success' : 'error'
+      });
+    } catch (err) {
+      console.error('SSO connection test failed:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'SSO connection test failed',
+        severity: 'error'
+      });
+    } finally {
       setIntegrationSettings(prev => ({
         ...prev,
         sso: { ...prev.sso, testConnection: false }
       }));
-      
-      setSnackbar({
-        open: true,
-        message: 'SSO connection test successful',
-        severity: 'success'
-      });
-    }, 2000);
+    }
   };
 
   // Save integration settings
-  const handleSaveIntegrations = () => {
-    setSnackbar({
-      open: true,
-      message: 'Integration settings saved successfully',
-      severity: 'success'
-    });
+  const handleSaveIntegrations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/settings/integrations`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(integrationSettings)
+      });
+      setSnackbar({
+        open: true,
+        message: 'Integration settings saved successfully',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error('Failed to save integration settings:', err);
+      setSnackbar({
+        open: true,
+        message: err.message || 'Failed to save integration settings',
+        severity: 'error'
+      });
+    }
   };
 
   // Close snackbar

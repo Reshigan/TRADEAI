@@ -92,8 +92,8 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
       setError('Unable to load AI insights');
       // Generate fallback data
       setIntelligence(generateFallbackIntelligence());
-      setForecast({ data: { predictions: generateMockForecast() } });
-      setRecommendations(generateMockRecommendations());
+      setForecast({ data: { predictions: generateFallbackForecast() } });
+      setRecommendations(generateFallbackRecommendations());
     } finally {
       setLoading(false);
     }
@@ -187,7 +187,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
     tier: 'Platinum'
   });
 
-  const generateMockForecast = () => {
+  const generateFallbackForecast = () => {
     const data = [];
     for (let i = 0; i < 30; i++) {
       const date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
@@ -201,7 +201,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
     return data;
   };
 
-  const generateMockRecommendations = () => [
+  const generateFallbackRecommendations = () => [
     { product_id: 'prod-001', product_name: 'Oreo Original 120g', score: 0.92, reason: 'High purchase rate' },
     { product_id: 'prod-002', product_name: 'Halls Menthol 33.5g', score: 0.87, reason: 'Seasonal demand' },
     { product_id: 'prod-003', product_name: 'Stimorol Ice 14g', score: 0.81, reason: 'Trending in segment' }

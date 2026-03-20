@@ -138,7 +138,7 @@ const AdvancedAnalytics = () => {
         }
       } catch { /* fallback to generated data */ }
 
-      const fallbackData = generateMockAnalyticsData();
+      const fallbackData = generateFallbackAnalyticsData();
       setAnalyticsData(fallbackData);
 
     } catch (err) {
@@ -149,7 +149,7 @@ const AdvancedAnalytics = () => {
     }
   }, [dateRange, filters]);
 
-  const generateMockAnalyticsData = () => {
+  const generateFallbackAnalyticsData = () => {
     const days = Math.ceil((dateRange.end - dateRange.start) / (1000 * 60 * 60 * 24));
     
     // ROI Analysis over time

@@ -75,9 +75,9 @@ const TradeSpendDetail = () => {
   // Fetch budgets from API
   const fetchBudgets = async () => {
     try {
-      // In a real app, we would call the API
       const response = await budgetService.getAll();
-      setBudgets(response.data);    } catch (err) {
+      setBudgets(response.data || response || []);
+    } catch (err) {
       console.error('Failed to fetch budgets:', err);
     }
   };
@@ -117,10 +117,7 @@ const TradeSpendDetail = () => {
   // Handle form submit
   const handleFormSubmit = async (tradeSpendData) => {
     try {
-      // In a real app, we would call the API
-      // await tradeSpendService.update(id, tradeSpendData);
-      
-      // Refresh trade spend
+      await tradeSpendService.update(id, tradeSpendData);
       fetchTradeSpend();
       setOpenEditForm(false);
     } catch (error) {

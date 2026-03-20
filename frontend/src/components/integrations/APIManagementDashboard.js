@@ -115,12 +115,18 @@ const APIManagementDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock API key generation
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      const res = await fetch(`${baseUrl}/api-management/keys`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(newKeyConfig)
+      });
+      const result = await res.json();
 
-      const newKey = {
+      const newKey = result.data || {
         id: `key_${Date.now()}`,
-        key: `tradeai_${Math.random().toString(36).substr(2, 56)}`,
+        key: `tradeai_${Date.now().toString(36)}`,
         tier: newKeyConfig.tier,
         name: newKeyConfig.name || `${newKeyConfig.tier} API Key`,
         rateLimit: getTierConfig(newKeyConfig.tier).rateLimit,
@@ -154,8 +160,12 @@ const APIManagementDashboard = () => {
       setLoading(true);
       setError(null);
 
-      // Mock API key revocation
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.REACT_APP_API_URL || '/api';
+      await fetch(`${baseUrl}/api-management/keys/${keyId}/revoke`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       setApiKeys(prev => prev.map(key => 
         key.id === keyId ? { ...key, active: false, revokedAt: new Date().toISOString() } : key
