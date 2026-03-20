@@ -37,7 +37,7 @@ export default function CampaignList() {
       <PageHeader
         title={tPlural('campaign')}
         subtitle={`Multi-${t('promotion').toLowerCase()} ${t('campaign').toLowerCase()} management`}
-        actions={<Button variant="contained" startIcon={<Plus size={16} />} onClick={() => navigate('/execute/campaigns/new')}>New {t('campaign')}</Button>}
+        actions={<Button variant="contained" startIcon={<Plus size={16} />} onClick={() => navigate('/campaigns/new')}>New {t('campaign')}</Button>}
       />
       <SmartTable
         columns={columns}
