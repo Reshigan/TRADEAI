@@ -77,7 +77,7 @@ const theme = createTheme({
     MuiTableCell: {
       styleOverrides: {
         root: { borderBottom: '1px solid #F1F5F9', padding: '12px 16px', fontSize: '0.8125rem' },
-        head: { fontWeight: 600, color: '#94A3B8', fontSize: '0.75rem', letterSpacing: '0.04em', textTransform: 'uppercase', backgroundColor: '#F8FAFC' },
+        head: { fontWeight: 600, color: '#475569', fontSize: '0.75rem', letterSpacing: '0.04em', textTransform: 'uppercase', backgroundColor: '#F8FAFC' },
       },
     },
     MuiTableRow: {

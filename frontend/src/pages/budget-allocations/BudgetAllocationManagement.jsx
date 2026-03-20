@@ -40,7 +40,7 @@ const StatusChip = ({ status }) => {
     approved: { bg: '#DBEAFE', color: '#2563EB' },
     active: { bg: '#D1FAE5', color: '#059669' },
     locked: { bg: '#EFF6FF', color: '#1E40AF' },
-    archived: { bg: '#F3F4F6', color: '#9CA3AF' },
+    archived: { bg: '#F3F4F6', color: 'text.secondary' },
   };
   const c = colorMap[status] || colorMap.draft;
   return (
@@ -87,7 +87,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: '#9CA3AF', mt: 0.5, display: 'block' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
               {subtitle}
             </Typography>
           )}
@@ -869,7 +869,7 @@ const BudgetAllocationManagement = () => {
                     <TableBody>
                       {detailLines.map((line, idx) => (
                         <TableRow key={line.id || idx} sx={{ '&:last-child td': { borderBottom: 0 } }}>
-                          <TableCell sx={{ color: '#9CA3AF' }}>{line.lineNumber || line.line_number || idx + 1}</TableCell>
+                          <TableCell sx={{ color: 'text.secondary' }}>{line.lineNumber || line.line_number || idx + 1}</TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                               {line.dimensionName || line.dimension_name || '-'}

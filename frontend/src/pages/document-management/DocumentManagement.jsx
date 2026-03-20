@@ -154,7 +154,7 @@ export default function DocumentManagement() {
                   </TableCell>
                 </TableRow>
               ))}
-              {documents.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No documents found</TableCell></TableRow>}
+              {documents.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>No documents found</TableCell></TableRow>}
             </TableBody>
           </Table>
         </TableContainer>

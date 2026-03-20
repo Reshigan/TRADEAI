@@ -139,7 +139,7 @@ function buildLightTheme() {
             '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#94A3B8' },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1976D2' },
           },
-          input: { color: '#1E293B', WebkitTextFillColor: '#1E293B', '&::placeholder': { color: '#64748B', WebkitTextFillColor: '#64748B', opacity: 1 } },
+          input: { color: '#1E293B', WebkitTextFillColor: '#1E293B', '&::placeholder': { color: '#64748B', WebkitTextFillColor: '#64748B', opacity: 0.7 } },
         },
       },
       MuiInputBase: { styleOverrides: { input: { color: '#1E293B', WebkitTextFillColor: '#1E293B' } } },

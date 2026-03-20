@@ -51,7 +51,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {subtitle}
             </Typography>
           )}
@@ -452,7 +452,7 @@ const DemandSignalManagement = () => {
             <TableBody>
               {sortedSignals.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                  <TableCell colSpan={9} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     No demand signals yet. Click "New Signal" to add one.
                   </TableCell>
                 </TableRow>
@@ -465,7 +465,7 @@ const DemandSignalManagement = () => {
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {formatDate(sig.signalDate || sig.signal_date)}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: '#9CA3AF' }}>{sig.granularity}</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>{sig.granularity}</Typography>
                     </TableCell>
                     <TableCell>
                       <Chip label={typeInfo?.label || (sig.signalType || sig.signal_type)} size="small"
@@ -570,7 +570,7 @@ const DemandSignalManagement = () => {
             <TableBody>
               {anomalies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     No anomalies detected
                   </TableCell>
                 </TableRow>
@@ -622,7 +622,7 @@ const DemandSignalManagement = () => {
             <TableBody>
               {sources.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     No data sources defined. Click "New Source" to add one.
                   </TableCell>
                 </TableRow>
@@ -632,7 +632,7 @@ const DemandSignalManagement = () => {
                   <TableRow key={src.id} hover>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>{src.name}</Typography>
-                      {src.description && <Typography variant="caption" sx={{ color: '#9CA3AF' }}>{src.description}</Typography>}
+                      {src.description && <Typography variant="caption" sx={{ color: 'text.secondary' }}>{src.description}</Typography>}
                     </TableCell>
                     <TableCell>
                       <Chip label={stInfo?.label || (src.sourceType || src.source_type)} size="small"

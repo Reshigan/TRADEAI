@@ -428,7 +428,7 @@ const ManagerDashboard = () => {
                     <Typography className="nav-label" variant="body2" fontWeight={500} sx={{ transition: 'color 0.15s' }}>
                       {link.label}
                     </Typography>
-                    <Typography sx={{ fontSize: 14, color: '#9CA3AF' }}>&#8250;</Typography>
+                    <Typography sx={{ fontSize: 14, color: 'text.secondary' }}>&#8250;</Typography>
                   </Box>
                 ))}
               </Box>

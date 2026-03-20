@@ -78,7 +78,7 @@ function SummaryCard({ title, value, subtitle, color = '#1E40AF' }) {
       <CardContent sx={{ p: 2 }}>
         <Typography variant="caption" sx={{ color: '#6B7280', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{title}</Typography>
         <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', mt: 0.5 }}>{value}</Typography>
-        {subtitle && <Typography variant="caption" sx={{ color: '#9CA3AF' }}>{subtitle}</Typography>}
+        {subtitle && <Typography variant="caption" sx={{ color: 'text.secondary' }}>{subtitle}</Typography>}
       </CardContent>
     </Card>
   );

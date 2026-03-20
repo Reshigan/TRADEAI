@@ -137,7 +137,7 @@ export default function RoleManagement() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {roles.length === 0 && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No roles found</TableCell></TableRow>}
+                {roles.length === 0 && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>No roles found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>
@@ -161,7 +161,7 @@ export default function RoleManagement() {
                     <TableCell>{a.created_at ? new Date(a.created_at).toLocaleDateString() : '-'}</TableCell>
                   </TableRow>
                 ))}
-                {assignments.length === 0 && <TableRow><TableCell colSpan={4} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No assignments found</TableCell></TableRow>}
+                {assignments.length === 0 && <TableRow><TableCell colSpan={4} align="center" sx={{ py: 4, color: 'text.secondary' }}>No assignments found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>
@@ -185,7 +185,7 @@ export default function RoleManagement() {
                     <TableCell>{g.is_system ? 'Yes' : 'No'}</TableCell>
                   </TableRow>
                 ))}
-                {permGroups.length === 0 && <TableRow><TableCell colSpan={4} align="center" sx={{ py: 4, color: '#9CA3AF' }}>No permission groups found</TableCell></TableRow>}
+                {permGroups.length === 0 && <TableRow><TableCell colSpan={4} align="center" sx={{ py: 4, color: 'text.secondary' }}>No permission groups found</TableCell></TableRow>}
               </TableBody>
             </Table>
           </TableContainer>

@@ -81,7 +81,7 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#1E40AF' }) => (
             {value}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: '#9CA3AF' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {subtitle}
             </Typography>
           )}
@@ -489,7 +489,7 @@ const TradeCalendarManagement = () => {
             <TableBody>
               {sortedEvents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     No calendar events yet. Click "New Event" to create one.
                   </TableCell>
                 </TableRow>
@@ -605,7 +605,7 @@ const TradeCalendarManagement = () => {
             <TableBody>
               {constraints.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 6, color: '#9CA3AF' }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                     No constraints defined. Click "New Constraint" to add one.
                   </TableCell>
                 </TableRow>
