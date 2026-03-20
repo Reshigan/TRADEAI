@@ -97,18 +97,22 @@ const PromotionWizard = () => {
   const fetchCustomers = async () => {
     try {
       const response = await apiClient.get(`/customers`);
-      setCustomers(response.data);
+      const result = response.data;
+      setCustomers(Array.isArray(result) ? result : (result?.data || []));
     } catch (error) {
       console.error('Error fetching customers:', error);
+      setCustomers([]);
     }
   };
 
   const fetchProducts = async () => {
     try {
       const response = await apiClient.get(`/products`);
-      setProducts(response.data);
+      const result = response.data;
+      setProducts(Array.isArray(result) ? result : (result?.data || []));
     } catch (error) {
       console.error('Error fetching products:', error);
+      setProducts([]);
     }
   };
 

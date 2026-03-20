@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Card, CardContent, Grid, CircularProgress, Alert, Divider } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, Grid, CircularProgress, Alert, Divider, Snackbar } from '@mui/material';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import BlockIcon from '@mui/icons-material/Block';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -12,6 +12,7 @@ const WasteDetectionManagement = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
+  const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
 
   const fetchWaste = async () => {
     try {
@@ -22,7 +23,12 @@ const WasteDetectionManagement = () => {
       ]);
       setData(wasteRes.data?.data || null);
       setSummary(summaryRes.data?.data || null);
-    } catch (e) { console.error(e); }
+      const pCount = (wasteRes.data?.data?.patterns || []).length;
+      setFeedback({ open: true, message: pCount > 0 ? `Analysis complete: ${pCount} waste pattern${pCount !== 1 ? 's' : ''} detected` : 'Analysis complete: no waste patterns detected', severity: pCount > 0 ? 'warning' : 'success' });
+    } catch (e) {
+      console.error(e);
+      setFeedback({ open: true, message: 'Analysis failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
+    }
     finally { setLoading(false); }
   };
 
@@ -111,6 +117,9 @@ const WasteDetectionManagement = () => {
           )}
         </Box>
       )}
+      <Snackbar open={feedback.open} autoHideDuration={5000} onClose={() => setFeedback(f => ({ ...f, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={() => setFeedback(f => ({ ...f, open: false }))} severity={feedback.severity} variant="filled">{feedback.message}</Alert>
+      </Snackbar>
     </Box>
   );
 };
