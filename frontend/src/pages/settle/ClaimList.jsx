@@ -41,12 +41,12 @@ export default function ClaimList() {
   };
 
   const columns = [
-    { field: 'description', headerName: 'Description', renderCell: ({ row }) => row.description || row.claim_type || '—' },
-    { field: 'claim_type', headerName: 'Type', renderCell: ({ row }) => (row.claim_type || '').replace(/_/g, ' ') },
-    { field: 'customer_name', headerName: 'Customer' },
-    { field: 'amount', headerName: 'Amount', type: 'currency', align: 'right', renderCell: ({ row }) => fmt(row.amount) },
+    { field: 'description', headerName: 'Description', renderCell: ({ row }) => row.description || row.reason || row.claimType || row.claim_type || '—' },
+    { field: 'claimType', headerName: 'Type', renderCell: ({ row }) => (row.claimType || row.claim_type || '').replace(/_/g, ' ') },
+    { field: 'customerName', headerName: 'Customer', renderCell: ({ row }) => row.customerName || row.customer_name || '—' },
+    { field: 'claimedAmount', headerName: 'Amount', type: 'currency', align: 'right', renderCell: ({ row }) => fmt(row.claimedAmount || row.claimed_amount || row.amount) },
     { field: 'status', headerName: 'Status', type: 'status' },
-    { field: 'created_at', headerName: 'Date', type: 'date' },
+    { field: 'createdAt', headerName: 'Date', type: 'date', renderCell: ({ row }) => { const d = row.createdAt || row.created_at; return d ? new Date(d).toLocaleDateString() : '—'; } },
   ];
 
   const rowActions = [

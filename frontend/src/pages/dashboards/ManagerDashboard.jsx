@@ -131,7 +131,7 @@ const ManagerDashboard = () => {
   const budget = liveData?.budget || {};
   const recentActivity = liveData?.recentActivity || [];
 
-  const budgetUtil = budget.total ? ((budget.utilized / budget.total) * 100).toFixed(0) : budget.utilizationRate || 0;
+  const budgetUtil = budget.total ? (((budget.committed || 0) + (budget.spent || 0)) / budget.total * 100).toFixed(0) : budget.utilizationRate || 0;
 
   const tabLabels = ['Overview', 'Activity', 'Timeline', 'Report'];
 

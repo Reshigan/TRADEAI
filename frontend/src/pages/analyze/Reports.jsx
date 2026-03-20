@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Button, Chip } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, Button, Chip, Snackbar, Alert } from '@mui/material';
 import { FileSpreadsheet, Download, Play, Clock } from 'lucide-react';
 import { reportService } from '../../services/api';
 
@@ -18,6 +18,7 @@ export default function Reports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState('');
+  const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     const load = async () => {
@@ -32,7 +33,11 @@ export default function Reports() {
       await reportService.generate({ template_id: templateId });
       const res = await reportService.getAll();
       setReports(res.data || res || []);
-    } catch (e) { console.error(e); }
+      setFeedback({ open: true, message: 'Report generated successfully', severity: 'success' });
+    } catch (e) {
+      console.error(e);
+      setFeedback({ open: true, message: 'Report generation failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
+    }
     setGenerating('');
   };
 
@@ -81,6 +86,9 @@ export default function Reports() {
           ))}
         </>
       )}
+      <Snackbar open={feedback.open} autoHideDuration={5000} onClose={() => setFeedback(f => ({ ...f, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={() => setFeedback(f => ({ ...f, open: false }))} severity={feedback.severity} variant="filled">{feedback.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

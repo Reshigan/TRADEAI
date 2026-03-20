@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Snackbar, Alert } from '@mui/material';
 import { AlertTriangle, RefreshCw, TrendingDown, DollarSign } from 'lucide-react';
 import api from '../../services/api';
 
@@ -8,6 +8,7 @@ const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).to
 export default function WasteDetection() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
 
   const load = async () => {
     try {
@@ -24,7 +25,12 @@ export default function WasteDetection() {
     try {
       const res = await api.post('/ai/waste-detection/analyze');
       setData(res.data?.data || res.data || {});
-    } catch (e) { console.error(e); }
+      const pCount = (res.data?.data?.patterns || res.data?.data?.waste_patterns || []).length;
+      setFeedback({ open: true, message: pCount > 0 ? `Analysis complete: ${pCount} waste pattern${pCount !== 1 ? 's' : ''} detected` : 'Analysis complete: no waste patterns detected', severity: 'success' });
+    } catch (e) {
+      console.error(e);
+      setFeedback({ open: true, message: 'Analysis failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
+    }
     setLoading(false);
   };
 
@@ -94,6 +100,9 @@ export default function WasteDetection() {
           </Card>
         </>
       )}
+      <Snackbar open={feedback.open} autoHideDuration={5000} onClose={() => setFeedback(f => ({ ...f, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+        <Alert onClose={() => setFeedback(f => ({ ...f, open: false }))} severity={feedback.severity} variant="filled">{feedback.message}</Alert>
+      </Snackbar>
     </Box>
   );
 }

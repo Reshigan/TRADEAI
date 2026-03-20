@@ -28,10 +28,10 @@ export default function AccrualList() {
   };
 
   const columns = [
-    { field: 'promotion_name', headerName: 'Promotion', renderCell: ({ row }) => row.promotion_name || row.promotion_id || '—' },
-    { field: 'period', headerName: 'Period', renderCell: ({ row }) => row.period || row.accrual_date || '—' },
-    { field: 'accrued_amount', headerName: 'Accrued Amount', align: 'right', renderCell: ({ row }) => fmt(row.accrued_amount || row.amount) },
-    { field: 'actual_amount', headerName: 'Actual Spend', align: 'right', renderCell: ({ row }) => fmt(row.actual_amount) },
+    { field: 'name', headerName: 'Promotion', renderCell: ({ row }) => row.name || row.promotionName || row.promotion_name || row.promotionId || row.promotion_id || '—' },
+    { field: 'frequency', headerName: 'Period', renderCell: ({ row }) => { const s = row.startDate || row.start_date; const e = row.endDate || row.end_date; return s && e ? `${new Date(s).toLocaleDateString()} - ${new Date(e).toLocaleDateString()}` : row.frequency || row.period || row.accrualDate || row.accrual_date || '—'; } },
+    { field: 'accruedAmount', headerName: 'Accrued Amount', align: 'right', renderCell: ({ row }) => fmt(row.accruedAmount || row.accrued_amount || row.amount) },
+    { field: 'settledAmount', headerName: 'Actual Spend', align: 'right', renderCell: ({ row }) => fmt(row.settledAmount || row.settled_amount || row.actualAmount || row.actual_amount) },
     { field: 'status', headerName: 'Status', type: 'status' },
   ];
 
