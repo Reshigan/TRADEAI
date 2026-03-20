@@ -158,6 +158,47 @@ settlements.get('/summary', async (c) => {
   }
 });
 
+// ── GET /reconciliation  Reconciliation dashboard data ────────────────
+settlements.get('/reconciliation', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+
+    const claimsResult = await db.prepare(
+      'SELECT COALESCE(SUM(claimed_amount), 0) as total FROM claims WHERE company_id = ?'
+    ).bind(companyId).first();
+
+    const deductionsResult = await db.prepare(`
+      SELECT 
+        COALESCE(SUM(deduction_amount), 0) as total,
+        COALESCE(SUM(CASE WHEN status = 'matched' THEN deduction_amount ELSE 0 END), 0) as matched
+      FROM deductions WHERE company_id = ?
+    `).bind(companyId).first();
+
+    const totalClaims = claimsResult?.total || 0;
+    const totalDeductions = deductionsResult?.total || 0;
+    const matched = deductionsResult?.matched || 0;
+    const unmatched = totalDeductions - matched;
+
+    return c.json({
+      success: true,
+      data: {
+        total_claims: totalClaims,
+        total_deductions: totalDeductions,
+        matched_amount: matched,
+        unmatched_amount: unmatched,
+        match_rate: totalDeductions > 0 ? ((matched / totalDeductions) * 100) : 0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching reconciliation data:', error);
+    return c.json({
+      success: true,
+      data: { total_claims: 0, total_deductions: 0, matched_amount: 0, unmatched_amount: 0, match_rate: 0 }
+    });
+  }
+});
+
 // ── GET /:id  Get settlement with lines and payments ─────────────────
 settlements.get('/:id', async (c) => {
   try {

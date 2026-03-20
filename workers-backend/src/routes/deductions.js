@@ -535,6 +535,84 @@ deductions.post('/:id/approve', async (c) => {
   }
 });
 
+// POST /auto-match — Bulk auto-match open deductions against claims
+deductions.post('/auto-match', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const now = new Date().toISOString();
+
+    // Get all open/under_review deductions
+    const openDeductions = await db.prepare(`
+      SELECT * FROM deductions 
+      WHERE company_id = ? AND status IN ('open', 'under_review')
+      ORDER BY deduction_date ASC
+    `).bind(companyId).all();
+
+    // Get all submitted/approved claims
+    const openClaims = await db.prepare(`
+      SELECT * FROM claims 
+      WHERE company_id = ? AND status IN ('submitted', 'approved')
+      ORDER BY created_at ASC
+    `).bind(companyId).all();
+
+    const matches = [];
+    const usedClaims = new Set();
+
+    for (const ded of (openDeductions.results || [])) {
+      const dedAmount = ded.deduction_amount || 0;
+      if (dedAmount <= 0) continue;
+
+      for (const claim of (openClaims.results || [])) {
+        if (usedClaims.has(claim.id)) continue;
+        const claimAmount = claim.claimed_amount || claim.amount || 0;
+        if (claimAmount <= 0) continue;
+
+        // Match if same customer and amount within 5% tolerance
+        const sameCustomer = ded.customer_id && claim.customer_id && ded.customer_id === claim.customer_id;
+        const tolerance = Math.abs(dedAmount - claimAmount) / Math.max(dedAmount, 1);
+
+        if (sameCustomer && tolerance < 0.05) {
+          // Update deduction to matched
+          await db.prepare(`
+            UPDATE deductions SET status = 'matched', matched_amount = ?, remaining_amount = 0, 
+              matched_to = ?, updated_at = ?
+            WHERE id = ? AND company_id = ?
+          `).bind(dedAmount, JSON.stringify([{ entityType: 'claim', entityId: claim.id, amount: dedAmount }]), now, ded.id, companyId).run();
+
+          // Update claim to matched
+          await db.prepare(`
+            UPDATE claims SET status = 'matched', updated_at = ?
+            WHERE id = ? AND company_id = ?
+          `).bind(now, claim.id, companyId).run();
+
+          matches.push({
+            deductionId: ded.id,
+            deductionNumber: ded.deduction_number,
+            claimId: claim.id,
+            amount: dedAmount,
+            tolerance: Math.round(tolerance * 100) + '%'
+          });
+
+          usedClaims.add(claim.id);
+          break;
+        }
+      }
+    }
+
+    return c.json({
+      success: true,
+      data: matches,
+      message: matches.length > 0
+        ? `Auto-match complete: ${matches.length} match${matches.length !== 1 ? 'es' : ''} found`
+        : 'Auto-match complete: no new matches found'
+    });
+  } catch (error) {
+    console.error('Error running auto-match:', error);
+    return apiError(c, error, 'deductions');
+  }
+});
+
 // W-12: Write off deduction → budget.spent update
 deductions.post('/:id/write-off', async (c) => {
   try {
