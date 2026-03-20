@@ -22,7 +22,7 @@ import {
 } from '@mui/icons-material';
 
 import { DataTable, StatusChip } from '../common';
-import budgetService from '../../services/api';
+import { budgetService } from '../../services/api';
 import BudgetForm from './BudgetForm';
 import { formatCurrencyCompact } from '../../utils/formatters';
 
