@@ -1,0 +1,17 @@
+# Cloudflare Workers Configuration
+# Production environment
+
+[env.production]
+name = "tradeai-production"
+account_id = "YOUR_ACCOUNT_ID"
+compatibility_date = "2024-03-25"
+
+[env.production.vars]
+NODE_ENV = "production"
+API_HOST = "tradeai.gonxt.tech"
+CORS_ORIGINS = "https://tradeai.gonxt.tech,https://app.tradeai.gonxt.tech"
+JWT_SECRET = "${JWT_SECRET}"
+MONGODB_URI = "${MONGODB_URI}"
+REDIS_URL = "${REDIS_URL}"
+DATA_DOG_API_KEY = "${DATA_DOG_API_KEY}"
+SENTRY_DSN = "${SENTRY_DSN}"
