@@ -211,6 +211,187 @@ const DeductionsHelp = lazy(() => import('./pages/help').then(m => ({ default: m
 const ForecastingHelp = lazy(() => import('./pages/help').then(m => ({ default: m.ForecastingHelp })));
 const BusinessProcessGuide = lazy(() => import('./pages/help').then(m => ({ default: m.BusinessProcessGuide })));
 
+// Sales Analytics Pages
+const SalesAnalytics = lazy(() => import('./pages/sales-analytics/SalesAnalytics'));
+const TopCustomers = lazy(() => import('./pages/sales-analytics/TopCustomers'));
+const TopProducts = lazy(() => import('./pages/sales-analytics/TopProducts'));
+const RevenueByPeriod = lazy(() => import('./pages/sales-analytics/RevenueByPeriod'));
+
+// Rebates Pages
+const RebateAnalytics = lazy(() => import('./pages/rebates/RebateAnalytics'));
+const RebateApproval = lazy(() => import('./pages/rebates/RebateApproval'));
+
+// Admin Tools Pages
+const CacheManagement = lazy(() => import('./pages/admin-tools/CacheManagement'));
+const PerformanceMetrics = lazy(() => import('./pages/admin-tools/PerformanceMetrics'));
+const SecurityMonitoring = lazy(() => import('./pages/admin-tools/SecurityMonitoring'));
+
+// Products Tabs
+const ProductOverview = lazy(() => import('./pages/products/tabs/ProductOverview'));
+const ProductPromotions = lazy(() => import('./pages/products/tabs/ProductPromotions'));
+const ProductCampaigns = lazy(() => import('./pages/products/tabs/ProductCampaigns'));
+const ProductSalesHistory = lazy(() => import('./pages/products/tabs/ProductSalesHistory'));
+const ProductTradingTerms = lazy(() => import('./pages/products/tabs/ProductTradingTerms'));
+
+// Customers Tabs
+const CustomerOverview = lazy(() => import('./pages/customers/tabs/CustomerOverview'));
+const CustomerPromotions = lazy(() => import('./pages/customers/tabs/CustomerPromotions'));
+const CustomerTradeSpends = lazy(() => import('./pages/customers/tabs/CustomerTradeSpends'));
+const CustomerBudgets = lazy(() => import('./pages/customers/tabs/CustomerBudgets'));
+const CustomerClaims = lazy(() => import('./pages/customers/tabs/CustomerClaims'));
+const CustomerDeductions = lazy(() => import('./pages/customers/tabs/CustomerDeductions'));
+const CustomerSalesHistory = lazy(() => import('./pages/customers/tabs/CustomerSalesHistory'));
+const CustomerTradingTerms = lazy(() => import('./pages/customers/tabs/CustomerTradingTerms'));
+
+// Products Forms
+const ProductForm = lazy(() => import('./pages/products/ProductForm'));
+const ProductListWithNewComponents = lazy(() => import('./pages/products/ProductListWithNewComponents'));
+const ProductFormWithNewComponents = lazy(() => import('./pages/products/ProductFormWithNewComponents'));
+
+// Customer Form
+const CustomerForm = lazy(() => import('./pages/customers/CustomerForm'));
+
+// Activity Grid
+const ActivityGridCalendar = lazy(() => import('./pages/activitygrid/ActivityGridCalendar'));
+
+// Vendor Management
+const VendorManagement = lazy(() => import('./pages/vendors/VendorManagement'));
+
+// Personalized Dashboard
+const PersonalizedDashboard = lazy(() => import('./pages/PersonalizedDashboard'));
+
+// Auth - Two Factor
+const TwoFASetup = lazy(() => import('./pages/auth/twofa/TwoFASetup'));
+
+// Budget Console
+const BudgetConsole = lazy(() => import('./pages/budgetconsole/BudgetConsole'));
+
+// Admin - Rebates, Workflows, System, Users, Business Rules
+const RebateConfiguration = lazy(() => import('./pages/admin/rebates/RebateConfiguration'));
+const WorkflowAutomation = lazy(() => import('./pages/admin/workflows/WorkflowAutomation'));
+const SystemSettings = lazy(() => import('./pages/admin/system/SystemSettings'));
+const UserManagement = lazy(() => import('./pages/admin/users/UserManagement'));
+const BusinessRulesPage = lazy(() => import('./pages/admin/BusinessRulesPage'));
+
+// Planning
+const PredictiveAnalytics = lazy(() => import('./pages/planning/PredictiveAnalytics'));
+
+// Simulation
+const SimulationStudio = lazy(() => import('./pages/simulation/SimulationStudio'));
+const SimulationDashboard = lazy(() => import('./pages/simulation/SimulationDashboard'));
+
+// Integrations
+const WebhookManagementPage = lazy(() => import('./pages/integrations/WebhookManagementPage'));
+
+// Transactions Steps
+const BasicTransactionStep = lazy(() => import('./pages/transactions/steps/BasicTransactionStep'));
+const LineItemsStep = lazy(() => import('./pages/transactions/steps/LineItemsStep'));
+const PaymentTermsStep = lazy(() => import('./pages/transactions/steps/PaymentTermsStep'));
+const ReviewSubmitStep = lazy(() => import('./pages/transactions/steps/ReviewSubmitStep'));
+
+// Promotions Tabs
+const PromotionOverview = lazy(() => import('./pages/promotions/tabs/PromotionOverview'));
+const PromotionProducts = lazy(() => import('./pages/promotions/tabs/PromotionProducts'));
+const PromotionCustomers = lazy(() => import('./pages/promotions/tabs/PromotionCustomers'));
+const PromotionBudget = lazy(() => import('./pages/promotions/tabs/PromotionBudget'));
+const PromotionApprovals = lazy(() => import('./pages/promotions/tabs/PromotionApprovals'));
+const PromotionDocuments = lazy(() => import('./pages/promotions/tabs/PromotionDocuments'));
+const PromotionHistory = lazy(() => import('./pages/promotions/tabs/PromotionHistory'));
+const PromotionPerformance = lazy(() => import('./pages/promotions/tabs/PromotionPerformance'));
+const PromotionConflicts = lazy(() => import('./pages/promotions/tabs/PromotionConflicts'));
+
+// Promotions Forms
+const PromotionForm = lazy(() => import('./pages/promotions/PromotionForm'));
+const PromotionPlanner = lazy(() => import('./pages/promotions/PromotionPlanner'));
+
+// Dashboards
+const ExecutiveDashboard = lazy(() => import('./pages/dashboards/ExecutiveDashboard'));
+const SalesDashboard = lazy(() => import('./pages/dashboards/SalesDashboard'));
+const PromotionDashboard = lazy(() => import('./pages/dashboards/PromotionDashboard'));
+
+// AI Dashboard
+const AIDashboard = lazy(() => import('./pages/ai/AIDashboard'));
+
+// Budgets Tabs
+const BudgetOverview = lazy(() => import('./pages/budgets/tabs/BudgetOverview'));
+const BudgetSpending = lazy(() => import('./pages/budgets/tabs/BudgetSpending'));
+const BudgetAllocations = lazy(() => import('./pages/budgets/tabs/BudgetAllocations'));
+const BudgetScenarios = lazy(() => import('./pages/budgets/tabs/BudgetScenarios'));
+const BudgetForecast = lazy(() => import('./pages/budgets/tabs/BudgetForecast'));
+const BudgetTransfers = lazy(() => import('./pages/budgets/tabs/BudgetTransfers'));
+const BudgetApprovals = lazy(() => import('./pages/budgets/tabs/BudgetApprovals'));
+const BudgetHistory = lazy(() => import('./pages/budgets/tabs/BudgetHistory'));
+
+// Budgets Components
+const BudgetAnalytics = lazy(() => import('./pages/budgets/BudgetAnalytics'));
+const BudgetOverviewPage = lazy(() => import('./pages/budgets/BudgetOverview'));
+
+// Governance
+const VarianceAnalysisPage = lazy(() => import('./pages/governance/VarianceAnalysisPage'));
+const BaselineConfigPage = lazy(() => import('./pages/governance/BaselineConfigPage'));
+const DataLineageDashboard = lazy(() => import('./pages/governance/DataLineageDashboard'));
+
+// Login Page
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+
+// Activities
+const ActivityDashboard = lazy(() => import('./pages/activities/ActivityDashboard'));
+
+// Campaigns Tabs
+const CampaignOverview = lazy(() => import('./pages/campaigns/tabs/CampaignOverview'));
+const CampaignPerformance = lazy(() => import('./pages/campaigns/tabs/CampaignPerformance'));
+const CampaignBudget = lazy(() => import('./pages/campaigns/tabs/CampaignBudget'));
+const CampaignHistory = lazy(() => import('./pages/campaigns/tabs/CampaignHistory'));
+
+// RealTime Dashboard
+const RealTimeDashboard = lazy(() => import('./pages/RealTimeDashboard'));
+
+// Performance Analytics
+const CustomerSegmentation = lazy(() => import('./pages/performance-analytics/CustomerSegmentation'));
+const BudgetVariance = lazy(() => import('./pages/performance-analytics/BudgetVariance'));
+const PromotionEffectiveness = lazy(() => import('./pages/performance-analytics/PromotionEffectiveness'));
+
+// Timeline
+const PromotionsTimeline = lazy(() => import('./pages/timeline/PromotionsTimeline'));
+
+// Company Admin
+const AnnouncementsPage = lazy(() => import('./pages/company-admin/AnnouncementsPage'));
+const CompanySettingsPage = lazy(() => import('./pages/company-admin/CompanySettingsPage'));
+const CompanyAdminDashboard = lazy(() => import('./pages/company-admin/CompanyAdminDashboard'));
+const GamesPage = lazy(() => import('./pages/company-admin/GamesPage'));
+const PoliciesPage = lazy(() => import('./pages/company-admin/PoliciesPage'));
+const LearningCoursesPage = lazy(() => import('./pages/company-admin/LearningCoursesPage'));
+
+// Flows
+const BudgetPlanningFlow = lazy(() => import('./pages/flows/BudgetPlanningFlow'));
+const CustomerFlow = lazy(() => import('./pages/flows/CustomerFlow'));
+const ActivityFlow = lazy(() => import('./pages/flows/ActivityFlow'));
+const PromotionFlow = lazy(() => import('./pages/flows/PromotionFlow'));
+const PromotionEntryFlow = lazy(() => import('./pages/flows/PromotionEntryFlow'));
+
+// Customer Flow Steps
+const BasicInfoStep = lazy(() => import('./pages/flows/customer/steps/BasicInfoStep'));
+const ContactDetailsStep = lazy(() => import('./pages/flows/customer/steps/ContactDetailsStep'));
+const BusinessProfileStep = lazy(() => import('./pages/flows/customer/steps/BusinessProfileStep'));
+const PaymentTermsStep = lazy(() => import('./pages/flows/customer/steps/PaymentTermsStep'));
+const RebateEligibilityStep = lazy(() => import('./pages/flows/customer/steps/RebateEligibilityStep'));
+const AIAnalysisStep = lazy(() => import('./pages/flows/customer/steps/AIAnalysisStep'));
+const ReviewSubmitStep = lazy(() => import('./pages/flows/customer/steps/ReviewSubmitStep'));
+
+// Trade Spends Tabs
+const TradeSpendOverview = lazy(() => import('./pages/trade-spends/tabs/TradeSpendOverview'));
+const TradeSpendPerformance = lazy(() => import('./pages/trade-spends/tabs/TradeSpendPerformance'));
+const TradeSpendAccruals = lazy(() => import('./pages/trade-spends/tabs/TradeSpendAccruals'));
+const TradeSpendApprovals = lazy(() => import('./pages/trade-spends/tabs/TradeSpendApprovals'));
+const TradeSpendDocuments = lazy(() => import('./pages/trade-spends/tabs/TradeSpendDocuments'));
+const TradeSpendHistory = lazy(() => import('./pages/trade-spends/tabs/TradeSpendHistory'));
+
+// Reports
+const ReportBuilder = lazy(() => import('./pages/reports/ReportBuilder'));
+
+// Funding
+const FundingOverview = lazy(() => import('./pages/funding/FundingOverview'));
+
 // ProtectedRoute defined outside App to maintain stable component identity.
 // Uses a redirect guard to prevent infinite history.replaceState() loops.
 const ProtectedRoute = React.memo(function ProtectedRoute({ children, user, onLogout, requiredRoles }) {
@@ -613,6 +794,187 @@ function App() {
             <Route path="/performance-analytics/budget-variance" element={<Navigate to="/advanced-reporting" replace />} />
             <Route path="/performance-analytics/customer-segmentation" element={<Navigate to="/advanced-reporting" replace />} />
             <Route path="/flows/promotion" element={<Navigate to="/promotions/new" replace />} />
+            
+            {/* Sales Analytics Routes */}
+            <Route path="/sales-analytics" element={<P><SalesAnalytics /></P>} />
+            <Route path="/sales-analytics/top-customers" element={<P><TopCustomers /></P>} />
+            <Route path="/sales-analytics/top-products" element={<P><TopProducts /></P>} />
+            <Route path="/sales-analytics/revenue-by-period" element={<P><RevenueByPeriod /></P>} />
+            
+            {/* Rebates Routes */}
+            <Route path="/rebates/analytics" element={<P><RebateAnalytics /></P>} />
+            <Route path="/rebates/approvals" element={<P><RebateApproval /></P>} />
+            
+            {/* Admin Tools Routes */}
+            <Route path="/admin-tools/cache" element={<P><CacheManagement /></P>} />
+            <Route path="/admin-tools/performance" element={<P><PerformanceMetrics /></P>} />
+            <Route path="/admin-tools/security" element={<P><SecurityMonitoring /></P>} />
+            
+            {/* Products Tabs Routes */}
+            <Route path="/products/:id/overview" element={<P><ProductOverview /></P>} />
+            <Route path="/products/:id/promotions" element={<P><ProductPromotions /></P>} />
+            <Route path="/products/:id/campaigns" element={<P><ProductCampaigns /></P>} />
+            <Route path="/products/:id/sales-history" element={<P><ProductSalesHistory /></P>} />
+            <Route path="/products/:id/trading-terms" element={<P><ProductTradingTerms /></P>} />
+            
+            {/* Products Forms Routes */}
+            <Route path="/products/form" element={<P><ProductForm /></P>} />
+            <Route path="/products/new-components" element={<P><ProductListWithNewComponents /></P>} />
+            <Route path="/products/form-new" element={<P><ProductFormWithNewComponents /></P>} />
+            
+            {/* Customers Tabs Routes */}
+            <Route path="/customers/:id/overview" element={<P><CustomerOverview /></P>} />
+            <Route path="/customers/:id/promotions" element={<P><CustomerPromotions /></P>} />
+            <Route path="/customers/:id/trade-spends" element={<P><CustomerTradeSpends /></P>} />
+            <Route path="/customers/:id/budgets" element={<P><CustomerBudgets /></P>} />
+            <Route path="/customers/:id/claims" element={<P><CustomerClaims /></P>} />
+            <Route path="/customers/:id/deductions" element={<P><CustomerDeductions /></P>} />
+            <Route path="/customers/:id/sales-history" element={<P><CustomerSalesHistory /></P>} />
+            <Route path="/customers/:id/trading-terms" element={<P><CustomerTradingTerms /></P>} />
+            
+            {/* Customer Form Route */}
+            <Route path="/customers/form" element={<P><CustomerForm /></P>} />
+            
+            {/* Activity Grid Route */}
+            <Route path="/activity-grid" element={<P><ActivityGridCalendar /></P>} />
+            
+            {/* Vendor Management Route */}
+            <Route path="/vendors/management" element={<P><VendorManagement /></P>} />
+            
+            {/* Personalized Dashboard Route */}
+            <Route path="/dashboard/personalized" element={<P><PersonalizedDashboard /></P>} />
+            
+            {/* Two Factor Auth Route */}
+            <Route path="/auth/2fa/setup" element={<P><TwoFASetup /></P>} />
+            
+            {/* Budget Console Route */}
+            <Route path="/budget-console" element={<P><BudgetConsole /></P>} />
+            
+            {/* Admin Configuration Routes */}
+            <Route path="/admin/rebates/config" element={<P><RebateConfiguration /></P>} />
+            <Route path="/admin/workflows/automation" element={<P><WorkflowAutomation /></P>} />
+            <Route path="/admin/system/settings" element={<P><SystemSettings /></P>} />
+            <Route path="/admin/users/management" element={<P><UserManagement /></P>} />
+            <Route path="/admin/business-rules" element={<P><BusinessRulesPage /></P>} />
+            
+            {/* Planning Routes */}
+            <Route path="/planning/predictive" element={<P><PredictiveAnalytics /></P>} />
+            
+            {/* Simulation Routes */}
+            <Route path="/simulation/studio" element={<P><SimulationStudio /></P>} />
+            <Route path="/simulation/dashboard" element={<P><SimulationDashboard /></P>} />
+            
+            {/* Integrations Routes */}
+            <Route path="/integrations/webhooks" element={<P><WebhookManagementPage /></P>} />
+            
+            {/* Transaction Flow Steps Routes */}
+            <Route path="/transactions/steps/basic" element={<P><BasicTransactionStep /></P>} />
+            <Route path="/transactions/steps/line-items" element={<P><LineItemsStep /></P>} />
+            <Route path="/transactions/steps/payment-terms" element={<P><PaymentTermsStep /></P>} />
+            <Route path="/transactions/steps/review" element={<P><ReviewSubmitStep /></P>} />
+            
+            {/* Promotions Tabs Routes */}
+            <Route path="/promotions/:id/overview" element={<P><PromotionOverview /></P>} />
+            <Route path="/promotions/:id/products" element={<P><PromotionProducts /></P>} />
+            <Route path="/promotions/:id/customers" element={<P><PromotionCustomers /></P>} />
+            <Route path="/promotions/:id/budget" element={<P><PromotionBudget /></P>} />
+            <Route path="/promotions/:id/approvals" element={<P><PromotionApprovals /></P>} />
+            <Route path="/promotions/:id/documents" element={<P><PromotionDocuments /></P>} />
+            <Route path="/promotions/:id/history" element={<P><PromotionHistory /></P>} />
+            <Route path="/promotions/:id/performance" element={<P><PromotionPerformance /></P>} />
+            <Route path="/promotions/:id/conflicts" element={<P><PromotionConflicts /></P>} />
+            
+            {/* Promotions Forms Routes */}
+            <Route path="/promotions/form" element={<P><PromotionForm /></P>} />
+            <Route path="/promotions/planner" element={<P><PromotionPlanner /></P>} />
+            
+            {/* Dashboard Routes */}
+            <Route path="/dashboard/executive" element={<P><ExecutiveDashboard /></P>} />
+            <Route path="/dashboard/sales" element={<P><SalesDashboard /></P>} />
+            <Route path="/dashboard/promotion" element={<P><PromotionDashboard /></P>} />
+            
+            {/* AI Dashboard Route */}
+            <Route path="/ai/dashboard" element={<P><AIDashboard /></P>} />
+            
+            {/* Budgets Tabs Routes */}
+            <Route path="/budgets/:id/overview" element={<P><BudgetOverview /></P>} />
+            <Route path="/budgets/:id/spending" element={<P><BudgetSpending /></P>} />
+            <Route path="/budgets/:id/allocations" element={<P><BudgetAllocations /></P>} />
+            <Route path="/budgets/:id/scenarios" element={<P><BudgetScenarios /></P>} />
+            <Route path="/budgets/:id/forecast" element={<P><BudgetForecast /></P>} />
+            <Route path="/budgets/:id/transfers" element={<P><BudgetTransfers /></P>} />
+            <Route path="/budgets/:id/approvals" element={<P><BudgetApprovals /></P>} />
+            <Route path="/budgets/:id/history" element={<P><BudgetHistory /></P>} />
+            
+            {/* Budgets Component Routes */}
+            <Route path="/budgets/analytics" element={<P><BudgetAnalytics /></P>} />
+            <Route path="/budgets/overview" element={<P><BudgetOverviewPage /></P>} />
+            
+            {/* Governance Routes */}
+            <Route path="/governance/variance" element={<P><VarianceAnalysisPage /></P>} />
+            <Route path="/governance/baseline-config" element={<P><BaselineConfigPage /></P>} />
+            <Route path="/governance/data-lineage" element={<P><DataLineageDashboard /></P>} />
+            
+            {/* Login Route */}
+            <Route path="/login-page" element={<P><LoginPage /></P>} />
+            
+            {/* Activities Route */}
+            <Route path="/activities/dashboard" element={<P><ActivityDashboard /></P>} />
+            
+            {/* Campaigns Tabs Routes */}
+            <Route path="/campaigns/:id/overview" element={<P><CampaignOverview /></P>} />
+            <Route path="/campaigns/:id/performance" element={<P><CampaignPerformance /></P>} />
+            <Route path="/campaigns/:id/budget" element={<P><CampaignBudget /></P>} />
+            <Route path="/campaigns/:id/history" element={<P><CampaignHistory /></P>} />
+            
+            {/* RealTime Dashboard Route */}
+            <Route path="/realtime-dashboard" element={<P><RealTimeDashboard /></P>} />
+            
+            {/* Performance Analytics Routes */}
+            <Route path="/performance-analytics/customer-segmentation" element={<P><CustomerSegmentation /></P>} />
+            <Route path="/performance-analytics/budget-variance" element={<P><BudgetVariance /></P>} />
+            <Route path="/performance-analytics/promotion-effectiveness" element={<P><PromotionEffectiveness /></P>} />
+            
+            {/* Timeline Route */}
+            <Route path="/timeline/promotions" element={<P><PromotionsTimeline /></P>} />
+            
+            {/* Company Admin Routes */}
+            <Route path="/company-admin/announcements" element={<P><AnnouncementsPage /></P>} />
+            <Route path="/company-admin/settings" element={<P><CompanySettingsPage /></P>} />
+            <Route path="/company-admin/dashboard" element={<P><CompanyAdminDashboard /></P>} />
+            <Route path="/company-admin/games" element={<P><GamesPage /></P>} />
+            <Route path="/company-admin/policies" element={<P><PoliciesPage /></P>} />
+            <Route path="/company-admin/learning" element={<P><LearningCoursesPage /></P>} />
+            
+            {/* Flow Routes */}
+            <Route path="/flows/budget-planning" element={<P><BudgetPlanningFlow /></P>} />
+            <Route path="/flows/customer" element={<P><CustomerFlow /></P>} />
+            <Route path="/flows/activity" element={<P><ActivityFlow /></P>} />
+            <Route path="/flows/promotion" element={<P><PromotionFlow /></P>} />
+            <Route path="/flows/promotion-entry" element={<P><PromotionEntryFlow /></P>} />
+            
+            {/* Customer Flow Steps Routes */}
+            <Route path="/flows/customer/basic-info" element={<P><BasicInfoStep /></P>} />
+            <Route path="/flows/customer/contact-details" element={<P><ContactDetailsStep /></P>} />
+            <Route path="/flows/customer/business-profile" element={<P><BusinessProfileStep /></P>} />
+            <Route path="/flows/customer/payment-terms" element={<P><PaymentTermsStep /></P>} />
+            <Route path="/flows/customer/rebate-eligibility" element={<P><RebateEligibilityStep /></P>} />
+            <Route path="/flows/customer/ai-analysis" element={<P><AIAnalysisStep /></P>} />
+            <Route path="/flows/customer/review" element={<P><ReviewSubmitStep /></P>} />
+            
+            {/* Trade Spends Tabs Routes */}
+            <Route path="/trade-spends/:id/overview" element={<P><TradeSpendOverview /></P>} />
+            <Route path="/trade-spends/:id/performance" element={<P><TradeSpendPerformance /></P>} />
+            <Route path="/trade-spends/:id/accruals" element={<P><TradeSpendAccruals /></P>} />
+            <Route path="/trade-spends/:id/approvals" element={<P><TradeSpendApprovals /></P>} />
+            <Route path="/trade-spends/:id/documents" element={<P><TradeSpendDocuments /></P>} />
+            <Route path="/trade-spends/:id/history" element={<P><TradeSpendHistory /></P>} />
+            
+            {/* Report Builder Route */}
+            <Route path="/reports/builder" element={<P><ReportBuilder /></P>} />
+            
+            {/* Funding Route */}
+            <Route path="/funding/overview" element={<P><FundingOverview /></P>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

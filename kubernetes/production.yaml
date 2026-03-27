@@ -1,0 +1,591 @@
+# TRADEAI Kubernetes Production Deployment
+# Best-in-Industry Configuration
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tradeai-production
+  labels:
+    name: tradeai-production
+    environment: production
+---
+# ConfigMap for Application Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tradeai-config
+  namespace: tradeai-production
+data:
+  NODE_ENV: "production"
+  PORT: "5002"
+  LOG_LEVEL: "info"
+  ENABLE_RATE_LIMITING: "true"
+  REDIS_ENABLED: "true"
+  REDIS_HOST: "tradeai-redis"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  REDIS_KEY_PREFIX: "tradeai:prod:"
+  ML_SERVICE_URL: "http://tradeai-ml-service:8001"
+  ML_SERVICE_TIMEOUT: "300000"
+  OLLAMA_URL: "http://tradeai-ollama:11434"
+  OLLAMA_MODEL: "phi3:mini"
+  OLLAMA_TIMEOUT: "60000"
+  SENTRY_TRACES_SAMPLE_RATE: "0.1"
+  DATADOG_ENABLED: "true"
+  DATADOG_TRACES_SAMPLE_RATE: "0.1"
+---
+# Secret for Sensitive Data
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tradeai-secrets
+  namespace: tradeai-production
+type: Opaque
+stringData:
+  MONGODB_URI: "mongodb+srv://tradeai-prod.mongodb.net/tradeai"
+  REDIS_PASSWORD: "CHANGE_ME_USE_SECRETS_MANAGER"
+  JWT_SECRET: "CHANGE_ME_USE_SECRETS_MANAGER"
+  JWT_REFRESH_SECRET: "CHANGE_ME_USE_SECRETS_MANAGER"
+  CORS_ORIGINS: "https://tradeai.gonxt.tech"
+  CLIENT_URL: "https://tradeai.gonxt.tech"
+  SENDGRID_API_KEY: "CHANGE_ME_USE_SECRETS_MANAGER"
+  AWS_ACCESS_KEY_ID: "CHANGE_ME_USE_SECRETS_MANAGER"
+  AWS_SECRET_ACCESS_KEY: "CHANGE_ME_USE_SECRETS_MANAGER"
+  SENTRY_DSN: "CHANGE_ME_USE_SECRETS_MANAGER"
+  DATADOG_API_KEY: "CHANGE_ME_USE_SECRETS_MANAGER"
+  DATADOG_APP_KEY: "CHANGE_ME_USE_SECRETS_MANAGER"
+---
+# MongoDB StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tradeai-mongodb
+  namespace: tradeai-production
+spec:
+  serviceName: tradeai-mongodb
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tradeai-mongodb
+  template:
+    metadata:
+      labels:
+        app: tradeai-mongodb
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - tradeai-mongodb
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: mongodb
+        image: mongo:7.0
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: tradeai-mongodb-credentials
+              key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tradeai-mongodb-credentials
+              key: password
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp3
+      resources:
+        requests:
+          storage: 100Gi
+---
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradeai-redis
+  namespace: tradeai-production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tradeai-redis
+  template:
+    metadata:
+      labels:
+        app: tradeai-redis
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - tradeai-redis
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: redis
+        image: redis:7.2-alpine
+        command:
+        - redis-server
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        - --appendonly
+        - "yes"
+        - --maxmemory
+        - "2gb"
+        - --maxmemory-policy
+        - "allkeys-lru"
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tradeai-secrets
+              key: REDIS_PASSWORD
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+# Backend Deployment with Auto-Scaling
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradeai-backend
+  namespace: tradeai-production
+  labels:
+    app: tradeai-backend
+    version: v2.1.3
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tradeai-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: tradeai-backend
+        version: v2.1.3
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5002"
+        prometheus.io/path: "/metrics"
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - tradeai-backend
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: backend
+        image: tradeai/backend:v2.1.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5002
+          name: http
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: tradeai-config
+              key: NODE_ENV
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: tradeai-config
+              key: PORT
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: tradeai-secrets
+              key: MONGODB_URI
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 5002
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: uploads
+          mountPath: /app/uploads
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: tradeai-uploads-pvc
+      - name: logs
+        emptyDir: {}
+---
+# Backend Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: tradeai-backend-hpa
+  namespace: tradeai-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: tradeai-backend
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      - type: Pods
+        value: 10
+        periodSeconds: 60
+      selectPolicy: Max
+---
+# ML Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradeai-ml-service
+  namespace: tradeai-production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tradeai-ml-service
+  template:
+    metadata:
+      labels:
+        app: tradeai-ml-service
+    spec:
+      containers:
+      - name: ml-service
+        image: tradeai/ml-service:v2.1.3
+        ports:
+        - containerPort: 8001
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+            nvidia.com/gpu: "1"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+            nvidia.com/gpu: "1"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+# Ollama Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradeai-ollama
+  namespace: tradeai-production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tradeai-ollama
+  template:
+    metadata:
+      labels:
+        app: tradeai-ollama
+    spec:
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest
+        ports:
+        - containerPort: 11434
+        env:
+        - name: OLLAMA_HOST
+          value: "0.0.0.0:11434"
+        - name: OLLAMA_MODELS
+          value: "/root/.ollama/models"
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+        volumeMounts:
+        - name: ollama-models
+          mountPath: /root/.ollama
+        livenessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          initialDelaySeconds: 120
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          initialDelaySeconds: 60
+          periodSeconds: 10
+  volumeClaimTemplates:
+  - metadata:
+      name: ollama-models
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp3
+      resources:
+        requests:
+          storage: 50Gi
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradeai-frontend
+  namespace: tradeai-production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tradeai-frontend
+  template:
+    metadata:
+      labels:
+        app: tradeai-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: tradeai/frontend:v2.1.3
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health.json
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health.json
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Ingress Configuration
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tradeai-ingress
+  namespace: tradeai-production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - tradeai.gonxt.tech
+    - api.tradeai.gonxt.tech
+    secretName: tradeai-tls
+  rules:
+  - host: tradeai.gonxt.tech
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tradeai-frontend
+            port:
+              number: 80
+  - host: api.tradeai.gonxt.tech
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tradeai-backend
+            port:
+              number: 5002
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tradeai-backend-pdb
+  namespace: tradeai-production
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: tradeai-backend
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tradeai-network-policy
+  namespace: tradeai-production
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: tradeai-production
+    ports:
+    - protocol: TCP
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: tradeai-production
+    ports:
+    - protocol: TCP
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
