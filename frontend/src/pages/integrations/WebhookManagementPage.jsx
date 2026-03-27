@@ -11,6 +11,7 @@ import {
   CheckCircle, Error, Warning, History
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { formatLabel } from '../../utils/formatters';
 
 const availableEvents = [
   { event: 'promotion.created', description: 'When a new promotion is created', category: 'Promotions' },
@@ -38,7 +39,6 @@ const availableEvents = [
   { event: 'import.failed', description: 'When a data import fails', category: 'System' },
   { event: 'alert.triggered', description: 'When a system alert is triggered', category: 'System' }
 ];
-import { formatLabel } from '../../utils/formatters';
 
 const eventCategories = [...new Set(availableEvents.map(e => e.category))];
 

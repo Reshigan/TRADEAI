@@ -373,10 +373,10 @@ const PromotionEntryFlow = lazy(() => import('./pages/flows/PromotionEntryFlow')
 const BasicInfoStep = lazy(() => import('./pages/flows/customer/steps/BasicInfoStep'));
 const ContactDetailsStep = lazy(() => import('./pages/flows/customer/steps/ContactDetailsStep'));
 const BusinessProfileStep = lazy(() => import('./pages/flows/customer/steps/BusinessProfileStep'));
-const PaymentTermsStep = lazy(() => import('./pages/flows/customer/steps/PaymentTermsStep'));
+const CustomerPaymentTermsStep = lazy(() => import('./pages/flows/customer/steps/PaymentTermsStep'));
 const RebateEligibilityStep = lazy(() => import('./pages/flows/customer/steps/RebateEligibilityStep'));
 const AIAnalysisStep = lazy(() => import('./pages/flows/customer/steps/AIAnalysisStep'));
-const ReviewSubmitStep = lazy(() => import('./pages/flows/customer/steps/ReviewSubmitStep'));
+const CustomerReviewSubmitStep = lazy(() => import('./pages/flows/customer/steps/ReviewSubmitStep'));
 
 // Trade Spends Tabs
 const TradeSpendOverview = lazy(() => import('./pages/trade-spends/tabs/TradeSpendOverview'));
@@ -957,10 +957,10 @@ function App() {
             <Route path="/flows/customer/basic-info" element={<P><BasicInfoStep /></P>} />
             <Route path="/flows/customer/contact-details" element={<P><ContactDetailsStep /></P>} />
             <Route path="/flows/customer/business-profile" element={<P><BusinessProfileStep /></P>} />
-            <Route path="/flows/customer/payment-terms" element={<P><PaymentTermsStep /></P>} />
+            <Route path="/flows/customer/payment-terms" element={<P><CustomerPaymentTermsStep /></P>} />
             <Route path="/flows/customer/rebate-eligibility" element={<P><RebateEligibilityStep /></P>} />
             <Route path="/flows/customer/ai-analysis" element={<P><AIAnalysisStep /></P>} />
-            <Route path="/flows/customer/review" element={<P><ReviewSubmitStep /></P>} />
+            <Route path="/flows/customer/review" element={<P><CustomerReviewSubmitStep /></P>} />
             
             {/* Trade Spends Tabs Routes */}
             <Route path="/trade-spends/:id/overview" element={<P><TradeSpendOverview /></P>} />

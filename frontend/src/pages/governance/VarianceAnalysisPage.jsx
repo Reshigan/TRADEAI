@@ -27,6 +27,7 @@ import {
   Tab,
   LinearProgress
 } from '@mui/material';
+import { formatLabel } from '../../utils/formatters';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
