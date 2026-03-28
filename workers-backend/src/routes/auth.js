@@ -509,11 +509,15 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
     const emailService = new EmailService(c.env);
     const frontendUrl = c.env.FRONTEND_URL || 'https://tradeai.vantax.co.za';
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
-    await emailService.sendPasswordReset(email, {
+    const emailSent = await emailService.sendPasswordReset(email, {
       firstName: user.firstName || 'User',
       resetUrl,
       token: resetToken,
     });
+
+    if (!emailSent) {
+      console.error(JSON.stringify({ level: 'error', action: 'password_reset_email_failed', email: email.toLowerCase() }));
+    }
 
     return c.json({
       success: true,
