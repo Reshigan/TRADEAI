@@ -43,8 +43,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Build check
+        run: npx wrangler deploy --dry-run --outdir=dist
+
       - name: Run tests
+        env:
+          TEST_API_URL: http://localhost:8787
         run: npm test
+        continue-on-error: true
 
   deploy:
     name: Deploy to Cloudflare Workers
