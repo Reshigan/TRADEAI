@@ -1,6 +1,6 @@
 // GAP-02: Email Delivery Service
-// Uses fetch() to call email API (Resend/SendGrid/Mailgun)
-// Falls back to logging if no API key configured
+// Supports Microsoft Graph (Azure AD), Resend, and SendGrid
+// Falls back to logging if no credentials configured
 
 const EMAIL_TEMPLATES = {
   passwordReset: (data) => ({
@@ -59,11 +59,68 @@ const EMAIL_TEMPLATES = {
 
 export class EmailService {
   constructor(env) {
+    // Microsoft Graph (Azure AD) config
+    this.azureClientId = env.AZURE_CLIENT_ID;
+    this.azureClientSecret = env.AZURE_CLIENT_SECRET;
+    this.azureTenantId = env.AZURE_TENANT_ID;
+    // Legacy provider config
     this.apiKey = env.EMAIL_API_KEY;
     this.fromEmail = env.EMAIL_FROM || 'noreply@tradeai.vantax.co.za';
     this.fromName = env.EMAIL_FROM_NAME || 'TradeAI';
-    this.provider = env.EMAIL_PROVIDER || 'resend'; // resend, sendgrid, mailgun
+    this.provider = env.EMAIL_PROVIDER || 'microsoft'; // microsoft, resend, sendgrid
     this.kv = env.CACHE;
+  }
+
+  /**
+   * Get an OAuth2 access token from Azure AD using client credentials flow
+   */
+  async getGraphToken() {
+    const tokenUrl = `https://login.microsoftonline.com/${this.azureTenantId}/oauth2/v2.0/token`;
+    const response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: this.azureClientId,
+        client_secret: this.azureClientSecret,
+        scope: 'https://graph.microsoft.com/.default',
+        grant_type: 'client_credentials',
+      }).toString(),
+    });
+
+    if (!response.ok) {
+      const err = await response.text().catch(() => 'Unknown error');
+      throw new Error(`Azure token request failed (${response.status}): ${err}`);
+    }
+
+    const tokenData = await response.json();
+    return tokenData.access_token;
+  }
+
+  /**
+   * Send email via Microsoft Graph API
+   */
+  async sendViaGraph(to, subject, html) {
+    const token = await this.getGraphToken();
+    const response = await fetch(
+      `https://graph.microsoft.com/v1.0/users/${this.fromEmail}/sendMail`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: {
+            subject,
+            body: { contentType: 'HTML', content: html },
+            toRecipients: [{ emailAddress: { address: to } }],
+            from: { emailAddress: { address: this.fromEmail, name: this.fromName } },
+          },
+          saveToSentItems: true,
+        }),
+      }
+    );
+    return response;
   }
 
   async send(to, templateName, data) {
@@ -75,14 +132,25 @@ export class EmailService {
 
     const { subject, html } = template(data);
 
-    if (!this.apiKey) {
-      console.log(JSON.stringify({ level: 'info', action: 'email_queued', to, subject, note: 'No EMAIL_API_KEY configured' }));
+    // Verify the active provider has the required credentials
+    const hasAzure = !!(this.azureClientId && this.azureClientSecret && this.azureTenantId);
+    const hasApiKey = !!this.apiKey;
+
+    if (this.provider === 'microsoft' && !hasAzure) {
+      console.log(JSON.stringify({ level: 'info', action: 'email_queued', to, subject, note: 'Microsoft Graph credentials not configured (AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID)' }));
+      return true; // Don't fail if email not configured
+    }
+    if ((this.provider === 'resend' || this.provider === 'sendgrid') && !hasApiKey) {
+      console.log(JSON.stringify({ level: 'info', action: 'email_queued', to, subject, note: `${this.provider} EMAIL_API_KEY not configured` }));
       return true; // Don't fail if email not configured
     }
 
     try {
       let response;
-      if (this.provider === 'resend') {
+
+      if (this.provider === 'microsoft') {
+        response = await this.sendViaGraph(to, subject, html);
+      } else if (this.provider === 'resend') {
         response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
@@ -98,9 +166,12 @@ export class EmailService {
             subject, content: [{ type: 'text/html', value: html }]
           })
         });
+      } else {
+        console.error(JSON.stringify({ level: 'error', action: 'email_provider_unknown', to, subject, provider: this.provider }));
+        return false;
       }
 
-      if (response && !response.ok) {
+      if (!response.ok) {
         const err = await response.text().catch(() => 'Unknown error');
         console.error(JSON.stringify({ level: 'error', action: 'email_send_failed', to, subject, status: response.status, error: err }));
         // Queue for retry
@@ -111,7 +182,7 @@ export class EmailService {
         return false;
       }
 
-      console.log(JSON.stringify({ level: 'info', action: 'email_sent', to, subject }));
+      console.log(JSON.stringify({ level: 'info', action: 'email_sent', to, subject, provider: this.provider }));
       return true;
     } catch (error) {
       console.error(JSON.stringify({ level: 'error', action: 'email_error', to, subject, error: error.message }));

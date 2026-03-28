@@ -505,10 +505,23 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
       resetPasswordExpiry: new Date(Date.now() + 60 * 60 * 1000).toISOString()
     });
 
+    // Send password reset email via configured provider (Microsoft Graph / Resend / SendGrid)
+    const emailService = new EmailService(c.env);
+    const frontendUrl = c.env.FRONTEND_URL || 'https://tradeai.vantax.co.za';
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const emailSent = await emailService.sendPasswordReset(email, {
+      firstName: user.firstName || 'User',
+      resetUrl,
+      token: resetToken,
+    });
+
+    if (!emailSent) {
+      console.error(JSON.stringify({ level: 'error', action: 'password_reset_email_failed', email: email.toLowerCase() }));
+    }
+
     return c.json({
       success: true,
       message: 'If an account exists with that email, a password reset link has been sent.',
-      data: { token: resetToken }
     });
   } catch (error) {
     return apiError(c, error, 'auth.forgotPassword');

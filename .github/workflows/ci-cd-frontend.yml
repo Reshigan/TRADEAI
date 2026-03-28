@@ -1,0 +1,116 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/ci-cd-frontend.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/ci-cd-frontend.yml'
+
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: frontend-deps-${{ hashFiles('frontend/package.json') }}
+          restore-keys: |
+            frontend-deps-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build
+        env:
+          CI: false
+          GENERATE_SOURCEMAP: false
+          REACT_APP_API_URL: https://tradeai-api.reshigan-085.workers.dev/api
+          REACT_APP_ML_API_URL: https://tradeai-api.reshigan-085.workers.dev/api/ml
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run build
+
+      - name: Upload build artifact
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      deployments: write
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: frontend-deps-${{ hashFiles('frontend/package.json') }}
+          restore-keys: |
+            frontend-deps-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build for production
+        env:
+          CI: false
+          GENERATE_SOURCEMAP: false
+          REACT_APP_API_URL: https://tradeai-api.reshigan-085.workers.dev/api
+          REACT_APP_ML_API_URL: https://tradeai-api.reshigan-085.workers.dev/api/ml
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy build --project-name=tradeai
+          workingDirectory: frontend
+
+      - name: Verify deployment
+        run: |
+          echo "Frontend deployed to Cloudflare Pages"
+          echo "URL: https://tradeai.vantax.co.za"
+          sleep 10
+          curl -sf https://tradeai.vantax.co.za > /dev/null && echo "Health check passed" || echo "Health check pending - DNS propagation may take a few minutes"

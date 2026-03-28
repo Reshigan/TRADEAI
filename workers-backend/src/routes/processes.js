@@ -15,11 +15,11 @@
  * PATCH  /api/processes/:id/steps/:stepId/status - Update step status
  */
 
-import { Router } from 'itty-router';
-import { createResponse, handleError, validateRequest } from '../utils/response.js';
-import { authenticate } from '../middleware/auth.js';
+import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
-const router = Router();
+const processRoutes = new Hono();
 
 // ============================================================================
 // Helper Functions
@@ -151,10 +151,13 @@ function calculateHealthScore(progress, stepCounts) {
  * GET /api/processes
  * List all processes with optional filtering
  */
-router.get('/processes', authenticate, async (request, env) => {
+processRoutes.get('/', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { type, status, limit = 50, offset = 0 } = request.query;
+    const db = getDB(c.env);
+    const type = c.req.query('type');
+    const status = c.req.query('status');
+    const limit = c.req.query('limit') || 50;
+    const offset = c.req.query('offset') || 0;
     
     let query = `
       SELECT 
@@ -166,7 +169,8 @@ router.get('/processes', authenticate, async (request, env) => {
       WHERE p.tenant_id = ?
     `;
     
-    const params = [request.user.tenantId];
+    const user = c.get('user');
+    const params = [user.companyId || c.get('tenantId')];
     
     if (type) {
       query += ' AND p.type = ?';
@@ -188,7 +192,7 @@ router.get('/processes', authenticate, async (request, env) => {
     
     const result = await db.prepare(query).bind(...params).all();
     
-    return createResponse({
+    return c.json({
       success: true,
       data: result.results || [],
       pagination: {
@@ -198,7 +202,7 @@ router.get('/processes', authenticate, async (request, env) => {
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to list processes');
+    return apiError(c, error, 'processes.list');
   }
 });
 
@@ -206,19 +210,21 @@ router.get('/processes', authenticate, async (request, env) => {
  * GET /api/processes/:id
  * Get single process with steps
  */
-router.get('/processes/:id', authenticate, async (request, env) => {
+processRoutes.get('/:id', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
+    const db = getDB(c.env);
+    const id = c.req.param('id');
     
     // Get process details
+    const user = c.get('user');
+    const tenantId = user.companyId || c.get('tenantId');
     const process = await db.prepare(`
       SELECT * FROM processes
       WHERE process_id = ? AND tenant_id = ?
-    `).bind(id, request.user.tenantId).first();
+    `).bind(id, tenantId).first();
     
     if (!process) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'Process not found',
       }, 404);
@@ -234,7 +240,7 @@ router.get('/processes/:id', authenticate, async (request, env) => {
     // Calculate metrics
     const metrics = await calculateProcessMetrics(db, id);
     
-    return createResponse({
+    return c.json({
       success: true,
       data: {
         ...process,
@@ -243,7 +249,7 @@ router.get('/processes/:id', authenticate, async (request, env) => {
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to get process');
+    return apiError(c, error, 'processes.get');
   }
 });
 
@@ -251,15 +257,15 @@ router.get('/processes/:id', authenticate, async (request, env) => {
  * POST /api/processes
  * Create new process
  */
-router.post('/processes', authenticate, async (request, env) => {
+processRoutes.post('/', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const body = await request.json();
+    const db = getDB(c.env);
+    const body = await c.req.json();
     
     // Validate
     const errors = validateProcessData(body);
     if (errors.length > 0) {
-      return createResponse({
+      return c.json({
         success: false,
         error: errors.join(', '),
       }, 400);
@@ -269,6 +275,8 @@ router.post('/processes', authenticate, async (request, env) => {
     const now = new Date().toISOString();
     
     // Insert process
+    const user = c.get('user');
+    const tenantId = user.companyId || c.get('tenantId');
     await db.prepare(`
       INSERT INTO processes (
         process_id, tenant_id, name, type, description, 
@@ -276,12 +284,12 @@ router.post('/processes', authenticate, async (request, env) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       processId,
-      request.user.tenantId,
+      tenantId,
       body.name,
       body.type,
       body.description || null,
       body.status || 'pending',
-      body.ownerId || request.user.userId,
+      body.ownerId || c.get('userId'),
       now,
       now
     ).run();
@@ -306,13 +314,13 @@ router.post('/processes', authenticate, async (request, env) => {
       }
     }
     
-    return createResponse({
+    return c.json({
       success: true,
       data: { processId },
       message: 'Process created successfully',
     }, 201);
   } catch (error) {
-    return handleError(error, 'Failed to create process');
+    return apiError(c, error, 'processes.create');
   }
 });
 
@@ -320,20 +328,22 @@ router.post('/processes', authenticate, async (request, env) => {
  * PUT /api/processes/:id
  * Update process
  */
-router.put('/processes/:id', authenticate, async (request, env) => {
+processRoutes.put('/:id', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
-    const body = await request.json();
+    const db = getDB(c.env);
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const user = c.get('user');
+    const tenantId = user.companyId || c.get('tenantId');
     
     // Check if process exists
     const existing = await db.prepare(`
       SELECT * FROM processes
       WHERE process_id = ? AND tenant_id = ?
-    `).bind(id, request.user.tenantId).first();
+    `).bind(id, tenantId).first();
     
     if (!existing) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'Process not found',
       }, 404);
@@ -366,7 +376,7 @@ router.put('/processes/:id', authenticate, async (request, env) => {
     fields.push('updated_at = ?');
     params.push(new Date().toISOString());
     
-    params.push(id, request.user.tenantId);
+    params.push(id, tenantId);
     
     await db.prepare(`
       UPDATE processes
@@ -374,12 +384,12 @@ router.put('/processes/:id', authenticate, async (request, env) => {
       WHERE process_id = ? AND tenant_id = ?
     `).bind(...params).run();
     
-    return createResponse({
+    return c.json({
       success: true,
       message: 'Process updated successfully',
     });
   } catch (error) {
-    return handleError(error, 'Failed to update process');
+    return apiError(c, error, 'processes.update');
   }
 });
 
@@ -387,10 +397,12 @@ router.put('/processes/:id', authenticate, async (request, env) => {
  * DELETE /api/processes/:id
  * Delete process
  */
-router.delete('/processes/:id', authenticate, async (request, env) => {
+processRoutes.delete('/:id', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
+    const db = getDB(c.env);
+    const id = c.req.param('id');
+    const user = c.get('user');
+    const tenantId = user.companyId || c.get('tenantId');
     
     // Delete steps first (cascade)
     await db.prepare(`
@@ -402,14 +414,14 @@ router.delete('/processes/:id', authenticate, async (request, env) => {
     await db.prepare(`
       DELETE FROM processes
       WHERE process_id = ? AND tenant_id = ?
-    `).bind(id, request.user.tenantId).run();
+    `).bind(id, tenantId).run();
     
-    return createResponse({
+    return c.json({
       success: true,
       message: 'Process deleted successfully',
     });
   } catch (error) {
-    return handleError(error, 'Failed to delete process');
+    return apiError(c, error, 'processes.delete');
   }
 });
 
@@ -417,10 +429,10 @@ router.delete('/processes/:id', authenticate, async (request, env) => {
  * POST /api/processes/:id/advance
  * Advance to next step
  */
-router.post('/processes/:id/advance', authenticate, async (request, env) => {
+processRoutes.post('/:id/advance', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
+    const db = getDB(c.env);
+    const id = c.req.param('id');
     
     // Get current active step
     const currentStep = await db.prepare(`
@@ -431,7 +443,7 @@ router.post('/processes/:id/advance', authenticate, async (request, env) => {
     `).bind(id).first();
     
     if (!currentStep) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'No active step found',
       }, 400);
@@ -460,7 +472,7 @@ router.post('/processes/:id/advance', authenticate, async (request, env) => {
         WHERE step_id = ?
       `).bind(new Date().toISOString(), nextStep.step_id).run();
       
-      return createResponse({
+      return c.json({
         success: true,
         data: {
           previousStep: currentStep.step_id,
@@ -476,7 +488,7 @@ router.post('/processes/:id/advance', authenticate, async (request, env) => {
         WHERE process_id = ?
       `).bind(new Date().toISOString(), id).run();
       
-      return createResponse({
+      return c.json({
         success: true,
         data: {
           previousStep: currentStep.step_id,
@@ -487,7 +499,7 @@ router.post('/processes/:id/advance', authenticate, async (request, env) => {
       });
     }
   } catch (error) {
-    return handleError(error, 'Failed to advance process');
+    return apiError(c, error, 'processes.advance');
   }
 });
 
@@ -495,10 +507,10 @@ router.post('/processes/:id/advance', authenticate, async (request, env) => {
  * POST /api/processes/:id/retreat
  * Go back to previous step
  */
-router.post('/processes/:id/retreat', authenticate, async (request, env) => {
+processRoutes.post('/:id/retreat', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
+    const db = getDB(c.env);
+    const id = c.req.param('id');
     
     // Get current active step
     const currentStep = await db.prepare(`
@@ -509,7 +521,7 @@ router.post('/processes/:id/retreat', authenticate, async (request, env) => {
     `).bind(id).first();
     
     if (!currentStep) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'No active step found',
       }, 400);
@@ -524,7 +536,7 @@ router.post('/processes/:id/retreat', authenticate, async (request, env) => {
     `).bind(id, currentStep.step_order).first();
     
     if (!previousStep) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'Already at first step',
       }, 400);
@@ -544,7 +556,7 @@ router.post('/processes/:id/retreat', authenticate, async (request, env) => {
       WHERE step_id = ?
     `).bind(new Date().toISOString(), previousStep.step_id).run();
     
-    return createResponse({
+    return c.json({
       success: true,
       data: {
         previousStep: previousStep.step_id,
@@ -552,7 +564,7 @@ router.post('/processes/:id/retreat', authenticate, async (request, env) => {
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to retreat process');
+    return apiError(c, error, 'processes.retreat');
   }
 });
 
@@ -560,19 +572,19 @@ router.post('/processes/:id/retreat', authenticate, async (request, env) => {
  * GET /api/processes/:id/metrics
  * Get process metrics
  */
-router.get('/processes/:id/metrics', authenticate, async (request, env) => {
+processRoutes.get('/:id/metrics', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
+    const db = getDB(c.env);
+    const id = c.req.param('id');
     
     const metrics = await calculateProcessMetrics(db, id);
     
-    return createResponse({
+    return c.json({
       success: true,
       data: metrics,
     });
   } catch (error) {
-    return handleError(error, 'Failed to get metrics');
+    return apiError(c, error, 'processes.metrics');
   }
 });
 
@@ -580,10 +592,10 @@ router.get('/processes/:id/metrics', authenticate, async (request, env) => {
  * GET /api/processes/:id/history
  * Get process history/audit log
  */
-router.get('/processes/:id/history', authenticate, async (request, env) => {
+processRoutes.get('/:id/history', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id } = request.params;
+    const db = getDB(c.env);
+    const id = c.req.param('id');
     
     const history = await db.prepare(`
       SELECT * FROM process_history
@@ -592,12 +604,12 @@ router.get('/processes/:id/history', authenticate, async (request, env) => {
       LIMIT 100
     `).bind(id).all();
     
-    return createResponse({
+    return c.json({
       success: true,
       data: history.results || [],
     });
   } catch (error) {
-    return handleError(error, 'Failed to get history');
+    return apiError(c, error, 'processes.history');
   }
 });
 
@@ -605,14 +617,15 @@ router.get('/processes/:id/history', authenticate, async (request, env) => {
  * PATCH /api/processes/:id/steps/:stepId/status
  * Update step status
  */
-router.patch('/processes/:id/steps/:stepId/status', authenticate, async (request, env) => {
+processRoutes.patch('/:id/steps/:stepId/status', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { id, stepId } = request.params;
-    const body = await request.json();
+    const db = getDB(c.env);
+    const id = c.req.param('id');
+    const stepId = c.req.param('stepId');
+    const body = await c.req.json();
     
     if (!body.status) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'Status is required',
       }, 400);
@@ -620,7 +633,7 @@ router.patch('/processes/:id/steps/:stepId/status', authenticate, async (request
     
     const validStatuses = ['pending', 'in_progress', 'completed', 'blocked', 'error', 'warning'];
     if (!validStatuses.includes(body.status)) {
-      return createResponse({
+      return c.json({
         success: false,
         error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
       }, 400);
@@ -643,16 +656,16 @@ router.patch('/processes/:id/steps/:stepId/status', authenticate, async (request
       body.previousStatus || null,
       body.status,
       new Date().toISOString(),
-      request.user.userId
+      c.get('userId')
     ).run();
     
-    return createResponse({
+    return c.json({
       success: true,
       message: 'Step status updated',
     });
   } catch (error) {
-    return handleError(error, 'Failed to update step status');
+    return apiError(c, error, 'processes.updateStepStatus');
   }
 });
 
-export default router;
+export { processRoutes };

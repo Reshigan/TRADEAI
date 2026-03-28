@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { Box, Typography, Card, CardContent, IconButton, Tooltip, Skeleton, Chip } from '@mui/material';
-import { TrendingUp, TrendingDown, MoreVertical, Info } from 'lucide-react';
+import { Box, Typography, Card, CardContent, IconButton, Tooltip, Skeleton } from '@mui/material';
+import { TrendingUp, TrendingDown, Info } from 'lucide-react';
 
 /**
  * Enhanced KPICard with professional styling
