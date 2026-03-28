@@ -68,4 +68,5 @@ tmp/
 temp/
 *.tmp
 .auth/
+.wrangler/
 workers-backend/.wrangler/

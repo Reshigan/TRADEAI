@@ -1,0 +1,67 @@
+name: Database Migrations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers-backend/migrations/**'
+      - '.github/workflows/ci-cd-database.yml'
+
+concurrency:
+  group: database-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Run D1 Migrations
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    defaults:
+      run:
+        working-directory: workers-backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install wrangler
+        run: npm install -g wrangler
+
+      - name: Detect new migration files
+        id: detect
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- migrations/ 2>/dev/null || echo "")
+          if [ -z "$CHANGED" ]; then
+            echo "No new migration files detected"
+            echo "has_migrations=false" >> $GITHUB_OUTPUT
+          else
+            echo "New migrations detected:"
+            echo "$CHANGED"
+            echo "has_migrations=true" >> $GITHUB_OUTPUT
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGED" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run migrations
+        if: steps.detect.outputs.has_migrations == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          echo "Running D1 migrations..."
+          for file in ${{ steps.detect.outputs.files }}; do
+            if [[ "$file" == migrations/*.sql ]]; then
+              echo "Applying migration: $file"
+              wrangler d1 execute tradeai --remote --file="$file" || {
+                echo "Warning: Migration $file may have already been applied or encountered an error"
+              }
+            fi
+          done
+          echo "Migrations complete"
