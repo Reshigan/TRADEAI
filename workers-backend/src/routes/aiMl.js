@@ -17,7 +17,8 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
 
-const aiMlRoutes = new Hono();
+const aiRoutes = new Hono();
+const mlRoutes = new Hono();
 
 // ============================================================================
 // Helper Functions
@@ -324,7 +325,7 @@ async function predictBottlenecks(db, processId) {
  * POST /api/ai/suggestions
  * Get AI suggestions for a process step
  */
-aiMlRoutes.post('/suggestions', authMiddleware, async (c) => {
+aiRoutes.post('/suggestions', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const body = await c.req.json();
@@ -369,7 +370,7 @@ aiMlRoutes.post('/suggestions', authMiddleware, async (c) => {
  * GET /api/ai/recommendations/:processId
  * Get AI recommendations for a process
  */
-aiMlRoutes.get('/recommendations/:processId', authMiddleware, async (c) => {
+aiRoutes.get('/recommendations/:processId', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -404,7 +405,7 @@ aiMlRoutes.get('/recommendations/:processId', authMiddleware, async (c) => {
  * GET /api/ml/predict/:processId/completion
  * Predict process completion time
  */
-aiMlRoutes.get('/predict/:processId/completion', authMiddleware, async (c) => {
+mlRoutes.get('/predict/:processId/completion', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -439,7 +440,7 @@ aiMlRoutes.get('/predict/:processId/completion', authMiddleware, async (c) => {
  * GET /api/ml/predict/:processId/success
  * Predict success rate
  */
-aiMlRoutes.get('/predict/:processId/success', authMiddleware, async (c) => {
+mlRoutes.get('/predict/:processId/success', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -459,7 +460,7 @@ aiMlRoutes.get('/predict/:processId/success', authMiddleware, async (c) => {
  * GET /api/ml/predict/:processId/bottlenecks
  * Predict bottlenecks
  */
-aiMlRoutes.get('/predict/:processId/bottlenecks', authMiddleware, async (c) => {
+mlRoutes.get('/predict/:processId/bottlenecks', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -479,7 +480,7 @@ aiMlRoutes.get('/predict/:processId/bottlenecks', authMiddleware, async (c) => {
  * POST /api/ai/optimize/:processId
  * Optimize process flow
  */
-aiMlRoutes.post('/optimize/:processId', authMiddleware, async (c) => {
+aiRoutes.post('/optimize/:processId', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -541,7 +542,7 @@ aiMlRoutes.post('/optimize/:processId', authMiddleware, async (c) => {
  * POST /api/ai/analyze/:processId/bottlenecks
  * Analyze process for bottlenecks
  */
-aiMlRoutes.post('/analyze/:processId/bottlenecks', authMiddleware, async (c) => {
+aiRoutes.post('/analyze/:processId/bottlenecks', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -576,7 +577,7 @@ aiMlRoutes.post('/analyze/:processId/bottlenecks', authMiddleware, async (c) => 
  * POST /api/ml/scenario/:processId
  * Run scenario analysis
  */
-aiMlRoutes.post('/scenario/:processId', authMiddleware, async (c) => {
+mlRoutes.post('/scenario/:processId', authMiddleware, async (c) => {
   try {
     const db = getDB(c.env);
     const processId = c.req.param('processId');
@@ -635,7 +636,7 @@ aiMlRoutes.post('/scenario/:processId', authMiddleware, async (c) => {
  * POST /api/ai/feedback
  * Submit feedback on AI recommendation
  */
-aiMlRoutes.post('/feedback', authMiddleware, async (c) => {
+aiRoutes.post('/feedback', authMiddleware, async (c) => {
   try {
     const { recommendationId, helpful, feedback } = await c.req.json();
     
@@ -655,7 +656,7 @@ aiMlRoutes.post('/feedback', authMiddleware, async (c) => {
  * GET /api/ml/metrics
  * Get ML model performance metrics
  */
-aiMlRoutes.get('/metrics', authMiddleware, async (c) => {
+mlRoutes.get('/metrics', authMiddleware, async (c) => {
   try {
     // In production, this would query actual ML model metrics
     // For now, return placeholder data
@@ -674,4 +675,4 @@ aiMlRoutes.get('/metrics', authMiddleware, async (c) => {
   }
 });
 
-export { aiMlRoutes };
+export { aiRoutes, mlRoutes };

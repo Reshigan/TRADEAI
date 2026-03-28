@@ -80,7 +80,7 @@ import { companyRoutes } from './routes/companies.js';
 import { tenantRoutes } from './routes/tenants.js';
 // Process UI routes (NEW for go-live)
 import { processRoutes } from './routes/processes.js';
-import { aiMlRoutes } from './routes/aiMl.js';
+import { aiRoutes, mlRoutes } from './routes/aiMl.js';
 import { baselineEngineRoutes } from './routes/baselineEngine.js';
 
 const app = new Hono();
@@ -209,8 +209,8 @@ app.route('/api/tenants', tenantRoutes);
 app.route('/api/baseline-engine', baselineEngineRoutes);
 // Process UI routes (NEW for go-live)
 app.route('/api/processes', processRoutes);
-app.route('/api/ai', aiMlRoutes);
-app.route('/api/ml', aiMlRoutes);
+app.route('/api/ai', aiRoutes);
+app.route('/api/ml', mlRoutes);
 
 // 404 handler
 app.notFound((c) => {
