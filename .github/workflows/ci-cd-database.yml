@@ -36,7 +36,7 @@ jobs:
       - name: Detect new migration files
         id: detect
         run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD -- migrations/ 2>/dev/null || echo "")
+          CHANGED=$(git diff --name-only --relative HEAD~1 HEAD -- migrations/ 2>/dev/null || echo "")
           if [ -z "$CHANGED" ]; then
             echo "No new migration files detected"
             echo "has_migrations=false" >> $GITHUB_OUTPUT
@@ -59,9 +59,7 @@ jobs:
           for file in ${{ steps.detect.outputs.files }}; do
             if [[ "$file" == migrations/*.sql ]]; then
               echo "Applying migration: $file"
-              wrangler d1 execute tradeai --remote --file="$file" || {
-                echo "Warning: Migration $file may have already been applied or encountered an error"
-              }
+              wrangler d1 execute tradeai --remote --file="$file"
             fi
           done
           echo "Migrations complete"
