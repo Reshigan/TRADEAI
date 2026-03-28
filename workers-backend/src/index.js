@@ -79,8 +79,8 @@ import { bulkOperationsRoutes } from './routes/bulkOperations.js';
 import { companyRoutes } from './routes/companies.js';
 import { tenantRoutes } from './routes/tenants.js';
 // Process UI routes (NEW for go-live)
-import processRoutes from './routes/processes.js';
-import aiMlRoutes from './routes/aiMl.js';
+import { processRoutes } from './routes/processes.js';
+import { aiMlRoutes } from './routes/aiMl.js';
 import { baselineEngineRoutes } from './routes/baselineEngine.js';
 
 const app = new Hono();

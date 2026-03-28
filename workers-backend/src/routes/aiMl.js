@@ -13,11 +13,11 @@
  * POST   /api/ml/scenario/:processId  - Run scenario analysis
  */
 
-import { Router } from 'itty-router';
-import { createResponse, handleError } from '../utils/response.js';
-import { authenticate } from '../middleware/auth.js';
+import { Hono } from 'hono';
+import { authMiddleware } from '../middleware/auth.js';
+import { apiError } from '../utils/apiError.js';
 
-const router = Router();
+const aiMlRoutes = new Hono();
 
 // ============================================================================
 // Helper Functions
@@ -324,15 +324,15 @@ async function predictBottlenecks(db, processId) {
  * POST /api/ai/suggestions
  * Get AI suggestions for a process step
  */
-router.post('/ai/suggestions', authenticate, async (request, env) => {
+aiMlRoutes.post('/ai/suggestions', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const body = await request.json();
+    const db = getDB(c.env);
+    const body = await c.req.json();
     
     const { processId, stepId, context } = body;
     
     if (!processId) {
-      return createResponse({
+      return c.json({
         success: false,
         error: 'processId is required',
       }, 400);
@@ -359,9 +359,9 @@ router.post('/ai/suggestions', authenticate, async (request, env) => {
       ).run();
     }
     
-    return createResponse(suggestions);
+    return c.json(suggestions);
   } catch (error) {
-    return handleError(error, 'Failed to get AI suggestions');
+    return apiError(c, error, 'aiMl.suggestions');
   }
 });
 
@@ -369,11 +369,11 @@ router.post('/ai/suggestions', authenticate, async (request, env) => {
  * GET /api/ai/recommendations/:processId
  * Get AI recommendations for a process
  */
-router.get('/ai/recommendations/:processId', authenticate, async (request, env) => {
+aiMlRoutes.get('/ai/recommendations/:processId', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
-    const { type } = request.query;
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
+    const type = c.req.query('type');
     
     let query = `
       SELECT * FROM ai_recommendations
@@ -391,12 +391,12 @@ router.get('/ai/recommendations/:processId', authenticate, async (request, env) 
     
     const result = await db.prepare(query).bind(...params).all();
     
-    return createResponse({
+    return c.json({
       success: true,
       data: result.results || [],
     });
   } catch (error) {
-    return handleError(error, 'Failed to get recommendations');
+    return apiError(c, error, 'aiMl.recommendations');
   }
 });
 
@@ -404,10 +404,10 @@ router.get('/ai/recommendations/:processId', authenticate, async (request, env) 
  * GET /api/ml/predict/:processId/completion
  * Predict process completion time
  */
-router.get('/ml/predict/:processId/completion', authenticate, async (request, env) => {
+aiMlRoutes.get('/ml/predict/:processId/completion', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
     
     const prediction = await predictCompletion(db, processId);
     
@@ -426,12 +426,12 @@ router.get('/ml/predict/:processId/completion', authenticate, async (request, en
       new Date(Date.now() + 60 * 60 * 1000) // Valid for 1 hour
     ).run();
     
-    return createResponse({
+    return c.json({
       success: true,
       data: prediction,
     });
   } catch (error) {
-    return handleError(error, 'Failed to predict completion');
+    return apiError(c, error, 'aiMl.predictCompletion');
   }
 });
 
@@ -439,19 +439,19 @@ router.get('/ml/predict/:processId/completion', authenticate, async (request, en
  * GET /api/ml/predict/:processId/success
  * Predict success rate
  */
-router.get('/ml/predict/:processId/success', authenticate, async (request, env) => {
+aiMlRoutes.get('/ml/predict/:processId/success', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
     
     const prediction = await predictSuccess(db, processId);
     
-    return createResponse({
+    return c.json({
       success: true,
       data: prediction,
     });
   } catch (error) {
-    return handleError(error, 'Failed to predict success rate');
+    return apiError(c, error, 'aiMl.predictSuccess');
   }
 });
 
@@ -459,19 +459,19 @@ router.get('/ml/predict/:processId/success', authenticate, async (request, env) 
  * GET /api/ml/predict/:processId/bottlenecks
  * Predict bottlenecks
  */
-router.get('/ml/predict/:processId/bottlenecks', authenticate, async (request, env) => {
+aiMlRoutes.get('/ml/predict/:processId/bottlenecks', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
     
     const prediction = await predictBottlenecks(db, processId);
     
-    return createResponse({
+    return c.json({
       success: true,
       data: prediction,
     });
   } catch (error) {
-    return handleError(error, 'Failed to predict bottlenecks');
+    return apiError(c, error, 'aiMl.predictBottlenecks');
   }
 });
 
@@ -479,10 +479,10 @@ router.get('/ml/predict/:processId/bottlenecks', authenticate, async (request, e
  * POST /api/ai/optimize/:processId
  * Optimize process flow
  */
-router.post('/ai/optimize/:processId', authenticate, async (request, env) => {
+aiMlRoutes.post('/ai/optimize/:processId', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
     
     const steps = await db.prepare(`
       SELECT * FROM process_steps WHERE process_id = ? ORDER BY step_order
@@ -523,7 +523,7 @@ router.post('/ai/optimize/:processId', authenticate, async (request, env) => {
       timeSavings += repetitiveSteps.length * 60;
     }
 
-    return createResponse({
+    return c.json({
       success: true,
       data: {
         originalDuration,
@@ -533,7 +533,7 @@ router.post('/ai/optimize/:processId', authenticate, async (request, env) => {
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to optimize process');
+    return apiError(c, error, 'aiMl.optimize');
   }
 });
 
@@ -541,10 +541,10 @@ router.post('/ai/optimize/:processId', authenticate, async (request, env) => {
  * POST /api/ai/analyze/:processId/bottlenecks
  * Analyze process for bottlenecks
  */
-router.post('/ai/analyze/:processId/bottlenecks', authenticate, async (request, env) => {
+aiMlRoutes.post('/ai/analyze/:processId/bottlenecks', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
     
     const prediction = await predictBottlenecks(db, processId);
     
@@ -559,7 +559,7 @@ router.post('/ai/analyze/:processId/bottlenecks', authenticate, async (request, 
       recommendations.push('No significant bottlenecks detected. Continue monitoring.');
     }
     
-    return createResponse({
+    return c.json({
       success: true,
       data: {
         bottlenecks: prediction.value.map(b => b.stepId),
@@ -568,7 +568,7 @@ router.post('/ai/analyze/:processId/bottlenecks', authenticate, async (request, 
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to analyze bottlenecks');
+    return apiError(c, error, 'aiMl.analyzeBottlenecks');
   }
 });
 
@@ -576,11 +576,11 @@ router.post('/ai/analyze/:processId/bottlenecks', authenticate, async (request, 
  * POST /api/ml/scenario/:processId
  * Run scenario analysis
  */
-router.post('/ml/scenario/:processId', authenticate, async (request, env) => {
+aiMlRoutes.post('/ml/scenario/:processId', authMiddleware, async (c) => {
   try {
-    const db = getDB(env);
-    const { processId } = request.params;
-    const { parameters } = await request.json();
+    const db = getDB(c.env);
+    const processId = c.req.param('processId');
+    const { parameters } = await c.req.json();
     
     // Get baseline metrics
     const metrics = await db.prepare(`
@@ -614,7 +614,7 @@ router.post('/ml/scenario/:processId', authenticate, async (request, env) => {
       comparison.successChange > 0 || 
       comparison.costChange < 0;
 
-    return createResponse({
+    return c.json({
       success: true,
       data: {
         name: parameters.name || 'Custom Scenario',
@@ -627,7 +627,7 @@ router.post('/ml/scenario/:processId', authenticate, async (request, env) => {
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to run scenario analysis');
+    return apiError(c, error, 'aiMl.scenario');
   }
 });
 
@@ -635,19 +635,19 @@ router.post('/ml/scenario/:processId', authenticate, async (request, env) => {
  * POST /api/ai/feedback
  * Submit feedback on AI recommendation
  */
-router.post('/ai/feedback', authenticate, async (request, env) => {
+aiMlRoutes.post('/ai/feedback', authMiddleware, async (c) => {
   try {
-    const { recommendationId, helpful, feedback } = await request.json();
+    const { recommendationId, helpful, feedback } = await c.req.json();
     
     // In production, this would update ML model training data
     console.log(`Feedback received for ${recommendationId}: helpful=${helpful}, feedback="${feedback}"`);
     
-    return createResponse({
+    return c.json({
       success: true,
       message: 'Feedback recorded',
     });
   } catch (error) {
-    return handleError(error, 'Failed to submit feedback');
+    return apiError(c, error, 'aiMl.feedback');
   }
 });
 
@@ -655,11 +655,11 @@ router.post('/ai/feedback', authenticate, async (request, env) => {
  * GET /api/ml/metrics
  * Get ML model performance metrics
  */
-router.get('/ml/metrics', authenticate, async (request, env) => {
+aiMlRoutes.get('/ml/metrics', authMiddleware, async (c) => {
   try {
     // In production, this would query actual ML model metrics
     // For now, return placeholder data
-    return createResponse({
+    return c.json({
       success: true,
       data: {
         accuracy: 87.5,
@@ -670,8 +670,8 @@ router.get('/ml/metrics', authenticate, async (request, env) => {
       },
     });
   } catch (error) {
-    return handleError(error, 'Failed to get model metrics');
+    return apiError(c, error, 'aiMl.metrics');
   }
 });
 
-export default router;
+export { aiMlRoutes };
