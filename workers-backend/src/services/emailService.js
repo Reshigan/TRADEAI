@@ -132,27 +132,31 @@ export class EmailService {
 
     const { subject, html } = template(data);
 
-    // Check if any email provider is configured
-    const hasAzure = this.azureClientId && this.azureClientSecret && this.azureTenantId;
-    const hasApiKey = this.apiKey;
+    // Verify the active provider has the required credentials
+    const hasAzure = !!(this.azureClientId && this.azureClientSecret && this.azureTenantId);
+    const hasApiKey = !!this.apiKey;
 
-    if (!hasAzure && !hasApiKey) {
-      console.log(JSON.stringify({ level: 'info', action: 'email_queued', to, subject, note: 'No email credentials configured' }));
+    if (this.provider === 'microsoft' && !hasAzure) {
+      console.log(JSON.stringify({ level: 'info', action: 'email_queued', to, subject, note: 'Microsoft Graph credentials not configured (AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID)' }));
+      return true; // Don't fail if email not configured
+    }
+    if ((this.provider === 'resend' || this.provider === 'sendgrid') && !hasApiKey) {
+      console.log(JSON.stringify({ level: 'info', action: 'email_queued', to, subject, note: `${this.provider} EMAIL_API_KEY not configured` }));
       return true; // Don't fail if email not configured
     }
 
     try {
       let response;
 
-      if (this.provider === 'microsoft' && hasAzure) {
+      if (this.provider === 'microsoft') {
         response = await this.sendViaGraph(to, subject, html);
-      } else if (this.provider === 'resend' && hasApiKey) {
+      } else if (this.provider === 'resend') {
         response = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ from: `${this.fromName} <${this.fromEmail}>`, to: [to], subject, html })
         });
-      } else if (this.provider === 'sendgrid' && hasApiKey) {
+      } else if (this.provider === 'sendgrid') {
         response = await fetch('https://api.sendgrid.com/v3/mail/send', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
@@ -162,9 +166,12 @@ export class EmailService {
             subject, content: [{ type: 'text/html', value: html }]
           })
         });
+      } else {
+        console.error(JSON.stringify({ level: 'error', action: 'email_provider_unknown', to, subject, provider: this.provider }));
+        return false;
       }
 
-      if (response && !response.ok) {
+      if (!response.ok) {
         const err = await response.text().catch(() => 'Unknown error');
         console.error(JSON.stringify({ level: 'error', action: 'email_send_failed', to, subject, status: response.status, error: err }));
         // Queue for retry
