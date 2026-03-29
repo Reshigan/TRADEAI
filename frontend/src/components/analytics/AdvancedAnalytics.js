@@ -81,7 +81,7 @@ const AdvancedAnalytics = () => {
     region: 'all'
   });
   const [loading, setLoading] = useState(false);
-  const [, setError] = useState(null);
+  const [error, setError] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
@@ -239,6 +239,15 @@ const AdvancedAnalytics = () => {
             </Button>
           </Box>
         </Box>
+
+        {/* Error State */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} action={
+            <Button color="inherit" size="small" onClick={fetchAnalyticsData}>Retry</Button>
+          }>
+            {error}
+          </Alert>
+        )}
 
         {/* KPI Summary */}
         <Grid container spacing={3} mb={3}>
