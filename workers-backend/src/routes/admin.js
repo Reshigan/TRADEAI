@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
 
 const admin = new Hono();
 admin.use('*', authMiddleware);
+admin.use('*', requireMinRole('admin'));
 
 const getCompanyId = (c) => {
   const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
@@ -125,9 +126,10 @@ admin.get('/performance/metrics', async (c) => {
 admin.get('/users', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const results = await db.prepare(
-      'SELECT id, email, name, role, status, company_id, created_at, updated_at FROM users ORDER BY created_at DESC LIMIT 100'
-    ).all();
+      'SELECT id, email, name, role, status, company_id, created_at, updated_at FROM users WHERE company_id = ? ORDER BY created_at DESC LIMIT 100'
+    ).bind(companyId).all();
     return c.json({ success: true, data: results.results || [] });
   } catch (error) {
     return apiError(c, error, 'admin.users');
@@ -137,6 +139,7 @@ admin.get('/users', async (c) => {
 admin.post('/users', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const body = await c.req.json();
     if (!body.email || !body.name) {
       return c.json({ success: false, message: 'email and name are required' }, 400);
@@ -145,7 +148,7 @@ admin.post('/users', async (c) => {
     const now = new Date().toISOString();
     await db.prepare(
       'INSERT INTO users (id, email, name, role, status, company_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-    ).bind(id, body.email, body.name, body.role || 'user', 'active', body.company_id || null, now, now).run();
+    ).bind(id, body.email, body.name, body.role || 'user', 'active', companyId, now, now).run();
     const created = await db.prepare('SELECT id, email, name, role, status, company_id, created_at FROM users WHERE id = ?').bind(id).first();
     return c.json({ success: true, data: created }, 201);
   } catch (error) {
@@ -156,13 +159,14 @@ admin.post('/users', async (c) => {
 admin.put('/users/:id', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const body = await c.req.json();
     const now = new Date().toISOString();
     await db.prepare(
-      'UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), status = COALESCE(?, status), updated_at = ? WHERE id = ?'
-    ).bind(body.name || null, body.role || null, body.status || null, now, id).run();
-    const updated = await db.prepare('SELECT id, email, name, role, status, company_id, created_at, updated_at FROM users WHERE id = ?').bind(id).first();
+      'UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?'
+    ).bind(body.name || null, body.role || null, body.status || null, now, id, companyId).run();
+    const updated = await db.prepare('SELECT id, email, name, role, status, company_id, created_at, updated_at FROM users WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!updated) return c.json({ success: false, message: 'User not found' }, 404);
     return c.json({ success: true, data: updated });
   } catch (error) {
@@ -173,8 +177,9 @@ admin.put('/users/:id', async (c) => {
 admin.delete('/users/:id', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    await db.prepare('DELETE FROM users WHERE id = ?').bind(id).run();
+    await db.prepare('DELETE FROM users WHERE id = ? AND company_id = ?').bind(id, companyId).run();
     return c.json({ success: true, message: 'User deleted' });
   } catch (error) {
     return apiError(c, error, 'admin.users');
@@ -184,12 +189,13 @@ admin.delete('/users/:id', async (c) => {
 admin.patch('/users/:id/toggle-active', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    const user = await db.prepare('SELECT status FROM users WHERE id = ?').bind(id).first();
+    const user = await db.prepare('SELECT status FROM users WHERE id = ? AND company_id = ?').bind(id, companyId).first();
     if (!user) return c.json({ success: false, message: 'User not found' }, 404);
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
     const now = new Date().toISOString();
-    await db.prepare('UPDATE users SET status = ?, updated_at = ? WHERE id = ?').bind(newStatus, now, id).run();
+    await db.prepare('UPDATE users SET status = ?, updated_at = ? WHERE id = ? AND company_id = ?').bind(newStatus, now, id, companyId).run();
     return c.json({ success: true, data: { status: newStatus } });
   } catch (error) {
     return apiError(c, error, 'admin.users');

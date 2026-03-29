@@ -11,6 +11,23 @@ const getCompanyId = (c) => {
   return id;
 };
 
+const validateWebhookUrl = (url) => {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      return 'Webhook URL must use http:// or https://';
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    const blocked = ['localhost', '127.0.0.1', '0.0.0.0', '::1', 'metadata.google.internal'];
+    if (blocked.includes(hostname)) return 'Webhook URL cannot target internal addresses';
+    if (hostname.startsWith('169.254.') || hostname.startsWith('10.') || hostname.startsWith('192.168.')) return 'Webhook URL cannot target private IP ranges';
+    if (hostname.match(/^172\.(1[6-9]|2[0-9]|3[01])\./)) return 'Webhook URL cannot target private IP ranges';
+    return null;
+  } catch {
+    return 'Invalid URL format';
+  }
+};
+
 // List webhooks
 webhooks.get('/', async (c) => {
   try {
@@ -33,6 +50,8 @@ webhooks.post('/', async (c) => {
     const db = c.env.DB;
     const body = await c.req.json();
     if (!body.url) return c.json({ success: false, message: 'url is required' }, 400);
+    const urlError = validateWebhookUrl(body.url);
+    if (urlError) return c.json({ success: false, message: urlError }, 400);
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
     await db.prepare(
@@ -104,7 +123,10 @@ webhooks.post('/:id/test', async (c) => {
     const webhook = await db.prepare('SELECT * FROM webhooks WHERE id = ? AND company_id = ?').bind(id, companyId).first().catch(() => null);
     if (!webhook) return c.json({ success: false, message: 'Webhook not found' }, 404);
 
-    // Send test payload to webhook URL
+    // Validate URL before making server-side request
+    const urlError = validateWebhookUrl(webhook.url);
+    if (urlError) return c.json({ success: false, message: `Cannot test webhook: ${urlError}` }, 400);
+
     const testPayload = {
       event: 'test',
       timestamp: new Date().toISOString(),
