@@ -350,10 +350,14 @@ export default function Dashboard() {
               <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                   <Brain size={16} color="#6366F1" />
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prediction</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Spend Forecast</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>Next quarter spend projected at {fmt((kpis.totalSpend || 0) * 1.12)}</Typography>
-                <Typography variant="caption" color="text.secondary">Based on historical patterns and seasonal trends</Typography>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {kpis.totalSpend > 0
+                    ? `Current spend is ${fmt(kpis.totalSpend)} against ${fmt(kpis.totalBudget)} budget (${(kpis.budgetUtil || 0).toFixed(0)}% utilized)`
+                    : 'No spend data available yet — create promotions to start tracking'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Based on your current period data</Typography>
               </Box>
             </Grid>
             <Grid item xs={12} md={4}>
@@ -362,18 +366,32 @@ export default function Dashboard() {
                   <Lightbulb size={16} color="#F59E0B" />
                   <Typography variant="caption" sx={{ fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recommendation</Typography>
                 </Box>
-                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>Reallocate underperforming budgets to high-ROI promotions</Typography>
-                <Typography variant="caption" color="text.secondary">3 promotions below target ROI detected</Typography>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {(kpis.budgetUtil || 0) > 90
+                    ? 'Budget nearly exhausted — review remaining allocations before committing new spend'
+                    : (kpis.roi || 0) < 1 && kpis.activePromos > 0
+                      ? `ROI is ${(kpis.roi || 0).toFixed(1)}x — consider pausing low-performing promotions`
+                      : kpis.activePromos > 0
+                        ? `${kpis.activePromos} active promotions running with ${(kpis.roi || 0).toFixed(1)}x ROI — performance is on track`
+                        : 'No active promotions — create your first promotion to get AI recommendations'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Generated from your live KPI data</Typography>
               </Box>
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                  <ShieldAlert size={16} color="#DC2626" />
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Anomaly Alert</Typography>
+                  <ShieldAlert size={16} color={kpis.pendingCount > 0 ? '#DC2626' : '#059669'} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: kpis.pendingCount > 0 ? '#DC2626' : '#059669', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {kpis.pendingCount > 0 ? 'Action Required' : 'All Clear'}
+                  </Typography>
                 </Box>
-                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>Unusual deduction pattern detected in 2 accounts</Typography>
-                <Typography variant="caption" color="text.secondary">Review recommended before settlement cycle</Typography>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {kpis.pendingCount > 0
+                    ? `${kpis.pendingCount} pending approval${kpis.pendingCount !== 1 ? 's' : ''} require review before settlement cycle`
+                    : 'No pending approvals — all items are up to date'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Based on your approval queue</Typography>
               </Box>
             </Grid>
           </Grid>
