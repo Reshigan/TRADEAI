@@ -508,7 +508,7 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
     // Send password reset email via configured provider (Microsoft Graph / Resend / SendGrid)
     const emailService = new EmailService(c.env);
     const frontendUrl = c.env.FRONTEND_URL || 'https://tradeai.vantax.co.za';
-    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
     const emailSent = await emailService.sendPasswordReset(email, {
       firstName: user.firstName || 'User',
       resetUrl,
