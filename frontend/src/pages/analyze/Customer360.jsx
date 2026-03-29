@@ -15,7 +15,7 @@ export default function Customer360() {
 
   useEffect(() => {
     const load = async () => {
-      try { const res = await customerService.getAll(); setCustomers(res.data || res || []); } catch (e) { console.error(e); }
+      try { const res = await customerService.getAll(); setCustomers(res.data || res || []); } catch (e) { console.error('Failed to load customers:', e); }
       setLoading(false);
     };
     load();
@@ -33,13 +33,13 @@ export default function Customer360() {
         try {
           const promoRes = await api.get('/promotions', { params: { customer_id: selected } });
           promos = promoRes.data?.data || [];
-        } catch (_) {}
+        } catch (promoErr) { console.error('Failed to load promotions:', promoErr); }
         // Also fetch trade spends for this customer
         let spends = [];
         try {
           const spendRes = await api.get('/trade-spends', { params: { customer_id: selected } });
           spends = spendRes.data?.data || [];
-        } catch (_) {}
+        } catch (spendErr) { console.error('Failed to load trade spends:', spendErr); }
         const totalSpend = spends.reduce((s, ts) => s + (Number(ts.amount) || 0), 0);
         setProfile({
           ...profileData,

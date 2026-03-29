@@ -378,9 +378,9 @@ const TradeSpendDetail = () => {
                   <Typography variant="h6" gutterBottom>
                     Performance
                   </Typography>
-                  <Alert severity="info">
-                    Performance metrics feature coming soon.
-                  </Alert>
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+                    No performance data available for this trade spend.
+                  </Typography>
                 </Box>
               )}
               
@@ -389,9 +389,9 @@ const TradeSpendDetail = () => {
                   <Typography variant="h6" gutterBottom>
                     Activity Log
                   </Typography>
-                  <Alert severity="info">
-                    Activity log feature coming soon.
-                  </Alert>
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+                    No activity recorded yet for this trade spend.
+                  </Typography>
                 </Box>
               )}
             </Box>

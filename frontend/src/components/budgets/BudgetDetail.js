@@ -413,9 +413,9 @@ const BudgetDetail = () => {
                   <Typography variant="h6" gutterBottom>
                     Activity Log
                   </Typography>
-                  <Alert severity="info">
-                    Activity log feature coming soon.
-                  </Alert>
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+                    No activity recorded yet for this budget.
+                  </Typography>
                 </Box>
               )}
             </Box>

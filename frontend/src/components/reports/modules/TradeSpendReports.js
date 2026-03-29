@@ -69,51 +69,33 @@ const TradeSpendReports = () => {
       setError(null);
       const response = await tradeSpendService.getAll();
       
-      // Generate synthetic trade spend performance data
-      const tradeSpendsWithMetrics = (response.data || []).map((tradeSpend, index) => ({
+      // Use real trade spend data with actual field values
+      const tradeSpendsWithMetrics = (response.data || []).map((tradeSpend) => ({
         ...tradeSpend,
-        // Budget metrics
-        budgetAllocated: Math.floor(Math.random() * 1000000) + 100000,
-        actualSpend: Math.floor(Math.random() * 800000) + 80000,
-        variance: 0, // Will be calculated
-        utilizationRate: 0, // Will be calculated
+        // Use actual data from API, default to 0 for missing metrics
+        budgetAllocated: tradeSpend.budget_allocated ?? tradeSpend.budget ?? 0,
+        actualSpend: tradeSpend.actual_spend ?? tradeSpend.spent ?? 0,
+        variance: 0,
+        utilizationRate: 0,
         
-        // Performance metrics
-        salesImpact: Math.floor(Math.random() * 2000000) + 200000,
-        roi: (Math.random() * 300) + 100, // 100% to 400% ROI
-        incrementalSales: Math.floor(Math.random() * 500000) + 50000,
-        marketShareGain: Math.random() * 5 + 1, // 1% to 6%
+        salesImpact: tradeSpend.sales_impact ?? 0,
+        roi: tradeSpend.roi ?? 0,
+        incrementalSales: tradeSpend.incremental_sales ?? 0,
+        marketShareGain: tradeSpend.market_share_gain ?? 0,
         
-        // Channel metrics
-        channelPerformance: [
-          { name: 'Modern Trade', spend: Math.floor(Math.random() * 300000) + 30000, sales: Math.floor(Math.random() * 800000) + 80000 },
-          { name: 'Traditional Trade', spend: Math.floor(Math.random() * 200000) + 20000, sales: Math.floor(Math.random() * 600000) + 60000 },
-          { name: 'E-commerce', spend: Math.floor(Math.random() * 150000) + 15000, sales: Math.floor(Math.random() * 400000) + 40000 },
-          { name: 'Wholesale', spend: Math.floor(Math.random() * 250000) + 25000, sales: Math.floor(Math.random() * 700000) + 70000 }
-        ],
+        channelPerformance: tradeSpend.channel_performance ?? [],
+        monthlyTrend: tradeSpend.monthly_trend ?? [],
         
-        // Time series data
-        monthlyTrend: Array.from({ length: 12 }, (_, i) => ({
-          month: `Month ${i + 1}`,
-          budget: Math.floor(Math.random() * 100000) + 50000,
-          actual: Math.floor(Math.random() * 90000) + 45000,
-          sales: Math.floor(Math.random() * 200000) + 100000,
-          roi: Math.random() * 200 + 100
-        })),
+        efficiency: tradeSpend.efficiency ?? 0,
+        wasteReduction: tradeSpend.waste_reduction ?? 0,
+        costPerAcquisition: tradeSpend.cost_per_acquisition ?? 0,
         
-        // Optimization metrics
-        efficiency: Math.random() * 40 + 60, // 60% to 100%
-        wasteReduction: Math.random() * 30 + 10, // 10% to 40%
-        costPerAcquisition: Math.floor(Math.random() * 200) + 50,
+        category: tradeSpend.category ?? 'Uncategorized',
+        customer: tradeSpend.customer_name ?? tradeSpend.customer ?? '',
         
-        // Category and customer data
-        category: ['FMCG', 'Beverages', 'Personal Care', 'Home Care'][Math.floor(Math.random() * 4)],
-        customer: `Customer ${String.fromCharCode(65 + index)}`,
-        
-        // Status
-        status: ['Active', 'Completed', 'Under Review'][Math.floor(Math.random() * 3)],
-        startDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
-        endDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+        status: tradeSpend.status ?? 'Unknown',
+        startDate: tradeSpend.start_date ? new Date(tradeSpend.start_date) : null,
+        endDate: tradeSpend.end_date ? new Date(tradeSpend.end_date) : null
       }));
       
       // Calculate derived metrics

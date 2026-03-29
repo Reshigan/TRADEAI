@@ -94,20 +94,14 @@ const CustomerReports = () => {
     setAnchorEl(null);
   };
 
-  // Calculate customer metrics with mock performance data
+  // Calculate customer metrics from real data
   const totalCustomers = customers.length;
   const activeCustomers = customers.filter(c => c.status === 'active').length;
   const totalRevenue = customers.reduce((sum, customer) => {
-    // Mock revenue calculation based on customer tier
-    const tierMultiplier = {
-      'platinum': 500000,
-      'gold': 300000,
-      'silver': 150000,
-      'bronze': 75000
-    };
-    return sum + (tierMultiplier[customer.tier] || 100000);
+    return sum + (customer.revenue ?? customer.total_revenue ?? 0);
   }, 0);
-  const avgOrderValue = totalRevenue / Math.max(totalCustomers * 12, 1); // Assuming 12 orders per year
+  const totalOrders = customers.reduce((sum, customer) => sum + (customer.orders ?? customer.total_orders ?? 0), 0);
+  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   // Customer segmentation
   const tierDistribution = customers.reduce((acc, customer) => {
@@ -122,27 +116,20 @@ const CustomerReports = () => {
     return acc;
   }, {});
 
-  // Prepare chart data with enhanced metrics
-  const customerPerformanceData = customers.map((customer, index) => {
-    const tierMultiplier = {
-      'platinum': 500000,
-      'gold': 300000,
-      'silver': 150000,
-      'bronze': 75000
-    };
-    const baseRevenue = tierMultiplier[customer.tier] || 100000;
-    const orders = Math.floor(Math.random() * 50) + 10;
-    const satisfaction = Math.floor(Math.random() * 30) + 70;
+  // Use real customer data for performance charts
+  const customerPerformanceData = customers.map((customer) => {
+    const revenue = customer.revenue ?? customer.total_revenue ?? 0;
+    const orders = customer.orders ?? customer.total_orders ?? 0;
     
     return {
       name: customer.name,
-      revenue: baseRevenue + (Math.random() * 100000),
+      revenue: revenue,
       orders: orders,
-      avgOrderValue: baseRevenue / orders,
-      satisfaction: satisfaction,
+      avgOrderValue: orders > 0 ? revenue / orders : 0,
+      satisfaction: customer.satisfaction ?? customer.customer_satisfaction ?? 0,
       tier: customer.tier,
       type: customer.type,
-      growth: (Math.random() * 40) - 10 // -10% to +30% growth
+      growth: customer.growth_rate ?? customer.growth ?? 0
     };
   });
 
