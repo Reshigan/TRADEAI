@@ -112,7 +112,7 @@ function NavGroup({ group, collapsed, location, navigate, pendingCount }) {
             <ListItemButton key={item.path} onClick={() => navigate(item.path)}
               sx={{ mx: 1, borderRadius: 1.5, minHeight: 36, pl: 5.5,
                 bgcolor: itemActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-                borderLeft: itemActive ? '2.5px solid #6366F1' : '2.5px solid transparent',
+                borderLeft: itemActive ? '2.5px solid #10B981' : '2.5px solid transparent',
                 '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' } }}>
               <ListItemIcon sx={{ minWidth: 28, color: itemActive ? '#fff' : 'rgba(255,255,255,0.4)' }}><ItemIcon size={16} /></ListItemIcon>
               <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: itemActive ? 600 : 400, color: itemActive ? '#fff' : 'rgba(255,255,255,0.5)' }} />
@@ -204,9 +204,9 @@ export default function Sidebar({ user }) {
                 <IconButton size="small" onClick={() => setMode(key)}
                   sx={{
                     color: mode === key ? '#fff' : 'rgba(255,255,255,0.35)',
-                                        bgcolor: mode === key ? 'rgba(16,185,129,0.25)' : 'transparent',
-                                        borderRadius: 1.5, mx: 0.25, width: 32, height: 32,
-                                        '&:hover': { color: '#fff', bgcolor: mode === key ? 'rgba(16,185,129,0.35)' : 'rgba(255,255,255,0.08)' },
+                    bgcolor: mode === key ? 'rgba(16,185,129,0.25)' : 'transparent',
+                    borderRadius: 1.5, mx: 0.25, width: 32, height: 32,
+                    '&:hover': { color: '#fff', bgcolor: mode === key ? 'rgba(16,185,129,0.35)' : 'rgba(255,255,255,0.08)' },
                   }}>
                   <Icon size={16} />
                 </IconButton>
