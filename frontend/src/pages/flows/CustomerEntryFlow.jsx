@@ -24,6 +24,8 @@ import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 
 /**
@@ -39,6 +41,8 @@ import { preFlightCheck } from '../../utils/apiHealth';
  */
 const CustomerEntryFlow = () => {
   // Form state
+    const toast = useToast();
+    const { confirm, ConfirmDialogComponent } = useConfirmDialog();
     const [formData, setFormData] = useState({
       name: '',
       code: '',
@@ -252,8 +256,7 @@ const CustomerEntryFlow = () => {
         formData
       );
     } catch (error) {
-      console.error('Auto-save failed:', error);
-    }
+      console.error('Auto-save failed:', error); toast.error('Auto-save failed'); }
   };
   
   // AI Panel
@@ -670,6 +673,7 @@ const CustomerEntryFlow = () => {
           </Button>
         </Box>
       </Box>
+    {ConfirmDialogComponent}
     </UniversalFlowLayout>
   );
 };

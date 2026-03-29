@@ -40,8 +40,10 @@ import ActivityGridList from './ActivityGridList';
 import ActivityGridHeatMap from './ActivityGridHeatMap';
 import ActivityForm from './ActivityForm';
 import { useSnackbar } from 'notistack';
+import { useToast } from '../common/ToastNotification';
 
 const ActivityGrid = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState([]);
   const [viewType, setViewType] = useState('month');
@@ -77,6 +79,7 @@ const ActivityGrid = () => {
       setConflicts(conflictsResponse.data.data);
     } catch (error) {
       console.error('Error fetching activity grid:', error);
+      toast.error('Error fetching activity grid');
       enqueueSnackbar('Failed to load activity grid data', { variant: 'error' });
     } finally {
       setLoading(false);
@@ -145,6 +148,7 @@ const ActivityGrid = () => {
       handleFormClose();
     } catch (error) {
       console.error('Error saving activity:', error);
+      toast.error('Error saving activity');
       enqueueSnackbar('Failed to save activity', { variant: 'error' });
     }
   };
@@ -173,6 +177,7 @@ const ActivityGrid = () => {
       fetchActivities();
     } catch (error) {
       console.error('Error syncing activities:', error);
+      toast.error('Error syncing activities');
       enqueueSnackbar('Failed to sync activities', { variant: 'error' });
     } finally {
       setLoading(false);

@@ -56,10 +56,12 @@ import {
   Legend
 } from 'recharts';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const PredictiveAnalytics = () => {
   const { enqueueSnackbar } = useSnackbar();
   
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [timeHorizon, setTimeHorizon] = useState('quarter');
   const [predictions, setPredictions] = useState([]);
@@ -124,6 +126,7 @@ const PredictiveAnalytics = () => {
         });
       } catch (error) {
         console.error('Error fetching predictions:', error);
+        toast.error('Error fetching predictions');
         enqueueSnackbar('Failed to load predictive analytics', { variant: 'error' });
       } finally {
         setLoading(false);

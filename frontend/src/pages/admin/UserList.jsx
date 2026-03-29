@@ -3,10 +3,15 @@ import { Box, Button, Avatar, Chip, Dialog, DialogTitle, DialogContent, DialogAc
 import { Plus, Edit2, Trash2, Shield } from 'lucide-react';
 import { userService } from '../../services/api';
 import { SmartTable, PageHeader, SmartField } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 export default function UserList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', role: 'kam', password: '', status: 'active' });
   const [saving, setSaving] = useState(false);
@@ -15,7 +20,8 @@ export default function UserList() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { const res = await userService.getAll(); setUsers(res.data || res || []); } catch (e) { console.error(e); }
+    setFetchError(null);
+    try { const res = await userService.getAll(); setUsers(res.data || res || []); } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -32,8 +38,8 @@ export default function UserList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this user?')) return;
-    try { await userService.delete(id); load(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete this user?', { severity: 'error' })) return;
+    try { await userService.delete(id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const roleColor = (r) => ({ super_admin: '#DC2626', admin: '#7C3AED', manager: '#2563EB', kam: '#059669', finance: '#F59E0B', viewer: '#94A3B8' }[r] || '#94A3B8');
@@ -61,6 +67,11 @@ export default function UserList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Users"
         subtitle="Manage system users and access"
@@ -109,6 +120,7 @@ export default function UserList() {
           <Button variant="contained" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : editId ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

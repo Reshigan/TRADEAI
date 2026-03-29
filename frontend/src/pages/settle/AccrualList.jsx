@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Alert} from '@mui/material';
 import { RefreshCw } from 'lucide-react';
 import { accrualService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function AccrualList() {
+  const toast = useToast();
   const { t, tPlural } = useTerminology();
   const [accruals, setAccruals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const load = async () => {
     try {
       const res = await accrualService.getAll();
       setAccruals(res.data || res || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 
@@ -37,6 +40,11 @@ export default function AccrualList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={tPlural('accrual')}
         subtitle={`${t('promotion')} ${t('accrual').toLowerCase()} calculations and tracking`}

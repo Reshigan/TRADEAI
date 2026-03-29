@@ -8,11 +8,12 @@ import {
   ShowChart as ChartIcon, Assessment as AssessmentIcon,
   Lightbulb as LightbulbIcon, Speed as SpeedIcon
 } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../../services/apiClient';
 import { postEventAnalysisService } from '../../../services/api';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const PromotionPerformance = ({ promotionId, promotion }) => {
+  const toast = useToast();
   const [performance, setPerformance] = useState(null);
   const [pea, setPea] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -42,8 +43,7 @@ const PromotionPerformance = ({ promotionId, promotion }) => {
       const res = await postEventAnalysisService.getAnalysis(promotionId);
       if (res.success) setPea(res.data);
     } catch (err) {
-      console.error('Error loading post-event analysis:', err);
-    }
+      console.error('Error loading post-event analysis:', err); toast.error('Error loading post-event analysis'); }
   };
 
   const formatCurrency = (value) => {

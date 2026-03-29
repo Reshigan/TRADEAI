@@ -59,6 +59,8 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import api from '../../../services/api';
+import { useToast } from '../../../components/common/ToastNotification';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 // Subscription plan configurations
 const SUBSCRIPTION_PLANS = {
@@ -93,6 +95,8 @@ const TenantManagement = () => {
   const { enqueueSnackbar } = useSnackbar();
   
   // State
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -176,6 +180,7 @@ const TenantManagement = () => {
       setTenants(response.data.data || []);
     } catch (error) {
       console.error('Error fetching tenants:', error);
+      toast.error('Error fetching tenants');
       enqueueSnackbar('Failed to load tenants', { variant: 'error' });
     } finally {
       setLoading(false);
@@ -188,8 +193,7 @@ const TenantManagement = () => {
       const response = await api.get('/tenants/stats');
       setStats(response.data.data);
     } catch (error) {
-      console.error('Error fetching stats:', error);
-    }
+      console.error('Error fetching stats:', error); toast.error('Error fetching stats'); }
   }, []);
 
   useEffect(() => {
@@ -296,6 +300,7 @@ const TenantManagement = () => {
       fetchStats();
     } catch (error) {
       console.error('Error saving tenant:', error);
+      toast.error('Error saving tenant');
       enqueueSnackbar(error.response?.data?.message || 'Failed to save tenant', { variant: 'error' });
     } finally {
       setSaving(false);
@@ -315,6 +320,7 @@ const TenantManagement = () => {
       fetchStats();
     } catch (error) {
       console.error('Error deleting tenant:', error);
+      toast.error('Error deleting tenant');
       enqueueSnackbar('Failed to deactivate tenant', { variant: 'error' });
     }
   };
@@ -1000,6 +1006,7 @@ const TenantManagement = () => {
           )}
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Container>
   );
 };

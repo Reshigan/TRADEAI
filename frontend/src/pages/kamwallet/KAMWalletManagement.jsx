@@ -28,8 +28,10 @@ import { kamWalletService } from '../../services/api';
 import { userService } from '../../services/api';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const KAMWalletManagement = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { formatCurrency } = useCurrency();
   const [wallets, setWallets] = useState([]);
@@ -68,8 +70,7 @@ const KAMWalletManagement = () => {
       const data = await userService.getUsers({ role: 'key_account_manager' });
       setUsers(data);
     } catch (err) {
-      console.error('Failed to load users:', err);
-    }
+      console.error('Failed to load users:', err); toast.error('Failed to load users'); }
   };
 
   const handleCreateWallet = async () => {

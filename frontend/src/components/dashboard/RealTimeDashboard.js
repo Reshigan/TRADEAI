@@ -40,6 +40,7 @@ import {
 } from 'chart.js';
 import { io } from 'socket.io-client';
 import { format, subHours } from 'date-fns';
+import { useToast } from '../common/ToastNotification';
 
 // Register Chart.js components
 ChartJS.register(
@@ -56,6 +57,7 @@ ChartJS.register(
 );
 
 const RealTimeDashboard = () => {
+  const toast = useToast();
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -193,6 +195,7 @@ const RealTimeDashboard = () => {
     } catch (err) {
       setError('Failed to fetch dashboard data');
       console.error('Dashboard fetch error:', err);
+      toast.error('Dashboard fetch error');
     } finally {
       setLoading(false);
     }

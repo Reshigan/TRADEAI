@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
+import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton , Alert} from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -16,13 +15,16 @@ import BudgetApprovals from './tabs/BudgetApprovals';
 import BudgetScenarios from './tabs/BudgetScenarios';
 import BudgetForecast from './tabs/BudgetForecast';
 import BudgetHistory from './tabs/BudgetHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const BudgetDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
+  const [fetchError, setFetchError] = useState(null);
   
   const pageVariant = usePageVariants('budgetDetail');
   const tabs = pageVariant?.tabs || [
@@ -51,9 +53,7 @@ const BudgetDetailWithTabs = () => {
       const response = await apiClient.get(`/budgets/${id}`);
       setBudget(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading budget:', error);
-      toast.error('Failed to load budget');
-    } finally {
+      console.error('Error loading budget:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -67,6 +67,11 @@ const BudgetDetailWithTabs = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadBudget(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ mb: 3 }}>
           <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />

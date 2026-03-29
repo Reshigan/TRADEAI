@@ -19,10 +19,12 @@ import {
 import { PageHeader, DataTable, StatusChip } from '../common';
 import { productService } from '../../services/api';
 import ProductForm from './ProductForm';
+import { useToast } from '../common/ToastNotification';
 
 // No more mock data - using real API calls
 
 const ProductList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,7 @@ const ProductList = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error:", error);
+      toast.error('Error');
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -98,6 +101,7 @@ const ProductList = () => {
       setOpenForm(false);
     } catch (err) {
       console.error('Error saving product:', err);
+      toast.error('Error saving product');
       // Handle error
     }
   };

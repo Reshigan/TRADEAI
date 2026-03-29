@@ -30,8 +30,12 @@ import { useNavigate } from 'react-router-dom';
 import { simulationService, baselineEngineService } from '../../services/api';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import HierarchyBreadcrumb from '../../components/hierarchy/HierarchyBreadcrumb';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const SimulationStudio = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [scenarios, setScenarios] = useState([
     {
@@ -164,6 +168,7 @@ const SimulationStudio = () => {
       });
     } catch (error) {
       console.error('Failed to run simulation:', error);
+      toast.error('Failed to run simulation');
       handleUpdateScenario(scenarioId, { loading: false });
     }
   };
@@ -192,8 +197,7 @@ const SimulationStudio = () => {
       const response = await simulationService.compareScenarios(scenariosToCompare);
       setCompareMode(true);
     } catch (error) {
-      console.error('Failed to compare scenarios:', error);
-    }
+      console.error('Failed to compare scenarios:', error); toast.error('Failed to compare scenarios'); }
   };
 
   const handleApplyScenario = (scenarioId) => {
@@ -653,6 +657,7 @@ const SimulationStudio = () => {
           )}
         </Grid>
       </Grid>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

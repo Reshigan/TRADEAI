@@ -50,6 +50,7 @@ import {
 
 import { PageHeader } from '../common';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 // Currency display mapping
 const currencyDisplay = {
@@ -82,6 +83,7 @@ const currencySymbols = {
 };
 
 const CompanyDetail = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   
@@ -118,6 +120,7 @@ const CompanyDetail = () => {
       setLoading(false);
     } catch (err) {
       console.error('Error fetching company data:', err);
+      toast.error('Error fetching company data');
       setSnackbar({
         open: true,
         message: 'Failed to load company data',
@@ -151,6 +154,7 @@ const CompanyDetail = () => {
       setTimeout(() => navigate('/companies'), 1500);
     } catch (error) {
       console.error('Error deleting company:', error);
+      toast.error('Error deleting company');
       setSnackbar({ open: true, message: 'Failed to delete company', severity: 'error' });
       handleDeleteDialogClose();
     }

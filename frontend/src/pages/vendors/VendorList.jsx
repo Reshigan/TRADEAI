@@ -10,8 +10,10 @@ import {
   Groups as VendorsIcon,
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const VendorList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +26,7 @@ const VendorList = () => {
         const response = await api.get(`/vendors${params}`);
         setVendors(response.data?.data || response.data || []);
       } catch (err) {
-        console.error('Failed to fetch vendors:', err);
-      } finally {
+        console.error('Failed to fetch vendors:', err); toast.error('Failed to fetch vendors'); } finally {
         setLoading(false);
       }
     };

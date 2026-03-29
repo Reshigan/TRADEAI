@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Grid, TextField, Button, MenuItem, Switch, FormControlLabel, Alert } from '@mui/material';
 import { Save } from 'lucide-react';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 export default function SystemConfig() {
+  const toast = useToast();
   const [config, setConfig] = useState({
     company_name: '', currency: 'ZAR', fiscal_year_start: '01', approval_threshold_1: '50000', approval_threshold_2: '200000',
     auto_accrual: true, auto_match_deductions: true, notification_email: true, ai_enabled: true,
@@ -17,7 +19,7 @@ export default function SystemConfig() {
         const res = await api.get('/config');
         const data = res.data?.data || res.data || {};
         setConfig(prev => ({ ...prev, ...data }));
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(e); toast.error('An error occurred'); }
     };
     load();
   }, []);
@@ -27,7 +29,7 @@ export default function SystemConfig() {
     try {
       await api.put('/config', config);
       setSuccess(true);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
     setSaving(false);
   };
 

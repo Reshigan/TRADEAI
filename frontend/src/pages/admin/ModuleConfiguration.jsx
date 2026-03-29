@@ -15,6 +15,7 @@ import {
   Description, WorkspacePremium
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const MODULE_DEFINITIONS = [
   { key: 'budgets', label: 'Budgets & Planning', icon: Assessment, description: 'Budget creation, allocation, and tracking', category: 'Core' },
@@ -34,10 +35,12 @@ const MODULE_DEFINITIONS = [
 const CATEGORIES = ['Core', 'Finance', 'Analytics', 'Integration', 'Workflow'];
 
 const ModuleConfiguration = () => {
+  const toast = useToast();
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [modules, setModules] = useState({});
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -49,8 +52,7 @@ const ModuleConfiguration = () => {
       const data = response.data?.data || response.data || [];
       setCompanies(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching companies:', error);
-    } finally {
+      console.error('Error fetching companies:', error); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   }, []);
@@ -64,6 +66,7 @@ const ModuleConfiguration = () => {
       setDirty(false);
     } catch (error) {
       console.error('Error fetching modules:', error);
+      toast.error('Error fetching modules');
       setModules({});
     }
   }, []);
@@ -89,6 +92,7 @@ const ModuleConfiguration = () => {
       setSnackbar({ open: true, message: 'Modules updated successfully', severity: 'success' });
     } catch (error) {
       console.error('Error saving modules:', error);
+      toast.error('Error saving modules');
       setSnackbar({ open: true, message: 'Failed to save modules', severity: 'error' });
     } finally {
       setSaving(false);
@@ -100,6 +104,11 @@ const ModuleConfiguration = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); fetchCompanies(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <CircularProgress />
       </Box>
     );

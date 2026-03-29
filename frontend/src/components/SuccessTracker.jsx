@@ -15,6 +15,7 @@ import {
   Share as ShareIcon
 } from '@mui/icons-material';
 import api from '../services/api';
+import { useToast } from './common/ToastNotification';
 
 /**
  * Success Tracker - Gamification & Motivation
@@ -23,6 +24,7 @@ import api from '../services/api';
  * Builds emotional connection and habit formation.
  */
 const SuccessTracker = ({ userId }) => {
+  const toast = useToast();
   const [stats, setStats] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [recentWins, setRecentWins] = useState([]);
@@ -36,6 +38,7 @@ const SuccessTracker = ({ userId }) => {
         setRecentWins(data.recentWins || []);
       } catch (error) {
         console.error('Error fetching user stats:', error);
+        toast.error('Error fetching user stats');
         setStats(null);
         setRecentWins([]);
       }

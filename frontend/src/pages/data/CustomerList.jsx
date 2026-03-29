@@ -3,6 +3,8 @@ import { Box, Card, CardContent, Typography, Button, Grid, Dialog, DialogTitle, 
 import { Plus, Edit2, Trash2, Users } from 'lucide-react';
 import { customerService } from '../../services/api';
 import { SmartTable, PageHeader, SmartField, FormSection } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const CHANNELS = [
   { value: 'retail', label: 'Retail' }, { value: 'wholesale', label: 'Wholesale' },
@@ -32,8 +34,11 @@ const emptyForm = {
 };
 
 export default function CustomerList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [saving, setSaving] = useState(false);
@@ -42,11 +47,12 @@ export default function CustomerList() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await customerService.getAll();
       const data = res?.data || res || [];
       setItems(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -78,8 +84,8 @@ export default function CustomerList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this customer?')) return;
-    try { await customerService.delete(id); load(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete this customer?', { severity: 'error' })) return;
+    try { await customerService.delete(id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const tierColor = (tc) => ({ A: '#059669', B: '#2563EB', C: '#D97706', D: '#DC2626' }[tc] || '#94A3B8');
@@ -103,6 +109,11 @@ export default function CustomerList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Customer Management"
         subtitle="Manage customer master data, hierarchy, and segmentation"
@@ -196,6 +207,7 @@ export default function CustomerList() {
           <Button variant="contained" onClick={handleSave} disabled={saving || !form.name}>{saving ? 'Saving...' : editId ? 'Update Customer' : 'Create Customer'}</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

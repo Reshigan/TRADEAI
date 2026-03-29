@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const PromotionApprovals = ({ promotionId, promotion, onUpdate }) => {
+  const toast = useToast();
   const [approvals, setApprovals] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -16,8 +18,7 @@ const PromotionApprovals = ({ promotionId, promotion, onUpdate }) => {
       const response = await apiClient.get(`/promotions/${promotionId}/approvals`);
       setApprovals(response.data.data || []);
     } catch (error) {
-      console.error('Error loading approvals:', error);
-    } finally {
+      console.error('Error loading approvals:', error); toast.error('Error loading approvals'); } finally {
       setLoading(false);
     }
   };

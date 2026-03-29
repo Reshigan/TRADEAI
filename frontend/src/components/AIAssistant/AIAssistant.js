@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import apiClient from '../../services/apiClient';
+import { useToast } from '../common/ToastNotification';
 import './AIAssistant.css';
 
 const AIAssistant = () => {
+  const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -50,6 +52,7 @@ const AIAssistant = () => {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('AI Service error:', error);
+      toast.error('AI Service error');
       const errorMessage = {
         type: 'error',
         text: 'Sorry, I\'m having trouble connecting to the AI service. Please try again later.',

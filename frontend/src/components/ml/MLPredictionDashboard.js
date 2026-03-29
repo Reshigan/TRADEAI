@@ -45,8 +45,10 @@ import {
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer} from 'recharts';
 import {format} from 'date-fns';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const MLPredictionDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -132,6 +134,7 @@ const MLPredictionDashboard = () => {
       setModelMetrics(response.data.data);
     } catch (error) {
       console.error('Error fetching model metrics:', error);
+      toast.error('Error fetching model metrics');
     }
   }, []);
 
@@ -141,6 +144,7 @@ const MLPredictionDashboard = () => {
       setTrainingStatus(response.data.data);
     } catch (error) {
       console.error('Error fetching training status:', error);
+      toast.error('Error fetching training status');
     }
   }, []);
 
@@ -165,6 +169,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to predict customer behavior');
       console.error('Error predicting customer behavior:', error);
+      toast.error('Error predicting customer behavior');
     } finally {
       setLoading(false);
     }
@@ -185,6 +190,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to forecast demand');
       console.error('Error forecasting demand:', error);
+      toast.error('Error forecasting demand');
     } finally {
       setLoading(false);
     }
@@ -207,6 +213,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to predict churn');
       console.error('Error predicting churn:', error);
+      toast.error('Error predicting churn');
     } finally {
       setLoading(false);
     }
@@ -229,6 +236,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to optimize promotion');
       console.error('Error optimizing promotion:', error);
+      toast.error('Error optimizing promotion');
     } finally {
       setLoading(false);
     }
@@ -256,6 +264,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to optimize price');
       console.error('Error optimizing price:', error);
+      toast.error('Error optimizing price');
     } finally {
       setLoading(false);
     }
@@ -283,6 +292,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to run batch prediction');
       console.error('Error running batch prediction:', error);
+      toast.error('Error running batch prediction');
     } finally {
       setLoading(false);
     }
@@ -306,6 +316,7 @@ const MLPredictionDashboard = () => {
     } catch (error) {
       setError('Failed to initiate model retraining');
       console.error('Error retraining models:', error);
+      toast.error('Error retraining models');
     } finally {
       setLoading(false);
     }

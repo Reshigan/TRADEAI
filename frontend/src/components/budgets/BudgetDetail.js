@@ -85,6 +85,7 @@ const BudgetDetail = () => {
       setTradeSpends(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch trade spends:', err);
+      toast.error('Failed to fetch trade spends');
       setTradeSpends([]);
     }
   };

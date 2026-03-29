@@ -38,6 +38,7 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from './ToastNotification';
 
 /**
  * ProcessWizard - World-class multi-step wizard component
@@ -72,6 +73,7 @@ const ProcessWizard = ({
   subtitle = 'Complete the steps below',
 }) => {
   const theme = useTheme();
+  const toast = useToast();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState(initialData);
   const [stepData, setStepData] = useState({});
@@ -147,6 +149,7 @@ const ProcessWizard = ({
       await onSave({ ...formData, ...stepData });
     } catch (error) {
       console.error('Auto-save failed:', error);
+      toast.error('Auto-save failed');
     } finally {
       setIsSaving(false);
     }
@@ -160,6 +163,7 @@ const ProcessWizard = ({
         await onComplete({ ...formData, ...stepData });
       } catch (error) {
         console.error('Submission failed:', error);
+        toast.error('Submission failed');
       } finally {
         setIsSaving(false);
       }

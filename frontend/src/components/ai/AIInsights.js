@@ -44,10 +44,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { format } from 'date-fns';
 import api from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const AIInsights = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [insights, setInsights] = useState([]);
@@ -109,6 +111,7 @@ const AIInsights = () => {
     } catch (error) {
       setError('Failed to generate insights');
       console.error('Error generating insights:', error);
+      toast.error('Error generating insights');
     } finally {
       setLoading(false);
     }
@@ -126,6 +129,7 @@ const AIInsights = () => {
       }
     } catch (error) {
       console.error('Error checking alerts:', error);
+      toast.error('Error checking alerts');
     }
   };
 

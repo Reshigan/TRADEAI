@@ -8,6 +8,7 @@ import {
 import { Add, Edit, Delete, Publish, Gavel, CheckCircle } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const policyCategories = [
   { value: 'hr', label: 'Human Resources' },
@@ -60,6 +61,7 @@ const initialFormData = {
 };
 
 export default function PoliciesPage() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -147,7 +149,7 @@ export default function PoliciesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this policy?')) return;
+    if (!await confirm('Are you sure you want to delete this policy?', { severity: 'error' })) return;
     try {
       await enterpriseApi.companyAdmin.deletePolicy(id);
       loadPolicies();
@@ -391,6 +393,7 @@ export default function PoliciesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

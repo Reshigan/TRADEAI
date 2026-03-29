@@ -23,6 +23,7 @@ import {
   Lightbulb as LightbulbIcon
 } from '@mui/icons-material';
 import api from '../services/api';
+import { useToast } from './common/ToastNotification';
 
 
 /**
@@ -32,6 +33,7 @@ import api from '../services/api';
  * Makes users feel like they have a smart assistant watching their business 24/7.
  */
 const SmartInsightsWidget = ({ userId, compact = false }) => {
+  const toast = useToast();
   const [insights, setInsights] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -51,6 +53,7 @@ const SmartInsightsWidget = ({ userId, compact = false }) => {
         setUnreadCount(response.data.unreadCount || 0);
       } catch (error) {
         console.error('Error fetching insights:', error);
+        toast.error('Error fetching insights');
         setInsights([]);
         setUnreadCount(0);
       } finally {

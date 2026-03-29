@@ -22,8 +22,10 @@ import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const CustomerDetail = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
@@ -63,7 +65,7 @@ const CustomerDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this customer?')) {
+    if (await confirm('Are you sure you want to delete this customer?', { severity: 'error' })) {
       try {
         await api.delete(`/customers/${id}`);
         analytics.trackEvent('customer_deleted', { customerId: id });
@@ -220,6 +222,7 @@ const CustomerDetail = () => {
           </Grid>
         </Grid>
       </Paper>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

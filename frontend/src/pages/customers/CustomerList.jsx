@@ -10,8 +10,10 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CustomerList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +31,7 @@ const CustomerList = () => {
         setCustomers(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch customers:', err);
-    } finally {
+      console.error('Failed to fetch customers:', err); toast.error('Failed to fetch customers'); } finally {
       setLoading(false);
     }
   };

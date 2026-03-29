@@ -4,6 +4,7 @@ import { Box, Card, CardContent, Typography, Grid, TextField, Button, Alert, Div
 import { Save, RotateCcw, Building2 } from 'lucide-react';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { settingsService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const TERMINOLOGY_KEYS = [
   { key: 'budget', description: 'Budget / AOP planning' },
@@ -36,6 +37,7 @@ const COMPANY_TYPES = [
 ];
 
 export default function TerminologySettings() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { labels, companyType, updateTerminology, resetTerminology, refresh } = useTerminology();
   const [editLabels, setEditLabels] = useState({});
   const [selectedCompanyType, setSelectedCompanyType] = useState(companyType || 'distributor');
@@ -74,7 +76,7 @@ export default function TerminologySettings() {
   };
 
   const handleReset = async () => {
-    if (!window.confirm('Reset all terminology to defaults? This cannot be undone.')) return;
+    if (!await confirm('Reset all terminology to defaults? This cannot be undone.', { severity: 'error' })) return;
     setResetting(true);
     setError('');
     setSuccess('');
@@ -205,6 +207,7 @@ export default function TerminologySettings() {
           </Grid>
         </CardContent>
       </Card>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

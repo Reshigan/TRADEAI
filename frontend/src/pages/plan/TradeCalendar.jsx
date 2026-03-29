@@ -7,6 +7,7 @@ import {
 import { DollarSign, Megaphone, LayoutGrid, TrendingUp } from 'lucide-react';
 import api, { promotionService, tradeCalendarService } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../components/common/ToastNotification';
 
 const formatCurrency = (v) => {
   const n = parseFloat(v) || 0;
@@ -85,6 +86,7 @@ function SummaryCard({ title, value, subtitle, color = '#1E40AF' }) {
 }
 
 export default function TradeCalendar() {
+  const toast = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [promos, setPromos] = useState([]);
@@ -110,7 +112,7 @@ export default function TradeCalendar() {
         setCalendarEvents(calRes.data || []);
         const gridData = gridRes.data?.data || gridRes.data || [];
         setActivityGrid(Array.isArray(gridData) ? gridData : []);
-      } catch (e) { console.error('Calendar load error:', e); }
+      } catch (e) { console.error('Calendar load error:', e); toast.error('Calendar load error'); }
       setLoading(false);
     };
     load();

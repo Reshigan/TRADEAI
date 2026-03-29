@@ -51,8 +51,10 @@ import {
 } from 'recharts';
 import { productService } from '../../../services/api';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../common/ToastNotification';
 
 const ProductReports = () => {
+  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +95,7 @@ const ProductReports = () => {
       setProducts(productsWithMetrics);
     } catch (error) {
       console.error('Error fetching product data:', error);
+      toast.error('Error fetching product data');
       setError('Failed to load product data. Please try again.');
       setProducts([]);
     } finally {

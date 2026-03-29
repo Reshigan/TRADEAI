@@ -27,8 +27,10 @@ import {
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import rebateService from '../../services/rebateService';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const RebateApproval = () => {
+  const toast = useToast();
   const [rebates, setRebates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRebate, setSelectedRebate] = useState(null);
@@ -51,6 +53,7 @@ const RebateApproval = () => {
       }
     } catch (error) {
       console.error('Failed to load pending rebates:', error);
+      toast.error('Failed to load pending rebates');
       setError('Failed to load pending rebates');
     } finally {
       setLoading(false);
@@ -97,6 +100,7 @@ const RebateApproval = () => {
       }
     } catch (error) {
       console.error(`Failed to ${action} rebate:`, error);
+      toast.error(`Failed to ${action} rebate`);
       setError(error.response?.data?.message || `Failed to ${action} rebate`);
     } finally {
       setLoading(false);

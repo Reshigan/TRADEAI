@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Button, Paper, Alert } from '@mui/material';
 import { Error as ErrorIcon, Refresh } from '@mui/icons-material';
 
+
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);

@@ -31,8 +31,10 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const AIModelHealthWidget = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [health, setHealth] = useState(null);
@@ -56,6 +58,7 @@ const AIModelHealthWidget = () => {
       setHealth(response.data);
     } catch (err) {
       console.error('Health check error:', err);
+      toast.error('Health check error');
       setError(err.response?.data?.message || 'Failed to load health status');
     } finally {
       setLoading(false);

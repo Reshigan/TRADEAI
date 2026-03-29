@@ -57,10 +57,12 @@ import {
   Cell
 } from 'recharts';
 import { securityService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const EnhancedSecurityDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -122,6 +124,7 @@ const EnhancedSecurityDashboard = () => {
     } catch (err) {
       setError('Failed to load security data');
       console.error('Security data loading error:', err);
+      toast.error('Security data loading error');
     } finally {
       setLoading(false);
     }
@@ -139,6 +142,7 @@ const EnhancedSecurityDashboard = () => {
     } catch (err) {
       setError('Failed to setup MFA');
       console.error('MFA setup error:', err);
+      toast.error('MFA setup error');
     }
   };
 
@@ -152,6 +156,7 @@ const EnhancedSecurityDashboard = () => {
     } catch (err) {
       setError('Failed to enable MFA');
       console.error('MFA enable error:', err);
+      toast.error('MFA enable error');
     }
   };
 
@@ -162,6 +167,7 @@ const EnhancedSecurityDashboard = () => {
     } catch (err) {
       setError('Failed to block user');
       console.error('Block user error:', err);
+      toast.error('Block user error');
     }
   };
 
@@ -172,6 +178,7 @@ const EnhancedSecurityDashboard = () => {
     } catch (err) {
       setError('Failed to terminate session');
       console.error('Terminate session error:', err);
+      toast.error('Terminate session error');
     }
   };
 
@@ -191,6 +198,7 @@ const EnhancedSecurityDashboard = () => {
     } catch (err) {
       setError('Failed to save role');
       console.error('Save role error:', err);
+      toast.error('Save role error');
     }
   };
 

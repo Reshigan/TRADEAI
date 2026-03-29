@@ -15,10 +15,13 @@ import {
   CheckCircle, AdminPanelSettings, Email
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const AdminAssignment = () => {
+  const toast = useToast();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -50,8 +53,7 @@ const AdminAssignment = () => {
 
       setCompanies(enriched);
     } catch (error) {
-      console.error('Error fetching companies:', error);
-    } finally {
+      console.error('Error fetching companies:', error); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   }, []);
@@ -78,6 +80,7 @@ const AdminAssignment = () => {
       fetchCompanies();
     } catch (error) {
       console.error('Error assigning admin:', error);
+      toast.error('Error assigning admin');
       setSnackbar({ open: true, message: error.response?.data?.message || 'Failed to assign admin', severity: 'error' });
     } finally {
       setSaving(false);
@@ -87,6 +90,11 @@ const AdminAssignment = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); fetchCompanies(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <CircularProgress />
       </Box>
     );

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Grid, Card, CardContent } from '@mui/material';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const fmt = (v) => typeof v === 'number' ? `R ${v.toLocaleString()}` : v || 'N/A';
 const pct = (v) => typeof v === 'number' ? `${v.toFixed(1)}%` : v || 'N/A';
 
 const CampaignPerformance = ({ campaignId }) => {
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,8 +21,7 @@ const CampaignPerformance = ({ campaignId }) => {
       const response = await apiClient.get(`/campaigns/${campaignId}/performance`);
       setData(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading performance:', error);
-    } finally {
+      console.error('Error loading performance:', error); toast.error('Error loading performance'); } finally {
       setLoading(false);
     }
   };

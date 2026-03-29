@@ -54,10 +54,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { format } from 'date-fns';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
 const IntegrationDashboard = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -109,6 +113,7 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to load dashboard data');
       console.error('Error loading dashboard data:', error);
+      toast.error('Error loading dashboard data');
       setDashboardData(null);
       setIntegrations([]);
       setWebhooks([]);
@@ -147,13 +152,14 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to connect integration');
       console.error('Error connecting integration:', error);
+      toast.error('Error connecting integration');
     } finally {
       setLoading(false);
     }
   };
 
   const disconnectIntegration = async (integrationId) => {
-    if (!window.confirm('Are you sure you want to disconnect this integration?')) {
+    if (!await confirm('Are you sure you want to disconnect this integration?', { severity: 'warning' })) {
       return;
     }
 
@@ -178,6 +184,7 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to disconnect integration');
       console.error('Error disconnecting integration:', error);
+      toast.error('Error disconnecting integration');
     } finally {
       setLoading(false);
     }
@@ -212,6 +219,7 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to sync integration');
       console.error('Error syncing integration:', error);
+      toast.error('Error syncing integration');
     } finally {
       setLoading(false);
     }
@@ -248,6 +256,7 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to create webhook');
       console.error('Error creating webhook:', error);
+      toast.error('Error creating webhook');
     } finally {
       setLoading(false);
     }
@@ -269,13 +278,14 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to test webhook');
       console.error('Error testing webhook:', error);
+      toast.error('Error testing webhook');
     } finally {
       setLoading(false);
     }
   };
 
   const deleteWebhook = async (webhookId) => {
-    if (!window.confirm('Are you sure you want to delete this webhook?')) {
+    if (!await confirm('Are you sure you want to delete this webhook?', { severity: 'error' })) {
       return;
     }
 
@@ -296,6 +306,7 @@ const IntegrationDashboard = () => {
     } catch (error) {
       setError('Failed to delete webhook');
       console.error('Error deleting webhook:', error);
+      toast.error('Error deleting webhook');
     } finally {
       setLoading(false);
     }
@@ -931,6 +942,7 @@ const IntegrationDashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

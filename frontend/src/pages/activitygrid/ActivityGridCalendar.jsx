@@ -27,8 +27,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { activityGridService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ActivityGridCalendar = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('month');
@@ -59,8 +61,7 @@ const ActivityGridCalendar = () => {
       setActivities(response.activities || []);
       setSummary(response.summary || null);
     } catch (error) {
-      console.error('Failed to load activity grid:', error);
-    } finally {
+      console.error('Failed to load activity grid:', error); toast.error('Failed to load activity grid'); } finally {
       setLoading(false);
     }
   };
@@ -73,8 +74,7 @@ const ActivityGridCalendar = () => {
       const response = await activityGridService.getHeatMap(year, month);
       setHeatMap(response.heatmap || []);
     } catch (error) {
-      console.error('Failed to load heat map:', error);
-    }
+      console.error('Failed to load heat map:', error); toast.error('Failed to load heat map'); }
   };
 
   const loadConflicts = async () => {
@@ -89,8 +89,7 @@ const ActivityGridCalendar = () => {
 
       setConflicts(response.conflicts || []);
     } catch (error) {
-      console.error('Failed to load conflicts:', error);
-    }
+      console.error('Failed to load conflicts:', error); toast.error('Failed to load conflicts'); }
   };
 
   const getStartDate = () => {
@@ -158,8 +157,7 @@ const ActivityGridCalendar = () => {
       await activityGridService.syncActivities('all', startDate.toISOString(), endDate.toISOString());
       loadActivityGrid();
     } catch (error) {
-      console.error('Failed to sync activities:', error);
-    }
+      console.error('Failed to sync activities:', error); toast.error('Failed to sync activities'); }
   };
 
   const getActivityTypeColor = (type) => {

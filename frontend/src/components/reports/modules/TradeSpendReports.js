@@ -51,8 +51,10 @@ import {
 } from 'recharts';
 import { tradeSpendService } from '../../../services/api';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../common/ToastNotification';
 
 const TradeSpendReports = () => {
+  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
   const [tradeSpends, setTradeSpends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +111,7 @@ const TradeSpendReports = () => {
       setTradeSpends(enrichedTradeSpends);
     } catch (error) {
       console.error('Error fetching trade spend data:', error);
+      toast.error('Error fetching trade spend data');
       setError('Failed to load trade spend data. Please try again.');
       setTradeSpends([]);
     } finally {

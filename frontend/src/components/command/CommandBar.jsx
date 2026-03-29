@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Zap, TrendingUp, Users, DollarSign, Calendar, AlertTriangle } from 'lucide-react';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 
 const CommandBar = ({ isOpen, onClose, onExecute }) => {
+  const toast = useToast();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -123,6 +125,7 @@ const CommandBar = ({ isOpen, onClose, onExecute }) => {
         onClose();
       } catch (error) {
         console.error('Command execution failed:', error);
+        toast.error('Command execution failed');
         onExecute({ type: 'error', error: error.message });
       } finally {
         setIsLoading(false);

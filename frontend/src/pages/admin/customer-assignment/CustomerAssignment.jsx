@@ -52,11 +52,13 @@ import {
 import { useSnackbar } from 'notistack';
 import api from '../../../services/api';
 import { formatLabel } from '../../../utils/formatters';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const CustomerAssignment = () => {
   const { enqueueSnackbar } = useSnackbar();
   
   // State
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [kamUsers, setKamUsers] = useState([]);
   const [unassignedCustomers, setUnassignedCustomers] = useState([]);
@@ -73,6 +75,7 @@ const CustomerAssignment = () => {
       setKamUsers(response.data.users || []);
     } catch (error) {
       console.error('Error fetching KAM users:', error);
+      toast.error('Error fetching KAM users');
       if (error.response?.status === 403) {
         enqueueSnackbar('Access denied. Admin or Manager role required.', { variant: 'error' });
       } else {
@@ -88,6 +91,7 @@ const CustomerAssignment = () => {
       setUnassignedCustomers(response.data.customers || []);
     } catch (error) {
       console.error('Error fetching unassigned customers:', error);
+      toast.error('Error fetching unassigned customers');
       enqueueSnackbar('Failed to load unassigned customers', { variant: 'error' });
     }
   }, [enqueueSnackbar]);
@@ -129,6 +133,7 @@ const CustomerAssignment = () => {
       setSelectedKam(null);
     } catch (error) {
       console.error('Error assigning customers:', error);
+      toast.error('Error assigning customers');
       enqueueSnackbar(error.response?.data?.message || 'Failed to assign customers', { variant: 'error' });
     } finally {
       setAssigning(false);
@@ -149,6 +154,7 @@ const CustomerAssignment = () => {
       await Promise.all([fetchKamUsers(), fetchUnassignedCustomers()]);
     } catch (error) {
       console.error('Error unassigning customer:', error);
+      toast.error('Error unassigning customer');
       enqueueSnackbar(error.response?.data?.message || 'Failed to unassign customer', { variant: 'error' });
     }
   };

@@ -32,8 +32,10 @@ import {
 
 import { PageHeader } from '../common';
 import { userService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const UserForm = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = id && id !== 'new';
@@ -78,6 +80,7 @@ const UserForm = () => {
           });
         } catch (err) {
           console.error('Failed to fetch user:', err);
+          toast.error('Failed to fetch user');
           setSnackbar({
             open: true,
             message: 'Failed to load user data',
@@ -201,6 +204,7 @@ const UserForm = () => {
       }, 1500);
     } catch (err) {
       console.error('Failed to save user:', err);
+      toast.error('Failed to save user');
       setSaving(false);
       setSnackbar({
         open: true,

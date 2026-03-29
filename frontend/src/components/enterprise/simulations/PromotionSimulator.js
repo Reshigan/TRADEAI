@@ -37,6 +37,7 @@ import {
   AreaChart
 } from 'recharts';
 import enterpriseApi from '../../../services/enterpriseApi';
+import { useToast } from '../../common/ToastNotification';
 
 const promotionTypes = [
   { value: 'discount', label: 'Discount Promotion' },
@@ -46,6 +47,7 @@ const promotionTypes = [
 ];
 
 export default function PromotionSimulator({ onSaveScenario }) {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
@@ -83,6 +85,7 @@ export default function PromotionSimulator({ onSaveScenario }) {
       setResults(response.data);
     } catch (err) {
       console.error('Simulation failed:', err);
+      toast.error('Simulation failed');
       setError(err.error?.message || 'Simulation failed. Please try again.');
     } finally {
       setLoading(false);

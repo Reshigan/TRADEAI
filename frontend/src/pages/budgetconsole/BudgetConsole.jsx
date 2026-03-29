@@ -27,8 +27,10 @@ import DecisionCard from '../../components/decision/DecisionCard';
 import { simulationService, budgetService } from '../../services/api';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const BudgetConsole = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const toast = useToast();
   const [loading, setLoading] = useState(true);
@@ -90,8 +92,7 @@ const BudgetConsole = () => {
 
       setReallocationSuggestions(response.recommendations || []);
     } catch (error) {
-      console.error('Failed to load reallocation suggestions:', error);
-    }
+      console.error('Failed to load reallocation suggestions:', error); toast.error('Failed to load reallocation suggestions'); }
   };
 
   const loadRoiCurve = async () => {
@@ -114,8 +115,7 @@ const BudgetConsole = () => {
       }));
       setRoiCurve({ points, optimal: totalBudget * 0.42, currentROI });
     } catch (error) {
-      console.error('Failed to load ROI curve:', error);
-    }
+      console.error('Failed to load ROI curve:', error); toast.error('Failed to load ROI curve'); }
   };
 
   const handleApplyReallocation = async (suggestion) => {
@@ -472,6 +472,7 @@ const BudgetConsole = () => {
         </>
         );
       })()}
+    {ConfirmDialogComponent}
     </Box>
   );
 };

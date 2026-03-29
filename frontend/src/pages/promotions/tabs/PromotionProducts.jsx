@@ -14,10 +14,13 @@ import {
   CircularProgress
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 const PromotionProducts = ({ promotionId, promotion, onUpdate }) => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +42,7 @@ const PromotionProducts = ({ promotionId, promotion, onUpdate }) => {
   };
 
   const handleDelete = async (productId) => {
-    if (!window.confirm('Remove this product from the promotion?')) return;
+    if (!await confirm('Remove this product from the promotion?', { severity: 'error' })) return;
     
     try {
       await apiClient.delete(`/promotions/${promotionId}/products/${productId}`);
@@ -121,6 +124,7 @@ const PromotionProducts = ({ promotionId, promotion, onUpdate }) => {
           </TableBody>
         </Table>
       </TableContainer>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

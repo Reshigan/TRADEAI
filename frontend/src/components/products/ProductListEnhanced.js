@@ -18,8 +18,10 @@ import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { productService } from '../../services/api';
 import ProductForm from './ProductForm';
 import { formatCurrency } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const ProductListEnhanced = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const theme = useTheme();
   const [products, setProducts] = useState([]);
@@ -48,6 +50,7 @@ const ProductListEnhanced = () => {
       setProducts(normalizedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
+      toast.error('Error fetching products');
       setError(error.message || "Failed to load products");
     } finally {
       setLoading(false);
@@ -282,6 +285,7 @@ const ProductListEnhanced = () => {
       fetchProducts();
     } catch (error) {
       console.error('Error creating product:', error);
+      toast.error('Error creating product');
     }
   };
 

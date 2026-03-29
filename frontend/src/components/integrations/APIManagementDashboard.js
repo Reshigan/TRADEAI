@@ -54,10 +54,14 @@ import {
 import { LineChart, Line, AreaChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { format } from 'date-fns';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
 const APIManagementDashboard = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -97,6 +101,7 @@ const APIManagementDashboard = () => {
     } catch (error) {
       setError('Failed to load API management data');
       console.error('Error loading API management data:', error);
+      toast.error('Error loading API management data');
       setApiKeys([]);
       setAnalytics(null);
       setUsage([]);
@@ -146,13 +151,14 @@ const APIManagementDashboard = () => {
     } catch (error) {
       setError('Failed to generate API key');
       console.error('Error generating API key:', error);
+      toast.error('Error generating API key');
     } finally {
       setLoading(false);
     }
   };
 
   const revokeAPIKey = async (keyId) => {
-    if (!window.confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) {
+    if (!await confirm('Are you sure you want to revoke this API key? This action cannot be undone.', { severity: 'warning' })) {
       return;
     }
 
@@ -175,6 +181,7 @@ const APIManagementDashboard = () => {
     } catch (error) {
       setError('Failed to revoke API key');
       console.error('Error revoking API key:', error);
+      toast.error('Error revoking API key');
     } finally {
       setLoading(false);
     }
@@ -719,6 +726,7 @@ const APIManagementDashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

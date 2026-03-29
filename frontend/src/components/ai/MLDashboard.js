@@ -53,8 +53,10 @@ import {
 
 // Import our ML service
 import { mlService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const MLDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [mlHealthy, setMlHealthy] = useState(null);
@@ -125,6 +127,7 @@ const MLDashboard = () => {
     } catch (err) {
       setError('Failed to load ML predictions');
       console.error('ML loading error:', err);
+      toast.error('ML loading error');
     } finally {
       setLoading(false);
     }
@@ -146,6 +149,7 @@ const MLDashboard = () => {
     } catch (err) {
       setError('Failed to load demand forecast');
       console.error('Forecast error:', err);
+      toast.error('Forecast error');
     } finally {
       setLoading(false);
     }
@@ -166,6 +170,7 @@ const MLDashboard = () => {
     } catch (err) {
       setError('Failed to load price optimization');
       console.error('Price optimization error:', err);
+      toast.error('Price optimization error');
     } finally {
       setLoading(false);
     }
@@ -184,6 +189,7 @@ const MLDashboard = () => {
     } catch (err) {
       setError('Failed to load promotion analysis');
       console.error('Promotion analysis error:', err);
+      toast.error('Promotion analysis error');
     } finally {
       setLoading(false);
     }
@@ -203,6 +209,7 @@ const MLDashboard = () => {
     } catch (err) {
       setError('Failed to load recommendations');
       console.error('Recommendations error:', err);
+      toast.error('Recommendations error');
     } finally {
       setLoading(false);
     }

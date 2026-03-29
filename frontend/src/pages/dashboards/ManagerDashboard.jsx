@@ -28,8 +28,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import DecisionCard from '../../components/decision/DecisionCard';
 import api, { analyticsService, promotionService, tradeCalendarService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ManagerDashboard = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
@@ -68,25 +70,25 @@ const ManagerDashboard = () => {
       try {
         const actRes = await api.get('/activities?limit=10');
         if (actRes.data?.success) setActivities(actRes.data.data || []);
-      } catch (e) { console.error('Activities load error:', e); }
+      } catch (e) { console.error('Activities load error:', e); toast.error('Activities load error'); }
 
       // Load timeline/calendar events
       try {
         const calRes = await tradeCalendarService.getAll();
         setTimelineEvents(calRes.data || []);
-      } catch (e) { console.error('Calendar load error:', e); }
+      } catch (e) { console.error('Calendar load error:', e); toast.error('Calendar load error'); }
 
       // Load recent promotions for report tab
       try {
         const promoRes = await promotionService.getAll({ limit: 20 });
         setRecentPromos((promoRes.data || promoRes || []).slice(0, 20));
-      } catch (e) { console.error('Promos load error:', e); }
+      } catch (e) { console.error('Promos load error:', e); toast.error('Promos load error'); }
 
       // Load report metrics
       try {
         const repRes = await api.get('/analytics/sales-performance').catch(() => null);
         setReportMetrics(repRes?.data?.data || null);
-      } catch (e) { console.error('Report load error:', e); }
+      } catch (e) { console.error('Report load error:', e); toast.error('Report load error'); }
 
       const budgetData = dashRes?.data?.budget || {};
       const analyticsData = analyticsRes?.data || {};
@@ -105,6 +107,7 @@ const ManagerDashboard = () => {
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      toast.error('Failed to load dashboard data');
       setDashboardData({
         budgetRecommendations: [],
         portfolioKPIs: {

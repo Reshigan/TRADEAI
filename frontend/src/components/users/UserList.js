@@ -42,8 +42,10 @@ import {
 
 import { PageHeader } from '../common';
 import { userService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const UserList = () => {
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -83,6 +85,7 @@ const UserList = () => {
         })) : []);
       } catch (err) {
         console.error('Failed to fetch users:', err);
+        toast.error('Failed to fetch users');
         setUsers([]);
       } finally {
         setLoading(false);
@@ -181,6 +184,7 @@ const UserList = () => {
       });
     } catch (err) {
       console.error('Failed to delete user:', err);
+      toast.error('Failed to delete user');
       setSnackbar({
         open: true,
         message: 'Failed to delete user',
@@ -209,6 +213,7 @@ const UserList = () => {
       });
     } catch (err) {
       console.error('Failed to update user status:', err);
+      toast.error('Failed to update user status');
       setSnackbar({
         open: true,
         message: 'Failed to update user status',

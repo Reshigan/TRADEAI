@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Chip, LinearProgress, Card, CardContent, Grid, TextField, MenuItem, Table, TableHead, TableBody, TableRow, TableCell, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Typography, Button, Chip, LinearProgress, Card, CardContent, Grid, TextField, MenuItem, Table, TableHead, TableBody, TableRow, TableCell, Dialog, DialogTitle, DialogContent, DialogActions, Alert} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import { useToast } from '../../components/common/ToastNotification';
 
 const statusColors = { draft: 'default', active: 'success', expired: 'warning', closed: 'error', cancelled: 'error' };
 
 const VendorFundManagement = () => {
+  const toast = useToast();
   const [funds, setFunds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [vendors, setVendors] = useState([]);
   const [form, setForm] = useState({ vendor_id: '', name: '', fund_type: 'marketing_coop', total_amount: '', start_date: '', end_date: '' });
   const navigate = useNavigate();
 
   const fetchFunds = async () => {
+    setFetchError(null);
     try {
       setLoading(true);
       const res = await apiClient.get('/vendor-funds');
       setFunds(res.data?.data || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     finally { setLoading(false); }
   };
 
@@ -30,7 +34,7 @@ const VendorFundManagement = () => {
     try {
       const res = await apiClient.get('/vendors');
       setVendors(res.data?.data || res.data || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   useEffect(() => { fetchFunds(); fetchVendors(); }, []);
@@ -46,11 +50,16 @@ const VendorFundManagement = () => {
       setCreateOpen(false);
       setForm({ vendor_id: '', name: '', fund_type: 'marketing_coop', total_amount: '', start_date: '', end_date: '' });
       fetchFunds();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); fetchFunds(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700}>Vendor Funds</Typography>

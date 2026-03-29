@@ -53,9 +53,11 @@ import {
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const Alerts = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const toast = useToast();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
@@ -91,6 +93,7 @@ const Alerts = () => {
         setAlerts(transformedAlerts);
       } catch (error) {
         console.error('Error fetching alerts:', error);
+        toast.error('Error fetching alerts');
         enqueueSnackbar('Failed to load alerts', { variant: 'error' });
       } finally {
         setLoading(false);

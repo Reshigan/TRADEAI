@@ -13,9 +13,11 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const CacheManagement = () => {
+  const toast = useToast();
   const [cacheStats, setCacheStats] = useState({ hits: 0, misses: 0, keys: 0, memory: 0 });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -30,8 +32,7 @@ const CacheManagement = () => {
 
       setCacheStats(response.data.data);
     } catch (err) {
-      console.error('Failed to fetch cache stats:', err);
-    } finally {
+      console.error('Failed to fetch cache stats:', err); toast.error('Failed to fetch cache stats'); } finally {
       setLoading(false);
     }
   };

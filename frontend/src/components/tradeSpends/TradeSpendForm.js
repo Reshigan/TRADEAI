@@ -18,6 +18,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { FormDialog } from '../common';
 import { customerService, productService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 // Static hierarchy options for consistency across the app
 const productHierarchyOptions = {
@@ -45,6 +46,7 @@ const TradeSpendForm = ({
   budgets = [],
   initialBudgetId = ''
 }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     budget_id: initialBudgetId || '',
     amount: '',
@@ -90,6 +92,7 @@ const TradeSpendForm = ({
         setProducts(productsRes.data || productsRes || []);
       } catch (error) {
         console.error('Error loading data:', error);
+        toast.error('Error loading data');
       }
     };
     fetchData();

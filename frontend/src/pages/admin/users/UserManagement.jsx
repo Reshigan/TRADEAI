@@ -24,8 +24,12 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete, Lock, LockOpen } from '@mui/icons-material';
 import api from '../../../services/api';
+import { useToast } from '../../../components/common/ToastNotification';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 const UserManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [users, setUsers] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -48,8 +52,7 @@ const UserManagement = () => {
         setUsers(response.data.data);
       }
     } catch (error) {
-      console.error('Failed to load users:', error);
-    }
+      console.error('Failed to load users:', error); toast.error('Failed to load users'); }
   };
 
   const handleOpenDialog = (user = null) => {
@@ -85,18 +88,16 @@ const UserManagement = () => {
       loadUsers();
       setOpenDialog(false);
     } catch (error) {
-      console.error('Failed to save user:', error);
-    }
+      console.error('Failed to save user:', error); toast.error('Failed to save user'); }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (await confirm('Are you sure you want to delete this user?', { severity: 'error' })) {
       try {
         await api.delete(`/admin/users/${userId}`);
         loadUsers();
       } catch (error) {
-        console.error('Failed to delete user:', error);
-      }
+        console.error('Failed to delete user:', error); toast.error('Failed to delete user'); }
     }
   };
 
@@ -107,8 +108,7 @@ const UserManagement = () => {
       });
       loadUsers();
     } catch (error) {
-      console.error('Failed to toggle user status:', error);
-    }
+      console.error('Failed to toggle user status:', error); toast.error('Failed to toggle user status'); }
   };
 
   return (
@@ -230,6 +230,7 @@ const UserManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

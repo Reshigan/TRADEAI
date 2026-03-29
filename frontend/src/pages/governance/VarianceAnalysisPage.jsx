@@ -53,6 +53,7 @@ import {
 } from 'recharts';
 import { dataLineageService } from '../../services/api';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const COLORS = ['#f44336', '#ff9800', '#4caf50', '#8B5CF6', '#9c27b0', '#00bcd4'];
 
@@ -67,6 +68,7 @@ const VARIANCE_CATEGORIES = [
 
 const VarianceAnalysisPage = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [reasonCodes, setReasonCodes] = useState([]);
@@ -97,8 +99,7 @@ const VarianceAnalysisPage = () => {
       const response = await dataLineageService.getVarianceReasonCodes();
       setReasonCodes(response.data || []);
     } catch (error) {
-      console.error('Error loading reason codes:', error);
-    }
+      console.error('Error loading reason codes:', error); toast.error('Error loading reason codes'); }
   };
 
   const loadPromotions = async () => {
@@ -106,8 +107,7 @@ const VarianceAnalysisPage = () => {
       const response = await api.get('/promotions', { params: { limit: 100 } });
       setPromotions(response.data?.data || response.data || []);
     } catch (error) {
-      console.error('Error loading promotions:', error);
-    }
+      console.error('Error loading promotions:', error); toast.error('Error loading promotions'); }
   };
 
   const loadVarianceReport = async () => {
@@ -121,8 +121,7 @@ const VarianceAnalysisPage = () => {
       });
       setVarianceReport(response.data);
     } catch (error) {
-      console.error('Error loading variance report:', error);
-    }
+      console.error('Error loading variance report:', error); toast.error('Error loading variance report'); }
   };
 
   const handleAnalyzePromotion = async () => {
@@ -138,6 +137,7 @@ const VarianceAnalysisPage = () => {
       enqueueSnackbar('Variance analysis complete', { variant: 'success' });
     } catch (error) {
       console.error('Error analyzing variance:', error);
+      toast.error('Error analyzing variance');
       enqueueSnackbar('Failed to analyze variance', { variant: 'error' });
     } finally {
       setLoading(false);
@@ -170,6 +170,7 @@ const VarianceAnalysisPage = () => {
       handleAnalyzePromotion();
     } catch (error) {
       console.error('Error tagging variance:', error);
+      toast.error('Error tagging variance');
       enqueueSnackbar('Failed to tag variance', { variant: 'error' });
     }
   };
@@ -181,6 +182,7 @@ const VarianceAnalysisPage = () => {
       loadReasonCodes();
     } catch (error) {
       console.error('Error seeding defaults:', error);
+      toast.error('Error seeding defaults');
       enqueueSnackbar('Failed to seed default codes', { variant: 'error' });
     }
   };
@@ -199,6 +201,7 @@ const VarianceAnalysisPage = () => {
       loadReasonCodes();
     } catch (error) {
       console.error('Error creating code:', error);
+      toast.error('Error creating code');
       enqueueSnackbar('Failed to create reason code', { variant: 'error' });
     }
   };

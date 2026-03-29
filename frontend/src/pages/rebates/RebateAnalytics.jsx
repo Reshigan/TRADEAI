@@ -28,8 +28,10 @@ import {
 } from '@mui/icons-material';
 import rebateService from '../../services/rebateService';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const RebateAnalytics = () => {
+  const toast = useToast();
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('month');
@@ -70,8 +72,7 @@ const RebateAnalytics = () => {
         setAnalytics(response.data);
       }
     } catch (error) {
-      console.error('Failed to load analytics:', error);
-    } finally {
+      console.error('Failed to load analytics:', error); toast.error('Failed to load analytics'); } finally {
       setLoading(false);
     }
   };

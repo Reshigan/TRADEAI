@@ -17,6 +17,8 @@ import {
   VpnKey
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const PERMISSION_MODULES = [
   { module: 'promotions', label: 'Promotions', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
@@ -31,6 +33,8 @@ const PERMISSION_MODULES = [
 ];
 
 const CompanyAdminSetup = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState([]);
@@ -52,6 +56,7 @@ const CompanyAdminSetup = () => {
       setRoles(response.data?.data || []);
     } catch (error) {
       console.error('Error fetching roles:', error);
+      toast.error('Error fetching roles');
       setRoles([]);
     }
   }, []);
@@ -63,6 +68,7 @@ const CompanyAdminSetup = () => {
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching users:', error);
+      toast.error('Error fetching users');
       setUsers([]);
     }
   }, []);
@@ -85,6 +91,7 @@ const CompanyAdminSetup = () => {
       setSystemConfig(configObj);
     } catch (error) {
       console.error('Error fetching system config:', error);
+      toast.error('Error fetching system config');
       setSystemConfig({});
     }
   }, []);
@@ -134,6 +141,7 @@ const CompanyAdminSetup = () => {
       setSnackbar({ open: true, message: 'Role saved successfully', severity: 'success' });
     } catch (error) {
       console.error('Error saving role:', error);
+      toast.error('Error saving role');
       setSnackbar({ open: true, message: 'Failed to save role', severity: 'error' });
     } finally {
       setSaving(false);
@@ -141,13 +149,14 @@ const CompanyAdminSetup = () => {
   };
 
   const handleDeleteRole = async (roleId) => {
-    if (!window.confirm('Delete this role? All user assignments will be removed.')) return;
+    if (!await confirm('Delete this role? All user assignments will be removed.', { severity: 'error' })) return;
     try {
       await api.delete(`/role-management/${roleId}`);
       fetchRoles();
       setSnackbar({ open: true, message: 'Role deleted', severity: 'success' });
     } catch (error) {
       console.error('Error deleting role:', error);
+      toast.error('Error deleting role');
       setSnackbar({ open: true, message: error.response?.data?.message || 'Failed to delete role', severity: 'error' });
     }
   };
@@ -191,6 +200,7 @@ const CompanyAdminSetup = () => {
       setSnackbar({ open: true, message: 'System configuration saved', severity: 'success' });
     } catch (error) {
       console.error('Error saving config:', error);
+      toast.error('Error saving config');
       setSnackbar({ open: true, message: 'Failed to save config', severity: 'error' });
     } finally {
       setSaving(false);
@@ -203,6 +213,7 @@ const CompanyAdminSetup = () => {
       setSnackbar({ open: true, message: 'Role assigned', severity: 'success' });
     } catch (error) {
       console.error('Error assigning role:', error);
+      toast.error('Error assigning role');
       setSnackbar({ open: true, message: 'Failed to assign role', severity: 'error' });
     }
   };
@@ -531,6 +542,7 @@ const CompanyAdminSetup = () => {
           {snackbar.message}
         </Alert>
       )}
+    {ConfirmDialogComponent}
     </Box>
   );
 };

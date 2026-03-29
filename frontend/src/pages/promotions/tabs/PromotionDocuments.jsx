@@ -20,10 +20,13 @@ import {
   Delete as DeleteIcon,
   InsertDriveFile as FileIcon
 } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 const PromotionDocuments = ({ promotionId, promotion, onUpdate }) => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -38,6 +41,7 @@ const PromotionDocuments = ({ promotionId, promotion, onUpdate }) => {
       setDocuments(response.data.data || []);
     } catch (error) {
       console.error('Error loading documents:', error);
+      toast.error('Error loading documents');
       if (error.response?.status !== 404) {
         toast.error('Failed to load documents');
       }
@@ -47,7 +51,7 @@ const PromotionDocuments = ({ promotionId, promotion, onUpdate }) => {
   };
 
   const handleDelete = async (documentId) => {
-    if (!window.confirm('Delete this document?')) return;
+    if (!await confirm('Delete this document?', { severity: 'error' })) return;
     
     try {
       await apiClient.delete(`/promotions/${promotionId}/documents/${documentId}`);
@@ -158,6 +162,7 @@ const PromotionDocuments = ({ promotionId, promotion, onUpdate }) => {
           </TableBody>
         </Table>
       </TableContainer>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

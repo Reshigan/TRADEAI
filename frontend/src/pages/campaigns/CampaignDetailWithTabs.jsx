@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
+import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton , Alert} from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -12,13 +11,16 @@ import CampaignOverview from './tabs/CampaignOverview';
 import CampaignBudget from './tabs/CampaignBudget';
 import CampaignPerformance from './tabs/CampaignPerformance';
 import CampaignHistory from './tabs/CampaignHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CampaignDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
+  const [fetchError, setFetchError] = useState(null);
 
   const pageVariant = usePageVariants('campaignDetail');
   const tabs = pageVariant?.tabs || [
@@ -43,9 +45,7 @@ const CampaignDetailWithTabs = () => {
       const response = await apiClient.get(`/campaigns/${id}`);
       setCampaign(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading campaign:', error);
-      toast.error('Failed to load campaign');
-    } finally {
+      console.error('Error loading campaign:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -59,6 +59,11 @@ const CampaignDetailWithTabs = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadCampaign(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ mb: 3 }}>
           <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />

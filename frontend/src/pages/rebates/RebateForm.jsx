@@ -22,6 +22,7 @@ import {Save, Cancel} from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import rebateService from '../../services/rebateService';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 // Static hierarchy options for consistency across the app
 const productHierarchyOptions = {
@@ -42,6 +43,7 @@ const customerHierarchyOptions = {
 };
 
 const RebateForm = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -113,6 +115,7 @@ const RebateForm = () => {
       setProducts(productsRes.data?.data || productsRes.data || []);
     } catch (error) {
       console.error('Failed to load initial data:', error);
+      toast.error('Failed to load initial data');
       setError('Failed to load form data');
     }
   };
@@ -126,6 +129,7 @@ const RebateForm = () => {
       }
     } catch (error) {
       console.error('Failed to load rebate:', error);
+      toast.error('Failed to load rebate');
       setError('Failed to load rebate details');
     } finally {
       setLoading(false);
@@ -171,6 +175,7 @@ const RebateForm = () => {
       }
     } catch (error) {
       console.error('Failed to save rebate:', error);
+      toast.error('Failed to save rebate');
       setError(error.response?.data?.message || 'Failed to save rebate');
     } finally {
       setLoading(false);

@@ -40,6 +40,7 @@ import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { productService, promotionService, tradeSpendService } from '../../services/api';
 import { RealTimePriceOptimizer } from '../contextual-ai';
 import ProductForm from './ProductForm';
+import { useToast } from '../common/ToastNotification';
 
 // Mock data for development - South African product
 
@@ -47,6 +48,7 @@ import ProductForm from './ProductForm';
 
 
 const ProductDetail = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
@@ -79,6 +81,7 @@ const ProductDetail = () => {
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch data:', error);
+      toast.error('Failed to fetch data');
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -91,6 +94,7 @@ const ProductDetail = () => {
       setPromotions(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch promotions:', err);
+      toast.error('Failed to fetch promotions');
     }
   };
 
@@ -101,6 +105,7 @@ const ProductDetail = () => {
       setTradeSpends(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch trade spends:', err);
+      toast.error('Failed to fetch trade spends');
     }
   };
 
@@ -111,6 +116,7 @@ const ProductDetail = () => {
       setSalesData(response.data || response || []);
     } catch (error) {
       console.error('Failed to fetch sales data:', error);
+      toast.error('Failed to fetch sales data');
     }
   };
 
@@ -139,6 +145,7 @@ const ProductDetail = () => {
       navigate('/products');
     } catch (error) {
       console.error('Failed to delete product:', error);
+      toast.error('Failed to delete product');
       setDeleteLoading(false);
     }
   };
@@ -151,6 +158,7 @@ const ProductDetail = () => {
       setOpenEditForm(false);
     } catch (error) {
       console.error('Error updating product:', error);
+      toast.error('Error updating product');
     }
   };
 

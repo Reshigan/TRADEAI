@@ -59,8 +59,10 @@ import {
 } from 'recharts';
 import { tradingTermsService } from '../../../services/api';
 import { formatCurrency, formatLabel } from '../../../utils/formatters';
+import { useToast } from '../../common/ToastNotification';
 
 const TradingTermsReports = () => {
+  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
   const [tradingTerms, setTradingTerms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,6 +81,7 @@ const TradingTermsReports = () => {
       setTradingTerms(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching trading terms data:', error);
+      toast.error('Error fetching trading terms data');
       setTradingTerms([]);
     } finally {
       setLoading(false);

@@ -34,8 +34,10 @@ import {
 } from '@mui/icons-material';
 import api from '../../../services/api';
 import { formatLabel } from '../../../utils/formatters';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 const UserList = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +64,7 @@ const UserList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (await confirm('Are you sure you want to delete this user?', { severity: 'error' })) {
       try {
         await api.delete(`/users/${id}`);
         fetchUsers();
@@ -320,6 +322,7 @@ const UserList = () => {
           Showing {filteredUsers.length} of {users.length} users
         </Typography>
       </Box>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

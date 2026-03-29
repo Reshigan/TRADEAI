@@ -40,6 +40,7 @@ import {
 
 import { PageHeader } from '../common';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 // Currency display mapping
 const currencyDisplay = {
@@ -56,6 +57,7 @@ const currencyDisplay = {
 };
 
 const CompanyList = () => {
+  const toast = useToast();
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -90,6 +92,7 @@ const CompanyList = () => {
       setCompanies(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching companies:', error);
+      toast.error('Error fetching companies');
       setSnackbar({ open: true, message: 'Failed to load companies', severity: 'error' });
     } finally {
       setLoading(false);
@@ -179,6 +182,7 @@ const CompanyList = () => {
       fetchCompanies();
     } catch (error) {
       console.error('Error deleting company:', error);
+      toast.error('Error deleting company');
       setSnackbar({ open: true, message: 'Failed to delete company', severity: 'error' });
       handleDeleteDialogClose();
     }

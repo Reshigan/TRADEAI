@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, TextField, MenuItem, Grid, Paper, Chip,
-  CircularProgress, InputAdornment, LinearProgress, alpha, Tabs, Tab,
+  CircularProgress, InputAdornment, LinearProgress, alpha, Tabs, Tab, Alert,
 } from '@mui/material';
 import {
   Add as AddIcon, Search as SearchIcon, TrendingUp as TrendingUpIcon,
@@ -10,17 +10,21 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const PromotionList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [filters, setFilters] = useState({ search: '', status: 'all', type: 'all' });
   const [statusTab, setStatusTab] = useState(0);
 
   useEffect(() => { fetchPromotions(); }, [filters]);
 
   const fetchPromotions = async () => {
+    setFetchError(null);
     try {
       const params = new URLSearchParams();
       if (filters.status !== 'all') params.append('status', filters.status);
@@ -29,8 +33,7 @@ const PromotionList = () => {
       const response = await api.get(`/promotions?${params}`);
       if (response.data.success) setPromotions(response.data.data);
     } catch (err) {
-      console.error('Failed to fetch promotions:', err);
-    } finally {
+      console.error('Failed to fetch promotions:', err); setFetchError(err.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };
@@ -64,6 +67,11 @@ const PromotionList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); fetchPromotions(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700} color="text.primary" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Promotions</Typography>

@@ -3,8 +3,7 @@ import {
   Box, Typography, Paper, Grid, Button, TextField, IconButton, Chip,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
   Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, Tabs, Tab,
-  LinearProgress, Tooltip, CircularProgress
-} from '@mui/material';
+  LinearProgress, Tooltip, CircularProgress, Alert} from '@mui/material';
 import {
   Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon,
   Refresh as RefreshIcon, PlayArrow as RunIcon, Schedule as ScheduleIcon,
@@ -13,6 +12,8 @@ import {
   ArrowBack as BackIcon, Visibility as ViewIcon, TableChart as CrossIcon
 } from '@mui/icons-material';
 import { advancedReportingService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const statusColors = {
   active: 'success', draft: 'default', archived: 'default', completed: 'success',
@@ -20,6 +21,8 @@ const statusColors = {
 };
 
 const AdvancedReportingManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [activeTab, setActiveTab] = useState(0);
   const [summary, setSummary] = useState(null);
   const [options, setOptions] = useState({});
@@ -30,6 +33,7 @@ const AdvancedReportingManagement = () => {
   const [total, setTotal] = useState(0);
   const [reportTotal, setReportTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [page, setPage] = useState(0);
@@ -51,14 +55,14 @@ const AdvancedReportingManagement = () => {
     try {
       const res = await advancedReportingService.getSummary();
       if (res.success) setSummary(res.data);
-    } catch (e) { console.error('Error loading summary:', e); }
+    } catch (e) { console.error('Error loading summary:', e); setFetchError(e.message || 'Failed to load data'); }
   }, []);
 
   const loadOptions = useCallback(async () => {
     try {
       const res = await advancedReportingService.getOptions();
       if (res.success) setOptions(res.data);
-    } catch (e) { console.error('Error loading options:', e); }
+    } catch (e) { console.error('Error loading options:', e); toast.error('Error loading options'); }
   }, []);
 
   const loadTemplates = useCallback(async () => {
@@ -69,7 +73,7 @@ const AdvancedReportingManagement = () => {
       if (categoryFilter) params.report_category = categoryFilter;
       const res = await advancedReportingService.getTemplates(params);
       if (res.success) { setTemplates(res.data || []); setTotal(res.total || 0); }
-    } catch (e) { console.error('Error loading templates:', e); }
+    } catch (e) { console.error('Error loading templates:', e); toast.error('Error loading templates'); }
     finally { setLoading(false); }
   }, [page, rowsPerPage, search, categoryFilter]);
 
@@ -78,21 +82,21 @@ const AdvancedReportingManagement = () => {
       const params = { limit: reportRowsPerPage, offset: reportPage * reportRowsPerPage };
       const res = await advancedReportingService.getReports(params);
       if (res.success) { setReports(res.data || []); setReportTotal(res.total || 0); }
-    } catch (e) { console.error('Error loading reports:', e); }
+    } catch (e) { console.error('Error loading reports:', e); toast.error('Error loading reports'); }
   }, [reportPage, reportRowsPerPage]);
 
   const loadSchedules = useCallback(async () => {
     try {
       const res = await advancedReportingService.getSchedules();
       if (res.success) setSchedules(res.data || []);
-    } catch (e) { console.error('Error loading schedules:', e); }
+    } catch (e) { console.error('Error loading schedules:', e); toast.error('Error loading schedules'); }
   }, []);
 
   const loadCrossModule = useCallback(async () => {
     try {
       const res = await advancedReportingService.getCrossModuleReport();
       if (res.success) setCrossModule(res.data);
-    } catch (e) { console.error('Error loading cross-module report:', e); }
+    } catch (e) { console.error('Error loading cross-module report:', e); toast.error('Error loading cross-module report'); }
   }, []);
 
   useEffect(() => { loadSummary(); loadOptions(); }, [loadSummary, loadOptions]);
@@ -131,7 +135,7 @@ const AdvancedReportingManagement = () => {
       setDialogOpen(false);
       loadTemplates();
       loadSummary();
-    } catch (e) { console.error('Error saving template:', e); }
+    } catch (e) { console.error('Error saving template:', e); toast.error('Error saving template'); }
     finally { setActionLoading(false); }
   };
 
@@ -141,7 +145,7 @@ const AdvancedReportingManagement = () => {
       await advancedReportingService.deleteTemplate(template.id || template._id);
       loadTemplates();
       loadSummary();
-    } catch (e) { console.error('Error deleting template:', e); }
+    } catch (e) { console.error('Error deleting template:', e); toast.error('Error deleting template'); }
   };
 
   const handleRun = async (template) => {
@@ -153,7 +157,7 @@ const AdvancedReportingManagement = () => {
         loadReports();
         loadSummary();
       }
-    } catch (e) { console.error('Error running report:', e); }
+    } catch (e) { console.error('Error running report:', e); toast.error('Error running report'); }
     finally { setActionLoading(false); }
   };
 
@@ -161,21 +165,21 @@ const AdvancedReportingManagement = () => {
     try {
       const res = await advancedReportingService.getTemplateById(template.id || template._id);
       if (res.success) { setSelectedTemplate(res.data); setDetailView(true); }
-    } catch (e) { console.error('Error loading template detail:', e); }
+    } catch (e) { console.error('Error loading template detail:', e); toast.error('Error loading template detail'); }
   };
 
   const handleViewReport = async (report) => {
     try {
       const res = await advancedReportingService.getReportById(report.id || report._id);
       if (res.success) { setSelectedReport(res.data); setReportDetailView(true); }
-    } catch (e) { console.error('Error loading report detail:', e); }
+    } catch (e) { console.error('Error loading report detail:', e); toast.error('Error loading report detail'); }
   };
 
   const handleToggleFavorite = async (report) => {
     try {
       await advancedReportingService.toggleFavorite(report.id || report._id);
       loadReports();
-    } catch (e) { console.error('Error toggling favorite:', e); }
+    } catch (e) { console.error('Error toggling favorite:', e); toast.error('Error toggling favorite'); }
   };
 
   const handleDeleteReport = async (report) => {
@@ -184,7 +188,7 @@ const AdvancedReportingManagement = () => {
       await advancedReportingService.deleteReport(report.id || report._id);
       loadReports();
       loadSummary();
-    } catch (e) { console.error('Error deleting report:', e); }
+    } catch (e) { console.error('Error deleting report:', e); toast.error('Error deleting report'); }
   };
 
   const handleCreateSchedule = () => {
@@ -202,7 +206,7 @@ const AdvancedReportingManagement = () => {
       setScheduleDialogOpen(false);
       loadSchedules();
       loadSummary();
-    } catch (e) { console.error('Error creating schedule:', e); }
+    } catch (e) { console.error('Error creating schedule:', e); toast.error('Error creating schedule'); }
     finally { setActionLoading(false); }
   };
 
@@ -212,7 +216,7 @@ const AdvancedReportingManagement = () => {
       await advancedReportingService.deleteSchedule(schedule.id || schedule._id);
       loadSchedules();
       loadSummary();
-    } catch (e) { console.error('Error deleting schedule:', e); }
+    } catch (e) { console.error('Error deleting schedule:', e); toast.error('Error deleting schedule'); }
   };
 
   const fmt = (v) => v != null ? Number(v).toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '—';
@@ -233,6 +237,11 @@ const AdvancedReportingManagement = () => {
 
     return (
       <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadSummary(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
           <IconButton onClick={() => { setReportDetailView(false); setSelectedReport(null); }}><BackIcon /></IconButton>
           <Typography variant="h5" fontWeight={700}>{selectedReport.name}</Typography>
@@ -678,6 +687,7 @@ const AdvancedReportingManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

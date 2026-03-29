@@ -40,10 +40,12 @@ import CustomerPerformanceChart from './charts/CustomerPerformanceChart';
 import ProductPerformanceChart from './charts/ProductPerformanceChart';
 import TradeSpendTrendsChart from './charts/TradeSpendTrendsChart';
 import AIPredictionsChart from './charts/AIPredictionsChart';
+import { useToast } from '../common/ToastNotification';
 
 // Using real API calls with seeded data
 
 const AnalyticsDashboard = () => {
+  const toast = useToast();
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -89,6 +91,7 @@ const AnalyticsDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching reference data:', error);
+      toast.error('Error fetching reference data');
     }
   };
 
@@ -103,6 +106,7 @@ const AnalyticsDashboard = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error loading data:', error);
+      toast.error('Error loading data');
       setError(error.message || 'Failed to load data');
       setLoading(false);
     }
@@ -183,6 +187,7 @@ const AnalyticsDashboard = () => {
       }
     } catch (err) {
       console.error('Export error:', err);
+      toast.error('Export error');
     }
   };
 

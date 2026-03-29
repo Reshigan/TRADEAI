@@ -1,30 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab } from '@mui/material';
+import { Box, Card, CardContent, Typography, Grid, Chip, Button, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Tab , Alert} from '@mui/material';
 import { ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { budgetService, promotionService } from '../../services/api';
 import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function BudgetDetail() {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [budget, setBudget] = useState(null);
   const [promos, setPromos] = useState([]);
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+
+  const loadBudget = async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      const [b, p] = await Promise.allSettled([budgetService.getById(id), promotionService.getAll({ budget_id: id })]);
+      if (b.status === 'fulfilled') setBudget(b.value.data || b.value);
+      if (p.status === 'fulfilled') setPromos(p.value.data || p.value || []);
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data');}
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [b, p] = await Promise.allSettled([budgetService.getById(id), promotionService.getAll({ budget_id: id })]);
-        if (b.status === 'fulfilled') setBudget(b.value.data || b.value);
-        if (p.status === 'fulfilled') setPromos(p.value.data || p.value || []);
-      } catch (e) { console.error(e); }
-      setLoading(false);
-    };
-    load();
+    loadBudget();
   }, [id]);
 
   const handleAction = async (action, metadata) => {
@@ -39,7 +45,7 @@ export default function BudgetDetail() {
       else if (action === 'reject') await budgetService.update(id, { status: 'rejected', reason: metadata?.comment });
       const res = await budgetService.getById(id);
       setBudget(res.data || res);
-    } catch (e) { console.error(e); throw e; }
+    } catch (e) { console.error(e); toast.error(`Action failed: ${e.message}`); }
   };
 
   // Budget-specific actions per status — only show actions we can handle
@@ -81,6 +87,11 @@ export default function BudgetDetail() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadBudget(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={budget.name}
         subtitle={`FY ${budget.fiscal_year || budget.year || '-'}`}

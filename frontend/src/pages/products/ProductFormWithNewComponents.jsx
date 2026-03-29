@@ -5,6 +5,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import { FormField, FormActions } from '../../components/forms';
 import { ErrorState, SkeletonList } from '../../components/states';
 import { productService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 /**
  * Example implementation of Product Form using new Phase 3 components
@@ -15,6 +16,7 @@ import { productService } from '../../services/api';
  * - Full-stack wiring with backend API
  */
 const ProductFormWithNewComponents = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = !!id;
@@ -69,6 +71,7 @@ const ProductFormWithNewComponents = () => {
       setFormData(response.data || response);
     } catch (err) {
       console.error('Error loading product:', err);
+      toast.error('Error loading product');
       setError(err);
     } finally {
       setLoading(false);
@@ -136,6 +139,7 @@ const ProductFormWithNewComponents = () => {
       navigate('/products');
     } catch (err) {
       console.error('Error saving product:', err);
+      toast.error('Error saving product');
       setError(err);
     } finally {
       setSubmitting(false);

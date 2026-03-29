@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
+import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton , Alert} from '@mui/material';
 import { ArrowBack as BackIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import { tradeSpendService } from '../../services/api';
 import analytics from '../../utils/analytics';
@@ -17,14 +16,17 @@ import TradeSpendDocuments from './tabs/TradeSpendDocuments';
 import TradeSpendApprovals from './tabs/TradeSpendApprovals';
 import TradeSpendPerformance from './tabs/TradeSpendPerformance';
 import TradeSpendHistory from './tabs/TradeSpendHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const TradeSpendDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [tradeSpend, setTradeSpend] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
   const [actionLoading, setActionLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const { t } = useTerminology();
 
   const pageVariant = usePageVariants('tradeSpendDetail');
@@ -52,9 +54,7 @@ const TradeSpendDetailWithTabs = () => {
       const response = await apiClient.get(`/trade-spends/${id}`);
       setTradeSpend(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading trade spend:', error);
-      toast.error('Failed to load trade spend');
-    } finally {
+      console.error('Error loading trade spend:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -68,6 +68,11 @@ const TradeSpendDetailWithTabs = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadTradeSpend(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ mb: 3 }}>
           <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />

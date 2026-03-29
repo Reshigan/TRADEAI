@@ -25,6 +25,7 @@ import BasicTransactionStep from './steps/BasicTransactionStep';
 import LineItemsStep from './steps/LineItemsStep';
 import PaymentTermsStep from './steps/PaymentTermsStep';
 import ReviewSubmitStep from './steps/ReviewSubmitStep';
+import { useToast } from '../../components/common/ToastNotification';
 
 const steps = [
   'Transaction Details',
@@ -36,6 +37,7 @@ const steps = [
 const STORAGE_KEY = 'transaction_entry_draft';
 
 export default function TransactionEntryFlow() {
+  const toast = useToast();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -91,24 +93,21 @@ export default function TransactionEntryFlow() {
         setFormData(draft);
       }
     } catch (error) {
-      console.error('Failed to load draft:', error);
-    }
+      console.error('Failed to load draft:', error); toast.error('Failed to load draft'); }
   };
 
   const saveDraft = () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
     } catch (error) {
-      console.error('Failed to save draft:', error);
-    }
+      console.error('Failed to save draft:', error); toast.error('Failed to save draft'); }
   };
 
   const clearDraft = () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to clear draft:', error);
-    }
+      console.error('Failed to clear draft:', error); toast.error('Failed to clear draft'); }
   };
 
   const loadReferenceData = async () => {
@@ -125,6 +124,7 @@ export default function TransactionEntryFlow() {
       setProducts(productsRes.data.data || productsRes.data.products || []);
     } catch (error) {
       console.error('Failed to load reference data:', error);
+      toast.error('Failed to load reference data');
       setSnackbar({
         open: true,
         message: 'Failed to load reference data',
@@ -267,6 +267,7 @@ export default function TransactionEntryFlow() {
 
     } catch (error) {
       console.error('Failed to submit transaction:', error);
+      toast.error('Failed to submit transaction');
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Failed to create transaction',

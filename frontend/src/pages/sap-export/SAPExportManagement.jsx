@@ -4,8 +4,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DescriptionIcon from '@mui/icons-material/Description';
 import StorageIcon from '@mui/icons-material/Storage';
 import apiClient from '../../services/apiClient';
+import { useToast } from '../../components/common/ToastNotification';
 
 const SAPExportManagement = () => {
+  const toast = useToast();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(null);
@@ -42,7 +44,7 @@ const SAPExportManagement = () => {
       a.download = `SAP_${templateId.replace(/-/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
-    } catch (e) { console.error('Download failed:', e); }
+    } catch (e) { console.error('Download failed:', e); toast.error('Download failed'); }
     finally { setDownloading(null); }
   };
 

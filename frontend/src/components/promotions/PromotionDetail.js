@@ -34,10 +34,12 @@ import { PageHeader, StatusChip, ConfirmDialog } from '../common';
 import { promotionService, customerService } from '../../services/api';
 import { formatCurrency, formatDate, formatLabel } from '../../utils/formatters';
 import PromotionForm from './PromotionForm';
+import { useToast } from '../common/ToastNotification';
 
 // Production component - no mock data
 
 const PromotionDetail = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [promotion, setPromotion] = useState(null);
@@ -66,6 +68,7 @@ const PromotionDetail = () => {
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch data:', error);
+      toast.error('Failed to fetch data');
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -78,6 +81,7 @@ const PromotionDetail = () => {
       setCustomers(response.data || response);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
+      toast.error('Failed to fetch customers');
       setCustomers([]);
     }
   };
@@ -107,6 +111,7 @@ const PromotionDetail = () => {
       navigate('/promotions');
     } catch (err) {
       console.error('Failed to delete promotion:', err);
+      toast.error('Failed to delete promotion');
       setDeleteLoading(false);
     }
   };
@@ -119,6 +124,7 @@ const PromotionDetail = () => {
       setOpenEditForm(false);
     } catch (error) {
       console.error('Error updating promotion:', error);
+      toast.error('Error updating promotion');
       setError(error.message || "An error occurred");
     }
   };

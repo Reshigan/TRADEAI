@@ -10,11 +10,10 @@ import {
   Paper,
   Chip,
   Skeleton
-} from '@mui/material';
+, Alert} from '@mui/material';
 import {
   ArrowBack as BackIcon
 } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -30,6 +29,8 @@ import PromotionDocuments from './tabs/PromotionDocuments';
 import PromotionConflicts from './tabs/PromotionConflicts';
 import PromotionPerformance from './tabs/PromotionPerformance';
 import PromotionHistory from './tabs/PromotionHistory';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 if (typeof window !== 'undefined') {
   window.__TABS_V2_IMPORTED__ = true;
@@ -37,12 +38,15 @@ if (typeof window !== 'undefined') {
 }
 
 const PromotionDetailWithTabs = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [promotion, setPromotion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
   const [actionLoading, setActionLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   const pageVariant = usePageVariants('promotionDetail');
   const tabs = pageVariant?.tabs || [
@@ -72,9 +76,7 @@ const PromotionDetailWithTabs = () => {
       const response = await apiClient.get(`/promotions/${id}`);
       setPromotion(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading promotion:', error);
-      toast.error('Failed to load promotion');
-    } finally {
+      console.error('Error loading promotion:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -91,7 +93,7 @@ const PromotionDetailWithTabs = () => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this promotion?')) {
+    if (!await confirm('Are you sure you want to delete this promotion?', { severity: 'error' })) {
       return;
     }
     try {
@@ -100,9 +102,7 @@ const PromotionDetailWithTabs = () => {
       toast.success('Promotion deleted successfully');
       navigate('/promotions');
     } catch (error) {
-      console.error('Error deleting promotion:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete promotion');
-    }
+      console.error('Error deleting promotion:', error); toast.error(error.response?.data?.message || 'Failed to delete promotion');}
   };
 
   // Promotion-specific actions per status — only show actions we can handle
@@ -144,6 +144,11 @@ const PromotionDetailWithTabs = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadPromotion(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ mb: 3 }}>
           <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
@@ -235,6 +240,7 @@ const PromotionDetailWithTabs = () => {
           {activeTab === 'stores' && <PromotionCustomers promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
           {activeTab === 'pos-proof' && <PromotionDocuments promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
         </Box>
+      {ConfirmDialogComponent}
       </Container>
   );
 };

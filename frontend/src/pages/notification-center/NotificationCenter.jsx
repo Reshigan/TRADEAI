@@ -30,6 +30,7 @@ const emptyAlert = { title: '', message: '', alert_type: 'threshold', severity: 
 export default function NotificationCenter() {
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [summary, setSummary] = useState({});
   const [options, setOptions] = useState({});
   const [notifications, setNotifications] = useState([]);
@@ -45,6 +46,7 @@ export default function NotificationCenter() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [s, o] = await Promise.all([notificationCenterService.getSummary(), notificationCenterService.getOptions()]);
       if (s.success) setSummary(s.data || {});
@@ -104,6 +106,11 @@ export default function NotificationCenter() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadData(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Notification Center & Alerts</Typography>

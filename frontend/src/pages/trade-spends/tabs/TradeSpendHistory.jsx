@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const TradeSpendHistory = ({ tradeSpendId }) => {
+  const toast = useToast();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -17,8 +19,7 @@ const TradeSpendHistory = ({ tradeSpendId }) => {
       const result = response.data.data || response.data;
       setData(Array.isArray(result) ? result : []);
     } catch (error) {
-      console.error('Error loading history:', error);
-    } finally {
+      console.error('Error loading history:', error); toast.error('Error loading history'); } finally {
       setLoading(false);
     }
   };

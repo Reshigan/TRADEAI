@@ -10,6 +10,7 @@ import {
 } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const categories = [
   { value: 'onboarding', label: 'Onboarding' },
@@ -45,6 +46,7 @@ const initialFormData = {
 };
 
 export default function LearningCoursesPage() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -122,7 +124,7 @@ export default function LearningCoursesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this course?')) return;
+    if (!await confirm('Are you sure you want to delete this course?', { severity: 'error' })) return;
     try {
       await enterpriseApi.companyAdmin.deleteCourse(id);
       loadCourses();
@@ -422,6 +424,7 @@ export default function LearningCoursesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

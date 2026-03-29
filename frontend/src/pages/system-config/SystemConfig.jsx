@@ -10,6 +10,7 @@ import {
   Settings as ConfigIcon, Edit as EditIcon, Business as TenantIcon
 } from '@mui/icons-material';
 import { systemConfigService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -24,12 +25,14 @@ const emptyConfig = { config_key: '', config_value: '', config_type: 'string', c
 const emptyTenant = { name: '', code: '', domain: '', status: 'active', plan: 'standard', max_users: 50, contact_name: '', contact_email: '', country: '', currency: 'ZAR', notes: '' };
 
 export default function SystemConfig() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState({});
   const [configs, setConfigs] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [options, setOptions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState('config');
   const [editItem, setEditItem] = useState(null);
@@ -39,6 +42,7 @@ export default function SystemConfig() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [sumRes, confRes, tenRes, optRes] = await Promise.all([
         systemConfigService.getSummary(),
@@ -86,17 +90,22 @@ export default function SystemConfig() {
   };
 
   const handleDeleteConfig = async (id) => {
-    if (!window.confirm('Delete this config?')) return;
+    if (!await confirm('Delete this config?', { severity: 'error' })) return;
     try { await systemConfigService.deleteConfig(id); setSnack({ open: true, message: 'Deleted', severity: 'success' }); loadData(); } catch (e) { setSnack({ open: true, message: e.message, severity: 'error' }); }
   };
 
   const handleDeleteTenant = async (id) => {
-    if (!window.confirm('Delete this tenant?')) return;
+    if (!await confirm('Delete this tenant?', { severity: 'error' })) return;
     try { await systemConfigService.deleteTenant(id); setSnack({ open: true, message: 'Deleted', severity: 'success' }); loadData(); } catch (e) { setSnack({ open: true, message: e.message, severity: 'error' }); }
   };
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadData(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>System Configuration</Typography>
@@ -230,6 +239,7 @@ export default function SystemConfig() {
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

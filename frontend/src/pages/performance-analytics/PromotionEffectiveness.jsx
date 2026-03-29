@@ -61,11 +61,13 @@ import {
 } from 'recharts';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const COLORS = ['#4caf50', '#8B5CF6', '#ff9800', '#f44336', '#9c27b0'];
 
 const PromotionEffectiveness = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const toast = useToast();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
@@ -114,6 +116,7 @@ const PromotionEffectiveness = () => {
         });
       } catch (error) {
         console.error('Error fetching promotion data:', error);
+        toast.error('Error fetching promotion data');
         enqueueSnackbar('Failed to load promotion analytics', { variant: 'error' });
       } finally {
         setLoading(false);

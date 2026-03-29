@@ -24,8 +24,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { ListPageTemplate } from '../enhanced-index';
 import { promotionService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 export default function PromotionsList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,8 +46,7 @@ export default function PromotionsList() {
       setPromotions(response.data || response || []);
       setTotal(response.data?.length || response.length || 0);
     } catch (error) {
-      console.error('Failed to load promotions:', error);
-    } finally {
+      console.error('Failed to load promotions:', error); toast.error('Failed to load promotions'); } finally {
       setLoading(false);
     }
   };
@@ -61,13 +64,13 @@ export default function PromotionsList() {
   };
 
   const handleDelete = async (promotion) => {
-    if (window.confirm(`Are you sure you want to delete "${promotion.name}"?`)) {
+    if (await confirm(`Are you sure you want to delete "${promotion.name}"?`, { severity: 'error' })) {
       try {
         await promotionService.delete(promotion.id);
+        toast.success('Promotion deleted');
         loadPromotions();
       } catch (error) {
-        console.error('Failed to delete promotion:', error);
-      }
+        console.error('Failed to delete promotion:', error); toast.error('Failed to delete promotion'); }
     }
   };
 
@@ -257,6 +260,8 @@ export default function PromotionsList() {
   ];
 
   return (
+    <>
+    {ConfirmDialogComponent}
     <ListPageTemplate
       title="Promotions"
       subtitle="Manage and track all trade promotions"
@@ -280,5 +285,6 @@ export default function PromotionsList() {
         description: 'Create your first promotion to start managing trade activities',
       }}
     />
+    </>
   );
 }

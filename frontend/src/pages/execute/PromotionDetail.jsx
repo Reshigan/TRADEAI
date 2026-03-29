@@ -5,11 +5,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 const statusColor = (s) => ({ draft: '#94A3B8', pending_approval: '#F59E0B', approved: '#2563EB', active: '#059669', completed: '#6B7280', cancelled: '#DC2626', rejected: '#DC2626' }[s] || '#94A3B8');
 
 export default function PromotionDetail() {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTerminology();
@@ -22,12 +24,12 @@ export default function PromotionDetail() {
   const [actionError, setActionError] = useState('');
 
   const reload = async () => {
-    try { const res = await promotionService.getById(id); setPromo(res.data || res); } catch (e) { console.error(e); }
+    try { const res = await promotionService.getById(id); setPromo(res.data || res); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   useEffect(() => {
     const load = async () => {
-      try { const res = await promotionService.getById(id); setPromo(res.data || res); } catch (e) { console.error(e); }
+      try { const res = await promotionService.getById(id); setPromo(res.data || res); } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();

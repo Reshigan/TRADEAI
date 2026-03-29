@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Box, Paper, Typography, Button, Grid, Slider, CircularProgress } from '@mui/material';
 import { ShowChart, PlayArrow } from '@mui/icons-material';
 import enterpriseApi from '../../../services/enterpriseApi';
+import { useToast } from '../../common/ToastNotification';
 
 export default function PricingSimulator({ onSaveScenario }) {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [priceChange, setPriceChange] = useState(5);
@@ -19,6 +21,7 @@ export default function PricingSimulator({ onSaveScenario }) {
       setResults(response.data);
     } catch (err) {
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }

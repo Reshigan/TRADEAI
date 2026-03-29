@@ -35,8 +35,10 @@ import {
   InfoOutlined
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [anomalies, setAnomalies] = useState(null);
@@ -83,6 +85,7 @@ const AIAnomalyDetectionWidget = ({ scope = 'all' }) => {
       setAnomalies(transformedData);
     } catch (err) {
       console.error('Anomaly detection error:', err);
+      toast.error('Anomaly detection error');
       setError(err.response?.data?.message || 'Failed to load anomalies');
     } finally {
       setLoading(false);

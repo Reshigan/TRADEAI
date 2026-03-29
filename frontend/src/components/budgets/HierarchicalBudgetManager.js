@@ -31,8 +31,10 @@ import {
 } from '@mui/icons-material';
 // Removed TreeView import due to compatibility issues
 import { budgetService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const HierarchicalBudgetManager = () => {
+  const toast = useToast();
   const [budgetHierarchy, setBudgetHierarchy] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   // Removed expandedNodes state as TreeView is no longer used
@@ -88,6 +90,7 @@ const HierarchicalBudgetManager = () => {
       setBudgetHierarchy(response.data || response || []);
     } catch (error) {
       console.error('Error fetching budget hierarchy:', error);
+      toast.error('Error fetching budget hierarchy');
       setBudgetHierarchy([]);
     } finally {
       setLoading(false);
@@ -159,6 +162,7 @@ const HierarchicalBudgetManager = () => {
       await fetchBudgetHierarchy();
     } catch (error) {
       console.error('Error saving budget:', error);
+      toast.error('Error saving budget');
     }
   };
 

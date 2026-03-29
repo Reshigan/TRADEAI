@@ -4,8 +4,7 @@ import {
   Paper, Chip, TextField, MenuItem, IconButton,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Tooltip, LinearProgress, Divider, Tabs, Tab
-} from '@mui/material';
+  CircularProgress, Tooltip, LinearProgress, Divider, Tabs, Tab, Alert} from '@mui/material';
 import {
   Add, Refresh, Calculate, CheckCircle, Delete, Edit,
   Timeline, TrendingUp, ShowChart,
@@ -13,6 +12,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { baselineService, baselineEngineService, customerService, productService, promotionService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const STATUS_COLORS = {
   draft: 'default',
@@ -23,8 +24,11 @@ const STATUS_COLORS = {
 };
 
 const BaselineManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [baselines, setBaselines] = useState([]);
   const [summary, setSummary] = useState(null);
   const [total, setTotal] = useState(0);
@@ -70,6 +74,7 @@ const BaselineManagement = () => {
 
   const loadBaselines = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = {};
       if (statusFilter) params.status = statusFilter;
@@ -79,7 +84,7 @@ const BaselineManagement = () => {
       setBaselines(response.data || []);
       setTotal(response.total || 0);
     } catch (error) {
-      console.error('Failed to load baselines:', error);
+      console.error('Failed to load baselines:', error); setFetchError(error.message || 'Failed to load data');
       setBaselines([]);
     } finally {
       setLoading(false);
@@ -91,8 +96,7 @@ const BaselineManagement = () => {
       const response = await baselineService.getSummary();
       setSummary(response.data || null);
     } catch (error) {
-      console.error('Failed to load summary:', error);
-    }
+      console.error('Failed to load summary:', error); toast.error('Failed to load summary'); }
   }, []);
 
   const loadReferenceData = useCallback(async () => {
@@ -108,8 +112,7 @@ const BaselineManagement = () => {
       setPromotions(promoRes.data || []);
       setOptions(optRes.data || null);
     } catch (error) {
-      console.error('Failed to load reference data:', error);
-    }
+      console.error('Failed to load reference data:', error); toast.error('Failed to load reference data'); }
   }, []);
 
   useEffect(() => { loadBaselines(); }, [loadBaselines]);
@@ -146,8 +149,7 @@ const BaselineManagement = () => {
       const detail = await baselineService.getById(selectedBaseline.id);
       setSelectedBaseline(detail.data);
     } catch (error) {
-      console.error('ML calculation failed:', error);
-    } finally {
+      console.error('ML calculation failed:', error); toast.error('ML calculation failed'); } finally {
       setActionLoading(false);
     }
   };
@@ -160,8 +162,7 @@ const BaselineManagement = () => {
       setImportDialogOpen(false);
       setImportCsv('');
     } catch (error) {
-      console.error('Import failed:', error);
-    } finally {
+      console.error('Import failed:', error); toast.error('Import failed'); } finally {
       setActionLoading(false);
     }
   };
@@ -175,8 +176,7 @@ const BaselineManagement = () => {
       await loadBaselines();
       await loadSummary();
     } catch (error) {
-      console.error('Failed to create baseline:', error);
-    } finally {
+      console.error('Failed to create baseline:', error); toast.error('Failed to create baseline'); } finally {
       setActionLoading(false);
     }
   };
@@ -190,21 +190,19 @@ const BaselineManagement = () => {
       resetForm();
       await loadBaselines();
     } catch (error) {
-      console.error('Failed to update baseline:', error);
-    } finally {
+      console.error('Failed to update baseline:', error); toast.error('Failed to update baseline'); } finally {
       setActionLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this baseline and all its period data?')) return;
+    if (!await confirm('Delete this baseline and all its period data?', { severity: 'error' })) return;
     try {
       await baselineService.delete(id);
       await loadBaselines();
       await loadSummary();
     } catch (error) {
-      console.error('Failed to delete baseline:', error);
-    }
+      console.error('Failed to delete baseline:', error); toast.error('Failed to delete baseline'); }
   };
 
   const handleCalculate = async (id) => {
@@ -220,20 +218,18 @@ const BaselineManagement = () => {
         }
       }
     } catch (error) {
-      console.error('Failed to calculate baseline:', error);
-    } finally {
+      console.error('Failed to calculate baseline:', error); toast.error('Failed to calculate baseline'); } finally {
       setActionLoading(false);
     }
   };
 
   const handleApprove = async (id) => {
-    if (!window.confirm('Approve this baseline?')) return;
+    if (!await confirm('Approve this baseline?', { severity: 'warning' })) return;
     try {
       await baselineService.approve(id);
       await loadBaselines();
     } catch (error) {
-      console.error('Failed to approve baseline:', error);
-    }
+      console.error('Failed to approve baseline:', error); toast.error('Failed to approve baseline'); }
   };
 
   const handleViewDetail = async (baseline) => {
@@ -243,8 +239,7 @@ const BaselineManagement = () => {
       setDetailTab(0);
       setDetailOpen(true);
     } catch (error) {
-      console.error('Failed to load baseline detail:', error);
-    }
+      console.error('Failed to load baseline detail:', error); toast.error('Failed to load baseline detail'); }
   };
 
   const handleOpenEdit = (baseline) => {
@@ -287,8 +282,7 @@ const BaselineManagement = () => {
       const detail = await baselineService.getById(selectedBaseline.id);
       setSelectedBaseline(detail.data);
     } catch (error) {
-      console.error('Failed to decompose volume:', error);
-    } finally {
+      console.error('Failed to decompose volume:', error); toast.error('Failed to decompose volume'); } finally {
       setActionLoading(false);
     }
   };
@@ -817,6 +811,11 @@ const BaselineManagement = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadBaselines(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <CircularProgress />
       </Box>
     );
@@ -1010,6 +1009,7 @@ const BaselineManagement = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

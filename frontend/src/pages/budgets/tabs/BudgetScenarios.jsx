@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const fmt = (v) => typeof v === 'number' ? `R ${v.toLocaleString()}` : v || 'N/A';
 
 const BudgetScenarios = ({ budgetId }) => {
+  const toast = useToast();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -19,8 +21,7 @@ const BudgetScenarios = ({ budgetId }) => {
       const result = response.data.data || response.data;
       setData(Array.isArray(result) ? result : []);
     } catch (error) {
-      console.error('Error loading scenarios:', error);
-    } finally {
+      console.error('Error loading scenarios:', error); toast.error('Error loading scenarios'); } finally {
       setLoading(false);
     }
   };

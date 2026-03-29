@@ -27,8 +27,10 @@ import {
   Error as ErrorIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 export default function BulkUploadTransactions() {
+  const toast = useToast();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -67,6 +69,7 @@ export default function BulkUploadTransactions() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download template:', error);
+      toast.error('Failed to download template');
       setErrors(['Failed to download template']);
     }
   };
@@ -105,6 +108,7 @@ export default function BulkUploadTransactions() {
       setFile(null);
     } catch (error) {
       console.error('Upload failed:', error);
+      toast.error('Upload failed');
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {

@@ -20,6 +20,8 @@ import {
   Assessment as ReportIcon,
 } from '@mui/icons-material';
 import { budgetAllocationService, budgetService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (value) => {
   if (value === null || value === undefined) return 'R 0.00';
@@ -116,6 +118,8 @@ const EMPTY_FORM = {
 };
 
 const BudgetAllocationManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [allocations, setAllocations] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -159,8 +163,7 @@ const BudgetAllocationManagement = () => {
       const res = await budgetAllocationService.getSummary();
       setSummary(res.data || null);
     } catch (err) {
-      console.error('Failed to fetch summary:', err);
-    }
+      console.error('Failed to fetch summary:', err); toast.error('Failed to fetch summary'); }
   }, []);
 
   const fetchWaterfall = useCallback(async () => {
@@ -169,8 +172,7 @@ const BudgetAllocationManagement = () => {
       const res = await budgetAllocationService.getWaterfall();
       setWaterfallData(res.data || []);
     } catch (err) {
-      console.error('Failed to fetch waterfall:', err);
-    } finally {
+      console.error('Failed to fetch waterfall:', err); toast.error('Failed to fetch waterfall'); } finally {
       setWaterfallLoading(false);
     }
   }, []);
@@ -184,8 +186,7 @@ const BudgetAllocationManagement = () => {
       setBudgets(budgetRes.data || []);
       setOptions(optRes.data || null);
     } catch (err) {
-      console.error('Failed to fetch ref data:', err);
-    }
+      console.error('Failed to fetch ref data:', err); toast.error('Failed to fetch ref data'); }
   }, []);
 
   useEffect(() => {
@@ -239,7 +240,7 @@ const BudgetAllocationManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this budget allocation and all its lines?')) return;
+    if (!await confirm('Delete this budget allocation and all its lines?', { severity: 'error' })) return;
     try {
       await budgetAllocationService.delete(id);
       fetchAllocations();
@@ -913,6 +914,7 @@ const BudgetAllocationManagement = () => {
           <Button onClick={() => setDetailOpen(false)} sx={{ textTransform: 'none' }}>Close</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

@@ -21,8 +21,10 @@ import { PageHeader, DataTable, StatusChip } from '../common';
 import { tradeSpendService, budgetService, customerService, vendorService } from '../../services/api';
 import { formatCurrency, formatLabel } from '../../utils/formatters';
 import TradeSpendForm from './TradeSpendForm';
+import { useToast } from '../common/ToastNotification';
 
 const TradeSpendList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -73,6 +75,7 @@ const TradeSpendList = () => {
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch data:', error);
+      toast.error('Failed to fetch data');
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -85,6 +88,7 @@ const TradeSpendList = () => {
       setBudgets(response.data);
     } catch (err) {
       console.error('Failed to fetch budgets:', err);
+      toast.error('Failed to fetch budgets');
     }
   };
 
@@ -95,6 +99,7 @@ const TradeSpendList = () => {
       setCustomers(response.data || response);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
+      toast.error('Failed to fetch customers');
       setCustomers([]);
     }
   };
@@ -106,6 +111,7 @@ const TradeSpendList = () => {
       setVendors(response.data || response);
     } catch (err) {
       console.error('Failed to fetch vendors:', err);
+      toast.error('Failed to fetch vendors');
       setVendors([]);
     }
   };
@@ -152,6 +158,7 @@ const TradeSpendList = () => {
       setOpenForm(false);
     } catch (err) {
       console.error('Error saving trade spend:', err);
+      toast.error('Error saving trade spend');
       // Handle error
     }
   };

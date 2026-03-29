@@ -3,6 +3,7 @@ import { Grid, Container, Paper } from '@mui/material';
 import ProcessWizard from './ProcessWizard';
 import FlowAIPanel from './FlowAIPanel';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../common/ToastNotification';
 
 /**
  * FlowContainer - Enhanced wrapper for ProcessWizard with AI panel
@@ -37,6 +38,7 @@ const FlowContainer = ({
   initialData = null,
   backUrl = null
 }) => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [flowData, setFlowData] = useState(initialData || {});
   const [aiRecommendations, setAIRecommendations] = useState([]);
@@ -62,6 +64,7 @@ const FlowContainer = ({
       setAIRecommendations(recommendations || []);
     } catch (error) {
       console.error('Failed to fetch AI recommendations:', error);
+      toast.error('Failed to fetch AI recommendations');
       setAIRecommendations([]);
     } finally {
       setAILoading(false);
@@ -87,6 +90,7 @@ const FlowContainer = ({
       }
     } catch (error) {
       console.error('Flow completion failed:', error);
+      toast.error('Flow completion failed');
       throw error;
     }
   };

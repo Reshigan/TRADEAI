@@ -19,8 +19,10 @@ import {
 } from '@mui/material';
 import { Save, Refresh } from '@mui/icons-material';
 import api from '../../../services/api';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const SystemSettings = () => {
+  const toast = useToast();
   const [settings, setSettings] = useState({
     companyName: 'Trade AI Inc.',
     currency: 'ZAR',
@@ -50,8 +52,7 @@ const SystemSettings = () => {
         setSettings(response.data.data);
       }
     } catch (error) {
-      console.error('Failed to load settings:', error);
-    }
+      console.error('Failed to load settings:', error); toast.error('Failed to load settings'); }
   };
 
   const handleChange = (field, value) => {

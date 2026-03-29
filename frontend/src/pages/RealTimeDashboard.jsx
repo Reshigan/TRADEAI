@@ -14,8 +14,10 @@ import {
 import { TrendingUp, ShowChart, Assessment, Speed } from '@mui/icons-material';
 import AIInsightCard from '../components/ai-insights/AIInsightCard';
 import api from '../services/api';
+import { useToast } from '../components/common/ToastNotification';
 
 const RealTimeDashboard = () => {
+  const toast = useToast();
   const [insights, setInsights] = useState([]);
   const [metrics, setMetrics] = useState({
     revenue: 0,
@@ -41,8 +43,7 @@ const RealTimeDashboard = () => {
       setInsights(insightsRes.data.insights || []);
       setMetrics(metricsRes.data.metrics || metrics);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
+      console.error('Error fetching dashboard data:', error); toast.error('Error fetching dashboard data'); } finally {
       setLoading(false);
     }
   };

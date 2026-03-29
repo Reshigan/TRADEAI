@@ -10,9 +10,11 @@ import {
 } from 'recharts';
 import { formatCurrency } from '../../../utils/formatters';
 import api from '../../../services/api';
+import { useToast } from '../../common/ToastNotification';
 
 const BudgetUtilizationChart = ({ data: propData, height = 400 }) => {
   const theme = useTheme();
+  const toast = useToast();
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,6 +52,7 @@ const BudgetUtilizationChart = ({ data: propData, height = 400 }) => {
       }
     } catch (err) {
       console.error('Failed to load budget utilization data:', err);
+      toast.error('Failed to load budget utilization data');
     } finally {
       setLoading(false);
     }

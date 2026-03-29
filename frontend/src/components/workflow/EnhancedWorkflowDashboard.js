@@ -67,10 +67,12 @@ import {
   Bar
 } from 'recharts';
 import { workflowService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 const EnhancedWorkflowDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -121,6 +123,7 @@ const EnhancedWorkflowDashboard = () => {
     } catch (err) {
       setError('Failed to load workflow data');
       console.error('Workflow data loading error:', err);
+      toast.error('Workflow data loading error');
     } finally {
       setLoading(false);
     }
@@ -137,6 +140,7 @@ const EnhancedWorkflowDashboard = () => {
     } catch (err) {
       setError('Failed to start workflow');
       console.error('Start workflow error:', err);
+      toast.error('Start workflow error');
     }
   };
 
@@ -157,6 +161,7 @@ const EnhancedWorkflowDashboard = () => {
     } catch (err) {
       setError(`Failed to ${action} workflow`);
       console.error('Approval error:', err);
+      toast.error('Approval error');
     }
   };
 
@@ -168,6 +173,7 @@ const EnhancedWorkflowDashboard = () => {
     } catch (err) {
       setError('Failed to load workflow details');
       console.error('Workflow details error:', err);
+      toast.error('Workflow details error');
     }
   };
 

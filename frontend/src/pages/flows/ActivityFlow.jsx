@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import './PromotionFlow.css';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const ActivityFlow = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -241,6 +243,7 @@ const ActivityFlow = () => {
       }
     } catch (err) {
       console.error('Error creating activity:', err);
+      toast.error('Error creating activity');
       setError(err.response?.data?.message || 'Failed to create activity. Please try again.');
     } finally {
       setLoading(false);

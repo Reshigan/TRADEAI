@@ -45,8 +45,10 @@ import {
 
 import { PageHeader } from '../common';
 import { userService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const SettingsPage = () => {
+  const toast = useToast();
   const [tabValue, setTabValue] = useState(0);
   const [profileData, setProfileData] = useState({
     name: 'Admin User',
@@ -190,6 +192,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('Failed to save profile:', err);
+      toast.error('Failed to save profile');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to update profile',
@@ -246,6 +249,7 @@ const SettingsPage = () => {
       }));
     } catch (err) {
       console.error('Failed to change password:', err);
+      toast.error('Failed to change password');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to change password',
@@ -271,6 +275,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('Failed to save notification settings:', err);
+      toast.error('Failed to save notification settings');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to save notification settings',
@@ -296,6 +301,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('Failed to save display settings:', err);
+      toast.error('Failed to save display settings');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to save display settings',
@@ -330,6 +336,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('Failed to generate API key:', err);
+      toast.error('Failed to generate API key');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to generate API key',
@@ -355,6 +362,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('Failed to delete API key:', err);
+      toast.error('Failed to delete API key');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to delete API key',
@@ -396,6 +404,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('SAP connection test failed:', err);
+      toast.error('SAP connection test failed');
       setSnackbar({
         open: true,
         message: err.message || 'SAP connection test failed',
@@ -431,6 +440,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('SSO connection test failed:', err);
+      toast.error('SSO connection test failed');
       setSnackbar({
         open: true,
         message: err.message || 'SSO connection test failed',
@@ -461,6 +471,7 @@ const SettingsPage = () => {
       });
     } catch (err) {
       console.error('Failed to save integration settings:', err);
+      toast.error('Failed to save integration settings');
       setSnackbar({
         open: true,
         message: err.message || 'Failed to save integration settings',

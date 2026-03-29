@@ -15,8 +15,10 @@ import { deductionMatchService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const DeductionsList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [deductions, setDeductions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,7 @@ const DeductionsList = () => {
       setDeductions(response.data || []);
     } catch (err) {
       console.error('Error loading deductions:', err);
+      toast.error('Error loading deductions');
       setError(err.message || 'Failed to load deductions');
     } finally {
       setLoading(false);
@@ -54,8 +57,7 @@ const DeductionsList = () => {
       const response = await deductionService.getDeductionStatistics();
       setStatistics(response.data);
     } catch (err) {
-      console.error('Error loading statistics:', err);
-    }
+      console.error('Error loading statistics:', err); toast.error('Error loading statistics'); }
   };
 
   const handleAutoMatch = async () => {
@@ -70,6 +72,7 @@ const DeductionsList = () => {
       }
     } catch (err) {
       console.error('Error AI-matching deductions:', err);
+      toast.error('Error AI-matching deductions');
       setMatchDialog({ open: false, results: [], loading: false });
       setError(err.message || 'Failed to AI-match deductions');
     }

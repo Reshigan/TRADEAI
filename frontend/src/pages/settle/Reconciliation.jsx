@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress, Snackbar, Alert } from '@mui/material';
 import { Scale, CheckCircle, AlertTriangle, DollarSign } from 'lucide-react';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function Reconciliation() {
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
@@ -15,7 +17,7 @@ export default function Reconciliation() {
       try {
         const res = await api.get('/settlements/reconciliation');
         setData(res.data?.data || res.data || {});
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();
@@ -31,6 +33,7 @@ export default function Reconciliation() {
       setFeedback({ open: true, message: matched > 0 ? `Auto-match complete: ${matched} match${matched !== 1 ? 'es' : ''} found` : 'Auto-match complete: no new matches found', severity: 'success' });
     } catch (e) {
       console.error(e);
+      toast.error('An error occurred');
       setFeedback({ open: true, message: 'Auto-match failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
     }
     setLoading(false);

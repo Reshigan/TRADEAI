@@ -31,8 +31,10 @@ import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 import { anomalyDetectionService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const CommandCenter = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [anomalies, setAnomalies] = useState([]);
@@ -69,6 +71,7 @@ const CommandCenter = () => {
       }
     } catch (err) {
       console.error('Error fetching anomalies:', err);
+      toast.error('Error fetching anomalies');
     }
   };
 
@@ -99,6 +102,7 @@ const CommandCenter = () => {
       setDashboardData(data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      toast.error('Error fetching dashboard data');
     } finally {
       setLoading(false);
     }

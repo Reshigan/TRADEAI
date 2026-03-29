@@ -14,9 +14,11 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const RevenueByPeriod = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [period, setPeriod] = useState('month');
@@ -38,8 +40,7 @@ const RevenueByPeriod = () => {
         setData(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch data:', err);
-    } finally {
+      console.error('Failed to fetch data:', err); toast.error('Failed to fetch data'); } finally {
       setLoading(false);
     }
   };

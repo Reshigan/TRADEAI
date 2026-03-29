@@ -21,8 +21,10 @@ import {format, parseISO} from 'date-fns';
 import { customerService, productService } from '../../services/api';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useToast } from '../common/ToastNotification';
 
 const ActivityForm = ({ activity, onSubmit, startDate, endDate }) => {
+  const toast = useToast();
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +42,7 @@ const ActivityForm = ({ activity, onSubmit, startDate, endDate }) => {
         setProducts(productsResponse.data.data);
       } catch (error) {
         console.error('Error fetching form data:', error);
+        toast.error('Error fetching form data');
       } finally {
         setLoading(false);
       }

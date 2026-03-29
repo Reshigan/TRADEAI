@@ -20,6 +20,8 @@ import {
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import { tradeCalendarService, customerService, productService, promotionService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -114,6 +116,8 @@ const EMPTY_CONSTRAINT = {
 };
 
 const TradeCalendarManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [events, setEvents] = useState([]);
   const [constraints, setConstraints] = useState([]);
@@ -169,8 +173,7 @@ const TradeCalendarManagement = () => {
       const res = await tradeCalendarService.getSummary();
       setSummary(res.data || null);
     } catch (e) {
-      console.error('Summary fetch error:', e);
-    }
+      console.error('Summary fetch error:', e); toast.error('Summary fetch error'); }
   }, []);
 
   const fetchTimeline = useCallback(async () => {
@@ -178,8 +181,7 @@ const TradeCalendarManagement = () => {
       const res = await tradeCalendarService.getTimeline({ year: new Date().getFullYear() });
       setTimeline(res.data?.timeline || []);
     } catch (e) {
-      console.error('Timeline fetch error:', e);
-    }
+      console.error('Timeline fetch error:', e); toast.error('Timeline fetch error'); }
   }, []);
 
   const fetchRefData = useCallback(async () => {
@@ -195,8 +197,7 @@ const TradeCalendarManagement = () => {
       setProducts(prodRes.data || []);
       setPromotions(promoRes.data || []);
     } catch (e) {
-      console.error('Ref data fetch error:', e);
-    }
+      console.error('Ref data fetch error:', e); toast.error('Ref data fetch error'); }
   }, []);
 
   useEffect(() => {
@@ -266,7 +267,7 @@ const TradeCalendarManagement = () => {
   };
 
   const handleDeleteEvent = async (id) => {
-    if (!window.confirm('Delete this calendar event?')) return;
+    if (!await confirm('Delete this calendar event?', { severity: 'error' })) return;
     try {
       await tradeCalendarService.delete(id);
       showSnack('Event deleted');
@@ -365,7 +366,7 @@ const TradeCalendarManagement = () => {
   };
 
   const handleDeleteConstraint = async (id) => {
-    if (!window.confirm('Delete this constraint?')) return;
+    if (!await confirm('Delete this constraint?', { severity: 'error' })) return;
     try {
       await tradeCalendarService.deleteConstraint(id);
       showSnack('Constraint deleted');
@@ -980,6 +981,7 @@ const TradeCalendarManagement = () => {
           {snack.message}
         </Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

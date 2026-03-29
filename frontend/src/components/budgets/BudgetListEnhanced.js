@@ -5,8 +5,10 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { budgetService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const BudgetListEnhanced = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const theme = useTheme();
   const [budgets, setBudgets] = useState([]);
@@ -23,6 +25,7 @@ const BudgetListEnhanced = () => {
       setBudgets(response.data || response || []);
     } catch (error) {
       console.error("Error fetching budgets:", error);
+      toast.error('Error fetching budgets');
     } finally {
       setLoading(false);
     }

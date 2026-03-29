@@ -65,10 +65,12 @@ import {
 } from 'recharts';
 import {format, subDays} from 'date-fns';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
 const AdvancedAnalytics = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [dateRange, setDateRange] = useState({
     start: subDays(new Date(), 30),
@@ -141,12 +143,14 @@ const AdvancedAnalytics = () => {
         setError('Analytics data is currently unavailable');
       } catch (fetchErr) {
         console.error('Analytics API unavailable:', fetchErr);
+        toast.error('Analytics API unavailable');
         setError('Analytics data is currently unavailable');
       }
 
     } catch (err) {
       setError('Failed to fetch analytics data');
       console.error('Analytics fetch error:', err);
+      toast.error('Analytics fetch error');
     } finally {
       setLoading(false);
     }
@@ -185,6 +189,7 @@ const AdvancedAnalytics = () => {
       setExportDialogOpen(false);
     } catch (error) {
       console.error('Export error:', error);
+      toast.error('Export error');
     }
   };
 

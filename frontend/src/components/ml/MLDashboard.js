@@ -43,8 +43,10 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const MLDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [predictions, setPredictions] = useState({});
   const [models, setModels] = useState({});
@@ -75,6 +77,7 @@ const MLDashboard = () => {
       setProducts(productsRes.data.slice(0, 50));
     } catch (error) {
       console.error('Error loading initial data:', error);
+      toast.error('Error loading initial data');
     }
   };
 
@@ -85,6 +88,7 @@ const MLDashboard = () => {
       setModelMetrics(response.data.metrics);
     } catch (error) {
       console.error('Error loading model status:', error);
+      toast.error('Error loading model status');
     }
   };
 
@@ -98,6 +102,7 @@ const MLDashboard = () => {
       });
     } catch (error) {
       console.error('Error running prediction:', error);
+      toast.error('Error running prediction');
     } finally {
       setLoading(false);
     }
@@ -111,6 +116,7 @@ const MLDashboard = () => {
       loadModelStatus(); // Refresh model status
     } catch (error) {
       console.error('Error training model:', error);
+      toast.error('Error training model');
       setTrainingStatus(prev => ({ ...prev, [modelType]: 'error' }));
     }
   };

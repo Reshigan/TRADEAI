@@ -9,8 +9,10 @@ import {
   Category as CategoryIcon, AttachMoney as PriceIcon,
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ProductList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,8 +37,7 @@ const ProductList = () => {
         setProducts(normalizedProducts);
       }
     } catch (err) {
-      console.error('Failed to fetch products:', err);
-    } finally {
+      console.error('Failed to fetch products:', err); toast.error('Failed to fetch products'); } finally {
       setLoading(false);
     }
   };

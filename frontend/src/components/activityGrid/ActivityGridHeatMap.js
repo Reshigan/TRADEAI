@@ -14,8 +14,10 @@ import { activityGridService } from '../../services/api';
 import { useSnackbar } from 'notistack';
 import {format} from 'date-fns';
 import { enZA } from 'date-fns/locale';
+import { useToast } from '../common/ToastNotification';
 
 const ActivityGridHeatMap = ({ year, month }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [heatMapData, setHeatMapData] = useState([]);
   const [groupBy, setGroupBy] = useState('customer');
@@ -36,6 +38,7 @@ const ActivityGridHeatMap = ({ year, month }) => {
         setHeatMapData(response.data.data.heatMap);
       } catch (error) {
         console.error('Error fetching heat map:', error);
+        toast.error('Error fetching heat map');
         enqueueSnackbar('Failed to load heat map data', { variant: 'error' });
       } finally {
         setLoading(false);

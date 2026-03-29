@@ -20,8 +20,10 @@ import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const PromotionDetail = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
@@ -61,7 +63,7 @@ const PromotionDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this promotion?')) {
+    if (await confirm('Are you sure you want to delete this promotion?', { severity: 'error' })) {
       try {
         await api.delete(`/promotions/${id}`);
         analytics.trackEvent('promotion_deleted', { promotionId: id });
@@ -370,6 +372,7 @@ const PromotionDetail = () => {
           </Grid>
         </Grid>
       </Paper>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

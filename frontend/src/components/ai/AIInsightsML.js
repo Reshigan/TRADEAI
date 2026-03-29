@@ -36,8 +36,10 @@ import {
 } from '@mui/icons-material';
 
 import { mlService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const AIInsightsML = ({ productId, customerId, refreshInterval = 300000 }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [insights, setInsights] = useState([]);
   const [error, setError] = useState(null);
@@ -87,6 +89,7 @@ const AIInsightsML = ({ productId, customerId, refreshInterval = 300000 }) => {
     } catch (err) {
       setError('Failed to load AI insights');
       console.error('Insights error:', err);
+      toast.error('Insights error');
     } finally {
       setLoading(false);
     }

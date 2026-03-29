@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { customerService } from '../../services/api';
 import { productService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 // Get currency symbol from user's company settings
 const getCurrencySymbol = () => {
@@ -64,6 +65,7 @@ const HierarchySelector = ({
   lockRatios = false,
   onLockRatiosChange
 }) => {
+  const toast = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedNodes, setExpandedNodes] = useState(new Set());
   const [hierarchyData, setHierarchyData] = useState([]);
@@ -94,6 +96,7 @@ const HierarchySelector = ({
       setHierarchyData(Array.isArray(hierarchyData) ? hierarchyData : [hierarchyData]);
     } catch (error) {
       console.error('Failed to load hierarchy data:', error);
+      toast.error('Failed to load hierarchy data');
       setHierarchyData([]);
     } finally {
       setLoading(false);

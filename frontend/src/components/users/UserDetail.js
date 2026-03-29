@@ -52,10 +52,12 @@ import {
 import { PageHeader } from '../common';
 import { formatLabel } from '../../utils/formatters';
 import { userService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 
 
 const UserDetail = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   
@@ -94,6 +96,7 @@ const UserDetail = () => {
         });
       } catch (err) {
         console.error('Failed to fetch user:', err);
+        toast.error('Failed to fetch user');
       } finally {
         setLoading(false);
       }
@@ -151,6 +154,7 @@ const UserDetail = () => {
       }, 1500);
     } catch (err) {
       console.error('Failed to delete user:', err);
+      toast.error('Failed to delete user');
       setSnackbar({
         open: true,
         message: 'Failed to delete user',
@@ -176,6 +180,7 @@ const UserDetail = () => {
       });
     } catch (err) {
       console.error('Failed to update user status:', err);
+      toast.error('Failed to update user status');
       setSnackbar({
         open: true,
         message: 'Failed to update user status',
@@ -196,6 +201,7 @@ const UserDetail = () => {
       });
     } catch (err) {
       console.error('Failed to reset password:', err);
+      toast.error('Failed to reset password');
       setSnackbar({
         open: true,
         message: 'Failed to reset password',

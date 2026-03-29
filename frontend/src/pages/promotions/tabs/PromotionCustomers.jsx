@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, IconButton, CircularProgress, Chip } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 const PromotionCustomers = ({ promotionId, promotion, onUpdate }) => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +29,7 @@ const PromotionCustomers = ({ promotionId, promotion, onUpdate }) => {
   };
 
   const handleDelete = async (customerId) => {
-    if (!window.confirm('Remove this customer from the promotion?')) return;
+    if (!await confirm('Remove this customer from the promotion?', { severity: 'error' })) return;
     
     try {
       await apiClient.delete(`/promotions/${promotionId}/customers/${customerId}`);
@@ -84,6 +87,7 @@ const PromotionCustomers = ({ promotionId, promotion, onUpdate }) => {
           </TableBody>
         </Table>
       </TableContainer>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

@@ -3,10 +3,13 @@ import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, A
 import { Plus } from 'lucide-react';
 import { tradingTermsService } from '../../services/api';
 import { SmartTable, PageHeader, SmartField } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 export default function TradingTermsList() {
+  const toast = useToast();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', term_type: 'rebate', rate: '', frequency: 'monthly', customer_id: '' });
   const [saving, setSaving] = useState(false);
@@ -14,11 +17,12 @@ export default function TradingTermsList() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await tradingTermsService.getAll();
       const data = res?.data || res || [];
       setItems(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -41,6 +45,11 @@ export default function TradingTermsList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Trading Terms"
         subtitle="Manage customer trading terms and agreements"
