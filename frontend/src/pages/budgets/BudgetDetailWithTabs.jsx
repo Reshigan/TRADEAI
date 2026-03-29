@@ -53,8 +53,7 @@ const BudgetDetailWithTabs = () => {
       const response = await apiClient.get(`/budgets/${id}`);
       setBudget(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading budget:', error);
-      toast.error('Failed to load budget'); setFetchError(error.message || 'Failed to load data');} finally {
+      console.error('Error loading budget:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };

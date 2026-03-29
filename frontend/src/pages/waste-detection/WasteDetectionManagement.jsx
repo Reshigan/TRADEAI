@@ -30,8 +30,7 @@ const WasteDetectionManagement = () => {
       const pCount = (wasteRes.data?.data?.patterns || []).length;
       setFeedback({ open: true, message: pCount > 0 ? `Analysis complete: ${pCount} waste pattern${pCount !== 1 ? 's' : ''} detected` : 'Analysis complete: no waste patterns detected', severity: pCount > 0 ? 'warning' : 'success' });
     } catch (e) {
-      console.error(e);
-      toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data');
+      console.error(e); setFetchError(e.message || 'Failed to load data');
       setFeedback({ open: true, message: 'Analysis failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
     }
     finally { setLoading(false); }

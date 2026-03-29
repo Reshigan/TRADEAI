@@ -52,7 +52,7 @@ export default function CustomerList() {
       const res = await customerService.getAll();
       const data = res?.data || res || [];
       setItems(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

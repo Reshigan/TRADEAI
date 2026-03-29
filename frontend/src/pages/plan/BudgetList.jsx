@@ -78,7 +78,7 @@ export default function BudgetList() {
     try {
       const res = await budgetService.getAll();
       setBudgets(res.data || res || []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

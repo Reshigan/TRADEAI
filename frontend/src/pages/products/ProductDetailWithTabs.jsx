@@ -47,8 +47,7 @@ const ProductDetailWithTabs = () => {
       const response = await apiClient.get(`/products/${id}`);
       setProduct(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading product:', error);
-      toast.error('Failed to load product'); setFetchError(error.message || 'Failed to load data');} finally {
+      console.error('Error loading product:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };

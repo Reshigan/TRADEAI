@@ -55,7 +55,7 @@ const AdvancedReportingManagement = () => {
     try {
       const res = await advancedReportingService.getSummary();
       if (res.success) setSummary(res.data);
-    } catch (e) { console.error('Error loading summary:', e); toast.error('Error loading summary'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error('Error loading summary:', e); setFetchError(e.message || 'Failed to load data'); }
   }, []);
 
   const loadOptions = useCallback(async () => {

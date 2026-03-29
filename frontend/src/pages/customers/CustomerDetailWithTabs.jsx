@@ -55,8 +55,7 @@ const CustomerDetailWithTabs = () => {
       const response = await apiClient.get(`/customers/${id}`);
       setCustomer(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading customer:', error);
-      toast.error('Failed to load customer'); setFetchError(error.message || 'Failed to load data');} finally {
+      console.error('Error loading customer:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };

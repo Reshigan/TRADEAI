@@ -29,7 +29,7 @@ export default function ClaimList() {
       const [res, cust] = await Promise.allSettled([claimService.getAll(), customerService.getAll()]);
       if (res.status === 'fulfilled') setClaims(res.value.data || res.value || []);
       if (cust.status === 'fulfilled') setCustomers(cust.value.data || cust.value || []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

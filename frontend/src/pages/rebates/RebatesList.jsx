@@ -25,7 +25,7 @@ const RebatesList = () => {
       const response = await api.get('/rebates');
       if (response.data.success) setRebates(response.data.data);
     } catch (error) {
-      console.error('Failed to load rebates:', error); toast.error('Failed to load rebates'); setFetchError(error.message || 'Failed to load data'); } finally {
+      console.error('Failed to load rebates:', error); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };

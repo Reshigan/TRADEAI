@@ -76,8 +76,7 @@ const PromotionDetailWithTabs = () => {
       const response = await apiClient.get(`/promotions/${id}`);
       setPromotion(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading promotion:', error);
-      toast.error('Failed to load promotion'); setFetchError(error.message || 'Failed to load data');} finally {
+      console.error('Error loading promotion:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -103,8 +102,7 @@ const PromotionDetailWithTabs = () => {
       toast.success('Promotion deleted successfully');
       navigate('/promotions');
     } catch (error) {
-      console.error('Error deleting promotion:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete promotion'); setFetchError(error.message || 'Failed to load data');}
+      console.error('Error deleting promotion:', error); setFetchError(error.message || 'Failed to load data');}
   };
 
   // Promotion-specific actions per status — only show actions we can handle

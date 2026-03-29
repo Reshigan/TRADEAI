@@ -33,7 +33,7 @@ const PromotionList = () => {
       const response = await api.get(`/promotions?${params}`);
       if (response.data.success) setPromotions(response.data.data);
     } catch (err) {
-      console.error('Failed to fetch promotions:', err); toast.error('Failed to fetch promotions'); setFetchError(err.message || 'Failed to load data'); } finally {
+      console.error('Failed to fetch promotions:', err); setFetchError(err.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };

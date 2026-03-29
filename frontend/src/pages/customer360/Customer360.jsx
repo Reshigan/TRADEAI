@@ -67,7 +67,7 @@ const Customer360Dashboard = () => {
     try {
       const res = await customer360Service.getSummary();
       if (res.success) setSummary(res.data);
-    } catch (e) { console.error('Error loading summary:', e); toast.error('Error loading summary'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error('Error loading summary:', e); setFetchError(e.message || 'Failed to load data'); }
   }, []);
 
   const loadProfiles = useCallback(async () => {

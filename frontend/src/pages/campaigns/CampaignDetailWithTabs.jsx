@@ -45,8 +45,7 @@ const CampaignDetailWithTabs = () => {
       const response = await apiClient.get(`/campaigns/${id}`);
       setCampaign(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading campaign:', error);
-      toast.error('Failed to load campaign'); setFetchError(error.message || 'Failed to load data');} finally {
+      console.error('Error loading campaign:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };

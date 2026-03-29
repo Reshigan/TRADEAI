@@ -70,7 +70,7 @@ export default function RevenueGrowthManagement() {
   const [growthData, setGrowthData] = useState([]);
 
   const loadSummary = useCallback(async () => {
-    try { const r = await revenueGrowthService.getSummary(); if (r.success) setSummary(r.data); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    try { const r = await revenueGrowthService.getSummary(); if (r.success) setSummary(r.data); } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
   }, []);
 
   const loadOptions = useCallback(async () => {

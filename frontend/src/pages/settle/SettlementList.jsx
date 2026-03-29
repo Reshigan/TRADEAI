@@ -16,7 +16,7 @@ export default function SettlementList() {
   const [fetchError, setFetchError] = useState(null);
 
   const load = async () => {
-    try { const res = await settlementService.getAll(); setSettlements(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    try { const res = await settlementService.getAll(); setSettlements(res.data || res || []); } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 
@@ -39,12 +39,12 @@ export default function SettlementList() {
   const rowActions = [
     {
       label: 'Approve', icon: <CheckCircle size={16} />,
-      onClick: async (row) => { try { await settlementService.approve(row.id); load(); } catch(e) { console.error(e); toast.error('An error occurred'); } },
+      onClick: async (row) => { try { await settlementService.approve(row.id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); } },
       visible: (row) => row.status === 'pending' || row.status === 'pending_approval',
     },
     {
       label: 'Reject', icon: <XCircle size={16} />,
-      onClick: async (row) => { try { await settlementService.reject(row.id); load(); } catch(e) { console.error(e); toast.error('An error occurred'); } },
+      onClick: async (row) => { try { await settlementService.reject(row.id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); } },
       visible: (row) => row.status === 'pending' || row.status === 'pending_approval',
     },
   ];

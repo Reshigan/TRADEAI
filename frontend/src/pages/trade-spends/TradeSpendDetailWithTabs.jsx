@@ -54,8 +54,7 @@ const TradeSpendDetailWithTabs = () => {
       const response = await apiClient.get(`/trade-spends/${id}`);
       setTradeSpend(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading trade spend:', error);
-      toast.error('Failed to load trade spend'); setFetchError(error.message || 'Failed to load data');} finally {
+      console.error('Error loading trade spend:', error); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };

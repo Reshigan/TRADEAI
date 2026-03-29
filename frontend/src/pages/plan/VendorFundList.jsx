@@ -24,7 +24,7 @@ export default function VendorFundList() {
       const res = await api.get('/vendor-funds');
       const data = res.data?.data || res.data || [];
       setFunds(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

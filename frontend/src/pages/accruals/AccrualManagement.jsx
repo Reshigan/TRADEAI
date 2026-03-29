@@ -74,8 +74,7 @@ const AccrualManagement = () => {
       setAccruals(response.data || []);
       setTotal(response.total || 0);
     } catch (error) {
-      console.error('Failed to load accruals:', error);
-      toast.error('Failed to load accruals'); setFetchError(error.message || 'Failed to load data');
+      console.error('Failed to load accruals:', error); setFetchError(error.message || 'Failed to load data');
       setAccruals([]);
     } finally {
       setLoading(false);

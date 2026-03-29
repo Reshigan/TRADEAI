@@ -26,7 +26,7 @@ const VendorFundManagement = () => {
       setLoading(true);
       const res = await apiClient.get('/vendor-funds');
       setFunds(res.data?.data || []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     finally { setLoading(false); }
   };
 

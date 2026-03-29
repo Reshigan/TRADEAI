@@ -21,7 +21,7 @@ export default function UserList() {
   const load = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
-    try { const res = await userService.getAll(); setUsers(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    try { const res = await userService.getAll(); setUsers(res.data || res || []); } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

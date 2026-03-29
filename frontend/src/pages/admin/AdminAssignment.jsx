@@ -53,7 +53,7 @@ const AdminAssignment = () => {
 
       setCompanies(enriched);
     } catch (error) {
-      console.error('Error fetching companies:', error); toast.error('Error fetching companies'); setFetchError(error.message || 'Failed to load data'); } finally {
+      console.error('Error fetching companies:', error); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   }, []);

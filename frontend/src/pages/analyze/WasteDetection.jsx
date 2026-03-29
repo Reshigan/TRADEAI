@@ -17,7 +17,7 @@ export default function WasteDetection() {
     try {
       const res = await api.get('/ai/waste-detection');
       setData(res.data?.data || res.data || {});
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 

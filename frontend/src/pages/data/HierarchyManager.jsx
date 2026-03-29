@@ -109,7 +109,7 @@ export default function HierarchyManager() {
         setProductHierarchy(arr);
         setStats(prev => ({ ...prev, product: { totalNodes: countNodes(arr) } }));
       }
-    } catch (e) { console.error('Failed to load hierarchy:', e); toast.error('Failed to load hierarchy'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error('Failed to load hierarchy:', e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

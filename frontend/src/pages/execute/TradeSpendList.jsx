@@ -37,7 +37,7 @@ export default function TradeSpendList() {
         const data = cust.value?.data || cust.value || [];
         setCustomers(Array.isArray(data) ? data : []);
       }
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 

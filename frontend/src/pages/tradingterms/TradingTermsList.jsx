@@ -31,8 +31,7 @@ const TradingTermsList = () => {
       const terms = response.tradingTerms || response.data || response || [];
       setTradingTerms(Array.isArray(terms) ? terms : []);
     } catch (error) {
-      console.error('Failed to load trading terms:', error);
-      toast.error('Failed to load trading terms'); setFetchError(error.message || 'Failed to load data');
+      console.error('Failed to load trading terms:', error); setFetchError(error.message || 'Failed to load data');
       setTradingTerms([]);
     } finally {
       setLoading(false);

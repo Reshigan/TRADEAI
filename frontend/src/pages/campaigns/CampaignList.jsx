@@ -30,7 +30,7 @@ const CampaignList = () => {
       const response = await api.get(`/campaigns?${params}`);
       if (response.data.success) setCampaigns(response.data.data);
     } catch (err) {
-      console.error('Failed to fetch campaigns:', err); toast.error('Failed to fetch campaigns'); setFetchError(err.message || 'Failed to load data'); } finally {
+      console.error('Failed to fetch campaigns:', err); setFetchError(err.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };

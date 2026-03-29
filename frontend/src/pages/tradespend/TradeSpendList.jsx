@@ -34,7 +34,7 @@ const TradeSpendList = () => {
       const response = await tradeSpendService.getTradeSpends(filters);
       setTradeSpends(response.data || response.tradeSpends || []);
     } catch (error) {
-      console.error('Failed to load trade spends:', error); toast.error('Failed to load trade spends'); setFetchError(error.message || 'Failed to load data'); } finally {
+      console.error('Failed to load trade spends:', error); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };

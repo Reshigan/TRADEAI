@@ -19,7 +19,7 @@ export default function AccrualList() {
     try {
       const res = await accrualService.getAll();
       setAccruals(res.data || res || []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 

@@ -79,8 +79,7 @@ const SettlementManagement = () => {
       setSettlements(response.data || []);
       setTotal(response.total || 0);
     } catch (error) {
-      console.error('Failed to load settlements:', error);
-      toast.error('Failed to load settlements'); setFetchError(error.message || 'Failed to load data');
+      console.error('Failed to load settlements:', error); setFetchError(error.message || 'Failed to load data');
       setSettlements([]);
     } finally {
       setLoading(false);

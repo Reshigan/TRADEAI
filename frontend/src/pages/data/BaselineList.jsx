@@ -13,7 +13,7 @@ export default function BaselineList() {
   const [fetchError, setFetchError] = useState(null);
 
   const load = async () => {
-    try { const res = await baselineService.getAll(); setItems(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    try { const res = await baselineService.getAll(); setItems(res.data || res || []); } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 

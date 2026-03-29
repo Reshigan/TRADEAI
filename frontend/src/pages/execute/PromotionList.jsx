@@ -28,7 +28,7 @@ export default function PromotionList() {
       if (statusFilter !== 'all') params.status = statusFilter;
       const res = await promotionService.getAll(params);
       setPromos(res.data || res || []);
-    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
+    } catch (e) { console.error(e); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, [statusFilter]);
 
