@@ -216,9 +216,13 @@ const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, au
                         variant="contained"
                         size="small"
                         startIcon={<ShoppingCart />}
-                        onClick={() => {}}
+                        onClick={() => {
+                          if (rec.product_id) {
+                            window.location.href = `/products/${rec.product_id}`;
+                          }
+                        }}
                       >
-                        Add
+                        View
                       </Button>
                     </Stack>
                   </Stack>

@@ -170,7 +170,7 @@ const VendorManagement = () => {
                         <IconButton size="small" onClick={() => handleEdit(vendor)}>
                           <EditIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small">
+                        <IconButton size="small" onClick={() => window.location.href = `/vendors/${vendor.id || vendor._id}`}>
                           <ViewIcon fontSize="small" />
                         </IconButton>
                       </TableCell>

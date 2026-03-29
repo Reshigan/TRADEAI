@@ -86,7 +86,7 @@ export default function LandingPage({ onLogin }) {
             sx={{ px: 4, py: 1.5, fontSize: 16, background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)', borderRadius: 3 }}>
             Start Free Trial
           </Button>
-          <Button variant="outlined" size="large" sx={{ px: 4, py: 1.5, fontSize: 16, borderColor: '#E2E8F0', color: '#475569', borderRadius: 3 }}>
+          <Button variant="outlined" size="large" onClick={() => setShowLogin(true)} sx={{ px: 4, py: 1.5, fontSize: 16, borderColor: '#E2E8F0', color: '#475569', borderRadius: 3 }}>
             Watch Demo
           </Button>
         </Box>
@@ -133,13 +133,13 @@ export default function LandingPage({ onLogin }) {
         <Container maxWidth="lg">
           <Typography sx={{ fontSize: { xs: 28, md: 36 }, fontWeight: 700, textAlign: 'center', mb: 1, color: '#fff' }}>Complete TPM Process Chain</Typography>
           <Typography sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.6)', mb: 5, fontSize: 16 }}>Every step wired together, end to end.</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: { xs: 1, md: 2 }, px: { xs: 1, md: 0 } }}>
             {['Budget', 'Wallet', 'Promotion', 'Approval', 'Activation', 'Accrual', 'Deduction', 'Settlement', 'P&L'].map((step, i) => (
               <React.Fragment key={step}>
-                <Box sx={{ px: 3, py: 1.5, borderRadius: 2, border: '1px solid rgba(255,255,255,0.15)', bgcolor: 'rgba(255,255,255,0.05)' }}>
-                  <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>{step}</Typography>
+                <Box sx={{ px: { xs: 2, md: 3 }, py: 1.5, borderRadius: 2, border: '1px solid rgba(255,255,255,0.15)', bgcolor: 'rgba(255,255,255,0.05)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: { xs: 12, md: 14 } }}>{step}</Typography>
                 </Box>
-                {i < 8 && <Box sx={{ display: 'flex', alignItems: 'center' }}><ArrowRight size={16} color="rgba(255,255,255,0.3)" /></Box>}
+                {i < 8 && <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}><ArrowRight size={16} color="rgba(255,255,255,0.3)" /></Box>}
               </React.Fragment>
             ))}
           </Box>

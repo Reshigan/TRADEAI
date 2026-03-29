@@ -232,7 +232,7 @@ export default function PromotionsList() {
     {
       label: 'Export Report',
       icon: FileText,
-      onClick: (item) => console.log('Export report for', item),
+      onClick: (item) => navigate(`/promotions/${item.id}/performance`),
     },
   ];
 
