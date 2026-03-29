@@ -397,13 +397,9 @@ export default function DetailPageTemplate({
             Share
           </MenuItem>
         )}
-        <MenuItem onClick={() => { handleMenuClose(); }}>
+        <MenuItem onClick={() => { window.print(); handleMenuClose(); }}>
           <Printer size={18} style={{ marginRight: 12 }} />
           Print
-        </MenuItem>
-        <MenuItem onClick={() => { handleMenuClose(); }}>
-          <History size={18} style={{ marginRight: 12 }} />
-          View History
         </MenuItem>
         {onDelete && (
           <>
