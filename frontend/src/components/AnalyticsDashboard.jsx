@@ -41,7 +41,7 @@ const AnalyticsDashboard = () => {
   const calculateBaseline = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.post('/baseline/calculate', baselineForm);
+      const response = await apiClient.post('/baselines/calculate', baselineForm);
       setResults(response.data.data);
     } catch (error) {
       console.error('Error calculating baseline:', error);
