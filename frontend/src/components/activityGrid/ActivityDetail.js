@@ -128,6 +128,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
   }
 
   return (
+    <>
     <Dialog
       open={open}
       onClose={onClose}
@@ -332,8 +333,9 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
-    {ConfirmDialogComponent}
     </Dialog>
+    {ConfirmDialogComponent}
+    </>
   );
 };
 

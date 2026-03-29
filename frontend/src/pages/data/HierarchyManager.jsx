@@ -22,7 +22,6 @@ const PRODUCT_LEVEL_ICONS = {
 };
 
 function HierarchyTree({ items, level = 0, type = 'customer', searchQuery = '', onNodeClick }) {
-  const toast = useToast();
   const [expanded, setExpanded] = useState({});
   if (!items || items.length === 0) return <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: level * 3 }}>No items at this level</Typography>;
   const icons = type === 'customer' ? CUSTOMER_LEVEL_ICONS : PRODUCT_LEVEL_ICONS;

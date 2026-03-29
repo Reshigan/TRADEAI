@@ -165,6 +165,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
   }
 
   return (
+    <>
     <Dialog
       open={open}
       onClose={onClose}
@@ -409,8 +410,9 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
           </Button>
         )}
       </DialogActions>
-    {ConfirmDialogComponent}
     </Dialog>
+    {ConfirmDialogComponent}
+    </>
   );
 };
 

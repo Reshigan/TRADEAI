@@ -72,8 +72,9 @@ const CreateClaim = () => {
       analytics.trackEvent('claim_created', { claimType: formData.claimType, amount: formData.claimAmount, submitted: submitForApproval });
       navigate('/claims');
     } catch (err) {
-      console.error('Error creating claim:', err); setFetchError(err.message || 'Failed to load data');
+      console.error('Error creating claim:', err);
       setError(err.message || 'Failed to create claim');
+      toast.error(err.message || 'Failed to create claim');
     } finally { setLoading(false); }
   };
 

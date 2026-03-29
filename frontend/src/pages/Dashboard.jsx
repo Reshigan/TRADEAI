@@ -150,7 +150,6 @@ function SectionHeader({ title, subtitle, action, icon: Icon }) {
 
 // Enhanced Quick Action Button
 function QuickActionButton({ label, path, icon: Icon, color = '#2563EB' }) {
-  const toast = useToast();
   const navigate = useNavigate();
   return (
     <Button

@@ -30,7 +30,6 @@ const PromotionPerformance = ({ promotionId, promotion }) => {
       setPerformance(response.data.data || response.data || null);
     } catch (error) {
       console.error('Error loading performance:', error);
-      toast.error('Error loading performance');
       if (error.response?.status !== 404) {
         toast.error('Failed to load performance data');
       }
