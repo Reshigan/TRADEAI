@@ -43,6 +43,41 @@ kamWallets.get('/', async (c) => {
   }
 });
 
+// Static routes MUST be defined before parameterized /:id routes
+kamWallets.get('/summary', async (c) => {
+  try {
+    const db = c.env.DB;
+    const companyId = getCompanyId(c);
+    const result = await db.prepare(`
+      SELECT
+        COUNT(*) as total_wallets,
+        COALESCE(SUM(allocated_amount), 0) as total_allocated,
+        COALESCE(SUM(utilized_amount), 0) as total_utilized,
+        COALESCE(SUM(committed_amount), 0) as total_committed,
+        COALESCE(SUM(available_amount), 0) as total_available,
+        COUNT(CASE WHEN status = 'active' THEN 1 END) as active_wallets,
+        COUNT(CASE WHEN status = 'exhausted' THEN 1 END) as exhausted_wallets
+      FROM kam_wallets WHERE company_id = ?
+    `).bind(companyId).first();
+    return c.json({
+      success: true,
+      data: {
+        totalWallets: result?.total_wallets || 0,
+        totalAllocated: result?.total_allocated || 0,
+        totalUtilized: result?.total_utilized || 0,
+        totalCommitted: result?.total_committed || 0,
+        totalAvailable: result?.total_available || 0,
+        activeWallets: result?.active_wallets || 0,
+        exhaustedWallets: result?.exhausted_wallets || 0,
+        utilizationRate: result?.total_allocated > 0 ? ((result?.total_utilized || 0) / result.total_allocated * 100).toFixed(1) : 0
+      }
+    });
+  } catch (error) {
+    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
+    return apiError(c, error, 'kamWallets');
+  }
+});
+
 kamWallets.get('/:id', async (c) => {
   try {
     const db = c.env.DB;
@@ -72,40 +107,6 @@ kamWallets.get('/:id/balance',async (c) => {
         utilizedAmount: result.utilized_amount || 0,
         committedAmount: result.committed_amount || 0,
         availableAmount: result.available_amount || (result.allocated_amount || 0) - (result.utilized_amount || 0) - (result.committed_amount || 0)
-      }
-    });
-  } catch (error) {
-    if (error.message === 'TENANT_REQUIRED') return c.json({ success: false, message: 'Company context required' }, 401);
-    return apiError(c, error, 'kamWallets');
-  }
-});
-
-kamWallets.get('/summary', async (c) => {
-  try {
-    const db = c.env.DB;
-    const companyId = getCompanyId(c);
-    const result = await db.prepare(`
-      SELECT
-        COUNT(*) as total_wallets,
-        COALESCE(SUM(allocated_amount), 0) as total_allocated,
-        COALESCE(SUM(utilized_amount), 0) as total_utilized,
-        COALESCE(SUM(committed_amount), 0) as total_committed,
-        COALESCE(SUM(available_amount), 0) as total_available,
-        COUNT(CASE WHEN status = 'active' THEN 1 END) as active_wallets,
-        COUNT(CASE WHEN status = 'exhausted' THEN 1 END) as exhausted_wallets
-      FROM kam_wallets WHERE company_id = ?
-    `).bind(companyId).first();
-    return c.json({
-      success: true,
-      data: {
-        totalWallets: result?.total_wallets || 0,
-        totalAllocated: result?.total_allocated || 0,
-        totalUtilized: result?.total_utilized || 0,
-        totalCommitted: result?.total_committed || 0,
-        totalAvailable: result?.total_available || 0,
-        activeWallets: result?.active_wallets || 0,
-        exhaustedWallets: result?.exhausted_wallets || 0,
-        utilizationRate: result?.total_allocated > 0 ? ((result?.total_utilized || 0) / result.total_allocated * 100).toFixed(1) : 0
       }
     });
   } catch (error) {
