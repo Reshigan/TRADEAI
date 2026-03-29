@@ -25,7 +25,7 @@ export default function LoginPage() {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default', px: 2 }}>
       <Card sx={{ maxWidth: 420, width: '100%', borderRadius: 3, overflow: 'hidden' }}>
-        <Box sx={{ p: 4, background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)', textAlign: 'center' }}>
+        <Box sx={{ p: 4, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', textAlign: 'center' }}>
           <Box sx={{ width: 56, height: 56, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.15)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
             <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: 28 }}>T</Typography>
           </Box>
