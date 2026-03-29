@@ -8,55 +8,55 @@ import { createTheme } from '@mui/material/styles';
 // Professional Design System - Single source of truth for all design tokens
 const tokens = {
   colors: {
-    // Primary Brand Colors - Indigo Palette
+    // Primary Brand Colors - Emerald Green
     primary: { 
-      50: '#EEF2FF',
-      100: '#E0E7FF',
-      200: '#C7D2FE',
-      300: '#A5B4FC',
-      400: '#818CF8',
-      500: '#6366F1',
-      600: '#4F46E5',
-      700: '#4338CA',
-      800: '#3730A3',
-      900: '#312E81',
-      main: '#6366F1', 
-      light: '#818CF8', 
-      dark: '#4F46E5', 
+      50: '#ECFDF5',
+      100: '#D1FAE5',
+      200: '#A7F3D0',
+      300: '#6EE7B7',
+      400: '#34D399',
+      500: '#10B981',
+      600: '#059669',
+      700: '#047857',
+      800: '#065F46',
+      900: '#064E3B',
+      main: '#10B981', 
+      light: '#34D399', 
+      dark: '#059669', 
       contrastText: '#fff' 
     },
-    // Secondary - Purple
+    // Secondary - Warm Amber/Gold
     secondary: { 
-      50: '#F5F3FF',
-      100: '#EDE9FE',
-      200: '#DDD6FE',
-      300: '#C4B5FD',
-      400: '#A78BFA',
-      500: '#8B5CF6',
-      600: '#7C3AED',
-      700: '#6D28D9',
-      800: '#5B21B6',
-      900: '#4C1D95',
-      main: '#8B5CF6', 
-      light: '#A78BFA', 
-      dark: '#7C3AED', 
+      50: '#FFFBEB',
+      100: '#FEF3C7',
+      200: '#FDE68A',
+      300: '#FCD34D',
+      400: '#FBBF24',
+      500: '#F59E0B',
+      600: '#D97706',
+      700: '#B45309',
+      800: '#92400E',
+      900: '#78350F',
+      main: '#F59E0B', 
+      light: '#FBBF24', 
+      dark: '#D97706', 
       contrastText: '#fff' 
     },
-    // Accent - Cyan
+    // Accent - Emerald Light
     accent: {
-      50: '#ECFEFF',
-      100: '#CFFAFE',
-      200: '#A5F3FC',
-      300: '#67E8F9',
-      400: '#22D3EE',
-      500: '#06B6D4',
-      600: '#0891B2',
-      700: '#0E7490',
-      800: '#155E75',
-      900: '#164E63',
-      main: '#06B6D4',
-      light: '#22D3EE',
-      dark: '#0891B2',
+      50: '#ECFDF5',
+      100: '#D1FAE5',
+      200: '#A7F3D0',
+      300: '#6EE7B7',
+      400: '#34D399',
+      500: '#10B981',
+      600: '#059669',
+      700: '#047857',
+      800: '#065F46',
+      900: '#064E3B',
+      main: '#10B981',
+      light: '#34D399',
+      dark: '#059669',
     },
     // Success - Emerald Green
     success: { 
@@ -135,12 +135,12 @@ const tokens = {
     },
     // Sidebar Colors
     sidebar: { 
-      bg: '#0F172A', 
-      hover: '#1E293B', 
-      active: '#1E3A5F', 
-      text: '#94A3B8', 
+      bg: '#09090B', 
+      hover: '#18181B', 
+      active: '#052E16', 
+      text: '#A1A1AA', 
       textActive: '#FFFFFF', 
-      border: '#1E293B' 
+      border: '#27272A' 
     },
     // Background Colors
     background: { 
@@ -233,14 +233,14 @@ const theme = createTheme({
     common: { black: '#000000', white: '#FFFFFF' },
     action: {
       active: tokens.colors.text.secondary,
-      hover: 'rgba(99, 102, 241, 0.04)',
+      hover: 'rgba(16, 185, 129, 0.04)',
       hoverOpacity: 0.04,
-      selected: 'rgba(99, 102, 241, 0.08)',
+      selected: 'rgba(16, 185, 129, 0.08)',
       selectedOpacity: 0.08,
       disabled: tokens.colors.text.disabled,
       disabledBackground: 'rgba(0, 0, 0, 0.12)',
       disabledOpacity: 0.38,
-      focus: 'rgba(99, 102, 241, 0.12)',
+      focus: 'rgba(16, 185, 129, 0.12)',
       focusOpacity: 0.12,
       activatedOpacity: 0.12,
     },
@@ -282,7 +282,7 @@ const theme = createTheme({
         '::-webkit-scrollbar': { width: 8, height: 8 },
         '::-webkit-scrollbar-track': { background: tokens.colors.background.default },
         '::-webkit-scrollbar-thumb': { background: tokens.colors.gray[400], borderRadius: 4, '&:hover': { background: tokens.colors.gray[500] } },
-        '::selection': { backgroundColor: 'rgba(99, 102, 241, 0.2)', color: tokens.colors.text.primary },
+        '::selection': { backgroundColor: 'rgba(16, 185, 129, 0.2)', color: tokens.colors.text.primary },
       },
     },
     MuiButton: {
@@ -307,9 +307,9 @@ const theme = createTheme({
         outlined: { 
           borderColor: tokens.colors.border.default, 
           borderWidth: 1.5,
-          '&:hover': { borderColor: tokens.colors.primary.main, backgroundColor: 'rgba(99,102,241,0.04)', borderWidth: 1.5 },
+          '&:hover': { borderColor: tokens.colors.primary.main, backgroundColor: 'rgba(16,185,129,0.04)', borderWidth: 1.5 },
         },
-        text: { '&:hover': { backgroundColor: 'rgba(99,102,241,0.04)' } },
+        text: { '&:hover': { backgroundColor: 'rgba(16,185,129,0.04)' } },
         sizeSmall: { padding: '6px 14px', minHeight: 32, fontSize: '0.8125rem' },
         sizeLarge: { padding: '12px 28px', minHeight: 48, fontSize: '0.9375rem' },
       },
@@ -430,8 +430,8 @@ const theme = createTheme({
           borderRadius: tokens.spacing.borderRadius.md,
           margin: '4px 8px',
           padding: '10px 12px',
-          '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.08)' },
-          '&.Mui-selected': { backgroundColor: 'rgba(99, 102, 241, 0.12)', '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.16)' } },
+          '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.08)' },
+          '&.Mui-selected': { backgroundColor: 'rgba(16, 185, 129, 0.12)', '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.16)' } },
         },
       },
     },
@@ -442,13 +442,13 @@ const theme = createTheme({
           margin: '4px 8px',
           padding: '10px 12px',
           fontSize: '0.875rem',
-          '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.08)' },
-          '&.Mui-selected': { backgroundColor: 'rgba(99, 102, 241, 0.12)', '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.16)' } },
+          '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.08)' },
+          '&.Mui-selected': { backgroundColor: 'rgba(16, 185, 129, 0.12)', '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.16)' } },
         },
       },
     },
     MuiIconButton: {
-      styleOverrides: { root: { borderRadius: tokens.spacing.borderRadius.md, transition: 'all 0.2s ease', '&:hover': { backgroundColor: 'rgba(99, 102, 241, 0.08)' } } },
+      styleOverrides: { root: { borderRadius: tokens.spacing.borderRadius.md, transition: 'all 0.2s ease', '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.08)' } } },
     },
   },
 });
@@ -466,11 +466,11 @@ theme.sidebar = {
 };
 
 theme.ai = { 
-  main: '#6366F1', 
-  light: '#818CF8',
-  accent: '#06B6D4',
-  gradient: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%)',
-  gradientAccent: 'linear-gradient(135deg, #06B6D4 0%, #22D3EE 100%)',
+  main: '#10B981', 
+  light: '#34D399',
+  accent: '#F59E0B',
+  gradient: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%)',
+  gradientAccent: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)',
 };
 
 theme.tokens = tokens;
@@ -496,7 +496,7 @@ theme.gradients = {
   success: `linear-gradient(135deg, ${tokens.colors.success[500]} 0%, ${tokens.colors.success[600]} 100%)`,
   warning: `linear-gradient(135deg, ${tokens.colors.warning[400]} 0%, ${tokens.colors.warning[500]} 100%)`,
   error: `linear-gradient(135deg, ${tokens.colors.error[500]} 0%, ${tokens.colors.error[600]} 100%)`,
-  ai: `linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)`,
+  ai: `linear-gradient(135deg, #10B981 0%, #059669 100%)`,
 };
 
 export { tokens };

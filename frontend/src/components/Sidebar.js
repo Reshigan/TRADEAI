@@ -78,7 +78,7 @@ function NavGroup({ group, collapsed, location, navigate, pendingCount }) {
         <ListItemButton onClick={() => navigate(group.path)}
           sx={{ mx: 1, borderRadius: 1.5, mb: 0.5, minHeight: 40, pl: collapsed ? 2.5 : 2,
             bgcolor: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-            borderLeft: isActive ? '2.5px solid #6366F1' : '2.5px solid transparent',
+            borderLeft: isActive ? '2.5px solid #10B981' : '2.5px solid transparent',
             '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' } }}>
           <ListItemIcon sx={{ minWidth: collapsed ? 0 : 36, color: isActive ? '#fff' : 'rgba(255,255,255,0.5)' }}>
             {group.badge ? <Badge badgeContent={pendingCount} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 18, height: 18 } }}><Icon size={20} /></Badge> : <Icon size={20} />}
@@ -112,7 +112,7 @@ function NavGroup({ group, collapsed, location, navigate, pendingCount }) {
             <ListItemButton key={item.path} onClick={() => navigate(item.path)}
               sx={{ mx: 1, borderRadius: 1.5, minHeight: 36, pl: 5.5,
                 bgcolor: itemActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-                borderLeft: itemActive ? '2.5px solid #6366F1' : '2.5px solid transparent',
+                borderLeft: itemActive ? '2.5px solid #10B981' : '2.5px solid transparent',
                 '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' } }}>
               <ListItemIcon sx={{ minWidth: 28, color: itemActive ? '#fff' : 'rgba(255,255,255,0.4)' }}><ItemIcon size={16} /></ListItemIcon>
               <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '0.8125rem', fontWeight: itemActive ? 600 : 400, color: itemActive ? '#fff' : 'rgba(255,255,255,0.5)' }} />
@@ -139,9 +139,9 @@ export default function Sidebar({ user }) {
   const width = collapsed ? COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
-    <Box sx={{ width, minWidth: width, height: '100vh', position: 'fixed', left: 0, top: 0, zIndex: 1200, bgcolor: '#0F172A', display: 'flex', flexDirection: 'column', transition: 'width 0.2s ease', overflowX: 'hidden' }}>
+    <Box sx={{ width, minWidth: width, height: '100vh', position: 'fixed', left: 0, top: 0, zIndex: 1200, bgcolor: '#09090B', display: 'flex', flexDirection: 'column', transition: 'width 0.2s ease', overflowX: 'hidden' }}>
       <Box sx={{ p: collapsed ? 1.5 : 2, display: 'flex', alignItems: 'center', gap: 1.5, minHeight: 64 }}>
-        <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' }}>
+        <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)' }}>
           <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>T</Typography>
         </Box>
         {!collapsed && <Box>
@@ -153,7 +153,7 @@ export default function Sidebar({ user }) {
       {!collapsed && user && (
         <Box sx={{ mx: 2, mb: 1.5, p: 1.5, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.04)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6366F1', fontSize: 13 }}>{(user.name || user.email || '?')[0].toUpperCase()}</Avatar>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: '#10B981', fontSize: 13 }}>{(user.name || user.email || '?')[0].toUpperCase()}</Avatar>
             <Box sx={{ overflow: 'hidden' }}>
               <Typography sx={{ color: '#fff', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.name || user.email}</Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, textTransform: 'capitalize' }}>{(user.role || 'user').replace('_', ' ')}</Typography>
@@ -177,7 +177,7 @@ export default function Sidebar({ user }) {
       {!collapsed && (<>
         <Box sx={{ px: 2, pb: 1 }}>
           <Button fullWidth variant="contained" startIcon={<Plus size={16} />} onClick={(e) => setQuickAnchor(e.currentTarget)}
-            sx={{ background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', borderRadius: 2, py: 1, fontSize: 13, boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)', '&:hover': { boxShadow: '0 6px 20px rgba(99, 102, 241, 0.5)' } }}>Quick Create</Button>
+            sx={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', borderRadius: 2, py: 1, fontSize: 13, boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)', '&:hover': { boxShadow: '0 6px 20px rgba(16, 185, 129, 0.5)' } }}>Quick Create</Button>
           <Popover open={Boolean(quickAnchor)} anchorEl={quickAnchor} onClose={() => setQuickAnchor(null)}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }} transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
             <List sx={{ minWidth: 200, p: 1 }}>
@@ -204,9 +204,9 @@ export default function Sidebar({ user }) {
                 <IconButton size="small" onClick={() => setMode(key)}
                   sx={{
                     color: mode === key ? '#fff' : 'rgba(255,255,255,0.35)',
-                    bgcolor: mode === key ? 'rgba(99,102,241,0.25)' : 'transparent',
+                    bgcolor: mode === key ? 'rgba(16,185,129,0.25)' : 'transparent',
                     borderRadius: 1.5, mx: 0.25, width: 32, height: 32,
-                    '&:hover': { color: '#fff', bgcolor: mode === key ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)' },
+                    '&:hover': { color: '#fff', bgcolor: mode === key ? 'rgba(16,185,129,0.35)' : 'rgba(255,255,255,0.08)' },
                   }}>
                   <Icon size={16} />
                 </IconButton>
