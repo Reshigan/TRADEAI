@@ -110,7 +110,7 @@ const WorkflowDashboard = () => {
 
   const completeTask = async (taskId, data) => {
     try {
-      await api.post(`/workflow-engine/tasks/${taskId}/complete`, data);
+      await api.put(`/workflow-engine/steps/${taskId}/complete`, data);
       loadWorkflowData(); // Refresh data
     } catch (error) {
       console.error('Error completing task:', error);
@@ -120,8 +120,8 @@ const WorkflowDashboard = () => {
 
   const approveTask = async (taskId, approved, comments) => {
     try {
-      await api.post(`/workflow-engine/tasks/${taskId}/approve`, {
-        approved,
+      await api.put(`/workflow-engine/steps/${taskId}/${approved ? 'complete' : 'reject'}`, {
+        action: approved ? 'approved' : 'rejected',
         comments
       });
       loadWorkflowData(); // Refresh data

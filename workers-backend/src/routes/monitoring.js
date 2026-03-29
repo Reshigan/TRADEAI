@@ -1,9 +1,16 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
 
 const monitoring = new Hono();
 monitoring.use('*', authMiddleware);
+monitoring.use('*', requireMinRole('admin'));
+
+const getCompanyId = (c) => {
+  const id = c.get('companyId') || c.get('tenantId') || c.req.header('X-Company-Code');
+  if (!id) throw new Error('TENANT_REQUIRED');
+  return id;
+};
 
 // Metrics
 monitoring.get('/metrics', async (c) => {
@@ -11,10 +18,11 @@ monitoring.get('/metrics', async (c) => {
     const db = c.env.DB;
     const filters = c.req.query();
     const timeRange = filters.timeRange || '24h';
+    const companyId = getCompanyId(c);
     const [userCount, promoCount, claimCount] = await Promise.all([
-      db.prepare('SELECT COUNT(*) as total FROM users').first().catch(() => ({ total: 0 })),
-      db.prepare('SELECT COUNT(*) as total FROM promotions').first().catch(() => ({ total: 0 })),
-      db.prepare('SELECT COUNT(*) as total FROM claims').first().catch(() => ({ total: 0 }))
+      db.prepare('SELECT COUNT(*) as total FROM users WHERE company_id = ?').bind(companyId).first().catch(() => ({ total: 0 })),
+      db.prepare('SELECT COUNT(*) as total FROM promotions WHERE company_id = ?').bind(companyId).first().catch(() => ({ total: 0 })),
+      db.prepare('SELECT COUNT(*) as total FROM claims WHERE company_id = ?').bind(companyId).first().catch(() => ({ total: 0 }))
     ]);
     return c.json({
       success: true,
@@ -39,9 +47,10 @@ monitoring.get('/logs', async (c) => {
   try {
     const db = c.env.DB;
     const limit = parseInt(c.req.query('limit') || '50');
+    const companyId = getCompanyId(c);
     const results = await db.prepare(
-      'SELECT * FROM audit_trail ORDER BY created_at DESC LIMIT ?'
-    ).bind(limit).all().catch(() => ({ results: [] }));
+      'SELECT * FROM audit_trail WHERE company_id = ? ORDER BY created_at DESC LIMIT ?'
+    ).bind(companyId, limit).all().catch(() => ({ results: [] }));
     return c.json({ success: true, data: results.results || [] });
   } catch (error) {
     return apiError(c, error, 'monitoring.logs');
@@ -53,9 +62,10 @@ monitoring.get('/traces', async (c) => {
   try {
     const db = c.env.DB;
     const limit = parseInt(c.req.query('limit') || '50');
+    const companyId = getCompanyId(c);
     const results = await db.prepare(
-      'SELECT * FROM audit_trail ORDER BY created_at DESC LIMIT ?'
-    ).bind(limit).all().catch(() => ({ results: [] }));
+      'SELECT * FROM audit_trail WHERE company_id = ? ORDER BY created_at DESC LIMIT ?'
+    ).bind(companyId, limit).all().catch(() => ({ results: [] }));
     return c.json({ success: true, data: results.results || [] });
   } catch (error) {
     return apiError(c, error, 'monitoring.traces');
@@ -66,9 +76,10 @@ monitoring.get('/traces', async (c) => {
 monitoring.get('/alerts', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const results = await db.prepare(
-      'SELECT * FROM alerts ORDER BY created_at DESC LIMIT 50'
-    ).all().catch(() => ({ results: [] }));
+      'SELECT * FROM alerts WHERE company_id = ? ORDER BY created_at DESC LIMIT 50'
+    ).bind(companyId).all().catch(() => ({ results: [] }));
     return c.json({ success: true, data: results.results || [] });
   } catch (error) {
     return apiError(c, error, 'monitoring.alerts');

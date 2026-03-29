@@ -100,9 +100,9 @@ posImport.get('/status/:jobId', async (c) => {
     ).bind(jobId).first().catch(() => null);
     if (!job) {
       return c.json({
-        success: true,
-        data: { jobId, status: 'completed', progress: 100, processedRows: 0, totalRows: 0 }
-      });
+        success: false,
+        message: 'Import job not found'
+      }, 404);
     }
     return c.json({
       success: true,
