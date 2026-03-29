@@ -59,7 +59,6 @@ const ClaimDetail = () => {
       analytics.trackEvent('claim_detail_viewed', { claimId: id, claimType: claimData.claimType });
     } catch (err) {
       console.error('Error fetching claim detail:', err);
-      showToast('Error fetching claim detail', { severity: 'error' });
       setError(err.message || 'Failed to load claim details');
       showToast('Failed to load claim details', 'error');
     } finally {
@@ -76,7 +75,6 @@ const ClaimDetail = () => {
       fetchClaimDetail();
     } catch (err) {
       console.error('Error submitting claim:', err);
-      showToast('Error submitting claim', { severity: 'error' });
       showToast(err.message || 'Failed to submit claim', 'error');
       analytics.trackEvent('claim_submit_failed', { claimId: id, error: err.message });
     } finally {
@@ -93,7 +91,6 @@ const ClaimDetail = () => {
       fetchClaimDetail();
     } catch (err) {
       console.error('Error approving claim:', err);
-      showToast('Error approving claim', { severity: 'error' });
       showToast(err.message || 'Failed to approve claim', 'error');
       analytics.trackEvent('claim_approve_failed', { claimId: id, error: err.message });
     } finally {
@@ -116,7 +113,6 @@ const ClaimDetail = () => {
       fetchClaimDetail();
     } catch (err) {
       console.error('Error rejecting claim:', err);
-      showToast('Error rejecting claim', { severity: 'error' });
       showToast(err.message || 'Failed to reject claim', 'error');
       analytics.trackEvent('claim_reject_failed', { claimId: id, error: err.message });
     } finally {
@@ -225,7 +221,6 @@ const ClaimDetail = () => {
           fetchClaimDetail();
         } catch (err) {
           console.error('Error rejecting claim:', err);
-          showToast('Error rejecting claim', { severity: 'error' });
           showToast(err.message || 'Failed to reject claim', 'error');
           analytics.trackEvent('claim_reject_failed', { claimId: id, error: err.message });
         } finally {

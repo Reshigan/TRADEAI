@@ -100,7 +100,7 @@ const RebateApproval = () => {
       }
     } catch (error) {
       console.error(`Failed to ${action} rebate:`, error);
-      toast.error('Failed to ${action} rebate');
+      toast.error(`Failed to ${action} rebate`);
       setError(error.response?.data?.message || `Failed to ${action} rebate`);
     } finally {
       setLoading(false);

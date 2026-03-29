@@ -43,7 +43,6 @@ const CreateDeduction = () => {
       navigate('/deductions');
     } catch (err) {
       console.error('Error creating deduction:', err);
-      showToast('Error creating deduction', { severity: 'error' });
       setError(err.message || 'Failed to create deduction');
       showToast(err.message || 'Failed to create deduction', 'error');
       analytics.trackEvent('deduction_create_failed', { error: err.message });

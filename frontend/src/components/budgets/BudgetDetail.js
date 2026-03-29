@@ -71,7 +71,6 @@ const BudgetDetail = () => {
       });
     } catch (error) {
       console.error('Error loading budget:', error);
-      toast.error('Error loading budget');
       const errorMsg = error.message || 'Failed to load budget';
       setError(errorMsg);
       toast.error(errorMsg);
@@ -117,7 +116,6 @@ const BudgetDetail = () => {
       navigate('/budgets');
     } catch (err) {
       console.error('Failed to delete budget:', err);
-      toast.error('Failed to delete budget');
       const errorMsg = err.message || 'Failed to delete budget';
       toast.error(errorMsg);
       setDeleteLoading(false);
@@ -133,7 +131,6 @@ const BudgetDetail = () => {
       setOpenEditForm(false);
     } catch (err) {
       console.error('Error updating budget:', err);
-      toast.error('Error updating budget');
       const errorMsg = err.message || 'Failed to update budget';
       toast.error(errorMsg);
     }

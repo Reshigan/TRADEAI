@@ -64,9 +64,10 @@ export default function PromotionsList() {
   };
 
   const handleDelete = async (promotion) => {
-    if (window.confirm(`Are you sure you want to delete "${promotion.name}"?`)) {
+    if (await confirm(`Are you sure you want to delete "${promotion.name}"?`, { severity: 'error' })) {
       try {
         await promotionService.delete(promotion.id);
+        toast.success('Promotion deleted');
         loadPromotions();
       } catch (error) {
         console.error('Failed to delete promotion:', error); toast.error('Failed to delete promotion'); }
@@ -214,7 +215,6 @@ export default function PromotionsList() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'flex-end' }}>
             <TrendingUp size={14} color={color} />
             <Box sx={{ fontWeight: 600, color }}>{roi.toFixed(1)}x</Box>
-          {ConfirmDialogComponent}
           </Box>
         );
       },
@@ -260,6 +260,8 @@ export default function PromotionsList() {
   ];
 
   return (
+    <>
+    {ConfirmDialogComponent}
     <ListPageTemplate
       title="Promotions"
       subtitle="Manage and track all trade promotions"
@@ -283,5 +285,6 @@ export default function PromotionsList() {
         description: 'Create your first promotion to start managing trade activities',
       }}
     />
+    </>
   );
 }

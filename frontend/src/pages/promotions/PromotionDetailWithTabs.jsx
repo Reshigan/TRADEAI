@@ -102,7 +102,7 @@ const PromotionDetailWithTabs = () => {
       toast.success('Promotion deleted successfully');
       navigate('/promotions');
     } catch (error) {
-      console.error('Error deleting promotion:', error); setFetchError(error.message || 'Failed to load data');}
+      console.error('Error deleting promotion:', error); toast.error(error.response?.data?.message || 'Failed to delete promotion');}
   };
 
   // Promotion-specific actions per status — only show actions we can handle

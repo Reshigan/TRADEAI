@@ -58,7 +58,6 @@ const RebateDetail = () => {
         analytics.trackEvent('rebate_detail_viewed', { rebateId: id, rebateType: data.type });
       } catch (err) {
         console.error('Error fetching rebate detail:', err);
-        showToast('Error fetching rebate detail', { severity: 'error' });
         setError(err.message || 'Failed to load rebate details');
         showToast('Failed to load rebate details', 'error');
       } finally {
@@ -78,7 +77,6 @@ const RebateDetail = () => {
         navigate('/rebates');
       } catch (err) {
         console.error('Error deleting rebate:', err);
-        showToast('Error deleting rebate', { severity: 'error' });
         showToast(err.message || 'Failed to delete rebate', 'error');
         analytics.trackEvent('rebate_delete_failed', { rebateId: id, error: err.message });
       }

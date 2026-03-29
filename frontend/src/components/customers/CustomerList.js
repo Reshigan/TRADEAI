@@ -139,7 +139,6 @@ const CustomerList = () => {
       return true;
     } catch (err) {
       console.error('Error filtering customer:', err, customer);
-      toast.error('Error filtering customer');
       return false;
     }
   });

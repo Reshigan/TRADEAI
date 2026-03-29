@@ -59,7 +59,6 @@ const ApprovalDetail = () => {
       analytics.trackEvent('approval_detail_viewed', { approvalId: id, requestType: data.requestType });
     } catch (err) {
       console.error('Error fetching approval detail:', err);
-      showToast('Error fetching approval detail', { severity: 'error' });
       setError(err.message || 'Failed to load approval details');
       showToast('Failed to load approval details', 'error');
     } finally {
@@ -76,7 +75,6 @@ const ApprovalDetail = () => {
       navigate('/approvals');
     } catch (err) {
       console.error('Error approving request:', err);
-      showToast('Error approving request', { severity: 'error' });
       showToast(err.message || 'Failed to approve request', 'error');
       analytics.trackEvent('approval_approve_failed', { approvalId: id, error: err.message });
     } finally {
@@ -99,7 +97,6 @@ const ApprovalDetail = () => {
       navigate('/approvals');
     } catch (err) {
       console.error('Error rejecting request:', err);
-      showToast('Error rejecting request', { severity: 'error' });
       showToast(err.message || 'Failed to reject request', 'error');
       analytics.trackEvent('approval_reject_failed', { approvalId: id, error: err.message });
     } finally {

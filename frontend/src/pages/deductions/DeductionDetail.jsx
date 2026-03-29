@@ -57,7 +57,6 @@ const DeductionDetail = () => {
       analytics.trackEvent('deduction_detail_viewed', { deductionId: id, deductionType: data.deductionType });
     } catch (err) {
       console.error('Error fetching deduction detail:', err);
-      showToast('Error fetching deduction detail', { severity: 'error' });
       setError(err.message || 'Failed to load deduction details');
       showToast('Failed to load deduction details', 'error');
     } finally {
@@ -74,7 +73,6 @@ const DeductionDetail = () => {
       fetchDeductionDetail();
     } catch (err) {
       console.error('Error validating deduction:', err);
-      showToast('Error validating deduction', { severity: 'error' });
       showToast(err.message || 'Failed to validate deduction', 'error');
       analytics.trackEvent('deduction_validate_failed', { deductionId: id, error: err.message });
     } finally {
@@ -97,7 +95,6 @@ const DeductionDetail = () => {
       fetchDeductionDetail();
     } catch (err) {
       console.error('Error disputing deduction:', err);
-      showToast('Error disputing deduction', { severity: 'error' });
       showToast(err.message || 'Failed to dispute deduction', 'error');
       analytics.trackEvent('deduction_dispute_failed', { deductionId: id, error: err.message });
     } finally {
@@ -120,7 +117,6 @@ const DeductionDetail = () => {
       fetchDeductionDetail();
     } catch (err) {
       console.error('Error resolving deduction:', err);
-      showToast('Error resolving deduction', { severity: 'error' });
       showToast(err.message || 'Failed to resolve deduction', 'error');
       analytics.trackEvent('deduction_resolve_failed', { deductionId: id, error: err.message });
     } finally {
@@ -198,7 +194,6 @@ const DeductionDetail = () => {
           fetchDeductionDetail();
         } catch (err) {
           console.error('Error disputing deduction:', err);
-          showToast('Error disputing deduction', { severity: 'error' });
           showToast(err.message || 'Failed to dispute deduction', 'error');
           analytics.trackEvent('deduction_dispute_failed', { deductionId: id, error: err.message });
         } finally {
@@ -218,7 +213,6 @@ const DeductionDetail = () => {
           fetchDeductionDetail();
         } catch (err) {
           console.error('Error resolving deduction:', err);
-          showToast('Error resolving deduction', { severity: 'error' });
           showToast(err.message || 'Failed to resolve deduction', 'error');
           analytics.trackEvent('deduction_resolve_failed', { deductionId: id, error: err.message });
         } finally {

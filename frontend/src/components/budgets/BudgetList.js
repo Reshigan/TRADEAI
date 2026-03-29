@@ -139,7 +139,6 @@ const BudgetList = () => {
       return true;
     } catch (err) {
       console.error('Error filtering budget:', err, budget);
-      toast.error('Error filtering budget');
       return false;
     }
   });

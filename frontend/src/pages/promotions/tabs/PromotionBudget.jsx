@@ -30,7 +30,6 @@ const PromotionBudget = ({ promotionId, promotion, onUpdate }) => {
       setBudget(response.data.data || response.data || null);
     } catch (error) {
       console.error('Error loading budget:', error);
-      toast.error('Error loading budget');
       if (error.response?.status !== 404) {
         toast.error('Failed to load budget');
       }

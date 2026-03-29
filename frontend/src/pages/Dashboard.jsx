@@ -210,6 +210,7 @@ const StatusChip = ({ status }) => {
 };
 
 export default function Dashboard() {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [kpis, setKpis] = useState({});
