@@ -83,6 +83,10 @@ webhooks.put('/:id', async (c) => {
     const db = c.env.DB;
     const { id } = c.req.param();
     const body = await c.req.json();
+    if (body.url) {
+      const urlError = validateWebhookUrl(body.url);
+      if (urlError) return c.json({ success: false, message: urlError }, 400);
+    }
     const now = new Date().toISOString();
     await db.prepare(
       'UPDATE webhooks SET name = COALESCE(?, name), url = COALESCE(?, url), events = COALESCE(?, events), status = COALESCE(?, status), updated_at = ? WHERE id = ? AND company_id = ?'

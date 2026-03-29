@@ -202,11 +202,12 @@ admin.patch('/users/:id/toggle-active', async (c) => {
   }
 });
 
-// Admin settings
+// Admin settings (tenant-scoped)
 admin.get('/settings', async (c) => {
   try {
     const db = c.env.DB;
-    const results = await db.prepare('SELECT * FROM settings ORDER BY key').all().catch(() => ({ results: [] }));
+    const companyId = getCompanyId(c);
+    const results = await db.prepare('SELECT * FROM settings WHERE company_id = ? ORDER BY key').bind(companyId).all().catch(() => ({ results: [] }));
     const settings = {};
     for (const row of (results.results || [])) {
       settings[row.key] = row.value;
@@ -220,12 +221,13 @@ admin.get('/settings', async (c) => {
 admin.put('/settings', async (c) => {
   try {
     const db = c.env.DB;
+    const companyId = getCompanyId(c);
     const body = await c.req.json();
     const now = new Date().toISOString();
     for (const [key, value] of Object.entries(body)) {
       await db.prepare(
-        'INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = ?'
-      ).bind(key, String(value), now, String(value), now).run().catch(() => {});
+        'INSERT INTO settings (key, value, company_id, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(key, company_id) DO UPDATE SET value = ?, updated_at = ?'
+      ).bind(key, String(value), companyId, now, String(value), now).run().catch(() => {});
     }
     return c.json({ success: true, message: 'Settings updated' });
   } catch (error) {
