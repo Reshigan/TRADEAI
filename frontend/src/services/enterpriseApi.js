@@ -123,32 +123,32 @@ export const enterpriseBudgetApi = {
 export const tradeSpendApi = {
   // Get real-time dashboard
   getDashboard: (filters) => {
-    return apiClient.get('/trade-spend/dashboard', { params: filters });
+    return apiClient.get('/trade-spends/dashboard', { params: filters });
   },
 
   // Process transaction
   processTransaction: (data) => {
-    return apiClient.post('/trade-spend/transaction', data);
+    return apiClient.post('/trade-spends/transaction', data);
   },
 
   // Analyze variance
   analyzeVariance: (filters) => {
-    return apiClient.post('/trade-spend/variance', filters);
+    return apiClient.post('/trade-spends/variance', filters);
   },
 
   // Optimize allocation
   optimize: (params) => {
-    return apiClient.post('/trade-spend/optimize', params);
+    return apiClient.post('/trade-spends/optimize', params);
   },
 
   // Reconcile spend
   reconcile: (params) => {
-    return apiClient.post('/trade-spend/reconcile', params);
+    return apiClient.post('/trade-spends/reconcile', params);
   },
 
   // Forecast
   forecast: (params) => {
-    return apiClient.post('/trade-spend/forecast', params);
+    return apiClient.post('/trade-spends/forecast', params);
   }
 };
 

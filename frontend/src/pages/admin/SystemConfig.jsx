@@ -16,7 +16,7 @@ export default function SystemConfig() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get('/config');
+        const res = await api.get('/system-config');
         const data = res.data?.data || res.data || {};
         setConfig(prev => ({ ...prev, ...data }));
       } catch (e) { console.error(e); toast.error('An error occurred'); }
@@ -27,7 +27,7 @@ export default function SystemConfig() {
   const handleSave = async () => {
     setSaving(true); setSuccess(false);
     try {
-      await api.put('/config', config);
+      await api.put('/system-config', config);
       setSuccess(true);
     } catch (e) { console.error(e); toast.error('An error occurred'); }
     setSaving(false);

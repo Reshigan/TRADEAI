@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, TextField, Alert, Chip } from '@mui/material';
 import { FileSpreadsheet, Download } from 'lucide-react';
-import api from '../../services/api';
+import apiClient from '../../services/apiClient';
 
 const templates = [
-  { id: 'vendor_master', name: 'Vendor Master (LFB1)', description: 'SAP vendor master data upload format' },
-  { id: 'customer_master', name: 'Customer Master (KNA1)', description: 'SAP customer master data upload format' },
-  { id: 'condition_record', name: 'Condition Records (KONH)', description: 'SAP pricing condition records' },
-  { id: 'sales_order', name: 'Sales Orders (VBAK)', description: 'SAP sales order flat file format' },
-  { id: 'billing_document', name: 'Billing Documents (VBRK)', description: 'SAP billing document upload' },
-  { id: 'fund_management', name: 'Fund Management (FMTT)', description: 'SAP fund center/commitment items' },
-  { id: 'journal_entry', name: 'Journal Entries (BKPF)', description: 'SAP FI journal entry posting' },
-  { id: 'settlement_doc', name: 'Settlement Documents', description: 'Trade promotion settlement exports' },
+  { id: 'vendor-master', name: 'Vendor Master (LFB1)', description: 'SAP vendor master data upload format' },
+  { id: 'customer-master', name: 'Customer Master (KNA1)', description: 'SAP customer master data upload format' },
+  { id: 'condition-records', name: 'Condition Records (KONH)', description: 'SAP pricing condition records' },
+  { id: 'sales-orders', name: 'Sales Orders (VBAK)', description: 'SAP sales order flat file format' },
+  { id: 'vendor-invoices', name: 'Billing Documents (VBRK)', description: 'SAP billing document upload' },
+  { id: 'budgets', name: 'Fund Management (FMTT)', description: 'SAP fund center/commitment items' },
+  { id: 'accruals', name: 'Journal Entries (BKPF)', description: 'SAP FI journal entry posting' },
+  { id: 'trade-spends', name: 'Settlement Documents', description: 'Trade promotion settlement exports' },
 ];
 
 export default function SAPExport() {
@@ -23,8 +23,18 @@ export default function SAPExport() {
   const generate = async (templateId) => {
     setGenerating(templateId); setError(''); setSuccess('');
     try {
-      const res = await api.post('/sap-export/generate', { template_id: templateId, ...dateRange });
-      setSuccess(`${templateId} export generated successfully`);
+      const params = {};
+      if (dateRange.start) params.startDate = dateRange.start;
+      if (dateRange.end) params.endDate = dateRange.end;
+      const res = await apiClient.get(`/sap-export/${templateId}`, { responseType: 'blob', params });
+      const blob = new Blob([res.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SAP_${templateId.replace(/-/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      setSuccess(`${templateId} export generated and downloaded successfully`);
     } catch (e) {
       setError(e.response?.data?.message || 'Export generation failed');
     }

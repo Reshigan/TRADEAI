@@ -21,8 +21,8 @@ import type {
 // Configuration
 // ============================================================================
 
-const API_BASE = '/api/processes';
-const AI_BASE = '/api/ai';
+const API_BASE = '/processes';
+const AI_BASE = '/ai';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -330,7 +330,7 @@ export const WizardAPI = {
     data: Record<string, any>
   ): Promise<WizardApiResponse> {
     const response = await withRetry(() => 
-      apiClient.post(`/api/wizards/${wizardId}/draft`, data)
+      apiClient.post(`/wizards/${wizardId}/draft`, data)
     );
     
     return response.data as WizardApiResponse;
@@ -342,7 +342,7 @@ export const WizardAPI = {
   async loadDraft(wizardId: string): Promise<Record<string, any> | null> {
     try {
       const response = await withRetry(() => 
-        apiClient.get(`/api/wizards/${wizardId}/draft`)
+        apiClient.get(`/wizards/${wizardId}/draft`)
       );
       
       return response.data.data as Record<string, any>;
@@ -362,7 +362,7 @@ export const WizardAPI = {
     data: Record<string, any>
   ): Promise<WizardApiResponse> {
     const response = await withRetry(() => 
-      apiClient.post(`/api/wizards/${wizardId}/submit`, data)
+      apiClient.post(`/wizards/${wizardId}/submit`, data)
     );
     
     return response.data as WizardApiResponse;
@@ -377,7 +377,7 @@ export const WizardAPI = {
     data: Record<string, any>
   ): Promise<{ valid: boolean; errors: string[] }> {
     const response = await withRetry(() => 
-      apiClient.post(`/api/wizards/${wizardId}/steps/${stepId}/validate`, data)
+      apiClient.post(`/wizards/${wizardId}/steps/${stepId}/validate`, data)
     );
     
     return response.data as { valid: boolean; errors: string[] };
@@ -388,7 +388,7 @@ export const WizardAPI = {
    */
   async deleteDraft(wizardId: string): Promise<void> {
     await withRetry(() => 
-      apiClient.delete(`/api/wizards/${wizardId}/draft`)
+      apiClient.delete(`/wizards/${wizardId}/draft`)
     );
   },
 };

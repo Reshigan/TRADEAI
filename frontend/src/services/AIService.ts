@@ -15,8 +15,8 @@ import type {
 // Configuration
 // ============================================================================
 
-const AI_API_BASE = '/api/ai';
-const ML_API_BASE = '/api/ml';
+const AI_API_BASE = '/ai';
+const ML_API_BASE = '/ml';
 const RECOMMENDATION_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 // ============================================================================

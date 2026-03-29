@@ -45,7 +45,7 @@ const ReportBuilder = () => {
     setError('');
 
     try {
-      const response = await api.post('/reports/generate', reportConfig, { responseType: reportConfig.format === 'pdf' ? 'blob' : 'json'
+      const response = await api.post('/reporting/generate', reportConfig, { responseType: reportConfig.format === 'pdf' ? 'blob' : 'json'
       });
 
       if (reportConfig.format === 'pdf') {

@@ -103,7 +103,7 @@ const IntegrationDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await api.get('/integrations/dashboard');
+      const response = await api.get('/integration-hub/dashboard');
       const data = response.data;
 
       setDashboardData(data);
@@ -135,7 +135,7 @@ const IntegrationDashboard = () => {
 
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || '/api';
-      await fetch(`${baseUrl}/integrations/${integrationId}/connect`, {
+      await fetch(`${baseUrl}/integration-hub/${integrationId}/connect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(integrationConfig)
@@ -169,7 +169,7 @@ const IntegrationDashboard = () => {
 
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || '/api';
-      await fetch(`${baseUrl}/integrations/${integrationId}/disconnect`, {
+      await fetch(`${baseUrl}/integration-hub/${integrationId}/disconnect`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -197,7 +197,7 @@ const IntegrationDashboard = () => {
 
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || '/api';
-      const res = await fetch(`${baseUrl}/integrations/${integrationId}/sync`, {
+      const res = await fetch(`${baseUrl}/integration-hub/${integrationId}/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(syncConfig)
@@ -233,7 +233,7 @@ const IntegrationDashboard = () => {
 
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || '/api';
-      const res = await fetch(`${baseUrl}/integrations/webhooks`, {
+      const res = await fetch(`${baseUrl}/integration-hub/webhooks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(webhookConfig)
@@ -269,7 +269,7 @@ const IntegrationDashboard = () => {
 
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || '/api';
-      await fetch(`${baseUrl}/integrations/webhooks/${webhookId}/test`, {
+      await fetch(`${baseUrl}/integration-hub/webhooks/${webhookId}/test`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -295,7 +295,7 @@ const IntegrationDashboard = () => {
 
       const token = localStorage.getItem('token');
       const baseUrl = process.env.REACT_APP_API_URL || '/api';
-      await fetch(`${baseUrl}/integrations/webhooks/${webhookId}`, {
+      await fetch(`${baseUrl}/integration-hub/webhooks/${webhookId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

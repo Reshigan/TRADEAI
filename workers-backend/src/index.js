@@ -82,6 +82,11 @@ import { tenantRoutes } from './routes/tenants.js';
 import { processRoutes } from './routes/processes.js';
 import { aiRoutes, mlRoutes } from './routes/aiMl.js';
 import { baselineEngineRoutes } from './routes/baselineEngine.js';
+// Route mismatch fixes - missing backend routes
+import { tradeSpendAnalyticsRoutes } from './routes/tradeSpendAnalytics.js';
+import { wizardRoutes } from './routes/wizards.js';
+import { processModelRoutes } from './routes/processModel.js';
+import { aiChatbotRoutes, cannibalizationRoutes, enterpriseRoutes, forwardBuyRoutes, insightsRoutes, masterDataRoutes, metricsRoutes, ollamaRoutes, superAdminRoutes, pushRoutes } from './routes/missingRoutes.js';
 
 const app = new Hono();
 
@@ -221,6 +226,20 @@ app.route('/api/baseline-engine', baselineEngineRoutes);
 app.route('/api/processes', processRoutes);
 app.route('/api/ai', aiRoutes);
 app.route('/api/ml', mlRoutes);
+// Route mismatch fixes - missing backend routes
+app.route('/api/trade-spend-analytics', tradeSpendAnalyticsRoutes);
+app.route('/api/wizards', wizardRoutes);
+app.route('/api/process-model', processModelRoutes);
+app.route('/api/ai-chatbot', aiChatbotRoutes);
+app.route('/api/cannibalization', cannibalizationRoutes);
+app.route('/api/enterprise', enterpriseRoutes);
+app.route('/api/forward-buy', forwardBuyRoutes);
+app.route('/api/insights', insightsRoutes);
+app.route('/api/master-data', masterDataRoutes);
+app.route('/api/metrics', metricsRoutes);
+app.route('/api/ollama', ollamaRoutes);
+app.route('/api/super-admin', superAdminRoutes);
+app.route('/api/push', pushRoutes);
 
 // 404 handler
 app.notFound((c) => {

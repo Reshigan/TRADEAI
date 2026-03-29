@@ -30,7 +30,7 @@ const SimulationDashboard = () => {
   const runSimulation = async (scenarioType) => {
     setLoading(true);
     try {
-      const response = await api.post('/simulation/run', {
+      const response = await api.post('/simulations/run-simulation', {
         scenarioType,
         baseData: {
           dailyRevenue: 100000,
@@ -52,7 +52,7 @@ const SimulationDashboard = () => {
   const runComparison = async () => {
     setLoading(true);
     try {
-      const response = await api.post('/simulation/compare', {
+      const response = await api.post('/simulations/compare', {
         baseData: {
           dailyRevenue: 100000,
           dailyVolume: 5000,

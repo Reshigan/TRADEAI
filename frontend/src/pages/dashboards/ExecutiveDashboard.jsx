@@ -60,7 +60,7 @@ const ExecutiveDashboard = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/dashboards/executive?year=${selectedYear}`);
+      const response = await api.get(`/dashboard/executive?year=${selectedYear}`);
       
       if (response?.data?.success) {
         setDashboardData(response.data.data);
@@ -76,7 +76,7 @@ const ExecutiveDashboard = () => {
       setExporting(true);
       
       const response = await api.get(
-        `/dashboards/executive/export/${format}?year=${selectedYear}`,
+        `/dashboard/executive/export/${format}?year=${selectedYear}`,
         { responseType: 'blob'
         }
       );
