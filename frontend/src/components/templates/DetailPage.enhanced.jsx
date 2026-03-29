@@ -397,7 +397,7 @@ export default function DetailPageTemplate({
             Share
           </MenuItem>
         )}
-        <MenuItem onClick={() => { window.print(); handleMenuClose(); }}>
+        <MenuItem onClick={() => { handleMenuClose(); setTimeout(() => window.print(), 300); }}>
           <Printer size={18} style={{ marginRight: 12 }} />
           Print
         </MenuItem>

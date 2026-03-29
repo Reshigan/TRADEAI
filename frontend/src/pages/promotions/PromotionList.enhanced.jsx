@@ -238,12 +238,13 @@ export default function PromotionsList() {
           ['Name', item.name || item.promotion_name || ''],
           ['Type', item.promotion_type || ''],
           ['Status', item.status || ''],
-          ['Budget', item.budget || ''],
+          ['Budget', item.budget ?? ''],
           ['Start Date', item.start_date || ''],
           ['End Date', item.end_date || ''],
-          ['ROI', item.roi || item.performance?.roi || ''],
+          ['ROI', item.roi ?? item.performance?.roi ?? ''],
         ];
-        const csv = rows.map(r => r.join(',')).join('\n');
+        const escapeCsv = (val) => { const s = String(val ?? ''); return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s; };
+        const csv = rows.map(r => r.map(escapeCsv).join(',')).join('\n');
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
