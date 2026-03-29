@@ -20,10 +20,15 @@ import {
   Clock,
   ChevronRight,
   MoreVertical,
-  Activity
+  Activity,
+  Sparkles,
+  Brain,
+  Lightbulb,
+  ShieldAlert,
+  Wallet
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { analyticsService, promotionService, budgetService, approvalService } from '../services/api';
+import { analyticsService, promotionService, budgetService, approvalService, kamWalletService } from '../services/api';
 import { useToast } from '../components/common/ToastNotification';
 
 const fmt = (v) => {
@@ -35,7 +40,7 @@ const fmt = (v) => {
 };
 
 // Enhanced KPI Card Component with professional styling
-function KPI({ icon: Icon, label, value, change, color = '#2563EB', loading, subtitle }) {
+function KPI({ icon: Icon, label, value, change, color = '#6366F1', loading, subtitle }) {
   if (loading) {
     return (
       <Card sx={{ height: '100%', transition: 'all 0.2s ease' }}>
@@ -50,10 +55,11 @@ function KPI({ icon: Icon, label, value, change, color = '#2563EB', loading, sub
   
   const positive = change >= 0;
   const gradientMap = {
-    '#2563EB': 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+    '#6366F1': 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
     '#059669': 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-    '#7C3AED': 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+    '#8B5CF6': 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
     '#F59E0B': 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    '#06B6D4': 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
   };
 
   return (
@@ -131,7 +137,7 @@ function SectionHeader({ title, subtitle, action, icon: Icon }) {
             alignItems: 'center', 
             justifyContent: 'center' 
           }}>
-            <Icon size={20} color="#2563EB" />
+            <Icon size={20} color="#6366F1" />
           </Box>
         )}
         <Box>
@@ -149,7 +155,7 @@ function SectionHeader({ title, subtitle, action, icon: Icon }) {
 }
 
 // Enhanced Quick Action Button
-function QuickActionButton({ label, path, icon: Icon, color = '#2563EB' }) {
+function QuickActionButton({ label, path, icon: Icon, color = '#6366F1' }) {
   const navigate = useNavigate();
   return (
     <Button
@@ -215,15 +221,17 @@ export default function Dashboard() {
   const [kpis, setKpis] = useState({});
   const [recentPromos, setRecentPromos] = useState([]);
   const [pendingApprovals, setPendingApprovals] = useState([]);
+  const [walletSummary, setWalletSummary] = useState(null);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [analytics, promos, budgets, approvals] = await Promise.allSettled([
+        const [analytics, promos, budgets, approvals, walletData] = await Promise.allSettled([
           analyticsService.getDashboard(),
           promotionService.getAll({ limit: 5, sort: '-created_at' }),
           budgetService.getAll({ limit: 5 }),
           approvalService.getAll({ status: 'pending', limit: 5 }),
+          kamWalletService.getSummary(),
         ]);
         const a = analytics.status === 'fulfilled' ? (analytics.value.data || analytics.value) : {};
         setKpis({
@@ -236,6 +244,7 @@ export default function Dashboard() {
         });
         if (promos.status === 'fulfilled') setRecentPromos((promos.value.data || promos.value || []).slice(0, 5));
         if (approvals.status === 'fulfilled') setPendingApprovals((approvals.value.data || approvals.value || []).slice(0, 5));
+        if (walletData.status === 'fulfilled') setWalletSummary(walletData.value.data || walletData.value || null);
       } catch (e) { console.error('Dashboard load error:', e); toast.error('Dashboard load error'); }
       setLoading(false);
     };
@@ -281,7 +290,7 @@ export default function Dashboard() {
             label="Total Budget" 
             value={fmt(kpis.totalBudget)} 
             change={8.2} 
-            color="#2563EB" 
+            color="#6366F1" 
             loading={loading}
             subtitle="Annual allocation"
           />
@@ -303,7 +312,7 @@ export default function Dashboard() {
             label="Active Promotions" 
             value={String(kpis.activePromos || 0)} 
             change={12} 
-            color="#7C3AED" 
+            color="#8B5CF6" 
             loading={loading}
             subtitle="Currently running"
           />
@@ -320,6 +329,74 @@ export default function Dashboard() {
           />
         </Grid>
       </Grid>
+
+      {/* AI Insights Panel */}
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'rgba(99,102,241,0.2)', background: 'linear-gradient(135deg, rgba(99,102,241,0.03) 0%, rgba(139,92,246,0.03) 50%, rgba(6,182,212,0.02) 100%)' }}>
+        <CardContent sx={{ py: 2.5, px: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 40, height: 40, borderRadius: 2.5, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Sparkles size={20} color="#fff" />
+              </Box>
+              <Box>
+                <Typography variant="h3" sx={{ fontSize: '1.125rem', fontWeight: 700 }}>AI Insights</Typography>
+                <Typography variant="caption" color="text.secondary">Powered by TradeAI ML Engine</Typography>
+              </Box>
+            </Box>
+            <Chip label="Live" size="small" sx={{ bgcolor: 'rgba(5,150,105,0.1)', color: '#059669', fontWeight: 700, fontSize: '0.75rem', '& .MuiChip-label': { px: 1.5 } }} />
+          </Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <Brain size={16} color="#6366F1" />
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Spend Forecast</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {kpis.totalSpend > 0
+                    ? `Current spend is ${fmt(kpis.totalSpend)} against ${fmt(kpis.totalBudget)} budget (${(kpis.budgetUtil || 0).toFixed(0)}% utilized)`
+                    : 'No spend data available yet — create promotions to start tracking'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Based on your current period data</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <Lightbulb size={16} color="#F59E0B" />
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recommendation</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {(kpis.budgetUtil || 0) > 90
+                    ? 'Budget nearly exhausted — review remaining allocations before committing new spend'
+                    : (kpis.roi || 0) < 1 && kpis.activePromos > 0
+                      ? `ROI is ${(kpis.roi || 0).toFixed(1)}x — consider pausing low-performing promotions`
+                      : kpis.activePromos > 0
+                        ? `${kpis.activePromos} active promotions running with ${(kpis.roi || 0).toFixed(1)}x ROI — performance is on track`
+                        : 'No active promotions — create your first promotion to get AI recommendations'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Generated from your live KPI data</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <ShieldAlert size={16} color={kpis.pendingCount > 0 ? '#DC2626' : '#059669'} />
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: kpis.pendingCount > 0 ? '#DC2626' : '#059669', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {kpis.pendingCount > 0 ? 'Action Required' : 'All Clear'}
+                  </Typography>
+                </Box>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  {kpis.pendingCount > 0
+                    ? `${kpis.pendingCount} pending approval${kpis.pendingCount !== 1 ? 's' : ''} require review before settlement cycle`
+                    : 'No pending approvals — all items are up to date'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Based on your approval queue</Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Secondary Metrics Grid */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
@@ -345,7 +422,7 @@ export default function Dashboard() {
                     bgcolor: 'action.hover', 
                     '& .MuiLinearProgress-bar': { 
                       bgcolor: (kpis.budgetUtil || 0) > 90 ? '#DC2626' : 
-                               (kpis.budgetUtil || 0) > 75 ? '#F59E0B' : '#2563EB',
+                               (kpis.budgetUtil || 0) > 75 ? '#F59E0B' : '#6366F1',
                       borderRadius: 4,
                     } 
                   }} 
@@ -445,7 +522,7 @@ export default function Dashboard() {
                   label="Create Promotion" 
                   path="/promotions/new" 
                   icon={Plus} 
-                  color="#2563EB" 
+                  color="#6366F1" 
                 />
                 <QuickActionButton 
                   label="Create Trade Spend" 
@@ -457,7 +534,7 @@ export default function Dashboard() {
                   label="Submit Claim" 
                   path="/claims/create" 
                   icon={AlertTriangle} 
-                  color="#7C3AED" 
+                  color="#8B5CF6" 
                 />
                 <QuickActionButton 
                   label="View Reports" 
@@ -589,6 +666,87 @@ export default function Dashboard() {
               </TableBody>
             </Table>
           </TableContainer>
+        </CardContent>
+      </Card>
+
+      {/* KAM Spend Wallet */}
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'rgba(99,102,241,0.15)' }}>
+        <CardContent>
+          <SectionHeader
+            title="KAM Spend Wallet"
+            subtitle="Key Account Manager spend allocation overview"
+            icon={Wallet}
+            action={
+              <Button
+                size="small"
+                endIcon={<ArrowRight size={14} />}
+                onClick={() => navigate('/kamwallet')}
+                sx={{ fontWeight: 600 }}
+              >
+                Manage Wallets
+              </Button>
+            }
+          />
+          <Grid container spacing={2.5}>
+            <Grid item xs={6} sm={3}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(99,102,241,0.06)', textAlign: 'center' }}>
+                <Wallet size={20} color="#6366F1" style={{ marginBottom: 8 }} />
+                <Typography variant="h5" fontWeight={700} color="#6366F1">
+                  {walletSummary ? walletSummary.activeWallets : '—'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Active Wallets</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(5,150,105,0.06)', textAlign: 'center' }}>
+                <DollarSign size={20} color="#059669" style={{ marginBottom: 8 }} />
+                <Typography variant="h5" fontWeight={700} color="#059669">
+                  {walletSummary ? fmt(walletSummary.totalAllocated) : '—'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Total Allocated</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(245,158,11,0.06)', textAlign: 'center' }}>
+                <TrendingUp size={20} color="#F59E0B" style={{ marginBottom: 8 }} />
+                <Typography variant="h5" fontWeight={700} color="#F59E0B">
+                  {walletSummary ? fmt(walletSummary.totalUtilized) : '—'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Total Utilized</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(139,92,246,0.06)', textAlign: 'center' }}>
+                <Target size={20} color="#8B5CF6" style={{ marginBottom: 8 }} />
+                <Typography variant="h5" fontWeight={700} color="#8B5CF6">
+                  {walletSummary ? fmt(walletSummary.totalAvailable) : '—'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Available Balance</Typography>
+              </Box>
+            </Grid>
+          </Grid>
+          {walletSummary && walletSummary.totalAllocated > 0 && (
+            <Box sx={{ mt: 2.5, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2" color="text.secondary">Wallet Utilization</Typography>
+                <Typography variant="body2" fontWeight={600}>{walletSummary.utilizationRate}%</Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(Number(walletSummary.utilizationRate), 100)}
+                sx={{
+                  height: 8,
+                  borderRadius: 4,
+                  bgcolor: 'action.hover',
+                  '& .MuiLinearProgress-bar': {
+                    bgcolor: Number(walletSummary.utilizationRate) > 90 ? '#DC2626' :
+                             Number(walletSummary.utilizationRate) > 75 ? '#F59E0B' : '#6366F1',
+                    borderRadius: 4,
+                  }
+                }}
+              />
+            </Box>
+          )}
         </CardContent>
       </Card>
 

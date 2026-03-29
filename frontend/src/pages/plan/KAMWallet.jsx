@@ -40,7 +40,7 @@ export default function KAMWallet() {
           <Card><CardContent>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="body2" color="text.secondary">Total Allocated</Typography>
-              <Wallet size={18} color="#2563EB" />
+              <Wallet size={18} color="#6366F1" />
             </Box>
             <Typography variant="h2">{fmt(totalAllocated)}</Typography>
           </CardContent></Card>
@@ -84,7 +84,7 @@ export default function KAMWallet() {
                         <TableCell align="right">{fmt(w.allocated_amount)}</TableCell>
                         <TableCell align="right">{fmt(w.spent_amount)}</TableCell>
                         <TableCell><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: util > 90 ? '#DC2626' : '#2563EB' } }} />
+                          <LinearProgress variant="determinate" value={Math.min(util, 100)} sx={{ flex: 1, height: 6, borderRadius: 3, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: util > 90 ? '#DC2626' : '#6366F1' } }} />
                           <Typography variant="caption">{util.toFixed(0)}%</Typography>
                         </Box></TableCell>
                         <TableCell><Chip label={w.status || 'active'} size="small" sx={{ textTransform: 'capitalize' }} /></TableCell>

@@ -2018,12 +2018,17 @@ export const kamWalletService = {
   getById: async (id) => { const r = await api.get(`/kam-wallets/${id}`); return r.data; },
   create: async (data) => { const r = await api.post('/kam-wallets', data); return r.data; },
   update: async (id, data) => { const r = await api.put(`/kam-wallets/${id}`, data); return r.data; },
-  allocate: async (data) => { const r = await api.post('/kam-wallets/allocate', data); return r.data; },
+  remove: async (id) => { const r = await api.delete(`/kam-wallets/${id}`); return r.data; },
+  allocate: async (id, data) => { const r = await api.post(`/kam-wallets/${id}/allocate`, data); return r.data; },
   getSummary: async () => { const r = await api.get('/kam-wallets/summary'); return r.data; },
+  getBalance: async (id) => { const r = await api.get(`/kam-wallets/${id}/balance`); return r.data; },
+  recordUsage: async (id, data) => { const r = await api.post(`/kam-wallets/${id}/record-usage`, data); return r.data; },
+  updateStatus: async (id, status) => { const r = await api.patch(`/kam-wallets/${id}/status`, { status }); return r.data; },
+  getCustomerAllocations: async (customerId) => { const r = await api.get(`/kam-wallets/customer/${customerId}/allocations`); return r.data; },
   getWallet: async (id) => { const r = await api.get(`/kam-wallets/${id}`); return r.data; },
   getWallets: async (params) => { const r = await api.get('/kam-wallets', { params }); return r.data; },
   createWallet: async (data) => { const r = await api.post('/kam-wallets', data); return r.data; },
-  allocateToCustomer: async (walletId, customerId, amount, notes) => { const r = await api.post('/kam-wallets/allocate', { walletId, customerId, amount, notes }); return r.data; },
+  allocateToCustomer: async (walletId, customerId, amount, notes) => { const r = await api.post(`/kam-wallets/${walletId}/allocate`, { customerId, amount, notes }); return r.data; },
 };
 
 export const simulationService = {

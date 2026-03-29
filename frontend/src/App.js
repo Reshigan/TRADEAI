@@ -642,6 +642,7 @@ function App() {
             <Route path="/vendors/:id/edit" element={<P><VendorForm /></P>} />
 
             <Route path="/kamwallet" element={<P><KAMWalletManagement /></P>} />
+            <Route path="/kamwallet/:id" element={<P><KAMWalletAllocate /></P>} />
             <Route path="/kamwallet/:id/allocate" element={<P><KAMWalletAllocate /></P>} />
 
             <Route path="/settings" element={<P requiredRoles={['admin', 'super_admin']}><SettingsPage /></P>} />
