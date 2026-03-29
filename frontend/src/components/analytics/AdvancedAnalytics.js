@@ -138,6 +138,7 @@ const AdvancedAnalytics = () => {
         }
       } catch (fetchErr) {
         console.error('Analytics API unavailable:', fetchErr);
+        setError('Analytics data is currently unavailable');
       }
 
     } catch (err) {

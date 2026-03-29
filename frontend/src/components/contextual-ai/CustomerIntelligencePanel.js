@@ -302,7 +302,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          {forecast?.data?.predictions ? (
+          {forecast?.data?.predictions?.length > 0 ? (
             <>
               <ResponsiveContainer width="100%" height={150}>
                 <LineChart data={forecast.data.predictions.slice(0, 30)}>
