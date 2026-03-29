@@ -40,7 +40,7 @@ const fmt = (v) => {
 };
 
 // Enhanced KPI Card Component with professional styling
-function KPI({ icon: Icon, label, value, change, color = '#6366F1', loading, subtitle }) {
+function KPI({ icon: Icon, label, value, change, color = '#10B981', loading, subtitle }) {
   if (loading) {
     return (
       <Card sx={{ height: '100%', transition: 'all 0.2s ease' }}>
@@ -55,11 +55,11 @@ function KPI({ icon: Icon, label, value, change, color = '#6366F1', loading, sub
   
   const positive = change >= 0;
   const gradientMap = {
-    '#6366F1': 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+    '#10B981': 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
     '#059669': 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-    '#8B5CF6': 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
     '#F59E0B': 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-    '#06B6D4': 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+    '#D97706': 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
+    '#34D399': 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
   };
 
   return (
@@ -137,7 +137,7 @@ function SectionHeader({ title, subtitle, action, icon: Icon }) {
             alignItems: 'center', 
             justifyContent: 'center' 
           }}>
-            <Icon size={20} color="#6366F1" />
+            <Icon size={20} color="#10B981" />
           </Box>
         )}
         <Box>
@@ -155,7 +155,7 @@ function SectionHeader({ title, subtitle, action, icon: Icon }) {
 }
 
 // Enhanced Quick Action Button
-function QuickActionButton({ label, path, icon: Icon, color = '#6366F1' }) {
+function QuickActionButton({ label, path, icon: Icon, color = '#10B981' }) {
   const navigate = useNavigate();
   return (
     <Button
@@ -290,7 +290,7 @@ export default function Dashboard() {
             label="Total Budget" 
             value={fmt(kpis.totalBudget)} 
             change={8.2} 
-            color="#6366F1" 
+            color="#10B981" 
             loading={loading}
             subtitle="Annual allocation"
           />
@@ -312,7 +312,7 @@ export default function Dashboard() {
             label="Active Promotions" 
             value={String(kpis.activePromos || 0)} 
             change={12} 
-            color="#8B5CF6" 
+            color="#34D399" 
             loading={loading}
             subtitle="Currently running"
           />
@@ -331,11 +331,11 @@ export default function Dashboard() {
       </Grid>
 
       {/* AI Insights Panel */}
-      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'rgba(99,102,241,0.2)', background: 'linear-gradient(135deg, rgba(99,102,241,0.03) 0%, rgba(139,92,246,0.03) 50%, rgba(6,182,212,0.02) 100%)' }}>
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'rgba(16,185,129,0.2)', background: 'linear-gradient(135deg, rgba(16,185,129,0.03) 0%, rgba(5,150,105,0.03) 50%, rgba(245,158,11,0.02) 100%)' }}>
         <CardContent sx={{ py: 2.5, px: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ width: 40, height: 40, borderRadius: 2.5, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Box sx={{ width: 40, height: 40, borderRadius: 2.5, background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Sparkles size={20} color="#fff" />
               </Box>
               <Box>
@@ -349,8 +349,8 @@ export default function Dashboard() {
             <Grid item xs={12} md={4}>
               <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                  <Brain size={16} color="#6366F1" />
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Spend Forecast</Typography>
+                  <Brain size={16} color="#10B981" />
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Spend Forecast</Typography>
                 </Box>
                 <Typography variant="body2" fontWeight={600} sx={{ mb: 0.5 }}>
                   {kpis.totalSpend > 0
@@ -422,7 +422,7 @@ export default function Dashboard() {
                     bgcolor: 'action.hover', 
                     '& .MuiLinearProgress-bar': { 
                       bgcolor: (kpis.budgetUtil || 0) > 90 ? '#DC2626' : 
-                               (kpis.budgetUtil || 0) > 75 ? '#F59E0B' : '#6366F1',
+                               (kpis.budgetUtil || 0) > 75 ? '#F59E0B' : '#10B981',
                       borderRadius: 4,
                     } 
                   }} 
@@ -522,7 +522,7 @@ export default function Dashboard() {
                   label="Create Promotion" 
                   path="/promotions/new" 
                   icon={Plus} 
-                  color="#6366F1" 
+                  color="#10B981" 
                 />
                 <QuickActionButton 
                   label="Create Trade Spend" 
@@ -534,13 +534,13 @@ export default function Dashboard() {
                   label="Submit Claim" 
                   path="/claims/create" 
                   icon={AlertTriangle} 
-                  color="#8B5CF6" 
+                  color="#F59E0B" 
                 />
                 <QuickActionButton 
                   label="View Reports" 
                   path="/reports" 
                   icon={BarChart3} 
-                  color="#F59E0B" 
+                  color="#D97706" 
                 />
               </Box>
             </CardContent>
@@ -670,7 +670,7 @@ export default function Dashboard() {
       </Card>
 
       {/* KAM Spend Wallet */}
-      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'rgba(99,102,241,0.15)' }}>
+      <Card sx={{ mb: 3, border: '1px solid', borderColor: 'rgba(16,185,129,0.15)' }}>
         <CardContent>
           <SectionHeader
             title="KAM Spend Wallet"
@@ -689,9 +689,9 @@ export default function Dashboard() {
           />
           <Grid container spacing={2.5}>
             <Grid item xs={6} sm={3}>
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(99,102,241,0.06)', textAlign: 'center' }}>
-                <Wallet size={20} color="#6366F1" style={{ marginBottom: 8 }} />
-                <Typography variant="h5" fontWeight={700} color="#6366F1">
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(16,185,129,0.06)', textAlign: 'center' }}>
+                <Wallet size={20} color="#10B981" style={{ marginBottom: 8 }} />
+                <Typography variant="h5" fontWeight={700} color="#10B981">
                   {walletSummary ? walletSummary.activeWallets : '—'}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">Active Wallets</Typography>
@@ -716,9 +716,9 @@ export default function Dashboard() {
               </Box>
             </Grid>
             <Grid item xs={6} sm={3}>
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(139,92,246,0.06)', textAlign: 'center' }}>
-                <Target size={20} color="#8B5CF6" style={{ marginBottom: 8 }} />
-                <Typography variant="h5" fontWeight={700} color="#8B5CF6">
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(245,158,11,0.06)', textAlign: 'center' }}>
+                <Target size={20} color="#F59E0B" style={{ marginBottom: 8 }} />
+                <Typography variant="h5" fontWeight={700} color="#F59E0B">
                   {walletSummary ? fmt(walletSummary.totalAvailable) : '—'}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">Available Balance</Typography>
@@ -740,7 +740,7 @@ export default function Dashboard() {
                   bgcolor: 'action.hover',
                   '& .MuiLinearProgress-bar': {
                     bgcolor: Number(walletSummary.utilizationRate) > 90 ? '#DC2626' :
-                             Number(walletSummary.utilizationRate) > 75 ? '#F59E0B' : '#6366F1',
+                             Number(walletSummary.utilizationRate) > 75 ? '#F59E0B' : '#10B981',
                     borderRadius: 4,
                   }
                 }}

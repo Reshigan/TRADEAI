@@ -71,7 +71,7 @@ const Login = () => {
   // GAP-01: 2FA Challenge Screen
   if (show2FA) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)', p: 3 }}>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', p: 3 }}>
         <Paper elevation={3} sx={{ maxWidth: 450, width: '100%', p: 5, borderRadius: 3 }}>
           <Box textAlign="center" mb={4}>
             <Box component="img" src={newLogo} alt="Trade AI Logo" sx={{ height: 50, mb: 2 }} />
@@ -113,7 +113,7 @@ const Login = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-          background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
           p: 3
         }}>
           <Paper elevation={3} sx={{ 
