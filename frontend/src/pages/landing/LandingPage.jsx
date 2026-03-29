@@ -257,7 +257,7 @@ export default function LandingPage({ onLogin }) {
                       p: 4, height: '100%', border: '1px solid', borderColor: brand.border, borderRadius: 4,
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', cursor: 'default', position: 'relative', overflow: 'hidden',
                       '&:hover': { borderColor: brand.primaryLight, transform: 'translateY(-4px)', boxShadow: '0 20px 40px rgba(99,102,241,0.1)' },
-                      '&::before': { content: '"\"\"', position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: brand.gradient, opacity: 0, transition: 'opacity 0.3s' },
+                      '&::before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: brand.gradient, opacity: 0, transition: 'opacity 0.3s' },
                       '&:hover::before': { opacity: 1 },
                     }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
@@ -481,7 +481,7 @@ export default function LandingPage({ onLogin }) {
           <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', my: 4 }} />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>
-              \u00a9 {new Date().getFullYear()} TradeAI by GONXT Technology | Vanta X Holdings (Pty) Ltd. All rights reserved.
+              {"\u00a9"} {new Date().getFullYear()} TradeAI by GONXT Technology | Vanta X Holdings (Pty) Ltd. All rights reserved.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3 }}>
               {['Privacy', 'Terms', 'Security'].map(item => (
