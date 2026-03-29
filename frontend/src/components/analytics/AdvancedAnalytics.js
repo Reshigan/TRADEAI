@@ -128,14 +128,17 @@ const AdvancedAnalytics = () => {
         const res = await fetch(`${baseUrl}/reporting/analytics?startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (res.ok) {
-          const result = await res.json();
-          const data = result.data || result;
-          if (data.roiAnalysis || data.kpis) {
-            setAnalyticsData(prev => ({ ...prev, ...data }));
-            return;
-          }
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '');
+          throw new Error(`Analytics API returned ${res.status}: ${errText}`);
         }
+        const result = await res.json();
+        const data = result.data || result;
+        if (data.roiAnalysis || data.kpis) {
+          setAnalyticsData(prev => ({ ...prev, ...data }));
+          return;
+        }
+        setError('Analytics data is currently unavailable');
       } catch (fetchErr) {
         console.error('Analytics API unavailable:', fetchErr);
         setError('Analytics data is currently unavailable');
