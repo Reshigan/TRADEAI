@@ -706,7 +706,7 @@ export default function LandingPage({ onLogin }) {
 
             <form onSubmit={handleLogin}>
               <Typography sx={{ fontSize: 13, fontWeight: 600, color: c.muted, mb: 0.75 }}>Email</Typography>
-              <TextField fullWidth size="small" placeholder="you@company.com" value={email} onChange={e => setEmail(e.target.value)}
+              <TextField fullWidth size="small" type="email" required autoFocus placeholder="you@company.com" value={email} onChange={e => setEmail(e.target.value)}
                 sx={{
                   mb: 2.5,
                   '& .MuiOutlinedInput-root': {
@@ -718,7 +718,7 @@ export default function LandingPage({ onLogin }) {
                   '& .MuiInputBase-input::placeholder': { color: c.dim, opacity: 1 },
                 }} />
               <Typography sx={{ fontSize: 13, fontWeight: 600, color: c.muted, mb: 0.75 }}>Password</Typography>
-              <TextField fullWidth size="small" type={showPassword ? 'text' : 'password'} placeholder="Enter password" value={password} onChange={e => setPassword(e.target.value)}
+              <TextField fullWidth size="small" type={showPassword ? 'text' : 'password'} required placeholder="Enter password" value={password} onChange={e => setPassword(e.target.value)}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
