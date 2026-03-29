@@ -69,35 +69,25 @@ const ProductReports = () => {
       setError(null);
       const response = await productService.getAll();
       
-      // Generate synthetic performance data for demonstration
-      const productsWithMetrics = (response.data || []).map((product, index) => ({
+      // Use real product data with actual field values
+      const productsWithMetrics = (response.data || []).map((product) => ({
         ...product,
-        // Sales metrics
-        totalSales: Math.floor(Math.random() * 1000000) + 100000,
-        unitsSold: Math.floor(Math.random() * 10000) + 1000,
-        revenue: Math.floor(Math.random() * 2000000) + 200000,
+        totalSales: product.total_sales ?? product.sales ?? 0,
+        unitsSold: product.units_sold ?? 0,
+        revenue: product.revenue ?? 0,
         
-        // Performance metrics
-        growthRate: (Math.random() * 40) - 10, // -10% to +30%
-        marketShare: Math.random() * 15 + 5, // 5% to 20%
-        profitMargin: Math.random() * 30 + 10, // 10% to 40%
+        growthRate: product.growth_rate ?? 0,
+        marketShare: product.market_share ?? 0,
+        profitMargin: product.profit_margin ?? product.margin ?? 0,
         
-        // Inventory metrics
-        stockLevel: Math.floor(Math.random() * 1000) + 100,
-        reorderPoint: Math.floor(Math.random() * 200) + 50,
-        turnoverRate: Math.random() * 8 + 2, // 2 to 10 times per year
+        stockLevel: product.stock_level ?? product.stock ?? 0,
+        reorderPoint: product.reorder_point ?? 0,
+        turnoverRate: product.turnover_rate ?? 0,
         
-        // Customer metrics
-        customerSatisfaction: Math.random() * 2 + 3, // 3 to 5 stars
-        returnRate: Math.random() * 5, // 0% to 5%
+        customerSatisfaction: product.customer_satisfaction ?? 0,
+        returnRate: product.return_rate ?? 0,
         
-        // Trend data for charts
-        salesTrend: Array.from({ length: 12 }, (_, i) => ({
-          month: `Month ${i + 1}`,
-          sales: Math.floor(Math.random() * 100000) + 50000,
-          units: Math.floor(Math.random() * 1000) + 500,
-          revenue: Math.floor(Math.random() * 150000) + 75000
-        }))
+        salesTrend: product.sales_trend ?? []
       }));
       
       setProducts(productsWithMetrics);

@@ -81,7 +81,7 @@ const AdvancedAnalytics = () => {
     region: 'all'
   });
   const [loading, setLoading] = useState(false);
-  const [, setError] = useState(null);
+  const [error, setError] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
@@ -128,18 +128,21 @@ const AdvancedAnalytics = () => {
         const res = await fetch(`${baseUrl}/reporting/analytics?startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (res.ok) {
-          const result = await res.json();
-          const data = result.data || result;
-          if (data.roiAnalysis || data.kpis) {
-            setAnalyticsData(prev => ({ ...prev, ...data }));
-            return;
-          }
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '');
+          throw new Error(`Analytics API returned ${res.status}: ${errText}`);
         }
-      } catch { /* fallback to generated data */ }
-
-      const fallbackData = generateFallbackAnalyticsData();
-      setAnalyticsData(fallbackData);
+        const result = await res.json();
+        const data = result.data || result;
+        if (data.roiAnalysis || data.kpis) {
+          setAnalyticsData(prev => ({ ...prev, ...data }));
+          return;
+        }
+        setError('Analytics data is currently unavailable');
+      } catch (fetchErr) {
+        console.error('Analytics API unavailable:', fetchErr);
+        setError('Analytics data is currently unavailable');
+      }
 
     } catch (err) {
       setError('Failed to fetch analytics data');
@@ -149,110 +152,6 @@ const AdvancedAnalytics = () => {
     }
   }, [dateRange, filters]);
 
-  const generateFallbackAnalyticsData = () => {
-    const days = Math.ceil((dateRange.end - dateRange.start) / (1000 * 60 * 60 * 24));
-    
-    // ROI Analysis over time
-    const roiAnalysis = Array.from({ length: days }, (_, i) => ({
-      date: format(subDays(dateRange.end, days - 1 - i), 'yyyy-MM-dd'),
-      roi: 120 + Math.random() * 80 + Math.sin(i / 7) * 20,
-      baseline: 100,
-      target: 150,
-      confidence: 0.85 + Math.random() * 0.1
-    }));
-
-    // Lift Analysis by promotion
-    const liftAnalysis = [
-      { promotion: 'Summer Sale', lift: 25.5, confidence: 0.92, pValue: 0.001 },
-      { promotion: 'Back to School', lift: 18.2, confidence: 0.88, pValue: 0.003 },
-      { promotion: 'Holiday Special', lift: 32.1, confidence: 0.95, pValue: 0.0001 },
-      { promotion: 'Flash Sale', lift: 15.8, confidence: 0.82, pValue: 0.008 },
-      { promotion: 'Clearance', lift: 12.3, confidence: 0.78, pValue: 0.015 }
-    ];
-
-    // Customer Segments Performance
-    const customerSegments = [
-      { segment: 'Premium', revenue: 850000, customers: 120, avgOrderValue: 7083, retention: 95 },
-      { segment: 'Regular', revenue: 1200000, customers: 480, avgOrderValue: 2500, retention: 78 },
-      { segment: 'New', revenue: 320000, customers: 280, avgOrderValue: 1143, retention: 45 },
-      { segment: 'Inactive', revenue: 80000, customers: 150, avgOrderValue: 533, retention: 12 }
-    ];
-
-    // Product Performance Matrix
-    const productPerformance = [
-      { product: 'Product A', revenue: 450000, margin: 35, velocity: 85, roi: 180 },
-      { product: 'Product B', revenue: 380000, margin: 28, velocity: 72, roi: 145 },
-      { product: 'Product C', revenue: 520000, margin: 42, velocity: 91, roi: 220 },
-      { product: 'Product D', revenue: 290000, margin: 25, velocity: 58, roi: 125 },
-      { product: 'Product E', revenue: 410000, margin: 38, velocity: 79, roi: 165 }
-    ];
-
-    // Promotion Effectiveness
-    const promotionEffectiveness = Array.from({ length: 10 }, (_, i) => ({
-      week: `Week ${i + 1}`,
-      withPromotion: 45000 + Math.random() * 15000,
-      withoutPromotion: 32000 + Math.random() * 8000,
-      lift: 15 + Math.random() * 20
-    }));
-
-    // Trend Analysis
-    const trendAnalysis = Array.from({ length: days }, (_, i) => ({
-      date: format(subDays(dateRange.end, days - 1 - i), 'yyyy-MM-dd'),
-      actual: 35000 + Math.random() * 10000 + Math.sin(i / 7) * 5000,
-      predicted: 36000 + Math.random() * 8000 + Math.sin(i / 7) * 4000,
-      upperBound: 42000 + Math.random() * 5000,
-      lowerBound: 28000 + Math.random() * 5000
-    }));
-
-    // Correlation Matrix
-    const correlationMatrix = [
-      { metric1: 'Revenue', metric2: 'Marketing Spend', correlation: 0.78 },
-      { metric1: 'Revenue', metric2: 'Customer Satisfaction', correlation: 0.65 },
-      { metric1: 'Revenue', metric2: 'Promotion Frequency', correlation: 0.42 },
-      { metric1: 'Customer Satisfaction', metric2: 'Retention Rate', correlation: 0.89 },
-      { metric1: 'Marketing Spend', metric2: 'New Customers', correlation: 0.71 },
-      { metric1: 'Promotion Frequency', metric2: 'Average Order Value', correlation: -0.23 }
-    ];
-
-    // Predictive Insights
-    const predictiveInsights = [
-      {
-        insight: 'Revenue is expected to increase by 15% next month based on current trends',
-        confidence: 0.87,
-        impact: 'high',
-        recommendation: 'Increase inventory for top-performing products'
-      },
-      {
-        insight: 'Customer churn risk is elevated for the Regular segment',
-        confidence: 0.72,
-        impact: 'medium',
-        recommendation: 'Launch targeted retention campaign'
-      },
-      {
-        insight: 'Optimal promotion frequency is 2.3 times per month',
-        confidence: 0.91,
-        impact: 'high',
-        recommendation: 'Adjust promotion calendar accordingly'
-      }
-    ];
-
-    return {
-      roiAnalysis,
-      liftAnalysis,
-      customerSegments,
-      productPerformance,
-      promotionEffectiveness,
-      trendAnalysis,
-      correlationMatrix,
-      predictiveInsights,
-      kpis: {
-        totalROI: 156.8,
-        averageLift: 20.8,
-        topPerformingSegment: 'Premium',
-        conversionRate: 3.2
-      }
-    };
-  };
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -340,6 +239,15 @@ const AdvancedAnalytics = () => {
             </Button>
           </Box>
         </Box>
+
+        {/* Error State */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }} action={
+            <Button color="inherit" size="small" onClick={fetchAnalyticsData}>Retry</Button>
+          }>
+            {error}
+          </Alert>
+        )}
 
         {/* KPI Summary */}
         <Grid container spacing={3} mb={3}>

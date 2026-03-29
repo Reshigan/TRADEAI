@@ -27,11 +27,13 @@ import {
   Visibility as ViewIcon,
   Business as BusinessIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 import { useCompanyType } from '../../contexts/CompanyTypeContext';
 import { formatLabel } from '../../utils/formatters';
 
 const VendorManagement = () => {
+  const navigate = useNavigate();
   const { isDistributor } = useCompanyType();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -170,7 +172,7 @@ const VendorManagement = () => {
                         <IconButton size="small" onClick={() => handleEdit(vendor)}>
                           <EditIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small">
+                        <IconButton size="small" onClick={() => navigate(`/vendors/${vendor.id || vendor._id}`)}>
                           <ViewIcon fontSize="small" />
                         </IconButton>
                       </TableCell>

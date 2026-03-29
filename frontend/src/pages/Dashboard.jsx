@@ -255,7 +255,7 @@ export default function Dashboard() {
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title="View Reports">
-              <IconButton sx={{ bgcolor: 'background.paper', boxShadow: 'sm' }}>
+              <IconButton onClick={() => navigate('/advanced-reporting')} sx={{ bgcolor: 'background.paper', boxShadow: 'sm' }}>
                 <BarChart3 size={20} />
               </IconButton>
             </Tooltip>

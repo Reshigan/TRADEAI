@@ -28,9 +28,11 @@ import {
   ShoppingCart
 } from '@mui/icons-material';
 
+import { useNavigate } from 'react-router-dom';
 import { mlService } from '../../services/api';
 
 const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, autoRefresh = false }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
   const [error, setError] = useState(null);
@@ -216,9 +218,13 @@ const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, au
                         variant="contained"
                         size="small"
                         startIcon={<ShoppingCart />}
-                        onClick={() => {}}
+                        onClick={() => {
+                          if (rec.product_id) {
+                            navigate(`/products/${rec.product_id}`);
+                          }
+                        }}
                       >
-                        Add
+                        View
                       </Button>
                     </Stack>
                   </Stack>

@@ -68,49 +68,31 @@ const PromotionReports = () => {
       setError(null);
       const response = await promotionService.getAll();
       
-      // Generate synthetic promotion performance data
-      const promotionsWithMetrics = (response.data || []).map((promotion, index) => ({
+      // Use real promotion data with actual field values
+      const promotionsWithMetrics = (response.data || []).map((promotion) => ({
         ...promotion,
-        // Campaign metrics
-        totalSpend: Math.floor(Math.random() * 500000) + 50000,
-        totalRevenue: Math.floor(Math.random() * 1500000) + 200000,
-        impressions: Math.floor(Math.random() * 1000000) + 100000,
-        clicks: Math.floor(Math.random() * 50000) + 5000,
-        conversions: Math.floor(Math.random() * 5000) + 500,
+        totalSpend: promotion.total_spend ?? promotion.spend ?? promotion.budget ?? 0,
+        totalRevenue: promotion.total_revenue ?? promotion.revenue ?? 0,
+        impressions: promotion.impressions ?? 0,
+        clicks: promotion.clicks ?? 0,
+        conversions: promotion.conversions ?? 0,
         
-        // Performance metrics
-        roi: (Math.random() * 400) + 100, // 100% to 500% ROI
-        uplift: (Math.random() * 30) + 5, // 5% to 35% uplift
-        ctr: Math.random() * 8 + 2, // 2% to 10% click-through rate
-        conversionRate: Math.random() * 15 + 5, // 5% to 20% conversion rate
-        cpa: Math.floor(Math.random() * 100) + 20, // R20 to R120 cost per acquisition
+        roi: promotion.roi ?? 0,
+        uplift: promotion.uplift ?? 0,
+        ctr: promotion.ctr ?? 0,
+        conversionRate: promotion.conversion_rate ?? 0,
+        cpa: promotion.cpa ?? 0,
         
-        // Effectiveness metrics
-        brandAwareness: Math.random() * 40 + 60, // 60% to 100%
-        customerSatisfaction: Math.random() * 2 + 3, // 3 to 5 stars
-        repeatPurchase: Math.random() * 50 + 30, // 30% to 80%
+        brandAwareness: promotion.brand_awareness ?? 0,
+        customerSatisfaction: promotion.customer_satisfaction ?? 0,
+        repeatPurchase: promotion.repeat_purchase ?? 0,
         
-        // Channel performance
-        channels: [
-          { name: 'Digital', spend: Math.floor(Math.random() * 200000) + 20000, roi: Math.random() * 300 + 150 },
-          { name: 'Print', spend: Math.floor(Math.random() * 100000) + 10000, roi: Math.random() * 200 + 100 },
-          { name: 'TV', spend: Math.floor(Math.random() * 300000) + 30000, roi: Math.random() * 250 + 120 },
-          { name: 'Radio', spend: Math.floor(Math.random() * 80000) + 8000, roi: Math.random() * 180 + 90 }
-        ],
+        channels: promotion.channels ?? [],
+        dailyPerformance: promotion.daily_performance ?? [],
         
-        // Time series data
-        dailyPerformance: Array.from({ length: 30 }, (_, i) => ({
-          day: i + 1,
-          spend: Math.floor(Math.random() * 20000) + 2000,
-          revenue: Math.floor(Math.random() * 60000) + 6000,
-          impressions: Math.floor(Math.random() * 50000) + 5000,
-          conversions: Math.floor(Math.random() * 200) + 20
-        })),
-        
-        // Status
-        status: ['Active', 'Completed', 'Paused'][Math.floor(Math.random() * 3)],
-        startDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1),
-        endDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+        status: promotion.status ?? 'Unknown',
+        startDate: promotion.start_date ? new Date(promotion.start_date) : null,
+        endDate: promotion.end_date ? new Date(promotion.end_date) : null
       }));
       
       setPromotions(promotionsWithMetrics);

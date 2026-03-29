@@ -188,17 +188,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
   });
 
   const generateFallbackForecast = () => {
-    const data = [];
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
-      const baseValue = 85000;
-      const variance = Math.random() * 15000 - 7500;
-      data.push({
-        date: date.toISOString().split('T')[0],
-        predicted_demand: Math.round(baseValue + variance)
-      });
-    }
-    return data;
+    return [];
   };
 
   const generateFallbackRecommendations = () => [
@@ -312,7 +302,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          {forecast?.data?.predictions ? (
+          {forecast?.data?.predictions?.length > 0 ? (
             <>
               <ResponsiveContainer width="100%" height={150}>
                 <LineChart data={forecast.data.predictions.slice(0, 30)}>
