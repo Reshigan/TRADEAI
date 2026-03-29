@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { toast } from 'react-toastify';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const CustomerTradingTerms = ({ customerId, customer }) => {
+  const toast = useToast();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 

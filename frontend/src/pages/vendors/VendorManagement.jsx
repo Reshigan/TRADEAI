@@ -31,8 +31,10 @@ import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 import { useCompanyType } from '../../contexts/CompanyTypeContext';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const VendorManagement = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { isDistributor } = useCompanyType();
   const [vendors, setVendors] = useState([]);
@@ -57,8 +59,7 @@ const VendorManagement = () => {
       const response = await apiClient.get('/vendors');
       setVendors(response.data || []);
     } catch (error) {
-      console.error('Error fetching vendors:', error);
-    } finally {
+      console.error('Error fetching vendors:', error); toast.error('Error fetching vendors'); } finally {
       setLoading(false);
     }
   };
@@ -89,8 +90,7 @@ const VendorManagement = () => {
       setDialogOpen(false);
       fetchVendors();
     } catch (error) {
-      console.error('Error saving vendor:', error);
-    }
+      console.error('Error saving vendor:', error); toast.error('Error saving vendor'); }
   };
 
   if (!isDistributor) {

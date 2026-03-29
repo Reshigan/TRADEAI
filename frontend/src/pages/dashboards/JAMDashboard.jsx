@@ -26,9 +26,11 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { simulationService } from '../../services/api';
 import analytics from '../../utils/analytics';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const JAMDashboard = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
@@ -58,8 +60,7 @@ const JAMDashboard = () => {
         }
       });
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    } finally {
+      console.error('Failed to load dashboard data:', error); toast.error('Failed to load dashboard data'); } finally {
       setLoading(false);
     }
   };
@@ -103,8 +104,7 @@ const JAMDashboard = () => {
       );
       loadDashboardData();
     } catch (error) {
-      console.error('Failed to approve promotion:', error);
-    }
+      console.error('Failed to approve promotion:', error); toast.error('Failed to approve promotion'); }
   };
 
   if (loading) {

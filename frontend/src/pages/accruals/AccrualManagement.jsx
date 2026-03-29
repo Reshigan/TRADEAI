@@ -4,14 +4,15 @@ import {
   Paper, Chip, TextField, MenuItem, IconButton,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Tooltip, Divider, Tabs, Tab
-} from '@mui/material';
+  CircularProgress, Tooltip, Divider, Tabs, Tab, Alert} from '@mui/material';
 import {
   Add, Refresh, Calculate, CheckCircle, Delete, Edit,
   AccountBalance, TrendingUp, Receipt, PostAdd,
   Undo, Gavel
 } from '@mui/icons-material';
 import { accrualService, customerService, productService, promotionService, baselineService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const STATUS_COLORS = {
   draft: 'default',
@@ -25,7 +26,10 @@ const STATUS_COLORS = {
 };
 
 const AccrualManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [accruals, setAccruals] = useState([]);
   const [summary, setSummary] = useState(null);
   const [total, setTotal] = useState(0);
@@ -61,6 +65,7 @@ const AccrualManagement = () => {
 
   const loadAccruals = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = {};
       if (statusFilter) params.status = statusFilter;
@@ -70,6 +75,7 @@ const AccrualManagement = () => {
       setTotal(response.total || 0);
     } catch (error) {
       console.error('Failed to load accruals:', error);
+      toast.error('Failed to load accruals'); setFetchError(error.message || 'Failed to load data');
       setAccruals([]);
     } finally {
       setLoading(false);
@@ -81,8 +87,7 @@ const AccrualManagement = () => {
       const response = await accrualService.getSummary();
       setSummary(response.data || null);
     } catch (error) {
-      console.error('Failed to load summary:', error);
-    }
+      console.error('Failed to load summary:', error); toast.error('Failed to load summary'); }
   }, []);
 
   const loadReferenceData = useCallback(async () => {
@@ -100,8 +105,7 @@ const AccrualManagement = () => {
       setBaselines(baseRes.data || []);
       setOptions(optRes.data || null);
     } catch (error) {
-      console.error('Failed to load reference data:', error);
-    }
+      console.error('Failed to load reference data:', error); toast.error('Failed to load reference data'); }
   }, []);
 
   useEffect(() => { loadAccruals(); }, [loadAccruals]);
@@ -129,8 +133,7 @@ const AccrualManagement = () => {
       await loadAccruals();
       await loadSummary();
     } catch (error) {
-      console.error('Failed to create accrual:', error);
-    } finally {
+      console.error('Failed to create accrual:', error); toast.error('Failed to create accrual'); } finally {
       setActionLoading(false);
     }
   };
@@ -144,20 +147,20 @@ const AccrualManagement = () => {
       resetForm();
       await loadAccruals();
     } catch (error) {
-      console.error('Failed to update accrual:', error);
-    } finally {
+      console.error('Failed to update accrual:', error); toast.error('Failed to update accrual'); } finally {
       setActionLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this accrual and all its periods/journals?')) return;
+    if (!await confirm('Delete this accrual and all its periods/journals?', { severity: 'error' })) return;
     try {
       await accrualService.delete(id);
       await loadAccruals();
       await loadSummary();
     } catch (error) {
       console.error('Failed to delete accrual:', error);
+      toast.error('Failed to delete accrual');
       alert(error?.response?.data?.message || 'Cannot delete this accrual');
     }
   };
@@ -175,14 +178,13 @@ const AccrualManagement = () => {
         }
       }
     } catch (error) {
-      console.error('Failed to calculate accrual:', error);
-    } finally {
+      console.error('Failed to calculate accrual:', error); toast.error('Failed to calculate accrual'); } finally {
       setActionLoading(false);
     }
   };
 
   const handlePost = async (id) => {
-    if (!window.confirm('Post this accrual to GL? This will create journal entries.')) return;
+    if (!await confirm('Post this accrual to GL? This will create journal entries.', { severity: 'warning' })) return;
     setActionLoading(true);
     try {
       const result = await accrualService.post(id);
@@ -196,6 +198,7 @@ const AccrualManagement = () => {
       }
     } catch (error) {
       console.error('Failed to post accrual:', error);
+      toast.error('Failed to post accrual');
       alert(error?.response?.data?.message || 'Failed to post');
     } finally {
       setActionLoading(false);
@@ -213,6 +216,7 @@ const AccrualManagement = () => {
       await loadSummary();
     } catch (error) {
       console.error('Failed to reverse accrual:', error);
+      toast.error('Failed to reverse accrual');
       alert(error?.response?.data?.message || 'Failed to reverse');
     } finally {
       setActionLoading(false);
@@ -220,13 +224,12 @@ const AccrualManagement = () => {
   };
 
   const handleApprove = async (id) => {
-    if (!window.confirm('Approve this accrual?')) return;
+    if (!await confirm('Approve this accrual?', { severity: 'warning' })) return;
     try {
       await accrualService.approve(id);
       await loadAccruals();
     } catch (error) {
-      console.error('Failed to approve accrual:', error);
-    }
+      console.error('Failed to approve accrual:', error); toast.error('Failed to approve accrual'); }
   };
 
   const handleViewDetail = async (accrual) => {
@@ -236,8 +239,7 @@ const AccrualManagement = () => {
       setDetailTab(0);
       setDetailOpen(true);
     } catch (error) {
-      console.error('Failed to load accrual detail:', error);
-    }
+      console.error('Failed to load accrual detail:', error); toast.error('Failed to load accrual detail'); }
   };
 
   const handleOpenEdit = (accrual) => {
@@ -744,6 +746,11 @@ const AccrualManagement = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadAccruals(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Accrual Management</Typography>
@@ -843,6 +850,7 @@ const AccrualManagement = () => {
       </Dialog>
 
       {renderDetailDialog()}
+    {ConfirmDialogComponent}
     </Box>
   );
 };

@@ -7,9 +7,11 @@ import {
   CircularProgress
 } from '@mui/material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const SalesAnalytics = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     revenueByPeriod: [],
@@ -36,8 +38,7 @@ const SalesAnalytics = () => {
         topProducts: productsRes.data.data || []
       });
     } catch (err) {
-      console.error('Failed to fetch analytics:', err);
-    } finally {
+      console.error('Failed to fetch analytics:', err); toast.error('Failed to fetch analytics'); } finally {
       setLoading(false);
     }
   };

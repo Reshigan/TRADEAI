@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip as ChartTooltip} from 'recharts';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = {
   highValue: '#4caf50',
@@ -41,6 +42,7 @@ const COLORS = {
 };
 
 const AICustomerSegmentationWidget = ({ companyId }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [segmentation, setSegmentation] = useState(null);
@@ -83,6 +85,7 @@ const AICustomerSegmentationWidget = ({ companyId }) => {
       setSegmentation(transformedData);
     } catch (err) {
       console.error('Segmentation error:', err);
+      toast.error('Segmentation error');
       setError(err.response?.data?.message || 'Failed to load segmentation');
     } finally {
       setLoading(false);

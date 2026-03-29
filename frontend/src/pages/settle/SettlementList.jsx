@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Alert} from '@mui/material';
 import { RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { settlementService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function SettlementList() {
+  const toast = useToast();
   const { t, tPlural } = useTerminology();
   const [settlements, setSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const load = async () => {
-    try { const res = await settlementService.getAll(); setSettlements(res.data || res || []); } catch (e) { console.error(e); }
+    try { const res = await settlementService.getAll(); setSettlements(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 
@@ -36,18 +39,23 @@ export default function SettlementList() {
   const rowActions = [
     {
       label: 'Approve', icon: <CheckCircle size={16} />,
-      onClick: async (row) => { try { await settlementService.approve(row.id); load(); } catch(e) { console.error(e); } },
+      onClick: async (row) => { try { await settlementService.approve(row.id); load(); } catch(e) { console.error(e); toast.error('An error occurred'); } },
       visible: (row) => row.status === 'pending' || row.status === 'pending_approval',
     },
     {
       label: 'Reject', icon: <XCircle size={16} />,
-      onClick: async (row) => { try { await settlementService.reject(row.id); load(); } catch(e) { console.error(e); } },
+      onClick: async (row) => { try { await settlementService.reject(row.id); load(); } catch(e) { console.error(e); toast.error('An error occurred'); } },
       visible: (row) => row.status === 'pending' || row.status === 'pending_approval',
     },
   ];
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={tPlural('settlement')}
         subtitle={`Generate and track ${t('settlement').toLowerCase()} documents`}

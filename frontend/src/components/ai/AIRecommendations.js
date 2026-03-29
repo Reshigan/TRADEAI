@@ -42,10 +42,12 @@ import {
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import api from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
 const AIRecommendations = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -136,6 +138,7 @@ const AIRecommendations = () => {
     } catch (error) {
       setError('Failed to get product recommendations');
       console.error('Error getting product recommendations:', error);
+      toast.error('Error getting product recommendations');
       setProductRecommendations([]);
     } finally {
       setLoading(false);
@@ -157,6 +160,7 @@ const AIRecommendations = () => {
     } catch (error) {
       setError('Failed to get personalized promotions');
       console.error('Error getting personalized promotions:', error);
+      toast.error('Error getting personalized promotions');
       setPersonalizedPromotions([]);
     } finally {
       setLoading(false);
@@ -177,6 +181,7 @@ const AIRecommendations = () => {
     } catch (error) {
       setError('Failed to segment customer');
       console.error('Error segmenting customer:', error);
+      toast.error('Error segmenting customer');
       setCustomerSegmentation(null);
     } finally {
       setLoading(false);

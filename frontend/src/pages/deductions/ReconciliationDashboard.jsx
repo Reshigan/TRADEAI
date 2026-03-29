@@ -29,8 +29,10 @@ import { customerService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ReconciliationDashboard = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [customers, setCustomers] = useState([]);
@@ -52,8 +54,7 @@ const ReconciliationDashboard = () => {
       const response = await customerService.getCustomers();
       setCustomers(response.data || []);
     } catch (err) {
-      console.error('Error loading customers:', err);
-    }
+      console.error('Error loading customers:', err); toast.error('Error loading customers'); }
   };
 
   const handleReconcile = async () => {
@@ -83,6 +84,7 @@ const ReconciliationDashboard = () => {
       });
     } catch (err) {
       console.error('Error reconciling:', err);
+      toast.error('Error reconciling');
       setError(err.message || 'Failed to reconcile deductions with claims');
     } finally {
       setLoading(false);

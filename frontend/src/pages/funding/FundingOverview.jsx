@@ -26,8 +26,10 @@ import {
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const FundingOverview = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [fundingSources, setFundingSources] = useState({
     budgets: [],
@@ -56,8 +58,7 @@ const FundingOverview = () => {
         terms: termsRes.status === 'fulfilled' ? (termsRes.value.data || []) : [],
       });
     } catch (error) {
-      console.error('Error fetching funding data:', error);
-    } finally {
+      console.error('Error fetching funding data:', error); toast.error('Error fetching funding data'); } finally {
       setLoading(false);
     }
   };

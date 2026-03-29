@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import {Box, Paper, Typography, Button, Grid, CircularProgress, Alert} from '@mui/material';
 import { CompareArrows, PlayArrow } from '@mui/icons-material';
 import enterpriseApi from '../../../services/enterpriseApi';
+import { useToast } from '../../common/ToastNotification';
 
 export default function WhatIfAnalyzer({ onSaveScenario, savedScenarios }) {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
 
@@ -25,6 +27,7 @@ export default function WhatIfAnalyzer({ onSaveScenario, savedScenarios }) {
       setResults(response.data);
     } catch (err) {
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }

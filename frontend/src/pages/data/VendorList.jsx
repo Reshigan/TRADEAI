@@ -3,10 +3,13 @@ import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, A
 import { Plus } from 'lucide-react';
 import api from '../../services/api';
 import { SmartTable, PageHeader, SmartField } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 export default function VendorList() {
+  const toast = useToast();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', code: '', contact_email: '', payment_terms: 'net_30', status: 'active' });
   const [saving, setSaving] = useState(false);
@@ -14,11 +17,12 @@ export default function VendorList() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await api.get('/vendors');
       const data = res.data?.data || res.data || [];
       setItems(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -40,6 +44,11 @@ export default function VendorList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Vendors"
         subtitle="Manage vendor/supplier master data"

@@ -10,8 +10,10 @@ import AIAnalysisStep from './customer/steps/AIAnalysisStep';
 import ReviewSubmitStep from './customer/steps/ReviewSubmitStep';
 import api from '../../services/api';
 import { stepValidators } from '../../utils/customerValidation';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CustomerFlow = () => {
+  const toast = useToast();
   const navigate = useNavigate();
 
   const flowSteps = [
@@ -84,6 +86,7 @@ const CustomerFlow = () => {
       return response.data.recommendations || [];
     } catch (error) {
       console.error('Failed to get AI recommendations:', error);
+      toast.error('Failed to get AI recommendations');
       return [];
     }
   };
@@ -96,6 +99,7 @@ const CustomerFlow = () => {
       }
     } catch (error) {
       console.error('Failed to create customer:', error);
+      toast.error('Failed to create customer');
       throw error;
     }
   };

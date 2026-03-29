@@ -8,9 +8,11 @@ import {
   LinearProgress
 } from '@mui/material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const PromotionDashboard = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState({
     activePromotions: 0,
@@ -34,8 +36,7 @@ const PromotionDashboard = () => {
         setMetrics(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch metrics:', err);
-    } finally {
+      console.error('Failed to fetch metrics:', err); toast.error('Failed to fetch metrics'); } finally {
       setLoading(false);
     }
   };

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from '@mui/material';
-import { toast } from 'react-toastify';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const BudgetAllocations = ({ budgetId }) => {
+  const toast = useToast();
   const [allocations, setAllocations] = useState([]);
   const [loading, setLoading] = useState(false);
 

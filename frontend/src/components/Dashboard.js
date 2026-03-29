@@ -37,10 +37,12 @@ import { WalkthroughTour } from './training';
 import { AIInsightsFeed } from './contextual-ai';
 import {analyticsService} from '../services/api';
 import {safeNumber, safeToFixed, formatPercentage} from '../utils/formatters';
+import { useToast } from './common/ToastNotification';
 
 const kpiColors = ['#1E40AF', '#1E40AF', '#10B981', '#F59E0B'];
 
 const Dashboard = ({ user }) => {
+  const toast = useToast();
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showWalkthroughSnackbar, setShowWalkthroughSnackbar] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -68,6 +70,7 @@ const Dashboard = ({ user }) => {
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        toast.error('Error fetching dashboard data');
         setError('Failed to load dashboard data. Please try again.');
       } finally {
         setLoading(false);

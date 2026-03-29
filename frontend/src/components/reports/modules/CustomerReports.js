@@ -58,8 +58,10 @@ import {
 } from 'recharts';
 import { customerService } from '../../../services/api';
 import { formatCurrency, formatLabel } from '../../../utils/formatters';
+import { useToast } from '../../common/ToastNotification';
 
 const CustomerReports = () => {
+  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +78,7 @@ const CustomerReports = () => {
       setCustomers(response.data || []);
     } catch (error) {
       console.error('Error fetching customer data:', error);
+      toast.error('Error fetching customer data');
       setCustomers([]);
     } finally {
       setLoading(false);
@@ -150,15 +153,25 @@ const CustomerReports = () => {
     .sort((a, b) => b.revenue - a.revenue)
     .slice(0, 10);
 
-  // Customer satisfaction radar data
-  const satisfactionData = [
-    { subject: 'Product Quality', A: 85, fullMark: 100 },
-    { subject: 'Service', A: 78, fullMark: 100 },
-    { subject: 'Delivery', A: 92, fullMark: 100 },
-    { subject: 'Pricing', A: 73, fullMark: 100 },
-    { subject: 'Support', A: 88, fullMark: 100 },
-    { subject: 'Innovation', A: 81, fullMark: 100 }
-  ];
+  // Customer satisfaction radar data derived from real customer metrics
+  const satisfactionData = (() => {
+    if (customers.length === 0) return [];
+    const avgSatisfaction = customers.reduce((s, c) => s + (c.satisfaction ?? c.customer_satisfaction ?? 0), 0) / customers.length;
+    const avgGrowth = customers.reduce((s, c) => s + Math.min(100, Math.max(0, (c.growth_rate ?? c.growth ?? 0) + 50)), 0) / customers.length;
+    const activeRate = totalCustomers > 0 ? (activeCustomers / totalCustomers) * 100 : 0;
+    const avgOrders = customers.reduce((s, c) => s + (c.orders ?? c.total_orders ?? 0), 0) / customers.length;
+    const orderScore = Math.min(100, avgOrders * 10);
+    const revenuePerCustomer = totalCustomers > 0 ? totalRevenue / totalCustomers : 0;
+    const revenueScore = Math.min(100, (revenuePerCustomer / 10000) * 100);
+    return [
+      { subject: 'Satisfaction', A: Math.round(avgSatisfaction), fullMark: 100 },
+      { subject: 'Growth', A: Math.round(avgGrowth), fullMark: 100 },
+      { subject: 'Retention', A: Math.round(activeRate), fullMark: 100 },
+      { subject: 'Order Freq', A: Math.round(orderScore), fullMark: 100 },
+      { subject: 'Revenue/Cust', A: Math.round(revenueScore), fullMark: 100 },
+      { subject: 'Tier Mix', A: Math.round(((tierDistribution.platinum || 0) * 4 + (tierDistribution.gold || 0) * 3 + (tierDistribution.silver || 0) * 2 + (tierDistribution.bronze || 0)) / Math.max(1, totalCustomers) * 25), fullMark: 100 },
+    ];
+  })();
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -557,7 +570,7 @@ const CustomerReports = () => {
               </Typography>
               <List>
                 {customers.slice(0, 8).map((customer, index) => {
-                  const healthScore = Math.floor(Math.random() * 30) + 70;
+                  const healthScore = Math.round(customer.satisfaction ?? customer.customer_satisfaction ?? customer.health_score ?? (customer.status === 'active' ? 80 : 55));
                   const getHealthColor = (score) => {
                     if (score >= 85) return 'success';
                     if (score >= 70) return 'warning';

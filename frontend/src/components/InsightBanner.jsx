@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Badge, Button, Collapse } from 'react-bootstrap';
 import { FaExclamationTriangle, FaInfoCircle, FaCheckCircle, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import apiClient from '../services/apiClient';
+import { useToast } from './common/ToastNotification';
 
 const InsightBanner = ({ module, entityId }) => {
+  const toast = useToast();
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedInsights, setExpandedInsights] = useState(new Set());
@@ -30,6 +32,7 @@ const InsightBanner = ({ module, entityId }) => {
       }
     } catch (error) {
       console.error('Error loading insights:', error);
+      toast.error('Error loading insights');
     } finally {
       setLoading(false);
     }
@@ -67,6 +70,7 @@ const InsightBanner = ({ module, entityId }) => {
       loadInsights();
     } catch (error) {
       console.error('Error acknowledging insight:', error);
+      toast.error('Error acknowledging insight');
     }
   };
 
@@ -78,6 +82,7 @@ const InsightBanner = ({ module, entityId }) => {
       loadInsights();
     } catch (error) {
       console.error('Error dismissing insight:', error);
+      toast.error('Error dismissing insight');
     }
   };
 

@@ -15,8 +15,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const AdminDashboardPage = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -48,8 +50,7 @@ const AdminDashboardPage = () => {
         pendingApprovals: 0
       });
     } catch (error) {
-      console.error('Error fetching admin stats:', error);
-    } finally {
+      console.error('Error fetching admin stats:', error); toast.error('Error fetching admin stats'); } finally {
       setLoading(false);
     }
   };

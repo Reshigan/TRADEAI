@@ -31,6 +31,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
+import { useToast } from '../../components/common/ToastNotification';
 
 ChartJS.register(
   CategoryScale,
@@ -46,6 +47,7 @@ ChartJS.register(
 
 
 const ExecutiveDashboard = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [dashboardData, setDashboardData] = useState(null);
@@ -64,8 +66,7 @@ const ExecutiveDashboard = () => {
         setDashboardData(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch dashboard:', err);
-    } finally {
+      console.error('Failed to fetch dashboard:', err); toast.error('Failed to fetch dashboard'); } finally {
       setLoading(false);
     }
   };
@@ -89,6 +90,7 @@ const ExecutiveDashboard = () => {
       link.parentNode.removeChild(link);
     } catch (err) {
       console.error('Export failed:', err);
+      toast.error('Export failed');
       alert('Export failed. Please try again.');
     } finally {
       setExporting(false);

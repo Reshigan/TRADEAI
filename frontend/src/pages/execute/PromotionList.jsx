@@ -1,36 +1,42 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Button, MenuItem, TextField } from '@mui/material';
+import { Box, Button, MenuItem, TextField, Alert} from '@mui/material';
 import { Plus, Eye, Trash2, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { promotionService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function PromotionList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = {};
       if (statusFilter !== 'all') params.status = statusFilter;
       const res = await promotionService.getAll(params);
       setPromos(res.data || res || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, [statusFilter]);
 
   useEffect(() => { load(); }, [load]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this promotion?')) return;
-    try { await promotionService.delete(id); load(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete this promotion?', { severity: 'error' })) return;
+    try { await promotionService.delete(id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const columns = [
@@ -51,6 +57,11 @@ export default function PromotionList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={tPlural('promotion')}
         subtitle={`Manage ${tPlural('promotion').toLowerCase()}`}
@@ -81,6 +92,7 @@ export default function PromotionList() {
           </Box>
         }
       />
+    {ConfirmDialogComponent}
     </Box>
   );
 }

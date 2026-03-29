@@ -44,6 +44,7 @@ import {
 } from '@mui/icons-material';
 import { companyAdminApi } from '../../services/enterpriseApi';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const TabPanel = ({ children, value, index, ...other }) => (
   <div role="tabpanel" hidden={value !== index} {...other}>
@@ -74,6 +75,7 @@ const ConnectionStatusChip = ({ status }) => {
 };
 
 const ERPSettingsPage = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -97,6 +99,7 @@ const ERPSettingsPage = () => {
     } catch (err) {
       setError('Failed to load ERP settings');
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }
@@ -107,8 +110,7 @@ const ERPSettingsPage = () => {
       const response = await companyAdminApi.getERPSyncHistory(20);
       setSyncHistory(response.data || []);
     } catch (err) {
-      console.error('Failed to load sync history:', err);
-    }
+      console.error('Failed to load sync history:', err); toast.error('Failed to load sync history'); }
   };
 
   const handleSave = async () => {
@@ -121,6 +123,7 @@ const ERPSettingsPage = () => {
     } catch (err) {
       setError('Failed to save ERP settings');
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setSaving(false);
     }
@@ -144,6 +147,7 @@ const ERPSettingsPage = () => {
     } catch (err) {
       setError('SAP connection test failed');
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setTesting(false);
     }
@@ -167,6 +171,7 @@ const ERPSettingsPage = () => {
     } catch (err) {
       setError('ERP connection test failed');
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setTesting(false);
     }
@@ -183,6 +188,7 @@ const ERPSettingsPage = () => {
     } catch (err) {
       setError(`Failed to sync ${dataType}`);
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setSyncing(false);
     }
@@ -199,6 +205,7 @@ const ERPSettingsPage = () => {
     } catch (err) {
       setError('Failed to sync sales data');
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setSyncing(false);
     }

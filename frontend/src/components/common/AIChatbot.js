@@ -22,9 +22,11 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { ollamaService } from '../../services/ollama/ollamaService';
+import { useToast } from './ToastNotification';
 
 const AIChatbot = ({ pageContext, contextData, open, onClose }) => {
   const theme = useTheme();
+  const toast = useToast();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -91,6 +93,7 @@ const AIChatbot = ({ pageContext, contextData, open, onClose }) => {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Chat error:', error);
+      toast.error('Chat error');
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again.',

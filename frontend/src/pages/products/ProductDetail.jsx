@@ -20,8 +20,10 @@ import { DetailPageSkeleton } from '../../components/common/SkeletonLoader';
 import { useToast } from '../../components/common/ToastNotification';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const ProductDetail = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
@@ -61,7 +63,7 @@ const ProductDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (await confirm('Are you sure you want to delete this product?', { severity: 'error' })) {
       try {
         await api.delete(`/products/${id}`);
         analytics.trackEvent('product_deleted', { productId: id });
@@ -216,6 +218,7 @@ const ProductDetail = () => {
           </Grid>
         </Grid>
       </Paper>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

@@ -24,8 +24,10 @@ import {
   Category as CategoryIcon,
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ProductHierarchy = () => {
+  const toast = useToast();
   const [tree, setTree] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,8 +48,7 @@ const ProductHierarchy = () => {
       const response = await apiClient.get('/products/hierarchy');
       setTree(response.data || []);
     } catch (error) {
-      console.error('Error fetching product hierarchy:', error);
-    } finally {
+      console.error('Error fetching product hierarchy:', error); toast.error('Error fetching product hierarchy'); } finally {
       setLoading(false);
     }
   };
@@ -86,8 +87,7 @@ const ProductHierarchy = () => {
       setDialogOpen(false);
       fetchHierarchy();
     } catch (error) {
-      console.error('Error saving product:', error);
-    }
+      console.error('Error saving product:', error); toast.error('Error saving product'); }
   };
 
   const renderTree = (nodes) => {

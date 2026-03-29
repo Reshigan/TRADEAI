@@ -2,24 +2,27 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, TextField, MenuItem, Grid, Paper, Chip,
-  CircularProgress, InputAdornment, alpha,
-} from '@mui/material';
+  CircularProgress, InputAdornment, alpha, Alert} from '@mui/material';
 import {
   Add as AddIcon, Search as SearchIcon, Campaign as CampaignIcon,
   PlayCircle as ActiveIcon, AttachMoney as BudgetIcon,
 } from '@mui/icons-material';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CampaignList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [filters, setFilters] = useState({ search: '', status: 'all' });
 
   useEffect(() => { fetchCampaigns(); }, [filters]);
 
   const fetchCampaigns = async () => {
+    setFetchError(null);
     try {
       const params = new URLSearchParams();
       if (filters.status !== 'all') params.append('status', filters.status);
@@ -27,8 +30,7 @@ const CampaignList = () => {
       const response = await api.get(`/campaigns?${params}`);
       if (response.data.success) setCampaigns(response.data.data);
     } catch (err) {
-      console.error('Failed to fetch campaigns:', err);
-    } finally {
+      console.error('Failed to fetch campaigns:', err); toast.error('Failed to fetch campaigns'); setFetchError(err.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };
@@ -53,6 +55,11 @@ const CampaignList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); fetchCampaigns(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700}>Campaigns</Typography>

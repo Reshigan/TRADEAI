@@ -30,6 +30,7 @@ const ActivityFormPage = () => {
       setActivity(response.data.data || response.data);
     } catch (error) {
       console.error('Error fetching activity:', error);
+      showToast('Error fetching activity', { severity: 'error' });
       showToast('Failed to load activity', 'error');
     } finally {
       setLoading(false);
@@ -48,6 +49,7 @@ const ActivityFormPage = () => {
       navigate('/activities');
     } catch (error) {
       console.error('Error saving activity:', error);
+      showToast('Error saving activity', { severity: 'error' });
       showToast(error.message || 'Failed to save activity', 'error');
     }
   };

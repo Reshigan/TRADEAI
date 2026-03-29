@@ -5,14 +5,17 @@ import { useNavigate } from 'react-router-dom';
 import { deductionService, customerService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader, SmartField } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function DeductionList() {
+  const toast = useToast();
   const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [deductions, setDeductions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [form, setForm] = useState({ deduction_type: 'trade_promotion', amount: '', customer_id: '', description: '', invoice_number: '' });
@@ -21,11 +24,12 @@ export default function DeductionList() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [res, cust] = await Promise.allSettled([deductionService.getAll(), customerService.getAll()]);
       if (res.status === 'fulfilled') setDeductions(res.value.data || res.value || []);
       if (cust.status === 'fulfilled') setCustomers(cust.value.data || cust.value || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -57,6 +61,11 @@ export default function DeductionList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={tPlural('deduction')}
         subtitle={`Track and resolve ${t('customer').toLowerCase()} ${tPlural('deduction').toLowerCase()}`}

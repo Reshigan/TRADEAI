@@ -46,6 +46,7 @@ import {
 } from '@mui/icons-material';
 
 import { PageHeader } from '../common';
+import { useToast } from '../common/ToastNotification';
 
 // Mock data for available fields
 const availableFields = {
@@ -120,6 +121,7 @@ const chartTypes = [
 ];
 
 const ReportBuilder = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   
   const [activeStep, setActiveStep] = useState(0);
@@ -304,6 +306,7 @@ const ReportBuilder = () => {
       }, 1500);
     } catch (err) {
       console.error('Failed to save report:', err);
+      toast.error('Failed to save report');
       setSaving(false);
       setSnackbar({
         open: true,

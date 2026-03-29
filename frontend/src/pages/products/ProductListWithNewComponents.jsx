@@ -5,6 +5,7 @@ import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/ico
 import PageLayout from '../../components/layout/PageLayout';
 import { TablePro, FilterBar } from '../../components/table';
 import { productService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 /**
  * Example implementation of Products List using new Phase 1-6 components
@@ -17,6 +18,7 @@ import { productService } from '../../services/api';
  * - Full-stack wiring with backend API
  */
 const ProductListWithNewComponents = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   
   const [products, setProducts] = useState([]);
@@ -161,6 +163,7 @@ const ProductListWithNewComponents = () => {
       setTotalCount(response.total || 0);
     } catch (err) {
       console.error('Error loading products:', err);
+      toast.error('Error loading products');
       setError(err);
     } finally {
       setLoading(false);
@@ -177,8 +180,7 @@ const ProductListWithNewComponents = () => {
       try {
         setSavedViews(JSON.parse(saved));
       } catch (err) {
-        console.error('Error loading saved views:', err);
-      }
+        console.error('Error loading saved views:', err); toast.error('Error loading saved views'); }
     }
   }, []);
 

@@ -35,8 +35,10 @@ import {
   CheckCircle
 } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
+import { useToast } from '../common/ToastNotification';
 
 export default function SuperAdminDashboard() {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [tenants, setTenants] = useState([]);
   const [statistics, setStatistics] = useState(null);
@@ -59,6 +61,7 @@ export default function SuperAdminDashboard() {
       setStatistics(response.data);
     } catch (error) {
       console.error('Failed to load statistics:', error);
+      toast.error('Failed to load statistics');
     }
   };
 
@@ -73,6 +76,7 @@ export default function SuperAdminDashboard() {
       setTotalTenants(response.data.pagination.total);
     } catch (error) {
       console.error('Failed to load tenants:', error);
+      toast.error('Failed to load tenants');
       showSnackbar('Failed to load tenants', 'error');
     } finally {
       setLoading(false);
@@ -102,6 +106,7 @@ export default function SuperAdminDashboard() {
       loadStatistics();
     } catch (error) {
       console.error('Failed to create tenant:', error);
+      toast.error('Failed to create tenant');
       showSnackbar('Failed to create tenant', 'error');
     }
   };
@@ -113,6 +118,7 @@ export default function SuperAdminDashboard() {
       loadTenants();
     } catch (error) {
       console.error('Failed to update status:', error);
+      toast.error('Failed to update status');
       showSnackbar('Failed to update status', 'error');
     }
   };
@@ -125,6 +131,7 @@ export default function SuperAdminDashboard() {
       loadTenants();
     } catch (error) {
       console.error('Failed to manage license:', error);
+      toast.error('Failed to manage license');
       showSnackbar('Failed to manage license', 'error');
     }
   };

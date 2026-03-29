@@ -39,6 +39,7 @@ import {
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#1E40AF', '#2e7d32', '#ed6c02', '#d32f2f', '#9c27b0'];
 
@@ -62,6 +63,7 @@ const defaultActivities = [
 ];
 
 export default function EnhancedDashboard({ user }) {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState({
@@ -116,6 +118,7 @@ export default function EnhancedDashboard({ user }) {
         }
       } catch (err) {
         console.error('Failed to load sales data:', err);
+        toast.error('Failed to load sales data');
       }
 
       // Fetch recent activities
@@ -131,10 +134,12 @@ export default function EnhancedDashboard({ user }) {
         }
       } catch (err) {
         console.error('Failed to load activities:', err);
+        toast.error('Failed to load activities');
       }
 
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }

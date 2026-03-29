@@ -5,14 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import { tradeSpendService, customerService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader, SmartField } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function TradeSpendList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [form, setForm] = useState({ notes: '', spendType: 'promotion', category: 'volume_discount', amountRequested: '', customer: '', startDate: new Date().toISOString().split('T')[0], endDate: '' });
@@ -21,6 +26,7 @@ export default function TradeSpendList() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [res, cust] = await Promise.allSettled([tradeSpendService.getAll(), customerService.getAll()]);
       if (res.status === 'fulfilled') {
@@ -31,7 +37,7 @@ export default function TradeSpendList() {
         const data = cust.value?.data || cust.value || [];
         setCustomers(Array.isArray(data) ? data : []);
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -47,8 +53,8 @@ export default function TradeSpendList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete?')) return;
-    try { await tradeSpendService.delete(id); load(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete?', { severity: 'error' })) return;
+    try { await tradeSpendService.delete(id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const columns = [
@@ -69,6 +75,11 @@ export default function TradeSpendList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={tPlural('trade_spend')}
         subtitle={`Track and manage ${tPlural('trade_spend').toLowerCase()}`}
@@ -124,6 +135,7 @@ export default function TradeSpendList() {
           <Button variant="contained" onClick={handleCreate} disabled={saving}>{saving ? 'Creating...' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

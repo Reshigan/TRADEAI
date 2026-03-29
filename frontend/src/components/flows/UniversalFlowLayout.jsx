@@ -17,6 +17,7 @@ import {
   WifiOff as WifiOffIcon
 } from '@mui/icons-material';
 import { checkAPIHealth } from '../../utils/apiHealth';
+import { useToast } from '../common/ToastNotification';
 
 /**
  * UniversalFlowLayout - Main wrapper for all flow-based interfaces
@@ -39,6 +40,7 @@ const UniversalFlowLayout = ({
   autoSave = true,
   autoSaveDelay = 2000
 }) => {
+  const toast = useToast();
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
   const [apiHealth, setApiHealth] = useState(null);
   const [isOnline, setIsOnline] = useState(true);
@@ -76,6 +78,7 @@ const UniversalFlowLayout = ({
           setLastSaved(new Date());
         } catch (error) {
           console.error('Auto-save failed:', error);
+          toast.error('Auto-save failed');
         } finally {
           setIsSaving(false);
         }

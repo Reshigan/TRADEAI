@@ -22,8 +22,10 @@ import {
 import { PageHeader } from '../common';
 import { tradingTermsService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const TradingTermDetail = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [tradingTerm, setTradingTerm] = useState(null);
@@ -40,6 +42,7 @@ const TradingTermDetail = () => {
       setTradingTerm(data);
     } catch (err) {
       console.error('Error fetching trading term:', err);
+      toast.error('Error fetching trading term');
       setError('Failed to load trading term details');
     } finally {
       setLoading(false);

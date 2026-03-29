@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, TextField, MenuItem, LinearProgress } from '@mui/material';
 import { TrendingUp, BarChart } from 'lucide-react';
 import { forecastingService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function Forecasting() {
+  const toast = useToast();
   const [forecast, setForecast] = useState(null);
   const [loading, setLoading] = useState(false);
   const [period, setPeriod] = useState('quarterly');
@@ -15,7 +17,7 @@ export default function Forecasting() {
     try {
       const res = await forecastingService.generateSalesForecast({ period });
       setForecast(res.data || res);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
     setLoading(false);
   };
 

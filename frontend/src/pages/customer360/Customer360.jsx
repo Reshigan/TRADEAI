@@ -12,6 +12,8 @@ import {
   Speed, ThumbUp, ArrowBack, BarChart
 } from '@mui/icons-material';
 import { customer360Service } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const tierColors = { platinum: '#1E40AF', gold: '#F59E0B', silver: '#6B7280', bronze: '#92400E' };
 const severityColors = { critical: '#EF4444', warning: '#F59E0B', info: '#3B82F6', success: '#10B981' };
@@ -38,11 +40,14 @@ const HealthBar = ({ score }) => {
 };
 
 const Customer360Dashboard = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [activeTab, setActiveTab] = useState(0);
   const [summary, setSummary] = useState(null);
   const [profiles, setProfiles] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('');
   const [segmentFilter, setSegmentFilter] = useState('');
@@ -62,11 +67,12 @@ const Customer360Dashboard = () => {
     try {
       const res = await customer360Service.getSummary();
       if (res.success) setSummary(res.data);
-    } catch (e) { console.error('Error loading summary:', e); }
+    } catch (e) { console.error('Error loading summary:', e); toast.error('Error loading summary'); setFetchError(e.message || 'Failed to load data'); }
   }, []);
 
   const loadProfiles = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = { limit: rowsPerPage, offset: page * rowsPerPage, sort_by: sortBy, sort_order: 'desc' };
       if (search) params.search = search;
@@ -74,7 +80,7 @@ const Customer360Dashboard = () => {
       if (segmentFilter) params.segment = segmentFilter;
       const res = await customer360Service.getProfiles(params);
       if (res.success) { setProfiles(res.data || []); setTotal(res.total || 0); }
-    } catch (e) { console.error('Error loading profiles:', e); }
+    } catch (e) { console.error('Error loading profiles:', e); toast.error('Error loading profiles'); }
     setLoading(false);
   }, [page, rowsPerPage, sortBy, search, tierFilter, segmentFilter]);
 
@@ -82,14 +88,14 @@ const Customer360Dashboard = () => {
     try {
       const res = await customer360Service.getAtRisk({ threshold: 0.5 });
       if (res.success) setAtRiskCustomers(res.data || []);
-    } catch (e) { console.error('Error loading at-risk:', e); }
+    } catch (e) { console.error('Error loading at-risk:', e); toast.error('Error loading at-risk'); }
   }, []);
 
   const loadLeaderboard = useCallback(async () => {
     try {
       const res = await customer360Service.getLeaderboard({ metric: 'total_revenue', limit: 10 });
       if (res.success) setLeaderboard(res.data || []);
-    } catch (e) { console.error('Error loading leaderboard:', e); }
+    } catch (e) { console.error('Error loading leaderboard:', e); toast.error('Error loading leaderboard'); }
   }, []);
 
   useEffect(() => { loadSummary(); loadAtRisk(); loadLeaderboard(); }, [loadSummary, loadAtRisk, loadLeaderboard]);
@@ -99,7 +105,7 @@ const Customer360Dashboard = () => {
     try {
       const res = await customer360Service.getInsights(profileId);
       if (res.success) setInsights(res.data || []);
-    } catch (e) { console.error('Error loading insights:', e); }
+    } catch (e) { console.error('Error loading insights:', e); toast.error('Error loading insights'); }
   };
 
   const handleViewProfile = async (profile) => {
@@ -130,16 +136,16 @@ const Customer360Dashboard = () => {
       setDialogOpen(false);
       loadProfiles();
       loadSummary();
-    } catch (e) { console.error('Error saving profile:', e); }
+    } catch (e) { console.error('Error saving profile:', e); toast.error('Error saving profile'); }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this customer 360 profile?')) return;
+    if (!await confirm('Delete this customer 360 profile?', { severity: 'error' })) return;
     try {
       await customer360Service.deleteProfile(id);
       loadProfiles();
       loadSummary();
-    } catch (e) { console.error('Error deleting profile:', e); }
+    } catch (e) { console.error('Error deleting profile:', e); toast.error('Error deleting profile'); }
   };
 
   const handleRecalculate = async (id) => {
@@ -150,7 +156,7 @@ const Customer360Dashboard = () => {
       }
       loadProfiles();
       loadSummary();
-    } catch (e) { console.error('Error recalculating:', e); }
+    } catch (e) { console.error('Error recalculating:', e); toast.error('Error recalculating'); }
   };
 
   if (detailView && selectedProfile) {
@@ -160,6 +166,11 @@ const Customer360Dashboard = () => {
 
     return (
       <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+        {fetchError && (
+          <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadSummary(); loadProfiles(); }}>Retry</Button>}>
+            {fetchError}
+          </Alert>
+        )}
         <Button startIcon={<ArrowBack />} onClick={() => { setDetailView(false); setSelectedProfile(null); }} sx={{ mb: 2 }}>
           Back to Dashboard
         </Button>
@@ -530,6 +541,7 @@ const Customer360Dashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

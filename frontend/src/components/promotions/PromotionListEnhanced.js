@@ -5,8 +5,10 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { promotionService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const PromotionListEnhanced = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const theme = useTheme();
   const [promotions, setPromotions] = useState([]);
@@ -23,6 +25,7 @@ const PromotionListEnhanced = () => {
       setPromotions(response.data || response || []);
     } catch (error) {
       console.error("Error fetching promotions:", error);
+      toast.error('Error fetching promotions');
     } finally {
       setLoading(false);
     }

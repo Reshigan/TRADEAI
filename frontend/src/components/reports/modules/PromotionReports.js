@@ -50,8 +50,10 @@ import {
 } from 'recharts';
 import { promotionService } from '../../../services/api';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../common/ToastNotification';
 
 const PromotionReports = () => {
+  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +100,7 @@ const PromotionReports = () => {
       setPromotions(promotionsWithMetrics);
     } catch (error) {
       console.error('Error fetching promotion data:', error);
+      toast.error('Error fetching promotion data');
       setError('Failed to load promotion data. Please try again.');
       setPromotions([]);
     } finally {

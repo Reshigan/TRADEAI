@@ -51,9 +51,11 @@ import {
 import {AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell} from 'recharts';
 import { format, subDays } from 'date-fns';
 import { securityService, userService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 
 const SecurityDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [, setError] = useState(null);
@@ -170,6 +172,7 @@ const SecurityDashboard = () => {
     } catch (err) {
       setError('Failed to fetch security data');
       console.error('Security data fetch error:', err);
+      toast.error('Security data fetch error');
     } finally {
       setLoading(false);
     }
@@ -199,6 +202,7 @@ const SecurityDashboard = () => {
       fetchSecurityData();
     } catch (error) {
       console.error('Error resolving event:', error);
+      toast.error('Error resolving event');
     }
   };
 

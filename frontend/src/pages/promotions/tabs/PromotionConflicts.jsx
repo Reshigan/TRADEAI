@@ -7,8 +7,10 @@ import {
   CheckCircle as CheckIcon
 } from '@mui/icons-material';
 import { promotionConflictService } from '../../../services/api';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const PromotionConflicts = ({ promotionId, promotion }) => {
+  const toast = useToast();
   const [conflicts, setConflicts] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,6 +33,7 @@ const PromotionConflicts = ({ promotionId, promotion }) => {
       setConflicts(res.data || null);
     } catch (err) {
       console.error('Error checking conflicts:', err);
+      toast.error('Error checking conflicts');
       setConflicts({ conflicts: [], summary: { total: 0 }, recommendation: 'clear', message: 'Unable to check conflicts' });
     } finally {
       setLoading(false);

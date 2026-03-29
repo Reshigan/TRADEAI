@@ -19,8 +19,9 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from './ToastNotification';
 
-const getAIResponse = async (message, context) => {
+const getAIResponse = async (message, context, toast) => {
   try {
     const response = await api.post('/ai/chat', {
       message,
@@ -31,11 +32,13 @@ const getAIResponse = async (message, context) => {
     return response.data?.response || "I'm here to help you with your trade spend analysis. What would you like to know?";
   } catch (error) {
     console.error('AI service error:', error);
+    if (toast) toast.error('AI service error');
     return "I'm currently experiencing technical difficulties. Please try again later or contact support for assistance.";
   }
 };
 
 const AIAssistant = ({ context = 'dashboard' }) => {
+  const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { 
@@ -73,7 +76,7 @@ const AIAssistant = ({ context = 'dashboard' }) => {
     
     // Get AI response
     try {
-      const response = await getAIResponse(newMessage, context);
+      const response = await getAIResponse(newMessage, context, toast);
       
       // Add AI response
       const aiMessage = {
@@ -86,6 +89,7 @@ const AIAssistant = ({ context = 'dashboard' }) => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error getting AI response:', error);
+      toast.error('Error getting AI response');
       
       // Add error message
       const errorMessage = {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, Chip, Snackbar, Alert } from '@mui/material';
 import { FileSpreadsheet, Download, Play, Clock } from 'lucide-react';
 import { reportService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const reportTemplates = [
   { id: 'promotion_summary', name: 'Promotion Summary', description: 'Overview of all promotions with status and spend', category: 'Promotions' },
@@ -15,6 +16,7 @@ const reportTemplates = [
 ];
 
 export default function Reports() {
+  const toast = useToast();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState('');
@@ -22,7 +24,7 @@ export default function Reports() {
 
   useEffect(() => {
     const load = async () => {
-      try { const res = await reportService.getAll(); setReports(res.data || res || []); } catch (e) { console.error(e); }
+      try { const res = await reportService.getAll(); setReports(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
     };
     load();
   }, []);
@@ -36,6 +38,7 @@ export default function Reports() {
       setFeedback({ open: true, message: 'Report generated successfully', severity: 'success' });
     } catch (e) {
       console.error(e);
+      toast.error('An error occurred');
       setFeedback({ open: true, message: 'Report generation failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
     }
     setGenerating('');

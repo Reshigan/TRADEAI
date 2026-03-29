@@ -4,8 +4,10 @@ import { FaChartLine, FaCheckCircle, FaExclamationTriangle } from 'react-icons/f
 import InsightBanner from './InsightBanner';
 import apiClient from '../services/apiClient';
 import { useUserSkillContext } from '../hooks/useUserSkillContext';
+import { useToast } from './common/ToastNotification';
 
 const ProcessShell = ({ module, entityId, entity, children }) => {
+  const toast = useToast();
   const [metrics, setMetrics] = useState({});
   const [processModel, setProcessModel] = useState(null);
   const [currentStage, setCurrentStage] = useState(null);
@@ -27,6 +29,7 @@ const ProcessShell = ({ module, entityId, entity, children }) => {
       }
     } catch (error) {
       console.error('Error loading metrics:', error);
+      toast.error('Error loading metrics');
     }
   };
 
@@ -52,6 +55,7 @@ const ProcessShell = ({ module, entityId, entity, children }) => {
       }
     } catch (error) {
       console.error('Error loading process model:', error);
+      toast.error('Error loading process model');
     } finally {
       setLoading(false);
     }

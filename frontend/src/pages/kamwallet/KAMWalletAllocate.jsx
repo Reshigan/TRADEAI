@@ -27,8 +27,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { kamWalletService } from '../../services/api';
 import { customerService } from '../../services/api';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import { useToast } from '../../components/common/ToastNotification';
 
 const KAMWalletAllocate = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const { formatCurrency } = useCurrency();
@@ -67,8 +69,7 @@ const KAMWalletAllocate = () => {
       const data = await customerService.getCustomers();
       setCustomers(data);
     } catch (err) {
-      console.error('Failed to load customers:', err);
-    }
+      console.error('Failed to load customers:', err); toast.error('Failed to load customers'); }
   };
 
   const handleAllocate = async () => {

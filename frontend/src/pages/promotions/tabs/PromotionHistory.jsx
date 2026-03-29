@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const PromotionHistory = ({ promotionId, promotion }) => {
+  const toast = useToast();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -16,8 +18,7 @@ const PromotionHistory = ({ promotionId, promotion }) => {
       const response = await apiClient.get(`/promotions/${promotionId}/history`);
       setHistory(response.data.data || []);
     } catch (error) {
-      console.error('Error loading history:', error);
-    } finally {
+      console.error('Error loading history:', error); toast.error('Error loading history'); } finally {
       setLoading(false);
     }
   };

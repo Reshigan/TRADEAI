@@ -27,6 +27,7 @@ import UniversalFlowLayout from '../../components/flows/UniversalFlowLayout';
 import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 /**
@@ -43,6 +44,7 @@ import { preFlightCheck } from '../../utils/apiHealth';
  */
 const ProductEntryFlow = () => {
   // Form state
+    const toast = useToast();
     const [formData, setFormData] = useState({
       name: '',
       sku: '',
@@ -262,8 +264,7 @@ const ProductEntryFlow = () => {
         formData
       );
     } catch (error) {
-      console.error('Auto-save failed:', error);
-    }
+      console.error('Auto-save failed:', error); toast.error('Auto-save failed'); }
   };
   
   // AI Panel

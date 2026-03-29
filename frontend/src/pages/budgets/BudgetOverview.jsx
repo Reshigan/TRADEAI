@@ -17,9 +17,11 @@ import {
 import api from '../../services/api';
 import BudgetAIInsights from '../../components/ai/budgets/BudgetAIInsights';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const BudgetOverview = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,8 +46,7 @@ const BudgetOverview = () => {
         setSummary({ total, allocated, spent, remaining: allocated - spent });
       }
     } catch (err) {
-      console.error('Failed to fetch budgets:', err);
-    } finally {
+      console.error('Failed to fetch budgets:', err); toast.error('Failed to fetch budgets'); } finally {
       setLoading(false);
     }
   };

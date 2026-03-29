@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Grid, Typography, Button, Paper, Chip, IconButton, TextField, MenuItem,
   CircularProgress, Tooltip, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, alpha,
-} from '@mui/material';
+  TableHead, TableRow, alpha, Alert} from '@mui/material';
 import {
   Add, Refresh, Edit, Delete, Visibility, AttachMoney, TrendingUp,
   CheckCircle, PieChart as PieChartIcon,
@@ -11,10 +10,15 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { tradeSpendService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const TradeSpendList = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [tradeSpends, setTradeSpends] = useState([]);
   const [summary, setSummary] = useState(null);
   const [filters, setFilters] = useState({ spendType: '', status: '', page: 1, limit: 20 });
@@ -25,20 +29,19 @@ const TradeSpendList = () => {
       const response = await tradeSpendService.getTradeSpends(filters);
       setTradeSpends(response.data || response.tradeSpends || []);
     } catch (error) {
-      console.error('Failed to load trade spends:', error);
-    } finally {
+      console.error('Failed to load trade spends:', error); toast.error('Failed to load trade spends'); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };
 
   const loadSummary = async () => {
+    setFetchError(null);
     try {
       const currentYear = new Date().getFullYear();
       const response = await tradeSpendService.getTradeSpendSummary(currentYear, 'year');
       setSummary(response.summary || null);
     } catch (error) {
-      console.error('Failed to load summary:', error);
-    }
+      console.error('Failed to load summary:', error); toast.error('Failed to load summary'); }
   };
 
   useEffect(() => { loadTradeSpends(); loadSummary(); }, [filters]);
@@ -47,8 +50,8 @@ const TradeSpendList = () => {
   const handleView = (id) => navigate(`/trade-spends/${id}`);
   const handleEdit = (id) => navigate(`/trade-spends/${id}/edit`);
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this trade spend?')) {
-      try { await tradeSpendService.deleteTradeSpend(id); loadTradeSpends(); } catch (error) { console.error('Failed to delete:', error); }
+    if (await confirm('Are you sure you want to delete this trade spend?', { severity: 'error' })) {
+      try { await tradeSpendService.deleteTradeSpend(id); loadTradeSpends(); } catch (error) { console.error('Failed to delete:', error); toast.error('Failed to delete'); }
     }
   };
 
@@ -68,6 +71,11 @@ const TradeSpendList = () => {
 
   return (
     <Box sx={{ maxWidth: 1600, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadTradeSpends(); loadSummary(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>Trade Spend</Typography>
@@ -180,6 +188,7 @@ const TradeSpendList = () => {
           </TableContainer>
         )}
       </Paper>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

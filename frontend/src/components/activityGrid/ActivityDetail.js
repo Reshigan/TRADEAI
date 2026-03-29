@@ -27,8 +27,12 @@ import { format } from 'date-fns';
 import { activityGridService } from '../../services/api';
 import ActivityForm from './ActivityForm';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -47,6 +51,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
       setActivity(response.data);
     } catch (error) {
       console.error('Error fetching activity:', error);
+      toast.error('Error fetching activity');
     } finally {
       setLoading(false);
     }
@@ -69,7 +74,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this activity?')) {
+    if (await confirm('Are you sure you want to delete this activity?', { severity: 'error' })) {
       try {
         await activityGridService.deleteActivity(activityId);
         if (onDelete) {
@@ -78,6 +83,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
         onClose();
       } catch (error) {
         console.error('Error deleting activity:', error);
+        toast.error('Error deleting activity');
       }
     }
   };
@@ -326,6 +332,7 @@ const ActivityDetail = ({ open, onClose, activityId, onUpdate, onDelete }) => {
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
+    {ConfirmDialogComponent}
     </Dialog>
   );
 };

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -12,8 +11,10 @@ import CampaignOverview from './tabs/CampaignOverview';
 import CampaignBudget from './tabs/CampaignBudget';
 import CampaignPerformance from './tabs/CampaignPerformance';
 import CampaignHistory from './tabs/CampaignHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CampaignDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState(null);

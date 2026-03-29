@@ -12,9 +12,11 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const PerformanceMetrics = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState({
     avgResponseTime: 0,
@@ -44,8 +46,7 @@ const PerformanceMetrics = () => {
         recentErrors: []
       });
     } catch (err) {
-      console.error('Failed to fetch metrics:', err);
-    } finally {
+      console.error('Failed to fetch metrics:', err); toast.error('Failed to fetch metrics'); } finally {
       setLoading(false);
     }
   };

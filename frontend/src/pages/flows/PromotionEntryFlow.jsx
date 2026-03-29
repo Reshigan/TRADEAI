@@ -26,6 +26,8 @@ import PromotionAIInsights from '../../components/ai/promotions/PromotionAIInsig
 import api from '../../services/api';
 import { preFlightCheck } from '../../utils/apiHealth';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 
 /**
@@ -41,6 +43,8 @@ import { formatLabel } from '../../utils/formatters';
  */
 const PromotionEntryFlow = () => {
   // Form state
+    const toast = useToast();
+    const { confirm, ConfirmDialogComponent } = useConfirmDialog();
     const [formData, setFormData] = useState({
       name: '',
       type: 'Discount',
@@ -137,6 +141,7 @@ const PromotionEntryFlow = () => {
         }
       } catch (error) {
         console.error('AI orchestrator error:', error);
+        toast.error('AI orchestrator error');
         const discount = parseFloat(formData.discount) || 10;
         const budget = parseFloat(formData.budget) || 10000;
         const baselineRevenue = budget * 2;
@@ -182,6 +187,7 @@ const PromotionEntryFlow = () => {
         setHistoricalData(response.data);
       } catch (error) {
         console.error('Failed to load historical data:', error);
+        toast.error('Failed to load historical data');
         setHistoricalData(null);
       }
     };
@@ -288,8 +294,7 @@ const PromotionEntryFlow = () => {
         formData
       );
     } catch (error) {
-      console.error('Auto-save failed:', error);
-    }
+      console.error('Auto-save failed:', error); toast.error('Auto-save failed'); }
   };
   
   // AI Insights Panel
@@ -676,6 +681,7 @@ const PromotionEntryFlow = () => {
           </Button>
         </Box>
       </Box>
+    {ConfirmDialogComponent}
     </UniversalFlowLayout>
   );
 };

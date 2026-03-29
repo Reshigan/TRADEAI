@@ -13,9 +13,11 @@ import {
 } from 'recharts';
 import { formatCurrency } from '../../../utils/formatters';
 import api from '../../../services/api';
+import { useToast } from '../../common/ToastNotification';
 
 const SalesPerformanceChart = ({ data: propData, height = 400 }) => {
   const theme = useTheme();
+  const toast = useToast();
   const [data, setData] = useState(propData || []);
   const [loading, setLoading] = useState(!propData || propData.length === 0);
   const [error, setError] = useState(null);
@@ -35,6 +37,7 @@ const SalesPerformanceChart = ({ data: propData, height = 400 }) => {
       }
     } catch (err) {
       console.error('Failed to load sales performance data:', err);
+      toast.error('Failed to load sales performance data');
       setError('Failed to load data');
     } finally {
       setLoading(false);

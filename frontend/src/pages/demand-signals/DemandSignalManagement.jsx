@@ -19,6 +19,8 @@ import {
   TrendingFlat as StableIcon,
 } from '@mui/icons-material';
 import { demandSignalService, customerService, productService, promotionService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -89,6 +91,8 @@ const EMPTY_SOURCE = {
 };
 
 const DemandSignalManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [signals, setSignals] = useState([]);
   const [sources, setSources] = useState([]);
@@ -143,8 +147,7 @@ const DemandSignalManagement = () => {
       const res = await demandSignalService.getSummary();
       setSummary(res.data || null);
     } catch (e) {
-      console.error('Summary fetch error:', e);
-    }
+      console.error('Summary fetch error:', e); toast.error('Summary fetch error'); }
   }, []);
 
   const fetchTrends = useCallback(async () => {
@@ -152,8 +155,7 @@ const DemandSignalManagement = () => {
       const res = await demandSignalService.getTrends({ granularity: 'monthly' });
       setTrends(res.data || []);
     } catch (e) {
-      console.error('Trends fetch error:', e);
-    }
+      console.error('Trends fetch error:', e); toast.error('Trends fetch error'); }
   }, []);
 
   const fetchAnomalies = useCallback(async () => {
@@ -161,8 +163,7 @@ const DemandSignalManagement = () => {
       const res = await demandSignalService.getAnomalies();
       setAnomalies(res.data || []);
     } catch (e) {
-      console.error('Anomalies fetch error:', e);
-    }
+      console.error('Anomalies fetch error:', e); toast.error('Anomalies fetch error'); }
   }, []);
 
   const fetchRefData = useCallback(async () => {
@@ -178,8 +179,7 @@ const DemandSignalManagement = () => {
       setProducts(prodRes.data || []);
       setPromotions(promoRes.data || []);
     } catch (e) {
-      console.error('Ref data fetch error:', e);
-    }
+      console.error('Ref data fetch error:', e); toast.error('Ref data fetch error'); }
   }, []);
 
   useEffect(() => {
@@ -264,7 +264,7 @@ const DemandSignalManagement = () => {
   };
 
   const handleDeleteSignal = async (id) => {
-    if (!window.confirm('Delete this demand signal?')) return;
+    if (!await confirm('Delete this demand signal?', { severity: 'error' })) return;
     try {
       await demandSignalService.delete(id);
       showSnack('Signal deleted');
@@ -323,7 +323,7 @@ const DemandSignalManagement = () => {
   };
 
   const handleDeleteSource = async (id) => {
-    if (!window.confirm('Delete this data source?')) return;
+    if (!await confirm('Delete this data source?', { severity: 'error' })) return;
     try {
       await demandSignalService.deleteSource(id);
       showSnack('Source deleted');
@@ -930,6 +930,7 @@ const DemandSignalManagement = () => {
           {snack.message}
         </Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

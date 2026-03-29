@@ -22,8 +22,10 @@ import {
 
 import { PageHeader } from '../common';
 import { tradingTermsService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const TradingTermForm = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = id && id !== 'new';
@@ -62,6 +64,7 @@ const TradingTermForm = () => {
           });
         } catch (err) {
           console.error('Error loading trading term:', err);
+          toast.error('Error loading trading term');
           setSnackbar({ open: true, message: 'Failed to load trading term', severity: 'error' });
         } finally {
           setLoading(false);
@@ -143,6 +146,7 @@ const TradingTermForm = () => {
       
     } catch (err) {
       console.error('Error saving trading term:', err);
+      toast.error('Error saving trading term');
       setSnackbar({
         open: true,
         message: err.message || 'An error occurred. Please try again.',

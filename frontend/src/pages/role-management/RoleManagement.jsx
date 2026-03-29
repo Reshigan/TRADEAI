@@ -11,6 +11,7 @@ import {
   Shield as PermIcon
 } from '@mui/icons-material';
 import { roleManagementService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -24,6 +25,7 @@ const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
 const emptyRole = { name: '', description: '', role_type: 'custom', level: 0, max_approval_amount: '', notes: '' };
 
 export default function RoleManagement() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState({});
   const [roles, setRoles] = useState([]);
@@ -31,6 +33,7 @@ export default function RoleManagement() {
   const [permGroups, setPermGroups] = useState([]);
   const [options, setOptions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(emptyRole);
@@ -38,6 +41,7 @@ export default function RoleManagement() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [sumRes, roleRes, assignRes, groupRes, optRes] = await Promise.all([
         roleManagementService.getSummary(),
@@ -75,7 +79,7 @@ export default function RoleManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this role?')) return;
+    if (!await confirm('Delete this role?', { severity: 'error' })) return;
     try {
       await roleManagementService.deleteRole(id);
       setSnack({ open: true, message: 'Role deleted', severity: 'success' });
@@ -85,6 +89,11 @@ export default function RoleManagement() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadData(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Role & Permission Management</Typography>
@@ -213,6 +222,7 @@ export default function RoleManagement() {
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { budgetService, customerService } from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader, SmartField, FormSection } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -58,10 +60,13 @@ const emptyForm = {
 };
 
 export default function BudgetList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [saving, setSaving] = useState(false);
@@ -73,7 +78,7 @@ export default function BudgetList() {
     try {
       const res = await budgetService.getAll();
       setBudgets(res.data || res || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -84,7 +89,7 @@ export default function BudgetList() {
       customerService.getAll().then(res => {
         const data = res.data || res || [];
         setCustomers(Array.isArray(data) ? data : []);
-      }).catch(() => {});
+      }).catch((e) => { console.error('Failed to load customers:', e); toast.error('Failed to load customers'); });
     }
   }, [showCreate]);
 
@@ -100,8 +105,8 @@ export default function BudgetList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this budget?')) return;
-    try { await budgetService.delete(id); load(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete this budget?', { severity: 'error' })) return;
+    try { await budgetService.delete(id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const steps = ['Budget Details', 'Scope & Targeting', 'Review'];
@@ -127,6 +132,11 @@ export default function BudgetList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={`${t('budget')} Management`}
         subtitle={`Plan, allocate, and track trade ${t('promotion').toLowerCase()} ${tPlural('budget').toLowerCase()}`}
@@ -265,6 +275,7 @@ export default function BudgetList() {
           )}
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

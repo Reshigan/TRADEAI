@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Skeleton } from '@mui/material';
 import ActivityDetail from '../../components/activityGrid/ActivityDetail';
 import apiClient from '../../services/apiClient';
+import { useToast } from '../../components/common/ToastNotification';
 
 /**
  * Page wrapper for ActivityDetail component with ProcessShell integration
  * ActivityDetail was originally designed as a modal, this wrapper makes it work as a full page
  */
 const ActivityDetailPage = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
@@ -24,8 +26,7 @@ const ActivityDetailPage = () => {
       const response = await apiClient.get(`/activities/${id}`);
       setActivity(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading activity:', error);
-    } finally {
+      console.error('Error loading activity:', error); toast.error('Error loading activity'); } finally {
       setLoading(false);
     }
   };

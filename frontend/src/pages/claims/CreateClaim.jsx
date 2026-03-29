@@ -10,10 +10,13 @@ import { customerService } from '../../services/api';
 import { productService } from '../../services/api';
 import analytics from '../../utils/analytics';
 import { SmartField, FormSection, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CreateClaim = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [error, setError] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
@@ -25,13 +28,14 @@ const CreateClaim = () => {
   useEffect(() => { loadCustomers(); loadProducts(); }, []);
 
   const loadCustomers = async () => {
+    setFetchError(null);
     try { const response = await customerService.getCustomers(); setCustomers(response.data || []); }
-    catch (err) { console.error('Error loading customers:', err); }
+    catch (err) { console.error('Error loading customers:', err); toast.error('Error loading customers'); }
   };
 
   const loadProducts = async () => {
     try { const response = await productService.getProducts(); setProducts(response.data || []); }
-    catch (err) { console.error('Error loading products:', err); }
+    catch (err) { console.error('Error loading products:', err); toast.error('Error loading products'); }
   };
 
   const handleChange = (field, value) => { setFormData(prev => ({ ...prev, [field]: value })); };
@@ -69,6 +73,7 @@ const CreateClaim = () => {
       navigate('/claims');
     } catch (err) {
       console.error('Error creating claim:', err);
+      toast.error('Error creating claim'); setFetchError(err.message || 'Failed to load data');
       setError(err.message || 'Failed to create claim');
     } finally { setLoading(false); }
   };
@@ -79,6 +84,11 @@ const CreateClaim = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadCustomers(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Create Claim"
         subtitle="Submit a new claim for processing"

@@ -12,8 +12,10 @@ import {
 import { AIEnhancedPage, PageHeader, AIChatbotFAB } from '../common';
 import { customerService, budgetService, promotionService, tradeSpendService } from '../../services/api';
 import { ollamaService } from '../../services/ollama/ollamaService';
+import { useToast } from '../common/ToastNotification';
 
 const CustomerDetailEnhanced = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
@@ -50,6 +52,7 @@ const CustomerDetailEnhanced = () => {
       generateInsights(customerData, relatedData);
     } catch (error) {
       console.error('Error fetching customer:', error);
+      toast.error('Error fetching customer');
     } finally {
       setLoading(false);
     }

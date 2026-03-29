@@ -18,9 +18,11 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const SecurityMonitoring = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [securityEvents, setSecurityEvents] = useState([]);
   const [stats, setStats] = useState({ totalEvents: 0, criticalEvents: 0, blockedIPs: 0, activeUsers: 0 });
@@ -39,8 +41,7 @@ const SecurityMonitoring = () => {
       setSecurityEvents(eventsRes.data.data || []);
       setStats(statsRes.data.data || { totalEvents: 0, criticalEvents: 0, blockedIPs: 0, activeUsers: 0 });
     } catch (err) {
-      console.error('Failed to fetch security data:', err);
-    } finally {
+      console.error('Failed to fetch security data:', err); toast.error('Failed to fetch security data'); } finally {
       setLoading(false);
     }
   };

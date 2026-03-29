@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -13,8 +12,10 @@ import ProductPromotions from './tabs/ProductPromotions';
 import ProductCampaigns from './tabs/ProductCampaigns';
 import ProductTradingTerms from './tabs/ProductTradingTerms';
 import ProductSalesHistory from './tabs/ProductSalesHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ProductDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);

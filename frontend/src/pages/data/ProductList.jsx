@@ -3,10 +3,15 @@ import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Grid, A
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { productService } from '../../services/api';
 import { SmartTable, PageHeader, SmartField } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 export default function ProductList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: '', sku: '', category: '', brand: '', unit_price: '', status: 'active' });
   const [saving, setSaving] = useState(false);
@@ -15,11 +20,12 @@ export default function ProductList() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await productService.getAll();
       const data = res?.data || res || [];
       setItems(Array.isArray(data) ? data : []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -37,8 +43,8 @@ export default function ProductList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete?')) return;
-    try { await productService.delete(id); load(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete?', { severity: 'error' })) return;
+    try { await productService.delete(id); load(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const columns = [
@@ -57,6 +63,11 @@ export default function ProductList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Products"
         subtitle="Manage product master data"
@@ -96,6 +107,7 @@ export default function ProductList() {
           <Button variant="contained" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : editId ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

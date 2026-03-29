@@ -5,8 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 export default function CampaignList() {
+  const toast = useToast();
   const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [campaigns, setCampaigns] = useState([]);
@@ -14,7 +16,7 @@ export default function CampaignList() {
 
   useEffect(() => {
     const load = async () => {
-      try { const res = await api.get('/campaigns'); setCampaigns(res.data?.data || res.data || []); } catch (e) { console.error(e); }
+      try { const res = await api.get('/campaigns'); setCampaigns(res.data?.data || res.data || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();

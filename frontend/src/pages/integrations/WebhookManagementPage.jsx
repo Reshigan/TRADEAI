@@ -12,6 +12,7 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const availableEvents = [
   { event: 'promotion.created', description: 'When a new promotion is created', category: 'Promotions' },
@@ -43,6 +44,7 @@ const availableEvents = [
 const eventCategories = [...new Set(availableEvents.map(e => e.category))];
 
 export default function WebhookManagementPage() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [loading, setLoading] = useState(true);
   const [webhooks, setWebhooks] = useState([]);
   const [error, setError] = useState(null);
@@ -148,7 +150,7 @@ export default function WebhookManagementPage() {
   };
 
   const handleDelete = async (webhookId) => {
-    if (!window.confirm('Are you sure you want to delete this webhook?')) return;
+    if (!await confirm('Are you sure you want to delete this webhook?', { severity: 'error' })) return;
     try {
       await api.delete(`/webhooks/${webhookId}`);
       setSuccess('Webhook deleted successfully');
@@ -606,6 +608,7 @@ export default function WebhookManagementPage() {
           <Button onClick={() => setDeliveriesDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

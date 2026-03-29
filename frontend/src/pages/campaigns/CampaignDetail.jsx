@@ -19,8 +19,10 @@ import {
 import api, { campaignService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 import { useTerminology } from '../../contexts/TerminologyContext';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const CampaignDetail = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id } = useParams();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState(null);
@@ -292,6 +294,7 @@ const CampaignDetail = () => {
           </Grid>
         </Grid>
       </Paper>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

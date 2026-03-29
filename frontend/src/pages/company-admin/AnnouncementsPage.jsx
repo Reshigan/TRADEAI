@@ -8,6 +8,7 @@ import {
 import { Add, Edit, Delete, Campaign, Publish, PushPin, Visibility } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const announcementTypes = [
   { value: 'info', label: 'Information', color: 'info' },
@@ -65,6 +66,7 @@ const initialFormData = {
 };
 
 export default function AnnouncementsPage() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -153,7 +155,7 @@ export default function AnnouncementsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this announcement?')) return;
+    if (!await confirm('Are you sure you want to delete this announcement?', { severity: 'error' })) return;
     try {
       await enterpriseApi.companyAdmin.deleteAnnouncement(id);
       loadAnnouncements();
@@ -411,6 +413,7 @@ export default function AnnouncementsPage() {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

@@ -48,8 +48,10 @@ import {
 
 import { mlService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const CustomerIntelligencePanel = ({ customerId, customerData }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [intelligence, setIntelligence] = useState(null);
   const [forecast, setForecast] = useState(null);
@@ -89,6 +91,7 @@ const CustomerIntelligencePanel = ({ customerId, customerData }) => {
 
     } catch (err) {
       console.error('Intelligence loading error:', err);
+      toast.error('Intelligence loading error');
       setError('Unable to load AI insights');
       // Generate fallback data
       setIntelligence(generateFallbackIntelligence());

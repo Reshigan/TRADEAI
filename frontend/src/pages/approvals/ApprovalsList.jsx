@@ -16,8 +16,10 @@ import { smartApprovalsService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ApprovalsList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [approvals, setApprovals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,8 +53,7 @@ const ApprovalsList = () => {
         setRiskScores(scores);
       }
     } catch (err) {
-      console.error('Error loading smart evaluations:', err);
-    } finally {
+      console.error('Error loading smart evaluations:', err); toast.error('Error loading smart evaluations'); } finally {
       setSmartLoading(false);
     }
   };
@@ -67,6 +68,7 @@ const ApprovalsList = () => {
       setApprovals(response.data || []);
     } catch (err) {
       console.error('Error loading approvals:', err);
+      toast.error('Error loading approvals');
       setError(err.message || 'Failed to load approvals');
     } finally {
       setLoading(false);
@@ -84,6 +86,7 @@ const ApprovalsList = () => {
       loadApprovals();
     } catch (err) {
       console.error('Error approving:', err);
+      toast.error('Error approving');
       setError(err.message || 'Failed to approve');
     } finally {
       setActionLoading(false);
@@ -101,6 +104,7 @@ const ApprovalsList = () => {
       loadApprovals();
     } catch (err) {
       console.error('Error rejecting:', err);
+      toast.error('Error rejecting');
       setError(err.message || 'Failed to reject');
     } finally {
       setActionLoading(false);

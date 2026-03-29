@@ -67,6 +67,7 @@ const TradeSpendDetail = () => {
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch data:', error);
+      toast.error('Failed to fetch data');
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -79,6 +80,7 @@ const TradeSpendDetail = () => {
       setBudgets(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch budgets:', err);
+      toast.error('Failed to fetch budgets');
     }
   };
 
@@ -108,6 +110,7 @@ const TradeSpendDetail = () => {
       navigate('/trade-spends');
     } catch (err) {
       console.error('Failed to delete trade spend:', err);
+      toast.error('Failed to delete trade spend');
       const errorMsg = err.message || 'Failed to delete trade spend';
       toast.error(errorMsg);
       setDeleteLoading(false);
@@ -122,6 +125,7 @@ const TradeSpendDetail = () => {
       setOpenEditForm(false);
     } catch (error) {
       console.error('Error updating trade spend:', error);
+      toast.error('Error updating trade spend');
       setError(error.message || "An error occurred");
     }
   };

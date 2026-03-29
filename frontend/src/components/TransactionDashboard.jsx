@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../services/apiClient';
 import { formatLabel } from '../utils/formatters';
+import { useToast } from './common/ToastNotification';
 import './TransactionDashboard.css';
 
 const TransactionDashboard = () => {
+  const toast = useToast();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -27,6 +29,7 @@ const TransactionDashboard = () => {
       setTransactions(response.data.data);
     } catch (error) {
       console.error('Error fetching transactions:', error);
+      toast.error('Error fetching transactions');
     } finally {
       setLoading(false);
     }
@@ -41,6 +44,7 @@ const TransactionDashboard = () => {
       setFormData({ type: 'accrual', amount: '', customerId: '', productId: '', description: '' });
     } catch (error) {
       console.error('Error creating transaction:', error);
+      toast.error('Error creating transaction');
       alert('Error creating transaction');
     }
   };
@@ -51,6 +55,7 @@ const TransactionDashboard = () => {
       fetchTransactions();
     } catch (error) {
       console.error('Error approving transaction:', error);
+      toast.error('Error approving transaction');
       alert('Error approving transaction');
     }
   };
@@ -64,6 +69,7 @@ const TransactionDashboard = () => {
       fetchTransactions();
     } catch (error) {
       console.error('Error rejecting transaction:', error);
+      toast.error('Error rejecting transaction');
       alert('Error rejecting transaction');
     }
   };
@@ -77,6 +83,7 @@ const TransactionDashboard = () => {
       fetchTransactions();
     } catch (error) {
       console.error('Error settling transaction:', error);
+      toast.error('Error settling transaction');
       alert('Error settling transaction');
     }
   };

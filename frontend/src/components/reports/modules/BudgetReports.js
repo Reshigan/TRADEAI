@@ -49,8 +49,10 @@ import {
 } from 'recharts';
 import budgetService from '../../../services/api';
 import { formatCurrency } from '../../../utils/formatters';
+import { useToast } from '../../common/ToastNotification';
 
 const BudgetReports = () => {
+  const toast = useToast();
   const [selectedTab, setSelectedTab] = useState(0);
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +69,7 @@ const BudgetReports = () => {
       setBudgets(response.data || []);
     } catch (error) {
       console.error('Error fetching budget data:', error);
+      toast.error('Error fetching budget data');
       setBudgets([]);
     } finally {
       setLoading(false);

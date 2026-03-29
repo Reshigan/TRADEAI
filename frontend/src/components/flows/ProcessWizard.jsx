@@ -21,6 +21,7 @@ import {
   Lightbulb
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 /**
  * ProcessWizard - Master component for guided workflow processes
@@ -45,6 +46,7 @@ const ProcessWizard = ({
   onStepChange,
   onCancel
 }) => {
+  const toast = useToast();
   const [activeStep, setActiveStep] = useState(0);
   const [stepData, setStepData] = useState({});
   const [aiRecommendations, setAiRecommendations] = useState({});
@@ -75,6 +77,7 @@ const ProcessWizard = ({
       }
     } catch (error) {
       console.error('Failed to load saved progress:', error);
+      toast.error('Failed to load saved progress');
     }
   };
 
@@ -90,6 +93,7 @@ const ProcessWizard = ({
       }));
     } catch (error) {
       console.error('Failed to save progress:', error);
+      toast.error('Failed to save progress');
     }
   };
 
@@ -113,6 +117,7 @@ const ProcessWizard = ({
       }
     } catch (error) {
       console.error('Failed to fetch AI recommendations:', error);
+      toast.error('Failed to fetch AI recommendations');
     } finally {
       setIsLoading(false);
     }
@@ -160,6 +165,7 @@ const ProcessWizard = ({
       localStorage.removeItem(`wizard_${processType}`);
     } catch (error) {
       console.error('Failed to complete process:', error);
+      toast.error('Failed to complete process');
     } finally {
       setIsSaving(false);
     }

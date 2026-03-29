@@ -35,6 +35,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 import HierarchySelector from '../hierarchy/HierarchySelector';
+import { useToast } from '../common/ToastNotification';
 
 
 const getCurrencySymbol = () => {
@@ -64,6 +65,7 @@ const steps = [
 ];
 
 const BudgetPlanningWizard = () => {
+  const toast = useToast();
   const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -104,6 +106,7 @@ const BudgetPlanningWizard = () => {
       }
     } catch (error) {
       console.error('Error fetching historical data:', error);
+      toast.error('Error fetching historical data');
     } finally {
       setLoading(false);
     }
@@ -254,6 +257,7 @@ const BudgetPlanningWizard = () => {
       
     } catch (error) {
       console.error('Error creating budget:', error);
+      toast.error('Error creating budget');
       alert('Error creating budget: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);

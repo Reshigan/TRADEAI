@@ -4,10 +4,12 @@ import { ArrowLeft, ArrowRight, Save, Send } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { promotionService, budgetService, customerService, productService, aiCopilotService } from '../../services/api';
 import { SmartField, FormSection, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const steps = ['Basic Info', 'Financials', 'Products & Customers', 'Review'];
 
 export default function PromotionWizard() {
+  const toast = useToast();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id) && id !== 'new';
@@ -39,7 +41,7 @@ export default function PromotionWizard() {
           const d = res.data || res;
           setForm(prev => ({ ...prev, ...d, planned_spend: d.planned_spend || d.budget || '', name: d.name || d.promotion_name || '' }));
         }
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(e); toast.error('An error occurred'); }
     };
     load();
   }, [id, isEdit]);
@@ -52,7 +54,7 @@ export default function PromotionWizard() {
         promotion_type: form.promotion_type, mechanic: form.mechanic,
         planned_spend: Number(form.planned_spend) || 0, customer_id: form.customer_id,
       }).then(res => { if (res?.recommendation || res?.insight) setAiTips(res.recommendation || res.insight); })
-        .catch(() => {});
+        .catch((e) => { console.error('AI tips error:', e); toast.error('Failed to load AI recommendations'); });
     }
   }, [step, form.name, form.planned_spend, form.promotion_type, form.mechanic, form.customer_id]);
 

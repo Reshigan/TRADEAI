@@ -21,6 +21,8 @@ import {
   Tune as TuneIcon,
 } from '@mui/icons-material';
 import { promotionOptimizerService, customerService, productService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -79,6 +81,8 @@ const EMPTY_OPT = {
 };
 
 const PromotionOptimizerManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [optimizations, setOptimizations] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -120,8 +124,7 @@ const PromotionOptimizerManagement = () => {
       const res = await promotionOptimizerService.getSummary();
       setSummary(res.data || null);
     } catch (e) {
-      console.error('Summary fetch error:', e);
-    }
+      console.error('Summary fetch error:', e); toast.error('Summary fetch error'); }
   }, []);
 
   const fetchRefData = useCallback(async () => {
@@ -135,8 +138,7 @@ const PromotionOptimizerManagement = () => {
       setCustomers(custRes.data || []);
       setProducts(prodRes.data || []);
     } catch (e) {
-      console.error('Ref data fetch error:', e);
-    }
+      console.error('Ref data fetch error:', e); toast.error('Ref data fetch error'); }
   }, []);
 
   useEffect(() => {
@@ -198,7 +200,7 @@ const PromotionOptimizerManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this optimization and all its recommendations/constraints?')) return;
+    if (!await confirm('Delete this optimization and all its recommendations/constraints?', { severity: 'error' })) return;
     try {
       await promotionOptimizerService.delete(id);
       showSnack('Optimization deleted');
@@ -746,6 +748,7 @@ const PromotionOptimizerManagement = () => {
           {snack.message}
         </Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

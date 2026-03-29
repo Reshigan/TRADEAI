@@ -38,8 +38,10 @@ import { customerService, budgetService, promotionService, tradeSpendService } f
 import { CustomerIntelligencePanel } from '../contextual-ai';
 import CustomerForm from './CustomerForm';
 import { formatCurrency, formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const CustomerDetail = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
@@ -72,6 +74,7 @@ const CustomerDetail = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error:", error);
+      toast.error('Error');
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -84,6 +87,7 @@ const CustomerDetail = () => {
       setBudgets(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch budgets:', err);
+      toast.error('Failed to fetch budgets');
       setBudgets([]);
     }
   };
@@ -95,6 +99,7 @@ const CustomerDetail = () => {
       setPromotions(response.data || response || []);
     } catch (err) {
       console.error('Failed to fetch promotions:', err);
+      toast.error('Failed to fetch promotions');
       setPromotions([]);
     }
   };
@@ -106,6 +111,7 @@ const CustomerDetail = () => {
       setTradeSpends(response.data || response || []);
     } catch (error) {
       console.error('Failed to fetch trade spends:', error);
+      toast.error('Failed to fetch trade spends');
       setTradeSpends([]);
     }
   };
@@ -135,6 +141,7 @@ const CustomerDetail = () => {
       navigate('/customers');
     } catch (error) {
       console.error('Failed to delete customer:', error);
+      toast.error('Failed to delete customer');
       setDeleteLoading(false);
       setError(error.message || "An error occurred");
     }
@@ -148,6 +155,7 @@ const CustomerDetail = () => {
       setOpenEditForm(false);
     } catch (error) {
       console.error('Error updating customer:', error);
+      toast.error('Error updating customer');
       setError(error.message || "An error occurred");
     }
   };

@@ -14,7 +14,6 @@ import {
 import {
   ArrowBack as BackIcon
 } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -30,6 +29,8 @@ import PromotionDocuments from './tabs/PromotionDocuments';
 import PromotionConflicts from './tabs/PromotionConflicts';
 import PromotionPerformance from './tabs/PromotionPerformance';
 import PromotionHistory from './tabs/PromotionHistory';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 if (typeof window !== 'undefined') {
   window.__TABS_V2_IMPORTED__ = true;
@@ -37,6 +38,8 @@ if (typeof window !== 'undefined') {
 }
 
 const PromotionDetailWithTabs = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [promotion, setPromotion] = useState(null);
@@ -91,7 +94,7 @@ const PromotionDetailWithTabs = () => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this promotion?')) {
+    if (!await confirm('Are you sure you want to delete this promotion?', { severity: 'error' })) {
       return;
     }
     try {
@@ -235,6 +238,7 @@ const PromotionDetailWithTabs = () => {
           {activeTab === 'stores' && <PromotionCustomers promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
           {activeTab === 'pos-proof' && <PromotionDocuments promotionId={id} promotion={promotion} onUpdate={loadPromotion} />}
         </Box>
+      {ConfirmDialogComponent}
       </Container>
   );
 };

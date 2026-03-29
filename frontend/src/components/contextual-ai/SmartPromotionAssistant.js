@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../common/ToastNotification';
 import {
   Box,
   Card,
@@ -37,6 +38,7 @@ const SmartPromotionAssistant = ({
   mode = 'create',
   onApplySuggestion 
 }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [comparison, setComparison] = useState(null);
   const [insights, setInsights] = useState([]);
@@ -111,6 +113,7 @@ const SmartPromotionAssistant = ({
 
     } catch (err) {
       console.error('Comparison error:', err);
+      toast.error('Comparison error');
       setError('Using estimated values');
       setComparison(generateFallback(formData));
     } finally {

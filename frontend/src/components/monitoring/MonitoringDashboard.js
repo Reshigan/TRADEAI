@@ -57,8 +57,10 @@ import {
 } from '@mui/icons-material';
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area} from 'recharts';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const MonitoringDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [metrics, setMetrics] = useState({});
   const [logs, setLogs] = useState([]);
@@ -108,6 +110,7 @@ const MonitoringDashboard = () => {
       setDashboards(dashboardsRes.data);
     } catch (error) {
       console.error('Error loading monitoring data:', error);
+      toast.error('Error loading monitoring data');
     } finally {
       setLoading(false);
     }
@@ -119,6 +122,7 @@ const MonitoringDashboard = () => {
       loadMonitoringData(); // Refresh data
     } catch (error) {
       console.error('Error acknowledging alert:', error);
+      toast.error('Error acknowledging alert');
     }
   };
 
@@ -128,6 +132,7 @@ const MonitoringDashboard = () => {
       loadMonitoringData(); // Refresh data
     } catch (error) {
       console.error('Error resolving alert:', error);
+      toast.error('Error resolving alert');
     }
   };
 

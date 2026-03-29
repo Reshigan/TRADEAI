@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, LinearProgress, Alert} from '@mui/material';
 import { RefreshCw } from 'lucide-react';
 import { baselineService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function BaselineList() {
+  const toast = useToast();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const load = async () => {
-    try { const res = await baselineService.getAll(); setItems(res.data || res || []); } catch (e) { console.error(e); }
+    try { const res = await baselineService.getAll(); setItems(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 
@@ -23,6 +26,11 @@ export default function BaselineList() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box><Typography variant="h1">Baselines</Typography><Typography variant="body2" color="text.secondary">Sales baseline calculations for promotion lift analysis</Typography></Box>
         <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={recalculate} disabled={loading}>Recalculate</Button>

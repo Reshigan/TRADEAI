@@ -55,8 +55,10 @@ import {
 } from '@mui/icons-material';
 import {PieChart, Pie, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line} from 'recharts';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const WorkflowDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [workflows, setWorkflows] = useState([]);
   const [workflowInstances, setWorkflowInstances] = useState([]);
@@ -89,6 +91,7 @@ const WorkflowDashboard = () => {
       setTaskStats(statsRes.data.tasks);
     } catch (error) {
       console.error('Error loading workflow data:', error);
+      toast.error('Error loading workflow data');
     } finally {
       setLoading(false);
     }
@@ -101,6 +104,7 @@ const WorkflowDashboard = () => {
       return response.data;
     } catch (error) {
       console.error('Error starting workflow:', error);
+      toast.error('Error starting workflow');
     }
   };
 
@@ -110,6 +114,7 @@ const WorkflowDashboard = () => {
       loadWorkflowData(); // Refresh data
     } catch (error) {
       console.error('Error completing task:', error);
+      toast.error('Error completing task');
     }
   };
 
@@ -122,6 +127,7 @@ const WorkflowDashboard = () => {
       loadWorkflowData(); // Refresh data
     } catch (error) {
       console.error('Error approving task:', error);
+      toast.error('Error approving task');
     }
   };
 

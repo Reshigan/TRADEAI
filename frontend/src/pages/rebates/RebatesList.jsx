@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Button, Grid, Paper, Typography, alpha } from '@mui/material';
+import { Box, Button, Grid, Paper, Typography, alpha, Alert} from '@mui/material';
 import { Add, AccountBalance, TrendingUp, CheckCircle } from '@mui/icons-material';
 import { Eye, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,20 +7,25 @@ import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 import { useTerminology } from '../../contexts/TerminologyContext';
 import { SmartTable, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const RebatesList = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const { t, tPlural } = useTerminology();
   const [rebates, setRebates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const loadRebates = async () => {
+    setFetchError(null);
     try {
       const response = await api.get('/rebates');
       if (response.data.success) setRebates(response.data.data);
     } catch (error) {
-      console.error('Failed to load rebates:', error);
-    } finally {
+      console.error('Failed to load rebates:', error); toast.error('Failed to load rebates'); setFetchError(error.message || 'Failed to load data'); } finally {
       setLoading(false);
     }
   };
@@ -28,8 +33,8 @@ const RebatesList = () => {
   useEffect(() => { loadRebates(); }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this rebate?')) {
-      try { await api.delete(`/rebates/${id}`); loadRebates(); } catch (error) { console.error('Failed to delete rebate:', error); }
+    if (await confirm('Are you sure you want to delete this rebate?', { severity: 'error' })) {
+      try { await api.delete(`/rebates/${id}`); loadRebates(); } catch (error) { console.error('Failed to delete rebate:', error); toast.error('Failed to delete rebate'); }
     }
   };
 
@@ -66,6 +71,11 @@ const RebatesList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadRebates(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title={tPlural('rebate')}
         subtitle={`Configure and manage all ${t('rebate').toLowerCase()} programs`}
@@ -101,6 +111,7 @@ const RebatesList = () => {
         searchPlaceholder={`Search ${tPlural('rebate').toLowerCase()}...`}
         emptyMessage={`No ${tPlural('rebate').toLowerCase()} found. Create your first rebate program.`}
       />
+    {ConfirmDialogComponent}
     </Box>
   );
 };

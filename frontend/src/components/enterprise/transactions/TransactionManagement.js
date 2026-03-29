@@ -33,8 +33,12 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import api from '../../../services/api';
+import { useToast } from '../../common/ToastNotification';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
 
 export default function TransactionManagement() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -60,6 +64,7 @@ export default function TransactionManagement() {
       setTransactions(response.data.transactions || []);
     } catch (err) {
       console.error('Failed to load transactions:', err);
+      toast.error('Failed to load transactions');
     } finally {
       setLoading(false);
     }
@@ -72,6 +77,7 @@ export default function TransactionManagement() {
       setSelectedRows([]);
     } catch (err) {
       console.error('Bulk approve failed:', err);
+      toast.error('Bulk approve failed');
     }
   };
 
@@ -82,6 +88,7 @@ export default function TransactionManagement() {
       setSelectedRows([]);
     } catch (err) {
       console.error('Bulk reject failed:', err);
+      toast.error('Bulk reject failed');
     }
   };
 
@@ -101,6 +108,7 @@ export default function TransactionManagement() {
       link.remove();
     } catch (err) {
       console.error('Export failed:', err);
+      toast.error('Export failed');
     }
   };
 
@@ -110,12 +118,13 @@ export default function TransactionManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this transaction?')) {
+    if (await confirm('Are you sure you want to delete this transaction?', { severity: 'error' })) {
       try {
         await api.delete(`/transactions/${id}`);
         loadTransactions();
       } catch (err) {
         console.error('Delete failed:', err);
+        toast.error('Delete failed');
       }
     }
   };
@@ -429,6 +438,7 @@ export default function TransactionManagement() {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

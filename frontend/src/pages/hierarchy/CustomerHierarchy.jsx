@@ -24,8 +24,10 @@ import {
   Business as BusinessIcon,
 } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CustomerHierarchy = () => {
+  const toast = useToast();
   const [tree, setTree] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,8 +48,7 @@ const CustomerHierarchy = () => {
       const response = await apiClient.get('/customers/hierarchy');
       setTree(response.data || []);
     } catch (error) {
-      console.error('Error fetching customer hierarchy:', error);
-    } finally {
+      console.error('Error fetching customer hierarchy:', error); toast.error('Error fetching customer hierarchy'); } finally {
       setLoading(false);
     }
   };
@@ -85,8 +86,7 @@ const CustomerHierarchy = () => {
       setDialogOpen(false);
       fetchHierarchy();
     } catch (error) {
-      console.error('Error saving customer:', error);
-    }
+      console.error('Error saving customer:', error); toast.error('Error saving customer'); }
   };
 
   const renderTree = (nodes) => {

@@ -18,8 +18,10 @@ import {
 } from '@mui/material';
 import { PlayArrow, CompareArrows, TrendingUp } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const SimulationDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [simulationResults, setSimulationResults] = useState(null);
@@ -42,8 +44,7 @@ const SimulationDashboard = () => {
         setSimulationResults(response.data.data);
       }
     } catch (error) {
-      console.error('Simulation failed:', error);
-    } finally {
+      console.error('Simulation failed:', error); toast.error('Simulation failed'); } finally {
       setLoading(false);
     }
   };
@@ -63,8 +64,7 @@ const SimulationDashboard = () => {
         setComparisonResults(response.data.data);
       }
     } catch (error) {
-      console.error('Comparison failed:', error);
-    } finally {
+      console.error('Comparison failed:', error); toast.error('Comparison failed'); } finally {
       setLoading(false);
     }
   };

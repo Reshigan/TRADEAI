@@ -111,6 +111,7 @@ export const saveFlowProgress = (flowId, data) => {
     }));
   } catch (error) {
     console.error('Failed to save flow progress:', error);
+    toast.error('Failed to save flow progress');
   }
 };
 
@@ -135,6 +136,7 @@ export const loadFlowProgress = (flowId) => {
     }
   } catch (error) {
     console.error('Failed to load flow progress:', error);
+    toast.error('Failed to load flow progress');
   }
   return null;
 };
@@ -149,6 +151,7 @@ export const clearFlowProgress = (flowId) => {
     localStorage.removeItem(key);
   } catch (error) {
     console.error('Failed to clear flow progress:', error);
+    toast.error('Failed to clear flow progress');
   }
 };
 

@@ -37,8 +37,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { reportService } from '../../services/api';
 import ReportForm from './ReportForm';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -58,6 +62,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
       setReport(response.data);
     } catch (error) {
       console.error('Error fetching report:', error);
+      toast.error('Error fetching report');
     } finally {
       setLoading(false);
     }
@@ -80,7 +85,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+    if (await confirm('Are you sure you want to delete this report? This action cannot be undone.', { severity: 'error' })) {
       try {
         await reportService.deleteReport(reportId);
         if (onDelete) {
@@ -89,6 +94,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
         onClose();
       } catch (error) {
         console.error('Error deleting report:', error);
+        toast.error('Error deleting report');
       }
     }
   };
@@ -105,6 +111,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
       // Handle the generated report (download, display, etc.)
     } catch (error) {
       console.error('Error generating report:', error);
+      toast.error('Error generating report');
     } finally {
       setGenerating(false);
     }
@@ -402,6 +409,7 @@ const ReportDetail = ({ open, onClose, reportId, onUpdate, onDelete }) => {
           </Button>
         )}
       </DialogActions>
+    {ConfirmDialogComponent}
     </Dialog>
   );
 };

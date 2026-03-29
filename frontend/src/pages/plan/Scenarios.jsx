@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Button, Grid, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Plus } from 'lucide-react';
 import { scenarioService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 export default function Scenarios() {
+  const toast = useToast();
   const [scenarios, setScenarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -11,7 +13,7 @@ export default function Scenarios() {
 
   useEffect(() => {
     const load = async () => {
-      try { const res = await scenarioService.getAll(); setScenarios(res.data || res || []); } catch (e) { console.error(e); }
+      try { const res = await scenarioService.getAll(); setScenarios(res.data || res || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();
@@ -20,7 +22,7 @@ export default function Scenarios() {
   const handleCreate = async () => {
     try { await scenarioService.create(form); setShowCreate(false);
       const res = await scenarioService.getAll(); setScenarios(res.data || res || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   return (

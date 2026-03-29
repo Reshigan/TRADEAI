@@ -30,8 +30,10 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 import { mlService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, autoRefresh = false }) => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
@@ -70,6 +72,7 @@ const AIRecommendationsML = ({ customerId, productId, maxRecommendations = 5, au
     } catch (err) {
       setError('Error loading recommendations');
       console.error('Recommendations error:', err);
+      toast.error('Recommendations error');
     } finally {
       setLoading(false);
     }

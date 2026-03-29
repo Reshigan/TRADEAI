@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
 import { ArrowBack as BackIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import { tradeSpendService } from '../../services/api';
 import analytics from '../../utils/analytics';
@@ -17,8 +16,10 @@ import TradeSpendDocuments from './tabs/TradeSpendDocuments';
 import TradeSpendApprovals from './tabs/TradeSpendApprovals';
 import TradeSpendPerformance from './tabs/TradeSpendPerformance';
 import TradeSpendHistory from './tabs/TradeSpendHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const TradeSpendDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [tradeSpend, setTradeSpend] = useState(null);

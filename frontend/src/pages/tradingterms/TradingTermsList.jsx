@@ -2,16 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Typography, Button, Paper, Chip, IconButton, TextField, MenuItem,
   CircularProgress, Tooltip, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, alpha, Grid,
-} from '@mui/material';
+  TableHead, TableRow, alpha, Grid, Alert} from '@mui/material';
 import { Add, Refresh, Edit, Delete, Visibility, Gavel, CheckCircle, TrendingUp } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { tradingTermsService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const TradingTermsList = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [tradingTerms, setTradingTerms] = useState([]);
   const [filters, setFilters] = useState({ termType: '', status: '', isActive: '' });
 
@@ -23,6 +27,7 @@ const TradingTermsList = () => {
       setTradingTerms(Array.isArray(terms) ? terms : []);
     } catch (error) {
       console.error('Failed to load trading terms:', error);
+      toast.error('Failed to load trading terms'); setFetchError(error.message || 'Failed to load data');
       setTradingTerms([]);
     } finally {
       setLoading(false);
@@ -35,8 +40,8 @@ const TradingTermsList = () => {
   const handleView = (id) => navigate(`/trading-terms/${id}`);
   const handleEdit = (id) => navigate(`/trading-terms/${id}/edit`);
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this trading term?')) {
-      try { await tradingTermsService.deleteTradingTerm(id); loadTradingTerms(); } catch (error) { console.error('Failed to delete:', error); }
+    if (await confirm('Are you sure you want to delete this trading term?', { severity: 'error' })) {
+      try { await tradingTermsService.deleteTradingTerm(id); loadTradingTerms(); } catch (error) { console.error('Failed to delete:', error); toast.error('Failed to delete'); }
     }
   };
 
@@ -57,6 +62,11 @@ const TradingTermsList = () => {
 
   return (
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadTradingTerms(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography variant="h5" fontWeight={700}>Trading Terms</Typography>
@@ -179,6 +189,7 @@ const TradingTermsList = () => {
           </TableContainer>
         )}
       </Paper>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

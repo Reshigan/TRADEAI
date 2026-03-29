@@ -12,6 +12,7 @@ import {
   Circle as CircleIcon, Refresh as RefreshIcon, Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { executiveKpiService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const ragColors = { green: '#4caf50', amber: '#ff9800', red: '#f44336' };
 
@@ -58,10 +59,12 @@ const SummaryCard = ({ title, value, subtitle, icon, color = '#7c3aed' }) => (
 );
 
 export default function ExecutiveKpiDashboard() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState({});
   const [options, setOptions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   const [definitions, setDefinitions] = useState([]);
   const [defTotal, setDefTotal] = useState(0);
@@ -105,6 +108,7 @@ export default function ExecutiveKpiDashboard() {
 
   const loadDefinitions = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await executiveKpiService.getDefinitions({
         limit: 25, offset: defPage * 25, ...(defSearch && { search: defSearch }),
@@ -189,7 +193,7 @@ export default function ExecutiveKpiDashboard() {
   };
 
   const handleDelete = async (type, id) => {
-    if (!window.confirm('Delete this record?')) return;
+    if (!await confirm('Delete this record?', { severity: 'error' })) return;
     try {
       if (type === 'definition') { await executiveKpiService.deleteDefinition(id); loadDefinitions(); }
       else if (type === 'target') { await executiveKpiService.deleteTarget(id); loadTargets(); }
@@ -219,6 +223,11 @@ export default function ExecutiveKpiDashboard() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadSummary(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>Executive KPI Dashboard</Typography>
@@ -679,6 +688,7 @@ export default function ExecutiveKpiDashboard() {
           </>
         )}
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

@@ -20,6 +20,8 @@ import {
   Assessment as ReportIcon,
 } from '@mui/icons-material';
 import { pnlService, customerService, promotionService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (value) => {
   if (value === null || value === undefined) return 'R 0.00';
@@ -94,6 +96,8 @@ const EMPTY_FORM = {
 };
 
 const PnLManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [reports, setReports] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -138,8 +142,7 @@ const PnLManagement = () => {
       const res = await pnlService.getSummary();
       setSummary(res.data || null);
     } catch (err) {
-      console.error('Failed to fetch summary:', err);
-    }
+      console.error('Failed to fetch summary:', err); toast.error('Failed to fetch summary'); }
   }, []);
 
   const fetchLiveData = useCallback(async () => {
@@ -152,8 +155,7 @@ const PnLManagement = () => {
       setLiveCustomerData(custRes.data || []);
       setLivePromoData(promoRes.data || []);
     } catch (err) {
-      console.error('Failed to fetch live P&L data:', err);
-    } finally {
+      console.error('Failed to fetch live P&L data:', err); toast.error('Failed to fetch live P&L data'); } finally {
       setLiveLoading(false);
     }
   }, []);
@@ -169,8 +171,7 @@ const PnLManagement = () => {
       setPromotions(promoRes.data || []);
       setOptions(optRes.data || null);
     } catch (err) {
-      console.error('Failed to fetch ref data:', err);
-    }
+      console.error('Failed to fetch ref data:', err); toast.error('Failed to fetch ref data'); }
   }, []);
 
   useEffect(() => {
@@ -225,7 +226,7 @@ const PnLManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this P&L report?')) return;
+    if (!await confirm('Delete this P&L report?', { severity: 'error' })) return;
     try {
       await pnlService.delete(id);
       fetchReports();
@@ -866,6 +867,7 @@ const PnLManagement = () => {
           )}
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

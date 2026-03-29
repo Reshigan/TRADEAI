@@ -15,9 +15,11 @@ import {
   Refresh as RefreshIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const TopCustomers = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
@@ -38,8 +40,7 @@ const TopCustomers = () => {
         setCustomers(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch customers:', err);
-    } finally {
+      console.error('Failed to fetch customers:', err); toast.error('Failed to fetch customers'); } finally {
       setLoading(false);
     }
   };

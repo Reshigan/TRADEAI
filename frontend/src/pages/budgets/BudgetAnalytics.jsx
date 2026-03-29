@@ -8,9 +8,11 @@ import {
   LinearProgress
 } from '@mui/material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const BudgetAnalytics = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState({
     utilizationTrend: [],
@@ -31,8 +33,7 @@ const BudgetAnalytics = () => {
         setAnalytics(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch analytics:', err);
-    } finally {
+      console.error('Failed to fetch analytics:', err); toast.error('Failed to fetch analytics'); } finally {
       setLoading(false);
     }
   };

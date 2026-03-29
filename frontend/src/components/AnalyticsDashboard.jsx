@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import apiClient from '../services/apiClient';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useToast } from './common/ToastNotification';
 import './AnalyticsDashboard.css';
 
 const AnalyticsDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState('baseline');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
@@ -43,6 +45,7 @@ const AnalyticsDashboard = () => {
       setResults(response.data.data);
     } catch (error) {
       console.error('Error calculating baseline:', error);
+      toast.error('Error calculating baseline');
       alert('Error calculating baseline');
     } finally {
       setLoading(false);
@@ -56,6 +59,7 @@ const AnalyticsDashboard = () => {
       setResults(response.data.data);
     } catch (error) {
       console.error('Error analyzing cannibalization:', error);
+      toast.error('Error analyzing cannibalization');
       alert('Error analyzing cannibalization');
     } finally {
       setLoading(false);
@@ -69,6 +73,7 @@ const AnalyticsDashboard = () => {
       setResults(response.data.data);
     } catch (error) {
       console.error('Error detecting forward buy:', error);
+      toast.error('Error detecting forward buy');
       alert('Error detecting forward buy');
     } finally {
       setLoading(false);

@@ -4,10 +4,12 @@ import { ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { budgetService, promotionService } from '../../services/api';
 import { QuickActionBar, ActivitySidebar, PageHeader } from '../../components/shared';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function BudgetDetail() {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [budget, setBudget] = useState(null);
@@ -21,7 +23,7 @@ export default function BudgetDetail() {
         const [b, p] = await Promise.allSettled([budgetService.getById(id), promotionService.getAll({ budget_id: id })]);
         if (b.status === 'fulfilled') setBudget(b.value.data || b.value);
         if (p.status === 'fulfilled') setPromos(p.value.data || p.value || []);
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();

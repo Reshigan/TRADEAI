@@ -4,14 +4,15 @@ import {
   Paper, Chip, TextField, MenuItem, IconButton,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Tooltip, Divider, Tabs, Tab
-} from '@mui/material';
+  CircularProgress, Tooltip, Divider, Tabs, Tab, Alert} from '@mui/material';
 import {
   Add, Refresh, Delete, Edit, Handshake,
   AccountBalance, TrendingDown, Payment, CheckCircle,
   Cancel, PlayArrow
 } from '@mui/icons-material';
 import { settlementService, customerService, promotionService, accrualService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const STATUS_COLORS = {
   draft: 'default',
@@ -26,7 +27,10 @@ const STATUS_COLORS = {
 };
 
 const SettlementManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [settlements, setSettlements] = useState([]);
   const [summary, setSummary] = useState(null);
   const [total, setTotal] = useState(0);
@@ -66,6 +70,7 @@ const SettlementManagement = () => {
 
   const loadSettlements = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = {};
       if (statusFilter) params.status = statusFilter;
@@ -75,6 +80,7 @@ const SettlementManagement = () => {
       setTotal(response.total || 0);
     } catch (error) {
       console.error('Failed to load settlements:', error);
+      toast.error('Failed to load settlements'); setFetchError(error.message || 'Failed to load data');
       setSettlements([]);
     } finally {
       setLoading(false);
@@ -86,8 +92,7 @@ const SettlementManagement = () => {
       const response = await settlementService.getSummary();
       setSummary(response.data || null);
     } catch (error) {
-      console.error('Failed to load summary:', error);
-    }
+      console.error('Failed to load summary:', error); toast.error('Failed to load summary'); }
   }, []);
 
   const loadReferenceData = useCallback(async () => {
@@ -103,8 +108,7 @@ const SettlementManagement = () => {
       setAccruals(accRes.data || []);
       setOptions(optRes.data || null);
     } catch (error) {
-      console.error('Failed to load reference data:', error);
-    }
+      console.error('Failed to load reference data:', error); toast.error('Failed to load reference data'); }
   }, []);
 
   useEffect(() => { loadSettlements(); }, [loadSettlements]);
@@ -131,8 +135,7 @@ const SettlementManagement = () => {
       await loadSettlements();
       await loadSummary();
     } catch (error) {
-      console.error('Failed to create settlement:', error);
-    } finally {
+      console.error('Failed to create settlement:', error); toast.error('Failed to create settlement'); } finally {
       setActionLoading(false);
     }
   };
@@ -146,20 +149,20 @@ const SettlementManagement = () => {
       resetForm();
       await loadSettlements();
     } catch (error) {
-      console.error('Failed to update settlement:', error);
-    } finally {
+      console.error('Failed to update settlement:', error); toast.error('Failed to update settlement'); } finally {
       setActionLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this settlement and all its lines/payments?')) return;
+    if (!await confirm('Delete this settlement and all its lines/payments?', { severity: 'error' })) return;
     try {
       await settlementService.delete(id);
       await loadSettlements();
       await loadSummary();
     } catch (error) {
       console.error('Failed to delete settlement:', error);
+      toast.error('Failed to delete settlement');
       alert(error?.response?.data?.message || 'Cannot delete this settlement');
     }
   };
@@ -178,14 +181,13 @@ const SettlementManagement = () => {
         if (result.message) alert(result.message);
       }
     } catch (error) {
-      console.error('Failed to process settlement:', error);
-    } finally {
+      console.error('Failed to process settlement:', error); toast.error('Failed to process settlement'); } finally {
       setActionLoading(false);
     }
   };
 
   const handleApprove = async (id) => {
-    if (!window.confirm('Approve this settlement?')) return;
+    if (!await confirm('Approve this settlement?', { severity: 'warning' })) return;
     setActionLoading(true);
     try {
       await settlementService.approve(id);
@@ -196,8 +198,7 @@ const SettlementManagement = () => {
         setSelectedSettlement(detail.data);
       }
     } catch (error) {
-      console.error('Failed to approve settlement:', error);
-    } finally {
+      console.error('Failed to approve settlement:', error); toast.error('Failed to approve settlement'); } finally {
       setActionLoading(false);
     }
   };
@@ -212,8 +213,7 @@ const SettlementManagement = () => {
       await loadSettlements();
       await loadSummary();
     } catch (error) {
-      console.error('Failed to reject settlement:', error);
-    } finally {
+      console.error('Failed to reject settlement:', error); toast.error('Failed to reject settlement'); } finally {
       setActionLoading(false);
     }
   };
@@ -232,6 +232,7 @@ const SettlementManagement = () => {
       }
     } catch (error) {
       console.error('Failed to record payment:', error);
+      toast.error('Failed to record payment');
       alert(error?.response?.data?.message || 'Payment failed');
     } finally {
       setActionLoading(false);
@@ -245,8 +246,7 @@ const SettlementManagement = () => {
       setDetailTab(0);
       setDetailOpen(true);
     } catch (error) {
-      console.error('Failed to load settlement detail:', error);
-    }
+      console.error('Failed to load settlement detail:', error); toast.error('Failed to load settlement detail'); }
   };
 
   const handleOpenEdit = (settlement) => {
@@ -745,6 +745,11 @@ const SettlementManagement = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadSettlements(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Settlement Management</Typography>
@@ -891,6 +896,7 @@ const SettlementManagement = () => {
       </Dialog>
 
       {renderDetailDialog()}
+    {ConfirmDialogComponent}
     </Box>
   );
 };

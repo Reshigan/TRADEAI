@@ -41,9 +41,11 @@ import {
 import { useSnackbar } from 'notistack';
 import { dataLineageService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const DataLineageDashboard = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [entityType, setEntityType] = useState('promotion');
@@ -67,8 +69,7 @@ const DataLineageDashboard = () => {
       const response = await dataLineageService.getOverriddenCalculations();
       setOverriddenCalculations(response.data || []);
     } catch (error) {
-      console.error('Error loading overridden calculations:', error);
-    }
+      console.error('Error loading overridden calculations:', error); toast.error('Error loading overridden calculations'); }
   };
 
   const loadImportBatches = async () => {
@@ -76,8 +77,7 @@ const DataLineageDashboard = () => {
       const response = await dataLineageService.getImportBatches();
       setImportBatches(response.data || []);
     } catch (error) {
-      console.error('Error loading import batches:', error);
-    }
+      console.error('Error loading import batches:', error); toast.error('Error loading import batches'); }
   };
 
   const handleSearch = async () => {
@@ -98,6 +98,7 @@ const DataLineageDashboard = () => {
       enqueueSnackbar('Lineage data loaded successfully', { variant: 'success' });
     } catch (error) {
       console.error('Error loading lineage:', error);
+      toast.error('Error loading lineage');
       enqueueSnackbar('Failed to load lineage data', { variant: 'error' });
     } finally {
       setLoading(false);
@@ -132,6 +133,7 @@ const DataLineageDashboard = () => {
       loadOverriddenCalculations();
     } catch (error) {
       console.error('Error overriding calculation:', error);
+      toast.error('Error overriding calculation');
       enqueueSnackbar('Failed to override calculation', { variant: 'error' });
     }
   };

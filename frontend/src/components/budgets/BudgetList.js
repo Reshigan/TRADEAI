@@ -25,10 +25,12 @@ import { DataTable, StatusChip } from '../common';
 import { budgetService } from '../../services/api';
 import BudgetForm from './BudgetForm';
 import { formatCurrencyCompact } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 // No more mock data - using real API calls
 
 const BudgetList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,6 +60,7 @@ const BudgetList = () => {
       setLoading(false);
     } catch (error) {
       console.error("BudgetList: Error fetching budgets:", error);
+      toast.error('BudgetList: Error fetching budgets');
       setError(error.message || "Failed to load budgets. Please try again.");
       setLoading(false);
     }
@@ -105,6 +108,7 @@ const BudgetList = () => {
       setOpenForm(false);
     } catch (err) {
       console.error('Error saving budget:', err);
+      toast.error('Error saving budget');
       setError(err.message || 'Failed to save budget');
     }
   };
@@ -135,6 +139,7 @@ const BudgetList = () => {
       return true;
     } catch (err) {
       console.error('Error filtering budget:', err, budget);
+      toast.error('Error filtering budget');
       return false;
     }
   });

@@ -19,8 +19,10 @@ import {
 } from '@mui/icons-material';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const VendorDetail = () => {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
@@ -49,7 +51,7 @@ const VendorDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this vendor?')) {
+    if (await confirm('Are you sure you want to delete this vendor?', { severity: 'error' })) {
       try {
         await api.delete(`/vendors/${id}`);
         navigate('/vendors');
@@ -195,6 +197,7 @@ const VendorDetail = () => {
             </Grid>
           </Grid>
         </Paper>
+      {ConfirmDialogComponent}
       </Box>
   );
 };

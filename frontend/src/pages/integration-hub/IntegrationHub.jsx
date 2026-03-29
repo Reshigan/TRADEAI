@@ -11,6 +11,7 @@ import {
   History as LogIcon
 } from '@mui/icons-material';
 import { integrationHubService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -24,11 +25,13 @@ const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
 const emptyIntegration = { name: '', description: '', integration_type: 'api', provider: 'custom', category: 'erp', status: 'inactive', endpoint_url: '', auth_type: 'api_key', sync_frequency: 'manual', notes: '' };
 
 export default function IntegrationHub() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState({});
   const [integrations, setIntegrations] = useState([]);
   const [options, setOptions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(emptyIntegration);
@@ -37,6 +40,7 @@ export default function IntegrationHub() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [sumRes, intRes, optRes] = await Promise.all([
         integrationHubService.getSummary(),
@@ -69,7 +73,7 @@ export default function IntegrationHub() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this integration?')) return;
+    if (!await confirm('Delete this integration?', { severity: 'error' })) return;
     try {
       await integrationHubService.deleteIntegration(id);
       setSnack({ open: true, message: 'Deleted', severity: 'success' });
@@ -96,6 +100,11 @@ export default function IntegrationHub() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadData(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Integration Hub</Typography>
@@ -211,6 +220,7 @@ export default function IntegrationHub() {
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

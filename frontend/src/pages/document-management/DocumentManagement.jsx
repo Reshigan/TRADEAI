@@ -10,6 +10,7 @@ import {
   Description as DocIcon, Edit as EditIcon, History as VersionIcon
 } from '@mui/icons-material';
 import { documentManagementService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -23,11 +24,13 @@ const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
 const emptyDoc = { name: '', description: '', document_type: 'general', category: 'other', file_name: '', file_url: '', file_size: 0, mime_type: '', status: 'active', entity_type: '', entity_id: '', entity_name: '', notes: '' };
 
 export default function DocumentManagement() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState({});
   const [documents, setDocuments] = useState([]);
   const [options, setOptions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(emptyDoc);
@@ -36,6 +39,7 @@ export default function DocumentManagement() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [sumRes, docRes, optRes] = await Promise.all([
         documentManagementService.getSummary(),
@@ -71,7 +75,7 @@ export default function DocumentManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this document?')) return;
+    if (!await confirm('Delete this document?', { severity: 'error' })) return;
     try {
       await documentManagementService.deleteDocument(id);
       setSnack({ open: true, message: 'Document deleted', severity: 'success' });
@@ -93,6 +97,11 @@ export default function DocumentManagement() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadData(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Document Management</Typography>
@@ -225,6 +234,7 @@ export default function DocumentManagement() {
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

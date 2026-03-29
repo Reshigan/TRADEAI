@@ -37,8 +37,12 @@ import { useNavigate } from 'react-router-dom';
 import { activityGridService } from '../../services/api';
 import { simulationService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const PromotionsTimeline = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [view, setView] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -70,8 +74,7 @@ const PromotionsTimeline = () => {
 
       setPromotions(response.activities || []);
     } catch (error) {
-      console.error('Failed to load promotions:', error);
-    } finally {
+      console.error('Failed to load promotions:', error); toast.error('Failed to load promotions'); } finally {
       setLoading(false);
     }
   };
@@ -88,8 +91,7 @@ const PromotionsTimeline = () => {
 
       setConflicts(response.conflicts || []);
     } catch (error) {
-      console.error('Failed to load conflicts:', error);
-    }
+      console.error('Failed to load conflicts:', error); toast.error('Failed to load conflicts'); }
   };
 
   const getStartDate = () => {
@@ -187,8 +189,7 @@ const PromotionsTimeline = () => {
 
       setDraggedPromotion(null);
     } catch (error) {
-      console.error('Failed to reschedule promotion:', error);
-    }
+      console.error('Failed to reschedule promotion:', error); toast.error('Failed to reschedule promotion'); }
   };
 
   const handleAutoFix = async (conflict) => {
@@ -208,8 +209,7 @@ const PromotionsTimeline = () => {
         }
       }
     } catch (error) {
-      console.error('Failed to get auto-fix suggestions:', error);
-    }
+      console.error('Failed to get auto-fix suggestions:', error); toast.error('Failed to get auto-fix suggestions'); }
   };
 
   const formatDateRange = () => {
@@ -595,6 +595,7 @@ const PromotionsTimeline = () => {
           </Box>
         )}
       </Drawer>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

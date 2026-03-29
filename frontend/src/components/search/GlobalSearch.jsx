@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 import './GlobalSearch.css';
 
 const GlobalSearch = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -27,6 +29,7 @@ const GlobalSearch = () => {
       setShowResults(true);
     } catch (err) {
       console.error('Search error:', err);
+      toast.error('Search error');
       setResults([]);
     } finally {
       setLoading(false);

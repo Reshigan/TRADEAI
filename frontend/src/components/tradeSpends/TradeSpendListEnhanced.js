@@ -5,8 +5,10 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { tradeSpendService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const TradeSpendListEnhanced = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const theme = useTheme();
   const [tradeSpends, setTradeSpends] = useState([]);
@@ -23,6 +25,7 @@ const TradeSpendListEnhanced = () => {
       setTradeSpends(response.data || response || []);
     } catch (error) {
       console.error("Error fetching trade spends:", error);
+      toast.error('Error fetching trade spends');
     } finally {
       setLoading(false);
     }

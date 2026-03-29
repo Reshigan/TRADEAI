@@ -8,6 +8,7 @@ import {
 import { Add, Edit, Delete, SportsEsports, EmojiEvents, Leaderboard } from '@mui/icons-material';
 import enterpriseApi from '../../services/enterpriseApi';
 import { formatLabel } from '../../utils/formatters';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const gameTypes = [
   { value: 'leaderboard', label: 'Leaderboard' },
@@ -68,6 +69,7 @@ const initialFormData = {
 };
 
 export default function GamesPage() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -144,7 +146,7 @@ export default function GamesPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this game?')) return;
+    if (!await confirm('Are you sure you want to delete this game?', { severity: 'error' })) return;
     try {
       await enterpriseApi.companyAdmin.deleteGame(id);
       loadGames();
@@ -409,6 +411,7 @@ export default function GamesPage() {
           </Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

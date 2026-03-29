@@ -14,8 +14,10 @@ import { claimService } from '../../services/api';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ClaimsList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,7 @@ const ClaimsList = () => {
       setClaims(response.data || []);
     } catch (err) {
       console.error('Error loading claims:', err);
+      toast.error('Error loading claims');
       setError(err.message || 'Failed to load claims');
     } finally {
       setLoading(false);
@@ -53,8 +56,7 @@ const ClaimsList = () => {
       const response = await claimService.getClaimStatistics();
       setStatistics(response.data);
     } catch (err) {
-      console.error('Error loading statistics:', err);
-    }
+      console.error('Error loading statistics:', err); toast.error('Error loading statistics'); }
   };
 
   const handleAutoMatch = async () => {
@@ -67,6 +69,7 @@ const ClaimsList = () => {
       loadStatistics();
     } catch (err) {
       console.error('Error auto-matching claims:', err);
+      toast.error('Error auto-matching claims');
       setError(err.message || 'Failed to auto-match claims');
     } finally {
       setLoading(false);

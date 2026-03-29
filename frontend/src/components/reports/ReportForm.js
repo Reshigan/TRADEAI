@@ -29,6 +29,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useAuth } from '../../contexts/AuthContext';
 import { reportService } from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const REPORT_TYPES = [
   { value: 'promotion_effectiveness', label: 'Promotion Effectiveness' },
@@ -56,6 +57,7 @@ const OUTPUT_FORMATS = [
 ];
 
 const ReportForm = ({ open, onClose, report, onSave }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -245,6 +247,7 @@ const ReportForm = ({ open, onClose, report, onSave }) => {
       onClose();
     } catch (error) {
       console.error('Error saving report:', error);
+      toast.error('Error saving report');
       setErrors({ submit: error.response?.data?.message || 'Failed to save report' });
     } finally {
       setLoading(false);

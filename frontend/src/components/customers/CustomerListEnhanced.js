@@ -17,8 +17,10 @@ import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { customerService } from '../../services/api';
 import CustomerForm from './CustomerForm';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const CustomerListEnhanced = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const theme = useTheme();
   const [customers, setCustomers] = useState([]);
@@ -40,6 +42,7 @@ const CustomerListEnhanced = () => {
       setCustomers(customerData);
     } catch (error) {
       console.error("Error fetching customers:", error);
+      toast.error('Error fetching customers');
       setError(error.message || "Failed to load customers");
     } finally {
       setLoading(false);
@@ -245,6 +248,7 @@ const CustomerListEnhanced = () => {
       fetchCustomers();
     } catch (error) {
       console.error('Error creating customer:', error);
+      toast.error('Error creating customer');
     }
   };
 

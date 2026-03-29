@@ -19,8 +19,10 @@ import { format } from 'date-fns';
 import { PageHeader, DataTable, StatusChip } from '../common';
 import { promotionService, customerService, productService } from '../../services/api';
 import PromotionForm from './PromotionForm';
+import { useToast } from '../common/ToastNotification';
 
 const PromotionList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [promotions, setPromotions] = useState([]);
@@ -64,6 +66,7 @@ const PromotionList = () => {
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch promotions:', err);
+      toast.error('Failed to fetch promotions');
       setError('Failed to fetch promotions. Please try again.');
       setLoading(false);
     }
@@ -76,6 +79,7 @@ const PromotionList = () => {
       setCustomers(response.data || response);
     } catch (err) {
       console.error('Failed to fetch customers:', err);
+      toast.error('Failed to fetch customers');
       setCustomers([]);
     }
   };
@@ -87,6 +91,7 @@ const PromotionList = () => {
       setProducts(response.data || response);
     } catch (err) {
       console.error('Failed to fetch products:', err);
+      toast.error('Failed to fetch products');
       setProducts([]);
     }
   };
@@ -133,6 +138,7 @@ const PromotionList = () => {
       setOpenForm(false);
     } catch (err) {
       console.error('Error saving promotion:', err);
+      toast.error('Error saving promotion');
       setError('Failed to save promotion. Please try again.');
     }
   };

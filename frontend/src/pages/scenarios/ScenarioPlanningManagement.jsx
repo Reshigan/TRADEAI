@@ -21,6 +21,8 @@ import {
   Science as ScienceIcon,
 } from '@mui/icons-material';
 import { scenarioService, customerService, productService, promotionService, budgetService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (value) => {
   const num = parseFloat(value) || 0;
@@ -87,6 +89,8 @@ const EMPTY_SCENARIO = {
 };
 
 const ScenarioPlanningManagement = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [scenarios, setScenarios] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -136,8 +140,7 @@ const ScenarioPlanningManagement = () => {
       const res = await scenarioService.getSummary();
       setSummary(res.data || null);
     } catch (e) {
-      console.error('Summary fetch error:', e);
-    }
+      console.error('Summary fetch error:', e); toast.error('Summary fetch error'); }
   }, []);
 
   const fetchRefData = useCallback(async () => {
@@ -155,8 +158,7 @@ const ScenarioPlanningManagement = () => {
       setPromotions(promoRes.data || []);
       setBudgets(budRes.data || []);
     } catch (e) {
-      console.error('Ref data fetch error:', e);
-    }
+      console.error('Ref data fetch error:', e); toast.error('Ref data fetch error'); }
   }, []);
 
   useEffect(() => {
@@ -220,7 +222,7 @@ const ScenarioPlanningManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this scenario and all its variables/results?')) return;
+    if (!await confirm('Delete this scenario and all its variables/results?', { severity: 'error' })) return;
     try {
       await scenarioService.delete(id);
       showSnack('Scenario deleted');
@@ -331,8 +333,7 @@ const ScenarioPlanningManagement = () => {
       const data = res.data || {};
       setDetailVariables(data.variables || []);
     } catch (e) {
-      console.error('Slider update error:', e);
-    }
+      console.error('Slider update error:', e); toast.error('Slider update error'); }
   };
 
   const handleCompare = async () => {
@@ -884,6 +885,7 @@ const ScenarioPlanningManagement = () => {
           {snack.message}
         </Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 };

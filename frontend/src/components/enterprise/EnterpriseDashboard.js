@@ -49,6 +49,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import enterpriseApi from '../../services/enterpriseApi';
+import { useToast } from '../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -66,6 +67,7 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 export default function EnterpriseDashboard() {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
@@ -84,6 +86,7 @@ export default function EnterpriseDashboard() {
       setDashboardData(response.data);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
+      toast.error('Failed to load dashboard data');
       setError(err.error || 'Failed to load dashboard data');
     } finally {
       setLoading(false);

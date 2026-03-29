@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const productHierarchyOptions = {
   vendors: ['Unilever', 'Nestle', 'P&G', 'Coca-Cola', 'PepsiCo', 'Kraft Heinz', 'General Mills'],
@@ -25,6 +26,7 @@ const customerHierarchyOptions = {
 };
 
 const PromotionForm = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
@@ -54,14 +56,14 @@ const PromotionForm = () => {
     try {
       const response = await api.get('/products');
       setProducts(response.data.data || response.data);
-    } catch (err) { console.error('Failed to fetch products:', err); }
+    } catch (err) { console.error('Failed to fetch products:', err); toast.error('Failed to fetch products'); }
   };
 
   const fetchCustomers = async () => {
     try {
       const response = await api.get('/customers');
       setCustomers(response.data.data || response.data);
-    } catch (err) { console.error('Failed to fetch customers:', err); }
+    } catch (err) { console.error('Failed to fetch customers:', err); toast.error('Failed to fetch customers'); }
   };
 
   const fetchPromotion = async () => {

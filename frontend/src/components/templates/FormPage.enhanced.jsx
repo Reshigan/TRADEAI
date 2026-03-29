@@ -64,6 +64,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../common/ToastNotification';
 
 /**
  * Professional FormPage Template
@@ -100,6 +101,7 @@ export default function FormPageTemplate({
   renderField = null,
   children,
 }) {
+  const toast = useToast();
   const navigate = useNavigate();
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
@@ -176,6 +178,7 @@ export default function FormPageTemplate({
       await onSubmit(values);
     } catch (error) {
       console.error('Form submission error:', error);
+      toast.error('Form submission error');
     }
   };
   

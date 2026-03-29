@@ -11,8 +11,10 @@ import {
 } from '@mui/material';
 import {  AttachMoney, PlayArrow } from '@mui/icons-material';
 import enterpriseApi from '../../../services/enterpriseApi';
+import { useToast } from '../../common/ToastNotification';
 
 export default function BudgetOptimizer({ onSaveScenario }) {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [totalBudget, setTotalBudget] = useState(1000000);
@@ -28,6 +30,7 @@ export default function BudgetOptimizer({ onSaveScenario }) {
       setResults(response.data);
     } catch (err) {
       console.error(err);
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }

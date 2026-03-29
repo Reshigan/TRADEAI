@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Tabs, Tab } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Tabs, Tab, Alert} from '@mui/material';
 import { Search, Check, X, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { approvalService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function ApprovalQueue() {
+  const toast = useToast();
   const navigate = useNavigate();
   const [approvals, setApprovals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
   const [actionDialog, setActionDialog] = useState(null);
@@ -20,7 +23,7 @@ export default function ApprovalQueue() {
       const status = tab === 0 ? 'pending' : tab === 1 ? 'approved' : 'rejected';
       const res = await approvalService.getAll({ status });
       setApprovals(res.data || res || []);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, [tab]);
 
@@ -33,11 +36,16 @@ export default function ApprovalQueue() {
     try {
       await approvalService.update(actionDialog.id, { status: action, comments: comment });
       setActionDialog(null); setComment(''); load();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h1">Approvals</Typography>
         <Typography variant="body2" color="text.secondary">Review and approve trade promotion requests</Typography>

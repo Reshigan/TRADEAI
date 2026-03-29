@@ -26,6 +26,7 @@ import {
 
 import { PageHeader } from '../common';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 // Available currencies
 const currencies = [
@@ -73,6 +74,7 @@ const regions = [
 ];
 
 const CompanyForm = () => {
+  const toast = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = id && id !== 'new';
@@ -126,6 +128,7 @@ const CompanyForm = () => {
       }
     } catch (error) {
       console.error('Error fetching company:', error);
+      toast.error('Error fetching company');
       setSnackbar({ open: true, message: 'Failed to load company', severity: 'error' });
     } finally {
       setLoading(false);
@@ -197,6 +200,7 @@ const CompanyForm = () => {
       setTimeout(() => navigate('/companies'), 1500);
     } catch (error) {
       console.error('Error saving company:', error);
+      toast.error('Error saving company');
       setSnackbar({ open: true, message: error.response?.data?.message || 'Failed to save company', severity: 'error' });
     } finally {
       setSaving(false);

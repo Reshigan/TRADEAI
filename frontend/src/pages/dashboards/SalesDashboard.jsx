@@ -10,9 +10,11 @@ import {
   TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 
 const SalesDashboard = () => {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState({
     totalSales: 0,
@@ -36,8 +38,7 @@ const SalesDashboard = () => {
         setMetrics(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to fetch metrics:', err);
-    } finally {
+      console.error('Failed to fetch metrics:', err); toast.error('Failed to fetch metrics'); } finally {
       setLoading(false);
     }
   };

@@ -33,8 +33,10 @@ import {
   AreaChart
 } from 'recharts';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 7 }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [forecast, setForecast] = useState(null);
@@ -76,6 +78,7 @@ const AIDemandForecastWidget = ({ productId = 'ALL', customerId = 'ALL', days = 
       setForecast(transformedForecast);
     } catch (err) {
       console.error('Forecast error:', err);
+      toast.error('Forecast error');
       setError(err.response?.data?.message || 'Failed to load forecast');
     } finally {
       setLoading(false);

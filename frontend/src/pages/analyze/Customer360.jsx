@@ -3,10 +3,12 @@ import { Box, Card, CardContent, Typography, Grid, TextField, MenuItem, LinearPr
 import { Users, TrendingUp, DollarSign, BarChart } from 'lucide-react';
 import { customerService } from '../../services/api';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function Customer360() {
+  const toast = useToast();
   const [customers, setCustomers] = useState([]);
   const [selected, setSelected] = useState('');
   const [profile, setProfile] = useState(null);
@@ -15,7 +17,7 @@ export default function Customer360() {
 
   useEffect(() => {
     const load = async () => {
-      try { const res = await customerService.getAll(); setCustomers(res.data || res || []); } catch (e) { console.error('Failed to load customers:', e); }
+      try { const res = await customerService.getAll(); setCustomers(res.data || res || []); } catch (e) { console.error('Failed to load customers:', e); toast.error('Failed to load customers'); }
       setLoading(false);
     };
     load();
@@ -33,13 +35,13 @@ export default function Customer360() {
         try {
           const promoRes = await api.get('/promotions', { params: { customer_id: selected } });
           promos = promoRes.data?.data || [];
-        } catch (promoErr) { console.error('Failed to load promotions:', promoErr); }
+        } catch (promoErr) { console.error('Failed to load promotions:', promoErr); toast.error('Failed to load promotions'); }
         // Also fetch trade spends for this customer
         let spends = [];
         try {
           const spendRes = await api.get('/trade-spends', { params: { customer_id: selected } });
           spends = spendRes.data?.data || [];
-        } catch (spendErr) { console.error('Failed to load trade spends:', spendErr); }
+        } catch (spendErr) { console.error('Failed to load trade spends:', spendErr); toast.error('Failed to load trade spends'); }
         const totalSpend = spends.reduce((s, ts) => s + (Number(ts.amount) || 0), 0);
         setProfile({
           ...profileData,
@@ -55,7 +57,7 @@ export default function Customer360() {
             roi: p.roi || 0
           }))
         });
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();

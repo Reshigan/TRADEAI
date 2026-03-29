@@ -5,16 +5,20 @@ import BlockIcon from '@mui/icons-material/Block';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import apiClient from '../../services/apiClient';
 import AIInsightCard from '../../components/ai/AIInsightCard';
+import { useToast } from '../../components/common/ToastNotification';
 
 const severityColors = { critical: '#EF4444', high: '#F59E0B', medium: '#3B82F6', low: '#64748B' };
 
 const WasteDetectionManagement = () => {
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [summary, setSummary] = useState(null);
   const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
 
   const fetchWaste = async () => {
+    setFetchError(null);
     try {
       setLoading(true);
       const [wasteRes, summaryRes] = await Promise.all([
@@ -27,6 +31,7 @@ const WasteDetectionManagement = () => {
       setFeedback({ open: true, message: pCount > 0 ? `Analysis complete: ${pCount} waste pattern${pCount !== 1 ? 's' : ''} detected` : 'Analysis complete: no waste patterns detected', severity: pCount > 0 ? 'warning' : 'success' });
     } catch (e) {
       console.error(e);
+      toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data');
       setFeedback({ open: true, message: 'Analysis failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
     }
     finally { setLoading(false); }
@@ -38,6 +43,11 @@ const WasteDetectionManagement = () => {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); fetchWaste(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700}>AI Waste Detection</Typography>

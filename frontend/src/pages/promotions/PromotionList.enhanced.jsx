@@ -24,8 +24,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { ListPageTemplate } from '../enhanced-index';
 import { promotionService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 export default function PromotionsList() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,8 +46,7 @@ export default function PromotionsList() {
       setPromotions(response.data || response || []);
       setTotal(response.data?.length || response.length || 0);
     } catch (error) {
-      console.error('Failed to load promotions:', error);
-    } finally {
+      console.error('Failed to load promotions:', error); toast.error('Failed to load promotions'); } finally {
       setLoading(false);
     }
   };
@@ -66,8 +69,7 @@ export default function PromotionsList() {
         await promotionService.delete(promotion.id);
         loadPromotions();
       } catch (error) {
-        console.error('Failed to delete promotion:', error);
-      }
+        console.error('Failed to delete promotion:', error); toast.error('Failed to delete promotion'); }
     }
   };
 
@@ -212,6 +214,7 @@ export default function PromotionsList() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'flex-end' }}>
             <TrendingUp size={14} color={color} />
             <Box sx={{ fontWeight: 600, color }}>{roi.toFixed(1)}x</Box>
+          {ConfirmDialogComponent}
           </Box>
         );
       },

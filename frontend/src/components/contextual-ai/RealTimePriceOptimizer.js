@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../common/ToastNotification';
 import {
   Box,
   Card,
@@ -34,6 +35,7 @@ const RealTimePriceOptimizer = ({
   productId,
   onChange
 }) => {
+  const toast = useToast();
   const [price, setPrice] = useState(currentPrice || 15.99);
   const [impact, setImpact] = useState(null);
   const [strategies, setStrategies] = useState(null);
@@ -91,6 +93,7 @@ const RealTimePriceOptimizer = ({
 
     } catch (err) {
       console.error('Price calculation error:', err);
+      toast.error('Price calculation error');
     } finally {
       setLoading(false);
     }

@@ -42,8 +42,10 @@ import {
 } from 'recharts';
 import { forecastingService } from '../../services/api';
 import { formatCurrency, formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 const ForecastingDashboard = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -90,6 +92,7 @@ const ForecastingDashboard = () => {
     } catch (err) {
       setError('Failed to load initial data');
       console.error('Initial data loading error:', err);
+      toast.error('Initial data loading error');
     } finally {
       setLoading(false);
     }
@@ -141,6 +144,7 @@ const ForecastingDashboard = () => {
     } catch (err) {
       setError('Failed to load forecasts');
       console.error('Forecast loading error:', err);
+      toast.error('Forecast loading error');
     } finally {
       setLoading(false);
     }
@@ -175,6 +179,7 @@ const ForecastingDashboard = () => {
     } catch (err) {
       setError(`Failed to export ${type} forecast`);
       console.error('Export error:', err);
+      toast.error('Export error');
     }
   };
 

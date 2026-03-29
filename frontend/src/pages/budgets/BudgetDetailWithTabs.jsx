@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
 import { formatLabel } from '../../utils/formatters';
@@ -16,8 +15,10 @@ import BudgetApprovals from './tabs/BudgetApprovals';
 import BudgetScenarios from './tabs/BudgetScenarios';
 import BudgetForecast from './tabs/BudgetForecast';
 import BudgetHistory from './tabs/BudgetHistory';
+import { useToast } from '../../components/common/ToastNotification';
 
 const BudgetDetailWithTabs = () => {
+  const toast = useToast();
   const { id, tab = 'overview' } = useParams();
   const navigate = useNavigate();
   const [budget, setBudget] = useState(null);

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Card, CardContent } from '@mui/material';
 import apiClient from '../../../services/apiClient';
+import { useToast } from '../../../components/common/ToastNotification';
 
 const fmt = (v) => typeof v === 'number' ? `R ${v.toLocaleString()}` : v || 'N/A';
 
 const BudgetForecast = ({ budgetId }) => {
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -18,8 +20,7 @@ const BudgetForecast = ({ budgetId }) => {
       const response = await apiClient.get(`/budgets/${budgetId}/forecast`);
       setData(response.data.data || response.data);
     } catch (error) {
-      console.error('Error loading forecast:', error);
-    } finally {
+      console.error('Error loading forecast:', error); toast.error('Error loading forecast'); } finally {
       setLoading(false);
     }
   };

@@ -13,6 +13,7 @@ const CreateDeduction = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [error, setError] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [formData, setFormData] = useState({
@@ -23,6 +24,7 @@ const CreateDeduction = () => {
   useEffect(() => { loadCustomers(); analytics.trackEvent('create_deduction_page_viewed'); }, []);
 
   const loadCustomers = async () => {
+    setFetchError(null);
     try { const response = await customerService.getCustomers(); setCustomers(response.data || []); }
     catch (err) { console.error('Error loading customers:', err); showToast('Failed to load customers', 'error'); }
   };
@@ -41,6 +43,7 @@ const CreateDeduction = () => {
       navigate('/deductions');
     } catch (err) {
       console.error('Error creating deduction:', err);
+      showToast('Error creating deduction', { severity: 'error' });
       setError(err.message || 'Failed to create deduction');
       showToast(err.message || 'Failed to create deduction', 'error');
       analytics.trackEvent('deduction_create_failed', { error: err.message });
@@ -53,6 +56,11 @@ const CreateDeduction = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadCustomers(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <PageHeader
         title="Create Deduction"
         subtitle="Record a new customer deduction"

@@ -11,6 +11,7 @@ import {
   Check as ApproveIcon, Close as RejectIcon
 } from '@mui/icons-material';
 import { workflowEngineService } from '../../services/api';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
   <Card sx={{ borderRadius: 3, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -24,12 +25,14 @@ const SummaryCard = ({ title, value, color = '#1E40AF' }) => (
 const emptyTemplate = { name: '', description: '', workflow_type: 'approval', entity_type: '', trigger_event: 'on_submit', sla_hours: '', auto_approve_below: '', notes: '' };
 
 export default function WorkflowEngine() {
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState({});
   const [templates, setTemplates] = useState([]);
   const [instances, setInstances] = useState([]);
   const [options, setOptions] = useState({});
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(emptyTemplate);
@@ -38,6 +41,7 @@ export default function WorkflowEngine() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [sumRes, tmpRes, instRes, optRes] = await Promise.all([
         workflowEngineService.getSummary(),
@@ -73,7 +77,7 @@ export default function WorkflowEngine() {
   };
 
   const handleDeleteTemplate = async (id) => {
-    if (!window.confirm('Delete this template?')) return;
+    if (!await confirm('Delete this template?', { severity: 'error' })) return;
     try { await workflowEngineService.deleteTemplate(id); setSnack({ open: true, message: 'Deleted', severity: 'success' }); loadData(); } catch (e) { setSnack({ open: true, message: e.message, severity: 'error' }); }
   };
 
@@ -106,6 +110,11 @@ export default function WorkflowEngine() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadData(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Workflow Engine</Typography>
@@ -255,6 +264,7 @@ export default function WorkflowEngine() {
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack({ ...snack, open: false })} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
       </Snackbar>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

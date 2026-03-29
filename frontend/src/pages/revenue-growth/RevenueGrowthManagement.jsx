@@ -3,8 +3,7 @@ import {
   Box, Typography, Paper, Grid, Tabs, Tab, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Button, TextField, Dialog,
   DialogTitle, DialogContent, DialogActions, IconButton, Chip, MenuItem,
-  InputAdornment, LinearProgress, Tooltip, Card, CardContent,
-} from '@mui/material';
+  InputAdornment, LinearProgress, Tooltip, Card, CardContent, Alert} from '@mui/material';
 import {
   Add as AddIcon, Search as SearchIcon, Edit as EditIcon,
   Delete as DeleteIcon, TrendingUp as GrowthIcon, AttachMoney as PricingIcon,
@@ -12,6 +11,8 @@ import {
   Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { revenueGrowthService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const formatCurrency = (v) => {
   if (!v && v !== 0) return 'R0';
@@ -45,10 +46,13 @@ const emptyPricing = {
 };
 
 export default function RevenueGrowthManagement() {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [tab, setTab] = useState(0);
   const [summary, setSummary] = useState(null);
   const [options, setOptions] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [search, setSearch] = useState('');
 
   const [initiatives, setInitiatives] = useState([]);
@@ -66,34 +70,35 @@ export default function RevenueGrowthManagement() {
   const [growthData, setGrowthData] = useState([]);
 
   const loadSummary = useCallback(async () => {
-    try { const r = await revenueGrowthService.getSummary(); if (r.success) setSummary(r.data); } catch (e) { console.error(e); }
+    try { const r = await revenueGrowthService.getSummary(); if (r.success) setSummary(r.data); } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
   }, []);
 
   const loadOptions = useCallback(async () => {
-    try { const r = await revenueGrowthService.getOptions(); if (r.success) setOptions(r.data); } catch (e) { console.error(e); }
+    try { const r = await revenueGrowthService.getOptions(); if (r.success) setOptions(r.data); } catch (e) { console.error(e); toast.error('An error occurred'); }
   }, []);
 
   const loadInitiatives = useCallback(async () => {
     setLoading(true);
-    try { const r = await revenueGrowthService.getInitiatives({ search, limit: 100 }); if (r.success) setInitiatives(r.data || []); } catch (e) { console.error(e); }
+    setFetchError(null);
+    try { const r = await revenueGrowthService.getInitiatives({ search, limit: 100 }); if (r.success) setInitiatives(r.data || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
     setLoading(false);
   }, [search]);
 
   const loadPricing = useCallback(async () => {
     setLoading(true);
-    try { const r = await revenueGrowthService.getPricing({ limit: 100 }); if (r.success) setPricing(r.data || []); } catch (e) { console.error(e); }
+    try { const r = await revenueGrowthService.getPricing({ limit: 100 }); if (r.success) setPricing(r.data || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
     setLoading(false);
   }, []);
 
   const loadMix = useCallback(async () => {
     setLoading(true);
-    try { const r = await revenueGrowthService.getMixAnalyses({ limit: 100 }); if (r.success) setMixAnalyses(r.data || []); } catch (e) { console.error(e); }
+    try { const r = await revenueGrowthService.getMixAnalyses({ limit: 100 }); if (r.success) setMixAnalyses(r.data || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
     setLoading(false);
   }, []);
 
   const loadGrowth = useCallback(async () => {
     setLoading(true);
-    try { const r = await revenueGrowthService.getGrowthTracking({ limit: 100 }); if (r.success) setGrowthData(r.data || []); } catch (e) { console.error(e); }
+    try { const r = await revenueGrowthService.getGrowthTracking({ limit: 100 }); if (r.success) setGrowthData(r.data || []); } catch (e) { console.error(e); toast.error('An error occurred'); }
     setLoading(false);
   }, []);
 
@@ -111,16 +116,16 @@ export default function RevenueGrowthManagement() {
       else await revenueGrowthService.createInitiative(initForm);
       setInitDialog(false); setInitForm(emptyInitiative); setEditingInit(null);
       loadInitiatives(); loadSummary();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const handleDeleteInitiative = async (id) => {
-    if (!window.confirm('Delete this initiative and all associated data?')) return;
-    try { await revenueGrowthService.deleteInitiative(id); loadInitiatives(); loadSummary(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete this initiative and all associated data?', { severity: 'error' })) return;
+    try { await revenueGrowthService.deleteInitiative(id); loadInitiatives(); loadSummary(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const handleViewInitiative = async (id) => {
-    try { const r = await revenueGrowthService.getInitiativeById(id); if (r.success) setSelectedInit(r.data); } catch (e) { console.error(e); }
+    try { const r = await revenueGrowthService.getInitiativeById(id); if (r.success) setSelectedInit(r.data); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const handleEditInitiative = (item) => {
@@ -149,12 +154,12 @@ export default function RevenueGrowthManagement() {
       else await revenueGrowthService.createPricing(pricingForm);
       setPricingDialog(false); setPricingForm(emptyPricing); setEditingPricing(null);
       loadPricing(); loadSummary();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const handleDeletePricing = async (id) => {
-    if (!window.confirm('Delete this pricing strategy?')) return;
-    try { await revenueGrowthService.deletePricing(id); loadPricing(); loadSummary(); } catch (e) { console.error(e); }
+    if (!await confirm('Delete this pricing strategy?', { severity: 'error' })) return;
+    try { await revenueGrowthService.deletePricing(id); loadPricing(); loadSummary(); } catch (e) { console.error(e); toast.error('An error occurred'); }
   };
 
   const handleEditPricing = (item) => {
@@ -191,6 +196,11 @@ export default function RevenueGrowthManagement() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadSummary(); loadInitiatives(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700}>Revenue Growth Management</Typography>
@@ -391,7 +401,7 @@ export default function RevenueGrowthManagement() {
                       <TableCell align="right">{Number(item.mixScore || item.mix_score || 0).toFixed(1)}</TableCell>
                       <TableCell align="right">{formatCurrency(item.opportunityValue || item.opportunity_value)}</TableCell>
                       <TableCell align="center">
-                        <Tooltip title="Delete"><IconButton size="small" color="error" onClick={async () => { if (window.confirm('Delete this analysis?')) { await revenueGrowthService.deleteMixAnalysis(item.id); loadMix(); } }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+                        <Tooltip title="Delete"><IconButton size="small" color="error" onClick={async () => { if (await confirm('Delete this analysis?', { severity: 'error' })) { await revenueGrowthService.deleteMixAnalysis(item.id); loadMix(); } }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -432,7 +442,7 @@ export default function RevenueGrowthManagement() {
                       <TableCell align="right" sx={{ color: (item.growthPct || item.growth_pct || 0) >= 0 ? 'success.main' : 'error.main' }}>{formatPct(item.growthPct || item.growth_pct)}</TableCell>
                       <TableCell><Chip label={item.trendDirection || item.trend_direction || 'flat'} size="small" color={(item.trendDirection || item.trend_direction) === 'up' ? 'success' : (item.trendDirection || item.trend_direction) === 'down' ? 'error' : 'default'} /></TableCell>
                       <TableCell align="center">
-                        <Tooltip title="Delete"><IconButton size="small" color="error" onClick={async () => { if (window.confirm('Delete this tracker?')) { await revenueGrowthService.deleteGrowthTracker(item.id); loadGrowth(); } }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
+                        <Tooltip title="Delete"><IconButton size="small" color="error" onClick={async () => { if (await confirm('Delete this tracker?', { severity: 'error' })) { await revenueGrowthService.deleteGrowthTracker(item.id); loadGrowth(); } }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -513,6 +523,7 @@ export default function RevenueGrowthManagement() {
           <Button variant="contained" onClick={handleSavePricing} disabled={!pricingForm.name}>{editingPricing ? 'Update' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
+    {ConfirmDialogComponent}
     </Box>
   );
 }

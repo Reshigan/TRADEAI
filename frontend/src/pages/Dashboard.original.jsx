@@ -3,6 +3,7 @@ import { Box, Grid, Card, CardContent, Typography, LinearProgress, Chip, Button,
 import { TrendingUp, TrendingDown, DollarSign, Megaphone, AlertTriangle, CheckSquare, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { analyticsService, promotionService, budgetService, approvalService } from '../services/api';
+import { useToast } from '../components/common/ToastNotification';
 
 const fmt = (v) => {
   if (v == null) return 'R 0';
@@ -38,6 +39,7 @@ function KPI({ icon: Icon, label, value, change, color = '#2563EB', loading }) {
 }
 
 export default function Dashboard() {
+  const toast = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [kpis, setKpis] = useState({});
@@ -64,7 +66,7 @@ export default function Dashboard() {
         });
         if (promos.status === 'fulfilled') setRecentPromos((promos.value.data || promos.value || []).slice(0, 5));
         if (approvals.status === 'fulfilled') setPendingApprovals((approvals.value.data || approvals.value || []).slice(0, 5));
-      } catch (e) { console.error('Dashboard load error:', e); }
+      } catch (e) { console.error('Dashboard load error:', e); toast.error('Dashboard load error'); }
       setLoading(false);
     };
     load();

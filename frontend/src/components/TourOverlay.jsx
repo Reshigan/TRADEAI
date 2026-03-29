@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, ProgressBar } from 'react-bootstrap';
 import { FaArrowLeft, FaArrowRight, FaTimes, FaQuestionCircle } from 'react-icons/fa';
 import apiClient from '../services/apiClient';
+import { useToast } from './common/ToastNotification';
 
 const TourOverlay = ({ module, onComplete }) => {
+  const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [tourSteps, setTourSteps] = useState([]);
@@ -25,6 +27,7 @@ const TourOverlay = ({ module, onComplete }) => {
       }
     } catch (error) {
       console.error('Error checking tour status:', error);
+      toast.error('Error checking tour status');
     }
   };
 
@@ -147,6 +150,7 @@ const TourOverlay = ({ module, onComplete }) => {
       }
     } catch (error) {
       console.error('Error completing tour:', error);
+      toast.error('Error completing tour');
     } finally {
       setLoading(false);
     }
@@ -182,6 +186,7 @@ const TourOverlay = ({ module, onComplete }) => {
       }
     } catch (error) {
       console.error('Error getting explanation:', error);
+      toast.error('Error getting explanation');
       alert('Unable to get explanation at this time. Please try again later.');
     } finally {
       setLoading(false);

@@ -22,10 +22,12 @@ import { PageHeader, DataTable, StatusChip } from '../common';
 import { customerService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
 import CustomerForm from './CustomerForm';
+import { useToast } from '../common/ToastNotification';
 
 // No more mock data - using real API calls
 
 const CustomerList = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -55,6 +57,7 @@ const CustomerList = () => {
       setLoading(false);
     } catch (error) {
       console.error("CustomerList: Error fetching customers:", error);
+      toast.error('CustomerList: Error fetching customers');
       setError(error.message || "Failed to load customers. Please try again.");
       setLoading(false);
     }
@@ -102,6 +105,7 @@ const CustomerList = () => {
       setOpenForm(false);
     } catch (err) {
       console.error('Error saving customer:', err);
+      toast.error('Error saving customer');
       // Handle error
     }
   };
@@ -135,6 +139,7 @@ const CustomerList = () => {
       return true;
     } catch (err) {
       console.error('Error filtering customer:', err, customer);
+      toast.error('Error filtering customer');
       return false;
     }
   });

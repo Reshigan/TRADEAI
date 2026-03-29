@@ -15,6 +15,7 @@ import {
 import { FormDialog } from '../common';
 import { customerService, productService } from '../../services/api';
 import { formatCurrency } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 // Get currency symbol from user's company settings
 const getCurrencySymbol = () => {
@@ -55,6 +56,7 @@ const customerHierarchyOptions = {
 };
 
 const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     year: new Date().getFullYear() + 1,
     total_amount: '',
@@ -125,6 +127,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
       setCustomers(response.data || response);
     } catch (error) {
       console.error('Error loading customers:', error);
+      toast.error('Error loading customers');
     }
   };
 
@@ -135,6 +138,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
       setProducts(response.data || response);
     } catch (error) {
       console.error('Error loading products:', error);
+      toast.error('Error loading products');
     }
   };
 
@@ -230,6 +234,7 @@ const BudgetForm = ({ open, onClose, onSubmit, budget = null }) => {
       setLoading(false);
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast.error('Error submitting form');
       setErrors({ general: error.message || 'Failed to submit form' });
       setLoading(false);
     }

@@ -39,6 +39,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { dataLineageService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const METHODOLOGIES = [
   { value: 'pre_period_average', label: 'Pre-Period Average', description: 'Simple average of pre-promotion period sales' },
@@ -53,6 +54,7 @@ const METHODOLOGIES = [
 
 const BaselineConfigPage = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [configs, setConfigs] = useState([]);
   const [defaultConfig, setDefaultConfig] = useState(null);
@@ -94,6 +96,7 @@ const BaselineConfigPage = () => {
       setDefaultConfig(defaultResponse.data);
     } catch (error) {
       console.error('Error loading configs:', error);
+      toast.error('Error loading configs');
       enqueueSnackbar('Failed to load baseline configurations', { variant: 'error' });
     } finally {
       setLoading(false);
@@ -156,6 +159,7 @@ const BaselineConfigPage = () => {
       loadConfigs();
     } catch (error) {
       console.error('Error saving config:', error);
+      toast.error('Error saving config');
       enqueueSnackbar('Failed to save configuration', { variant: 'error' });
     }
   };
@@ -167,6 +171,7 @@ const BaselineConfigPage = () => {
       loadConfigs();
     } catch (error) {
       console.error('Error setting default:', error);
+      toast.error('Error setting default');
       enqueueSnackbar('Failed to set default configuration', { variant: 'error' });
     }
   };

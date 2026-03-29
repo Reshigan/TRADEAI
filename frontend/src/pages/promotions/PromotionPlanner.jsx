@@ -28,10 +28,12 @@ import HierarchySelector from '../../components/hierarchy/HierarchySelector';
 import { simulationService } from '../../services/api';
 import { promotionService } from '../../services/api';
 import { useSnackbar } from 'notistack';
+import { useToast } from '../../components/common/ToastNotification';
 
 const steps = ['Select Hierarchy', 'Configure Promotion', 'Review & Simulate', 'Finalize'];
 
 const PromotionPlanner = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const { enqueueSnackbar } = useSnackbar();
@@ -102,8 +104,7 @@ const PromotionPlanner = () => {
 
       setConflicts(conflictResponse.conflicts || []);
     } catch (error) {
-      console.error('Failed to run simulation:', error);
-    } finally {
+      console.error('Failed to run simulation:', error); toast.error('Failed to run simulation'); } finally {
       setSimulationLoading(false);
     }
   };
@@ -129,6 +130,7 @@ const PromotionPlanner = () => {
       navigate('/promotions');
     } catch (error) {
       console.error('Failed to create promotion:', error);
+      toast.error('Failed to create promotion');
       enqueueSnackbar(error.message || 'Failed to create promotion', { variant: 'error' });
     } finally {
       setSubmitting(false);

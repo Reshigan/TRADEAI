@@ -31,11 +31,14 @@ import {
   LocationCity as DistrictIcon,
   Store as StoreIcon
 } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 import apiClient from '../../services/apiClient';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
+import useConfirmDialog from '../../hooks/useConfirmDialog';
 
 const HierarchyManager = () => {
+  const toast = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const [activeTab, setActiveTab] = useState(0);
   const [regions, setRegions] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -429,6 +432,7 @@ const HierarchyManager = () => {
       )}
 
       {renderDialog()}
+    {ConfirmDialogComponent}
     </Container>
   );
 };

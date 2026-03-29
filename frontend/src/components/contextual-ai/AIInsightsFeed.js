@@ -27,9 +27,11 @@ import {
   ArrowForward
 } from '@mui/icons-material';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../common/ToastNotification';
 
 
 const AIInsightsFeed= ({ userId }) => {
+  const toast = useToast();
   const [setLoading] = useState(true);
   const [actions, setActions] = useState([]);
   const [performance, setPerformance] = useState(null);
@@ -54,6 +56,7 @@ const AIInsightsFeed= ({ userId }) => {
       
     } catch (err) {
       console.error('Feed loading error:', err);
+      toast.error('Feed loading error');
       // Fallback to static feed
       setActions(generateFallbackActions());
       setPerformance(generateFallbackPerformance());

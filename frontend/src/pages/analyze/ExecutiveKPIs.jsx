@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Grid, LinearProgress } from '@mui/material';
 import { TrendingUp, TrendingDown, DollarSign, Target, BarChart, Megaphone, Users, AlertTriangle } from 'lucide-react';
 import { analyticsService } from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
@@ -31,6 +32,7 @@ function KPICard({ icon: Icon, label, value, change, color = '#2563EB', subtitle
 }
 
 export default function ExecutiveKPIs() {
+  const toast = useToast();
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,7 @@ export default function ExecutiveKPIs() {
       try {
         const res = await analyticsService.getDashboard();
         setData(res.data || res || {});
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error(e); toast.error('An error occurred'); }
       setLoading(false);
     };
     load();

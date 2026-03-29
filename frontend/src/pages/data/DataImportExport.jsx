@@ -61,6 +61,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { useDropzone } from 'react-dropzone';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 // Module configurations
 const MODULES = {
@@ -113,6 +114,7 @@ const DataImportExport = () => {
   const { enqueueSnackbar } = useSnackbar();
   
   // State
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState(0);
   const [selectedModule, setSelectedModule] = useState('customers');
   const [loading, setLoading] = useState(false);
@@ -194,6 +196,7 @@ const DataImportExport = () => {
       setImportStep(1);
     } catch (error) {
       console.error('Error parsing file:', error);
+      toast.error('Error parsing file');
       enqueueSnackbar('Error parsing file', { variant: 'error' });
     }
   };
@@ -219,6 +222,7 @@ const DataImportExport = () => {
       enqueueSnackbar(`Successfully imported ${response.data.data.successCount} records`, { variant: 'success' });
     } catch (error) {
       console.error('Import error:', error);
+      toast.error('Import error');
       enqueueSnackbar(error.response?.data?.message || 'Import failed', { variant: 'error' });
     } finally {
       setImporting(false);
@@ -253,6 +257,7 @@ const DataImportExport = () => {
       enqueueSnackbar(`${MODULES[module].label} exported successfully`, { variant: 'success' });
     } catch (error) {
       console.error('Export error:', error);
+      toast.error('Export error');
       enqueueSnackbar('Export failed', { variant: 'error' });
     } finally {
       setExporting(false);
@@ -280,6 +285,7 @@ const DataImportExport = () => {
       enqueueSnackbar('Template downloaded', { variant: 'success' });
     } catch (error) {
       console.error('Template download error:', error);
+      toast.error('Template download error');
       enqueueSnackbar('Failed to download template', { variant: 'error' });
     } finally {
       setLoading(false);

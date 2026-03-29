@@ -2,14 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Card, CardContent, Typography, Tabs, Tab, LinearProgress, Button,
   List, ListItemButton, ListItemIcon, ListItemText, Collapse, Chip,
-  TextField, InputAdornment, IconButton, Grid, Paper
-} from '@mui/material';
+  TextField, InputAdornment, IconButton, Grid, Paper, Alert} from '@mui/material';
 import {
   ChevronDown, ChevronRight, FolderTree, Search, X, RefreshCw,
   Building2, Store, MapPin, Globe, Tag, Package, Layers
 } from 'lucide-react';
 import { baselineEngineService } from '../../services/api';
 import HierarchyBreadcrumb from '../../components/hierarchy/HierarchyBreadcrumb';
+import { useToast } from '../../components/common/ToastNotification';
 
 const CUSTOMER_LEVEL_ICONS = {
   national: <Globe size={16} />, chain: <Building2 size={16} />,
@@ -22,6 +22,7 @@ const PRODUCT_LEVEL_ICONS = {
 };
 
 function HierarchyTree({ items, level = 0, type = 'customer', searchQuery = '', onNodeClick }) {
+  const toast = useToast();
   const [expanded, setExpanded] = useState({});
   if (!items || items.length === 0) return <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: level * 3 }}>No items at this level</Typography>;
   const icons = type === 'customer' ? CUSTOMER_LEVEL_ICONS : PRODUCT_LEVEL_ICONS;
@@ -78,16 +79,19 @@ const countNodes = (nodes) => {
 };
 
 export default function HierarchyManager() {
+  const toast = useToast();
   const [tab, setTab] = useState(0);
   const [customerHierarchy, setCustomerHierarchy] = useState([]);
   const [productHierarchy, setProductHierarchy] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNode, setSelectedNode] = useState(null);
   const [stats, setStats] = useState({ customer: {}, product: {} });
 
   const loadHierarchy = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [custRes, prodRes] = await Promise.allSettled([
         baselineEngineService.getHierarchyTree('customer'),
@@ -105,7 +109,7 @@ export default function HierarchyManager() {
         setProductHierarchy(arr);
         setStats(prev => ({ ...prev, product: { totalNodes: countNodes(arr) } }));
       }
-    } catch (e) { console.error('Failed to load hierarchy:', e); }
+    } catch (e) { console.error('Failed to load hierarchy:', e); toast.error('Failed to load hierarchy'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   }, []);
 
@@ -113,6 +117,11 @@ export default function HierarchyManager() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadHierarchy(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
           <Typography variant="h1">Hierarchy Manager</Typography>

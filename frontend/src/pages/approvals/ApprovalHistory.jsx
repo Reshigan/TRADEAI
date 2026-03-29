@@ -46,9 +46,11 @@ import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
+import { useToast } from '../../components/common/ToastNotification';
 
 const ApprovalHistory = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const toast = useToast();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
@@ -86,6 +88,7 @@ const ApprovalHistory = () => {
         setApprovals(transformedApprovals);
       } catch (error) {
         console.error('Error fetching approval history:', error);
+        toast.error('Error fetching approval history');
         enqueueSnackbar('Failed to load approval history', { variant: 'error' });
       } finally {
         setLoading(false);

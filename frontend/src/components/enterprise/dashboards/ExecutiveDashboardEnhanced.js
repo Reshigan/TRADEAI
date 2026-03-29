@@ -46,6 +46,7 @@ import {
 } from 'recharts';
 import enterpriseApi from '../../../services/enterpriseApi';
 import KPICard from './KPICard';
+import { useToast } from '../../common/ToastNotification';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
@@ -58,6 +59,7 @@ function TabPanel({ children, value, index }) {
 }
 
 export default function ExecutiveDashboardEnhanced() {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -82,6 +84,7 @@ export default function ExecutiveDashboardEnhanced() {
       setData(response.data);
     } catch (err) {
       console.error('Failed to load executive dashboard:', err);
+      toast.error('Failed to load executive dashboard');
       setError(err.error?.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);

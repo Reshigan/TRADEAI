@@ -46,6 +46,7 @@ import apiClient from '../../services/apiClient';
 import { formatLabel } from '../../utils/formatters';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { useToast } from '../common/ToastNotification';
 
 
 const steps = [
@@ -56,6 +57,7 @@ const steps = [
 ];
 
 const PromotionWizard = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -101,6 +103,7 @@ const PromotionWizard = () => {
       setCustomers(Array.isArray(result) ? result : (result?.data || []));
     } catch (error) {
       console.error('Error fetching customers:', error);
+      toast.error('Error fetching customers');
       setCustomers([]);
     }
   };
@@ -112,6 +115,7 @@ const PromotionWizard = () => {
       setProducts(Array.isArray(result) ? result : (result?.data || []));
     } catch (error) {
       console.error('Error fetching products:', error);
+      toast.error('Error fetching products');
       setProducts([]);
     }
   };
@@ -140,6 +144,7 @@ const PromotionWizard = () => {
       setCustomerHierarchies(flatHierarchies);
     } catch (error) {
       console.error('Error fetching customer hierarchies:', error);
+      toast.error('Error fetching customer hierarchies');
       setCustomerHierarchies([]);
     }
   };
@@ -168,6 +173,7 @@ const PromotionWizard = () => {
       setProductHierarchies(flatHierarchies);
     } catch (error) {
       console.error('Error fetching product hierarchies:', error);
+      toast.error('Error fetching product hierarchies');
       setProductHierarchies([]);
     }
   };
@@ -305,6 +311,7 @@ const PromotionWizard = () => {
       
     } catch (error) {
       console.error('Error creating promotion:', error);
+      toast.error('Error creating promotion');
       alert('Error creating promotion: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);

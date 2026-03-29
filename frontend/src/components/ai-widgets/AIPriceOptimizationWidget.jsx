@@ -27,8 +27,10 @@ import {
   InfoOutlined
 } from '@mui/icons-material';
 import api from '../../services/api';
+import { useToast } from '../common/ToastNotification';
 
 const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 25.99 }) => {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [optimization, setOptimization] = useState(null);
@@ -74,6 +76,7 @@ const AIPriceOptimizationWidget = ({ productId = 'SAMPLE-PROD', currentPrice = 2
       setOptimization(transformedOptimization);
     } catch (err) {
       console.error('Optimization error:', err);
+      toast.error('Optimization error');
       setError(err.response?.data?.message || 'Failed to load optimization');
     } finally {
       setLoading(false);

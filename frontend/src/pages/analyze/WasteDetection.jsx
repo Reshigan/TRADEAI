@@ -2,19 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Grid, Button, LinearProgress, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Snackbar, Alert } from '@mui/material';
 import { AlertTriangle, RefreshCw, TrendingDown, DollarSign } from 'lucide-react';
 import api from '../../services/api';
+import { useToast } from '../../components/common/ToastNotification';
 
 const fmt = (v) => { const n = Number(v || 0); return n >= 1e6 ? `R ${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `R ${(n/1e3).toFixed(0)}K` : `R ${n.toFixed(0)}`; };
 
 export default function WasteDetection() {
+  const toast = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [feedback, setFeedback] = useState({ open: false, message: '', severity: 'success' });
 
   const load = async () => {
     try {
       const res = await api.get('/ai/waste-detection');
       setData(res.data?.data || res.data || {});
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error('An error occurred'); setFetchError(e.message || 'Failed to load data'); }
     setLoading(false);
   };
 
@@ -29,6 +32,7 @@ export default function WasteDetection() {
       setFeedback({ open: true, message: pCount > 0 ? `Analysis complete: ${pCount} waste pattern${pCount !== 1 ? 's' : ''} detected` : 'Analysis complete: no waste patterns detected', severity: 'success' });
     } catch (e) {
       console.error(e);
+      toast.error('An error occurred');
       setFeedback({ open: true, message: 'Analysis failed: ' + (e.response?.data?.message || e.message), severity: 'error' });
     }
     setLoading(false);
@@ -39,6 +43,11 @@ export default function WasteDetection() {
 
   return (
     <Box>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); load(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box><Typography variant="h1">Waste Detection</Typography><Typography variant="body2" color="text.secondary">AI-powered identification of money-losing promotion patterns</Typography></Box>
         <Button variant="contained" startIcon={<RefreshCw size={16} />} onClick={runAnalysis} disabled={loading}>Run Analysis</Button>
