@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Typography, Button, Paper, Chip, IconButton, TextField, MenuItem,
   CircularProgress, Tooltip, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, alpha, Grid, Alert} from '@mui/material';
-import { Add, Refresh, Edit, Delete, Visibility, Gavel, CheckCircle, TrendingUp } from '@mui/icons-material';
+  TableHead, TableRow, TableSortLabel, TablePagination, alpha, Grid, Alert, InputAdornment} from '@mui/material';
+import { Add, Refresh, Edit, Delete, Visibility, Gavel, CheckCircle, TrendingUp, Search as SearchIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { tradingTermsService } from '../../services/api';
 import { formatLabel } from '../../utils/formatters';
@@ -18,6 +18,11 @@ const TradingTermsList = () => {
   const [fetchError, setFetchError] = useState(null);
   const [tradingTerms, setTradingTerms] = useState([]);
   const [filters, setFilters] = useState({ termType: '', status: '', isActive: '' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [sortDir, setSortDir] = useState('asc');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const loadTradingTerms = async () => {
     setLoading(true);
@@ -44,6 +49,29 @@ const TradingTermsList = () => {
       try { await tradingTermsService.deleteTradingTerm(id); loadTradingTerms(); } catch (error) { console.error('Failed to delete:', error); toast.error('Failed to delete'); }
     }
   };
+
+  const handleSort = (field) => {
+    setSortDir(sortField === field && sortDir === 'asc' ? 'desc' : 'asc');
+    setSortField(field);
+  };
+
+  const filteredTerms = useMemo(() => {
+    if (!searchQuery) return tradingTerms;
+    const q = searchQuery.toLowerCase();
+    return tradingTerms.filter(t => (t.code || '').toLowerCase().includes(q) || (t.name || '').toLowerCase().includes(q));
+  }, [tradingTerms, searchQuery]);
+
+  const sortedTerms = useMemo(() => {
+    if (!sortField) return filteredTerms;
+    return [...filteredTerms].sort((a, b) => {
+      const aVal = a[sortField] ?? '';
+      const bVal = b[sortField] ?? '';
+      const cmp = typeof aVal === 'number' && typeof bVal === 'number' ? aVal - bVal : String(aVal).localeCompare(String(bVal));
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [filteredTerms, sortField, sortDir]);
+
+  const paginatedTerms = sortedTerms.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const getStatusColor = (status) => ({ draft: 'default', pending_approval: 'warning', approved: 'success', rejected: 'error', expired: 'default', suspended: 'warning' })[status] || 'default';
   const getTermTypeLabel = (type) => ({ volume_discount: 'Volume Discount', early_payment: 'Early Payment', prompt_payment: 'Prompt Payment', rebate: 'Rebate', listing_fee: 'Listing Fee', promotional_support: 'Promotional Support', marketing_contribution: 'Marketing Contribution', settlement_discount: 'Settlement Discount', cash_discount: 'Cash Discount', quantity_discount: 'Quantity Discount', loyalty_bonus: 'Loyalty Bonus', growth_incentive: 'Growth Incentive' })[type] || formatLabel(type);
@@ -130,12 +158,16 @@ const TradingTermsList = () => {
             <MenuItem value="true">Active</MenuItem>
             <MenuItem value="false">Inactive</MenuItem>
           </TextField>
-          <Chip label={`${tradingTerms.length} terms`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', fontWeight: 600 }} />
+          <TextField placeholder="Search trading terms..." value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }} size="small"
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
+            sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
+          <Chip label={`${filteredTerms.length} terms`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', fontWeight: 600 }} />
         </Box>
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: 'primary.dark' }} /></Box>
-        ) : tradingTerms.length === 0 ? (
+        ) : filteredTerms.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Gavel sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
             <Typography variant="body2" color="text.secondary">No trading terms found. Create your first trading term to get started.</Typography>
@@ -145,19 +177,19 @@ const TradingTermsList = () => {
             <Table>
               <TableHead>
                 <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: 'background.default' } }}>
-                  <TableCell>Code</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'code'} direction={sortField === 'code' ? sortDir : 'asc'} onClick={() => handleSort('code')}>Code</TableSortLabel></TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'name'} direction={sortField === 'name' ? sortDir : 'asc'} onClick={() => handleSort('name')}>Name</TableSortLabel></TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'termType'} direction={sortField === 'termType' ? sortDir : 'asc'} onClick={() => handleSort('termType')}>Type</TableSortLabel></TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'status'} direction={sortField === 'status' ? sortDir : 'asc'} onClick={() => handleSort('status')}>Status</TableSortLabel></TableCell>
                   <TableCell>Valid From</TableCell>
                   <TableCell>Valid To</TableCell>
-                  <TableCell align="right">Rate</TableCell>
-                  <TableCell>Priority</TableCell>
+                  <TableCell align="right"><TableSortLabel active={sortField === 'rate'} direction={sortField === 'rate' ? sortDir : 'asc'} onClick={() => handleSort('rate')}>Rate</TableSortLabel></TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'priority'} direction={sortField === 'priority' ? sortDir : 'asc'} onClick={() => handleSort('priority')}>Priority</TableSortLabel></TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tradingTerms.map((term) => (
+                {paginatedTerms.map((term) => (
                   <TableRow key={term.id || term._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}
                     onClick={() => handleView(term.id || term._id)}>
                     <TableCell><Typography variant="body2" fontWeight={600}>{term.code}</Typography></TableCell>
@@ -187,6 +219,12 @@ const TradingTermsList = () => {
               </TableBody>
             </Table>
           </TableContainer>
+        )}
+        {filteredTerms.length > 0 && (
+          <TablePagination component="div" count={sortedTerms.length} page={page}
+            onPageChange={(_, p) => setPage(p)} rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+            rowsPerPageOptions={[10, 25, 50, 100]} />
         )}
       </Paper>
     {ConfirmDialogComponent}

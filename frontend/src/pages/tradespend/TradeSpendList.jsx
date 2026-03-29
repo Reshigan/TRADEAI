@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Grid, Typography, Button, Paper, Chip, IconButton, TextField, MenuItem,
   CircularProgress, Tooltip, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, alpha, Alert} from '@mui/material';
+  TableHead, TableRow, TableSortLabel, TablePagination, alpha, Alert, InputAdornment} from '@mui/material';
 import {
   Add, Refresh, Edit, Delete, Visibility, AttachMoney, TrendingUp,
-  CheckCircle, PieChart as PieChartIcon,
+  CheckCircle, PieChart as PieChartIcon, Search as SearchIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { tradeSpendService } from '../../services/api';
@@ -22,6 +22,11 @@ const TradeSpendList = () => {
   const [tradeSpends, setTradeSpends] = useState([]);
   const [summary, setSummary] = useState(null);
   const [filters, setFilters] = useState({ spendType: '', status: '', page: 1, limit: 20 });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [sortDir, setSortDir] = useState('asc');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const loadTradeSpends = async () => {
     setLoading(true);
@@ -54,6 +59,29 @@ const TradeSpendList = () => {
       try { await tradeSpendService.deleteTradeSpend(id); loadTradeSpends(); } catch (error) { console.error('Failed to delete:', error); toast.error('Failed to delete'); }
     }
   };
+
+  const handleSort = (field) => {
+    setSortDir(sortField === field && sortDir === 'asc' ? 'desc' : 'asc');
+    setSortField(field);
+  };
+
+  const filteredSpends = useMemo(() => {
+    if (!searchQuery) return tradeSpends;
+    const q = searchQuery.toLowerCase();
+    return tradeSpends.filter(s => (s.spendId || '').toLowerCase().includes(q) || (s.customer?.name || s.customerName || '').toLowerCase().includes(q));
+  }, [tradeSpends, searchQuery]);
+
+  const sortedSpends = useMemo(() => {
+    if (!sortField) return filteredSpends;
+    return [...filteredSpends].sort((a, b) => {
+      const aVal = a[sortField] ?? '';
+      const bVal = b[sortField] ?? '';
+      const cmp = typeof aVal === 'number' && typeof bVal === 'number' ? aVal - bVal : String(aVal).localeCompare(String(bVal));
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [filteredSpends, sortField, sortDir]);
+
+  const paginatedSpends = sortedSpends.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const getStatusColor = (status) => ({ draft: 'default', submitted: 'info', approved: 'success', active: 'primary', completed: 'success', cancelled: 'error', rejected: 'error' })[status] || 'default';
   const getSpendTypeLabel = (type) => ({ marketing: 'Marketing', cash_coop: 'Cash Co-op', trading_terms: 'Trading Terms', rebate: 'Rebate', promotion: 'Promotion' })[type] || formatLabel(type);
@@ -133,12 +161,16 @@ const TradeSpendList = () => {
             <MenuItem value="cancelled">Cancelled</MenuItem>
             <MenuItem value="rejected">Rejected</MenuItem>
           </TextField>
-          <Chip label={`${tradeSpends.length} records`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', fontWeight: 600 }} />
+          <TextField placeholder="Search trade spends..." value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }} size="small"
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment> }}
+            sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.default' } }} />
+          <Chip label={`${filteredSpends.length} records`} sx={{ alignSelf: 'center', bgcolor: alpha('#1E40AF', 0.08), color: 'primary.dark', fontWeight: 600 }} />
         </Box>
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress sx={{ color: 'primary.dark' }} /></Box>
-        ) : tradeSpends.length === 0 ? (
+        ) : filteredSpends.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <AttachMoney sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
             <Typography variant="body2" color="text.secondary">No trade spends found. Create your first trade spend to get started.</Typography>
@@ -148,19 +180,19 @@ const TradeSpendList = () => {
             <Table>
               <TableHead>
                 <TableRow sx={{ '& th': { fontWeight: 600, color: 'text.secondary', fontSize: '0.8rem', bgcolor: 'background.default' } }}>
-                  <TableCell>Spend ID</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Customer</TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'spendId'} direction={sortField === 'spendId' ? sortDir : 'asc'} onClick={() => handleSort('spendId')}>Spend ID</TableSortLabel></TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'spendType'} direction={sortField === 'spendType' ? sortDir : 'asc'} onClick={() => handleSort('spendType')}>Type</TableSortLabel></TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'customerName'} direction={sortField === 'customerName' ? sortDir : 'asc'} onClick={() => handleSort('customerName')}>Customer</TableSortLabel></TableCell>
                   <TableCell align="right">Requested</TableCell>
                   <TableCell align="right">Approved</TableCell>
                   <TableCell align="right">Spent</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'status'} direction={sortField === 'status' ? sortDir : 'asc'} onClick={() => handleSort('status')}>Status</TableSortLabel></TableCell>
                   <TableCell>Period</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tradeSpends.map((spend) => (
+                {paginatedSpends.map((spend) => (
                   <TableRow key={spend.id || spend._id} hover sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha('#1E40AF', 0.02) } }}
                     onClick={() => handleView(spend._id)}>
                     <TableCell><Typography variant="body2" fontWeight={600}>{spend.spendId}</Typography></TableCell>
@@ -186,6 +218,12 @@ const TradeSpendList = () => {
               </TableBody>
             </Table>
           </TableContainer>
+        )}
+        {filteredSpends.length > 0 && (
+          <TablePagination component="div" count={sortedSpends.length} page={page}
+            onPageChange={(_, p) => setPage(p)} rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+            rowsPerPageOptions={[10, 25, 50, 100]} />
         )}
       </Paper>
     {ConfirmDialogComponent}

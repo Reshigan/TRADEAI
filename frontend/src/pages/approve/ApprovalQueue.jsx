@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, TextField, LinearProgress, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Tabs, Tab, Alert} from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, TablePagination, Chip, TextField, LinearProgress, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Tabs, Tab, Alert} from '@mui/material';
 import { Search, Check, X, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { approvalService } from '../../services/api';
@@ -17,6 +17,10 @@ export default function ApprovalQueue() {
   const [tab, setTab] = useState(0);
   const [actionDialog, setActionDialog] = useState(null);
   const [comment, setComment] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [sortDir, setSortDir] = useState('asc');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const load = useCallback(async () => {
     try {
@@ -30,6 +34,21 @@ export default function ApprovalQueue() {
   useEffect(() => { setLoading(true); load(); }, [load]);
 
   const filtered = approvals.filter(a => (a.promotion_name || a.entity_type || '').toLowerCase().includes(search.toLowerCase()));
+
+  const handleSort = (field) => {
+    setSortDir(sortField === field && sortDir === 'asc' ? 'desc' : 'asc');
+    setSortField(field);
+  };
+
+  const sortedFiltered = [...filtered].sort((a, b) => {
+    if (!sortField) return 0;
+    const aVal = a[sortField] ?? '';
+    const bVal = b[sortField] ?? '';
+    const cmp = typeof aVal === 'number' && typeof bVal === 'number' ? aVal - bVal : String(aVal).localeCompare(String(bVal));
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  const paginatedApprovals = sortedFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleAction = async (action) => {
     if (!actionDialog) return;
@@ -62,12 +81,12 @@ export default function ApprovalQueue() {
             <TableContainer>
               <Table size="small">
                 <TableHead><TableRow>
-                  <TableCell>Item</TableCell><TableCell>Type</TableCell><TableCell>Requester</TableCell><TableCell align="right">Amount</TableCell><TableCell>Submitted</TableCell><TableCell>Status</TableCell><TableCell align="right">Actions</TableCell>
+                  <TableCell><TableSortLabel active={sortField === 'promotion_name'} direction={sortField === 'promotion_name' ? sortDir : 'asc'} onClick={() => handleSort('promotion_name')}>Item</TableSortLabel></TableCell><TableCell><TableSortLabel active={sortField === 'entity_type'} direction={sortField === 'entity_type' ? sortDir : 'asc'} onClick={() => handleSort('entity_type')}>Type</TableSortLabel></TableCell><TableCell>Requester</TableCell><TableCell align="right"><TableSortLabel active={sortField === 'amount'} direction={sortField === 'amount' ? sortDir : 'asc'} onClick={() => handleSort('amount')}>Amount</TableSortLabel></TableCell><TableCell><TableSortLabel active={sortField === 'created_at'} direction={sortField === 'created_at' ? sortDir : 'asc'} onClick={() => handleSort('created_at')}>Submitted</TableSortLabel></TableCell><TableCell>Status</TableCell><TableCell align="right">Actions</TableCell>
                 </TableRow></TableHead>
                 <TableBody>
                   {filtered.length === 0 ? (
                     <TableRow><TableCell colSpan={7} align="center"><Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>No approvals found</Typography></TableCell></TableRow>
-                  ) : filtered.map(a => (
+                  ) : paginatedApprovals.map(a => (
                     <TableRow key={a.id}>
                       <TableCell><Typography variant="body2" fontWeight={500}>{a.promotion_name || a.entity_type || 'Approval'}</Typography></TableCell>
                       <TableCell sx={{ textTransform: 'capitalize' }}>{(a.entity_type || 'promotion').replace(/_/g, ' ')}</TableCell>
@@ -87,6 +106,12 @@ export default function ApprovalQueue() {
                 </TableBody>
               </Table>
             </TableContainer>
+          )}
+          {filtered.length > 0 && (
+            <TablePagination component="div" count={sortedFiltered.length} page={page}
+              onPageChange={(_, p) => setPage(p)} rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+              rowsPerPageOptions={[10, 25, 50, 100]} />
           )}
         </CardContent>
       </Card>
