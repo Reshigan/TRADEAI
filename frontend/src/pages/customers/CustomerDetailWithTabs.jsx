@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton } from '@mui/material';
+import { Box, Container, Typography, Tabs, Tab, Button, Paper, Chip, Skeleton , Alert} from '@mui/material';
 import { ArrowBack as BackIcon, Edit as EditIcon } from '@mui/icons-material';
 import apiClient from '../../services/apiClient';
 import analytics from '../../utils/analytics';
@@ -25,6 +25,7 @@ const CustomerDetailWithTabs = () => {
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
+  const [fetchError, setFetchError] = useState(null);
 
   const pageVariant = usePageVariants('customerDetail');
   const { labels } = useCompanyType();
@@ -55,8 +56,7 @@ const CustomerDetailWithTabs = () => {
       setCustomer(response.data.data || response.data);
     } catch (error) {
       console.error('Error loading customer:', error);
-      toast.error('Failed to load customer');
-    } finally {
+      toast.error('Failed to load customer'); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -70,6 +70,11 @@ const CustomerDetailWithTabs = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadCustomer(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ mb: 3 }}>
           <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />

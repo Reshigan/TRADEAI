@@ -10,7 +10,7 @@ import {
   Paper,
   Chip,
   Skeleton
-} from '@mui/material';
+, Alert} from '@mui/material';
 import {
   ArrowBack as BackIcon
 } from '@mui/icons-material';
@@ -46,6 +46,7 @@ const PromotionDetailWithTabs = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(tab || 'overview');
   const [actionLoading, setActionLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   const pageVariant = usePageVariants('promotionDetail');
   const tabs = pageVariant?.tabs || [
@@ -76,8 +77,7 @@ const PromotionDetailWithTabs = () => {
       setPromotion(response.data.data || response.data);
     } catch (error) {
       console.error('Error loading promotion:', error);
-      toast.error('Failed to load promotion');
-    } finally {
+      toast.error('Failed to load promotion'); setFetchError(error.message || 'Failed to load data');} finally {
       setLoading(false);
     }
   };
@@ -104,8 +104,7 @@ const PromotionDetailWithTabs = () => {
       navigate('/promotions');
     } catch (error) {
       console.error('Error deleting promotion:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete promotion');
-    }
+      toast.error(error.response?.data?.message || 'Failed to delete promotion'); setFetchError(error.message || 'Failed to load data');}
   };
 
   // Promotion-specific actions per status — only show actions we can handle
@@ -147,6 +146,11 @@ const PromotionDetailWithTabs = () => {
   if (loading) {
     return (
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {fetchError && (
+        <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={() => { setFetchError(null); loadPromotion(); }}>Retry</Button>}>
+          {fetchError}
+        </Alert>
+      )}
         <Box sx={{ mb: 3 }}>
           <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={120} sx={{ mb: 2 }} />
