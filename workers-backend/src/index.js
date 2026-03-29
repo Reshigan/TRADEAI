@@ -87,6 +87,14 @@ import { tradeSpendAnalyticsRoutes } from './routes/tradeSpendAnalytics.js';
 import { wizardRoutes } from './routes/wizards.js';
 import { processModelRoutes } from './routes/processModel.js';
 import { aiChatbotRoutes, cannibalizationRoutes, enterpriseRoutes, forwardBuyRoutes, insightsRoutes, masterDataRoutes, metricsRoutes, ollamaRoutes, superAdminRoutes, pushRoutes } from './routes/missingRoutes.js';
+// Remaining missing backend routes
+import { adminRoutes } from './routes/admin.js';
+import { apiManagementRoutes } from './routes/apiManagement.js';
+import { monitoringRoutes } from './routes/monitoring.js';
+import { posImportRoutes } from './routes/posImport.js';
+import { predictiveAnalyticsRoutes } from './routes/predictiveAnalytics.js';
+import { salesTransactionsRoutes } from './routes/salesTransactions.js';
+import { webhookRoutes } from './routes/webhooks.js';
 
 const app = new Hono();
 
@@ -240,6 +248,14 @@ app.route('/api/metrics', metricsRoutes);
 app.route('/api/ollama', ollamaRoutes);
 app.route('/api/super-admin', superAdminRoutes);
 app.route('/api/push', pushRoutes);
+// Remaining missing backend routes
+app.route('/api/admin', adminRoutes);
+app.route('/api/api-management', apiManagementRoutes);
+app.route('/api/monitoring', monitoringRoutes);
+app.route('/api/pos-import', posImportRoutes);
+app.route('/api/predictive-analytics', predictiveAnalyticsRoutes);
+app.route('/api/sales-transactions', salesTransactionsRoutes);
+app.route('/api/webhooks', webhookRoutes);
 
 // 404 handler
 app.notFound((c) => {
