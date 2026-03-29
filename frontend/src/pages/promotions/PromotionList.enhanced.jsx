@@ -232,7 +232,26 @@ export default function PromotionsList() {
     {
       label: 'Export Report',
       icon: FileText,
-      onClick: (item) => navigate(`/promotions/${item.id}/performance`),
+      onClick: (item) => {
+        const rows = [
+          ['Field', 'Value'],
+          ['Name', item.name || item.promotion_name || ''],
+          ['Type', item.promotion_type || ''],
+          ['Status', item.status || ''],
+          ['Budget', item.budget || ''],
+          ['Start Date', item.start_date || ''],
+          ['End Date', item.end_date || ''],
+          ['ROI', item.roi || item.performance?.roi || ''],
+        ];
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `promotion-${item.id}-report.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
     },
   ];
 
