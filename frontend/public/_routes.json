@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/api/*",
+    "/auth/*",
+    "/dashboard/*",
+    "/admin/*",
+    "/settings/*",
+    "/profile/*",
+    "/reports/*",
+    "/analytics/*"
+  ]
+}

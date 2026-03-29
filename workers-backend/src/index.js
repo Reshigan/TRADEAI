@@ -96,7 +96,17 @@ app.use('*', async (c, next) => {
 // Global middleware
 app.use('*', logger());
 app.use('*', prettyJSON());
-app.use('*', secureHeaders());
+
+// Security headers with custom CSP
+app.use('*', async (c, next) => {
+  await next();
+  c.header('X-Frame-Options', 'DENY');
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-XSS-Protection', '1; mode=block');
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  c.header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  c.header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://tradeai-api.reshigan-085.workers.dev; frame-ancestors 'none';");
+});
 
 // CORS configuration - dual deploy compatible
 app.use('*', cors({
