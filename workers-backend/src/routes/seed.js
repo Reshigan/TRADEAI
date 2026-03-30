@@ -316,12 +316,13 @@ seedRoutes.get('/ml-stats', async (c) => {
     
     // Get budget statistics
     const budgets = await db.find('budgets', { company_id: companyId });
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
-    const totalUtilized = budgets.reduce((sum, b) => sum + (b.utilized || 0), 0);
+    const toNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+    const totalBudget = budgets.reduce((sum, b) => sum + toNum(b.amount), 0);
+    const totalUtilized = budgets.reduce((sum, b) => sum + toNum(b.utilized), 0);
     
     // Get trade spend statistics
     const tradeSpends = await db.find('trade_spends', { company_id: companyId });
-    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    const totalSpend = tradeSpends.reduce((sum, ts) => sum + toNum(ts.amount), 0);
     const avgSpendROI = tradeSpends.reduce((sum, ts) => sum + (parseFloat(ts.actualROI) || 0), 0) / tradeSpends.length;
     
     return c.json({
@@ -332,7 +333,7 @@ seedRoutes.get('/ml-stats', async (c) => {
           completed: completedPromos.length,
           avgRoiByType,
           avgUpliftByType,
-          overallAvgROI: (completedPromos.reduce((sum, p) => sum + (p.performance?.roi || 0), 0) / completedPromos.length).toFixed(2)
+          overallAvgROI: (completedPromos.reduce((sum, p) => sum + toNum(p.performance?.roi), 0) / completedPromos.length).toFixed(2)
         },
         budgets: {
           total: budgets.length,

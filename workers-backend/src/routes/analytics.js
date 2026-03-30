@@ -19,10 +19,11 @@ analyticsRoutes.get('/', async (c) => {
       mongodb.find('budgets', { companyId: tenantId })
     ]);
 
-    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const toNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+    const totalSpend = tradeSpends.reduce((sum, ts) => sum + toNum(ts.amount), 0);
+    const totalBudget = budgets.reduce((sum, b) => sum + toNum(b.amount), 0);
     const avgROI = promotions.length > 0 
-      ? promotions.reduce((sum, p) => sum + (p.performance?.roi || 0), 0) / promotions.length 
+      ? promotions.reduce((sum, p) => sum + toNum(p.performance?.roi), 0) / promotions.length 
       : 0;
 
     return c.json({
@@ -57,10 +58,11 @@ analyticsRoutes.get('/dashboard', async (c) => {
       mongodb.find('deductions', { companyId: tenantId })
     ]);
 
-    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const toNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+    const totalSpend = tradeSpends.reduce((sum, ts) => sum + toNum(ts.amount), 0);
+    const totalBudget = budgets.reduce((sum, b) => sum + toNum(b.amount), 0);
     const avgROI = promotions.length > 0 
-      ? promotions.reduce((sum, p) => sum + (p.performance?.roi || 0), 0) / promotions.length 
+      ? promotions.reduce((sum, p) => sum + toNum(p.performance?.roi), 0) / promotions.length 
       : 0;
     const utilization = totalBudget ? parseFloat(((totalSpend / totalBudget) * 100).toFixed(2)) : 0;
 
@@ -184,7 +186,7 @@ analyticsRoutes.get('/performance', async (c) => {
       success: true,
       data: {
         period,
-        totalSpend: tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0),
+        totalSpend: tradeSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0),
         transactionCount: tradeSpends.length,
         dailySpend: Object.entries(dailySpend).map(([date, amount]) => ({ date, amount }))
       }
@@ -215,7 +217,7 @@ analyticsRoutes.get('/sales-performance', async (c) => {
     tradeSpends.forEach(ts => {
       const date = new Date(ts.created_at || ts.createdAt);
       const month = months[date.getMonth()];
-      monthlyData[month].sales += (ts.amount || 0);
+      const amt = parseFloat(ts.amount); monthlyData[month].sales += (isFinite(amt) ? amt : 0);
       monthlyData[month].target = monthlyData[month].sales * 1.1; // Target is 10% above actual
       monthlyData[month].lastYear = monthlyData[month].sales * 0.85; // Last year was 15% less
     });
@@ -304,7 +306,7 @@ analyticsRoutes.get('/customer-performance', async (c) => {
     tradeSpends.forEach(ts => {
       const custId = ts.customer_id || ts.customerId;
       if (custId) {
-        customerSpend[custId] = (customerSpend[custId] || 0) + (ts.amount || 0);
+        const amt = parseFloat(ts.amount); customerSpend[custId] = (customerSpend[custId] || 0) + (isFinite(amt) ? amt : 0);
       }
     });
 
@@ -336,8 +338,8 @@ analyticsRoutes.get('/trends', async (c) => {
         byType[type] = { count: 0, totalROI: 0, totalSpend: 0 };
       }
       byType[type].count++;
-      byType[type].totalROI += p.performance?.roi || 0;
-      byType[type].totalSpend += p.investment?.total || 0;
+      const roi = parseFloat(p.performance?.roi); byType[type].totalROI += (isFinite(roi) ? roi : 0);
+      const inv = parseFloat(p.investment?.total); byType[type].totalSpend += (isFinite(inv) ? inv : 0);
     });
 
     const trends = Object.entries(byType).map(([type, data]) => ({

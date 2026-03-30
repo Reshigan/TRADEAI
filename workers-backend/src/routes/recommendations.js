@@ -171,7 +171,7 @@ recommendationsRoutes.post('/next-best-action', async (c) => {
     
     // Rule 2: Pending trade spends need approval
     if (tradeSpends.length > 0) {
-      const totalPending = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+      const totalPending = tradeSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0);
       actions.push({
         id: `action-approvals-${Date.now()}`,
         priority: tradeSpends.length > 5 ? 'high' : 'medium',
@@ -246,9 +246,10 @@ recommendationsRoutes.get('/insights/:entityType/:entityId', async (c) => {
       const promotions = await db.find('promotions', { company_id: user.companyId });
       
       if (customer) {
-        const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
-        const approvedSpend = tradeSpends.filter(ts => ts.status === 'approved').reduce((sum, ts) => sum + (ts.amount || 0), 0);
-        const pendingSpend = tradeSpends.filter(ts => ts.status === 'pending').reduce((sum, ts) => sum + (ts.amount || 0), 0);
+        const toNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+        const totalSpend = tradeSpends.reduce((sum, ts) => sum + toNum(ts.amount), 0);
+        const approvedSpend = tradeSpends.filter(ts => ts.status === 'approved').reduce((sum, ts) => sum + toNum(ts.amount), 0);
+        const pendingSpend = tradeSpends.filter(ts => ts.status === 'pending').reduce((sum, ts) => sum + toNum(ts.amount), 0);
         
         if (totalSpend > 0) {
           insights.push({

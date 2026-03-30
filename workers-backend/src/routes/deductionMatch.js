@@ -103,7 +103,8 @@ deductionMatchRoutes.get('/summary', async (c) => {
 
     const deductions = await db.find('deductions', { company_id: user.companyId });
     const total = deductions.length;
-    const totalAmount = deductions.reduce((s, d) => s + (d.amount || d.deduction_amount || 0), 0);
+    const dedAmt = (d) => { const n = parseFloat(d.amount || d.deduction_amount); return isFinite(n) ? n : 0; };
+    const totalAmount = deductions.reduce((s, d) => s + dedAmt(d), 0);
     const matched = deductions.filter(d => d.status === 'matched' || d.status === 'resolved');
     const unmatched = deductions.filter(d => d.status === 'pending' || d.status === 'open');
     const disputed = deductions.filter(d => d.status === 'disputed');
@@ -114,9 +115,9 @@ deductionMatchRoutes.get('/summary', async (c) => {
         total,
         totalAmount,
         matched: matched.length,
-        matchedAmount: matched.reduce((s, d) => s + (d.amount || d.deduction_amount || 0), 0),
+        matchedAmount: matched.reduce((s, d) => s + dedAmt(d), 0),
         unmatched: unmatched.length,
-        unmatchedAmount: unmatched.reduce((s, d) => s + (d.amount || d.deduction_amount || 0), 0),
+        unmatchedAmount: unmatched.reduce((s, d) => s + dedAmt(d), 0),
         disputed: disputed.length,
         matchRate: total > 0 ? ((matched.length / total) * 100).toFixed(1) : 0,
         timestamp: new Date().toISOString()

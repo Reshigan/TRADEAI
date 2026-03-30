@@ -256,7 +256,7 @@ budgetRoutes.get('/:id/spending', async (c) => {
     const tradeSpends = await mongodb.find('tradespends', { budgetId: id, companyId: tenantId });
     const spending = {
       totalBudget: budget.amount || budget.totalAmount || 0,
-      totalSpent: tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0),
+      totalSpent: tradeSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0),
       items: tradeSpends.map(ts => ({
         id: ts._id || ts.id,
         name: ts.name || ts.spendType || 'Trade Spend',
@@ -465,7 +465,7 @@ budgetRoutes.get('/:id/utilization', async (c) => {
 
     // Get related trade spends
     const tradeSpends = await mongodb.find('tradespends', { budgetId: id, companyId: tenantId });
-    const utilized = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    const utilized = tradeSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0);
     const utilizationRate = budget.amount ? (utilized / budget.amount) * 100 : 0;
 
     return c.json({
