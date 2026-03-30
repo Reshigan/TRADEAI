@@ -765,6 +765,9 @@ function rowToDocument(row) {
   if (!row) return null;
   
   const doc = {};
+  // Track which keys came from real SQL columns so JSON data cannot overwrite them
+  const sqlKeys = new Set();
+  let pendingJsonData = null;
   
   for (const [column, value] of Object.entries(row)) {
     // Convert column name back to camelCase
@@ -773,13 +776,15 @@ function rowToDocument(row) {
     if (column === 'id') {
       doc._id = value;
       doc.id = value;
+      sqlKeys.add('_id');
+      sqlKeys.add('id');
     } else if (column === 'data' && value) {
-      // Merge JSON data into document
+      // Defer JSON data merge until after all SQL columns are processed
       try {
-        const jsonData = JSON.parse(value);
-        Object.assign(doc, jsonData);
+        pendingJsonData = JSON.parse(value);
       } catch (e) {
         doc.data = value;
+        sqlKeys.add('data');
       }
     } else if (column === 'permissions' && value) {
       try {
@@ -787,10 +792,22 @@ function rowToDocument(row) {
       } catch (e) {
         doc.permissions = [];
       }
+      sqlKeys.add('permissions');
     } else if (column === 'is_active') {
       doc.isActive = value === 1;
+      sqlKeys.add('isActive');
     } else {
       doc[field] = value;
+      sqlKeys.add(field);
+    }
+  }
+  
+  // Merge JSON data without overwriting real SQL column values
+  if (pendingJsonData && typeof pendingJsonData === 'object') {
+    for (const [key, val] of Object.entries(pendingJsonData)) {
+      if (!sqlKeys.has(key)) {
+        doc[key] = val;
+      }
     }
   }
   

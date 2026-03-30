@@ -486,7 +486,7 @@ aiOrchestratorRoutes.post('/roi-predict', async (c) => {
     // Find similar campaigns
     const similarCampaigns = tradeSpends.filter(ts => ts.spend_type === type).length;
     const avgSpend = similarCampaigns > 0
-      ? tradeSpends.filter(ts => ts.spend_type === type).reduce((sum, ts) => sum + (ts.amount || 0), 0) / similarCampaigns
+      ? tradeSpends.filter(ts => ts.spend_type === type).reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0) / similarCampaigns
       : 18000;
     
     return c.json({
@@ -561,7 +561,7 @@ aiOrchestratorRoutes.post('/customer-analysis', async (c) => {
         }, 0) / customerSpends.length
       : 2.5;
     
-    const totalSpendWithCustomer = customerSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    const totalSpendWithCustomer = customerSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0);
     
     // Churn risk calculation
     const typeRisk = { 'Retail': 15, 'Wholesale': 8, 'Distributor': 10, 'Direct': 12 };
@@ -765,15 +765,16 @@ aiOrchestratorRoutes.get('/ml-insights', async (c) => {
     const upliftStats = calculateStats(promoPerformance, 'uplift');
     
     // Budget analysis
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
-    const totalUtilized = budgets.reduce((sum, b) => sum + (b.utilized || 0), 0);
+    const toNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+    const totalBudget = budgets.reduce((sum, b) => sum + toNum(b.amount), 0);
+    const totalUtilized = budgets.reduce((sum, b) => sum + toNum(b.utilized), 0);
     
     // Trade spend analysis
-    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    const totalSpend = tradeSpends.reduce((sum, ts) => sum + toNum(ts.amount), 0);
     const spendByType = {};
     tradeSpends.forEach(ts => {
       const type = ts.spend_type || 'Other';
-      spendByType[type] = (spendByType[type] || 0) + (ts.amount || 0);
+      spendByType[type] = (spendByType[type] || 0) + toNum(ts.amount);
     });
     
     return c.json({

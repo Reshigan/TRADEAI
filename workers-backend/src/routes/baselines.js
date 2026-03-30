@@ -435,7 +435,7 @@ baselines.post('/:id/calculate', async (c) => {
       });
 
       const isPromoted = periodRows.some(r => r.promo_start && r.promo_end);
-      const totalAmount = periodRows.reduce((sum, r) => sum + (r.amount || 0), 0);
+      const totalAmount = periodRows.reduce((sum, r) => { const n = parseFloat(r.amount); return sum + (isFinite(n) ? n : 0); }, 0);
 
       periodBuckets.push({
         periodNumber: i + 1,

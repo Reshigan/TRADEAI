@@ -179,7 +179,7 @@ optimizerRoutes.post('/portfolio/analyze', async (c) => {
     const activeCount = promotions.filter(p => p.status === 'active').length;
     const completedCount = promotions.filter(p => p.status === 'completed').length;
     const avgROI = promotions.length > 0
-      ? promotions.reduce((sum, p) => sum + (p.data?.roi || 0), 0) / promotions.length
+      ? promotions.reduce((sum, p) => { const n = parseFloat(p.data?.roi); return sum + (isFinite(n) ? n : 0); }, 0) / promotions.length
       : 0;
     
     return c.json({

@@ -18,7 +18,7 @@ function calculateRiskScore(item, historicalData) {
   if (!item.customer_id && !item.customerId) score += 15;
 
   const avgAmount = historicalData.length > 0
-    ? historicalData.reduce((s, h) => s + (h.amount || 0), 0) / historicalData.length
+    ? historicalData.reduce((s, h) => { const n = parseFloat(h.amount); return s + (isFinite(n) ? n : 0); }, 0) / historicalData.length
     : amount;
   if (amount > avgAmount * 2) score += 20;
 

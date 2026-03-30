@@ -307,7 +307,7 @@ promotionRoutes.get('/:id/budget', async (c) => {
       }
     }
     const tradeSpends = await mongodb.find('tradespends', { promotionId: id, companyId: tenantId });
-    spentBudget = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    spentBudget = tradeSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0);
     return c.json({ success: true, data: {
       totalBudget,
       allocatedBudget,
@@ -471,7 +471,7 @@ promotionRoutes.get('/:id/performance',async (c) => {
     // Get related trade spends
     const tradeSpends = await mongodb.find('tradespends', { promotionId: id, companyId: tenantId });
     
-    const totalSpend = tradeSpends.reduce((sum, ts) => sum + (ts.amount || 0), 0);
+    const totalSpend = tradeSpends.reduce((sum, ts) => { const n = parseFloat(ts.amount); return sum + (isFinite(n) ? n : 0); }, 0);
     const roi = promotion.performance?.roi || ((promotion.revenue || 0) - totalSpend) / (totalSpend || 1) * 100;
 
     return c.json({

@@ -51,10 +51,11 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
       });
     });
 
-    const avgClaimAmt = claims.length > 0 ? claims.reduce((s, cl) => s + (cl.amount || cl.claimed_amount || cl.claimedAmount || 0), 0) / claims.length : 0;
-    const stdDev = claims.length > 1 ? Math.sqrt(claims.reduce((s, cl) => { const a = (cl.amount || cl.claimed_amount || cl.claimedAmount || 0); return s + Math.pow(a - avgClaimAmt, 2); }, 0) / claims.length) : avgClaimAmt * 0.5;
+    const claimAmt = (cl) => { const n = parseFloat(cl.amount || cl.claimed_amount || cl.claimedAmount); return isFinite(n) ? n : 0; };
+    const avgClaimAmt = claims.length > 0 ? claims.reduce((s, cl) => s + claimAmt(cl), 0) / claims.length : 0;
+    const stdDev = claims.length > 1 ? Math.sqrt(claims.reduce((s, cl) => { const a = claimAmt(cl); return s + Math.pow(a - avgClaimAmt, 2); }, 0) / claims.length) : avgClaimAmt * 0.5;
     claims.forEach(cl => {
-      const amt = cl.amount || cl.claimed_amount || cl.claimedAmount || 0;
+      const amt = claimAmt(cl);
       if (amt > avgClaimAmt + 2 * stdDev && amt > 10000) {
         anomalies.push({
           id: `anom-claim-${cl.id}`,
@@ -80,7 +81,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
     });
     Object.entries(claimsByCustomer).forEach(([cid, custClaims]) => {
       if (custClaims.length >= 5) {
-        const total = custClaims.reduce((s, cl) => s + (cl.amount || cl.claimed_amount || cl.claimedAmount || 0), 0);
+        const total = custClaims.reduce((s, cl) => s + claimAmt(cl), 0);
         anomalies.push({
           id: `anom-freq-${cid}`,
           type: 'high_frequency',
@@ -95,10 +96,12 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
       }
     });
 
-    const spendAmounts = tradeSpends.map(ts => ts.amount || 0).filter(a => a > 0);
+    const spendAmt = (ts) => { const n = parseFloat(ts.amount); return isFinite(n) ? n : 0; };
+    const spendAmounts = tradeSpends.map(ts => spendAmt(ts)).filter(a => a > 0);
     const avgSpend = spendAmounts.length > 0 ? spendAmounts.reduce((a, b) => a + b, 0) / spendAmounts.length : 0;
     tradeSpends.forEach(ts => {
-      if ((ts.amount || 0) > avgSpend * 3 && (ts.amount || 0) > 50000) {
+      const tsAmt = spendAmt(ts);
+      if (tsAmt > avgSpend * 3 && tsAmt > 50000) {
         anomalies.push({
           id: `anom-spend-${ts.id}`,
           type: 'unusual_spend',
@@ -106,8 +109,8 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
           entity: 'trade_spend',
           entityId: ts.id,
           entityName: ts.description || `Trade Spend ${ts.id.slice(-8)}`,
-          title: `Unusual trade spend: R${(ts.amount || 0).toLocaleString()}`,
-          description: `${((ts.amount / avgSpend) * 100).toFixed(0)}% above average spend of R${Math.round(avgSpend).toLocaleString()}`,
+          title: `Unusual trade spend: R${tsAmt.toLocaleString()}`,
+          description: `${((tsAmt / avgSpend) * 100).toFixed(0)}% above average spend of R${Math.round(avgSpend).toLocaleString()}`,
           action: `/trade-spends/${ts.id}`
         });
       }

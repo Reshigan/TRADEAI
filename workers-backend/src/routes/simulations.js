@@ -148,12 +148,13 @@ simulationsRoutes.post('/promotion', async (c) => {
       status: 'completed'
     });
     
+    const toNum = (v, fallback) => { const n = parseFloat(v); return isFinite(n) ? n : fallback; };
     const avgROI = salesHistory.length > 0 
-      ? salesHistory.reduce((sum, p) => sum + (p.data?.roi || 1.5), 0) / salesHistory.length 
+      ? salesHistory.reduce((sum, p) => sum + toNum(p.data?.roi, 1.5), 0) / salesHistory.length 
       : 1.5;
     
     const avgUplift = salesHistory.length > 0
-      ? salesHistory.reduce((sum, p) => sum + (p.data?.uplift || 15), 0) / salesHistory.length
+      ? salesHistory.reduce((sum, p) => sum + toNum(p.data?.uplift, 15), 0) / salesHistory.length
       : 15;
     
     const baselineRevenue = budget * 2;

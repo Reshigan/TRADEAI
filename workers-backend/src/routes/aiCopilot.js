@@ -39,12 +39,13 @@ aiCopilotRoutes.post('/ask', async (c) => {
     let aiEnhanced = false;
 
     // Build data context for Workers AI LLM
-    const totalBudget = budgets.reduce((s, b) => s + (b.amount || 0), 0);
-    const totalUtilized = budgets.reduce((s, b) => s + (b.utilized || 0), 0);
-    const totalSpendAmt = tradeSpends.reduce((s, ts) => s + (ts.amount || 0), 0);
+    const toNum = (v) => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+    const totalBudget = budgets.reduce((s, b) => s + toNum(b.amount), 0);
+    const totalUtilized = budgets.reduce((s, b) => s + toNum(b.utilized), 0);
+    const totalSpendAmt = tradeSpends.reduce((s, ts) => s + toNum(ts.amount), 0);
     const pendingCount = approvals.filter(a => a.status === 'pending').length;
-    const totalClaimAmt = claims.reduce((s, cl) => s + (cl.amount || cl.claimed_amount || 0), 0);
-    const totalDeductionAmt = deductions.reduce((s, d) => s + (d.amount || d.deduction_amount || 0), 0);
+    const totalClaimAmt = claims.reduce((s, cl) => s + toNum(cl.amount || cl.claimed_amount), 0);
+    const totalDeductionAmt = deductions.reduce((s, d) => s + toNum(d.amount || d.deduction_amount), 0);
 
     const dataContext = `Company: ${user.companyId}
 Customers: ${customers.length}, Products: ${products.length}
@@ -67,8 +68,8 @@ Pending Approvals: ${pendingCount}`;
         { text: 'Review pending approvals', action: '/approvals' }
       ];
     } else if (q.includes('budget') && (q.includes('utiliz') || q.includes('spend') || q.includes('how much'))) {
-      const totalBudget = budgets.reduce((s, b) => s + (b.amount || 0), 0);
-      const totalUtilized = budgets.reduce((s, b) => s + (b.utilized || 0), 0);
+      const totalBudget = budgets.reduce((s, b) => s + toNum(b.amount), 0);
+      const totalUtilized = budgets.reduce((s, b) => s + toNum(b.utilized), 0);
       const pct = totalBudget > 0 ? ((totalUtilized / totalBudget) * 100).toFixed(1) : 0;
       const remaining = totalBudget - totalUtilized;
       answer = `Your total budget is ${summarizeNumber(totalBudget)} with ${pct}% utilized (${summarizeNumber(totalUtilized)} spent, ${summarizeNumber(remaining)} remaining). You have ${budgets.length} active budgets.`;
@@ -85,8 +86,8 @@ Pending Approvals: ${pendingCount}`;
       suggestions.push({ text: 'View top-performing promotions', action: '/promotions?status=completed' });
       if (avgROI < 1.5) suggestions.push({ text: 'ROI is below target — run AI optimization', action: '/simulation-studio' });
     } else if (q.includes('claim') || q.includes('deduction')) {
-      const totalClaims = claims.reduce((s, cl) => s + (cl.amount || cl.claimed_amount || cl.claimAmount || cl.claimedAmount || 0), 0);
-      const totalDeductions = deductions.reduce((s, d) => s + (d.amount || d.deduction_amount || 0), 0);
+      const totalClaims = claims.reduce((s, cl) => s + toNum(cl.amount || cl.claimed_amount || cl.claimAmount || cl.claimedAmount), 0);
+      const totalDeductions = deductions.reduce((s, d) => s + toNum(d.amount || d.deduction_amount), 0);
       const pendingClaims = claims.filter(cl => cl.status === 'pending' || cl.status === 'submitted');
       answer = `You have ${claims.length} claims totalling ${summarizeNumber(totalClaims)} and ${deductions.length} deductions totalling ${summarizeNumber(totalDeductions)}. ${pendingClaims.length} claims are pending review.`;
       data = { claims: claims.length, totalClaims, deductions: deductions.length, totalDeductions, pendingClaims: pendingClaims.length };
@@ -111,7 +112,7 @@ Pending Approvals: ${pendingCount}`;
       data = { total: products.length, categories };
       suggestions.push({ text: 'Explore product hierarchy', action: '/hierarchy/products' });
     } else if (q.includes('trade spend') || q.includes('trade-spend') || q.includes('spend overview')) {
-      const totalSpend = tradeSpends.reduce((s, ts) => s + (ts.amount || 0), 0);
+      const totalSpend = tradeSpends.reduce((s, ts) => s + toNum(ts.amount), 0);
       const byStatus = {};
       tradeSpends.forEach(ts => { const st = ts.status || 'unknown'; byStatus[st] = (byStatus[st] || 0) + 1; });
       answer = `Total trade spend: ${summarizeNumber(totalSpend)} across ${tradeSpends.length} entries. Status breakdown: ${Object.entries(byStatus).map(([s, c]) => `${s}: ${c}`).join(', ')}.`;
@@ -126,8 +127,8 @@ Pending Approvals: ${pendingCount}`;
         { text: 'Summarize claims and deductions', action: 'ask' }
       ];
     } else {
-      const totalBudget = budgets.reduce((s, b) => s + (b.amount || 0), 0);
-      const totalSpend = tradeSpends.reduce((s, ts) => s + (ts.amount || 0), 0);
+      const totalBudget = budgets.reduce((s, b) => s + toNum(b.amount), 0);
+      const totalSpend = tradeSpends.reduce((s, ts) => s + toNum(ts.amount), 0);
       const pendingApprovals = approvals.filter(a => a.status === 'pending').length;
       answer = `Here's your overview: ${customers.length} customers, ${products.length} products, ${promotions.length} promotions, ${summarizeNumber(totalBudget)} in budgets, ${summarizeNumber(totalSpend)} in trade spend, ${pendingApprovals} pending approvals, ${claims.length} claims, ${deductions.length} deductions.`;
       data = { customers: customers.length, products: products.length, promotions: promotions.length, totalBudget, totalSpend, pendingApprovals, claims: claims.length, deductions: deductions.length };
