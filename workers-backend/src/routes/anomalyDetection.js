@@ -36,7 +36,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
       }
     } catch (e) { /* no baseline available */ }
 
-    const overBudgets = budgets.filter(b => b.amount && (b.utilized || 0) > b.amount);
+    const overBudgets = budgets.filter(b => { const amt = parseFloat(b.amount); const util = parseFloat(b.utilized); return isFinite(amt) && amt > 0 && isFinite(util) && util > amt; });
     overBudgets.forEach(b => {
       anomalies.push({
         id: `anom-budget-${b.id}`,
@@ -46,7 +46,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
         entityId: b.id,
         entityName: b.name,
         title: `Budget overrun: ${b.name}`,
-        description: `Utilized R${(b.utilized || 0).toLocaleString()} exceeds allocated R${(b.amount || 0).toLocaleString()} by R${((b.utilized || 0) - (b.amount || 0)).toLocaleString()}`,
+        description: `Utilized R${(parseFloat(b.utilized) || 0).toLocaleString()} exceeds allocated R${(parseFloat(b.amount) || 0).toLocaleString()} by R${((parseFloat(b.utilized) || 0) - (parseFloat(b.amount) || 0)).toLocaleString()}`,
         action: `/budgets/${b.id}`
       });
     });

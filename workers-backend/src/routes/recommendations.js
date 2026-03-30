@@ -315,7 +315,7 @@ recommendationsRoutes.get('/insights/:entityType/:entityId', async (c) => {
       
       if (budget) {
         const utilization = budget.amount ? ((budget.utilized || 0) / budget.amount) * 100 : 0;
-        const remaining = (budget.amount || 0) - (budget.utilized || 0);
+        const remaining = (parseFloat(budget.amount) || 0) - (parseFloat(budget.utilized) || 0);
         
         insights.push({
           id: `insight-budget-util-${entityId}`,
@@ -456,7 +456,7 @@ recommendationsRoutes.get('/trending', async (c) => {
         id: b.id,
         name: b.name,
         utilization: utilization.toFixed(1),
-        remaining: (b.amount || 0) - (b.utilized || 0),
+        remaining: (parseFloat(b.amount) || 0) - (parseFloat(b.utilized) || 0),
         status: utilization > 90 ? 'critical' : utilization > 70 ? 'warning' : 'healthy'
       };
     });

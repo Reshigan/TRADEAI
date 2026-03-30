@@ -179,7 +179,7 @@ analyticsRoutes.get('/performance', async (c) => {
     const dailySpend = {};
     tradeSpends.forEach(ts => {
       const date = ts.createdAt.split('T')[0];
-      dailySpend[date] = (dailySpend[date] || 0) + (ts.amount || 0);
+      const amt = parseFloat(ts.amount); dailySpend[date] = (dailySpend[date] || 0) + (isFinite(amt) ? amt : 0);
     });
 
     return c.json({
@@ -245,9 +245,9 @@ analyticsRoutes.get('/budget-utilization', async (c) => {
     
     const chartData = budgets.slice(0, 10).map(budget => ({
       name: budget.name || 'Unnamed Budget',
-      allocated: budget.amount || 0,
-      used: budget.utilized || budget.allocated || Math.round((budget.amount || 0) * 0.6),
-      remaining: (budget.amount || 0) - (budget.utilized || Math.round((budget.amount || 0) * 0.6))
+      allocated: parseFloat(budget.amount) || 0,
+      used: parseFloat(budget.utilized) || parseFloat(budget.allocated) || Math.round((parseFloat(budget.amount) || 0) * 0.6),
+      remaining: (parseFloat(budget.amount) || 0) - (parseFloat(budget.utilized) || Math.round((parseFloat(budget.amount) || 0) * 0.6))
     }));
 
     return c.json({ success: true, data: chartData });
