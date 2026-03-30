@@ -36,7 +36,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
       }
     } catch (e) { /* no baseline available */ }
 
-    const overBudgets = budgets.filter(b => b.amount && (b.utilized || 0) > b.amount);
+    const overBudgets = budgets.filter(b => { const amt = parseFloat(b.amount); const util = parseFloat(b.utilized); return isFinite(amt) && amt > 0 && isFinite(util) && util > amt; });
     overBudgets.forEach(b => {
       anomalies.push({
         id: `anom-budget-${b.id}`,
