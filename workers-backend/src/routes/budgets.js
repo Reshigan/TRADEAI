@@ -472,9 +472,9 @@ budgetRoutes.get('/:id/utilization', async (c) => {
       success: true,
       data: {
         budgetId: id,
-        totalBudget: budget.amount || 0,
+        totalBudget: parseFloat(budget.amount) || 0,
         utilized,
-        remaining: (budget.amount || 0) - utilized,
+        remaining: (parseFloat(budget.amount) || 0) - utilized,
         utilizationRate: utilizationRate.toFixed(2)
       }
     });

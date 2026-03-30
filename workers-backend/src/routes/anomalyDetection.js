@@ -46,7 +46,7 @@ anomalyDetectionRoutes.get('/scan', async (c) => {
         entityId: b.id,
         entityName: b.name,
         title: `Budget overrun: ${b.name}`,
-        description: `Utilized R${(b.utilized || 0).toLocaleString()} exceeds allocated R${(b.amount || 0).toLocaleString()} by R${((b.utilized || 0) - (b.amount || 0)).toLocaleString()}`,
+        description: `Utilized R${(parseFloat(b.utilized) || 0).toLocaleString()} exceeds allocated R${(parseFloat(b.amount) || 0).toLocaleString()} by R${((parseFloat(b.utilized) || 0) - (parseFloat(b.amount) || 0)).toLocaleString()}`,
         action: `/budgets/${b.id}`
       });
     });
