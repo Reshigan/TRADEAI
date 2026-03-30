@@ -9,6 +9,7 @@ Uses INSERT OR IGNORE to avoid conflicts with existing seed data from migration 
 
 import random
 import hashlib
+import os
 from datetime import datetime, timedelta
 import json
 
@@ -1366,7 +1367,7 @@ lines.append("-- SEED COMPLETE: Methodist company fully populated with 12 months
 lines.append("-- ============================================================================")
 
 # Write to file
-output_path = "/home/ubuntu/repos/TRADEAI/workers-backend/migrations/0071_seed_methodist_full_year.sql"
+output_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'migrations', '0071_seed_methodist_full_year.sql')
 with open(output_path, "w") as f:
     f.write("\n".join(lines))
 
