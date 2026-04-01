@@ -16,19 +16,12 @@ import {
 } from '@mui/material';
 import { 
   Refresh as RefreshIcon,
-  TrendingUp, 
-  TrendingDown, 
   AccountBalance,
   Campaign,
   ShoppingCart,
   Assessment,
-  ArrowForward,
-  WarningAmber,
-  CheckCircle,
-  Error as ErrorIcon,
   Insights as InsightsIcon,
-  AutoGraph,
-  QueryStats
+  AutoGraph
 } from '@mui/icons-material';
 import { format, subDays } from 'date-fns';
 import { useNavigate } from 'react-router-dom';

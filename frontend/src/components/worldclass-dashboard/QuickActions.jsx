@@ -13,9 +13,7 @@ import {
   ShoppingCart,
   Receipt,
   TrendingUp,
-  Analytics,
-  Receipt as ClaimIcon,
-  Assignment
+  Analytics
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 

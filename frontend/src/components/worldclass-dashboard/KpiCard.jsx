@@ -3,8 +3,7 @@ import {
   Card, 
   CardContent, 
   Typography, 
-  Box, 
-  Chip 
+  Box
 } from '@mui/material';
 import { 
   TrendingUp as TrendingUpIcon, 
