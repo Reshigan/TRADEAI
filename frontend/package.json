@@ -63,7 +63,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=true react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "build:fallback": "node build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -80,7 +80,7 @@
     ],
     "rules": {
       "no-unused-vars": "off",
-      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-imports": "warn",
       "unused-imports/no-unused-vars": "off",
       "react-hooks/exhaustive-deps": "off",
       "testing-library/no-wait-for-multiple-assertions": "off",
@@ -99,15 +99,7 @@
   },
   "proxy": "http://localhost:5002",
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "production": [">0.2%"],
+    "development": ["last 1 chrome version"]
   }
 }

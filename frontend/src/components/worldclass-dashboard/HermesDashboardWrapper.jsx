@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import AuthContext from '../../contexts/AuthContext';
 import HermesDashboard from './HermesDashboard';
 
 // Wrapper component to provide proper context to our HermesDashboard

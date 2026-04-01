@@ -50,19 +50,13 @@ const CustomTooltip = ({ active, payload }) => {
 
 // Budget Distribution Component (Zero-Slop Law 3, 11, 24)
 const BudgetDistribution = ({ data = [], height = 250 }) => {
-  // Handle empty data state (Zero-Slop Law 3)
-  if (!data || data.length === 0) {
-    return (
-      <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
-          No budget data available
-        </Typography>
-      </Box>
-    );
-  }
-
   // Process data for pie chart
   const chartData = useMemo(() => {
+    // Handle case where data is null, undefined, or empty
+    if (!data || data.length === 0) {
+      return [];
+    }
+    
     // Calculate total amount for percentage calculation
     const totalAmount = data.reduce((sum, item) => sum + (item.amount || 0), 0);
     
@@ -77,6 +71,17 @@ const BudgetDistribution = ({ data = [], height = 250 }) => {
       .sort((a, b) => b.value - a.value); // Sort by value descending
   }, [data]);
 
+  // Handle empty data state (Zero-Slop Law 3)
+  if (!data || data.length === 0) {
+    return (
+      <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          No budget data available
+        </Typography>
+      </Box>
+    );
+  }
+
   // Handle case where all amounts are zero
   if (chartData.length === 0 || chartData.every(item => item.amount === 0)) {
     return (
@@ -87,6 +92,72 @@ const BudgetDistribution = ({ data = [], height = 250 }) => {
       </Box>
     );
   }
+
+  return (
+    <Box sx={{ height }}>
+      <ResponsiveContainer width="100%" height="80%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={100}
+            paddingAngle={2}
+            dataKey="value"
+            nameKey="category"
+            label={({ category, value }) => `${category}: ${value}%`}
+          >
+            {chartData.map((entry, index) => (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={COLORS[index % COLORS.length]} 
+              />
+            ))}
+          </Pie>
+          <Tooltip content={<CustomTooltip />} />
+        </PieChart>
+      </ResponsiveContainer>
+      
+      {/* Legend */}
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          justifyContent: 'center', 
+          gap: 1, 
+          mt: 1,
+          maxHeight: 80,
+          overflow: 'auto'
+        }}
+      >
+        {chartData.map((entry, index) => (
+          <Box 
+            key={entry.category}
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 0.5,
+              minWidth: 120
+            }}
+          >
+            <Box 
+              sx={{ 
+                width: 12, 
+                height: 12, 
+                borderRadius: '50%', 
+                bgcolor: COLORS[index % COLORS.length] 
+              }} 
+            />
+            <Typography variant="caption" noWrap>
+              {entry.category} ({entry.value}%)
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  );
+};
 
   return (
     <Box sx={{ height }}>

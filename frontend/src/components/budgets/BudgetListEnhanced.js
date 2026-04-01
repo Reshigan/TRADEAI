@@ -11,13 +11,9 @@ import {
   Snackbar
 } from '@mui/material';
 import { 
-  Add as AddIcon,
-  AutoGraph as AutoGraphIcon,
-  TrendingUp as TrendingUpIcon,
-  Savings as SavingsIcon,
-  AccountBalance as AccountBalanceIcon
+  Add as AddIcon
 } from '@mui/icons-material';
-import { AIEnhancedPage, SmartDataGrid, PageHeader, StatusChip } from '../common';
+import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
 import { budgetService } from '../../services/api';
 import { formatLabel, formatCurrencyCompact } from '../../utils/formatters';
 import { useToast } from '../common/ToastNotification';
