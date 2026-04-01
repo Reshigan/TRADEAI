@@ -1,11 +1,116 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Chip, Typography, LinearProgress, useTheme } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { AIEnhancedPage, SmartDataGrid, PageHeader } from '../common';
+import { 
+  Box, 
+  Button, 
+  Chip, 
+  Typography, 
+  LinearProgress, 
+  useTheme,
+  Alert,
+  Snackbar
+} from '@mui/material';
+import { 
+  Add as AddIcon,
+  AutoGraph as AutoGraphIcon,
+  TrendingUp as TrendingUpIcon,
+  Savings as SavingsIcon,
+  AccountBalance as AccountBalanceIcon
+} from '@mui/icons-material';
+import { AIEnhancedPage, SmartDataGrid, PageHeader, StatusChip } from '../common';
 import { budgetService } from '../../services/api';
-import { formatLabel } from '../../utils/formatters';
+import { formatLabel, formatCurrencyCompact } from '../../utils/formatters';
 import { useToast } from '../common/ToastNotification';
+
+// Hermes-style recommendation engine
+const budgetAdvisor = (budgets) => {
+  if (!budgets || budgets.length === 0) {
+    return {
+      insights: [],
+      recommendations: [],
+      risks: [],
+      opportunities: []
+    };
+  }
+
+  const advisorData = {
+    insights: [],
+    recommendations: [],
+    risks: [],
+    opportunities: []
+  };
+
+  // Calculate key metrics for analysis
+  const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+  const totalSpent = budgets.reduce((sum, b) => sum + (b.utilized || b.spent || 0), 0);
+  const utilizationRate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+  // High-level insights
+  advisorData.insights.push({
+    id: 'overall-utilization',
+    title: 'Overall Budget Utilization',
+    message: `Currently utilizing ${utilizationRate.toFixed(1)}% of allocated budget`,
+    type: utilizationRate > 90 ? 'risk' : 
+           utilizationRate > 70 ? 'info' : 
+           utilizationRate > 30 ? 'success' : 'warning',
+    confidence: 0.95,
+    priority: 'high'
+  });
+
+  // Risk identification
+  budgets.forEach(budget => {
+    const spent = budget.utilized || budget.spent || 0;
+    const amount = budget.amount || 1;
+    const utilization = (spent / amount) * 100;
+    
+    if (utilization > 95) {
+      advisorData.risks.push({
+        id: `risk-${budget.id}`,
+        title: `Budget Depletion Risk`,
+        message: `${formatLabel(budget.name || budget.customerName || 'Unnamed Budget')} is ${utilization.toFixed(0)}% spent`,
+        type: 'critical',
+        confidence: 0.92,
+        budgetId: budget.id,
+        action: `/budgets/${budget.id}`
+      });
+    }
+    
+    if (utilization < 30 && budget.status === 'active') {
+      advisorData.opportunities.push({
+        id: `opportunity-${budget.id}`,
+        title: `Reallocate Underutilized Budget`,
+        message: `${formatLabel(budget.name || budget.customerName || 'Unnamed Budget')} has ${100 - utilization.toFixed(0)}% unspent budget`,
+        type: 'info',
+        confidence: 0.85,
+        budgetId: budget.id,
+        action: `/budgets/${budget.id}/reallocate`
+      });
+    }
+  });
+
+  // Strategic recommendations
+  if (utilizationRate > 90) {
+    advisorData.recommendations.push({
+      id: 'realloc-recommend',
+      title: `Strategic Reallocation Recommended`,
+      message: `Consider moving funds to underperforming areas for balanced spend`,
+      type: 'strategy',
+      confidence: 0.88,
+      action: '/scenarios'
+    });
+  }
+
+  advisorData.recommendations.push({
+    id: 'forecast-recommend',
+    title: `Forecast Next Quarter Needs`,
+    message: `Use predictive analytics to plan upcoming budget requirements`,
+    type: 'strategy',
+    confidence: 0.81,
+    action: '/forecasting'
+  });
+
+  return advisorData;
+};
 
 const BudgetListEnhanced = () => {
   const toast = useToast();
@@ -13,56 +118,94 @@ const BudgetListEnhanced = () => {
   const theme = useTheme();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [advisor, setAdvisor] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchBudgets();
   }, []);
 
-  const fetchBudgets = async () => {
-    setLoading(true);
+  const fetchBudgets = async (showLoading = true) => {
     try {
+      if (showLoading) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
+      
+      setError(null);
+      
       const response = await budgetService.getAll();
-      setBudgets(response.data || response || []);
+      const budgetData = response.data || response || [];
+      setBudgets(budgetData);
+      
+      // Generate advisor insights
+      const advisorInsights = budgetAdvisor(budgetData);
+      setAdvisor(advisorInsights);
     } catch (error) {
-      console.error("Error fetching budgets:", error);
+      console.error("BudgetListEnhanced: Error fetching budgets:", error);
+      setError(error.message || "Failed to load budgets. Please try again.");
+      setSnackbar({
+        open: true,
+        message: `Error loading budgets: ${error.message || 'Unknown error'}`,
+        severity: 'error'
+      });
       toast.error('Error fetching budgets');
     } finally {
       setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchBudgets(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
+  const handleAdvisorAction = (action) => {
+    if (action) {
+      navigate(action);
     }
   };
 
   const generateAIInsights = () => {
-    if (budgets.length === 0) return [];
+    if (!advisor) return [];
     
+    // Convert advisor insights to format expected by AIEnhancedPage
     const insights = [];
-    const totalBudget = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
-    // API returns 'utilized' instead of 'spent'
-    const totalSpent = budgets.reduce((sum, b) => sum + (b.utilized || b.spent || 0), 0);
-    const utilization = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
     
-    if (utilization > 90) {
+    // Add overall insights
+    advisor.insights.forEach(insight => {
       insights.push({
-        title: `High Budget Utilization (${utilization.toFixed(1)}%)`,
-        description: `You've used ${utilization.toFixed(1)}% of allocated budgets. Consider reallocating or requesting additional funds for high-performing areas.`,
-        confidence: 0.94
+        title: insight.title,
+        description: insight.message,
+        confidence: insight.confidence || 0.8
       });
-    }
-
-    const underutilized = budgets.filter(b => ((b.utilized || b.spent || 0) / (b.amount || 1)) < 0.5 && b.status === 'active').length;
-    if (underutilized > 0) {
-      insights.push({
-        title: `${underutilized} Budgets Underutilized`,
-        description: `Reallocate unused funds to high-performing campaigns for better ROI.`,
-        confidence: 0.87
-      });
-    }
-
-    insights.push({
-      title: `Budget Optimization Opportunity`,
-      description: `AI analysis suggests 15-20% efficiency gain through strategic reallocation across categories.`,
-      confidence: 0.81
     });
-
+    
+    // Add risks
+    advisor.risks.forEach(risk => {
+      insights.push({
+        title: risk.title,
+        description: risk.message,
+        confidence: risk.confidence || 0.9
+      });
+    });
+    
+    // Add recommendations
+    advisor.recommendations.forEach(rec => {
+      insights.push({
+        title: rec.title,
+        description: rec.message,
+        confidence: rec.confidence || 0.8
+      });
+    });
+    
     return insights;
   };
 
@@ -96,34 +239,34 @@ const BudgetListEnhanced = () => {
   const getTips = () => [
     'Tip: Budgets with <50% utilization may benefit from reallocation',
     'Tip: Use the AI optimizer to balance spend across categories',
-    'Tip: Track ROI per budget category for data-driven decisions'
+    'Tip: Track ROI per budget category for data-driven decisions',
+    'Tip: Schedule regular budget reviews to stay on target'
   ];
 
   const generateRowInsights = () => {
     const insights = {};
-    budgets.forEach(budget => {
-      // API returns 'utilized' instead of 'spent'
-      const spent = budget.utilized || budget.spent || 0;
-      const amount = budget.amount || 1;
-      const utilization = (spent / amount) * 100;
-      
-      if (utilization > 95) {
-        insights[budget.id || budget._id] = {
+    
+    if (!budgets || !advisor) return insights;
+    
+    // Map advisor insights to specific rows
+    advisor.risks.forEach(risk => {
+      if (risk.budgetId) {
+        insights[risk.budgetId] = {
           type: 'risk',
-          message: `${utilization.toFixed(0)}% spent - Near limit`
-        };
-      } else if (utilization < 30 && budget.status === 'active') {
-        insights[budget.id || budget._id] = {
-          type: 'opportunity',
-          message: `Low utilization - Consider reallocation`
-        };
-      } else if (utilization >= 70 && utilization <= 90) {
-        insights[budget.id || budget._id] = {
-          type: 'trending',
-          message: `Healthy utilization: ${utilization.toFixed(0)}%`
+          message: risk.message
         };
       }
     });
+    
+    advisor.opportunities.forEach(opportunity => {
+      if (opportunity.budgetId) {
+        insights[opportunity.budgetId] = {
+          type: 'opportunity',
+          message: opportunity.message
+        };
+      }
+    });
+    
     return insights;
   };
 
@@ -205,18 +348,53 @@ const BudgetListEnhanced = () => {
     }
   ];
 
+  // Compute budget statistics
+  const budgetStats = useMemo(() => {
+    if (!budgets) return { total: 0, allocated: 0, spent: 0, utilization: 0 };
+    
+    const totalAmount = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const totalSpent = budgets.reduce((sum, b) => sum + (b.utilized || b.spent || 0), 0);
+    const utilization = totalAmount > 0 ? (totalSpent / totalAmount) * 100 : 0;
+    
+    return {
+      total: budgets.length,
+      allocated: totalAmount,
+      spent: totalSpent,
+      utilization: utilization
+    };
+  }, [budgets]);
+
   return (
     <AIEnhancedPage
       pageContext="budgets"
-      contextData={{ total: budgets.length }}
+      contextData={{ total: budgetStats.total, allocated: budgetStats.allocated }}
       aiInsights={generateAIInsights()}
       quickActions={getQuickActions()}
       tips={getTips()}
     >
       <Box>
+        {error && (
+          <Alert 
+            severity="error" 
+            sx={{ mb: 2, borderRadius: 2 }}
+            action={
+              <Button 
+                color="inherit" 
+                size="small" 
+                onClick={handleRefresh}
+                disabled={refreshing}
+              >
+                {refreshing ? 'Retrying...' : 'Retry'}
+              </Button>
+            }
+          >
+            {error}
+          </Alert>
+        )}
+        
         <PageHeader
           title="Budget Management"
-          subtitle={`Managing ${budgets.length} budget allocations`}
+          subtitle={`Managing ${budgets.length} budget allocations (${formatCurrencyCompact(budgetStats.allocated)} total)`}
           action={
             <Button
               variant="contained"
@@ -244,6 +422,21 @@ const BudgetListEnhanced = () => {
           />
         </Box>
       </Box>
+      
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </AIEnhancedPage>
   );
 };
