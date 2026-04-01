@@ -50,19 +50,13 @@ const CustomTooltip = ({ active, payload }) => {
 
 // Budget Distribution Component (Zero-Slop Law 3, 11, 24)
 const BudgetDistribution = ({ data = [], height = 250 }) => {
-  // Handle empty data state (Zero-Slop Law 3)
-  if (!data || data.length === 0) {
-    return (
-      <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
-          No budget data available
-        </Typography>
-      </Box>
-    );
-  }
-
-  // Process data for pie chart
+  // Process data for pie chart (always call hooks at the top level)
   const chartData = useMemo(() => {
+    // Handle empty data state (Zero-Slop Law 3)
+    if (!data || data.length === 0) {
+      return [];
+    }
+    
     // Calculate total amount for percentage calculation
     const totalAmount = data.reduce((sum, item) => sum + (item.amount || 0), 0);
     
@@ -77,8 +71,19 @@ const BudgetDistribution = ({ data = [], height = 250 }) => {
       .sort((a, b) => b.value - a.value); // Sort by value descending
   }, [data]);
 
+  // Handle empty data state after processing
+  if (chartData.length === 0) {
+    return (
+      <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          No budget data available
+        </Typography>
+      </Box>
+    );
+  }
+
   // Handle case where all amounts are zero
-  if (chartData.length === 0 || chartData.every(item => item.amount === 0)) {
+  if (chartData.every(item => item.amount === 0)) {
     return (
       <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="body2" color="text.secondary">
