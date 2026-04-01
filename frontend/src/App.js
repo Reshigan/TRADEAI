@@ -34,6 +34,9 @@ const JAMDashboard = lazy(() => import('./pages/dashboards/JAMDashboard'));
 const ManagerDashboard = lazy(() => import('./pages/dashboards/ManagerDashboard'));
 const ExecutiveKpiDashboard = lazy(() => import('./pages/executive-kpi/ExecutiveKpiDashboard'));
 
+// Hermes Dashboard Components
+const HermesDashboardWrapper = lazy(() => import('./components/worldclass-dashboard/HermesDashboardWrapper'));
+
 const BudgetPage = lazy(() => import('./components/budgets').then(m => ({ default: m.BudgetPage })));
 const BudgetPlanningWizard = lazy(() => import('./components/Wizards/BudgetPlanningWizard'));
 const BudgetEdit = lazy(() => import('./components/budgets/BudgetEdit'));
@@ -539,6 +542,7 @@ function App() {
             <Route path="/dashboard" element={
               <P>{user?.role === 'jam' || user?.role === 'key_account_manager' ? <JAMDashboard /> : user?.role === 'manager' || user?.role === 'admin' || user?.role === 'super_admin' ? <ManagerDashboard /> : <CommandCenter user={user} />}</P>
             } />
+            <Route path="/dashboard/hermes" element={<P><HermesDashboardWrapper /></P>} />
             <Route path="/dashboard/jam" element={<P><JAMDashboard /></P>} />
             <Route path="/dashboard/manager" element={<P><ManagerDashboard /></P>} />
             <Route path="/dashboard/classic" element={<P><Dashboard user={user} /></P>} />
