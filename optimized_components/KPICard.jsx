@@ -1,8 +1,17 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box, Skeleton, alpha, useTheme } from '@mui/material';
+import React, { memo, useCallback } from 'react';
+import { 
+  Card, 
+  CardContent, 
+  Typography, 
+  Box, 
+  Skeleton, 
+  alpha, 
+  useTheme 
+} from '@mui/material';
 import { TrendingUp, TrendingDown, TrendingFlat } from '@mui/icons-material';
 
-const KPICard = ({ 
+// Memoized component for better performance
+const KPICard = memo(({ 
   title, 
   value, 
   trend, 
@@ -61,6 +70,29 @@ const KPICard = ({
 
   const colors = colorMap[color] || colorMap.primary;
 
+  // Memoized callback for click handler
+  const handleClick = useCallback(() => {
+    if (onClick) onClick();
+  }, [onClick]);
+
+  // Format numeric values
+  const formatValue = useCallback((val) => {
+    if (typeof val === 'number') {
+      if (prefix.includes('$') || prefix.includes('R') || suffix.includes('%')) {
+        return prefix + val.toLocaleString() + suffix;
+      }
+      return val.toLocaleString();
+    }
+    return val;
+  }, [prefix, suffix]);
+
+  // Get trend icon
+  const getTrendIcon = useCallback(() => {
+    if (trend === 'up') return <TrendingUp sx={{ fontSize: 16 }} />;
+    if (trend === 'down') return <TrendingDown sx={{ fontSize: 16 }} />;
+    return <TrendingFlat sx={{ fontSize: 16 }} />;
+  }, [trend]);
+
   if (loading) {
     return (
       <Card 
@@ -87,24 +119,6 @@ const KPICard = ({
       </Card>
     );
   }
-
-  // Format numeric values with commas and currency where appropriate
-  const formatValue = (val) => {
-    if (typeof val === 'number') {
-      if (prefix.includes('$') || prefix.includes('R') || suffix.includes('%')) {
-        return prefix + val.toLocaleString() + suffix;
-      }
-      return val.toLocaleString();
-    }
-    return val;
-  };
-
-  // Get trend icon
-  const getTrendIcon = () => {
-    if (trend === 'up') return <TrendingUp sx={{ fontSize: 16 }} />;
-    if (trend === 'down') return <TrendingDown sx={{ fontSize: 16 }} />;
-    return <TrendingFlat sx={{ fontSize: 16 }} />;
-  };
 
   return (
     <Card 
@@ -136,7 +150,7 @@ const KPICard = ({
           transition: 'opacity 0.3s ease'
         }
       }}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <CardContent sx={{ p: compact ? 2 : 3, pb: compact ? '16px !important' : '24px !important' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -227,6 +241,9 @@ const KPICard = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+// Set display name for debugging
+KPICard.displayName = 'KPICard';
 
 export default KPICard;
