@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          #Removed cache: 'npm' to avoid failure when package-lock.json is missing
 
       - name: Install Wrangler
         run: npm install -g wrangler
