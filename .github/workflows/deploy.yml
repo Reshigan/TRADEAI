@@ -1,0 +1,50 @@
+name: Production Deployment
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Deploy Backend to Cloudflare Workers
+        run: |
+          cd workers-backend
+          npx wrangler deploy src/index.js
+        env:
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+
+      - name: Deploy Database Migrations
+        run: |
+          cd workers-backend
+          # Run all pending migrations in the migrations folder
+          for file in migrations/*.sql; do
+            npx wrangler d1 execute tradeai --file="$file" --remote
+          done
+        env:
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+
+      - name: Deploy Frontend to Cloudflare Pages
+        run: |
+          cd frontend
+          npm install --legacy-peer-deps
+          npm run build
+          npx wrangler pages deploy dist --project-name tradeai
+        env:
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
