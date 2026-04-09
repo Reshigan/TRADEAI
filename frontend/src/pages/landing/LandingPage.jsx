@@ -27,15 +27,16 @@ function Reveal({ children, delay = 0, direction = 'up' }) {
 }
 
 const c = {
-  emerald: '#10B981', emeraldLight: '#34D399', emeraldDark: '#059669',
-  gold: '#F59E0B', goldLight: '#FBBF24', goldDark: '#D97706',
-  bg: '#09090B', bgCard: '#18181B', bgElevated: '#1C1C1F',
-  surface: '#27272A', surfaceLight: '#3F3F46',
-  white: '#FAFAFA', offWhite: '#E4E4E7', muted: '#A1A1AA', dim: '#71717A',
-  border: 'rgba(255,255,255,0.08)', borderHover: 'rgba(255,255,255,0.15)',
-  gradientHero: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%)',
+  primary: '#006CFF', primaryDark: '#0056D2', primaryLight: '#E6F0FF',
+  secondary: '#6366F1', secondaryDark: '#4F46E5', secondaryLight: '#EEF2FF',
+  accent: '#10B981', accentDark: '#059669', accentLight: '#D1FAE5',
+  bg: '#050505', bgCard: '#111113', bgElevated: '#18181B',
+  surface: '#1F1F22', surfaceLight: '#2D2D30',
+  white: '#FFFFFF', offWhite: '#F4F4F5', muted: '#A1A1AA', dim: '#71717A',
+  border: 'rgba(255,255,255,0.06)', borderHover: 'rgba(255,255,255,0.12)',
+  gradientHero: 'linear-gradient(135deg, #006CFF 0%, #6366F1 100%)',
   gradientGold: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-  gradientGlow: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)',
+  gradientGlow: 'radial-gradient(circle, rgba(0,108,255,0.15) 0%, transparent 70%)',
   gradientGlowGold: 'radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 70%)',
 };
 
