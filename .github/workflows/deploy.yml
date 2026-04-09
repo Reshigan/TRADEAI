@@ -46,7 +46,7 @@ jobs:
           cd frontend
           npm install --legacy-peer-deps
           npm run build
-          npx wrangler pages deploy dist --project-name tradeai
+          npx wrangler pages deploy build --project-name tradeai
         env:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
