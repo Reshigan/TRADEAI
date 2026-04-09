@@ -23,6 +23,7 @@ jobs:
       - name: Deploy Backend to Cloudflare Workers
         run: |
           cd workers-backend
+          npm install --legacy-peer-deps
           npx wrangler deploy src/index.js
         env:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
