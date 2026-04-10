@@ -79,6 +79,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
           workingDirectory: workers-backend
+          apiEmail: ${{ secrets.CLOUDFLARE_EMAIL }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Verify deployment
         run: |
