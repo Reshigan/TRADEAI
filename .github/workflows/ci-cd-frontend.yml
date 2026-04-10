@@ -107,6 +107,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build --project-name=tradeai
           workingDirectory: frontend
+          apiEmail: ${{ secrets.CLOUDFLARE_EMAIL }}
+          apiKey: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Purge Cloudflare Cache
         run: |
