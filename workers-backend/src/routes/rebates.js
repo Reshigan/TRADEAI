@@ -3,6 +3,7 @@ import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { checkBudgetAvailability } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { validateBody, schemas } from '../validators/schemas.js';
 import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 import { createNotification } from '../services/notifications.js';
 import { resolveBaselineScope } from '../services/hierarchyResolver.js';
@@ -136,7 +137,7 @@ rebates.get('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!result) {
-      return c.json({ success: false, message: 'Rebate not found' }, 404);
+      return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
     }
 
     // Hierarchy-aware baseline resolution for rebate context
@@ -176,7 +177,7 @@ rebates.get('/:id/accruals', async (c) => {
     `).bind(id, companyId).first();
     
     if (!rebate) {
-      return c.json({ success: false, message: 'Rebate not found' }, 404);
+      return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
     }
     
     // Parse accruals from data JSON if exists
@@ -205,11 +206,11 @@ rebates.get('/:id/accruals', async (c) => {
 });
 
 // Create rebate
-rebates.post('/', async (c) => {
+rebates.post('/', validateBody(schemas.rebate), async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const body = await c.req.json();
+    const body = c.get('validatedBody');
     const userId = getUserId(c);
     
     const id = generateId();
@@ -246,12 +247,12 @@ rebates.post('/', async (c) => {
 });
 
 // Update rebate
-rebates.put('/:id', async (c) => {
+rebates.put('/:id', validateBody(schemas.rebate), async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    const body = await c.req.json();
+    const body = c.get('validatedBody');
     const now = new Date().toISOString();
     
     const existing = await db.prepare(`
@@ -259,7 +260,7 @@ rebates.put('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Rebate not found' }, 404);
+      return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
     }
     
     await db.prepare(`
@@ -308,7 +309,7 @@ rebates.delete('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Rebate not found' }, 404);
+      return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
     }
     
     await db.prepare('DELETE FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).run();
@@ -374,7 +375,7 @@ rebates.post('/:id/submit', async (c) => {
     const now = new Date().toISOString();
 
     const rebate = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!rebate) return c.json({ success: false, message: 'Rebate not found' }, 404);
+    if (!rebate) return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
 
     const lifecycle = new EntityLifecycleService(db, companyId, userId);
     const result = await lifecycle.onEntitySubmit({
@@ -411,7 +412,7 @@ rebates.post('/:id/approve', async (c) => {
     const now = new Date().toISOString();
 
     const rebate = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!rebate) return c.json({ success: false, message: 'Rebate not found' }, 404);
+    if (!rebate) return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
 
     const lifecycle = new EntityLifecycleService(db, companyId, userId);
     await lifecycle.onEntityApprove({
@@ -470,7 +471,7 @@ rebates.post('/:id/reject', async (c) => {
     const now = new Date().toISOString();
 
     const rebate = await db.prepare('SELECT * FROM rebates WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!rebate) return c.json({ success: false, message: 'Rebate not found' }, 404);
+    if (!rebate) return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
 
     const lifecycle = new EntityLifecycleService(db, companyId, userId);
     await lifecycle.onEntityReject({
@@ -508,7 +509,7 @@ rebates.post('/:id/calculate', async (c) => {
     `).bind(id, companyId).first();
     
     if (!rebate) {
-      return c.json({ success: false, message: 'Rebate not found' }, 404);
+      return apiError(c, { status: 404, message: 'Rebate not found' }, 'rebates');
     }
     
     // Simple calculation based on provided sales data

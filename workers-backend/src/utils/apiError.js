@@ -1,6 +1,18 @@
 // D-09: Sanitized error response utility
 // Prevents leaking internal D1/SQL error details to API consumers
 
+export const ErrorCodes = {
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  NOT_FOUND: 'NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  CONFLICT: 'CONFLICT',
+  RATE_LIMITED: 'RATE_LIMITED',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  D1_ERROR: 'D1_ERROR',
+  AI_ERROR: 'AI_ERROR'
+};
+
 const SAFE_MESSAGES = new Set([
   'Not found',
   'Budget insufficient',
@@ -59,10 +71,22 @@ export function apiError(c, error, context = 'unknown') {
   const safeMessage = isSafeMessage(message) ? message : 'An internal error occurred';
   const status = error?.status || 500;
 
+  // Map status to error code
+  let code = ErrorCodes.INTERNAL_ERROR;
+  if (status === 400) code = ErrorCodes.VALIDATION_ERROR;
+  else if (status === 401) code = ErrorCodes.UNAUTHORIZED;
+  else if (status === 403) code = ErrorCodes.FORBIDDEN;
+  else if (status === 404) code = ErrorCodes.NOT_FOUND;
+  else if (status === 409) code = ErrorCodes.CONFLICT;
+  else if (status === 429) code = ErrorCodes.RATE_LIMITED;
+  else if (message.includes('D1') || message.includes('SQL')) code = ErrorCodes.D1_ERROR;
+  else if (context === 'ai') code = ErrorCodes.AI_ERROR;
+
   // Log full error for debugging (structured logging will capture this)
   if (typeof console !== 'undefined') {
     console.error(JSON.stringify({
       level: 'error',
+      requestId: c.get('requestId'),
       context,
       message: message,
       stack: error?.stack?.substring(0, 500)
@@ -71,6 +95,10 @@ export function apiError(c, error, context = 'unknown') {
 
   return c.json({
     success: false,
-    message: safeMessage
+    error: {
+      code: code,
+      message: safeMessage,
+      details: error?.details || {}
+    }
   }, status >= 400 && status < 600 ? status : 500);
 }

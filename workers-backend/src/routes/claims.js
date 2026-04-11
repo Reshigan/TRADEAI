@@ -3,6 +3,7 @@ import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { recordSpend } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { validateBody, schemas } from '../validators/schemas.js';
 import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 import { createNotification } from '../services/notifications.js';
 
@@ -337,7 +338,7 @@ claims.get('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!result) {
-      return c.json({ success: false, message: 'Claim not found' }, 404);
+      return apiError(c, { status: 404, message: 'Claim not found' }, 'claims');
     }
     
     const doc = rowToDocument(result);
@@ -408,7 +409,7 @@ claims.put('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Claim not found' }, 404);
+      return apiError(c, { status: 404, message: 'Claim not found' }, 'claims');
     }
     
     await db.prepare(`
@@ -452,7 +453,7 @@ claims.delete('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Claim not found' }, 404);
+      return apiError(c, { status: 404, message: 'Claim not found' }, 'claims');
     }
     
     await db.prepare('DELETE FROM claims WHERE id = ? AND company_id = ?').bind(id, companyId).run();
@@ -501,7 +502,7 @@ claims.post('/:id/approve', async (c) => {
     `).bind(id, companyId).first();
     
     if (!claim) {
-      return c.json({ success: false, message: 'Claim not found' }, 404);
+      return apiError(c, { status: 404, message: 'Claim not found' }, 'claims');
     }
     
     const approvedAmount = body.approvedAmount || body.approved_amount || claim.claimed_amount;
@@ -609,7 +610,7 @@ claims.post('/:id/settle', async (c) => {
     `).bind(id, companyId).first();
     
     if (!claim) {
-      return c.json({ success: false, message: 'Claim not found' }, 404);
+      return apiError(c, { status: 404, message: 'Claim not found' }, 'claims');
     }
     
     const settledAmount = body.settledAmount || body.settled_amount || claim.approved_amount;
@@ -653,7 +654,7 @@ claims.post('/:id/match', async (c) => {
     `).bind(id, companyId).first();
     
     if (!claim) {
-      return c.json({ success: false, message: 'Claim not found' }, 404);
+      return apiError(c, { status: 404, message: 'Claim not found' }, 'claims');
     }
     
     // Update claim data with matched deduction

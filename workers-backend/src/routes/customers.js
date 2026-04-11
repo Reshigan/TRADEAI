@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { getMongoClient } from '../services/d1.js';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
+import { validateBody, schemas } from '../validators/schemas.js';
 
 export const customerRoutes = new Hono();
 
@@ -86,7 +87,7 @@ customerRoutes.get('/hierarchy', async (c) => {
       ]
     });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to get customer hierarchy', error: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -159,7 +160,7 @@ customerRoutes.get('/', async (c) => {
       pagination: { page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit)) }
     });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to get customers', error: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -171,11 +172,11 @@ customerRoutes.get('/:id', async (c) => {
     const mongodb = getMongoClient(c);
 
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
 
     return c.json({ success: true, data: customer });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to get customer', error: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -185,7 +186,7 @@ customerRoutes.get('/:id/promotions', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     const promos = await mongodb.find('promotions', { companyId: tenantId }, { limit: 50, sort: { createdAt: -1 } });
     const filtered = promos.filter(p => {
       const custId = customer.id || customer._id;
@@ -204,7 +205,7 @@ customerRoutes.get('/:id/budgets', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     const custId = customer.id || customer._id;
     const budgets = await mongodb.find('budgets', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: budgets });
@@ -219,7 +220,7 @@ customerRoutes.get('/:id/deductions', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     const custId = customer.id || customer._id;
     const deductions = await mongodb.find('deductions', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: deductions });
@@ -234,7 +235,7 @@ customerRoutes.get('/:id/claims', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     const custId = customer.id || customer._id;
     const claims = await mongodb.find('claims', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: claims });
@@ -249,7 +250,7 @@ customerRoutes.get('/:id/trade-spends', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     const custId = customer.id || customer._id;
     const spends = await mongodb.find('tradespends', { customerId: custId, companyId: tenantId }, { limit: 50 });
     return c.json({ success: true, data: spends });
@@ -264,7 +265,7 @@ customerRoutes.get('/:id/sales-history', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     return c.json({ success: true, data: customer.salesHistory || [] });
   } catch (error) {
     return apiError(c, error, 'customers');
@@ -277,7 +278,7 @@ customerRoutes.get('/:id/trading-terms', async (c) => {
     const tenantId = c.get('tenantId');
     const mongodb = getMongoClient(c);
     const customer = await mongodb.findOne('customers', { _id: { $oid: id }, companyId: tenantId });
-    if (!customer) return c.json({ success: false, message: 'Customer not found' }, 404);
+    if (!customer) return apiError(c, { status: 404, message: 'Customer not found' }, 'customers');
     return c.json({ success: true, data: customer.tradingTerms || [] });
   } catch (error) {
     return apiError(c, error, 'customers');
@@ -285,33 +286,33 @@ customerRoutes.get('/:id/trading-terms', async (c) => {
 });
 
 // Create customer
-customerRoutes.post('/', async (c) => {
+customerRoutes.post('/', validateBody(schemas.customer), async (c) => {
   try {
     const tenantId = c.get('tenantId');
-    const data = await c.req.json();
+    const data = c.get('validatedBody');
     const mongodb = getMongoClient(c);
 
     const customerId = await mongodb.insertOne('customers', { ...data, companyId: tenantId, status: 'active' });
 
     return c.json({ success: true, data: { id: customerId }, message: 'Customer created successfully' }, 201);
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to create customer', error: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
 // Update customer
-customerRoutes.put('/:id', async (c) => {
+customerRoutes.put('/:id', validateBody(schemas.customer), async (c) => {
   try {
     const { id } = c.req.param();
     const tenantId = c.get('tenantId');
-    const updates = await c.req.json();
+    const updates = c.get('validatedBody');
     const mongodb = getMongoClient(c);
 
     await mongodb.updateOne('customers', { _id: { $oid: id }, companyId: tenantId }, updates);
 
     return c.json({ success: true, message: 'Customer updated successfully' });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to update customer', error: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });
 
@@ -326,6 +327,6 @@ customerRoutes.delete('/:id', async (c) => {
 
     return c.json({ success: true, message: 'Customer deleted successfully' });
   } catch (error) {
-    return c.json({ success: false, message: 'Failed to delete customer', error: error.message }, 500);
+    return apiError(c, error, 'customers');
   }
 });

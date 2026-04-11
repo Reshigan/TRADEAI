@@ -1,0 +1,553 @@
+{
+  "config": {
+    "configFile": "/workspace/project/TRADEAI/playwright.config.js",
+    "rootDir": "/workspace/project/TRADEAI/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/workspace/project/TRADEAI/tests/e2e-global-setup.js",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/workspace/project/TRADEAI/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/workspace/project/TRADEAI/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e/**/*.spec.{ts,js}",
+          "**/regression/**/*.spec.{ts,js}",
+          "**/roles/**/*.spec.{ts,js}",
+          "**/workflows/**/*.spec.{ts,js}",
+          "**/ai/**/*.spec.{ts,js}",
+          "**/ui/**/*.spec.{ts,js}"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/workspace/project/TRADEAI/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/workspace/project/TRADEAI/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e/**/*.spec.{ts,js}",
+          "**/regression/**/*.spec.{ts,js}",
+          "**/roles/**/*.spec.{ts,js}",
+          "**/workflows/**/*.spec.{ts,js}",
+          "**/ai/**/*.spec.{ts,js}",
+          "**/ui/**/*.spec.{ts,js}"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/workspace/project/TRADEAI/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/workspace/project/TRADEAI/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e/**/*.spec.{ts,js}",
+          "**/regression/**/*.spec.{ts,js}",
+          "**/roles/**/*.spec.{ts,js}",
+          "**/workflows/**/*.spec.{ts,js}",
+          "**/ai/**/*.spec.{ts,js}",
+          "**/ui/**/*.spec.{ts,js}"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/workspace/project/TRADEAI/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/workspace/project/TRADEAI/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e/**/*.spec.{ts,js}",
+          "**/regression/**/*.spec.{ts,js}",
+          "**/roles/**/*.spec.{ts,js}",
+          "**/workflows/**/*.spec.{ts,js}",
+          "**/ai/**/*.spec.{ts,js}",
+          "**/ui/**/*.spec.{ts,js}"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/workspace/project/TRADEAI/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/workspace/project/TRADEAI/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e/**/*.spec.{ts,js}",
+          "**/regression/**/*.spec.{ts,js}",
+          "**/roles/**/*.spec.{ts,js}",
+          "**/workflows/**/*.spec.{ts,js}",
+          "**/ai/**/*.spec.{ts,js}",
+          "**/ui/**/*.spec.{ts,js}"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "e2e/smoke-test.spec.js",
+      "file": "e2e/smoke-test.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Smoke Test - Critical Path",
+          "file": "e2e/smoke-test.spec.js",
+          "line": 27,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should complete a successful user journey",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 486,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\n    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11",
+                        "location": {
+                          "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                          "column": 14,
+                          "line": 20
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                            "column": 14,
+                            "line": 20
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\u001b[22m\n\u001b[2m    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-11T04:28:38.364Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                        "column": 14,
+                        "line": 20
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f403a3316ea51c65e135-3dc3052ffae070bd42e4",
+              "file": "e2e/smoke-test.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "should complete a successful user journey",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1545,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\n    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11",
+                        "location": {
+                          "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                          "column": 14,
+                          "line": 20
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                            "column": 14,
+                            "line": 20
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\u001b[22m\n\u001b[2m    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-11T04:28:39.835Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                        "column": 14,
+                        "line": 20
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f403a3316ea51c65e135-c1f4680194bf3f46223d",
+              "file": "e2e/smoke-test.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "should complete a successful user journey",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 994,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to localhost: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to localhost: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\n    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11",
+                        "location": {
+                          "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                          "column": 14,
+                          "line": 20
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                            "column": 14,
+                            "line": 20
+                          },
+                          "message": "Error: page.goto: Could not connect to localhost: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\u001b[22m\n\u001b[2m    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-11T04:28:43.029Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-webkit/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                        "column": 14,
+                        "line": 20
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f403a3316ea51c65e135-09d7ec146029f7de79da",
+              "file": "e2e/smoke-test.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "should complete a successful user journey",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 296,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\n    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11",
+                        "location": {
+                          "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                          "column": 14,
+                          "line": 20
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                            "column": 14,
+                            "line": 20
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\u001b[22m\n\u001b[2m    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-11T04:28:45.180Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-Mobile-Chrome/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-Mobile-Chrome/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-Mobile-Chrome/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                        "column": 14,
+                        "line": 20
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f403a3316ea51c65e135-e8eab218bfc8701d4feb",
+              "file": "e2e/smoke-test.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "should complete a successful user journey",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 678,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to localhost: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to localhost: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\n    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11",
+                        "location": {
+                          "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                          "column": 14,
+                          "line": 20
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                            "column": 14,
+                            "line": 20
+                          },
+                          "message": "Error: page.goto: Could not connect to localhost: Connection refused\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 18 |\u001b[39m\n \u001b[90m 19 |\u001b[39m \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m login(page\u001b[33m,\u001b[39m user) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[33mCONFIG\u001b[39m\u001b[33m.\u001b[39mbaseURL)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"email\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39memail)\u001b[33m;\u001b[39m\n \u001b[90m 22 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"password\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mfill(user\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at login (/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:20:14)\u001b[22m\n\u001b[2m    at /workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js:30:11\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-11T04:28:46.017Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-Mobile-Safari/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-Mobile-Safari/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/workspace/project/TRADEAI/test-results/e2e-smoke-test-Smoke-Test--dc652-e-a-successful-user-journey-Mobile-Safari/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/workspace/project/TRADEAI/tests/e2e/smoke-test.spec.js",
+                        "column": 14,
+                        "line": 20
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "f403a3316ea51c65e135-cc7dc3c0cad52abb915b",
+              "file": "e2e/smoke-test.spec.js",
+              "line": 28,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-04-11T04:28:37.773Z",
+    "duration": 9074.300000000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 5,
+    "flaky": 0
+  }
+}
