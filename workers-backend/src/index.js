@@ -86,7 +86,12 @@ import { baselineEngineRoutes } from './routes/baselineEngine.js';
 import { tradeSpendAnalyticsRoutes } from './routes/tradeSpendAnalytics.js';
 import { wizardRoutes } from './routes/wizards.js';
 import { processModelRoutes } from './routes/processModel.js';
-import { aiChatbotRoutes, cannibalizationRoutes, enterpriseRoutes, forwardBuyRoutes, insightsRoutes, masterDataRoutes, metricsRoutes, ollamaRoutes, superAdminRoutes, pushRoutes } from './routes/missingRoutes.js';
+import { aiChatbotRoutes } from './routes/aiChatbot.js';
+import { enterpriseRoutes } from './routes/enterprise.js';
+import { insightsRoutes } from './routes/insights.js';
+import { cannibalizationRoutes } from './routes/cannibalization.js';
+import { forwardBuyRoutes } from './routes/forwardbuy.js';
+import { masterDataRoutes, metricsRoutes, ollamaRoutes, superAdminRoutes, pushRoutes } from './routes/missingRoutes.js';
 // Remaining missing backend routes
 import { adminRoutes } from './routes/admin.js';
 import { apiManagementRoutes } from './routes/apiManagement.js';

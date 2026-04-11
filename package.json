@@ -85,7 +85,7 @@
     "@babel/preset-typescript": "^7.23.0",
     "@cypress/code-coverage": "^3.12.0",
     "@faker-js/faker": "^8.2.0",
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.59.1",
     "@testing-library/jest-dom": "^6.1.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/react-hooks": "^8.0.1",
@@ -95,6 +95,7 @@
     "@types/supertest": "^2.0.16",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
+    "@vitest/coverage-v8": "^4.1.4",
     "artillery": "^2.0.21",
     "artillery-plugin-expect": "^2.20.0",
     "audit-ci": "^6.6.1",
@@ -129,7 +130,8 @@
     "prettier": "^3.0.0",
     "snyk": "^1.1200.0",
     "supertest": "^6.3.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^4.1.4"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -157,5 +159,8 @@
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "playwright": "^1.59.1"
   }
 }

@@ -132,7 +132,7 @@ export function requireRole(...roles) {
   return async (c, next) => {
     const user = c.get('user');
     if (!user) return c.json({ success: false, message: 'Authentication required' }, 401);
-    if (!roles.includes(user.role)) return c.json({ success: false, message: 'Insufficient permissions' }, 403);
+    if (!roles.includes(user.role)) return c.json({ success: false, message: 'Insufficient permissions', requiredRoles: roles }, 403);
     await next();
   };
 }

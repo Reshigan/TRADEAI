@@ -3,6 +3,7 @@ import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { checkBudgetAvailability, commitFunds } from '../services/budgetEnforcement.js';
 import { apiError } from '../utils/apiError.js';
+import { validateBody, schemas } from '../validators/schemas.js';
 import { EntityLifecycleService } from '../services/entityLifecycleService.js';
 
 const campaigns = new Hono();
@@ -118,7 +119,7 @@ campaigns.get('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!result) {
-      return c.json({ success: false, message: 'Campaign not found' }, 404);
+      return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     }
     
     // Get associated promotions
@@ -149,11 +150,11 @@ campaigns.get('/:id', async (c) => {
 });
 
 // Create campaign
-campaigns.post('/', async (c) => {
+campaigns.post('/', validateBody(schemas.campaign), async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
-    const body = await c.req.json();
+    const body = c.get('validatedBody');
     const userId = getUserId(c);
     
     const id = generateId();
@@ -193,12 +194,12 @@ campaigns.post('/', async (c) => {
 });
 
 // Update campaign
-campaigns.put('/:id', async (c) => {
+campaigns.put('/:id', validateBody(schemas.campaign), async (c) => {
   try {
     const db = c.env.DB;
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
-    const body = await c.req.json();
+    const body = c.get('validatedBody');
     const now = new Date().toISOString();
     
     const existing = await db.prepare(`
@@ -206,7 +207,7 @@ campaigns.put('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Campaign not found' }, 404);
+      return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     }
     
     await db.prepare(`
@@ -258,7 +259,7 @@ campaigns.delete('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Campaign not found' }, 404);
+      return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     }
     
     await db.prepare('DELETE FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).run();
@@ -280,7 +281,7 @@ campaigns.post('/:id/submit', async (c) => {
     const now = new Date().toISOString();
 
     const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    if (!campaign) return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     const doc = rowToDocument(campaign);
 
     const lifecycle = new EntityLifecycleService(db, companyId, userId);
@@ -318,7 +319,7 @@ campaigns.post('/:id/approve', async (c) => {
     const now = new Date().toISOString();
 
     const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    if (!campaign) return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     const doc = rowToDocument(campaign);
 
     const lifecycle = new EntityLifecycleService(db, companyId, userId);
@@ -354,7 +355,7 @@ campaigns.post('/:id/reject', async (c) => {
     const now = new Date().toISOString();
 
     const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    if (!campaign) return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     const doc = rowToDocument(campaign);
 
     const lifecycle = new EntityLifecycleService(db, companyId, userId);
@@ -459,7 +460,7 @@ campaigns.post('/:id/promotions', async (c) => {
     `).bind(id, companyId).first();
     
     if (!campaign) {
-      return c.json({ success: false, message: 'Campaign not found' }, 404);
+      return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     }
     
     let data = {};
@@ -491,7 +492,7 @@ campaigns.get('/:id/performance', async (c) => {
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    if (!campaign) return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     const doc = rowToDocument(campaign);
     return c.json({ success: true, data: doc.performance || {
       budgetAmount: doc.budgetAmount || 0,
@@ -513,7 +514,7 @@ campaigns.get('/:id/budget', async (c) => {
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    if (!campaign) return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     const doc = rowToDocument(campaign);
     return c.json({ success: true, data: doc.budget || {
       totalBudget: doc.budgetAmount || 0,
@@ -532,7 +533,7 @@ campaigns.get('/:id/history', async (c) => {
     const companyId = getCompanyId(c);
     const { id } = c.req.param();
     const campaign = await db.prepare('SELECT * FROM campaigns WHERE id = ? AND company_id = ?').bind(id, companyId).first();
-    if (!campaign) return c.json({ success: false, message: 'Campaign not found' }, 404);
+    if (!campaign) return apiError(c, { status: 404, message: 'Campaign not found' }, 'campaigns');
     const doc = rowToDocument(campaign);
     const history = [];
     history.push({ id: `hist-create-${id}`, action: 'Created', user: doc.createdBy, date: doc.createdAt, details: `Campaign "${doc.name}" created` });

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import {authMiddleware, requireMinRole } from '../middleware/auth.js';
 import { rowToDocument } from '../services/d1.js';
 import { apiError } from '../utils/apiError.js';
+import { validateBody, schemas } from '../validators/schemas.js';
 
 const vendors = new Hono();
 
@@ -99,7 +100,7 @@ vendors.get('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!result) {
-      return c.json({ success: false, message: 'Vendor not found' }, 404);
+      return apiError(c, { status: 404, message: 'Vendor not found' }, 'vendors');
     }
     
     return c.json({ success: true, data: rowToDocument(result) });
@@ -167,7 +168,7 @@ vendors.put('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Vendor not found' }, 404);
+      return apiError(c, { status: 404, message: 'Vendor not found' }, 'vendors');
     }
     
     await db.prepare(`
@@ -218,7 +219,7 @@ vendors.delete('/:id', async (c) => {
     `).bind(id, companyId).first();
     
     if (!existing) {
-      return c.json({ success: false, message: 'Vendor not found' }, 404);
+      return apiError(c, { status: 404, message: 'Vendor not found' }, 'vendors');
     }
     
     await db.prepare('DELETE FROM vendors WHERE id = ? AND company_id = ?').bind(id, companyId).run();
