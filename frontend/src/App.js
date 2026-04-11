@@ -34,6 +34,15 @@ const JAMDashboard = lazy(() => import('./pages/dashboards/JAMDashboard'));
 const ManagerDashboard = lazy(() => import('./pages/dashboards/ManagerDashboard'));
 const ExecutiveKpiDashboard = lazy(() => import('./pages/executive-kpi/ExecutiveKpiDashboard'));
 
+// Cockpit Dashboards
+const KAMCockpit = lazy(() => import('./pages/dashboards/cockpits/KAMCockpit'));
+const AnalystCockpit = lazy(() => import('./pages/dashboards/cockpits/AnalystCockpit'));
+const TradeMarketingCockpit = lazy(() => import('./pages/dashboards/cockpits/TradeMarketingCockpit'));
+const FinanceCockpit = lazy(() => import('./pages/dashboards/cockpits/FinanceCockpit'));
+const ManagerCockpit = lazy(() => import('./pages/dashboards/cockpits/ManagerCockpit'));
+const AdminCockpit = lazy(() => import('./pages/dashboards/cockpits/AdminCockpit'));
+const SuperAdminCockpit = lazy(() => import('./pages/dashboards/cockpits/SuperAdminCockpit'));
+
 // Hermes Dashboard Components
 const HermesDashboardWrapper = lazy(() => import('./components/worldclass-dashboard/HermesDashboardWrapper'));
 
@@ -893,10 +902,25 @@ function App() {
             <Route path="/promotions/form" element={<P><PromotionForm /></P>} />
             <Route path="/promotions/planner" element={<P><PromotionPlanner /></P>} />
             
-            {/* Dashboard Routes */}
-            <Route path="/dashboard/executive" element={<P><ExecutiveDashboard /></P>} />
-            <Route path="/dashboard/sales" element={<P><SalesDashboard /></P>} />
-            <Route path="/dashboard/promotion" element={<P><PromotionDashboard /></P>} />
+            {/* Dashboard Route */}
+            <Route path="/dashboard" element={
+              <P>
+                {(() => {
+                  const user = auth.user; // Assuming auth is available in this scope or via useAuth hook
+                  const COCKPIT_MAP = {
+                    kam: KAMCockpit, key_account_manager: KAMCockpit, jam: KAMCockpit,
+                    analyst: AnalystCockpit,
+                    trade_marketing: TradeMarketingCockpit,
+                    finance: FinanceCockpit,
+                    manager: ManagerCockpit, director: ManagerCockpit,
+                    admin: AdminCockpit,
+                    super_admin: SuperAdminCockpit,
+                  };
+                  const CockpitComponent = COCKPIT_MAP[user?.role] || KAMCockpit;
+                  return <CockpitComponent user={user} />;
+                })()}
+              </P>
+            } />
             
             {/* AI Dashboard Route */}
             <Route path="/ai/dashboard" element={<P><AIDashboard /></P>} />

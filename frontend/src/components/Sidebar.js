@@ -134,7 +134,17 @@ export default function Sidebar({ user }) {
   const [quickAnchor, setQuickAnchor] = useState(null);
   const pendingCount = 0;
   const userRole = user?.role || 'kam';
+  const visible = (item) => !item.roles || item.roles.includes(userRole);
+  const visibleGroup = (group) => !group.roles || group.roles.includes(userRole);
+
   const navGroups = buildNavGroups(t, tPlural);
+  
+  // Apply Role-Based visibility to groups and items
+  const filteredGroups = navGroups.map(group => ({
+    ...group,
+    items: group.items ? group.items.filter(visible) : undefined
+  })).filter(visibleGroup);
+
   useEffect(() => { localStorage.setItem('sidebar_collapsed', collapsed); }, [collapsed]);
   const width = collapsed ? COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
@@ -166,11 +176,9 @@ export default function Sidebar({ user }) {
 
       <Box sx={{ flex: 1, overflow: 'auto', py: 1, '&::-webkit-scrollbar': { width: 0 } }}>
         <List disablePadding>
-          {navGroups.map(group => {
-            if (group.adminOnly && !['admin', 'super_admin'].includes(userRole)) return null;
-            if (group.superAdminOnly && userRole !== 'super_admin') return null;
-            return <NavGroup key={group.label} group={group} collapsed={collapsed} location={location} navigate={navigate} pendingCount={pendingCount} />;
-          })}
+          {filteredGroups.map(group => (
+            <NavGroup key={group.label} group={group} collapsed={collapsed} location={location} navigate={navigate} pendingCount={pendingCount} />
+          ))}
         </List>
       </Box>
 
