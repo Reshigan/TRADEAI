@@ -34,6 +34,7 @@ describe('Transaction Model - Comprehensive Tests', () => {
   });
 
   const createMockData = (overrides = {}) => ({
+    transactionNumber: `TEST-ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     transactionType: 'order',
     customerId: mockCustomerId,
     tenantId: mockTenantId,
