@@ -11,6 +11,7 @@ on:
     paths:
       - 'frontend/**'
       - '.github/workflows/ci-cd-frontend.yml'
+  workflow_dispatch:
 
 concurrency:
   group: frontend-${{ github.ref }}
