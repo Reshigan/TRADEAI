@@ -70,3 +70,6 @@ temp/
 .auth/
 .wrangler/
 workers-backend/.wrangler/
+
+# Cloudflare Pages SPA fallback
+frontend/public/_redirects
