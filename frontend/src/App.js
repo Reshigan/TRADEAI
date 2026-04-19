@@ -42,6 +42,7 @@ const FinanceCockpit = lazy(() => import('./pages/dashboards/cockpits/FinanceCoc
 const ManagerCockpit = lazy(() => import('./pages/dashboards/cockpits/ManagerCockpit'));
 const AdminCockpit = lazy(() => import('./pages/dashboards/cockpits/AdminCockpit'));
 const SuperAdminCockpit = lazy(() => import('./pages/dashboards/cockpits/SuperAdminCockpit'));
+const CockpitRouter = lazy(() => import('./pages/dashboards/cockpits/CockpitRouter'));
 
 // Hermes Dashboard Components
 const HermesDashboardWrapper = lazy(() => import('./components/worldclass-dashboard/HermesDashboardWrapper'));
@@ -905,20 +906,7 @@ function App() {
             {/* Dashboard Route */}
             <Route path="/dashboard" element={
               <P>
-                {(() => {
-                  const user = auth.user; // Assuming auth is available in this scope or via useAuth hook
-                  const COCKPIT_MAP = {
-                    kam: KAMCockpit, key_account_manager: KAMCockpit, jam: KAMCockpit,
-                    analyst: AnalystCockpit,
-                    trade_marketing: TradeMarketingCockpit,
-                    finance: FinanceCockpit,
-                    manager: ManagerCockpit, director: ManagerCockpit,
-                    admin: AdminCockpit,
-                    super_admin: SuperAdminCockpit,
-                  };
-                  const CockpitComponent = COCKPIT_MAP[user?.role] || KAMCockpit;
-                  return <CockpitComponent user={user} />;
-                })()}
+                <CockpitRouter />
               </P>
             } />
             

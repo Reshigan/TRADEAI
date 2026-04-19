@@ -1,14 +1,13 @@
 import React from 'react';
 import { Card, Grid, Typography, Box, Button } from '@mui/material';
-import { 
-  Assignment, 
-  CheckCircle, 
-  People, 
-  TrendingUp, 
-  WarningAmber 
+import {
+  CheckCircle,
+  People,
+  TrendingUp,
+  WarningAmber
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
-import { useMyWork } from '../../hooks/useMyWork';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useMyWork } from '../../../hooks/useMyWork';
 
 const ManagerCockpit = ({ user }) => {
   const { tenantId } = useAuth();

@@ -7,8 +7,8 @@ import {
   Search, 
   AddCircleOutline 
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
-import { useMyWork } from '../../hooks/useMyWork';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useMyWork } from '../../../hooks/useMyWork';
 
 const TradeMarketingCockpit = ({ user }) => {
   const { tenantId } = useAuth();

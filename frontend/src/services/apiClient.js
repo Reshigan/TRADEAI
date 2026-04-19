@@ -1,5 +1,6 @@
-export { 
-  default,
+export {
+  apiClient,
+  apiClient as api,
   authService,
   budgetService,
   tradeSpendService,
@@ -13,3 +14,5 @@ export {
   tradingTermsService,
   forecastingService
 } from './api';
+
+export { default } from './api';

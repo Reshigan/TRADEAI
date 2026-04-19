@@ -7,7 +7,6 @@ import {
   Group, 
   Assessment 
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
 
 const SuperAdminCockpit = ({ user }) => {
   return (

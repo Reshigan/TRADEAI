@@ -1,14 +1,12 @@
 import React from 'react';
 import { Card, Grid, Typography, Box, Button } from '@mui/material';
-import { 
-  TrendingUp, 
-  Assignment, 
-  AccountBox, 
-  WarningAmber, 
-  PlusCircle 
+import {
+  TrendingUp,
+  Description,
+  Add
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
-import { useMyWork } from '../../hooks/useMyWork'; // Logic to be implemented in hooks/useMyWork.ts
+import { useAuth } from '../../../contexts/AuthContext';
+import { useMyWork } from '../../../hooks/useMyWork';
 
 const KAMCockpit = ({ user }) => {
   const { tenantId } = useAuth();
@@ -33,7 +31,7 @@ const KAMCockpit = ({ user }) => {
         <Grid item xs={12} md={3}>
           <Card sx={{ p: 2, textAlign: 'center', bgcolor: 'secondary.light', color: 'white' }}>
             <Typography variant="subtitle2">Assigned Customers</Typography>
-            <Typography variant="h4">{customers?.length || 0}</Typography
+            <Typography variant="h4">{customers?.length || 0}</Typography>
             <Typography variant="caption">Active account la-assignments</Typography>
           </Card>
         </Grid>
@@ -58,7 +56,7 @@ const KAMCockpit = ({ user }) => {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">My Active Promotions</Typography>
               <Button size="small" variant="outlined">View All</Button>
-C            </Box>
+</Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {promotions?.slice(0, 5).map(promo => (
                 <Box key={promo.id} sx={{ p: 2, border: '1px solid #eee', borderRadius: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -94,8 +92,8 @@ C            </Box>
           <Card sx={{ p: 2 }}>
             <Typography variant="h6" mb={2}>Quick Actions</Typography>
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button variant="contained" startIcon={<PlusCircle />} color="primary">Create Promotion</Button>
-              <Button variant="contained" startIcon={<Assignment />} color="secondary">Submit Claim</Button>
+              <Button variant="contained" startIcon={<Add />} color="primary">Create Promotion</Button>
+              <Button variant="contained" startIcon={<Description />} color="secondary">Submit Claim</Button>
               <Button variant="contained" startIcon={<TrendingUp />} color="success">Analyze ROI</Button>
             </Box>
           </Card>
