@@ -2,7 +2,8 @@ import { Hono } from 'hono';
 import { getD1Client } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
-import { generateId } from '../utils/id.js';
+// Use crypto.randomUUID() for ID generation (native Cloudflare Workers API)
+// crypto.randomUUID() is available natively in Cloudflare Workers
 
 // Create a separate router for unauthenticated seed endpoints
 const seedAuthRoutes = new Hono();
@@ -53,7 +54,7 @@ seedAuthRoutes.post('/init', async (c) => {
     const createdUsers = [];
     for (const user of testUsers) {
       const hashedPassword = await hashPassword(user.password);
-      const userId = generateId();
+      const userId = crypto.randomUUID();
       const now = new Date().toISOString();
       
       await db.rawExecute(
