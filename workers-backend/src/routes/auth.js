@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { getMongoClient } from '../services/d1.js';
+import { getD1Client, rowToDocument } from '../services/d1.js';
 import { signJWT, verifyJWT, authMiddleware } from '../middleware/auth.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 import { apiError } from '../utils/apiError.js';
@@ -66,15 +66,23 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Email and password are required' }, 400);
     }
 
-    const mongodb = getMongoClient(c);
-    const user = await mongodb.findOne('users', { email: email.toLowerCase() });
-
-    if (!user) {
+    const db = getD1Client(c);
+    
+    // Find user by email
+    const result = await db.rawExecute(
+      "SELECT * FROM users WHERE email = ?",
+      [email.toLowerCase()]
+    );
+    
+    if (!result.results || result.results.length === 0) {
       return c.json({ success: false, message: 'Invalid credentials' }, 401);
     }
+    
+    const user = rowToDocument(result.results[0]);
+    const userId = user.id;
 
     // Check if account is locked
-    if (user.lockUntil && new Date(user.lockUntil) > new Date()) {
+    if (user.lock_until && new Date(user.lock_until) > new Date()) {
       return c.json({ success: false, message: 'Account is temporarily locked. Please try again later.' }, 423);
     }
 
@@ -83,32 +91,35 @@ authRoutes.post('/login', authRateLimit, async (c) => {
 
     if (!isValidPassword) {
       // Increment failed login attempts
-      const loginAttempts = (user.loginAttempts || 0) + 1;
-      const updateData = { loginAttempts };
+      const loginAttempts = (user.login_attempts || 0) + 1;
+      const updateData = { login_attempts: loginAttempts };
 
       if (loginAttempts >= 5) {
-        updateData.lockUntil = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(); // 2 hours
+        updateData.lock_until = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
       }
 
-      await mongodb.updateOne('users', { _id: user._id }, updateData);
+      await db.rawExecute(
+        "UPDATE users SET login_attempts = ?, lock_until = ? WHERE id = ?",
+        [loginAttempts, updateData.lock_until || null, userId]
+      );
       return c.json({ success: false, message: 'Invalid credentials' }, 401);
     }
 
-    if (!user.isActive) {
+    if (!user.is_active) {
       return c.json({ success: false, message: 'Account is deactivated' }, 401);
     }
 
     // Check if password reset is required (seeded accounts)
-    if (user.passwordResetRequired) {
+    if (user.password_reset_required) {
       return c.json({ success: false, message: 'Password reset required. Please change your password before proceeding.', code: 'PASSWORD_RESET_REQUIRED' }, 428);
     }
 
     // GAP-01: If 2FA is enabled, return tempToken instead of full login
-    if (user.twoFactorEnabled && user.twoFactorSecret) {
+    if (user.two_factor_enabled && user.two_factor_secret) {
       const secret = c.env.JWT_SECRET;
       if (!secret) return c.json({ success: false, message: 'Server configuration error' }, 500);
       const tempToken = await signJWT({
-        userId: user._id.$oid || user._id,
+        userId: userId,
         type: '2fa_pending',
         email: user.email
       }, secret, '5m');
@@ -121,11 +132,18 @@ authRoutes.post('/login', authRateLimit, async (c) => {
     }
 
     // Rehash legacy SHA-256 password to PBKDF2 on successful login
-    const rehashData = { loginAttempts: 0, lockUntil: null, lastLogin: new Date().toISOString() };
+    const updateFields = ['login_attempts = 0', 'lock_until = NULL', `last_login = '${new Date().toISOString()}'`];
+    const params = [];
     if (!user.password.includes(':')) {
-      rehashData.password = await hashPassword(password);
+      const newHash = await hashPassword(password);
+      updateFields.push('password = ?');
+      params.push(newHash);
     }
-    await mongodb.updateOne('users', { _id: user._id }, rehashData);
+    params.push(userId);
+    await db.rawExecute(
+      `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`,
+      params
+    );
 
     // Generate tokens
     const secret = c.env.JWT_SECRET;
@@ -133,22 +151,23 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Server configuration error: JWT_SECRET not set' }, 500);
     }
     const accessToken = await signJWT({
-      userId: user._id.$oid || user._id,
+      userId: userId,
       email: user.email,
       role: user.role,
-      tenantId: user.companyId
+      tenantId: user.company_id
     }, secret, '15m');
 
     const refreshToken = await signJWT({
-      userId: user._id.$oid || user._id,
+      userId: userId,
       type: 'refresh'
     }, secret, '7d');
 
     // Store refresh token
-    await mongodb.updateOne('users', { _id: user._id }, {
-      refreshToken,
-      refreshTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-    });
+    const refreshExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    await db.rawExecute(
+      "UPDATE users SET refresh_token = ?, refresh_token_expiry = ? WHERE id = ?",
+      [refreshToken, refreshExpiry, userId]
+    );
 
     // D-11: Set refresh token as httpOnly secure cookie
     const isProduction = c.env.ENVIRONMENT === 'production';
@@ -159,12 +178,12 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       token: accessToken,
       data: {
         user: {
-          id: user._id.$oid || user._id,
+          id: userId,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.first_name,
+          lastName: user.last_name,
           role: user.role,
-          companyId: user.companyId
+          companyId: user.company_id
         },
         tokens: {
           accessToken
@@ -215,22 +234,24 @@ async function handleRefreshToken(c) {
       return c.json({ success: false, message: 'Invalid refresh token' }, 401);
     }
 
-    const mongodb = getMongoClient(c);
-    const user = await mongodb.findOne('users', { 
-      _id: { $oid: decoded.userId },
-      refreshToken 
-    });
+    const db = getD1Client(c);
+    const result = await db.rawExecute(
+      "SELECT * FROM users WHERE id = ? AND refresh_token = ?",
+      [decoded.userId, refreshToken]
+    );
 
-    if (!user) {
+    if (!result.results || result.results.length === 0) {
       return c.json({ success: false, message: 'Invalid refresh token' }, 401);
     }
 
+    const user = rowToDocument(result.results[0]);
+
     // Generate new access token
     const accessToken = await signJWT({
-      userId: user._id.$oid || user._id,
+      userId: user.id,
       email: user.email,
       role: user.role,
-      tenantId: user.companyId
+      tenantId: user.company_id
     }, secret, '15m');
 
     return c.json({
@@ -248,12 +269,12 @@ async function handleRefreshToken(c) {
 authRoutes.post('/logout', authMiddleware, async (c) => {
   try {
     const userId = c.get('userId');
-    const mongodb = getMongoClient(c);
+    const db = getD1Client(c);
 
-    await mongodb.updateOne('users', { _id: { $oid: userId } }, {
-      refreshToken: null,
-      refreshTokenExpiry: null
-    });
+    await db.rawExecute(
+      "UPDATE users SET refresh_token = NULL, refresh_token_expiry = NULL WHERE id = ?",
+      [userId]
+    );
 
     // D-11: Clear httpOnly cookie on logout
     c.header('Set-Cookie', 'refreshToken=; HttpOnly; SameSite=Strict; Path=/api/auth; Max-Age=0');
@@ -272,14 +293,14 @@ authRoutes.get('/me', authMiddleware, async (c) => {
     return c.json({
       success: true,
       data: {
-        id: user._id.$oid || user._id,
+        id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        firstName: user.first_name,
+        lastName: user.last_name,
         role: user.role,
-        companyId: user.companyId,
+        companyId: user.company_id,
         permissions: user.permissions || [],
-        lastLogin: user.lastLogin
+        lastLogin: user.last_login
       }
     });
   } catch (error) {
@@ -304,13 +325,12 @@ authRoutes.post('/change-password', authMiddleware, async (c) => {
     }
 
     const hashedPassword = await hashPassword(newPassword);
-    const mongodb = getMongoClient(c);
+    const db = getD1Client(c);
 
-    await mongodb.updateOne('users', { _id: user._id }, {
-      password: hashedPassword,
-      passwordChangedAt: new Date().toISOString(),
-      refreshToken: null // Invalidate all sessions
-    });
+    await db.rawExecute(
+      "UPDATE users SET password = ?, password_changed_at = ?, refresh_token = NULL, refresh_token_expiry = NULL WHERE id = ?",
+      [hashedPassword, new Date().toISOString(), user.id]
+    );
 
     return c.json({ success: true, message: 'Password changed successfully' });
   } catch (error) {
@@ -353,14 +373,12 @@ authRoutes.post('/2fa/verify', authMiddleware, async (c) => {
     if (!isValid) {
       return c.json({ success: false, message: 'Invalid 2FA code. Please try again.' }, 400);
     }
-    const mongodb = getMongoClient(c);
+    const db = getD1Client(c);
     const backupCodes = generateBackupCodes(10);
-    await mongodb.updateOne('users', { _id: user._id }, {
-      twoFactorEnabled: true,
-      twoFactorSecret: cleanSecret,
-      twoFactorBackupCodes: JSON.stringify(backupCodes),
-      twoFactorEnabledAt: new Date().toISOString()
-    });
+    await db.rawExecute(
+      "UPDATE users SET two_factor_enabled = 1, two_factor_secret = ?, two_factor_backup_codes = ?, two_factor_enabled_at = ? WHERE id = ?",
+      [cleanSecret, JSON.stringify(backupCodes), new Date().toISOString(), user.id]
+    );
     return c.json({ success: true, backupCodes, message: '2FA enabled successfully' });
   } catch (error) {
     return apiError(c, error, 'auth');
@@ -380,27 +398,32 @@ authRoutes.post('/2fa/login', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Invalid temp token' }, 401);
     }
 
-    const mongodb = getMongoClient(c);
-    const user = await mongodb.findOne('users', { email: decoded.email });
-    if (!user || !user.twoFactorEnabled) {
+    const db = getD1Client(c);
+    const result = await db.rawExecute(
+      "SELECT * FROM users WHERE email = ?",
+      [decoded.email]
+    );
+    if (!result.results || result.results.length === 0 || !result.results[0].two_factor_enabled) {
       return c.json({ success: false, message: 'Invalid request' }, 401);
     }
+    const user = rowToDocument(result.results[0]);
 
     let authenticated = false;
 
     if (totpCode) {
       // Validate TOTP
-      authenticated = await verifyTOTP(totpCode, user.twoFactorSecret);
+      authenticated = await verifyTOTP(totpCode, user.two_factor_secret);
     } else if (backupCode) {
       // Validate backup code (one-time use)
-      const storedCodes = JSON.parse(user.twoFactorBackupCodes || '[]');
+      const storedCodes = JSON.parse(user.two_factor_backup_codes || '[]');
       const codeIndex = storedCodes.indexOf(backupCode);
       if (codeIndex >= 0) {
         authenticated = true;
         storedCodes.splice(codeIndex, 1);
-        await mongodb.updateOne('users', { _id: user._id }, {
-          twoFactorBackupCodes: JSON.stringify(storedCodes)
-        });
+        await db.rawExecute(
+          "UPDATE users SET two_factor_backup_codes = ? WHERE id = ?",
+          [JSON.stringify(storedCodes), user.id]
+        );
       }
     }
 
@@ -409,29 +432,37 @@ authRoutes.post('/2fa/login', authRateLimit, async (c) => {
     }
 
     // Update login state
-    const rehashData = { loginAttempts: 0, lockUntil: null, lastLogin: new Date().toISOString() };
+    const loginUpdates = { login_attempts: 0, lock_until: null, last_login: new Date().toISOString() };
     if (user.password && !user.password.includes(':')) {
-      rehashData.password = await hashPassword(user.password);
+      loginUpdates.password = await hashPassword(user.password);
     }
-    await mongodb.updateOne('users', { _id: user._id }, rehashData);
+    
+    // Build UPDATE query dynamically
+    const updateFields = Object.keys(loginUpdates).map(k => `${k} = ?`).join(', ');
+    const updateValues = [...Object.values(loginUpdates), user.id];
+    await db.rawExecute(
+      `UPDATE users SET ${updateFields} WHERE id = ?`,
+      updateValues
+    );
 
     // Generate full tokens
     const accessToken = await signJWT({
-      userId: user._id.$oid || user._id,
+      userId: user.id,
       email: user.email,
       role: user.role,
-      tenantId: user.companyId
+      tenantId: user.company_id
     }, jwtSecret, '15m');
 
     const refreshToken = await signJWT({
-      userId: user._id.$oid || user._id,
+      userId: user.id,
       type: 'refresh'
     }, jwtSecret, '7d');
 
-    await mongodb.updateOne('users', { _id: user._id }, {
-      refreshToken,
-      refreshTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-    });
+    const refreshExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    await db.rawExecute(
+      "UPDATE users SET refresh_token = ?, refresh_token_expiry = ? WHERE id = ?",
+      [refreshToken, refreshExpiry, user.id]
+    );
 
     const isProduction = c.env.ENVIRONMENT === 'production';
     c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=Strict; Path=/api/auth; Max-Age=${7 * 24 * 60 * 60}`);
@@ -441,12 +472,12 @@ authRoutes.post('/2fa/login', authRateLimit, async (c) => {
       token: accessToken,
       data: {
         user: {
-          id: user._id.$oid || user._id,
+          id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.first_name,
+          lastName: user.last_name,
           role: user.role,
-          companyId: user.companyId
+          companyId: user.company_id
         },
         tokens: { accessToken }
       },
@@ -469,12 +500,11 @@ authRoutes.post('/2fa/disable', authMiddleware, async (c) => {
     if (!isValid) {
       return c.json({ success: false, message: 'Invalid password' }, 401);
     }
-    const mongodb = getMongoClient(c);
-    await mongodb.updateOne('users', { _id: user._id }, {
-      twoFactorEnabled: false,
-      twoFactorSecret: null,
-      twoFactorBackupCodes: null
-    });
+    const db = getD1Client(c);
+    await db.rawExecute(
+      "UPDATE users SET two_factor_enabled = 0, two_factor_secret = NULL, two_factor_backup_codes = NULL WHERE id = ?",
+      [user.id]
+    );
     return c.json({ success: true, message: '2FA disabled successfully' });
   } catch (error) {
     return apiError(c, error, 'auth');
@@ -489,8 +519,12 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Email is required' }, 400);
     }
 
-    const mongodb = getMongoClient(c);
-    const user = await mongodb.findOne('users', { email: email.toLowerCase() });
+    const db = getD1Client(c);
+    const result = await db.rawExecute(
+      "SELECT * FROM users WHERE email = ?",
+      [email.toLowerCase()]
+    );
+    const user = result.results && result.results.length > 0 ? rowToDocument(result.results[0]) : null;
 
     if (!user) {
       return c.json({ success: true, message: 'If an account exists with that email, a password reset link has been sent.' });
@@ -500,17 +534,17 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
     crypto.getRandomValues(tokenBytes);
     const resetToken = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
 
-    await mongodb.updateOne('users', { _id: user._id }, {
-      resetPasswordToken: resetToken,
-      resetPasswordExpiry: new Date(Date.now() + 60 * 60 * 1000).toISOString()
-    });
+    await db.rawExecute(
+      "UPDATE users SET reset_password_token = ?, reset_password_expiry = ? WHERE id = ?",
+      [resetToken, new Date(Date.now() + 60 * 60 * 1000).toISOString(), user.id]
+    );
 
     // Send password reset email via configured provider (Microsoft Graph / Resend / SendGrid)
     const emailService = new EmailService(c.env);
     const frontendUrl = c.env.FRONTEND_URL || 'https://tradeai.vantax.co.za';
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
     const emailSent = await emailService.sendPasswordReset(email, {
-      firstName: user.firstName || 'User',
+      firstName: user.first_name || 'User',
       resetUrl,
       token: resetToken,
     });
@@ -540,27 +574,26 @@ authRoutes.post('/reset-password', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Password must be at least 8 characters' }, 400);
     }
 
-    const mongodb = getMongoClient(c);
-    const user = await mongodb.findOne('users', { resetPasswordToken: token });
+    const db = getD1Client(c);
+    const result = await db.rawExecute(
+      "SELECT * FROM users WHERE reset_password_token = ?",
+      [token]
+    );
+    const user = result.results && result.results.length > 0 ? rowToDocument(result.results[0]) : null;
 
     if (!user) {
       return c.json({ success: false, message: 'Invalid or expired reset token' }, 400);
     }
 
-    if (user.resetPasswordExpiry && new Date(user.resetPasswordExpiry) < new Date()) {
+    if (user.reset_password_expiry && new Date(user.reset_password_expiry) < new Date()) {
       return c.json({ success: false, message: 'Reset token has expired. Please request a new one.' }, 400);
     }
 
     const hashedPassword = await hashPassword(password);
-    await mongodb.updateOne('users', { _id: user._id }, {
-      password: hashedPassword,
-      resetPasswordToken: null,
-      resetPasswordExpiry: null,
-      passwordChangedAt: new Date().toISOString(),
-      refreshToken: null,
-      loginAttempts: 0,
-      lockUntil: null
-    });
+    await db.rawExecute(
+      "UPDATE users SET password = ?, reset_password_token = NULL, reset_password_expiry = NULL, password_changed_at = ?, refresh_token = NULL, refresh_token_expiry = NULL, login_attempts = 0, lock_until = NULL WHERE id = ?",
+      [hashedPassword, new Date().toISOString(), user.id]
+    );
 
     return c.json({ success: true, message: 'Password reset successfully' });
   } catch (error) {
@@ -576,26 +609,26 @@ authRoutes.post('/register', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'All fields are required' }, 400);
     }
 
-    const mongodb = getMongoClient(c);
+    const db = getD1Client(c);
 
     // Check if user exists
-    const existingUser = await mongodb.findOne('users', { email: email.toLowerCase() });
-    if (existingUser) {
+    const existingResult = await db.rawExecute(
+      "SELECT id FROM users WHERE email = ?",
+      [email.toLowerCase()]
+    );
+    if (existingResult.results && existingResult.results.length > 0) {
       return c.json({ success: false, message: 'User already exists' }, 409);
     }
 
     const hashedPassword = await hashPassword(password);
+    const userId = generateId();
+    const now = new Date().toISOString();
 
-    const userId = await mongodb.insertOne('users', {
-      email: email.toLowerCase(),
-      password: hashedPassword,
-      firstName,
-      lastName,
-      role: role || 'user',
-      companyId,
-      isActive: true,
-      loginAttempts: 0
-    });
+    await db.rawExecute(
+      `INSERT INTO users (id, company_id, email, password, first_name, last_name, role, is_active, login_attempts, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)`,
+      [userId, companyId || null, email.toLowerCase(), hashedPassword, firstName, lastName, role || 'user', now, now]
+    );
 
     return c.json({
       success: true,

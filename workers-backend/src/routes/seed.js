@@ -3,6 +3,7 @@ import { getD1Client } from '../services/d1.js';
 import { getMongoClient } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
+import { generateId } from '../utils/id.js';
 
 // Create a separate router for unauthenticated seed endpoints
 const seedAuthRoutes = new Hono();
@@ -27,12 +28,14 @@ async function hashPassword(password) {
 // Unauthenticated endpoint to seed initial users
 seedAuthRoutes.post('/init', async (c) => {
   try {
-    const mongodb = getMongoClient(c);
+    const db = getD1Client(c);
     
     // Check if users already exist
-    const existingUsers = await mongodb.find('users', {}, { limit: 1 });
+    const existingUsers = await db.rawExecute(
+      "SELECT id FROM users LIMIT 1"
+    );
     
-    if (existingUsers.length > 0) {
+    if (existingUsers.results && existingUsers.results.length > 0) {
       return c.json({
         success: false,
         message: 'Users already exist. Use authenticated endpoints to manage users.'
@@ -51,17 +54,14 @@ seedAuthRoutes.post('/init', async (c) => {
     const createdUsers = [];
     for (const user of testUsers) {
       const hashedPassword = await hashPassword(user.password);
-      const userId = await mongodb.insertOne('users', {
-        email: user.email.toLowerCase(),
-        password: hashedPassword,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        companyId: user.companyId,
-        isActive: true,
-        isEmailVerified: true,
-        loginAttempts: 0
-      });
+      const userId = generateId();
+      const now = new Date().toISOString();
+      
+      await db.rawExecute(
+        `INSERT INTO users (id, company_id, email, password, first_name, last_name, role, is_active, login_attempts, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)`,
+        [userId, user.companyId, user.email.toLowerCase(), hashedPassword, user.firstName, user.lastName, user.role, now, now]
+      );
       createdUsers.push({ email: user.email, role: user.role, userId });
     }
     
