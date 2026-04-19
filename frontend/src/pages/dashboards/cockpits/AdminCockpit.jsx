@@ -5,9 +5,9 @@ import {
   Security, 
   Build, 
   Analytics, 
-  NotificationsActive 
+  NotificationsActive,
+  People 
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
 
 const AdminCockpit = ({ user }) => {
   return (
@@ -55,7 +55,7 @@ const AdminCockpit = ({ user }) => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Button variant="contained" startIcon={<People />} color="primary">Manage Users</Button>
               <Button variant="contained" startIcon={<Security />} color="secondary">Audit Access Logs</Button>
-              <Button variant="contained" startIcon={<Build />} color="info">Update System Config</B>
+              <Button variant="contained" startIcon={<Build />} color="info">Update System Config</Button>
             </Box>
           </Card>
         </Grid>

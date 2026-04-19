@@ -5,10 +5,10 @@ import {
   TrendingUp, 
   WarningAmber, 
   Search, 
-  Insight
+  Lightbulb
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
-import { useMyWork } from '../../hooks/useMyWork';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useMyWork } from '../../../hooks/useMyWork';
 
 const AnalystCockpit = ({ user }) => {
   const { tenantId } = useAuth();
@@ -63,7 +63,7 @@ const AnalystCockpit = ({ user }) => {
               <Typography variant="body2" color="text.secondary">ROI Analysis Chart Area</Typography>
             </Box>
             <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-              <Button variant="contained" startIcon={<Insight />} color="primary">Run Cannibalization Audit</Button>
+              <Button variant="contained" startIcon={<Lightbulb />} color="primary">Run Cannibalization Audit</Button>
               <Button variant="contained" startIcon={<Search />} color="secondary">Analyze Forward-Buying</Button>
             </Box>
           </Card>

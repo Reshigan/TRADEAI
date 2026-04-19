@@ -1,14 +1,13 @@
 import React from 'react';
 import { Card, Grid, Typography, Box, Button } from '@mui/material';
-import { 
-  AttachMoney, 
-  AccountBalanceWallet, 
-  ReceiptLong, 
-  TrendingDown, 
-  CheckCircle 
+import {
+  AttachMoney,
+  AccountBalanceWallet,
+  ReceiptLong,
+  WarningAmber
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
-import { useMyWork } from '../../hooks/useMyWork';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useMyWork } from '../../../hooks/useMyWork';
 
 const FinanceCockpit = ({ user }) => {
   const { tenantId } = useAuth();
