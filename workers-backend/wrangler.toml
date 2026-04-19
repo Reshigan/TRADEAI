@@ -1,6 +1,7 @@
 name = "tradeai-api"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
+account_id = "08596e523c096f04b56d7ae43f7821f4"
 
 [vars]
 ENVIRONMENT = "production"
