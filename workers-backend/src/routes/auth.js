@@ -82,7 +82,7 @@ authRoutes.post('/login', authRateLimit, async (c) => {
     const userId = user.id;
 
     // Check if account is locked
-    if (user.lock_until && new Date(user.lock_until) > new Date()) {
+    if (user.lockUntil && new Date(user.lockUntil) > new Date()) {
       return c.json({ success: false, message: 'Account is temporarily locked. Please try again later.' }, 423);
     }
 
@@ -91,7 +91,7 @@ authRoutes.post('/login', authRateLimit, async (c) => {
 
     if (!isValidPassword) {
       // Increment failed login attempts
-      const loginAttempts = (user.login_attempts || 0) + 1;
+      const loginAttempts = (user.loginAttempts || 0) + 1;
       const updateData = { login_attempts: loginAttempts };
 
       if (loginAttempts >= 5) {
@@ -105,17 +105,17 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Invalid credentials' }, 401);
     }
 
-    if (!user.is_active) {
+    if (!user.isActive) {
       return c.json({ success: false, message: 'Account is deactivated' }, 401);
     }
 
     // Check if password reset is required (seeded accounts)
-    if (user.password_reset_required) {
+    if (user.passwordResetRequired) {
       return c.json({ success: false, message: 'Password reset required. Please change your password before proceeding.', code: 'PASSWORD_RESET_REQUIRED' }, 428);
     }
 
     // GAP-01: If 2FA is enabled, return tempToken instead of full login
-    if (user.two_factor_enabled && user.two_factor_secret) {
+    if (user.twoFactorEnabled && user.twoFactorSecret) {
       const secret = c.env.JWT_SECRET;
       if (!secret) return c.json({ success: false, message: 'Server configuration error' }, 500);
       const tempToken = await signJWT({
@@ -154,7 +154,7 @@ authRoutes.post('/login', authRateLimit, async (c) => {
       userId: userId,
       email: user.email,
       role: user.role,
-      tenantId: user.company_id
+      tenantId: user.companyId
     }, secret, '15m');
 
     const refreshToken = await signJWT({
@@ -180,10 +180,10 @@ authRoutes.post('/login', authRateLimit, async (c) => {
         user: {
           id: userId,
           email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           role: user.role,
-          companyId: user.company_id
+          companyId: user.companyId
         },
         tokens: {
           accessToken
@@ -251,7 +251,7 @@ async function handleRefreshToken(c) {
       userId: user.id,
       email: user.email,
       role: user.role,
-      tenantId: user.company_id
+      tenantId: user.companyId
     }, secret, '15m');
 
     return c.json({
@@ -295,12 +295,12 @@ authRoutes.get('/me', authMiddleware, async (c) => {
       data: {
         id: user.id,
         email: user.email,
-        firstName: user.first_name,
-        lastName: user.last_name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.role,
-        companyId: user.company_id,
+        companyId: user.companyId,
         permissions: user.permissions || [],
-        lastLogin: user.last_login
+        lastLogin: user.lastLogin
       }
     });
   } catch (error) {
@@ -412,10 +412,10 @@ authRoutes.post('/2fa/login', authRateLimit, async (c) => {
 
     if (totpCode) {
       // Validate TOTP
-      authenticated = await verifyTOTP(totpCode, user.two_factor_secret);
+      authenticated = await verifyTOTP(totpCode, user.twoFactorSecret);
     } else if (backupCode) {
       // Validate backup code (one-time use)
-      const storedCodes = JSON.parse(user.two_factor_backup_codes || '[]');
+      const storedCodes = JSON.parse(user.twoFactorBackupCodes || '[]');
       const codeIndex = storedCodes.indexOf(backupCode);
       if (codeIndex >= 0) {
         authenticated = true;
@@ -450,7 +450,7 @@ authRoutes.post('/2fa/login', authRateLimit, async (c) => {
       userId: user.id,
       email: user.email,
       role: user.role,
-      tenantId: user.company_id
+      tenantId: user.companyId
     }, jwtSecret, '15m');
 
     const refreshToken = await signJWT({
@@ -474,10 +474,10 @@ authRoutes.post('/2fa/login', authRateLimit, async (c) => {
         user: {
           id: user.id,
           email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           role: user.role,
-          companyId: user.company_id
+          companyId: user.companyId
         },
         tokens: { accessToken }
       },
@@ -544,7 +544,7 @@ authRoutes.post('/forgot-password', authRateLimit, async (c) => {
     const frontendUrl = c.env.FRONTEND_URL || 'https://tradeai.vantax.co.za';
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
     const emailSent = await emailService.sendPasswordReset(email, {
-      firstName: user.first_name || 'User',
+      firstName: user.firstName || 'User',
       resetUrl,
       token: resetToken,
     });
@@ -585,7 +585,7 @@ authRoutes.post('/reset-password', authRateLimit, async (c) => {
       return c.json({ success: false, message: 'Invalid or expired reset token' }, 400);
     }
 
-    if (user.reset_password_expiry && new Date(user.reset_password_expiry) < new Date()) {
+    if (user.resetPasswordExpiry && new Date(user.resetPasswordExpiry) < new Date()) {
       return c.json({ success: false, message: 'Reset token has expired. Please request a new one.' }, 400);
     }
 
