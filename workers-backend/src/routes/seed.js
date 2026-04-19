@@ -4,7 +4,8 @@ import { getMongoClient } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
 
-const seedRoutes = new Hono();
+// Create a separate router for unauthenticated seed endpoints
+const seedAuthRoutes = new Hono();
 
 // Password hashing for seed users (PBKDF2)
 const PBKDF2_ITERATIONS = 100000;
@@ -23,8 +24,8 @@ async function hashPassword(password) {
   return `${toHex(salt)}:${toHex(new Uint8Array(hashBuffer))}`;
 }
 
-// Unauthenticated endpoint to seed initial users (no auth required)
-seedRoutes.post('/users', async (c) => {
+// Unauthenticated endpoint to seed initial users
+seedAuthRoutes.post('/init', async (c) => {
   try {
     const mongodb = getMongoClient(c);
     
@@ -75,7 +76,8 @@ seedRoutes.post('/users', async (c) => {
   }
 });
 
-// All other seed routes require authentication
+// Main seed routes with authentication
+const seedRoutes = new Hono();
 seedRoutes.use('*', authMiddleware);
 seedRoutes.use('*', requireRole('admin'));
 
@@ -1188,4 +1190,4 @@ seedRoutes.post('/comprehensive', async (c) => {
   }
 });
 
-export { seedRoutes };
+export { seedRoutes, seedAuthRoutes };
