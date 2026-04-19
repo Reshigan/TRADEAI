@@ -1,10 +1,81 @@
 import { Hono } from 'hono';
 import { getD1Client } from '../services/d1.js';
+import { getMongoClient } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
 
 const seedRoutes = new Hono();
 
+// Password hashing for seed users (PBKDF2)
+const PBKDF2_ITERATIONS = 100000;
+const SALT_LENGTH = 16;
+const HASH_LENGTH = 32;
+
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const hashBuffer = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' }, keyMaterial, HASH_LENGTH * 8);
+  return `${toHex(salt)}:${toHex(new Uint8Array(hashBuffer))}`;
+}
+
+// Unauthenticated endpoint to seed initial users (no auth required)
+seedRoutes.post('/users', async (c) => {
+  try {
+    const mongodb = getMongoClient(c);
+    
+    // Check if users already exist
+    const existingUsers = await mongodb.find('users', {}, { limit: 1 });
+    
+    if (existingUsers.length > 0) {
+      return c.json({
+        success: false,
+        message: 'Users already exist. Use authenticated endpoints to manage users.'
+      }, 400);
+    }
+    
+    const testUsers = [
+      { email: 'admin@trade-ai.com', password: 'Admin@123', firstName: 'Admin', lastName: 'User', role: 'super_admin', companyId: 'comp-mondelez-001' },
+      { email: 'salesmanager@trade-ai.com', password: 'Sales@123', firstName: 'Sales', lastName: 'Manager', role: 'sales_manager', companyId: 'comp-mondelez-001' },
+      { email: 'kam@trade-ai.com', password: 'KAM@1234', firstName: 'Key Account', lastName: 'Manager', role: 'kam', companyId: 'comp-mondelez-001' },
+      { email: 'finance@trade-ai.com', password: 'Finance@123', firstName: 'Finance', lastName: 'Manager', role: 'finance_manager', companyId: 'comp-mondelez-001' },
+      { email: 'inventory@trade-ai.com', password: 'Inventory@123', firstName: 'Inventory', lastName: 'Manager', role: 'inventory_manager', companyId: 'comp-mondelez-001' },
+      { email: 'analyst@trade-ai.com', password: 'Analyst@123', firstName: 'Data', lastName: 'Analyst', role: 'analyst', companyId: 'comp-mondelez-001' }
+    ];
+    
+    const createdUsers = [];
+    for (const user of testUsers) {
+      const hashedPassword = await hashPassword(user.password);
+      const userId = await mongodb.insertOne('users', {
+        email: user.email.toLowerCase(),
+        password: hashedPassword,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        companyId: user.companyId,
+        isActive: true,
+        isEmailVerified: true,
+        loginAttempts: 0
+      });
+      createdUsers.push({ email: user.email, role: user.role, userId });
+    }
+    
+    return c.json({
+      success: true,
+      message: 'Test users seeded successfully',
+      users: createdUsers
+    }, 201);
+  } catch (error) {
+    console.error('Seed users error:', error);
+    return apiError(c, error, 'seed.users');
+  }
+});
+
+// All other seed routes require authentication
 seedRoutes.use('*', authMiddleware);
 seedRoutes.use('*', requireRole('admin'));
 
