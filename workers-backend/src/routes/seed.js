@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
 import { getD1Client } from '../services/d1.js';
-import { getMongoClient } from '../services/d1.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { apiError } from '../utils/apiError.js';
 import { generateId } from '../utils/id.js';
