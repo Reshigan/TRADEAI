@@ -69,46 +69,25 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    defaults:
-      run:
-        working-directory: frontend
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: 20
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: frontend/node_modules
-          key: frontend-deps-${{ hashFiles('frontend/package.json') }}
-          restore-keys: |
-            frontend-deps-
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build for production
-        env:
-          CI: false
-          GENERATE_SOURCEMAP: false
-          REACT_APP_API_URL: https://tradeai-api.reshigan-085.workers.dev/api
-          REACT_APP_ML_API_URL: https://tradeai-api.reshigan-085.workers.dev/api/ml
-          NODE_OPTIONS: --max-old-space-size=4096
-        run: npm run build
+          name: frontend-build
+          path: ./build
 
       - name: Deploy to Cloudflare Pages
-        run: |
-          npm install -g wrangler
-          wrangler pages deploy build --project-name=tradeai
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: tradeai
+          directory: ./build
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Purge Cloudflare Cache
         run: |
