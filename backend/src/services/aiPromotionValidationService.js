@@ -1,16 +1,23 @@
 /**
- * AI Promotion Validation Service
- * Handles AI-powered promotion validation and suggestions
+ * HEURISTIC (NOT ML) Promotion Validation Service
+ * 
+ * D-09: This service uses rule-of-thumb heuristics, NOT trained ML models.
+ * Formula: baselineUplift = sqrt(discount%) × 3.5 × categoryFactor.
+ * This is a rule-of-thumb based on industry averages.
+ * 
+ * For real model-based predictions, use forecastingService.predictPromotionPerformance,
+ * which uses historical regression on completed promotions.
  */
 
-class AIPromotionValidationService {
+class HeuristicPromotionValidationService {
   constructor() {
-    this.modelVersion = '1.0';
+    this.modelVersion = 'heuristic-v1';
   }
 
   /**
-     * Validate promotion uplift prediction using ML models
-     */
+   * Validate promotion uplift prediction using heuristics
+   * @returns {Object} - Validation result with source='heuristic' and warning
+   */
   validatePromotionUplift(promotionData) {
     const {
       _productId,
@@ -25,7 +32,7 @@ class AIPromotionValidationService {
     // Calculate discount percentage
     const discountPercentage = ((currentPrice - proposedPrice) / currentPrice) * 100;
 
-    // Simple validation logic (can be enhanced with ML model)
+    // Simple validation logic (rule-of-thumb heuristic)
     const baselineUplift = this.calculateBaselineUplift(discountPercentage, category);
     const historicalAverage = historicalData.averageUplift || 15;
 
@@ -51,13 +58,17 @@ class AIPromotionValidationService {
         category,
         duration,
         historicalPerformance: historicalAverage
-      }
+      },
+      // D-09: Honest labeling - this is a heuristic, not ML
+      source: 'heuristic',
+      warning: 'Not a trained ML prediction. Use forecastingService for model-based forecasts.'
     };
   }
 
   /**
-     * Generate AI-powered promotion suggestions
-     */
+   * Generate heuristic-based promotion suggestions
+   * @returns {Object} - Suggestions with source='heuristic' and warning
+   */
   generatePromotionSuggestions(promotionData) {
     const {
       _productId,
@@ -98,7 +109,10 @@ class AIPromotionValidationService {
         recommendedPrice: currentPrice * (1 - scenario.discount / 100),
         estimatedRevenue: this.estimateRevenue(currentPrice, scenario.discount, scenario.expectedUplift, duration)
       })),
-      recommendations: this.generateRecommendations(discountPercentage, category, baselineUplift)
+      recommendations: this.generateRecommendations(discountPercentage, category, baselineUplift),
+      // D-09: Honest labeling
+      source: 'heuristic',
+      warning: 'Not a trained ML prediction. Use forecastingService for model-based forecasts.'
     };
   }
 

@@ -4,9 +4,28 @@
  */
 
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 
+// For Jest globalSetup, we use a pre-created MongoDB instance
+// For direct usage, we import MongoMemoryServer here
 let mongoServer;
+let mongoServerImported = false;
+
+async function importMongoMemoryServer() {
+  if (!mongoServerImported) {
+    try {
+      const mms = require('mongodb-memory-server');
+      mongoServer = await mms.MongoMemoryServer.create();
+      mongoServerImported = true;
+    } catch (e) {
+      // Fallback: try to use global __MONGO_URI__ if available
+      if (global.__MONGO_URI__) {
+        console.log('Using global MongoDB URI from globalSetup');
+        return;
+      }
+      throw e;
+    }
+  }
+}
 
 /**
  * Connect to in-memory MongoDB instance
@@ -18,9 +37,17 @@ async function connect() {
       await mongoose.disconnect();
     }
 
-    // Create new in-memory server
-    mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
+    let uri;
+    
+    // Try to use global MongoDB URI from globalSetup first
+    if (global.__MONGO_URI__) {
+      uri = global.__MONGO_URI__;
+      console.log('Using global MongoDB URI');
+    } else {
+      // Create new in-memory server
+      await importMongoMemoryServer();
+      uri = mongoServer.getUri();
+    }
 
     // Connect to in-memory database
     await mongoose.connect(uri, {

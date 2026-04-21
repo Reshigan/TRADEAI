@@ -259,20 +259,37 @@ exports.approvePromotion = asyncHandler(async (req, res, _next) => {
     throw new AppError('Promotion not found', 404);
   }
 
-  const approvalLevel = {
+  // D-04: Use explicit role-to-approval-level mapping (defined in Promotion model)
+  const ROLE_TO_APPROVAL_LEVEL = {
     kam: 'kam',
     manager: 'manager',
     director: 'director',
-    admin: 'finance'
-  }[req.user.role];
+    finance: 'finance',
+    admin: 'finance',
+    super_admin: 'finance',
+  };
+  
+  const approvalLevel = ROLE_TO_APPROVAL_LEVEL[req.user.role];
+  
+  if (!approvalLevel) {
+    throw new AppError(`Role "${req.user.role}" cannot approve promotions`, 403);
+  }
 
-  await promotion.approve(approvalLevel, req.user._id, comments);
-
-  res.json({
-    success: true,
-    message: 'Promotion approved',
-    data: promotion
-  });
+  try {
+    const result = await promotion.approve(approvalLevel, req.user._id, comments);
+    res.json({
+      success: true,
+      message: result.fullyApproved
+        ? 'Promotion fully approved'
+        : 'Approval recorded, further approvals required',
+      data: promotion
+    });
+  } catch (err) {
+    if (err.code === 'INVALID_TRANSITION') throw new AppError(err.message, 409);
+    if (err.code === 'FORBIDDEN_ROLE') throw new AppError(err.message, 403);
+    if (err.code === 'NO_APPROVAL_SLOT') throw new AppError(err.message, 404);
+    throw err;
+  }
 });
 
 // Calculate promotion performance

@@ -349,6 +349,10 @@ class ForecastingService {
         confidence,
         similarPromotionsCount: similarPromotions.length,
         recommendations: this.generatePromotionRecommendations(predictions),
+        // D-12: Honest labeling - this is regression-based, not trained ML model
+        modelType: 'regression',
+        source: 'forecastingService',
+        warning: 'Regression-based prediction using similar historical promotions. Not a trained ML model.',
         generatedAt: new Date()
       };
 

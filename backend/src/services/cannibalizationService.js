@@ -36,57 +36,68 @@ class CannibalizationService {
       tenantId
     );
 
-    // Analyze impact on each related product
+    // D-10: Analyze impact on each related product WITH ERROR ISOLATION
     const cannibalizationResults = [];
+    const errors = [];
 
     for (const relatedProduct of relatedProducts) {
       // Skip the promoted product itself
       if (relatedProduct._id.toString() === productId) continue;
 
-      // Calculate baseline for related product
-      const baselineResult = await baselineService.calculateBaseline({
-        productId: relatedProduct._id,
-        customerId,
-        promotionStartDate: new Date(promotionStartDate),
-        promotionEndDate: new Date(promotionEndDate),
-        tenantId
-      });
-
-      // Get actual sales for related product during promotion
-      const actualSales = await SalesHistory.find({
-        productId: relatedProduct._id,
-        customerId,
-        date: {
-          $gte: promotionStartDate,
-          $lte: promotionEndDate
-        },
-        tenantId
-      });
-
-      // Calculate cannibalization
-      const baseline = baselineResult.recommended.baseline;
-      const totalBaseline = baseline.reduce((sum, b) => sum + b.baselineQuantity, 0);
-      const totalActual = actualSales.reduce((sum, s) => sum + s.quantity, 0);
-      const cannibalizedVolume = totalBaseline - totalActual;
-      const cannibalizationRate = totalBaseline > 0 ?
-        (cannibalizedVolume / totalBaseline * 100) : 0;
-
-      // Only include if significant cannibalization detected (>10% decline)
-      if (cannibalizationRate > 10) {
-        cannibalizationResults.push({
-          product: {
-            _id: relatedProduct._id,
-            name: relatedProduct.name,
-            sku: relatedProduct.sku,
-            category: relatedProduct.category
-          },
-          baseline: totalBaseline,
-          actual: totalActual,
-          cannibalizedVolume,
-          cannibalizationRate,
-          revenueImpact: cannibalizedVolume * (relatedProduct.price || 0),
-          relationship: this.determineRelationship(promotedProduct, relatedProduct)
+      try {
+        // Calculate baseline for related product
+        const baselineResult = await baselineService.calculateBaseline({
+          productId: relatedProduct._id,
+          customerId,
+          promotionStartDate: new Date(promotionStartDate),
+          promotionEndDate: new Date(promotionEndDate),
+          tenantId
         });
+
+        // Get actual sales for related product during promotion
+        const actualSales = await SalesHistory.find({
+          productId: relatedProduct._id,
+          customerId,
+          date: {
+            $gte: promotionStartDate,
+            $lte: promotionEndDate
+          },
+          tenantId
+        });
+
+        // Calculate cannibalization
+        const baseline = baselineResult.recommended.baseline;
+        const totalBaseline = baseline.reduce((sum, b) => sum + b.baselineQuantity, 0);
+        const totalActual = actualSales.reduce((sum, s) => sum + s.quantity, 0);
+        const cannibalizedVolume = totalBaseline - totalActual;
+        const cannibalizationRate = totalBaseline > 0 ?
+          (cannibalizedVolume / totalBaseline * 100) : 0;
+
+        // Only include if significant cannibalization detected (>10% decline)
+        if (cannibalizationRate > 10) {
+          cannibalizationResults.push({
+            product: {
+              _id: relatedProduct._id,
+              name: relatedProduct.name,
+              sku: relatedProduct.sku,
+              category: relatedProduct.category
+            },
+            baseline: totalBaseline,
+            actual: totalActual,
+            cannibalizedVolume,
+            cannibalizationRate,
+            revenueImpact: cannibalizedVolume * (relatedProduct.price || 0),
+            relationship: this.determineRelationship(promotedProduct, relatedProduct)
+          });
+        }
+      } catch (err) {
+        // D-10: Log error but continue processing other products
+        errors.push({
+          productId: relatedProduct._id.toString(),
+          productName: relatedProduct.name,
+          message: err.message
+        });
+        console.warn(`Cannibalization analysis failed for product ${relatedProduct._id}: ${err.message}`);
       }
     }
 
@@ -112,13 +123,17 @@ class CannibalizationService {
         end: promotionEndDate
       },
       affectedProducts: cannibalizationResults,
+      // D-10: Include error info for callers to decide how to surface
+      errors,
+      partial: errors.length > 0,
       summary: {
         totalAffectedProducts: cannibalizationResults.length,
         totalCannibalizedVolume,
         totalRevenueImpact,
         averageCannibalizationRate: cannibalizationResults.length > 0 ?
           cannibalizationResults.reduce((sum, r) => sum + r.cannibalizationRate, 0) /
-          cannibalizationResults.length : 0
+          cannibalizationResults.length : 0,
+        productsWithErrors: errors.length
       }
     };
   }

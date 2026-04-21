@@ -481,6 +481,35 @@ promotionSchema.index({ company: 1, 'period.startDate': 1, 'period.endDate': 1 }
 
 // Pre-save middleware
 promotionSchema.pre('save', function (next) {
+  // D-13: Input validation
+  const errors = {};
+
+  if (this.period?.startDate && this.period?.endDate &&
+      this.period.endDate <= this.period.startDate) {
+    errors['period.endDate'] = 'period.endDate must be after period.startDate';
+  }
+
+  if (this.mechanics?.discountType === 'percentage' &&
+      (this.mechanics.discountValue < 0 || this.mechanics.discountValue > 100)) {
+    errors['mechanics.discountValue'] = 'percentage discountValue must be 0–100';
+  }
+
+  if (this.mechanics?.discountType === 'fixed_amount' && this.mechanics.discountValue < 0) {
+    errors['mechanics.discountValue'] = 'fixed_amount discountValue must be >= 0';
+  }
+
+  if (this.products?.length === 0) {
+    errors['products'] = 'promotion must have at least one product';
+  }
+
+  if (Object.keys(errors).length > 0) {
+    const err = new mongoose.Error.ValidationError();
+    Object.keys(errors).forEach(field => {
+      err.errors[field] = new mongoose.Error.ValidatorError({ message: errors[field] });
+    });
+    return next(err);
+  }
+
   // Set analysis windows based on promotion period
   if (this.isModified('period.startDate') || this.isModified('period.endDate')) {
     const startDate = new Date(this.period.startDate);
@@ -517,13 +546,25 @@ promotionSchema.pre('save', function (next) {
       (this.financial.costs.logisticsCost || 0);
   }
 
-  // Calculate profitability metrics
-  if (this.financial.actual.incrementalRevenue && this.financial.costs.totalCost) {
-    this.financial.profitability.netProfit =
-      this.financial.actual.incrementalRevenue - this.financial.costs.totalCost;
+  // D-05: Standard ROI formula: (incrementalRevenue − investment) / investment
+  // D-08: Calculate grossProfit as well
+  if (this.financial.actual) {
+    const incrementalRevenue = this.financial.actual.incrementalRevenue || 0;
+    const totalCost = this.financial.costs.totalCost || 0;
+    
+    // grossProfit = revenue - cost of goods (estimated as 70% of revenue)
+    this.financial.profitability.grossProfit = incrementalRevenue * 0.7;
+    
+    // netProfit = incrementalRevenue - total investment cost
+    this.financial.profitability.netProfit = incrementalRevenue - totalCost;
 
-    this.financial.profitability.roi =
-      (this.financial.profitability.netProfit / this.financial.costs.totalCost) * 100;
+    // Standard ROI: (incrementalRevenue - investment) / investment * 100
+    if (totalCost > 0) {
+      this.financial.profitability.roi =
+        ((incrementalRevenue - totalCost) / totalCost) * 100;
+    } else {
+      this.financial.profitability.roi = 0;
+    }
   }
 
   next();
@@ -552,61 +593,144 @@ promotionSchema.methods.calculatePerformance = async function (salesData) {
   await this.save();
 };
 
-promotionSchema.methods.submitForApproval = async function (userId) {
-  this.status = 'pending_approval';
-  this.lastModifiedBy = userId;
+// ALLOWED status transitions — single source of truth.
+// Any caller attempting a transition not in this map MUST throw.
+promotionSchema.statics.PROMOTION_TRANSITIONS = {
+  draft:            ['pending_approval', 'cancelled'],
+  pending_approval: ['approved', 'rejected', 'draft', 'cancelled'],  // draft = recall
+  approved:         ['active', 'cancelled'],
+  active:           ['completed', 'cancelled'],
+  completed:        [],         // terminal
+  cancelled:        [],         // terminal
+  rejected:         ['draft'],  // can be re-edited
+};
 
+promotionSchema.statics.canTransition = function (from, to) {
+  return (promotionSchema.statics.PROMOTION_TRANSITIONS[from] || []).includes(to);
+};
+
+promotionSchema.methods.transitionTo = function (newStatus, userId, comment) {
+  if (!promotionSchema.statics.canTransition(this.status, newStatus)) {
+    const err = new Error(
+      `Invalid promotion status transition: ${this.status} → ${newStatus}`
+    );
+    err.code = 'INVALID_TRANSITION';
+    err.currentStatus = this.status;
+    err.attemptedStatus = newStatus;
+    throw err;
+  }
+  const previous = this.status;
+  this.status = newStatus;
   this.history.push({
-    action: 'submitted_for_approval',
+    action: `status_changed:${previous}→${newStatus}`,
     performedBy: userId,
-    performedDate: new Date()
+    performedDate: new Date(),
+    comment,
   });
+};
 
+// Role → approval level. Explicit, no defaults. Unknown role = hard error.
+const ROLE_TO_APPROVAL_LEVEL = {
+  kam:          'kam',
+  manager:      'manager',
+  director:     'director',
+  finance:      'finance',       // D-04: finance role now resolves to finance level
+  admin:        'finance',       // admin acts on behalf of finance
+  super_admin:  'finance',
+};
+
+promotionSchema.methods.submitForApproval = async function (userId) {
+  this.transitionTo('pending_approval', userId, 'Submitted for approval');
+  this.lastModifiedBy = userId;
   await this.save();
 };
 
 promotionSchema.methods.approve = async function (level, userId, comments) {
-  const approval = this.approvals.find((a) => a.level === level);
-  if (approval) {
-    approval.status = 'approved';
-    approval.approver = userId;
-    approval.comments = comments;
-    approval.date = new Date();
+  // D-01: State guard - can only approve from pending_approval status
+  if (this.status !== 'pending_approval') {
+    const err = new Error(`Cannot approve promotion in status "${this.status}"`);
+    err.code = 'INVALID_TRANSITION';
+    throw err;
   }
 
-  // Check if all required approvals are complete
+  // D-04: Validate role can approve - explicit role mapping with hard error for unknown roles
+  if (!level) {
+    const err = new Error(`Role cannot approve promotions`);
+    err.code = 'FORBIDDEN_ROLE';
+    throw err;
+  }
+
+  const approval = this.approvals.find((a) => a.level === level);
+
+  // D-01: No approval slot for this level
+  if (!approval) {
+    const err = new Error(`No pending approval at level "${level}" for this promotion`);
+    err.code = 'NO_APPROVAL_SLOT';
+    throw err;
+  }
+
+  // D-14: Idempotency - if this level is already approved by this user, return without pushing history
+  if (approval.status === 'approved' && String(approval.approver) === String(userId)) {
+    return { alreadyApproved: true };
+  }
+
+  approval.status = 'approved';
+  approval.approver = userId;
+  approval.comments = comments;
+  approval.date = new Date();
+
   const allApproved = this.approvals.every((a) => a.status === 'approved');
   if (allApproved) {
-    this.status = 'approved';
+    this.transitionTo('approved', userId, `All approvals complete (final: ${level})`);
+  } else {
+    this.history.push({
+      action: `approval_recorded:${level}`,
+      performedBy: userId,
+      performedDate: new Date(),
+      comment: comments,
+    });
   }
 
-  this.history.push({
-    action: 'approved',
-    performedBy: userId,
-    performedDate: new Date(),
-    comment: `${level} approval: ${comments}`
-  });
-
   await this.save();
+  return { alreadyApproved: false, fullyApproved: allApproved };
 };
 
 // Statics
+// D-06: Fixed to use AND logic - both customer AND product must match (not OR which causes false positives)
 promotionSchema.statics.findOverlapping = function (customerId, productId, startDate, endDate) {
-  return this.find({
+  // Build query with proper AND logic - both conditions must be satisfied
+  const query = {
     $and: [
-      {
-        $or: [
-          { 'scope.customers.customer': customerId },
-          { 'products.product': productId }
-        ]
-      },
       {
         'period.startDate': { $lte: endDate },
         'period.endDate': { $gte: startDate }
+      },
+      {
+        status: { $in: ['approved', 'active'] }
       }
-    ],
-    status: { $in: ['approved', 'active'] }
-  });
+    ]
+  };
+
+  // Only add customer filter if provided
+  if (customerId) {
+    query.$and.push({ 'scope.customers.customer': customerId });
+  }
+
+  // Only add product filter if provided  
+  if (productId) {
+    query.$and.push({ 'products.product': productId });
+  }
+
+  // If neither customer nor product specified, fall back to time-based search only
+  if (!customerId && !productId) {
+    return this.find({
+      'period.startDate': { $lte: endDate },
+      'period.endDate': { $gte: startDate },
+      status: { $in: ['approved', 'active'] }
+    });
+  }
+
+  return this.find(query);
 };
 
 // Add tenant support to the schema
