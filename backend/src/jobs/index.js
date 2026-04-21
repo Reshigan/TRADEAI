@@ -9,6 +9,7 @@ const budgetAlertJob = require('./budgetAlert');
 const dataCleanupJob = require('./dataCleanup');
 const mlTrainingJob = require('./mlTraining');
 const anomalyDetectionJob = require('./anomalyDetection');
+const promotionLifecycleJob = require('./promotionLifecycle');
 
 const isRedisConfigured = () => {
   const { host, password } = config.jobs.redis || {};
@@ -24,7 +25,8 @@ const queues = isRedisConfigured() ? {
   budgetAlert: new Queue('budget-alert', { redis: config.jobs.redis }),
   dataCleanup: new Queue('data-cleanup', { redis: config.jobs.redis }),
   mlTraining: new Queue('ml-training', { redis: config.jobs.redis }),
-  anomalyDetection: new Queue('anomaly-detection', { redis: config.jobs.redis })
+  anomalyDetection: new Queue('anomaly-detection', { redis: config.jobs.redis }),
+  promotionLifecycle: new Queue('promotion-lifecycle', { redis: config.jobs.redis })
 } : {};
 
 // Initialize jobs
@@ -84,6 +86,16 @@ const initializeJobs = async () => {
       }
     );
 
+    // D-11: Promotion Lifecycle - Every 15 minutes
+    await queues.promotionLifecycle.add(
+      'process-lifecycle',
+      {},
+      {
+        repeat: { cron: '*/15 * * * *' },
+        ...config.jobs.defaultJobOptions
+      }
+    );
+
     // Process jobs with error handling
     try {
       if (sapSyncJob && sapSyncJob.process) {
@@ -120,6 +132,12 @@ const initializeJobs = async () => {
         queues.anomalyDetection.process(anomalyDetectionJob.process);
       } else {
         logger.warn('anomalyDetectionJob.process is not available');
+      }
+
+      if (promotionLifecycleJob && promotionLifecycleJob.process) {
+        queues.promotionLifecycle.process(promotionLifecycleJob.process);
+      } else {
+        logger.warn('promotionLifecycleJob.process is not available');
       }
     } catch (error) {
       logger.error('Error setting up job processors:', error);

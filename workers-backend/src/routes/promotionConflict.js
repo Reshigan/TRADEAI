@@ -71,16 +71,34 @@ promotionConflictRoutes.post('/check', async (c) => {
       let severity = 'low';
       let reason = '';
 
-      const promoCustomerId = pData.customerId || promo.customer_id;
-      if (customerId && promoCustomerId && customerId === promoCustomerId) {
+      // D-06 Fix: AND logic - require BOTH customer AND product overlap (not OR)
+      // Changed from separate checks to combined check
+      const customerMatch = customerId && promoCustomerId && customerId === promoCustomerId;
+      const productOverlap = productIds && productIds.length > 0 && pData.productIds &&
+        (productIds.filter(pid => (pData.productIds || []).includes(pid)).length > 0);
+      
+      // Both conditions must be true for critical/full overlap
+      if (customerMatch && productOverlap) {
+        conflictType = 'full_overlap';
+        severity = 'critical';
+        const overlappingProducts = productIds.filter(pid => (pData.productIds || []).includes(pid));
+        reason = `Same customer AND ${overlappingProducts.length} overlapping products — high cannibalization risk`;
+      } else if (customerMatch) {
+        // Customer overlap only (no product overlap or no products specified)
         conflictType = 'customer_overlap';
         severity = 'high';
         reason = `Both promotions target the same customer during overlapping dates (${overlapDays} days overlap)`;
+      } else if (productOverlap) {
+        // Product overlap only (different customers or no customer specified)
+        conflictType = 'product_overlap';
+        severity = 'high';
+        const overlappingProducts = productIds.filter(pid => (pData.productIds || []).includes(pid));
+        reason = `${overlappingProducts.length} product(s) overlap during ${overlapDays} days — cannibalization risk`;
       }
 
-      if (productIds && productIds.length > 0 && pData.productIds) {
-        const overlappingProducts = productIds.filter(pid => pData.productIds.includes(pid));
-        if (overlappingProducts.length > 0) {
+      // Removed separate product overlap check - now part of AND logic above
+      if (false) { // Deprecated: product overlap now handled in combined logic above
+        if (productOverlap) {
           conflictType = conflictType ? 'full_overlap' : 'product_overlap';
           severity = conflictType === 'full_overlap' ? 'critical' : 'high';
           reason = conflictType === 'full_overlap'
