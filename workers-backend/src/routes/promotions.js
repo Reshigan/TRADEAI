@@ -6,6 +6,7 @@ import { WalletEnforcementService } from '../services/walletEnforcement.js';
 import { routeApproval } from '../services/approvalRouting.js';
 import { apiError } from '../utils/apiError.js';
 import { validateBody, schemas } from '../validators/schemas.js';
+import { createNotification } from '../services/notifications.js';
 
 export const promotionRoutes = new Hono();
 
@@ -487,6 +488,206 @@ promotionRoutes.get('/:id/performance',async (c) => {
       }
     });
   } catch (error) {
+    return apiError(c, error, 'promotions');
+  }
+});
+
+// D-01: State machine - Approve promotion (finance/admin role only)
+promotionRoutes.post('/:id/approve', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const companyId = c.get('tenantId');
+    const userId = c.get('userId');
+    const userRole = c.get('role') || c.get('userRole') || 'admin';
+    const body = await c.req.json().catch(() => ({}));
+    const comments = body.comments || '';
+
+    // Get promotion
+    const promo = await c.env.DB.prepare(
+      'SELECT * FROM promotions WHERE id = ? AND company_id = ?'
+    ).bind(id, companyId).first();
+
+    if (!promo) {
+      return c.json({ success: false, message: 'Promotion not found' }, 404);
+    }
+
+    // D-04: Role-based approval level mapping
+    const ROLE_TO_APPROVAL_LEVEL = {
+      kam: 'kam',
+      manager: 'manager',
+      director: 'director',
+      finance: 'finance',
+      admin: 'finance',
+      super_admin: 'finance'
+    };
+
+    const approvalLevel = ROLE_TO_APPROVAL_LEVEL[userRole?.toLowerCase()] || 'finance';
+
+    // D-01: State guard - only pending_approval can be approved
+    if (promo.status !== 'pending_approval') {
+      return c.json({ 
+        success: false, 
+        message: `Cannot approve promotion in status "${promo.status}". Only promotions with status "pending_approval" can be approved.`,
+        code: 'INVALID_TRANSITION',
+        currentStatus: promo.status,
+        attemptedStatus: 'approved'
+      }, 409);
+    }
+
+    // D-14: Idempotency check - if already approved by this user, return without duplicate history
+    if (promo.approved_by && promo.approved_by === userId) {
+      return c.json({ 
+        success: true, 
+        data: { alreadyApproved: true },
+        message: 'Promotion already approved by this user' 
+      });
+    }
+
+    // Update promotion status to approved
+    const now = new Date().toISOString();
+    await c.env.DB.prepare(
+      "UPDATE promotions SET status = 'approved', approved_by = ?, approved_at = ?, updated_at = ? WHERE id = ?"
+    ).bind(userId, now, now, id).run();
+
+    // Commit budget funds if budget linked
+    if (promo.budget_id && promo.expected_spend > 0) {
+      try {
+        const enforcement = new BudgetEnforcementService(c.env.DB);
+        await enforcement.commitFunds(promo.budget_id, promo.expected_spend);
+      } catch (e) {
+        console.error('Budget commit on approval failed:', e.message);
+      }
+    }
+
+    // Create notification
+    try {
+      await createNotification(c.env.DB, {
+        companyId, userId: promo.created_by,
+        title: 'Promotion Approved', message: `Promotion "${promo.name}" has been approved.`,
+        type: 'success', category: 'approval', entityType: 'promotion', entityId: id
+      });
+    } catch (e) { /* notification optional */ }
+
+    const updated = await c.env.DB.prepare('SELECT * FROM promotions WHERE id = ?').bind(id).first();
+
+    return c.json({ 
+      success: true, 
+      data: { status: 'approved', approvedBy: userId, approvedAt: now, level: approvalLevel },
+      message: 'Promotion approved successfully' 
+    });
+  } catch (error) {
+    console.error('Error approving promotion:', error);
+    return apiError(c, error, 'promotions');
+  }
+});
+
+// D-01: State machine - Activate promotion (approved status required)
+promotionRoutes.post('/:id/activate', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const companyId = c.get('tenantId');
+    const userId = c.get('userId');
+    const body = await c.req.json().catch(() => ({}));
+
+    // Get promotion
+    const promo = await c.env.DB.prepare(
+      'SELECT * FROM promotions WHERE id = ? AND company_id = ?'
+    ).bind(id, companyId).first();
+
+    if (!promo) {
+      return c.json({ success: false, message: 'Promotion not found' }, 404);
+    }
+
+    // D-01: State guard - only approved can be activated
+    if (promo.status !== 'approved') {
+      return c.json({ 
+        success: false, 
+        message: `Cannot activate promotion in status "${promo.status}". Only promotions with status "approved" can be activated.`,
+        code: 'INVALID_TRANSITION',
+        currentStatus: promo.status,
+        attemptedStatus: 'active'
+      }, 409);
+    }
+
+    // Check if start date has arrived
+    if (promo.start_date && new Date(promo.start_date) > new Date()) {
+      return c.json({ 
+        success: false, 
+        message: `Cannot activate promotion before start date (${promo.start_date})`,
+        code: 'START_DATE_NOT_REACHED'
+      }, 400);
+    }
+
+    // Update status to active
+    const now = new Date().toISOString();
+    await c.env.DB.prepare(
+      "UPDATE promotions SET status = 'active', updated_at = ? WHERE id = ?"
+    ).bind(now, id).run();
+
+    const updated = await c.env.DB.prepare('SELECT * FROM promotions WHERE id = ?').bind(id).first();
+
+    return c.json({ 
+      success: true, 
+      data: { status: 'active' },
+      message: 'Promotion activated successfully' 
+    });
+  } catch (error) {
+    console.error('Error activating promotion:', error);
+    return apiError(c, error, 'promotions');
+  }
+});
+
+// D-01: State machine - Cancel promotion
+promotionRoutes.post('/:id/cancel', async (c) => {
+  try {
+    const { id } = c.req.param();
+    const companyId = c.get('tenantId');
+    const userId = c.get('userId');
+    const body = await c.req.json().catch(() => ({}));
+    const reason = body.reason || 'Cancelled by user';
+
+    // Get promotion
+    const promo = await c.env.DB.prepare(
+      'SELECT * FROM promotions WHERE id = ? AND company_id = ?'
+    ).bind(id, companyId).first();
+
+    if (!promo) {
+      return c.json({ success: false, message: 'Promotion not found' }, 404);
+    }
+
+    // D-01: State guard - terminal states cannot be cancelled
+    if (['completed', 'cancelled'].includes(promo.status)) {
+      return c.json({ 
+        success: false, 
+        message: `Cannot cancel promotion in terminal status "${promo.status}"`,
+        code: 'INVALID_TRANSITION',
+        currentStatus: promo.status
+      }, 409);
+    }
+
+    const now = new Date().toISOString();
+    
+    // Release budget funds if committed
+    if (promo.budget_id && promo.expected_spend > 0 && ['approved', 'active'].includes(promo.status)) {
+      try {
+        const enforcement = new BudgetEnforcementService(c.env.DB);
+        await enforcement.releaseFunds(promo.budget_id, promo.expected_spend);
+      } catch (e) {
+        console.error('Budget release on cancellation failed:', e.message);
+      }
+    }
+
+    await c.env.DB.prepare(
+      "UPDATE promotions SET status = 'cancelled', rejection_reason = ?, updated_at = ? WHERE id = ?"
+    ).bind(reason, now, id).run();
+
+    return c.json({ 
+      success: true, 
+      data: { status: 'cancelled' },
+      message: 'Promotion cancelled' 
+    });
+  } catch (error) {
+    console.error('Error cancelling promotion:', error);
     return apiError(c, error, 'promotions');
   }
 });
