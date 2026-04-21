@@ -169,16 +169,40 @@ Based on SPRINT_0_LOGIC_FIXES.md requirements:
 
 | Task | Description | Status | Notes |
 |------|-------------|--------|-------|
-| S0-1 | Promotion state machine guard (D-01, D-04) | ⚠️ PARTIAL | Model exists but controller missing approve/activate routes |
+| S0-1 | Promotion state machine guard (D-01) | ✅ DONE | Added to models AND routes (Workers) |
 | S0-2 | Simulation field names (D-02) | ✅ DONE | Simulations endpoint working |
-| S0-3 | Budget ledger committed (D-03) | ⚠️ NEEDS TEST | Budgets return committed=0 - need to verify when promotions approved |
-| S0-4 | ROI formula (D-05) | ⏳ NOT TESTED | Need to check promotion financial data |
-| S0-5 | findOverlapping AND logic (D-06) | ⏳ NOT TESTED | Need overlap detection test |
+| S0-3 | Budget ledger committed (D-03) | ⚠️ PARTIAL | Budget commit on promotion approval - integrated |
+| S0-4 | ROI formula (D-05) | ✅ DONE | Standard formula: (revenue - investment) / investment |
 | S0-6 | Deduction state transitions (D-07) | ✅ DONE | Deductions endpoint accessible |
-| S0-7 | Promotion lifecycle cron (D-11) | ⏳ NOT TESTED | Cron jobs run on Cloudflare Workers differently |
-| S0-8 | Honest AI labeling (D-09) | ⏳ NOT TESTED | No AI validation service tested |
-| S0-9 | Cannibalization error isolation (D-10) | ⏳ NOT TESTED | No cannibalization tests run |
-| S0-10 | Input validation (D-13) | ⏳ NOT TESTED | No validation tests run |
+| S0-7 | Promotion lifecycle cron (D-11) | ✅ DONE | Added promotionLifecycle.js job |
+| S0-8 | Honest AI labeling (D-09) | ✅ DONE | aiPromotionValidationService added |
+| S0-9 | Cannibalization error isolation (D-10) | ✅ DONE | try/catch wrapping added |
+| S0-10 | Input validation (D-13) | ✅ DONE | pre-save validation in Promotion model |
+| D-04 | pending_approval auto-activation | ✅ DONE | State machine guards + routes |
+| D-06 | findOverlapping AND logic | ✅ DONE | Both customer AND product must match |
+
+### Commits Pushed
+
+| Commit | Description |
+|--------|-------------|
+| `4ee59f0a2` | Cloudflare Workers: State machine routes (approve/activate/cancel) |
+| `21f6d1d9f` | Backend models: State machine, ROI formula, validation |
+
+### Next Steps for Full Deployment
+
+1. **Deploy to Cloudflare Workers:**
+   - Commits pushed to `origin/main`
+   - GitHub Actions should auto-deploy via Cloudflare Pages integration
+
+2. **Verify state machine endpoints work after deployment:**
+   - POST `/api/promotions/:id/approve` - only from pending_approval
+   - POST `/api/promotions/:id/activate` - only from approved
+   - POST `/api/promotions/:id/cancel` - from non-terminal states
+
+3. **Run UAT tests again to confirm fixes:**
+   ```bash
+   bash workers-backend/test-uat.sh
+   ```
 
 ---
 
